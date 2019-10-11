@@ -1,0 +1,674 @@
+import React from "react";
+import Select from "react-select";
+import DatePicker from "react-datepicker";
+import moment from 'moment';
+import "./formInputs.css";
+
+/*
+@method: renderLoginTextInputField
+@desc: Render login page input
+*/
+export function renderLoginTextInputField(field) {
+  const {
+    input,
+    meta: { touched, error },
+    label,
+    ...others
+  } = field;
+  return (
+    <div className="input-form-group email-block">
+      <label>{label}</label>
+      <div className="inputbox input-group ">
+        <input
+          maxLength={field.mxlength}
+          {...others}
+
+          type="email"
+          className={`form-control`}
+          {...input}
+        />
+        <div className="input-group-prepend">
+          <span className="input-group-text bg-white">
+            <i className="fas fa-envelope mr-1" />
+          </span>
+        </div>
+      </div>
+      <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: renderFileInputField
+@desc: Render file upload input field
+*/
+export function renderFileInputField(field) {
+  const { input, label, ...others } = field;
+  return (
+    <div className="input-form-group">
+      <label>{label}</label>
+      <div className="input-group bdr-btm">
+        <input
+          maxLength={field.mxlength}
+          {...others}
+          type="file"
+          className={`form-control`}
+          {...input}
+        />
+        <div className="input-group-prepend">
+          <span className="input-group-text bg-primary" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/*
+@method: renderLoginPasswordInputField
+@desc: Render number type input
+*/
+export function renderLoginPasswordInputField(field) {
+  const {
+    input,
+    meta: { touched, error },
+    label
+  } = field;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+    }`;
+  return (
+    <div className="input-form-group">
+      <label>{label}</label>
+      <div className="input-group bdr-btm">
+        <input
+          maxLength={25}
+          type="password"
+          className={InputClassName}
+          {...input}
+        />
+        <div className="input-group-prepend">
+          <span className="input-group-text bg-primary">
+            <i className="fas fa-lock mr-1" />
+          </span>
+        </div>
+      </div>
+      <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: renderCheckboxInputField
+@desc: Render radio input
+*/
+export function renderCheckboxInputField(field) {
+  const { input, ...others } = field;
+  const InputClassName = `float-left ${field.className ? field.className : ""}`;
+  return (
+    <div className={InputClassName}>
+      <input
+        {...others}
+        id={field.input.name}
+        className="m-0 align-middle"
+        {...input}
+      />
+      <label
+        htmlFor={field.input.name}
+        className="btn btn-link align-middle checkbox-label"
+      >
+        {field.label}
+      </label>
+    </div>
+  );
+}
+
+export function renderCheckboxInputFieldWithValidation(field) {
+  const {
+    input,
+    meta: { touched, error },
+    label,
+    ...others
+  } = field;
+  const InputClassName = `${field.className ? field.className : ""}`;
+  return (
+    <div className="input-form-group">
+      <div className={InputClassName}>
+        <input
+          {...others}
+          id={field.input.name}
+          className="m-0 align-middle"
+          {...input}
+        />
+        <label
+          htmlFor={field.input.name}
+          className="btn btn-link align-middle checkbox-label"
+        >
+          {label}
+        </label>
+      </div>
+      <div className="text-help float-left ">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: renderPasswordInputField
+@desc: Render password input
+*/
+export function renderPasswordInputField(field) {
+  const {
+    input,
+    meta: { touched, error, active }
+  } = field;
+  const inputbox = `inputbox input-group ${active ? "active" : ""}`;
+  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+    }`;
+  const placeholder = field.placeholder ? field.placeholder : "";
+  const isPwdVisible = field.isShowHide === true ? 'text' : 'password';
+  const eyeIcon = field.isShowHide === true ? 'fa-eye' : 'fa-eye-slash';
+  return (
+    <div className={className}>
+      <label>
+        {field.label}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}
+      </label>
+      <div className={inputbox}>
+        <input
+          maxLength={field.maxLength}
+          type={isPwdVisible}
+          className={InputClassName}
+          {...input}
+          placeholder={placeholder}
+        />
+        {field.isEyeIcon === true &&
+          <div className={`input-group-prepend ${field.isShowHide === true ? 'hide' : 'show'}`}>
+            <span onClick={field.showHide} className="input-group-text bg-white">
+              <i className={`fas ${eyeIcon}`} />
+            </span>
+          </div>}
+
+        {field.isEyeIcon === false &&
+          <div className="input-group-prepend">
+            <span className="input-group-text bg-white">
+              <i className="fas fa-lock" />
+            </span>
+          </div>
+        }
+
+        {field.isVarificationForm === true &&
+          <div className="input-group-prepend">
+            <span className="input-group-text bg-white"></span>
+          </div>
+        }
+
+      </div>
+      <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: renderMultiSelectField
+@desc: Render multi select input
+*/
+export function renderMultiSelectField(field) {
+  const {
+    isTouched,
+    meta: { touched, error, active }
+  } = field;
+  console.log(' touched: ',  touched);
+  //console.log('field:111 ', field);
+  const inputbox = `inputbox ${active ? "active" : ""}`;
+  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `basic-multi-select ${
+    field.className ? field.className : ""
+    }`;
+  const optionValue = field.optionValue;
+  const optionLabel = field.optionLabel;
+  const placeholder = field.placeholder ? field.placeholder : "";
+  console.log('touched', isTouched);
+  return (
+    <div className={className}>
+      <label>
+        {field.label}
+        {field.mendatory && field.mendatory === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )} 
+      </label>
+      <div className={inputbox} onClick = {field.onTouched}>
+        <Select
+          className={InputClassName}
+          getOptionLabel={optionLabel}
+          getOptionValue={optionValue}
+          value={field.selection}
+          isMulti
+          options={field.options}
+          classNamePrefix="select"
+          closeMenuOnSelect="false"
+          onChange={field.selectionChanged}
+          placeholder={placeholder}
+          
+        />
+      </div>
+      <div className="text-help">
+        {isTouched &&
+        field.mendatory &&
+        field.selection &&
+        field.selection.length === 0
+          ? "This field is required."
+          : ""}
+        {/* <div className="text-help">{field.isEmpty ? 'This field is required.' : ""}</div> */}
+      </div>
+    </div>
+  );
+}
+
+/*
+@method: renderMultiSelectField
+@desc: Render multi select input
+*/
+export function renderMultiSelectFieldMessage(field) {
+  const {
+    meta: { touched, error, active }
+  } = field;
+  console.log('field===', touched, error, active)
+  const inputbox = `inputbox ${active ? "active" : ""}`;
+  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `basic-multi-select ${
+    field.className ? field.className : ""
+    }`;
+  const optionValue = field.optionValue;
+  const optionLabel = field.optionLabel;
+  const placeholder = field.placeholder ? field.placeholder : "";
+  return (
+    <div className={className}>
+      <label>
+        {field.label}
+        {field.mendatory && field.mendatory === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}
+      </label>
+      <div className={inputbox}>
+        <Select
+          className={InputClassName}
+          getOptionLabel={optionLabel}
+          getOptionValue={optionValue}
+          value={field.selection}
+          isMulti
+          options={field.options}
+          classNamePrefix="select"
+          closeMenuOnSelect="false"
+          onChange={field.selectionChanged}
+          placeholder={placeholder}
+        />
+      </div>
+      <div className="text-help">
+        {touched &&
+          field.selection.length === 0
+          ? "This field is required."
+          : ""}
+      </div>
+    </div>
+  );
+}
+
+/*
+@method: renderEmailInputField
+@desc: Render email input
+*/
+export function renderEmailInputField(field) {
+  const {
+    input,
+    isDisabled,
+    meta: { touched, error, active },
+    ...others
+  } = field;
+  const disabled = isDisabled === true ? true : false;
+  const inputbox = `inputbox input-group ${active ? "active" : ""}`;
+  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${
+    disabled ? "disabled-control " : " "
+    } ${field.className ? field.className : ""}`;
+  return (
+    <div className={className}>
+      <label>
+        {field.label}
+        {field.value}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}
+      </label>
+      <div className={disabled ? `${inputbox} disabledEmail ` : inputbox}>
+        <input
+          {...others}
+          maxLength={field.maxLength}
+          disabled={disabled}
+          id={field.id}
+          placeholder={field.placeholder}
+          type="text"
+          className={InputClassName}
+          {...input}
+        />
+        <div className="input-group-prepend">
+          <span
+            className={`input-group-text bg-white ${disabled ? "bg-gray" : ""}`}
+          >
+            <i className="fas fa-envelope" />
+          </span>
+        </div>
+      </div>
+      <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: renderTextInputField
+@desc: Render text input
+*/
+export function renderTextInputField(field) {
+  const {
+    input,
+    meta: { touched, error, active },
+    ...others
+  } = field;
+  const inputbox = `inputbox ${active ? "active" : ""}`;
+  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const inputStyle = field.inputStyle ? field.inputStyle : "";
+  const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+    }`;
+  return (
+    <div className={`${className} ${inputStyle}`}>
+      <label>
+        {field.label}
+        {field.value}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}
+      </label>
+      <div className={inputbox}>
+        <input
+          maxLength={field.maxLength}
+          {...others}
+          type="text"
+          className={`form-control ${InputClassName}`}
+          {...input}
+        />
+        {field.iconName && (
+          <div className="input-group-prepend">
+            <span className={`input-group-text ${inputIconStyle}`}>
+              <i className={`fas fa-${field.iconName}`} />
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: renderSelectField
+@desc: Render select input
+*/
+export function renderSelectField(field) {
+  const {
+    meta: { touched, error, active }
+  } = field;
+  const inputbox = `inputbox ${active ? "active" : ""}`;
+  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+    }`;
+  let optionKey = field.optionValue;
+  let optionText = field.optionLabel;
+
+  return (
+    <div className={className}>
+      <label>
+        {field.label}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}
+      </label>
+      <div className={inputbox}>
+        <select className={InputClassName} {...field.input}>
+          {field.isSelect === false &&
+            <option value="">Select</option>
+          }
+          {field.options.map(data => {
+            return (
+              <option key={data[optionKey]} value={data[optionKey]}>
+                {data[optionText]}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+      <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: renderNumberInputField
+@desc: Render number input
+*/
+export function renderNumberInputField(field) {
+  const {
+    input,
+    meta: { touched, error },
+    ...others
+  } = field;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+    }`;
+  return (
+    <div className="form-group">
+      <label>
+        {field.label}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}
+      </label>
+      <div className="inputbox input-group">
+        <input
+          {...others}
+          type="number"
+          className={InputClassName}
+          maxLength={field.maxLength}
+          {...input}
+        />
+        {/* <div className="input-group-prepend">
+          <span className="input-group-text bg-white">
+            <i className="fas fa-phone fa-rotate-90" />
+          </span>
+        </div> */}
+      </div>
+      <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: renderTextAreaField
+@desc: Render textarea input
+*/
+export function renderTextAreaField(field) {
+  const {
+    input,
+    meta: { touched, error }
+  } = field;
+  // console.log('error: ', error);
+  //console.log('touched: ', field.input.value ==='');
+  const placeholder = field.placeholder ? field.placeholder : "";
+  return (
+    <div className="form-group">
+      <label>{field.label}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}
+      </label>
+      <div className="inputbox ">
+        <textarea
+          maxLength={field.maxLength}
+          value={field.value}
+          className="form-control withoutBorder"
+          {...input}
+          placeholder={placeholder}
+        />
+      </div>
+      <div className="text-help">{touched && field.input.value === '' ? 'This field is required' : ""}</div>
+    </div>
+  );
+}
+
+/*
+@method: focusOnError
+@desc: focus on the error input
+*/
+export const focusOnError = errors => {
+  if (typeof errors !== "undefined" && errors !== null) {
+    const errorEl = document.querySelector(
+      Object.keys(errors)
+        .map(fieldName => {
+          return `[name="${fieldName}"]`;
+        })
+        .join(",")
+    );
+
+    if (errorEl && errorEl.focus) {
+      errorEl.focus();
+    }
+  }
+};
+
+/********************************
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ Updated components
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************* 
+ ********************************/
+
+export function renderText(field) {
+  const {
+    input,
+    meta: { touched, error },
+    ...others
+  } = field;
+  const className = `form-group inputbox ${
+    touched && error ? "has-danger" : ""
+    }`;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+    }`;
+  return (
+    <div className={className}>
+      <label>
+        {field.label}
+        {field.value}
+        {field.required && field.required == true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}{" "}
+      </label>
+      <input
+        maxLength={field.maxLength}
+        {...input}
+        {...others}
+        className={InputClassName}
+      />
+
+      <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+export function renderDatePicker(field) {
+  const { input, placeholder, defaultValue, meta: { touched, error } } = field;
+  console.log("input.value", field)
+  return (
+    <div className={'react-picker-box'}>
+      <label>{field.label}{(field.required && field.required == true) ? <span className="asterisk-required">*</span> : ''} </label>
+      <DatePicker
+        {...input}
+        dateFormat="MM/dd/yyyy"
+        placeholderText={placeholder}
+        //maxDate={new Date()} 
+        minDate={new Date()}
+        showMonthDropdown
+        showYearDropdown
+        readonly="readonly"
+        onBlur={() => null}
+        selected={input.value ? new Date(input.value) : null}
+        className={field.className}
+        onSelect={field.changeHandler ? (date) => field.changeHandler(date) : null}
+        autoComplete={field.autoComplete}
+        disabledKeyboardNavigation
+        onChangeRaw={(e) => e.preventDefault()}
+      />
+      {touched ? <div className="text-help mb-2">{error}</div> : ""}
+    </div>
+  )
+}
+
+export function renderDatePickerOneDayAgo(field) {
+  const { input, placeholder, defaultValue, meta: { touched, error } } = field;
+  console.log("input.value", field)
+  const d = new Date();
+  return (
+    <div>
+      <label>{field.label}{(field.required && field.required == true) ? <span className="asterisk-required">*</span> : ''} </label>
+      <DatePicker
+        {...input}
+        dateFormat="MM/dd/yyyy"
+        placeholderText={placeholder}
+        //maxDate={new Date()} 
+        minDate={d.setDate(d.getDate() + 1)}
+        showMonthDropdown
+        showYearDropdown
+        readonly="readonly"
+        onBlur={() => null}
+        selected={input.value ? new Date(input.value) : null}
+        className={field.className}
+      />
+      <div className="text-help mb-2">{touched ? error : ""}</div>
+    </div>
+  )
+}
+

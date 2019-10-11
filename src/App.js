@@ -1,26 +1,71 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import { connect } from "react-redux";
+import Main from './components/Main.js';
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { toastr } from "react-redux-toastr";
+import { MESSAGES } from '../src/config/message';
+//import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoggedIn: false
+    };
+  }
+
+  componentDidMount() {
+    // const key = "isLoggedIn";
+    // const loggedInDetail = reactLocalStorage.getObject("loggedInDetail");
+    // reactLocalStorage.setObject('verificationStatus', false);
+    // if (loggedInDetail.hasOwnProperty(key)) {
+    //   let value = reactLocalStorage.getObject("loggedInDetail");
+    //   value = value === true;
+    //   this.setState({ [key]: value });
+    // }
+  }
+
+  // logUserIn = () => {
+  //   this.setState({ isLoggedIn: true });
+  //   reactLocalStorage.setObject("isLoggedIn", true);
+  // }
+
+  // logUserOut = () => {
+  //   // console.log("Log out");
+  //   const key = "rememberCredential";
+  //   this.setState({ isLoggedIn: false });
+  //   reactLocalStorage.setObject("isLoggedIn", false);
+  //   reactLocalStorage.setObject("basicProfileAndProd", false);
+  //   reactLocalStorage.setObject("userResponse", {});
+  //   reactLocalStorage.setObject("internalRouteANDID", {});
+  //   toastr.success(MESSAGES.LOGOUT_SUCCESS);
+  //   setTimeout(() => {
+  //     window.location.assign('/login');
+  //   }, 1000)
+  // }
+
+  // isBasicProfileAndProduction = () => {
+  //   reactLocalStorage.setObject("basicProfileAndProd", true);
+  // }
+
+  render() {
+    return (
+      <BrowserRouter>
+        <div>
+            <Route path="/" render={
+              (props) => <Main {...props}
+                // isLoggedIn={this.state.isLoggedIn}
+                // logUserIn={this.logUserIn}
+                // logUserOut={this.logUserOut}
+                // isBasicProfileAndProduction= {this.isBasicProfileAndProduction}
+              />
+            } />
+        </div>
+     </BrowserRouter>
+    );
+  }
 }
 
-export default App;
+export default connect(null, { })(App);
+

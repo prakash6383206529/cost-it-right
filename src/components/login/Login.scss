@@ -1,0 +1,233 @@
+/*Add 21-02-2019*/
+
+.card {
+  margin-top: 3em;
+  margin-bottom: 15em;
+  width: 400px;
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+
+.card-header h3,
+.input-group-text {
+  color: white;
+}
+
+.input-group-prepend span {
+  border: 0 !important;
+}
+
+input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.remember {
+  color: white;
+  input {
+    margin-left: 15px;
+    margin-right: 5px;
+    border: solid 1px #2c3138;
+    background-color: #fff;
+    vertical-align: bottom;
+    border-spacing: 5px;
+  }
+}
+
+.login-logo {
+  img {
+    width: 160px;
+    height: 92px;
+    max-width: 100%;
+    height: auto;
+  }
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+body a {
+  color: #87939f;
+}
+
+.login-container {
+  color: #73818e;
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  padding-top:105px;
+  padding-bottom:80px;
+  .card {
+    margin-top: 15px;
+    width: 100%;
+    background-color: transparent !important;
+  }
+}
+
+.card-body {
+  background-color: #fff;
+  min-height: 296px;
+  border-radius: 0px;
+  padding: 25px 20px;
+  -webkit-box-shadow: 0px 0px 20px 10px rgba(106, 151, 219, 0.1);
+  -moz-box-shadow: 0px 0px 20px 10px rgba(106, 151, 219, 0.1);
+  box-shadow: 0px 0px 20px 10px rgba(106, 151, 219, 0.1);
+}
+
+.login-main-block.reset-container .card-body,
+.login-container.forgot-container .card-body {
+  min-height: 190px;
+  position: relative;
+}
+
+.login-main-block.reset-container .card-body {
+  min-height: 253px;
+}
+
+.login-container {
+  label {
+    margin-bottom: 1px !important;
+    color: #87939f;
+  }
+  .form-control {
+    border: none;
+  }
+  .input-form-group {
+    label,
+    .form-control {
+      font-size: 1rem;
+    }
+  }
+  .card-body,
+  .card-header {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    border-radius: 15px;
+  }
+}
+
+/* Role box style */
+
+.login-form {
+  padding: 30px;
+  // .form-group {
+  //   width: 100%;
+  // }
+}
+.customs-checkbox {
+  position: relative;
+  padding-left: 25px;
+  padding-top: 3px;
+  input[type="checkbox"] {
+    opacity: 0;
+  }
+  .before-box:before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background-color: transparent;
+    border: 2px solid #6c6666;
+    top: 6px;
+    left: 0;
+  }
+  input[type="checkbox"]:checked + .before-box:before {
+    content: "\2713";
+    font-size: 12px;
+    text-align: center;
+    color: #fff;
+    line-height: 16px;
+    font-weight: 600;
+    background: #ccc;
+  }
+}
+.custom-checkbox .before-box {
+  padding-left: 24px;
+  font-size: 1rem;
+}
+.forgot-link {
+  display: flex;
+  justify-content: space-between;
+  a {
+    font-size: 1rem;
+    &:hover {
+      color: #f6c413;
+    }
+  }
+}
+.form-heading {
+  margin-bottom: 30px;
+  position: relative;
+  h2 {
+    font-weight: 600;
+    font-size: 1.8rem;
+    color: #000;
+    &:after {
+      content: "";
+      position: absolute;
+      width: 7%;
+      height: 37px;
+      border-bottom: 3px solid #f6c413;
+      top: 6px;
+      left: 0;
+    }
+  }
+}
+.login-btn {
+  font-size: 1.2rem;
+  padding: 8px 15px;
+  margin-top: 10px;
+  min-width: 150px
+}
+.inputbox.input-group .form-control {
+  padding: 0;
+}
+span.input-group-text.bg-white {
+  padding: 0;
+}
+.small-screen {
+  height: calc(100vh - 265px);
+}
+
+@media screen and (max-width: 767px) {
+  .login-container {margin: 15px;padding-top: 20px;
+    padding-bottom: 20px;}
+  .login-form {
+    padding: 15px;}
+    .signup-form {
+      padding-top: 25px;
+      padding-bottom: 0;
+  }  
+  .small-screen {
+    height: inherit;
+}
+}
+@media screen and (max-width: 575px) {
+  .logo {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .login-container .logo {
+    img {
+      max-width: 100%;
+    }
+    margin-top: 30px;
+    margin-bottom: 40px;
+  }
+  .navbar-toggler-icon .fas {
+    color: #fff;
+  }
+  .nav-link {
+    display: block;
+    padding: 4px 1rem;
+  }
+  .logout-link {
+    margin-top: 9px;
+  }
+  .login-container .d-flex.justify-content-center {
+    margin: 0 15px;
+    .d-flex.justify-content-center {
+      margin: 0;
+    }
+  }
+}

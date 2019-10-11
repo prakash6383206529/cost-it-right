@@ -1,0 +1,127 @@
+export const minLength = min => value =>
+    value && value.length < min ? `Min length must be ${min}.` : undefined;
+
+export const maxLength = max => value =>
+    value && value.length > max ? `Max length must be ${max}.` : undefined;
+
+export const minLength1 = minLength(1);
+export const minLength2 = minLength(2);
+export const minLength3 = minLength(3);
+export const minLength4 = minLength(4);
+export const minLength5 = minLength(5);
+export const minLength7 = minLength(7);
+export const minLength10 = minLength(10);
+
+export const maxLength6 = maxLength(6);
+export const maxLength7 = maxLength(7);
+export const maxLength11 = maxLength(11);
+export const maxLength15 = maxLength(15);
+export const maxLength12 = maxLength(12);
+export const maxLength25 = maxLength(25);
+export const maxLength20 = maxLength(20);
+export const maxLength26 = maxLength(25);
+export const maxLength30 = maxLength(30);
+export const maxLength45 = maxLength(45);
+export const maxLength50 = maxLength(50);
+export const maxLength70 = maxLength(71);
+export const maxLength100 = maxLength(100);
+export const maxLength200 = maxLength(200);
+export const maxLength250 = maxLength(250);
+export const maxLength500 = maxLength(500);
+export const maxLength300 = maxLength(300);
+export const maxLength1000 = maxLength(1000);
+export const maxLength5000 = maxLength(5000);
+
+
+export const checkFacebooklink = value =>
+    value && !/^(http|https):\/\/www.facebook.com\/.*/i.test(value) ? 'Please enter valid url' : undefined;
+
+
+export const checkTwitterlink = value =>
+    value && !/^(http|https):\/\/www.twitter.com\/.*/i.test(value) ? 'Please enter valid url' : undefined;
+
+
+export const checkinstagramlink = value =>
+    value && !/^(http|https):\/\/www.instagram.com\/.*/i.test(value) ? 'Please enter valid url' : undefined;
+
+
+export const checkYoutubelink = value =>
+    value && !/^(http|https):\/\/www.youtube.com\/.*/i.test(value) ? 'Please enter valid url' : undefined;
+
+export const checkSnapchatlink = value => {
+    return (value && !/^(http|https):\/\/www.snapchat.com\/.*/i.test(value));
+}
+
+export const checkIMDBlink = value => {
+    return (value && !/^(http|https):\/\/www.imdb.com\/.*/i.test(value));
+}
+export const checkMusicallylink = value =>
+    value && !/^(http|https):\/\/www.musical.ly.com\/.*/i.test(value) ? 'Please enter valid url' : undefined;
+
+export const validateEmail = value => {
+    return (value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value));
+}
+
+export const email = value =>
+    value && !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(value)
+        ? 'Please enter a valid email address.'
+        : undefined;
+
+export const website = value =>
+    value && !/^[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/i.test(value)
+        ? 'Please enter a valid website.'
+        : undefined;
+
+export const required = value =>
+    ((typeof value !== 'undefined' && value !== null && value !== "" && value.trim() !== '')
+        ? undefined : 'This field is required.');
+
+export const selectRequired = value =>
+    ((typeof value !== 'undefined' && value !== null && value !== "")
+        ? undefined : 'This field is required.');
+
+export const number = value =>
+    value && (isNaN(Number(value)) || Number(value) <= 0)
+        ? 'This field is invalid.' : undefined;
+
+export const alphabetsOnly = value =>
+    value && /[^a-zA-Z ]/i.test(value)
+        ? 'Only alphabets are allowed.' : undefined;
+
+export const alphabetsOnlyForName = value =>
+    value && /[^a-zA-Z ]/i.test(value)
+        ? 'Please enter a valid name.' : undefined;
+
+export const specialName = value =>
+    value && /[^A-Za-z\'\s\.\,\@\_\-]+$/i.test(value)
+        ? 'Please enter a valid name.' : undefined;
+
+export const validatePassword = value => {
+    return (value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*?[#?!@$%^&*-]).{5,}$/.test(value) === false);
+}
+
+export const alphaNumeric = value =>
+    value && /[^a-zA-Z0-9 ]/i.test(value)
+        ? 'Please enter a valid zip code'
+        : undefined;
+
+export const alphaNumericTitle = value =>
+    value && /[^a-zA-Z0-9 ]/i.test(value)
+        ? 'Title can contain only alphabets and numbers.'
+        : undefined;
+
+export const vlidatePhoneNumber = value => {
+    return (value && /(?:\+?61)?(?:\(0\)[23478]|\(?0?[23478]\)?)\d{8}/.test(value) === false);
+}
+
+export const validateUrl = value =>
+    (value && /^(http:|https:)\/\/(www\.)?[-a-zA-Z0-9@:%._~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_.~#?&//=]*)/.test(value) === false) ? 'Please enter valid url' : undefined;
+
+
+export const normalizePhone = value => {
+    if (!value) {
+        return value
+    }
+
+    return value.replace(/[^\d]/g, '')
+}
