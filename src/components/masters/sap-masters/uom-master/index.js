@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
-import PartMaster from './AddPart';
-import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/Part';
+import AddUOM from './AddUOM';
+import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../../actions/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 
 
-class MaterialMaster extends Component {
+class UOMMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -18,7 +18,7 @@ class MaterialMaster extends Component {
     }
 
     componentDidMount() {
-        this.props.getAllPartsAPI(res => {});
+        this.props.getUnitOfMeasurementAPI(res => {});
     }
     /**
      * @method openModel
@@ -55,7 +55,7 @@ class MaterialMaster extends Component {
     deletePart = (index) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeletePart(index)
+                this.confirmDeleteUOM(index)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
@@ -63,21 +63,21 @@ class MaterialMaster extends Component {
     }
 
     /**
-    * @method confirmDeletePart
-    * @description confirm delete part
+    * @method confirmDeleteUOM
+    * @description confirm delete unit of measurement
     */
-    confirmDeletePart = (index) => {
-        this.props.deletePartsAPI(index, (res) => {
+   confirmDeleteUOM = (index, Id) => {
+        this.props.deleteUnitOfMeasurementAPI(index,Id, (res) => {
             if (res.data.Result === true) {
-                this.props.getUserProfileAPI(this.props.userData.id, true, () => { });
                 toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.props.getAllPartsAPI(res => {});
+                this.props.getUnitOfMeasurementAPI(res => {});
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         });
         
     }
+
 
     /**
     * @method render
@@ -89,68 +89,62 @@ class MaterialMaster extends Component {
             <Container className="top-margin">
                 <Row>
                     <Col>
-                        <h3>Material Master </h3>
+                        <h3>Unit of Measurement Master </h3>
                     </Col>
                     <Col>
-                        <Button onClick={this.openModel}>Add Part</Button>
+                        <Button onClick={this.openModel}>Add UOM</Button>
                     </Col>
                 </Row>
+                
                 <hr />
                 <Row>
                     <Col>
-                        <h5>Material Master Details </h5>
+                        <h5>Unit Of Measurement Master Details </h5>
                     </Col>
                 </Row>
                 <Col>
                 {/* <Table>
                     <thead>
                         <tr>
-                        <th>Part Number</th>
-                        <th>Part Name</th> 
-                        <th>Part Type</th>
-                        <th>Part Group Code</th>
-                        <th>Unit of Measurement</th>
-                        <th>Part Description</th>
+                        <th>UOM Name</th>
+                        <th>UOM Title</th> 
+                        <th>UOM Description</th>
+                        <th>UOM Created By</th>
                         </tr>
                     </thead> */}
-                {this.props.partsListing && this.props.partsListing.length > 0 &&
-                    this.props.partsListing.map((item, index) => {
+                {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
+                    this.props.unitOfMeasurementList.map((item, index) => {
                         return (
                         <div key={index}> 
-                         <Table>
+                        <Table>
                             <thead>
                                 <tr>
-                                <th>Part Number</th>
-                                <th>Part Name</th> 
-                                <th>Part Type</th>
-                                <th>Part Group Code</th>
-                                <th>Unit of Measurement</th>
-                                <th>Part Description</th>
+                                <th>UOM Name</th>
+                                <th>UOM Title</th> 
+                                <th>UOM Description</th>
+                                <th>UOM Created By</th>
                                 </tr>
                             </thead>
                             <tbody > 
                                 <tr >
-                                    <td >{item.PartNumber}</td>
-                                    <td>{item.PartName}</td> 
-                                    <td>{item.MaterialTypeId ? item.MaterialTypeId : 'N/A'}</td>
-                                    <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td> 
-                                    <td>{item.UnitOfMeasurementId ? item.UnitOfMeasurementId : 'N/A'}</td> 
-                                    <td>{item.PartDescription}</td>
+                                    <td >{item.Name}</td>
+                                    <td>{item.Title}</td> 
+                                    <td>{item.Description}</td>
+                                    <td>{item.CreatedBy}</td>
                                     <div>
-                                        <Button className="black-btn" onClick={() => this.editPartDetails(item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
-                                        <Button className="black-btn" onClick={() => this.deletePart(index)}><i className="far fa-trash-alt"></i></Button>
+                                        <Button className="black-btn" onClick={() => this.editPartDetails(index, )}><i className="fas fa-pencil-alt"></i></Button> 
+                                        <Button className="black-btn" onClick={() => this.deletePart(index,this.props.unitOfMeasurementList.Id)}><i className="far fa-trash-alt"></i></Button>
                                     </div>
                                 </tr>
                             </tbody>  
-                            </Table> 
+                        </Table> 
                         </div>
-                        
                         )
                     })}
                     {/* </Table> */}
                 </Col>
                 {isOpen && (
-                    <PartMaster
+                    <AddUOM
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
@@ -168,14 +162,13 @@ class MaterialMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part}) {
-    const { partsListing } = part;
-    console.log('partsListing: ', partsListing);
-    return { partsListing }
+function mapStateToProps({ unitOfMeasrement }) {
+    const {unitOfMeasurementList} = unitOfMeasrement;
+    return { unitOfMeasurementList}
 }
 
 
 export default connect(
-    mapStateToProps, {getAllPartsAPI, deletePartsAPI}
-)(MaterialMaster);
+    mapStateToProps, { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI}
+)(UOMMaster);
 

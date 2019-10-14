@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
-import { NavLink as NavBtn, Link } from 'react-router-dom';
-import { reactLocalStorage } from "reactjs-localstorage";
 import {
   Collapse,
   Navbar,
@@ -12,15 +10,7 @@ import {
   NavLink,
   Dropdown,
   DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  Badge
 } from "reactstrap";
-import { isUserLoggedIn } from "../../helper/auth";
-import { PROFILE_MEDIA_URL } from '../../config/constants';
-import { getCompanyProfileAPI } from '../../actions/ProductionDetail';
-import { getUserProfileAPI } from '../../actions/Profile';
 import "./NavBar.scss";
 
 class SideBar extends Component {
@@ -82,21 +72,6 @@ class SideBar extends Component {
   }
 
   render() {
-    const isLoggedIn = isUserLoggedIn();
-    const userData = reactLocalStorage.getObject('userResponse');
-    
-    let imagePreview = null;
-    if (userData.profileImage) {
-      imagePreview = (<img src={`${PROFILE_MEDIA_URL}${userData.profileImage}`} className="profileImage rounded-circle" />);
-    } else {
-      imagePreview = (<img src={'../../images/defaultUser.png'} className="profileImage rounded-circle" />);
-    }
-
-    const fName = (userData.firstName && userData.firstName != 'undefined') ? userData.firstName : '';
-    const lName = (userData.lastName && userData.lastName != 'undefined') ? userData.lastName : '';
-
-    const { url } = this.state;
-
     return (
       <nav>
           <div className="flex-conatiner sign-social before-login">
@@ -156,12 +131,12 @@ class SideBar extends Component {
                   <NavLink href="/dashboard">Dashboard</NavLink>
                 </NavItem>
                 <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">SAP Masters</a>
+                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
                   <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href= '#'>BOM Master</a>
-                    <a className="dropdown-item" href="#">Material Master</a>
-                    <a className="dropdown-item" href="#">SAP Master</a>
-                    <a className="dropdown-item" href= '#'>Supplier Master</a>
+                    <a className="dropdown-item" href= '/UOMMaster'>Unit Of Measurement Master</a>
+                    <a className="dropdown-item" href="/PartMaster">Part Master</a>
+                    <a className="dropdown-item" href="">SAP Master</a>
+                    <a className="dropdown-item" href= '/SupplierMaster'>Supplier Master</a>
                     <a className="dropdown-item" href="#">Supplier Materail Quata</a>
                   </div>
                 </li>
@@ -199,12 +174,9 @@ class SideBar extends Component {
  * @desc map state containing organisation details from the api to props
  * @return object{}
  */
-function mapStateToProps({ profile, production }) {
-  const { formdata } = profile;
+function mapStateToProps({}) {
   return {
-    profile,
-    formdata,
-    production
+
   }
 }
 
@@ -215,6 +187,5 @@ function mapStateToProps({ profile, production }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(
-  mapStateToProps,
-  { getUserProfileAPI, getCompanyProfileAPI }
+  mapStateToProps, null
 )(SideBar);

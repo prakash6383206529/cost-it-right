@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Container, Col, Button } from "reactstrap";
 
 
-class Contact extends Component {
+class SupplierMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,7 +20,7 @@ class Contact extends Component {
             <Container className="top-margin">
                 <Row>
                     <Col>
-                        <h3>Contact</h3>
+                        <h3>Supplier Master </h3>
                     </Col>
                 </Row>
                 <hr />
@@ -40,5 +40,5 @@ function mapStateToProps({ }) {
 
 export default connect(
     mapStateToProps, null
-)(Contact);
+)(SupplierMaster);
 

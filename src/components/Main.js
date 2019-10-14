@@ -10,8 +10,11 @@ import NotFoundPage from './common/NotFoundPage';
 import Signup from './signup/SignupForm';
 import Homepage from './homepage/Homepage';
 import Dashboard from './dashboard';
-import { TIME } from '../config/constants';
 import { Loader } from '../../src/components/common/Loader';
+import MaterialMaster from './masters/sap-masters/material-master';
+import UOMMaster from './masters/sap-masters/uom-master';
+import SupplierMaster from './masters/sap-masters/supplier-master';
+
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
 import termCondition from "./about/term&condition";
@@ -108,6 +111,30 @@ class Main extends Component {
                   />
                 )}
               />
+              <Route
+                path="/PartMaster"
+                render={props => (
+                  <MaterialMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/UOMMaster"
+                render={props => (
+                  <UOMMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/SupplierMaster"
+                render={props => (
+                  <SupplierMaster
+                    {...props}
+                  />
+                )}
+              />
               {/* <Route
                 path="/terms&condition"
                 render={props => (
@@ -143,7 +170,6 @@ class Main extends Component {
             </div>
           }
           <ReduxToastr
-            timeOut={TIME}
             newestOnTop={false}
             preventDuplicates
             position="top-right"
