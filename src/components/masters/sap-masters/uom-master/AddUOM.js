@@ -4,7 +4,9 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText } from "../../../layout/FormInputs";
-import { createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI} from '../../../../actions/unitOfMeasurment';
+import { createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI,
+     getOneUnitOfMeasurementAPI
+} from '../../../../actions/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 
@@ -12,7 +14,21 @@ class AddUOM extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            typeOfListing: [],
+        }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
+    componentDidMount(){
+        const { uomId,isEditFlag } = this.props;
+        if(isEditFlag){
+            this.setState({isEditFlag},()=>{  
+            this.props.getOneUnitOfMeasurementAPI(uomId,true, res => {})   
+        })
+        }else{
+            this.props.getOneUnitOfMeasurementAPI('',false, res => {})   
         }
     }
 
@@ -25,33 +41,23 @@ class AddUOM extends Component {
     }
 
     /**
-    * @method handleTypeOfListingChange
-    * @description  used to handle type of listing selection
-    */
-    handleTypeOfListingChange = (e) => {
-        this.setState({
-            typeOfListing: e
-        })
-    }
-
-    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
         if (this.props.isEditFlag) { 
-            const { editIndex } = this.props;
+            const { editIndex, uomId} = this.props;
             this.setState({ isSubmitted: true });
-            let formData = this.props.partDetails;
-            console.log('formData: ', formData);
+            let formData = this.props.unitOfMeasurementList;
+
                 formData[editIndex].Name = values.Name;
                 formData[editIndex].Title = values.Title;
                 formData[editIndex].Description = values.Description;
                 formData[editIndex].CreatedBy = values.CreatedBy;
 
-            this.props.updateUnitOfMeasurementAPI(formData, (res) => {
+            this.props.updateUnitOfMeasurementAPI(uomId,formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_PART_SUCESS);
+                    toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
                     this.toggleModel();
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
@@ -60,7 +66,7 @@ class AddUOM extends Component {
         }else{
             this.props.createUnitOfMeasurementAPI(values, (res) => {
                 if (res.data.Result === true) {
-                  toastr.success(MESSAGES.PART_ADD_SUCCESS);
+                  toastr.success(MESSAGES.UOM_ADD_SUCCESS);
                   {this.toggleModel()}
                 } else {
                   toastr.error(res.data.message);
@@ -114,7 +120,7 @@ class AddUOM extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col md="6">
+                                        <Col md="12">
                                             <Field
                                                 label="Description"
                                                 name={"Description"}
@@ -124,16 +130,6 @@ class AddUOM extends Component {
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Created By"
-                                                name={"CreatedBy"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderText}
-                                                className=" withoutBorder "
                                             />
                                         </Col>
                                     </Row>
@@ -160,20 +156,18 @@ class AddUOM extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part}) {
-    console.log('part', part);
-    const {uniOfMeasurementList} = part;
+function mapStateToProps({ unitOfMeasrement }) {
+    const { unitOfMeasurementData, unitOfMeasurementList } = unitOfMeasrement;
     let initialValues = {};
-    initialValues = {
-        // PartNumber: oldformData[uniOfMeasurementList.editIndex].PartNumber,
-        // PartName: oldformData[uniOfMeasurementList.editIndex].PartName,
-        // MaterialTypeId: oldformData[uniOfMeasurementList.editIndex].MaterialTypeId,
-        // MaterialGroupCode: oldformData[uniOfMeasurementList.editIndex].MaterialGroupCode,
-        // UnitOfMeasurementId: oldformData[uniOfMeasurementList.editIndex].UnitOfMeasurementId,
-        // PartDescription: oldformData[uniOfMeasurementList.editIndex].PartDescription,
+    if(unitOfMeasurementData && unitOfMeasurementData !== undefined){
+        initialValues = {
+            Name: unitOfMeasurementData.Name,
+            Title: unitOfMeasurementData.Title,
+            Description: unitOfMeasurementData.Description,
+            CreatedBy: unitOfMeasurementData.CreatedBy,
+        }
     }
-    console.log('uniOfMeasurementList: ', uniOfMeasurementList);
-    return { uniOfMeasurementList, initialValues }
+    return {unitOfMeasurementData, initialValues, unitOfMeasurementList };
 }
 
 /**
@@ -182,7 +176,7 @@ function mapStateToProps({ part}) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, {createUnitOfMeasurementAPI,updateUnitOfMeasurementAPI})(reduxForm({
+export default connect(mapStateToProps, {createUnitOfMeasurementAPI,updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI})(reduxForm({
     form: 'addUOM',
     enableReinitialize: true,
 })(AddUOM));

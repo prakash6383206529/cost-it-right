@@ -11,16 +11,3 @@ const userObj = reactLocalStorage.getObject('userResponse');
 export const PAGE_LENGTH = 10;
 
 
-// export const headers = {
-//     axios : {
-//         defaults : {
-//             headers : {
-//                 common : [
-//                     {'Authorization' : `bearer ${userObj.token}`}
-//                 ]
-//             }
-//         }
-//     }
-// }
-
-

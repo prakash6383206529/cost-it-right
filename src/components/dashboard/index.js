@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Loader } from "../common/Loader";
-import { Row, Container, Col, Button } from "reactstrap";
+import { Row, Container, Col } from "reactstrap";
 
 class Dashboard extends Component {
 
@@ -23,8 +23,7 @@ class Dashboard extends Component {
             <Row>
                 <Col>
                     <h3>Dashboard </h3>
-                </Col>
-               
+                </Col> 
             </Row>
             <hr />
         </Container >

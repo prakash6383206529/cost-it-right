@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col,Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText } from "../../../layout/FormInputs";
-import { createPartAPI } from '../../../../actions/Part';
+import { renderText,renderSelectField } from "../../../layout/FormInputs";
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message'
 
-class UnitOfMeasurement extends Component {
+class AddCategory extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            typeOfListing: [],
+            isEditFlag:false
         }
     }
 
@@ -23,19 +25,44 @@ class UnitOfMeasurement extends Component {
     }
 
     /**
+    * @method handleTypeOfListingChange
+    * @description  used to handle type of listing selection
+    */
+    handleTypeOfListingChange = (e) => {
+        this.setState({
+            typeOfListing: e
+        })
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log('submit the form', values);
         // this.props.createPartAPI(values, (res) => {
         //     if (res.data.Result === true) {
-        //       toastr.success(res.data.Message,'success');
+        //         toastr.success(MESSAGES.PART_ADD_SUCCESS);
+        //         {this.toggleModel()}
         //     } else {
-        //       toastr.error(res.data.message,'danger');
+        //         toastr.error(res.data.message);
         //     }
-        //   });
+        // });   
     }
+
+    /**
+    * @method selectUnitOfMeasurement
+    * @description Used show listing of unit of measurement
+    */
+    selectUnitOfMeasurement = () => {
+        // const {uniOfMeasurementList} = this.props;
+        // const temp = [];
+        // uniOfMeasurementList && uniOfMeasurementList.map(item =>
+        //   temp.push({ Text: item.Text, Value: item.Value })
+        // );
+        // console.log('temp', uniOfMeasurementList);
+        // return temp;
+    }
+
 
     /**
     * @method render
@@ -46,10 +73,10 @@ class UnitOfMeasurement extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>Add Part</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>Add Category</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>
+                            <Container>     
                                 <form
                                     noValidate
                                     className="form"
@@ -58,71 +85,48 @@ class UnitOfMeasurement extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Material Code"
-                                                name={"mCode"}
+                                                label="Category"
+                                                name={"Category"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 component={renderText}
                                                 required={true}
-                                                //maxLength={26}
+                                                className=" withoutBorder"
                                             />
                                         </Col>
-
                                         <Col md="6">
                                             <Field
-                                                label="Material Type"
-                                                name={"mTYpe"}
+                                                label="Category Type"
+                                                name={"CategoryType"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 component={renderText}
                                                 required={true}
-                                                //maxLength={26}
+                                                className=" withoutBorder custom-select"
+                                                //options={this.selectMaterialType()}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                //component={renderSelectField}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="6">
+                                    <Row/>
+                                    <Row/>
+                                        <Col md="12">
                                             <Field
-                                                label="Material Group code"
-                                                name={"mTYpe"}
+                                                label="Description"
+                                                name={"Description"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
                                                 component={renderText}
                                                 //required={true}
-                                                //maxLength={26}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Unit Of Measurement"
-                                                name={"unitOfMeasurment"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                //maxLength={26}
+                                                className=" withoutBorder"
                                             />
                                         </Col>
                                     </Row>
-                                    <Row>
-                                        <Col md="12">
-                                            <Field
-                                                label="Description"
-                                                name={"description"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                //maxLength={26}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
@@ -145,13 +149,10 @@ class UnitOfMeasurement extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
+function mapStateToProps({}) {
+   
+    return { }
 }
-
-
-// export default connect(
-//     mapStateToProps, null
-// )(PartMaster);
 
 /**
  * @method connect
@@ -160,10 +161,6 @@ function mapStateToProps({ }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, null)(reduxForm({
-    //validate,
-    form: 'AddPart',
-    //enableReinitialize: true,
-    // onSubmitFail: (errors) => {
-    //     focusOnError(errors)
-    // }
-})(UnitOfMeasurement));
+    form: 'AddCategory',
+    enableReinitialize: true,
+})(AddCategory));

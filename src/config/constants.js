@@ -17,12 +17,13 @@ export const API = {
   deleteUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/delete`,
 
   //Api for the part
+  getMaterialType: `${BASE_URL}/api/v1/configuration/select-list-get-material-type`,
   partCreateAPI: `${BASE_URL}/api/v1/masters-part/create`,
   getAllPartsAPI: `${BASE_URL}/api/v1/masters-part/get`,
   getOnePartAPI: `${BASE_URL}/api/v1/masters-part/get`,
   filterPartAPI : `${BASE_URL}/api/v1/masters-part/get`,
-  deletePartAPI : `${BASE_URL}/api/v1/masters-part/update`,
-  updatePartAPI : `${BASE_URL}/api/v1/masters-part/delete`
+  deletePartAPI : `${BASE_URL}/api/v1/masters-part/delete`,
+  updatePartAPI : `${BASE_URL}/api/v1/masters-part/update`
 
 }
 
@@ -32,12 +33,15 @@ export const  API_REQUEST = 'API_REQUEST';
 export const FETCH_MATER_DATA_FAILURE = 'FETCH_MATER_DATA_FAILURE';
 export const FETCH_MATER_DATA_REQUEST = 'FETCH_MATER_DATA_REQUEST';
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
+export const GET_UOM_SUCCESS = 'GET_UOM_SUCCESS';
 export const UNIT_OF_MEASUREMENT_API_FAILURE = 'UNIT_OF_MEASUREMENT_API_FAILURE';
 export const CREATE_PART_REQUEST = 'CREATE_PART_REQUEST';
 export const CREATE_PART_FAILURE = 'CREATE_PART_FAILURE';
 export const CREATE_PART_SUCCESS = 'CREATE_PART_SUCCESS';
 export const GET_ALL_PARTS_SUCCESS = 'GET_ALL_PARTS_SUCCESS';
+export const  GET_PART_SUCCESS = 'GET_PART_SUCCESS';
 export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE';
 export const API_FAILURE = 'API_FAILURE';
+export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS';
 
 

@@ -8,5 +8,7 @@ export const MESSAGES = {
   PART_DELETE_SUCCESS: 'Part has been deleted.',
   UPDATE_PART_SUCESS: 'Part updated successfully',
   MESSAGE_SENT_EXCEPT_USER: 'Message has been sent except the user',
+  UOM_ADD_SUCCESS: 'Unit Of measurement added successfully',
+  UPDATE_UOM_SUCESS: 'Unit Of measurement updated  successfully'
 };
  

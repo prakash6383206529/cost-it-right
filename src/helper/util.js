@@ -1,7 +1,6 @@
 import { toastr } from "react-redux-toastr";
 import Moment from 'moment';
 import axios from 'axios';
-//import NavigationService from '../services/navigator';
 import { MESSAGES } from '../config/message';
 import { reactLocalStorage } from 'reactjs-localstorage';
 

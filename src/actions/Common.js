@@ -1,5 +1,6 @@
 
-// import axios from 'axios';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import axios from 'axios';
 // import {API,
 //     FETCH_USER_DATA, UPDATE_FORM_DATA, FETCH_MATER_DATA_SUCCESS,
 //     FETCH_MATER_DATA_FAILURE, FETCH_MATER_DATA_REQUEST, UPDATE_PRODUCTION_PROFILE_FORM_DATA
@@ -10,7 +11,41 @@
 //     'Content-Type': 'application/json',
 // };
 
+// /**
+//  * @method updateUserData
+//  * @description update data in store on app landing
+//  */
 
+// export function updateUserData() {
+//     return (dispatch) => {
+//         dispatch({ type: 'Nothing' });
+//         reactLocalStorage.getItem('userResponse')
+//             .then((value) => {
+//                 if (value === null) {
+//                 } else {
+//                     const userDataValue = JSON.parse(value);
+//                     dispatch({
+//                         type: FETCH_USER_DATA,
+//                         payload: userDataValue
+//                     });
+//                 }
+//             });
+//     };
+// }
+
+// export function updateFormData(formData, obj) {
+//     formData = { ...formData, ...obj };
+//     return (dispatch) => {
+//         dispatch({ type: UPDATE_FORM_DATA, payload: formData });
+//     };
+// }
+
+// export function updateProductionProfileFormData(formData, obj) {
+//     formData = { ...formData, ...obj };
+//     return (dispatch) => {
+//         dispatch({ type: UPDATE_PRODUCTION_PROFILE_FORM_DATA, payload: formData });
+//     };
+// }
 
 
 // export function fetchMasterDataAPI() {

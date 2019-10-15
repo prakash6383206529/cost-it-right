@@ -5,7 +5,8 @@ import {
 import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../../actions/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { Loader } from '../../../common/Loader';
 
 
 class UOMMaster extends Component {
@@ -25,7 +26,7 @@ class UOMMaster extends Component {
      * @description  used to open filter form 
      */
     openModel = () => {
-        this.setState({ isOpen: true })
+        this.setState({ isOpen: true ,isEditFlag: false})
     }
 
     /**
@@ -40,10 +41,11 @@ class UOMMaster extends Component {
     * @method editPartDetails
     * @description confirm delete part
     */
-    editPartDetails = (index) => {
+    editPartDetails = (index, Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
+            uomId: Id,
             editIndex: index,
         })
     }
@@ -52,10 +54,10 @@ class UOMMaster extends Component {
     * @method deletePart
     * @description confirm delete part
     */
-    deletePart = (index) => {
+    deletePart = (index, Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index)
+                this.confirmDeleteUOM(index, Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
@@ -67,7 +69,7 @@ class UOMMaster extends Component {
     * @description confirm delete unit of measurement
     */
    confirmDeleteUOM = (index, Id) => {
-        this.props.deleteUnitOfMeasurementAPI(index,Id, (res) => {
+        this.props.deleteUnitOfMeasurementAPI(index, Id , (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.PART_DELETE_SUCCESS);
                 this.props.getUnitOfMeasurementAPI(res => {});
@@ -84,9 +86,10 @@ class UOMMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex } = this.state;
+        const { isOpen, isEditFlag,editIndex, uomId } = this.state;
         return (
             <Container className="top-margin">
+            {this.props.loading && <Loader/>}
                 <Row>
                     <Col>
                         <h3>Unit of Measurement Master </h3>
@@ -132,8 +135,8 @@ class UOMMaster extends Component {
                                     <td>{item.Description}</td>
                                     <td>{item.CreatedBy}</td>
                                     <div>
-                                        <Button className="black-btn" onClick={() => this.editPartDetails(index, )}><i className="fas fa-pencil-alt"></i></Button> 
-                                        <Button className="black-btn" onClick={() => this.deletePart(index,this.props.unitOfMeasurementList.Id)}><i className="far fa-trash-alt"></i></Button>
+                                        <Button className="black-btn" onClick={() => this.editPartDetails(index,item.Id )}><i className="fas fa-pencil-alt"></i></Button> 
+                                        <Button className="black-btn" onClick={() => this.deletePart(index,item.Id)}><i className="far fa-trash-alt"></i></Button>
                                     </div>
                                 </tr>
                             </tbody>  
@@ -149,7 +152,7 @@ class UOMMaster extends Component {
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
                         editIndex={editIndex}
-                        partDetails={this.props.partsListing}
+                        uomId={uomId}
                     />
                 )}
             </Container >
@@ -163,8 +166,8 @@ class UOMMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ unitOfMeasrement }) {
-    const {unitOfMeasurementList} = unitOfMeasrement;
-    return { unitOfMeasurementList}
+    const {unitOfMeasurementList, loading} = unitOfMeasrement;
+    return { unitOfMeasurementList,loading}
 }
 
 

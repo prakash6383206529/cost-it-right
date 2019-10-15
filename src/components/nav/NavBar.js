@@ -135,8 +135,8 @@ class SideBar extends Component {
                   <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a className="dropdown-item" href= '/UOMMaster'>Unit Of Measurement Master</a>
                     <a className="dropdown-item" href="/PartMaster">Part Master</a>
+                    <a className="dropdown-item" href= '/category-master'>Category Master</a>
                     <a className="dropdown-item" href="">SAP Master</a>
-                    <a className="dropdown-item" href= '/SupplierMaster'>Supplier Master</a>
                     <a className="dropdown-item" href="#">Supplier Materail Quata</a>
                   </div>
                 </li>

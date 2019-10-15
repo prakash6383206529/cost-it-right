@@ -11,9 +11,9 @@ import Signup from './signup/SignupForm';
 import Homepage from './homepage/Homepage';
 import Dashboard from './dashboard';
 import { Loader } from '../../src/components/common/Loader';
-import MaterialMaster from './masters/sap-masters/material-master';
+import MaterialMaster from './masters/sap-masters/part-master';
 import UOMMaster from './masters/sap-masters/uom-master';
-import SupplierMaster from './masters/sap-masters/supplier-master';
+import CategoryMaster from './masters/sap-masters/category-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -128,9 +128,9 @@ class Main extends Component {
                 )}
               />
               <Route
-                path="/SupplierMaster"
+                path="/category-master"
                 render={props => (
-                  <SupplierMaster
+                  <CategoryMaster
                     {...props}
                   />
                 )}

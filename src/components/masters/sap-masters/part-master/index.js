@@ -5,7 +5,8 @@ import {
 import PartMaster from './AddPart';
 import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/Part';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { Loader } from '../../../common/Loader';
 
 
 class MaterialMaster extends Component {
@@ -25,7 +26,7 @@ class MaterialMaster extends Component {
      * @description  used to open filter form 
      */
     openModel = () => {
-        this.setState({ isOpen: true })
+        this.setState({ isOpen: true, isEditFlag: false })
     }
 
     /**
@@ -40,10 +41,12 @@ class MaterialMaster extends Component {
     * @method editPartDetails
     * @description confirm delete part
     */
-    editPartDetails = (index) => {
+    editPartDetails = (index, Id) => {
+        console.log('Id: ', Id);
         this.setState({
             isEditFlag: true,
             isOpen: true,
+            PartId: Id,
             editIndex: index,
         })
     }
@@ -52,10 +55,10 @@ class MaterialMaster extends Component {
     * @method deletePart
     * @description confirm delete part
     */
-    deletePart = (index) => {
+    deletePart = (index, Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeletePart(index)
+                this.confirmDeletePart(index,Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
@@ -66,10 +69,9 @@ class MaterialMaster extends Component {
     * @method confirmDeletePart
     * @description confirm delete part
     */
-    confirmDeletePart = (index) => {
-        this.props.deletePartsAPI(index, (res) => {
+    confirmDeletePart = (index, PartId) => {
+        this.props.deletePartsAPI(PartId, (res) => {
             if (res.data.Result === true) {
-                this.props.getUserProfileAPI(this.props.userData.id, true, () => { });
                 toastr.success(MESSAGES.PART_DELETE_SUCCESS);
                 this.props.getAllPartsAPI(res => {});
             } else {
@@ -84,12 +86,13 @@ class MaterialMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex } = this.state;
+        const { isOpen, isEditFlag,editIndex, PartId } = this.state;
         return (
             <Container className="top-margin">
+            {this.props.loading && <Loader/>}
                 <Row>
                     <Col>
-                        <h3>Material Master </h3>
+                        <h3>Part Master </h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>Add Part</Button>
@@ -98,7 +101,7 @@ class MaterialMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>Material Master Details </h5>
+                        <h5>Part Master Details </h5>
                     </Col>
                 </Row>
                 <Col>
@@ -137,8 +140,8 @@ class MaterialMaster extends Component {
                                     <td>{item.UnitOfMeasurementId ? item.UnitOfMeasurementId : 'N/A'}</td> 
                                     <td>{item.PartDescription}</td>
                                     <div>
-                                        <Button className="black-btn" onClick={() => this.editPartDetails(item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
-                                        <Button className="black-btn" onClick={() => this.deletePart(index)}><i className="far fa-trash-alt"></i></Button>
+                                        <Button className="black-btn" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
+                                        <Button className="black-btn" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
                                     </div>
                                 </tr>
                             </tbody>  
@@ -155,7 +158,7 @@ class MaterialMaster extends Component {
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
                         editIndex={editIndex}
-                        partDetails={this.props.partsListing}
+                        partId={PartId}
                     />
                 )}
             </Container >
@@ -169,9 +172,9 @@ class MaterialMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ part}) {
-    const { partsListing } = part;
+    const { partsListing ,loading } = part;
     console.log('partsListing: ', partsListing);
-    return { partsListing }
+    return { partsListing, loading }
 }
 
 

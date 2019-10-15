@@ -1,27 +1,14 @@
 import React, { Component } from "react";
 import {
-  Button,
   Nav,
   NavItem,
   NavLink,
-  Input,
-  Container,
-  Row,
-  Col
 } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
 const FooterNav = [
   {
-    name: "Glossary",
-    link: "#"
-  },
-  {
     name: "About Us",
     link: "about-us"
-  },
-  {
-    name: "FAQs",
-    link: "#"
   },
   {
     name: "Contact Us",
@@ -38,7 +25,6 @@ const FooterNav = [
 ];
 class Footer extends Component {
   render() {
-    const basicProfileAndProd = reactLocalStorage.getObject("basicProfileAndProd");
     const userResponse = reactLocalStorage.getObject("userResponse");
     return (
       <div>

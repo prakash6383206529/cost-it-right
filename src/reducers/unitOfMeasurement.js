@@ -1,42 +1,39 @@
-import axios from 'axios';
 import {
-    API,
-    FETCH_MATER_DATA_FAILURE,
-    FETCH_MATER_DATA_REQUEST,
+    API_REQUEST,
     GET_UOM_DATA_SUCCESS,
-    UNIT_OF_MEASUREMENT_API_FAILURE,
     CREATE_PART_REQUEST,
     CREATE_PART_FAILURE,
     CREATE_PART_SUCCESS,
-    GET_ALL_PARTS_SUCCESS,
-    GET_ALL_PARTS_FAILURE
+    GET_UOM_SUCCESS,
 } from '../config/constants';
-import {
-    apiErrors
-} from '../helper/util';
-import {
-    MESSAGES
-} from '../config/message';
-import {
-    toastr
-} from 'react-redux-toastr'
+
 const initialState = {
    
 };
 
 export default function UOMReducer(state = initialState, action) {
     switch (action.type) {
-        case CREATE_PART_REQUEST:
+        case API_REQUEST:
             return {
                 ...state,
                 loading: true
             };
-        case GET_UOM_DATA_SUCCESS:
-        console.log('uniOfMeasurementList: ', action.payload);
+        case CREATE_PART_REQUEST:
             return {
                 ...state,
-                loading: true, 
+                loading: false
+            };
+        case GET_UOM_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false, 
                 unitOfMeasurementList: action.payload
+            };
+        case GET_UOM_SUCCESS:
+            return {
+                ...state,
+                loading: false, 
+                unitOfMeasurementData: action.payload
             };
             
         case CREATE_PART_SUCCESS: {
