@@ -4,6 +4,7 @@
 
 //hosting url for api of cost-it-right
 const BASE_URL = 'http://183.182.84.29/cost-it-right-lite';
+//const BASE_URL = 'http://10.10.10.235';
 
 
 /** Export API */
@@ -23,8 +24,11 @@ export const API = {
   getOnePartAPI: `${BASE_URL}/api/v1/masters-part/get`,
   filterPartAPI : `${BASE_URL}/api/v1/masters-part/get`,
   deletePartAPI : `${BASE_URL}/api/v1/masters-part/delete`,
-  updatePartAPI : `${BASE_URL}/api/v1/masters-part/update`
+  updatePartAPI : `${BASE_URL}/api/v1/masters-part/update`,
 
+  //Api for category
+  createcategoryTypeAPI: `${BASE_URL}/api/v1/masters-category/create-type`,
+  createCategoryAPI: `${BASE_URL}/api/v1/masters-category/create`,
 }
 
 
@@ -43,5 +47,10 @@ export const  GET_PART_SUCCESS = 'GET_PART_SUCCESS';
 export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE';
 export const API_FAILURE = 'API_FAILURE';
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS';
+export const GET_UOM_DATA_FAILURE = 'GET_UOM_DATA_FAILURE';
+export const CREATE_CATEGORY_TYPE_SUCCESS = 'CREATE_CATEGORY_TYPE_SUCCESS';
+export const CREATE_CATEGORY_TYPE_FAILURE = 'CREATE_CATEGORY_TYPE_FAILURE';
+export const CREATE_CATEGORY_FAILURE = 'CREATE_CATEGORY_FAILURE';
+export const CREATE_CATEGORY_SUCCESS = 'CREATE_CATEGORY_SUCCESS'
 
 
