@@ -8,7 +8,8 @@ import {
     CREATE_PART_REQUEST,
     CREATE_PART_FAILURE,
     CREATE_PART_SUCCESS,
-    GET_UOM_SUCCESS
+    GET_UOM_SUCCESS,
+    GET_UOM_DATA_FAILURE
 } from '../config/constants';
 import {
     apiErrors
@@ -25,8 +26,8 @@ const headers = {
 
 export function getUnitOfMeasurementAPI(callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST, headers });
-        axios.get(API.getUOMAPI)
+        dispatch({ type: API_REQUEST });
+        axios.get(API.getUOMAPI, {headers})
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -38,8 +39,9 @@ export function getUnitOfMeasurementAPI(callback) {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
+                console.log('error',error.response ? error.response : error)
                 dispatch({
-                    type: FETCH_MATER_DATA_FAILURE
+                    type: GET_UOM_DATA_FAILURE
                 });
                 callback(error);
                 apiErrors(error);
@@ -55,7 +57,7 @@ export function getUnitOfMeasurementAPI(callback) {
  */
 export function getOneUnitOfMeasurementAPI(uomId,isEditFlag,callback) {
     return (dispatch) => {
-        // dispatch({ type: API_REQUEST });
+        dispatch({ type: API_REQUEST });
         if(isEditFlag){
             axios.get(`${API.getUOMAPI}/${uomId}`, headers)
             .then((response) => {
@@ -140,9 +142,11 @@ export function deleteUnitOfMeasurementAPI(index,Id ,callback) {
  * @description delete user media
  */
 export function updateUnitOfMeasurementAPI(uomId,requestData, callback) {
+    console.log('requestData', requestData);
+    
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateUOMAPI}/${uomId}`,requestData, headers)
+        axios.put(`${API.updateUOMAPI}`,requestData, headers)
             .then((response) => {
                     callback(response);
             }).catch((error) => {

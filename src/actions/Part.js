@@ -52,7 +52,7 @@ export function fetchMasterDataAPI() {
 
 export function getAllPartsAPI(callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
+        //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getAllPartsAPI}`,headers);
         request.then((response) => {
             if (response.data.Result === true) {
@@ -148,7 +148,7 @@ export function updatePartsAPI(requestData, callback) {
  */
 export function getOnePartsAPI(PartId,isEditFlag, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
+        //dispatch({ type: API_REQUEST });
         if(isEditFlag){
             axios.get(`${API.getOnePartAPI}/${PartId}`,headers)
             .then((response) => {
