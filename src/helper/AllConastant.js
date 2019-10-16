@@ -1,0 +1,15 @@
+export const CONSTANT = {
+    ADD: 'Add',
+    UPDATE:'Update',
+    SAVE: 'Save',
+    PART: 'Part',
+    NAME: 'Name',
+    DESCRIPTION : 'Description',
+    UOM:'Unit Of Measurement',
+    NUMBER : 'Number',
+    TYPE: 'type',
+    GROUPCODE: 'Group Code',
+    MASTER : 'Master',
+    DETAILS : 'Details',
+    BOM : 'BOM'
+  };
