@@ -9,7 +9,6 @@ import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
 
-
 class MaterialMaster extends Component {
     constructor(props) {
         super(props);
@@ -102,7 +101,7 @@ class MaterialMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>Part Master Details </h5>
+                        <h5>{`${CONSTANT.PART} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
                     </Col>
                 </Row>
                 <Col>
@@ -124,12 +123,12 @@ class MaterialMaster extends Component {
                          <Table>
                             <thead>
                                 <tr>
-                                <th>Part Number</th>
-                                <th>Part Name</th> 
-                                <th>Part Type</th>
-                                <th>Part Group Code</th>
-                                <th>Unit of Measurement</th>
-                                <th>Part Description</th>
+                                <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                                <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th> 
+                                <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
+                                <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
+                                <th>{`${CONSTANT.UOM}`}t</th>
+                                <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
                                 </tr>
                             </thead>
                             <tbody > 

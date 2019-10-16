@@ -6,7 +6,8 @@ import { required } from "../../../../helper/validation";
 import { renderText } from "../../../layout/FormInputs";
 import { createCategoryTypeAPI } from '../../../../actions/Category';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { CONSTANT} from '../../../../helper/AllConastant'
 
 class AddCategoryType extends Component {
     constructor(props) {
@@ -74,7 +75,7 @@ class AddCategoryType extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>Add Category</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>     
@@ -86,7 +87,7 @@ class AddCategoryType extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Category Type"
+                                                label={`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}
                                                 name={"CategoryType"}
                                                 type="text"
                                                 placeholder={''}
@@ -98,7 +99,7 @@ class AddCategoryType extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label="Description"
+                                                label={`${CONSTANT.DESCRIPTION}`}
                                                 name={"Description"}
                                                 type="text"
                                                 placeholder={''}
@@ -112,7 +113,7 @@ class AddCategoryType extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                Save
+                                                {`${CONSTANT.SAVE}`}
                                             </button>
                                         </div>
                                     </Row>

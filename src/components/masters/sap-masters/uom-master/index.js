@@ -7,7 +7,7 @@ import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../..
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
-
+import { CONSTANT } from '../../../../helper/AllConastant';
 
 class UOMMaster extends Component {
     constructor(props) {
@@ -18,9 +18,14 @@ class UOMMaster extends Component {
         }
     }
 
+    /**
+     * @method componentDidMount
+     * @description  called before rendering the component
+     */
     componentDidMount() {
         this.props.getUnitOfMeasurementAPI(res => {});
     }
+
     /**
      * @method openModel
      * @description  used to open filter form 
@@ -67,7 +72,7 @@ class UOMMaster extends Component {
     * @method confirmDeleteUOM
     * @description confirm delete unit of measurement
     */
-   confirmDeleteUOM = (index, Id) => {
+    confirmDeleteUOM = (index, Id) => {
         this.props.deleteUnitOfMeasurementAPI(index, Id , (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
@@ -75,10 +80,8 @@ class UOMMaster extends Component {
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
-        });
-        
+        });   
     }
-
 
     /**
     * @method render
@@ -91,17 +94,17 @@ class UOMMaster extends Component {
             {this.props.loading && <Loader/>}
                 <Row>
                     <Col>
-                        <h3>Unit of Measurement Master </h3>
+                        <h3>{`${CONSTANT.UOM} ${CONSTANT.MASTER}`}</h3>
                     </Col>
                     <Col>
-                        <Button onClick={this.openModel}>Add UOM</Button>
+                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} UOM`}</Button>
                     </Col>
                 </Row>
                 
                 <hr />
                 <Row>
                     <Col>
-                        <h5>Unit Of Measurement Master Details </h5>
+                        <h5>{`${CONSTANT.UOM} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
                 <Col>
@@ -121,10 +124,9 @@ class UOMMaster extends Component {
                         <Table>
                             <thead>
                                 <tr>
-                                <th>UOM Name</th>
-                                <th>UOM Title</th> 
-                                <th>UOM Description</th>
-                                <th>UOM Created By</th>
+                                <th>{`UOM ${CONSTANT.NAME}`}</th>
+                                <th>{`UOM ${CONSTANT.TITLE}`}</th> 
+                                <th>{`UOM ${CONSTANT.DESCRIPTION}`}</th>
                                 </tr>
                             </thead>
                             <tbody > 
@@ -132,7 +134,6 @@ class UOMMaster extends Component {
                                     <td >{item.Name}</td>
                                     <td>{item.Title}</td> 
                                     <td>{item.Description}</td>
-                                    <td>{item.CreatedBy}</td>
                                     <div>
                                         <Button className="black-btn" onClick={() => this.editPartDetails(index,item.Id )}><i className="fas fa-pencil-alt"></i></Button> 
                                         <Button className="black-btn" onClick={() => this.deletePart(index,item.Id)}><i className="far fa-trash-alt"></i></Button>

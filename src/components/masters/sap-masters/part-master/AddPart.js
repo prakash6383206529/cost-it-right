@@ -135,7 +135,7 @@ class PartMaster extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Part Code"
+                                                label={`${CONSTANT.PART} ${CONSTANT.NUMBER}`}
                                                 name={"PartNumber"}
                                                 type="text"
                                                 placeholder={''}
@@ -147,7 +147,7 @@ class PartMaster extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label="Part Name    "
+                                                label={`${CONSTANT.PART} ${CONSTANT.NAME}`}
                                                 name={"PartName"}
                                                 type="text"
                                                 placeholder={''}
@@ -161,13 +161,13 @@ class PartMaster extends Component {
                                     <Row/>
                                         <Col md="6">
                                             <Field
-                                                label="Part Type"
+                                                label={`${CONSTANT.PART} ${CONSTANT.TYPE}`}
                                                 name={"MaterialTypeId"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.selectMaterialType()}
                                                 onChange={this.handleTypeofListing}
@@ -178,7 +178,7 @@ class PartMaster extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label="Unit Of Measurement"
+                                                label={`${CONSTANT.UOM}`}
                                                 name={"UnitOfMeasurementId"}
                                                 type="text"
                                                 placeholder={''}
@@ -198,7 +198,7 @@ class PartMaster extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Part Group code"
+                                                label={`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}
                                                 name={"MaterialGroupCode"}
                                                 type="text"
                                                 placeholder={''}
@@ -208,7 +208,7 @@ class PartMaster extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label="Part Description"
+                                                label={`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}
                                                 name={"PartDescription"}
                                                 type="text"
                                                 placeholder={''}
