@@ -28,7 +28,6 @@ class Footer extends Component {
     const userResponse = reactLocalStorage.getObject("userResponse");
     return (
       <div>
-        {basicProfileAndProd == false &&
           <footer>
             <div className="container">
               <div className="row">
@@ -46,7 +45,6 @@ class Footer extends Component {
               </div>
             </div>
           </footer>
-        }
       </div>
     );
   }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
-import PartMaster from './AddPart';
+//import PartMaster from './AddPart';
 import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -10,7 +10,7 @@ import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
 
 
-class MaterialMaster extends Component {
+class BOMMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -93,16 +93,16 @@ class MaterialMaster extends Component {
             {this.props.loading && <Loader/>}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.PART} ${CONSTANT.MASTER}`}</h3>
+                        <h3>{`${CONSTANT.BOM} ${CONSTANT.MASTER}`}</h3>
                     </Col>
                     <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.PART} `}</Button>
+                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.BOM} `}</Button>
                     </Col>
                 </Row>
                 <hr />
                 <Row>
                     <Col>
-                        <h5>Part Master Details </h5>
+                        <h5>{`${CONSTANT.BOM} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
                 <Col>
@@ -117,7 +117,7 @@ class MaterialMaster extends Component {
                         <th>Part Description</th>
                         </tr>
                     </thead> */}
-                {this.props.partsListing && this.props.partsListing.length > 0 &&
+                {/* {this.props.partsListing && this.props.partsListing.length > 0 &&
                     this.props.partsListing.map((item, index) => {
                         return (
                         <div key={index}> 
@@ -150,10 +150,10 @@ class MaterialMaster extends Component {
                         </div>
                         
                         )
-                    })}
+                    })} */}
                     {/* </Table> */}
                 </Col>
-                {isOpen && (
+                {/* {isOpen && (
                     <PartMaster
                         isOpen={isOpen}
                         onCancel={this.onCancel}
@@ -161,7 +161,7 @@ class MaterialMaster extends Component {
                         editIndex={editIndex}
                         partId={PartId}
                     />
-                )}
+                )} */}
             </Container >
         );
     }
@@ -181,5 +181,5 @@ function mapStateToProps({ part}) {
 
 export default connect(
     mapStateToProps, {getAllPartsAPI, deletePartsAPI}
-)(MaterialMaster);
+)(BOMMaster);
 

@@ -46,7 +46,6 @@ class UOMMaster extends Component {
             isEditFlag: true,
             isOpen: true,
             uomId: Id,
-            editIndex: index,
         })
     }
     
@@ -61,7 +60,7 @@ class UOMMaster extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Are you sure you want to delete This part ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
     }
 
     /**
@@ -71,7 +70,7 @@ class UOMMaster extends Component {
    confirmDeleteUOM = (index, Id) => {
         this.props.deleteUnitOfMeasurementAPI(index, Id , (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+                toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
                 this.props.getUnitOfMeasurementAPI(res => {});
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);

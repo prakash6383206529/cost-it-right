@@ -136,7 +136,7 @@ class SideBar extends Component {
                     <a className="dropdown-item" href= '/UOMMaster'>Unit Of Measurement Master</a>
                     <a className="dropdown-item" href="/PartMaster">Part Master</a>
                     <a className="dropdown-item" href= '/category-master'>Category Master</a>
-                    <a className="dropdown-item" href="">SAP Master</a>
+                    <a className="dropdown-item" href="bom-master">BOM Master</a>
                     <a className="dropdown-item" href="#">Supplier Materail Quata</a>
                   </div>
                 </li>

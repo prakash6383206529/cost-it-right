@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
+import { renderText } from "../../../layout/FormInputs";
+import { createCategoryTypeAPI } from '../../../../actions/Category';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 
@@ -39,14 +40,14 @@ class AddCategoryType extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        // this.props.createPartAPI(values, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.PART_ADD_SUCCESS);
-        //         {this.toggleModel()}
-        //     } else {
-        //         toastr.error(res.data.message);
-        //     }
-        // });   
+        this.props.createCategoryTypeAPI(values, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.CATEGORY_TYPE_ADDED_SUCCESS);
+                {this.toggleModel()}
+            } else {
+                toastr.error(res.data.message);
+            }
+        });   
     }
 
     /**
@@ -141,7 +142,7 @@ function mapStateToProps({}) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, null)(reduxForm({
+export default connect(mapStateToProps, { createCategoryTypeAPI })(reduxForm({
     form: 'AddCategoryType',
     enableReinitialize: true,
 })(AddCategoryType));

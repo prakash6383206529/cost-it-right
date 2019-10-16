@@ -14,6 +14,7 @@ import { Loader } from '../../src/components/common/Loader';
 import MaterialMaster from './masters/sap-masters/part-master';
 import UOMMaster from './masters/sap-masters/uom-master';
 import CategoryMaster from './masters/sap-masters/category-master';
+import BOMMaster from './masters/sap-masters/bom-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -135,15 +136,15 @@ class Main extends Component {
                   />
                 )}
               />
-              {/* <Route
-                path="/terms&condition"
+               <Route
+                path="/bom-master"
                 render={props => (
-                  <termCondition
+                  <BOMMaster
                     {...props}
                   />
                 )}
               />
-              <Route
+              {/* <Route
                 path="/privacy-policy"
                 render={props => (
                   <aboutus
@@ -158,7 +159,7 @@ class Main extends Component {
                     {...props}
                   />
                 )}
-              /> */}
+              />  */}
               <Route
                 render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}
               />

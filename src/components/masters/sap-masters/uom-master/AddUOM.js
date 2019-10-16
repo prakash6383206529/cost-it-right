@@ -5,7 +5,7 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText } from "../../../layout/FormInputs";
 import { createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI,
-     getOneUnitOfMeasurementAPI
+     getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
 } from '../../../../actions/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
@@ -46,19 +46,20 @@ class AddUOM extends Component {
     */
     onSubmit = (values) => {
         if (this.props.isEditFlag) { 
-            const { editIndex, uomId} = this.props;
+            console.log('values', values);
+            const { uomId } = this.props;
             this.setState({ isSubmitted: true });
-            let formData = this.props.unitOfMeasurementList;
-
-                formData[editIndex].Name = values.Name;
-                formData[editIndex].Title = values.Title;
-                formData[editIndex].Description = values.Description;
-                formData[editIndex].CreatedBy = values.CreatedBy;
-
+            let formData = {
+                Name : values.Name,
+                Title : values.Title,
+                Description : values.Description,
+                Id : uomId
+            }
             this.props.updateUnitOfMeasurementAPI(uomId,formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
                     this.toggleModel();
+                    this.props.getUnitOfMeasurementAPI(res => {});
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
@@ -68,6 +69,7 @@ class AddUOM extends Component {
                 if (res.data.Result === true) {
                   toastr.success(MESSAGES.UOM_ADD_SUCCESS);
                   {this.toggleModel()}
+                  this.props.getUnitOfMeasurementAPI(res => {});
                 } else {
                   toastr.error(res.data.message);
                 }
@@ -176,7 +178,9 @@ function mapStateToProps({ unitOfMeasrement }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, {createUnitOfMeasurementAPI,updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI})(reduxForm({
+export default connect(mapStateToProps, {createUnitOfMeasurementAPI,
+    updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
+})(reduxForm({
     form: 'addUOM',
     enableReinitialize: true,
 })(AddUOM));
