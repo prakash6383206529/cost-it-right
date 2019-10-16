@@ -11,5 +11,7 @@ export const CONSTANT = {
     GROUPCODE: 'Group Code',
     MASTER : 'Master',
     DETAILS : 'Details',
-    BOM : 'BOM'
+    BOM : 'BOM',
+    CATEGORY: 'Category',
+    TITLE: 'title',
   };

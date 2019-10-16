@@ -12,6 +12,6 @@ export const MESSAGES = {
   UPDATE_UOM_SUCESS: 'Unit Of measurement updated successfully',
   DELETE_UOM_SUCCESS: 'Unit Of measurement deleted successfully',
   CONFIRM_DELETE : 'Are you sure you want to delete This',
-  CATEGORY_TYPE_ADDED_SUCCESS: 'category Type added successfully',
+  CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',
 };
  
