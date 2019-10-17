@@ -2,9 +2,9 @@ import { combineReducers } from 'redux';
 import AuthReducer from './AuthReducer';
 import {reducer as toastrReducer} from 'react-redux-toastr';
 import {reducer as formReducer} from  'redux-form';
-import partReducer from './Part';
-import UOMREducer from './unitOfMeasurement';
-import categoryReducer from './Category';
+import partReducer from './master/Part';
+import UOMREducer from './master/unitOfMeasurement';
+import categoryReducer from './master/Category';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
