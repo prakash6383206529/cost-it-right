@@ -1,6 +1,4 @@
-import axios from 'axios';
 import {
-    API,
     API_REQUEST,
     CREATE_CATEGORY_TYPE_SUCCESS,
     CREATE_CATEGORY_TYPE_FAILURE,

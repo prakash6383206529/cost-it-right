@@ -5,6 +5,9 @@ import {reducer as formReducer} from  'redux-form';
 import partReducer from './master/Part';
 import UOMREducer from './master/unitOfMeasurement';
 import categoryReducer from './master/Category';
+import materialReducer from './master/Material';
+import plantReducer from './master/Plant';
+import supplierReducer from './master/Supplier';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -20,7 +23,10 @@ const allReducers = combineReducers({
    auth                : AuthReducer, 
    part                : partReducer,
    unitOfMeasrement    : UOMREducer,
-   category            : categoryReducer
+   category            : categoryReducer,
+   material            : materialReducer,
+   plant               : plantReducer,
+   supplier            : supplierReducer,
 });
 
 export default rootReducer;
