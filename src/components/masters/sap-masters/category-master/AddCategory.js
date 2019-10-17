@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { createCategoryAPI, fetchCategoryMasterDataAPI } from '../../../../actions/Category';
+import { createCategoryAPI, fetchCategoryMasterDataAPI } from '../../../../actions/master/Category';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';

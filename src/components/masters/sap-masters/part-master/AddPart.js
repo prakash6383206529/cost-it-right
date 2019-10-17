@@ -4,12 +4,12 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { createPartAPI, fetchMasterDataAPI, updatePartsAPI , getOnePartsAPI} from '../../../../actions/Part';
+import { createPartAPI, fetchMasterDataAPI, updatePartsAPI , getOnePartsAPI} from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 
-class PartMaster extends Component {
+class AddPart extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -267,4 +267,4 @@ function mapStateToProps({ part}) {
 export default connect(mapStateToProps, {createPartAPI,fetchMasterDataAPI, updatePartsAPI,getOnePartsAPI })(reduxForm({
     form: 'AddPart',
     enableReinitialize: true,
-})(PartMaster));
+})(AddPart));

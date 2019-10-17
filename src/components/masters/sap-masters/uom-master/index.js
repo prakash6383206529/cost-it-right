@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
 import AddUOM from './AddUOM';
-import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../../actions/unitOfMeasurment';
+import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../../actions/master/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
 //import PartMaster from './AddPart';
-import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/Part';
+import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';

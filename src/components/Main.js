@@ -11,9 +11,12 @@ import Signup from './signup/SignupForm';
 import Homepage from './homepage/Homepage';
 import Dashboard from './dashboard';
 import { Loader } from '../../src/components/common/Loader';
-import MaterialMaster from './masters/sap-masters/part-master';
+import PartMaster from './masters/sap-masters/part-master';
 import UOMMaster from './masters/sap-masters/uom-master';
 import CategoryMaster from './masters/sap-masters/category-master';
+import MaterialMaster from './masters/sap-masters/material-master';
+import PlantMaster from './masters/sap-masters/plant-master';
+import SupplierMaster from './masters/sap-masters/supplier-master';
 import BOMMaster from './masters/sap-masters/bom-master';
 
 import { isUserLoggedIn } from '../helper/auth';
@@ -115,7 +118,7 @@ class Main extends Component {
               <Route
                 path="/PartMaster"
                 render={props => (
-                  <MaterialMaster
+                  <PartMaster
                     {...props}
                   />
                 )}
@@ -132,6 +135,30 @@ class Main extends Component {
                 path="/category-master"
                 render={props => (
                   <CategoryMaster
+                    {...props}
+                  />
+                )}
+              />
+               <Route
+                path="/material-master"
+                render={props => (
+                  <MaterialMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/plant-master"
+                render={props => (
+                  <PlantMaster
+                    {...props}
+                  />
+                )}
+              />
+               <Route
+                path="/supplier-master"
+                render={props => (
+                  <SupplierMaster
                     {...props}
                   />
                 )}

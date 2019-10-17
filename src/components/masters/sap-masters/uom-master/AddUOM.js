@@ -6,7 +6,7 @@ import { required } from "../../../../helper/validation";
 import { renderText } from "../../../layout/FormInputs";
 import { createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI,
      getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
-} from '../../../../actions/unitOfMeasurment';
+} from '../../../../actions/master/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 

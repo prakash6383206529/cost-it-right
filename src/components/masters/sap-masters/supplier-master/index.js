@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
-import AddPart from './AddPart';
-import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
+//import PartMaster from './AddPart';
+//import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
 
-class PartMaster extends Component {
+class SupplierMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -18,105 +18,94 @@ class PartMaster extends Component {
         }
     }
 
-    componentDidMount() {
-        this.props.getAllPartsAPI(res => {});
-    }
+    // componentDidMount() {
+    //     this.props.getAllPartsAPI(res => {});
+    // }
     /**
      * @method openModel
      * @description  used to open filter form 
      */
-    openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
-    }
+    // openModel = () => {
+    //     this.setState({ isOpen: true, isEditFlag: false })
+    // }
 
     /**
      * @method onCancel
      * @description  used to cancel filter form
      */
-    onCancel = () => {
-        this.setState({ isOpen: false })
-    }
+    // onCancel = () => {
+    //     this.setState({ isOpen: false })
+    // }
 
     /**
     * @method editPartDetails
     * @description confirm delete part
     */
-    editPartDetails = (index, Id) => {
-        console.log('Id: ', Id);
-        this.setState({
-            isEditFlag: true,
-            isOpen: true,
-            PartId: Id,
-            editIndex: index,
-        })
-    }
+    // editPartDetails = (index, Id) => {
+    //     console.log('Id: ', Id);
+    //     this.setState({
+    //         isEditFlag: true,
+    //         isOpen: true,
+    //         PartId: Id,
+    //         editIndex: index,
+    //     })
+    // }
     
     /**
     * @method deletePart
     * @description confirm delete part
     */
-    deletePart = (index, Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeletePart(index,Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
-        };
-        return toastr.confirm(`Are you sure you want to delete This part ?`, toastrConfirmOptions);
-    }
+    // deletePart = (index, Id) => {
+    //     const toastrConfirmOptions = {
+    //         onOk: () => {
+    //             this.confirmDeletePart(index,Id)
+    //         },
+    //         onCancel: () => console.log('CANCEL: clicked')
+    //     };
+    //     return toastr.confirm(`Are you sure you want to delete This part ?`, toastrConfirmOptions);
+    // }
 
     /**
     * @method confirmDeletePart
     * @description confirm delete part
     */
-    confirmDeletePart = (index, PartId) => {
-        this.props.deletePartsAPI(PartId, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.props.getAllPartsAPI(res => {});
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        });
+    // confirmDeletePart = (index, PartId) => {
+    //     this.props.deletePartsAPI(PartId, (res) => {
+    //         if (res.data.Result === true) {
+    //             toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+    //             this.props.getAllPartsAPI(res => {});
+    //         } else {
+    //             toastr.error(MESSAGES.SOME_ERROR);
+    //         }
+    //     });
         
-    }
+    // }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex, PartId } = this.state;
+        //const { isOpen, isEditFlag,editIndex, PartId } = this.state;
         return (
             <Container className="top-margin">
-            {this.props.loading && <Loader/>}
+            {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.PART} ${CONSTANT.MASTER}`}</h3>
+                        <h3>{`${CONSTANT.SUPPLIER} ${CONSTANT.MASTER}`}</h3>
                     </Col>
                     <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.PART} `}</Button>
+                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.SUPPLIER} `}</Button>
                     </Col>
                 </Row>
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.PART} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
+                        <h5>{`${CONSTANT.SUPPLIER} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
                     </Col>
                 </Row>
                 <Col>
-                {/* <Table>
-                    <thead>
-                        <tr>
-                        <th>Part Number</th>
-                        <th>Part Name</th> 
-                        <th>Part Type</th>
-                        <th>Part Group Code</th>
-                        <th>Unit of Measurement</th>
-                        <th>Part Description</th>
-                        </tr>
-                    </thead> */}
-                {this.props.partsListing && this.props.partsListing.length > 0 &&
+                {/* {this.props.partsListing && this.props.partsListing.length > 0 &&
                     this.props.partsListing.map((item, index) => {
                         return (
                         <div key={index}> 
@@ -149,18 +138,17 @@ class PartMaster extends Component {
                         </div>
                         
                         )
-                    })}
-                    {/* </Table> */}
+                    })} */}
                 </Col>
-                {isOpen && (
-                    <AddPart
+                {/* {isOpen && (
+                    <PartMaster
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
                         editIndex={editIndex}
                         partId={PartId}
                     />
-                )}
+                )} */}
             </Container >
         );
     }
@@ -171,14 +159,14 @@ class PartMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part}) {
-    const { partsListing ,loading } = part;
-    console.log('partsListing: ', partsListing);
-    return { partsListing, loading }
+function mapStateToProps({ }) {
+    // const { partsListing ,loading } = part;
+    // console.log('partsListing: ', partsListing);
+    // return { partsListing, loading }
 }
 
 
 export default connect(
-    mapStateToProps, {getAllPartsAPI, deletePartsAPI}
-)(PartMaster);
+    mapStateToProps, null
+)(SupplierMaster);
 
