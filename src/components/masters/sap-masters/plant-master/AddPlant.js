@@ -102,9 +102,16 @@ class AddPlant extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        this.props.createPlantAPI(values, (res) => {
+        let formData = {
+            PlantName : values.PlantName,
+            PlantTitle : values.PlantTitle,
+            UnitNumber : values.UnitNumber,
+            Address: values.Address,
+            CityId: values.CityId
+        }
+        this.props.createPlantAPI(formData, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+                toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
                 {this.toggleModel()}
             } else {
                 toastr.error(res.data.Message);
