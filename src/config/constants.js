@@ -29,6 +29,7 @@ export const API = {
   //Api for category
   createcategoryTypeAPI: `${BASE_URL}/api/v1/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/api/v1/masters-category/create`,
+  fetchCategoryType: `${BASE_URL}/api/v1/configuration/select-list-get-category-type`
 }
 
 
@@ -51,6 +52,7 @@ export const GET_UOM_DATA_FAILURE = 'GET_UOM_DATA_FAILURE';
 export const CREATE_CATEGORY_TYPE_SUCCESS = 'CREATE_CATEGORY_TYPE_SUCCESS';
 export const CREATE_CATEGORY_TYPE_FAILURE = 'CREATE_CATEGORY_TYPE_FAILURE';
 export const CREATE_CATEGORY_FAILURE = 'CREATE_CATEGORY_FAILURE';
-export const CREATE_CATEGORY_SUCCESS = 'CREATE_CATEGORY_SUCCESS'
-
+export const CREATE_CATEGORY_SUCCESS = 'CREATE_CATEGORY_SUCCESS';
+export const FETCH_CATEGORY_DATA_FAILURE = 'FETCH_CATEGORY_DATA_FAILURE';
+export const  GET_CATEGORY_DATA_SUCCESS = 'GET_CATEGORY_DATA_SUCCESS';
 

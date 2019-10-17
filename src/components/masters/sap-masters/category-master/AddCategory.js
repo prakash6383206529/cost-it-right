@@ -4,8 +4,10 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText,renderSelectField } from "../../../layout/FormInputs";
+import { createCategoryAPI, fetchCategoryMasterDataAPI } from '../../../../actions/Category';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { CONSTANT } from '../../../../helper/AllConastant';
 
 class AddCategory extends Component {
     constructor(props) {
@@ -16,6 +18,9 @@ class AddCategory extends Component {
         }
     }
 
+    componentWillMount(){
+        this.props.fetchCategoryMasterDataAPI(res => {});   
+    }
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -39,28 +44,28 @@ class AddCategory extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        // this.props.createPartAPI(values, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.PART_ADD_SUCCESS);
-        //         {this.toggleModel()}
-        //     } else {
-        //         toastr.error(res.data.message);
-        //     }
-        // });   
+        this.props.createCategoryAPI(values, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
+                {this.toggleModel()}
+            } else {
+                toastr.error(res.data.message);
+            }
+        });   
     }
 
     /**
     * @method selectUnitOfMeasurement
     * @description Used show listing of unit of measurement
     */
-    selectUnitOfMeasurement = () => {
-        // const {uniOfMeasurementList} = this.props;
-        // const temp = [];
-        // uniOfMeasurementList && uniOfMeasurementList.map(item =>
-        //   temp.push({ Text: item.Text, Value: item.Value })
-        // );
-        // console.log('temp', uniOfMeasurementList);
-        // return temp;
+    selectMaterialType = () => {
+        const {categoryList} = this.props;
+        const temp = [];
+        categoryList && categoryList.map(item =>
+          temp.push({ Text: item.Text, Value: item.Value })
+        );
+        console.log('temp', categoryList);
+        return temp;
     }
 
 
@@ -73,7 +78,7 @@ class AddCategory extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>Add Category</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>     
@@ -105,11 +110,11 @@ class AddCategory extends Component {
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder custom-select"
-                                                //options={this.selectMaterialType()}
+                                                options={this.selectMaterialType()}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                //component={renderSelectField}
+                                                component={renderSelectField}
                                             />
                                         </Col>
                                     <Row/>
@@ -149,9 +154,10 @@ class AddCategory extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({}) {
-   
-    return { }
+function mapStateToProps({ category }) {
+   const { categoryList } = category;
+   console.log('categoryList: ', categoryList);
+    return { categoryList }
 }
 
 /**
@@ -160,7 +166,7 @@ function mapStateToProps({}) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, null)(reduxForm({
+export default connect(mapStateToProps, { createCategoryAPI, fetchCategoryMasterDataAPI })(reduxForm({
     form: 'AddCategory',
     enableReinitialize: true,
 })(AddCategory));

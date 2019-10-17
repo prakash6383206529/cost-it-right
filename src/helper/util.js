@@ -9,59 +9,31 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 * @desc Response error handler.
 * @param res
 */
-// export const apiErrors = (res) => {
-//     console.log('apiErrors=> ', res);
-//     const response = res ? res.response : undefined;
-//     if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
-//         toastr.error(response.data.error.message.value);
-//     } else if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
-//         toastr.error(response.data.error.message.value);
-//     } else if (response) {
-//         if (response.status && response.status === 400) {
-//             toastr.error('Something went wrong please try again.');
-//         } else if (response.status && response.status === 401) {
-//             toastr.error('Your session has been expired. Please login again');
-//         } else if (response && response.status === 403) {
-//             toastr.error('Server error occurred, please try again after sometime.');
-//         } else if (response && (response.status === 500 || response.status === 501 || response.status === 503 || response.status === 502)) {
-//             toastr.error('Server error occurred, please try again after sometime.');
-//         } else if(response.status && response.status === 404) {
-//             toastr.error('this record does not exist.');
-//         }else {
-//             toastr.error('Something went wrong please try again.');
-//         }
-//     } else {
-//         toastr.error('Something went wrong please try again.');
-//     }
-// }
-/**
-* @method apiErrors
-* @description used to show error meeage when api response have error
-*/
 export const apiErrors = (res) => {
-    console.log("apiErrors", res);
-    const response = res.response;
-    if (res && res.data && res.data.error && res.data.error.message && res.data.error.message.value) {
-        toastr.error(res.data.error.message.value);
-    } else if (res && response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
+    console.log('apiErrors=> ', res);
+    const response = res ? res.response : undefined;
+    if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
-    } else if (response && response.status === 401) {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                onLogout()
-            },
-            onCancel: () => console.log('CANCEL: clicked'),
-            disableCancel: true
-        };
-        return toastr.confirm('It seems you do not have permission to access it. Please try again.', toastrConfirmOptions);
-    } else if (response && response.status === 403) {
-        toastr.error('Server error occurred, please try again after sometime.');
-    } else if (response && (response.status === 500 || response.status === 501 || response.status === 503 || response.status === 502)) {
-        toastr.error('Server error occurred, please try again after sometime.');
+    } else if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
+        toastr.error(response.data.error.message.value);
+    } else if (response) {
+        if (response.status && response.status === 400) {
+            toastr.error('Something went wrong please try again.');
+        } else if (response.status && response.status === 401) {
+            toastr.error('Your session has been expired. Please login again');
+        } else if (response && response.status === 403) {
+            toastr.error('Server error occurred, please try again after sometime.');
+        } else if (response && (response.status === 500 || response.status === 501 || response.status === 503 || response.status === 502)) {
+            toastr.error('Server error occurred, please try again after sometime.');
+        } else if(response.status && response.status === 404) {
+            toastr.error('this record does not exist.');
+        }else {
+            toastr.error('Something went wrong please try again.');
+        }
     } else {
         toastr.error('Something went wrong please try again.');
     }
-};
+}
 
 /**
  * Create all the helper functions and classes inside helper folder

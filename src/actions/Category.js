@@ -7,6 +7,8 @@ import {
     CREATE_CATEGORY_TYPE_FAILURE,
     CREATE_CATEGORY_FAILURE,
     CREATE_CATEGORY_SUCCESS,
+    FETCH_CATEGORY_DATA_FAILURE,
+    GET_CATEGORY_DATA_SUCCESS
 } from '../config/constants';
 import {
     apiErrors
@@ -85,3 +87,21 @@ export function createCategoryAPI(data, callback) {
     };
 }
 
+export function fetchCategoryMasterDataAPI() {
+    return (dispatch) => {
+        const API1 = axios.get(API.fetchCategoryType, headers);
+        Promise.all([API1])
+            .then((response) => {
+                dispatch({
+                    type: GET_CATEGORY_DATA_SUCCESS,
+                    payload: response[0].data.SelectList,
+                });
+                 
+            }).catch((error) => {
+                dispatch({
+                    type: FETCH_CATEGORY_DATA_FAILURE
+                });
+                apiErrors(error);
+            });
+    };
+}
