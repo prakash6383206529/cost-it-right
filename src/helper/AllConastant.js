@@ -13,8 +13,12 @@ export const CONSTANT = {
     DETAILS : 'Details',
     BOM : 'BOM',
     CATEGORY: 'Category',
-    TITLE: 'title',
+    TITLE: 'Title',
     MATERIAL: 'Material',
     PLANT: 'Plant',
     SUPPLIER: 'Supplier',
+    ADDRESS: 'Address',
+    COUNTRY: 'Country',
+    STATE: 'State',
+    CITY: 'City',
   };

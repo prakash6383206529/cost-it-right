@@ -14,5 +14,6 @@ export const MESSAGES = {
   CONFIRM_DELETE : 'Are you sure you want to delete This',
   CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',
   CATEGORY_ADD_SUCCESS: 'Category created successfully',
+  MATERIAL_ADDED_SUCCESS: 'Material added successfully',
 };
  

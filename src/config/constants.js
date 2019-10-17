@@ -8,16 +8,21 @@ const BASE_URL = 'http://183.182.84.29/cost-it-right-lite';
 
 /** Export API */
 export const API = {
+  //configure api's
+  getMasterFilterUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/get`,
+  getMaterialType: `${BASE_URL}/api/v1/configuration/select-list-get-material-type`,
+  getCountry: `${BASE_URL}/api/v1/configuration/select-list-get-country`,
+  getState: `${BASE_URL}/api/v1/configuration/select-list-get-state`,
+  getCity: `${BASE_URL}/api/v1/configuration/select-list-get-city`,
+
   //Api for Unit of measurement master
   createUOMAPI: `${BASE_URL}/api/v1/masters-unit-of-measurement/create`,
   getUOMAPI: `${BASE_URL}/api/v1/masters-unit-of-measurement/get`,
   getAllMasterUOMAPI: `${BASE_URL}/api/v1/configuration/select-list-get-unit-of-measurement`,
-  getMasterFilterUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/get`,
   updateUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/update`,
   deleteUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/delete`,
 
   //Api for the part master
-  getMaterialType: `${BASE_URL}/api/v1/configuration/select-list-get-material-type`,
   partCreateAPI: `${BASE_URL}/api/v1/masters-part/create`,
   getAllPartsAPI: `${BASE_URL}/api/v1/masters-part/get`,
   getOnePartAPI: `${BASE_URL}/api/v1/masters-part/get`,
@@ -48,6 +53,9 @@ export const API_FAILURE = 'API_FAILURE';
 // Masters api constant
 export const FETCH_MATER_DATA_REQUEST = 'FETCH_MATER_DATA_REQUEST';
 export const FETCH_MATER_DATA_FAILURE = 'FETCH_MATER_DATA_FAILURE';
+export const GET_COUNTRY_SUCCESS = 'GET_COUNTRY_SUCCESS';
+export const GET_STATE_SUCCESS = 'GET_STATE_SUCCESS';
+export const GET_CITY_SUCCESS = 'GET_CITY_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';

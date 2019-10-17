@@ -8,6 +8,7 @@ import categoryReducer from './master/Category';
 import materialReducer from './master/Material';
 import plantReducer from './master/Plant';
 import supplierReducer from './master/Supplier';
+import commanReducer from './master/Comman'
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -27,6 +28,7 @@ const allReducers = combineReducers({
    material            : materialReducer,
    plant               : plantReducer,
    supplier            : supplierReducer,
+   comman              : commanReducer,
 });
 
 export default rootReducer;
