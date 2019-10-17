@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
-//import PartMaster from './AddPart';
+import AddPlant from './AddPlant';
 //import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -25,17 +25,17 @@ class PlantMaster extends Component {
      * @method openModel
      * @description  used to open filter form 
      */
-    // openModel = () => {
-    //     this.setState({ isOpen: true, isEditFlag: false })
-    // }
+    openModel = () => {
+        this.setState({ isOpen: true, isEditFlag: false })
+    }
 
     /**
      * @method onCancel
      * @description  used to cancel filter form
      */
-    // onCancel = () => {
-    //     this.setState({ isOpen: false })
-    // }
+    onCancel = () => {
+        this.setState({ isOpen: false })
+    }
 
     /**
     * @method editPartDetails
@@ -86,7 +86,7 @@ class PlantMaster extends Component {
     * @description Renders the component
     */
     render() {
-        //const { isOpen, isEditFlag,editIndex, PartId } = this.state;
+        const { isOpen, isEditFlag,editIndex, PartId } = this.state;
         return (
             <Container className="top-margin">
             {/* {this.props.loading && <Loader/>} */}
@@ -140,15 +140,12 @@ class PlantMaster extends Component {
                         )
                     })} */}
                 </Col>
-                {/* {isOpen && (
-                    <PartMaster
+                {isOpen && (
+                    <AddPlant
                         isOpen={isOpen}
                         onCancel={this.onCancel}
-                        isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        partId={PartId}
                     />
-                )} */}
+                )}
             </Container >
         );
     }
