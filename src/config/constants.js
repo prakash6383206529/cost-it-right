@@ -3,47 +3,66 @@
  */
 
 //hosting url for api of cost-it-right
-const BASE_URL = 'http://183.182.84.29/cost-it-right-lite';
+const BASE_URL = 'http://183.182.84.29/cost-it-right-lite/api/v1';
 
 
 /** Export API */
 export const API = {
   //configure api's
-  getMasterFilterUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/get`,
-  getMaterialType: `${BASE_URL}/api/v1/configuration/select-list-get-material-type`,
-  getCountry: `${BASE_URL}/api/v1/configuration-location/select-list-get-country`,
-  getState: `${BASE_URL}/api/v1/configuration-location/select-list-get-state`,
-  getCity: `${BASE_URL}/api/v1/configuration-location/select-list-get-city`,
-  getPlant: `${BASE_URL}/api/v1/configuration/select-list-get-plant`,
+  getPart: `${BASE_URL}/configuration/select-list-get-part`,
+  getMasterFilterUOMAPI : `${BASE_URL}/masters-unit-of-measurement/get`,
+  getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
+  getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
+  getTechnology: `${BASE_URL}/configuration/select-list-get-technology`,
+  getSupplier: `${BASE_URL}/configuration/select-list-get-supplier`,
+  getSupplierCode: `${BASE_URL}/configuration/select-list-get-supplier-code`,
+  getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
+  getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
+
+  //api's for configure location
+  getCountry: `${BASE_URL}/configuration-location/select-list-get-country`,
+  getState: `${BASE_URL}/configuration-location/select-list-get-state`,
+  getCity: `${BASE_URL}/configuration-location/select-list-get-city`,
+
+  //api's for configure row material
+  getRowMaterial: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
+  getRowGrade: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
+  getRowMaterialDetail: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
+  getRowMaterialCategory: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-categoryy`,
 
   //Api for Unit of measurement master
-  createUOMAPI: `${BASE_URL}/api/v1/masters-unit-of-measurement/create`,
-  getUOMAPI: `${BASE_URL}/api/v1/masters-unit-of-measurement/get`,
-  getAllMasterUOMAPI: `${BASE_URL}/api/v1/configuration/select-list-get-unit-of-measurement`,
-  updateUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/update`,
-  deleteUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/delete`,
+  createUOMAPI: `${BASE_URL}/masters-unit-of-measurement/create`,
+  getUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
+  getAllMasterUOMAPI: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
+  updateUOMAPI : `${BASE_URL}/masters-unit-of-measurement/update`,
+  deleteUOMAPI : `${BASE_URL}/masters-unit-of-measurement/delete`,
 
   //Api for the part master
-  partCreateAPI: `${BASE_URL}/api/v1/masters-part/create`,
-  getAllPartsAPI: `${BASE_URL}/api/v1/masters-part/get`,
-  getOnePartAPI: `${BASE_URL}/api/v1/masters-part/get`,
-  filterPartAPI : `${BASE_URL}/api/v1/masters-part/get`,
-  deletePartAPI : `${BASE_URL}/api/v1/masters-part/delete`,
-  updatePartAPI : `${BASE_URL}/api/v1/masters-part/update`,
+  partCreateAPI: `${BASE_URL}/masters-part/create`,
+  getAllPartsAPI: `${BASE_URL}/masters-part/get`,
+  getOnePartAPI: `${BASE_URL}/masters-part/get`,
+  filterPartAPI : `${BASE_URL}/masters-part/get`,
+  deletePartAPI : `${BASE_URL}/masters-part/delete`,
+  updatePartAPI : `${BASE_URL}/masters-part/update`,
 
   //Api for category master
-  createcategoryTypeAPI: `${BASE_URL}/api/v1/masters-category/create-type`,
-  createCategoryAPI: `${BASE_URL}/api/v1/masters-category/create`,
-  fetchCategoryType: `${BASE_URL}/api/v1/configuration/select-list-get-category-type`,
+  createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
+  createCategoryAPI: `${BASE_URL}/masters-category/create`,
+  fetchCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
 
   //Api for material master
-  createMaterialAPI: `${BASE_URL}/api/v1/masters-material/material-type-create`,
+  createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
 
   //Api for plant master
-  createPlantAPI: `${BASE_URL}/api/v1/plant/create`,
+  createPlantAPI: `${BASE_URL}/plant/create`,
 
   //Api for supplier master
-  createSupplierAPI: `${BASE_URL}/api/v1/supplier/create`,
+  createSupplierAPI: `${BASE_URL}/supplier/create`,
+
+  //Api's for bill of materail
+  createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
+  createCategoryAPI: `${BASE_URL}/masters-category/create`,
+  fetchCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
 }
 
 
