@@ -222,7 +222,7 @@ export function renderMultiSelectField(field) {
     isTouched,
     meta: { touched, error, active }
   } = field;
-  console.log(' touched: ',  touched);
+  console.log(' touched: ',  field);
   //console.log('field:111 ', field);
   const inputbox = `inputbox ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
@@ -250,6 +250,7 @@ export function renderMultiSelectField(field) {
           getOptionValue={optionValue}
           value={field.selection}
           isMulti
+        //  isDisabled={field.options}
           options={field.options}
           classNamePrefix="select"
           closeMenuOnSelect="false"
@@ -266,57 +267,6 @@ export function renderMultiSelectField(field) {
           ? "This field is required."
           : ""}
         {/* <div className="text-help">{field.isEmpty ? 'This field is required.' : ""}</div> */}
-      </div>
-    </div>
-  );
-}
-
-/*
-@method: renderMultiSelectField
-@desc: Render multi select input
-*/
-export function renderMultiSelectFieldMessage(field) {
-  const {
-    meta: { touched, error, active }
-  } = field;
-  console.log('field===', touched, error, active)
-  const inputbox = `inputbox ${active ? "active" : ""}`;
-  const className = `form-group ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `basic-multi-select ${
-    field.className ? field.className : ""
-    }`;
-  const optionValue = field.optionValue;
-  const optionLabel = field.optionLabel;
-  const placeholder = field.placeholder ? field.placeholder : "";
-  return (
-    <div className={className}>
-      <label>
-        {field.label}
-        {field.mendatory && field.mendatory === true ? (
-          <span className="asterisk-required">*</span>
-        ) : (
-            ""
-          )}
-      </label>
-      <div className={inputbox}>
-        <Select
-          className={InputClassName}
-          getOptionLabel={optionLabel}
-          getOptionValue={optionValue}
-          value={field.selection}
-          isMulti
-          options={field.options}
-          classNamePrefix="select"
-          closeMenuOnSelect="false"
-          onChange={field.selectionChanged}
-          placeholder={placeholder}
-        />
-      </div>
-      <div className="text-help">
-        {touched &&
-          field.selection.length === 0
-          ? "This field is required."
-          : ""}
       </div>
     </div>
   );

@@ -6,7 +6,8 @@ import {
     FETCH_MATER_DATA_FAILURE,
     GET_COUNTRY_SUCCESS,
     GET_STATE_SUCCESS,
-    GET_CITY_SUCCESS
+    GET_CITY_SUCCESS,
+    GET_PLANT_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -70,6 +71,17 @@ export function fetchCountryDataAPI(callback) {
 export function fetchStateDataAPI(countryId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
+       if(countryId == 0){
+        dispatch({
+            type: GET_STATE_SUCCESS,
+            payload: []
+        });
+        dispatch({
+            type: GET_CITY_SUCCESS,
+            payload: [],
+        });
+        callback([]);
+       }else{
         const request = axios.get(`${API.getState}/${countryId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
@@ -86,17 +98,48 @@ export function fetchStateDataAPI(countryId, callback) {
             callback(error);
             apiErrors(error);
         });
+       }
     };
 }
 
 export function fetchCityDataAPI(stateId,callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
+       if(stateId == 0){
+        dispatch({
+            type: GET_CITY_SUCCESS,
+            payload: [],
+        });
+        callback([]);
+       }else{
         const request = axios.get(`${API.getCity}/${stateId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
                     type: GET_CITY_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+       }
+    };
+}
+
+export function fetchPlantDataAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlant}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PLANT_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);

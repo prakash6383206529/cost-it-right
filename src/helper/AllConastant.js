@@ -21,4 +21,6 @@ export const CONSTANT = {
     COUNTRY: 'Country',
     STATE: 'State',
     CITY: 'City',
+    EMAIL: 'email',
+    CODE: 'code'
   };

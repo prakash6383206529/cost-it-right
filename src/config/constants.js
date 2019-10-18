@@ -11,9 +11,10 @@ export const API = {
   //configure api's
   getMasterFilterUOMAPI : `${BASE_URL}/api/v1/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/api/v1/configuration/select-list-get-material-type`,
-  getCountry: `${BASE_URL}/api/v1/configuration/select-list-get-country`,
-  getState: `${BASE_URL}/api/v1/configuration/select-list-get-state`,
-  getCity: `${BASE_URL}/api/v1/configuration/select-list-get-city`,
+  getCountry: `${BASE_URL}/api/v1/configuration-location/select-list-get-country`,
+  getState: `${BASE_URL}/api/v1/configuration-location/select-list-get-state`,
+  getCity: `${BASE_URL}/api/v1/configuration-location/select-list-get-city`,
+  getPlant: `${BASE_URL}/api/v1/configuration/select-list-get-plant`,
 
   //Api for Unit of measurement master
   createUOMAPI: `${BASE_URL}/api/v1/masters-unit-of-measurement/create`,
@@ -36,7 +37,7 @@ export const API = {
   fetchCategoryType: `${BASE_URL}/api/v1/configuration/select-list-get-category-type`,
 
   //Api for material master
-  createMaterialAPI: `${BASE_URL}/api/v1/masters-material/create`,
+  createMaterialAPI: `${BASE_URL}/api/v1/masters-material/material-type-create`,
 
   //Api for plant master
   createPlantAPI: `${BASE_URL}/api/v1/plant/create`,
@@ -56,6 +57,7 @@ export const FETCH_MATER_DATA_FAILURE = 'FETCH_MATER_DATA_FAILURE';
 export const GET_COUNTRY_SUCCESS = 'GET_COUNTRY_SUCCESS';
 export const GET_STATE_SUCCESS = 'GET_STATE_SUCCESS';
 export const GET_CITY_SUCCESS = 'GET_CITY_SUCCESS';
+export const  GET_PLANT_SUCCESS = 'GET_PLANT_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
