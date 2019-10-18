@@ -130,9 +130,10 @@ export function deletePartsAPI(PartId, callback) {
  * @description delete user media
  */
 export function updatePartsAPI(requestData, callback) {
+    console.log('requestData: ', requestData);
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.put(`${API.updatePartAPI}/${requestData.PartId}`, requestData,headers)
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updatePartAPI}`, requestData,headers)
             .then((response) => {
                     callback(response);
             }).catch((error) => {
@@ -141,6 +142,7 @@ export function updatePartsAPI(requestData, callback) {
             });
     };
 }
+
 
 /**
  * @method deleteUserMediaAPI
