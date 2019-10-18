@@ -4,7 +4,8 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { createPartAPI, fetchMasterDataAPI, updatePartsAPI , getOnePartsAPI} from '../../../../actions/master/Part';
+import { createPartAPI, fetchMasterDataAPI, updatePartsAPI , getOnePartsAPI, getAllPartsAPI} from '../../../../actions/master/Part';
+import { fetchPlantDataAPI } from '../../../../actions/master/Comman'
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -19,7 +20,8 @@ class AddPart extends Component {
     }
 
     componentWillMount(){
-        this.props.fetchMasterDataAPI(res => {});   
+        this.props.fetchMasterDataAPI(res => {}); 
+        this.props.fetchPlantDataAPI(res=> {});  
     }
 
     componentDidMount(){
@@ -57,19 +59,24 @@ class AddPart extends Component {
     */
     onSubmit = (values) => {
         if (this.props.isEditFlag) { 
-            const { editIndex } = this.props;
-            this.setState({ isSubmitted: true });
-            let formData = this.props.partDetails;
-                formData[editIndex].PartNumber = values.PartNumber;
-                formData[editIndex].PartName = values.PartName;
-                formData[editIndex].MaterialTypeId = values.MaterialTypeId;
-                formData[editIndex].MaterialGroupCode = values.MaterialGroupCode;
-                formData[editIndex].UnitOfMeasurementId = values.UnitOfMeasurementId;
-                formData[editIndex].PartDescription = values.PartDescription; 
+            const { partId } = this.props;
+            this.setState({ isSubmitted: true }); 
+                let formData = {
+                    PartNumber : values.PartNumber,
+                    PartName : values.PartName,
+                    MaterialTypeId : values.MaterialTypeId,
+                    MaterialGroupCode : values.MaterialGroupCode,
+                    UnitOfMeasurementId : values.UnitOfMeasurementId,
+                    PlantId : values.PlantId,
+                    PartDescription : values.PartDescription,
+                    Id : partId
+                }
+                console.log('formData: ', formData);
 
-            this.props.updatePartsAPI(formData, (res) => {
+            this.props.updatePartsAPI(partId,formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_PART_SUCESS);
+                    this.props.getAllPartsAPI(res => {})
                     this.toggleModel();
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
@@ -79,6 +86,7 @@ class AddPart extends Component {
             this.props.createPartAPI(values, (res) => {
                 if (res.data.Result === true) {
                   toastr.success(MESSAGES.PART_ADD_SUCCESS);
+                  this.props.getAllPartsAPI(res => {})
                   {this.toggleModel()}
                 } else {
                   toastr.error(res.data.message);
@@ -91,27 +99,31 @@ class AddPart extends Component {
     * @method selectUnitOfMeasurement
     * @description Used show listing of unit of measurement
     */
-    selectUnitOfMeasurement = () => {
-        const {uniOfMeasurementList} = this.props;
+    renderTypeOfListing = (label) => {
+        const { uniOfMeasurementList, plantList,materialTypeList } = this.props;
         const temp = [];
-        uniOfMeasurementList && uniOfMeasurementList.map(item =>
-          temp.push({ Text: item.Text, Value: item.Value })
-        );
-        console.log('temp', uniOfMeasurementList);
-        return temp;
-    }
-
-    /**
-    * @method selectMaterialType
-    * @description Used show listing of materail type
-    */
-    selectMaterialType = () => {
-        const { materialTypeList } = this.props;
-        const temp = [];
-        materialTypeList && materialTypeList.map(item =>
-        temp.push({ Text: item.Text, Value: item.Value })
-        );
-        return temp;
+        if(label === 'material'){
+            materialTypeList && materialTypeList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+              );
+              console.log('temp', materialTypeList);
+            return temp;
+        }
+        if(label === 'uom'){
+            uniOfMeasurementList && uniOfMeasurementList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+              );
+              console.log('temp', uniOfMeasurementList);
+            return temp;
+        }
+        if(label = 'plant'){
+            plantList && plantList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+              );
+              console.log('temp', plantList);
+            return temp;
+        }
+        
     }
 
     /**
@@ -166,10 +178,9 @@ class AddPart extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.selectMaterialType()}
+                                                options={this.renderTypeOfListing('material')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -183,10 +194,26 @@ class AddPart extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 maxLength={26}
-                                                options={this.selectUnitOfMeasurement()}
+                                                options={this.renderTypeOfListing('uom')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="12">
+                                            <Field
+                                                label={`${CONSTANT.PLANT}`}
+                                                name={"PlantId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                maxLength={26}
+                                                options={this.renderTypeOfListing('plant')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -242,8 +269,10 @@ class AddPart extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part}) {
+function mapStateToProps({ part, comman}) {
     const {uniOfMeasurementList, partData, materialTypeList} = part;
+    console.log('partData: ', partData);
+    const { plantList } = comman
     let initialValues = {};
     if(partData && partData !== undefined){
         initialValues = {
@@ -251,11 +280,12 @@ function mapStateToProps({ part}) {
             PartName: partData.PartName,
             MaterialTypeId: partData.MaterialTypeId,
             MaterialGroupCode: partData.MaterialGroupCode,
+            PlantId: partData.PlantId,
             UnitOfMeasurementId: partData.UnitOfMeasurementId,
             PartDescription: partData.PartDescription,
         }
     }
-    return { uniOfMeasurementList, initialValues, materialTypeList }
+    return { uniOfMeasurementList, initialValues, materialTypeList,plantList }
 }
 
 /**
@@ -264,7 +294,9 @@ function mapStateToProps({ part}) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, {createPartAPI,fetchMasterDataAPI, updatePartsAPI,getOnePartsAPI })(reduxForm({
+export default connect(mapStateToProps, {createPartAPI,fetchMasterDataAPI, 
+    updatePartsAPI,getOnePartsAPI, 
+    fetchPlantDataAPI, getAllPartsAPI })(reduxForm({
     form: 'AddPart',
     enableReinitialize: true,
 })(AddPart));
