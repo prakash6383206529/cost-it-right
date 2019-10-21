@@ -3,11 +3,15 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
 import AddMaterial from './AddMaterial';
+import AddRMCategory from './AddCategory';
+import AddRMGrade from './AddGrade';
+import AddSpecification from './AddSpecification';
 //import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
+import AddCategory from './AddCategory';
 
 class MaterialMaster extends Component {
     constructor(props) {
@@ -15,12 +19,16 @@ class MaterialMaster extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            isCategory: false,
+            isGrade: false,
+            isSpecification: false
         }
     }
 
     // componentDidMount() {
     //     this.props.getAllPartsAPI(res => {});
     // }
+
     /**
      * @method openModel
      * @description  used to open filter form 
@@ -29,12 +37,22 @@ class MaterialMaster extends Component {
         this.setState({ isOpen: true, isEditFlag: false })
     }
 
+    openCategorymodel = () => {
+        this.setState({ isCategory: true})
+    }
+    openGrademodel = () => {
+        this.setState({ isGrade: true})
+    }
+    openSpecificationmodel = () => {
+        this.setState({ isSpecification: true})
+    }
+
     /**
      * @method onCancel
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false })
+        this.setState({ isOpen: false, isCategory: false, isGrade: false, isSpecification: false })
     }
 
     /**
@@ -86,7 +104,7 @@ class MaterialMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex, PartId } = this.state;
+        const { isOpen, isEditFlag,editIndex, PartId,isCategory, isGrade, isSpecification } = this.state;
         return (
             <Container className="top-margin">
             {/* {this.props.loading && <Loader/>} */}
@@ -96,6 +114,15 @@ class MaterialMaster extends Component {
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL} `}</Button>
+                    </Col>
+                    <Col>
+                        <Button onClick={this.openCategorymodel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY} `}</Button>
+                    </Col>
+                    <Col>
+                        <Button onClick={this.openGrademodel}>{`${CONSTANT.ADD} ${CONSTANT.GRADE} `}</Button>
+                    </Col>
+                    <Col>
+                        <Button onClick={this.openSpecificationmodel}>{`${CONSTANT.ADD} ${CONSTANT.SPECIFICATION} `}</Button>
                     </Col>
                 </Row>
                 <hr />
@@ -146,6 +173,24 @@ class MaterialMaster extends Component {
                         onCancel={this.onCancel}
                     />
                 )}
+                {isCategory && 
+                    <AddRMCategory
+                        isOpen={isCategory}
+                        onCancel={this.onCancel}
+                    />
+                }
+                {isGrade && 
+                    <AddRMGrade
+                        isOpen={isGrade}
+                        onCancel={this.onCancel}
+                    />
+                }
+                {isSpecification && 
+                    <AddSpecification
+                        isOpen={isSpecification}
+                        onCancel={this.onCancel}
+                    />
+                }
             </Container >
         );
     }

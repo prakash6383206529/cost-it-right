@@ -127,7 +127,7 @@ class PartMaster extends Component {
                                 <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th> 
                                 <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
                                 <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
-                                <th>{`${CONSTANT.UOM}`}t</th>
+                                <th>{`${CONSTANT.UOM}`}</th>
                                 <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
                                 </tr>
                             </thead>
@@ -135,9 +135,9 @@ class PartMaster extends Component {
                                 <tr >
                                     <td >{item.PartNumber}</td>
                                     <td>{item.PartName}</td> 
-                                    <td>{item.MaterialTypeId ? item.MaterialTypeId : 'N/A'}</td>
+                                    <td>{item.MaterialType ? item.MaterialType : 'N/A'}</td>
                                     <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td> 
-                                    <td>{item.UnitOfMeasurementId ? item.UnitOfMeasurementId : 'N/A'}</td> 
+                                    <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : 'N/A'}</td> 
                                     <td>{item.PartDescription}</td>
                                     <div>
                                         <Button className="black-btn" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 

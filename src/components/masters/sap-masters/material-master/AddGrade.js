@@ -3,28 +3,28 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { createMaterialAPI } from '../../../../actions/master/Material';
-import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
+import { renderText,renderSelectField} from "../../../layout/FormInputs";
+import { createRMGradeAPI } from '../../../../actions/master/Material';
+import { fetchRowMaterialAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT} from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant';
 
-class AddMaterial extends Component {
+class AddGrade extends Component {
     constructor(props) {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
     }
 
     /**
     * @method componentWillMount
-    * @description called before render the component
+    * @description call before rendering the component
     */
     componentWillMount(){
-        this.props.fetchPlantDataAPI(res=> {});  
+        this.props.fetchRowMaterialAPI(res => {});   
     }
 
     /**
@@ -33,19 +33,6 @@ class AddMaterial extends Component {
     */
     toggleModel = () => {
         this.props.onCancel();
-    }
-
-    /**
-    * @method renderTypeOfListing
-    * @description Used show plant master list
-    */
-    renderTypeOfListing = () => {
-        const { plantList } = this.props;
-        const temp = [];
-            plantList && plantList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-        return temp;
     }
 
     /**
@@ -59,16 +46,29 @@ class AddMaterial extends Component {
     }
 
     /**
+    * @method renderTypeOfListing
+    * @description Used show listing of row material
+    */
+    renderTypeOfListing = () => {
+        const { rowMaterialList } = this.props;
+        const temp = [];
+        rowMaterialList && rowMaterialList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+        return temp;
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        this.props.createMaterialAPI(values, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+        this.props.createRMGradeAPI(values, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
                 {this.toggleModel()}
             } else {
-                toastr.error(res.data.Message);
+                toastr.error(res.data.message);
             }
         });   
     }
@@ -82,7 +82,7 @@ class AddMaterial extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.GRADE}`}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>     
@@ -94,8 +94,8 @@ class AddMaterial extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
-                                                name={"MaterialType"}
+                                                label={`${CONSTANT.GRADE}`}
+                                                name={"Grade"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -118,8 +118,8 @@ class AddMaterial extends Component {
                                         </Col>
                                         <Col md="12">
                                             <Field
-                                                label={`${CONSTANT.PLANT}`}
-                                                name={"PlantId"}
+                                                label={`${CONSTANT.MATERIAL}`}
+                                                name={"RawMaterialId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -136,7 +136,7 @@ class AddMaterial extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {`${CONSTANT.SAVE}`}
+                                             {CONSTANT.SAVE}
                                             </button>
                                         </div>
                                     </Row>
@@ -155,9 +155,9 @@ class AddMaterial extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-   const { plantList } = comman;
-    return { plantList }
+function mapStateToProps({comman }) {
+   const { rowMaterialList } = comman;
+    return { rowMaterialList }
 }
 
 /**
@@ -166,7 +166,7 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createMaterialAPI, fetchPlantDataAPI })(reduxForm({
-    form: 'AddMaterial',
+export default connect(mapStateToProps, { createRMGradeAPI,fetchRowMaterialAPI })(reduxForm({
+    form: 'AddGrade',
     enableReinitialize: true,
-})(AddMaterial));
+})(AddGrade));

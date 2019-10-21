@@ -5,7 +5,7 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText,renderSelectField } from "../../../layout/FormInputs";
 import { createPartAPI, fetchMasterDataAPI, updatePartsAPI , getOnePartsAPI, getAllPartsAPI} from '../../../../actions/master/Part';
-import { fetchPlantDataAPI } from '../../../../actions/master/Comman'
+import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -69,11 +69,11 @@ class AddPart extends Component {
                     UnitOfMeasurementId : values.UnitOfMeasurementId,
                     PlantId : values.PlantId,
                     PartDescription : values.PartDescription,
-                    Id : partId
+                    PartId : partId
                 }
                 console.log('formData: ', formData);
 
-            this.props.updatePartsAPI(partId,formData, (res) => {
+            this.props.updatePartsAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_PART_SUCESS);
                     this.props.getAllPartsAPI(res => {})

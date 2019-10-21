@@ -37,11 +37,8 @@ class AddPlant extends Component {
     * @method handleCountryChange
     * @description  used to handle country selection
     */
-    handleCountryChange = (value) => {
-        // this.setState({
-        //     countryListing: value
-        // });
-        this.props.fetchStateDataAPI(value.target.value, res => {
+    handleCountryChange = (e) => {
+        this.props.fetchStateDataAPI(e.target.value, res => {
             console.log('res of state: ', res);
         });
     }
@@ -50,11 +47,8 @@ class AddPlant extends Component {
     * @method handleStateChange
     * @description  used to handle state selection
     */
-    handleStateChange = (value) => {
-        // this.setState({
-        //     stateListing: value
-        // });
-        this.props.fetchCityDataAPI(value.target.value, res => {console.log('res of city', res);});
+    handleStateChange = (e) => {
+        this.props.fetchCityDataAPI(e.target.value, res => {console.log('res of city', res);});
     }
 
     /**
@@ -193,7 +187,7 @@ class AddPlant extends Component {
                                          <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.COUNTRY}`}
-                                                //name={"CityId"}
+                                                name={"CountryId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -210,7 +204,7 @@ class AddPlant extends Component {
                                         <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.STATE}`}
-                                                //name={"CityId"}
+                                                name={"StateId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
