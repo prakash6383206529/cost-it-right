@@ -25,4 +25,8 @@ export const CONSTANT = {
     CODE: 'code',
     GRADE: 'Grade',
     SPECIFICATION: 'Specification',
+    QUANTITY: 'Quantity',
+    ASSEMBLY: 'Assembly',
+    LEVEL: 'Level',
+    REVISION: 'Revision',
   };
