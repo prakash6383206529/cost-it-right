@@ -20,7 +20,6 @@ const headers = {
  * @method createPlantAPI
  * @description create plant master
  */
-
 export function createPlantAPI(data, callback) {
     return (dispatch) => {
         // dispatch({

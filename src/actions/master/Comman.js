@@ -7,7 +7,9 @@ import {
     GET_COUNTRY_SUCCESS,
     GET_STATE_SUCCESS,
     GET_CITY_SUCCESS,
-    GET_PLANT_SUCCESS
+    GET_PLANT_SUCCESS,
+    GET_ROW_MATERIAL_SUCCESS,
+    GET_GRADE_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -45,7 +47,10 @@ const headers = {
 //             });
 //     };
 // }
-
+/**
+ * @method fetchCountryDataAPI
+ * @description Used to fetch country list
+ */
 export function fetchCountryDataAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -68,6 +73,10 @@ export function fetchCountryDataAPI(callback) {
     };
 }
 
+/**
+ * @method fetchStateDataAPI
+ * @description Used to fetch state list
+ */
 export function fetchStateDataAPI(countryId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -102,6 +111,10 @@ export function fetchStateDataAPI(countryId, callback) {
     };
 }
 
+/**
+ * @method fetchCityDataAPI
+ * @description Used to fetch city list
+ */
 export function fetchCityDataAPI(stateId,callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -132,6 +145,10 @@ export function fetchCityDataAPI(stateId,callback) {
     };
 }
 
+/**
+ * @method fetchPlantDataAPI
+ * @description Used to fetch plant list
+ */
 export function fetchPlantDataAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -140,6 +157,91 @@ export function fetchPlantDataAPI(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_PLANT_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchRowMaterialAPI
+ * @description Used to fetch row material list
+ */
+export function fetchRowMaterialAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRowMaterial}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ROW_MATERIAL_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchRMGradeAPI
+ * @description Used to fetch row material grade list
+ */
+export function fetchRMGradeAPI(Id ,callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if(Id == 0){
+            dispatch({
+                type: GET_GRADE_SUCCESS,
+                payload: []
+            });
+        }else{
+            const request = axios.get(`${API.getRowGrade}/${Id}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_GRADE_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } 
+    };
+}
+
+/**
+ * @method fetchRMCategoryAPI
+ * @description Used to fetch row material category list
+ */
+export function fetchRMCategoryAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRowMaterial}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ROW_MATERIAL_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);

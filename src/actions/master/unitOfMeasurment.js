@@ -24,6 +24,10 @@ const headers = {
     //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
 };
 
+/**
+ * @method getUnitOfMeasurementAPI
+ * @description get all UOM list
+ */
 export function getUnitOfMeasurementAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -49,11 +53,9 @@ export function getUnitOfMeasurementAPI(callback) {
     };
 }
 
-
-
 /**
- * @method deleteUserMediaAPI
- * @description delete user media
+ * @method getOneUnitOfMeasurementAPI
+ * @description get one UOM based on id
  */
 export function getOneUnitOfMeasurementAPI(uomId,isEditFlag,callback) {
     return (dispatch) => {
@@ -86,10 +88,9 @@ export function getOneUnitOfMeasurementAPI(uomId,isEditFlag,callback) {
 }
 
 /**
- * @method createOpportunityAPI
- * @description create opportunity 
+ * @method createUnitOfMeasurementAPI
+ * @description create UOM 
  */
-
 export function createUnitOfMeasurementAPI(data, callback) {
     return (dispatch) => {
         dispatch({
@@ -118,18 +119,15 @@ export function createUnitOfMeasurementAPI(data, callback) {
 }
 
 /**
- * @method deleteUserMediaAPI
- * @description delete user media
+ * @method deleteUnitOfMeasurementAPI
+ * @description delete UOM 
  */
 export function deleteUnitOfMeasurementAPI(index,Id ,callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteUOMAPI}/${Id}`, headers)
             .then((response) => {
-                // getUserProfileAPIForUpdatingProps(dispatch, id, () => {
                     callback(response);
-                   // dispatch({ type: DELETE_USER_MEDIA_SUCCESS });
-                // });
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
@@ -138,8 +136,8 @@ export function deleteUnitOfMeasurementAPI(index,Id ,callback) {
 }
 
 /**
- * @method deleteUserMediaAPI
- * @description delete user media
+ * @method updateUnitOfMeasurementAPI
+ * @description update UOM
  */
 export function updateUnitOfMeasurementAPI(uomId,requestData, callback) {
     console.log('requestData', requestData);

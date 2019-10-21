@@ -26,6 +26,10 @@ const headers = {
     //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
 };
 
+/**
+ * @method fetchMasterDataAPI
+ * @description fetch UOM and material type list
+ */
 export function fetchMasterDataAPI() {
     return (dispatch) => {
         const API1 = axios.get(API.getAllMasterUOMAPI, headers);
@@ -50,6 +54,10 @@ export function fetchMasterDataAPI() {
     };
 }
 
+/**
+ * @method getAllPartsAPI
+ * @description get all parts
+ */
 export function getAllPartsAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -74,10 +82,9 @@ export function getAllPartsAPI(callback) {
 
 
 /**
- * @method createOpportunityAPI
- * @description create opportunity 
+ * @method createPartAPI
+ * @description create part
  */
-
 export function createPartAPI(data, callback) {
     return (dispatch) => {
         dispatch({
@@ -106,8 +113,8 @@ export function createPartAPI(data, callback) {
 }
 
 /**
- * @method deleteUserMediaAPI
- * @description delete user media
+ * @method deletePartsAPI
+ * @description delete part
  */
 export function deletePartsAPI(PartId, callback) {
     return (dispatch) => {
@@ -126,8 +133,8 @@ export function deletePartsAPI(PartId, callback) {
 }
 
 /**
- * @method deleteUserMediaAPI
- * @description delete user media
+ * @method updatePartsAPI
+ * @description update part details
  */
 export function updatePartsAPI(requestData, callback) {
     console.log('requestData: ', requestData);
@@ -145,8 +152,8 @@ export function updatePartsAPI(requestData, callback) {
 
 
 /**
- * @method deleteUserMediaAPI
- * @description delete user media
+ * @method getOnePartsAPI
+ * @description get one part based on id
  */
 export function getOnePartsAPI(PartId,isEditFlag, callback) {
     return (dispatch) => {

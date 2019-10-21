@@ -13,9 +13,6 @@ import {
 import {
     apiErrors
 } from '../../helper/util';
-import {
-    MESSAGES
-} from '../../config/message';
 import { toastr } from 'react-redux-toastr'
 
 const headers = {
@@ -27,7 +24,6 @@ const headers = {
  * @method createCategoryTypeAPI
  * @description create category type
  */
-
 export function createCategoryTypeAPI(data, callback) {
     return (dispatch) => {
         // dispatch({
@@ -56,10 +52,9 @@ export function createCategoryTypeAPI(data, callback) {
 }
 
 /**
- * @method createCategoryTypeAPI
- * @description create category type
+ * @method createCategoryAPI
+ * @description create category category
  */
-
 export function createCategoryAPI(data, callback) {
     return (dispatch) => {
         // dispatch({
@@ -87,6 +82,10 @@ export function createCategoryAPI(data, callback) {
     };
 }
 
+/**
+ * @method fetchCategoryMasterDataAPI
+ * @description create category category list
+ */
 export function fetchCategoryMasterDataAPI() {
     return (dispatch) => {
         const API1 = axios.get(API.fetchCategoryType, headers);

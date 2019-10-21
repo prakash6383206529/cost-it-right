@@ -17,10 +17,9 @@ const headers = {
 };
 
 /**
- * @method createMaterialAPI
- * @description create material master
+ * @method createSupplierAPI
+ * @description create supplier master
  */
-
 export function createSupplierAPI(data, callback) {
     return (dispatch) => {
         // dispatch({

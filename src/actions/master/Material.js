@@ -20,13 +20,105 @@ const headers = {
  * @method createMaterialAPI
  * @description create material master
  */
-
 export function createMaterialAPI(data, callback) {
     return (dispatch) => {
         // dispatch({
         //     type:  API_REQUEST,
         // });
         const request = axios.post(API.createMaterialAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                    dispatch({
+                        type: CREATE_MATERIAL_SUCCESS,
+                    });
+                    callback(response);
+            } else {
+                dispatch({ type: CREATE_MATERIAL_FAILURE });
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message);
+                    } 
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method createRMCategoryAPI
+ * @description create row material category master
+ */
+export function createRMCategoryAPI(data, callback) {
+    return (dispatch) => {
+        // dispatch({
+        //     type:  API_REQUEST,
+        // });
+        const request = axios.post(API.createRMCategoryAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                    dispatch({
+                        type: CREATE_MATERIAL_SUCCESS,
+                    });
+                    callback(response);
+            } else {
+                dispatch({ type: CREATE_MATERIAL_FAILURE });
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message);
+                    } 
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method createRMGradeAPI
+ * @description create row material grade master
+ */
+export function createRMGradeAPI(data, callback) {
+    return (dispatch) => {
+        // dispatch({
+        //     type:  API_REQUEST,
+        // });
+        const request = axios.post(API.createRMGradeAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                    dispatch({
+                        type: CREATE_MATERIAL_SUCCESS,
+                    });
+                    callback(response);
+            } else {
+                dispatch({ type: CREATE_MATERIAL_FAILURE });
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message);
+                    } 
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method createRMSpecificationAPI
+ * @description create row material specification master
+ */
+export function createRMSpecificationAPI(data, callback) {
+    return (dispatch) => {
+        // dispatch({
+        //     type:  API_REQUEST,
+        // });
+        const request = axios.post(API.createRMSpecificationAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                     dispatch({
