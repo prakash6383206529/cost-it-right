@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
-//import PartMaster from './AddPart';
+import AddBOM from './AddBOM';
 import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -19,9 +19,6 @@ class BOMMaster extends Component {
         }
     }
 
-    componentDidMount() {
-        this.props.getAllPartsAPI(res => {});
-    }
     /**
      * @method openModel
      * @description  used to open filter form 
@@ -39,55 +36,11 @@ class BOMMaster extends Component {
     }
 
     /**
-    * @method editPartDetails
-    * @description confirm delete part
-    */
-    editPartDetails = (index, Id) => {
-        console.log('Id: ', Id);
-        this.setState({
-            isEditFlag: true,
-            isOpen: true,
-            PartId: Id,
-            editIndex: index,
-        })
-    }
-    
-    /**
-    * @method deletePart
-    * @description confirm delete part
-    */
-    deletePart = (index, Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeletePart(index,Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
-        };
-        return toastr.confirm(`Are you sure you want to delete This part ?`, toastrConfirmOptions);
-    }
-
-    /**
-    * @method confirmDeletePart
-    * @description confirm delete part
-    */
-    confirmDeletePart = (index, PartId) => {
-        this.props.deletePartsAPI(PartId, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.props.getAllPartsAPI(res => {});
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        });
-        
-    }
-
-    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex, PartId } = this.state;
+        const { isOpen } = this.state;
         return (
             <Container className="top-margin">
             {this.props.loading && <Loader/>}
@@ -105,63 +58,12 @@ class BOMMaster extends Component {
                         <h5>{`${CONSTANT.BOM} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
-                <Col>
-                {/* <Table>
-                    <thead>
-                        <tr>
-                        <th>Part Number</th>
-                        <th>Part Name</th> 
-                        <th>Part Type</th>
-                        <th>Part Group Code</th>
-                        <th>Unit of Measurement</th>
-                        <th>Part Description</th>
-                        </tr>
-                    </thead> */}
-                {/* {this.props.partsListing && this.props.partsListing.length > 0 &&
-                    this.props.partsListing.map((item, index) => {
-                        return (
-                        <div key={index}> 
-                         <Table>
-                            <thead>
-                                <tr>
-                                <th>Part Number</th>
-                                <th>Part Name</th> 
-                                <th>Part Type</th>
-                                <th>Part Group Code</th>
-                                <th>Unit of Measurement</th>
-                                <th>Part Description</th>
-                                </tr>
-                            </thead>
-                            <tbody > 
-                                <tr >
-                                    <td >{item.PartNumber}</td>
-                                    <td>{item.PartName}</td> 
-                                    <td>{item.MaterialTypeId ? item.MaterialTypeId : 'N/A'}</td>
-                                    <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td> 
-                                    <td>{item.UnitOfMeasurementId ? item.UnitOfMeasurementId : 'N/A'}</td> 
-                                    <td>{item.PartDescription}</td>
-                                    <div>
-                                        <Button className="black-btn" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
-                                        <Button className="black-btn" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
-                                    </div>
-                                </tr>
-                            </tbody>  
-                            </Table> 
-                        </div>
-                        
-                        )
-                    })} */}
-                    {/* </Table> */}
-                </Col>
-                {/* {isOpen && (
-                    <PartMaster
+                {isOpen && (
+                    <AddBOM
                         isOpen={isOpen}
                         onCancel={this.onCancel}
-                        isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        partId={PartId}
                     />
-                )} */}
+                )}
             </Container >
         );
     }

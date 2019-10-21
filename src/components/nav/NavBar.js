@@ -114,12 +114,6 @@ class SideBar extends Component {
                   priyanka
                 </span>
               </DropdownToggle>
-              {/* <DropdownMenu right>
-                <DropdownItem tag="a" href={`/user/${userData.id}`} >My Profile</DropdownItem>
-                <DropdownItem tag="a" href={`/view-company/${userData.productionId}`} >Production Company Details</DropdownItem>
-                <DropdownItem tag="a" href={`/resume-builder`} >Resume Builder</DropdownItem>
-                <DropdownItem tag="a" href="" onClick={this.logout}>Logout</DropdownItem>
-              </DropdownMenu> */}
             </Dropdown>
             <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
           </Nav>
