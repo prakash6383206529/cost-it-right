@@ -18,6 +18,7 @@ export const MESSAGES = {
   PLANT_ADDED_SUCCESS: 'Part created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
   GRADE_ADD_SUCCESS: 'Row material grade added successfully',
-  SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully'
+  SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
+  BOM_ADD_SUCCESS: 'Bill of material added successfully',
 };
  

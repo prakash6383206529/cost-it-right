@@ -63,9 +63,8 @@ export const API = {
   createSupplierAPI: `${BASE_URL}/supplier/create`,
 
   //Api's for bill of materail
-  createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
-  createCategoryAPI: `${BASE_URL}/masters-category/create`,
-  fetchCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
+  createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/add-bill-of-material`,
+  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-material-list`,
 }
 
 
@@ -117,5 +116,9 @@ export const CREATE_PLANT_FAILURE = 'CREATE_PLANT_FAILURE';
 //for supplier master
 export const CREATE_SUPPLIER_SUCCESS = 'CREATE_SUPPLIER_SUCCESS';
 export const CREATE_SUPPLIER_FAILURE = 'CREATE_SUPPLIER_FAILURE';
+
+//for BOM master
+export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
+export const CREATE_BOM_FAILURE = 'CREATE_BOM_FAILURE';
 
 
