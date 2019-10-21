@@ -52,6 +52,9 @@ export const API = {
 
   //Api for material master
   createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
+  createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
+  createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
+  createRMSpecificationAPI:`${BASE_URL}/masters-raw-material/create-specification` ,
 
   //Api for plant master
   createPlantAPI: `${BASE_URL}/plant/create`,
@@ -76,7 +79,7 @@ export const FETCH_MATER_DATA_FAILURE = 'FETCH_MATER_DATA_FAILURE';
 export const GET_COUNTRY_SUCCESS = 'GET_COUNTRY_SUCCESS';
 export const GET_STATE_SUCCESS = 'GET_STATE_SUCCESS';
 export const GET_CITY_SUCCESS = 'GET_CITY_SUCCESS';
-export const  GET_PLANT_SUCCESS = 'GET_PLANT_SUCCESS';
+export const GET_PLANT_SUCCESS = 'GET_PLANT_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
@@ -104,6 +107,8 @@ export const GET_CATEGORY_DATA_SUCCESS = 'GET_CATEGORY_DATA_SUCCESS';
 //for material master
 export const CREATE_MATERIAL_SUCCESS = ' CREATE_MATERIAL_SUCCESS';
 export const CREATE_MATERIAL_FAILURE = 'CREATE_MATERIAL_FAILURE';
+export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
+export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';
 
 //for plant master
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS';
