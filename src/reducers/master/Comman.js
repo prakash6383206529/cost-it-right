@@ -1,5 +1,8 @@
 import {
     API_REQUEST,
+    GET_UOM_DATA_SUCCESS,
+    GET_MATERIAL_TYPE_SUCCESS,
+    GET_PART_SUCCESS,
     FETCH_MATER_DATA_FAILURE,
     GET_COUNTRY_SUCCESS,
     GET_STATE_SUCCESS,
@@ -19,6 +22,27 @@ export default function commanReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: true
+            };
+        case GET_UOM_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                uniOfMeasurementList: action.payload
+            };
+        case GET_MATERIAL_TYPE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                materialTypeList: action.payload
+            };
+        case GET_PART_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                partList: action.payload
             };
         case GET_COUNTRY_SUCCESS:
             return {
