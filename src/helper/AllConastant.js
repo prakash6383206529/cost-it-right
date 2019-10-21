@@ -14,7 +14,7 @@ export const CONSTANT = {
     BOM : 'BOM',
     CATEGORY: 'Category',
     TITLE: 'Title',
-    MATERIAL: 'Material',
+    MATERIAL: 'Row Material',
     PLANT: 'Plant',
     SUPPLIER: 'Supplier',
     ADDRESS: 'Address',
@@ -22,5 +22,7 @@ export const CONSTANT = {
     STATE: 'State',
     CITY: 'City',
     EMAIL: 'email',
-    CODE: 'code'
+    CODE: 'code',
+    GRADE: 'Grade',
+    SPECIFICATION: 'Specification',
   };
