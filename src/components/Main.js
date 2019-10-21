@@ -55,7 +55,7 @@ class Main extends Component {
                     <div className="logo-section col-md-2 col-4">
                       <div className="inner-header">
                           <div className="main-logo">
-                            <a href="javaScript:Void(0);"><img src={require('../assests/images/mainlogo.png')} alt='Cost It Rights' />
+                            <a href="javaScript:Void(0);"><img src={require('../assests/images/cir-logo.png')} alt='Cost It Rights' />
                             </a>
                           </div>
                       </div>
