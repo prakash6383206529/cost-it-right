@@ -20,7 +20,7 @@ export default function materialReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                categoryList: action.payload
+               // materialList: action.payload
             };
         case CREATE_MATERIAL_FAILURE:
             return {

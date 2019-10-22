@@ -30,6 +30,7 @@ export function createBOMAPI(data, callback) {
             if (response.data.Result) {
                     dispatch({
                         type: CREATE_BOM_SUCCESS,
+                        //payload: response.data.Data
                     });
                     callback(response);
             } else {

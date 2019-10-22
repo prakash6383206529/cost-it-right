@@ -34,6 +34,7 @@ export function createCategoryTypeAPI(data, callback) {
             if (response.data.Result) {
                     dispatch({
                         type: CREATE_CATEGORY_TYPE_SUCCESS,
+                        payload: response.data.Data
                     });
                     callback(response);
             } else {
@@ -62,9 +63,11 @@ export function createCategoryAPI(data, callback) {
         // });
         const request = axios.post(API.createCategoryAPI, data,headers);
         request.then((response) => {
-            if (response.data.Result) {
+            console.log('response: ', response);
+            if (response && response.data && response.data.Result) {
                     dispatch({
                         type: CREATE_CATEGORY_SUCCESS,
+                        //payload: response.data.Data
                     });
                     callback(response);
             } else {
@@ -72,12 +75,14 @@ export function createCategoryAPI(data, callback) {
                     if (response.data.Message) {
                         toastr.error(response.data.Message);
                     } 
+                    callback(response);
             }
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE
             });
             apiErrors(error);
+            callback(error);
         });
     };
 }

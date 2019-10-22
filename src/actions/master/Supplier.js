@@ -30,6 +30,7 @@ export function createSupplierAPI(data, callback) {
             if (response.data.Result) {
                     dispatch({
                         type: CREATE_SUPPLIER_SUCCESS,
+                        payload: response.data.Data
                     });
                     callback(response);
             } else {

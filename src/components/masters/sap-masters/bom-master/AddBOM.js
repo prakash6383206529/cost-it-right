@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
+import { renderText,renderSelectField, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
 import { createBOMAPI } from '../../../../actions/master/BillOfMaterial';
 import { toastr } from 'react-redux-toastr';
@@ -15,7 +15,8 @@ class AddBOM extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag:false,
+            selectedParts: [],
         }
     }
 
@@ -45,11 +46,44 @@ class AddBOM extends Component {
         })
     }
 
+     /**
+     * @method handlePartSelection
+     * @description called
+     */
+    handlePartSelection = e => {
+        this.setState({
+            selectedParts: e
+        });
+    };
+
+    /**
+     * @method renderSelectPartList
+     * @description called
+     */
+    renderSelectPartList = () => {
+        const { partList } = this.props;
+        const temp = [];
+        partList && partList.map(item =>
+            {
+                if(item.Value != 0){
+                    temp.push({ Text: item.Text, Value: item.Value })
+                }
+            }
+            );
+            console.log('temp', partList);
+        return temp;
+    }
+    
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { selectedParts } = this.state;
+        let plantArray = [];
+        selectedParts.map((item, i) => {
+            return plantArray.push({ PartId: item.Value });
+        });
         this.props.createBOMAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.BOM_ADD_SUCCESS);
@@ -276,6 +310,23 @@ class AddBOM extends Component {
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="12">
+                                            <Field
+                                                label={`${CONSTANT.PART} Included ${CONSTANT.BOM}`}
+                                                name={"PartsIncludedBOM"}
+                                                type="text"
+                                                placeholder="--Select Part included Bom--"
+                                                selection={this.state.selectedParts}
+                                                options={this.renderSelectPartList()}
+                                                selectionChanged={this.handlePlantSelection}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                validate={[required]}
+                                                required={true}
+                                                className="withoutBorder"
                                             />
                                         </Col>
                                     </Row>

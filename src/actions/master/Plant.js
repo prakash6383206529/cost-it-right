@@ -30,6 +30,7 @@ export function createPlantAPI(data, callback) {
             if (response.data.Result) {
                     dispatch({
                         type: CREATE_PLANT_SUCCESS,
+                        payload: response.data.Data
                     });
                     callback(response);
             } else {
