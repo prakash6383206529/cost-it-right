@@ -35,12 +35,13 @@ export default function categoryReducer(state = initialState, action) {
         case CREATE_CATEGORY_TYPE_SUCCESS:
             return {
                 ...state,
-                loading: false, 
+                loading: false,
+                //categoryTypeList : action.payload,
             };
         case  CREATE_CATEGORY_SUCCESS: {
             return {
                 ...state,
-                partData : action.payload,
+                //categoryList : action.payload,
                 loading: false,
                 error: false
             };

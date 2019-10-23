@@ -29,4 +29,7 @@ export const CONSTANT = {
     ASSEMBLY: 'Assembly',
     LEVEL: 'Level',
     REVISION: 'Revision',
+    BOP: 'Bought out parts',
+    BOPP: 'BOP',
+    BILL: 'Bill'
   };

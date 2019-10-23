@@ -30,6 +30,7 @@ export function createMaterialAPI(data, callback) {
             if (response.data.Result) {
                     dispatch({
                         type: CREATE_MATERIAL_SUCCESS,
+                        payload: response.data.Data
                     });
                     callback(response);
             } else {

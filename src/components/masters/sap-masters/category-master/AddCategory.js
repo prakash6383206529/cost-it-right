@@ -44,13 +44,16 @@ class AddCategory extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        this.props.createCategoryAPI(values, (res) => {
-            if (res.data.Result === true) {
+        console.log('values: ', values);
+        this.props.createCategoryAPI(values, (response) => {
+            if(response && response.data){
+            if (response && response.data && response.data.Result) {
                 toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
                 {this.toggleModel()}
             } else {
-                toastr.error(res.data.message);
+                toastr.error(response.data.Message);
             }
+        }
         });   
     }
 
@@ -60,8 +63,9 @@ class AddCategory extends Component {
     */
     selectMaterialType = () => {
         const {categoryList} = this.props;
+        console.log('categoryList',typeof(categoryList), categoryList)
         const temp = [];
-        categoryList && categoryList.map(item =>
+        categoryList && categoryList !== undefined && categoryList.map(item =>
           temp.push({ Text: item.Text, Value: item.Value })
         );
         console.log('temp', categoryList);
@@ -135,7 +139,7 @@ class AddCategory extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                Save
+                                               {CONSTANT.SAVE}
                                             </button>
                                         </div>
                                     </Row>

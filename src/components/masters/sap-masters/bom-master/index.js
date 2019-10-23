@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
 import AddBOM from './AddBOM';
-import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
+import { getAllBOMAPI } from '../../../../actions/master/BillOfMaterial';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -19,6 +19,9 @@ class BOMMaster extends Component {
         }
     }
 
+    componentDidMount() {
+        this.props.getAllBOMAPI(res => {});
+    }
     /**
      * @method openModel
      * @description  used to open filter form 
@@ -58,6 +61,47 @@ class BOMMaster extends Component {
                         <h5>{`${CONSTANT.BOM} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
+                <Col>
+                {this.props.BOMListing && this.props.BOMListing.length > 0 &&
+                    this.props.BOMListing.map((item, index) => {
+                        return (
+                        <div key={index}> 
+                         <Table>
+                            <thead>
+                                <tr>
+                                <th>{`${CONSTANT.BILL} ${CONSTANT.NUMBER}`}</th>
+                                <th>{`${CONSTANT.BOM} ${CONSTANT.CODE}`}</th> 
+                                <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.CODE}`}</th>
+                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}` }</th>
+                                <th>{`${CONSTANT.QUANTITY}`}</th>
+                                <th>{`Assembly ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                                <th>{`${CONSTANT.BOM} ${CONSTANT.LEVEL}`}</th> 
+                                <th>{`ECO ${CONSTANT.NUMBER}`}</th>
+                                <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th>
+                                </tr>
+                            </thead>
+                            <tbody > 
+                                <tr >
+                                    <td >{item.BillNumber}</td>
+                                    <td>{item.BillOfMaterialCode}</td> 
+                                    <td>{item.PartNumber ? item.PartNumber : 'N/A'}</td>
+                                    <td>{item.MaterialCode ? item.MaterialCode : 'N/A'}</td> 
+                                    <td>{item.MaterialDescription ? item.MaterialDescription : 'N/A'}</td> 
+                                    <td>{item.Quantity}</td>
+                                    <td>{item.AssemblyPartNumberMark}</td>
+                                    <td>{item.BOMLevel}</td>
+                                    <td>{item.EcoNumber}</td>
+                                    <td>{item.RevisionNumber}</td>
+                                    <div> 
+                                    </div>
+                                </tr>
+                            </tbody>  
+                            </Table> 
+                        </div>
+                        )
+                    })}
+                </Col>
                 {isOpen && (
                     <AddBOM
                         isOpen={isOpen}
@@ -74,14 +118,14 @@ class BOMMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part}) {
-    const { partsListing ,loading } = part;
-    console.log('partsListing: ', partsListing);
-    return { partsListing, loading }
+function mapStateToProps({ billOfMaterial}) {
+    const { BOMListing ,loading } = billOfMaterial;;
+    console.log('BOMListing: ', BOMListing);
+    return { BOMListing, loading }
 }
 
 
 export default connect(
-    mapStateToProps, {getAllPartsAPI, deletePartsAPI}
+    mapStateToProps, {getAllBOMAPI}
 )(BOMMaster);
 

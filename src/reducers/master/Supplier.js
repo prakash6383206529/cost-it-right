@@ -20,7 +20,7 @@ export default function supplierReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                categoryList: action.payload
+                //supplierList: action.payload
             };
         case CREATE_SUPPLIER_FAILURE:
             return {

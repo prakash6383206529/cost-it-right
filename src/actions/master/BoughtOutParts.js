@@ -3,8 +3,8 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_SUPPLIER_SUCCESS,
-    CREATE_SUPPLIER_FAILURE
+    CREATE_BOM_SUCCESS,
+    CREATE_BOM_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
@@ -17,24 +17,24 @@ const headers = {
 };
 
 /**
- * @method createSupplierAPI
- * @description create supplier master
+ * @method createBOPAPI
+ * @description create baught out parts master
  */
-export function createSupplierAPI(data, callback) {
+export function createBOPAPI(data, callback) {
     return (dispatch) => {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createSupplierAPI, data, headers);
+        const request = axios.post(API.createBOMAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                     dispatch({
-                        type: CREATE_SUPPLIER_SUCCESS,
-                        payload: response.data.Data
+                        type: CREATE_BOM_SUCCESS,
+                        //payload: response.data.Data
                     });
                     callback(response);
             } else {
-                dispatch({ type: CREATE_SUPPLIER_FAILURE });
+                dispatch({ type: CREATE_BOM_FAILURE });
                     if (response.data.Message) {
                         toastr.error(response.data.Message);
                     } 

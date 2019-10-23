@@ -15,7 +15,7 @@ export const MESSAGES = {
   CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',
   CATEGORY_ADD_SUCCESS: 'Category created successfully',
   MATERIAL_ADDED_SUCCESS: 'Material added successfully',
-  PLANT_ADDED_SUCCESS: 'Part created successfully',
+  PLANT_ADDED_SUCCESS: 'Plant created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
   GRADE_ADD_SUCCESS: 'Row material grade added successfully',
   SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',

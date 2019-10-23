@@ -20,7 +20,7 @@ export default function plantReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                categoryList: action.payload
+                //plantList: action.payload
             };
         case CREATE_PLANT_FAILURE:
             return {
