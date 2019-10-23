@@ -12,7 +12,7 @@ import {
     GET_CITY_SUCCESS,
     GET_PLANT_SUCCESS,
     GET_ROW_MATERIAL_SUCCESS,
-    GET_GRADE_SUCCESS
+    GET_GRADE_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -31,8 +31,10 @@ export function fetchMasterDataAPI() {
     return (dispatch) => {
         const API1 = axios.get(API.getAllMasterUOMAPI, headers);
         const API2 = axios.get(API.getMaterialType, headers);
-        const API3 = axios.get(API.getPart, headers)
-        Promise.all([API1, API2, API3])
+        const API3 = axios.get(API.getPart, headers);
+        const API4 = axios.get(API.getPlant, headers);
+        const API5 = axios.get(API.getSupplier, headers);
+        Promise.all([API1, API2, API3, API4, API5])
             .then((response) => {
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
@@ -47,7 +49,15 @@ export function fetchMasterDataAPI() {
                 dispatch({
                     type: GET_PART_SUCCESS,
                     payload: response[2].data.SelectList,
-                });  
+                });
+                dispatch({
+                    type: GET_PLANT_SUCCESS,
+                    payload: response[3].data.SelectList,
+                });
+                dispatch({
+                    type: GET_PLANT_SUCCESS,
+                    payload: response[4].data.SelectList,
+                });   
             }).catch((error) => {
                 dispatch({
                     type: FETCH_MATER_DATA_FAILURE

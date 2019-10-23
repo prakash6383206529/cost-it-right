@@ -3,12 +3,17 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_BOM_SUCCESS,
-    CREATE_BOM_FAILURE
+    CREATE_BOP_SUCCESS,
+    CREATE_BOP_FAILURE,
+    GET_BOM_SUCCESS,
+    GET_BOM_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
 } from '../../helper/util';
+import {
+    MESSAGES
+} from '../../config/message';
 import { toastr } from 'react-redux-toastr'
 
 const headers = {
@@ -25,16 +30,16 @@ export function createBOMAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createBOMAPI, data, headers);
+        const request = axios.post(API.createBOPAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                     dispatch({
-                        type: CREATE_BOM_SUCCESS,
+                        type: CREATE_BOP_SUCCESS,
                         //payload: response.data.Data
                     });
                     callback(response);
             } else {
-                dispatch({ type: CREATE_BOM_FAILURE });
+                dispatch({ type: CREATE_BOP_FAILURE });
                     if (response.data.Message) {
                         toastr.error(response.data.Message);
                     } 
@@ -43,6 +48,32 @@ export function createBOMAPI(data, callback) {
             dispatch({
                 type: API_FAILURE
             });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAllBOMAPI
+ * @description get all bill of material list
+ */
+export function getAllBOMAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getBOMAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_BOM_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: GET_BOM_FAILURE });
+            callback(error);
             apiErrors(error);
         });
     };
