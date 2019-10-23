@@ -65,6 +65,10 @@ export const API = {
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/add-bill-of-material`,
   getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-material-list`,
+
+  //Api's for bought out parts
+  createBOPAPI: `${BASE_URL}//masters-bought-out-part/create`,
+  getBOPAPI: `${BASE_URL}/GET /api/v1/masters-bought-out-part/get`,
 }
 
 
@@ -120,5 +124,11 @@ export const CREATE_SUPPLIER_FAILURE = 'CREATE_SUPPLIER_FAILURE';
 //for BOM master
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
 export const CREATE_BOM_FAILURE = 'CREATE_BOM_FAILURE';
+export const GET_BOM_SUCCESS = 'GET_BOM_SUCCESS';
+export const GET_BOM_FAILURE = 'GET_BOM_FAILURE';
 
-
+//for BOP master
+export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';
+export const CREATE_BOP_FAILURE = 'CREATE_BOP_FAILURE';
+export const GET_BOP_SUCCESS = 'GET_BOP_SUCCESS';
+export const GET_BOP_FAILURE = 'GET_BOP_FAILURE'
