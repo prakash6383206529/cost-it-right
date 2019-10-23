@@ -20,5 +20,6 @@ export const MESSAGES = {
   GRADE_ADD_SUCCESS: 'Row material grade added successfully',
   SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
+  BOP_ADD_SUCCESS: 'Bought out part added successfully',
 };
  

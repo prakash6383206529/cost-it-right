@@ -17,9 +17,11 @@ export const API = {
   getSupplier: `${BASE_URL}/configuration/select-list-get-supplier`,
   getSupplierCode: `${BASE_URL}/configuration/select-list-get-supplier-code`,
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
+  getCategory: `${BASE_URL}/configuration/select-list-get-category`,
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
 
   //api's for configure location
+  getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-supplier-city`,
   getCountry: `${BASE_URL}/configuration-location/select-list-get-country`,
   getState: `${BASE_URL}/configuration-location/select-list-get-state`,
   getCity: `${BASE_URL}/configuration-location/select-list-get-city`,
@@ -67,7 +69,7 @@ export const API = {
   getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-material-list`,
 
   //Api's for bought out parts
-  createBOPAPI: `${BASE_URL}//masters-bought-out-part/create`,
+  createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
   getBOPAPI: `${BASE_URL}/GET /api/v1/masters-bought-out-part/get`,
 }
 
@@ -83,6 +85,11 @@ export const GET_COUNTRY_SUCCESS = 'GET_COUNTRY_SUCCESS';
 export const GET_STATE_SUCCESS = 'GET_STATE_SUCCESS';
 export const GET_CITY_SUCCESS = 'GET_CITY_SUCCESS';
 export const GET_PLANT_SUCCESS = 'GET_PLANT_SUCCESS';
+export const GET_SUPPLIER_SUCCESS = 'GET_SUPPLIER_SUCCESS';
+export const GET_SUPPLIER_CITY_SUCCESS = 'GET_SUPPLIER_CITY_SUCCESS';
+export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
+export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
+export const  GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';

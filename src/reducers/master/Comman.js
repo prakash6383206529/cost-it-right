@@ -10,6 +10,11 @@ import {
     GET_PLANT_SUCCESS,
     GET_ROW_MATERIAL_SUCCESS,
     GET_GRADE_SUCCESS,
+    GET_SUPPLIER_SUCCESS,
+    GET_SUPPLIER_CITY_SUCCESS,
+    GET_TECHNOLOGY_SUCCESS,
+    GET_CATEGORY_TYPE_SUCCESS,
+    GET_CATEGORY_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -37,12 +42,33 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 materialTypeList: action.payload
             };
+        case GET_CATEGORY_TYPE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                categoryTypeList: action.payload
+            };
+        case GET_CATEGORY_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                categoryList: action.payload
+            };
         case GET_PART_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
                 partList: action.payload
+            };
+        case GET_SUPPLIER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                supplierList: action.payload
             };
         case GET_COUNTRY_SUCCESS:
             return {
@@ -64,6 +90,20 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 cityList: action.payload
+            };
+        case GET_SUPPLIER_CITY_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                cityList: action.payload
+            };
+        case GET_TECHNOLOGY_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                technologyList: action.payload
             };
         case  GET_PLANT_SUCCESS:
             return {
