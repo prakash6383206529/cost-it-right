@@ -62,26 +62,25 @@ class BOMMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                {this.props.BOMListing && this.props.BOMListing.length > 0 &&
-                    this.props.BOMListing.map((item, index) => {
-                        return (
-                        <div key={index}> 
-                         <Table>
-                            <thead>
-                                <tr>
-                                <th>{`${CONSTANT.BILL} ${CONSTANT.NUMBER}`}</th>
-                                <th>{`${CONSTANT.BOM} ${CONSTANT.CODE}`}</th> 
-                                <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.CODE}`}</th>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}` }</th>
-                                <th>{`${CONSTANT.QUANTITY}`}</th>
-                                <th>{`Assembly ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                                <th>{`${CONSTANT.BOM} ${CONSTANT.LEVEL}`}</th> 
-                                <th>{`ECO ${CONSTANT.NUMBER}`}</th>
-                                <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th>
-                                </tr>
-                            </thead>
-                            <tbody > 
+                <Table  className="table table-striped" bordered>
+                    <thead>
+                        <tr>
+                        <th>{`${CONSTANT.BILL} ${CONSTANT.NUMBER}`}</th>
+                        <th>{`${CONSTANT.BOM} ${CONSTANT.CODE}`}</th> 
+                        <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.CODE}`}</th>
+                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}` }</th>
+                        <th>{`${CONSTANT.QUANTITY}`}</th>
+                        <th>{`Assembly ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                        <th>{`${CONSTANT.BOM} ${CONSTANT.LEVEL}`}</th> 
+                        <th>{`ECO ${CONSTANT.NUMBER}`}</th>
+                        <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th>
+                        </tr>
+                    </thead>
+                    <tbody > 
+                    {this.props.BOMListing && this.props.BOMListing.length > 0 &&
+                        this.props.BOMListing.map((item, index) => {
+                            return (
                                 <tr >
                                     <td >{item.BillNumber}</td>
                                     <td>{item.BillOfMaterialCode}</td> 
@@ -96,11 +95,10 @@ class BOMMaster extends Component {
                                     <div> 
                                     </div>
                                 </tr>
-                            </tbody>  
-                            </Table> 
-                        </div>
-                        )
-                    })}
+                            )
+                        })}
+                    </tbody> 
+                </Table>
                 </Col>
                 {isOpen && (
                     <AddBOM
