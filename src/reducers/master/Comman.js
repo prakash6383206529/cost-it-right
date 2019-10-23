@@ -9,7 +9,7 @@ import {
     GET_CITY_SUCCESS,
     GET_PLANT_SUCCESS,
     GET_ROW_MATERIAL_SUCCESS,
-    GET_GRADE_SUCCESS
+    GET_GRADE_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
