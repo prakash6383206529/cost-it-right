@@ -222,8 +222,6 @@ export function renderMultiSelectField(field) {
     isTouched,
     meta: { touched, error, active }
   } = field;
-  console.log(' touched: ',  field);
-  //console.log('field:111 ', field);
   const inputbox = `inputbox ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `basic-multi-select ${
@@ -232,7 +230,6 @@ export function renderMultiSelectField(field) {
   const optionValue = field.optionValue;
   const optionLabel = field.optionLabel;
   const placeholder = field.placeholder ? field.placeholder : "";
-  console.log('touched', isTouched);
   return (
     <div className={className}>
       <label>

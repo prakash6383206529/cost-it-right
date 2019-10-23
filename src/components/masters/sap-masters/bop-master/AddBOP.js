@@ -5,12 +5,12 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText,renderSelectField, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
-import { createBOMAPI } from '../../../../actions/master/BillOfMaterial';
+import { createBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 
-class AddBOM extends Component {
+class AddBOP extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -100,9 +100,10 @@ class AddBOM extends Component {
             PartsIncludedBOM: plantArray
         }
         console.log('formData: ', formData);
-        this.props.createBOMAPI(formData, (res) => {
+        this.props.createBOPAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.BOM_ADD_SUCCESS);
+                this.props.getAllPartsAPI(res => {})
                 {this.toggleModel()}
             } else {
                 toastr.error(res.data.message);
@@ -115,7 +116,7 @@ class AddBOM extends Component {
     * @description Used show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, partList,materialTypeList } = this.props;
+        const { uniOfMeasurementList, partList,materialTypeList, plantList } = this.props;
         const temp = [];
         if(label === 'material'){
             materialTypeList && materialTypeList.map(item =>
@@ -129,8 +130,14 @@ class AddBOM extends Component {
             );
             return temp;
         }
-        if(label = 'part'){
+        if(label === 'part'){
             partList && partList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if(label === 'plant'){
+            plantList && plantList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
@@ -156,65 +163,17 @@ class AddBOM extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
-                                    <Row>
-                                        <Col md="6">
+                                <Row>
+                                    <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.BOM} ${CONSTANT.NUMBER}`}
-                                                name={"BillNumber"}
+                                                label={`Basic Rate`}
+                                                name={"BasicRate"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 component={renderText}
                                                 required={true}
                                                 className="withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.BOM} ${CONSTANT.CODE}`}
-                                                name={"BillOfMaterialCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.PART} ${CONSTANT.NUMBER}`}
-                                                name={"PartNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.CODE}`}
-                                                name={"MaterialCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}
-                                                name={"MaterialDescription"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
                                             />
                                         </Col>
                                         <Col md="6">
@@ -231,77 +190,155 @@ class AddBOM extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.ASSEMBLY} ${CONSTANT.PART} ${CONSTANT.NUMBER}`}
-                                                name={"AssemblyPartNumberMark"}
+                                                label={`Net Landed Cost`}
+                                                name={"NetLandedCost"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.BOM} ${CONSTANT.LEVEL}`}
-                                                name={"BOMLevel"}
+                                                label={`Technology Id`}
+                                                name={"TechnologyId"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
+                                                required={true}
+                                                className=" withoutBorder custom-select"
+                                                //options={this.renderTypeOfListing('material')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                //component={renderSelectField}
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`ECO ${CONSTANT.NUMBER}`}
-                                                name={"EcoNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}
-                                                name={"RevisionNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Row/>
-                                    <Row/>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
-                                                name={"MaterialTypeId"}
+                                                label={`Category Id`}
+                                                name={"CategoryId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
+                                                component={renderText}
+                                               //options={this.renderTypeOfListing('uom')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                //component={renderSelectField}
                                                 className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.SPECIFICATION}`}
+                                                name={"Specification"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE} Id`}
+                                                name={"MaterialTypesId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
                                                 options={this.renderTypeOfListing('material')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.UOM}`}
+                                                label={`Source Supplier City Id`}
+                                                name={"SourceSupplierCityId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                //options={this.renderTypeOfListing('material')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                //component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Source Supplier Id`}
+                                                name={"SourceSupplierId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                //options={this.renderTypeOfListing('material')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                //component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>  
+                                        <Col md="6">
+                                            <Field
+                                                label={`Destination Supplier City Id`}
+                                                name={"DestinationSupplierCityId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                //options={this.renderTypeOfListing('material')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                //component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Destination Supplier Id`}
+                                                name={"DestinationSupplierId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                //options={this.renderTypeOfListing('material')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                //component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`UnitOfMeasurement`}
                                                 name={"UnitOfMeasurementId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
+                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('uom')}
                                                 onChange={this.handleTypeofListing}
@@ -313,13 +350,14 @@ class AddBOM extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.PART}`}
-                                                name={"PartId"}
+                                                label={`Plant Id`}
+                                                name={"PlantId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('part')}
+                                                component={renderText}
+                                                options={this.renderTypeOfListing('plant')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -329,28 +367,29 @@ class AddBOM extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.PART} Included ${CONSTANT.BOM}`}
-                                                name={"PartsIncludedBOM"}
-                                                placeholder="--Select Part included Bom--"
-                                                selection={this.state.selectedParts}
-                                                options={this.renderSelectPartList()}
-                                                selectionChanged={this.handlePartSelection}
-                                                optionValue={option => option.Value}
-                                                optionLabel={option => option.Text}
-                                                component={renderMultiSelectField}
-                                                className="withoutBorder"
+                                                label={`Part Id`}
+                                                name={"PartId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                component={renderText}
+                                                options={this.renderTypeOfListing('part')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                    </Row>
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-center">
-                                            <button type="submit" className="btn dark-pinkbtn" >
-                                                {`${CONSTANT.SAVE}`}
-                                            </button>
-                                        </div>
-                                    </Row>
+                                </Row>
+                                <Row className="sf-btn-footer no-gutters justify-content-between">
+                                    <div className="col-sm-12 text-center">
+                                        <button type="submit" className="btn dark-pinkbtn" >
+                                            {`${CONSTANT.SAVE}`}
+                                        </button>
+                                    </div>
+                                </Row>
                                 </form>
                             </Container>
                         </Row>
@@ -367,8 +406,8 @@ class AddBOM extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-    const {uniOfMeasurementList, partList, materialTypeList} = comman;
-    return { uniOfMeasurementList, materialTypeList, partList }
+    const {uniOfMeasurementList, partList, materialTypeList, plantList} = comman;
+    return { uniOfMeasurementList, materialTypeList, partList,plantList }
 }
 
 /**
@@ -377,7 +416,7 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createBOMAPI, fetchMasterDataAPI })(reduxForm({
-    form: 'AddBOM',
+export default connect(mapStateToProps, { createBOPAPI, fetchMasterDataAPI })(reduxForm({
+    form: 'AddBOP',
     enableReinitialize: true,
-})(AddBOM));
+})(AddBOP));

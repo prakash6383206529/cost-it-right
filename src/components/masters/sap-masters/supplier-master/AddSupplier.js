@@ -51,7 +51,7 @@ class AddSupplier extends Component {
     */
     handleCountryChange = (e) => {
         this.props.fetchStateDataAPI(e.target.value, res => {
-            console.log('res of state: ', res);
+           // console.log('res of state: ', res);
         });
     }
     
@@ -60,7 +60,7 @@ class AddSupplier extends Component {
     * @description  used to handle state selection
     */
     handleStateChange = (e) => {
-        this.props.fetchCityDataAPI(e.target.value, res => {console.log('res of city', res);});
+        this.props.fetchCityDataAPI(e.target.value, res => {});
     }
 
     /**
@@ -84,21 +84,21 @@ class AddSupplier extends Component {
             countryList && countryList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
                 );
-                console.log('temp', countryList);
+                //console.log('temp', countryList);
                 return temp;
         }
         if(label === 'state'){
             stateList && stateList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
                 );
-                console.log('temp', stateList);
+                //console.log('temp', stateList);
                 return temp;
         } 
         if(label === 'city'){
             cityList && cityList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
                 );
-                console.log('temp', cityList);
+                //console.log('temp', cityList);
                 return temp;
         }  
     }
@@ -113,7 +113,7 @@ class AddSupplier extends Component {
                 }
             }
             );
-            console.log('temp', plantList);
+            //console.log('temp', plantList);
         return temp;
     }
     /**
@@ -134,7 +134,7 @@ class AddSupplier extends Component {
             CityId: values.CityId,
             SelectedPlants: plantArray
         }
-        console.log('submit form' , formData);
+        //console.log('submit form' , formData);
         this.props.createSupplierAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
@@ -309,7 +309,7 @@ class AddSupplier extends Component {
 */
 function mapStateToProps({ comman }) {
    const { countryList, stateList, cityList, plantList} = comman
-   console.log('plantList: ', plantList);
+  // console.log('plantList: ', plantList);
     return { countryList, stateList, cityList, plantList }
 }
 

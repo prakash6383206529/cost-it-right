@@ -18,6 +18,7 @@ import MaterialMaster from './masters/sap-masters/material-master';
 import PlantMaster from './masters/sap-masters/plant-master';
 import SupplierMaster from './masters/sap-masters/supplier-master';
 import BOMMaster from './masters/sap-masters/bom-master';
+import BOPMaster from './masters/sap-masters/bop-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -167,6 +168,14 @@ class Main extends Component {
                 path="/bom-master"
                 render={props => (
                   <BOMMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/bop-master"
+                render={props => (
+                  <BOPMaster
                     {...props}
                   />
                 )}
