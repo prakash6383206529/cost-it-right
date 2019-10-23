@@ -13,6 +13,11 @@ import {
     GET_PLANT_SUCCESS,
     GET_ROW_MATERIAL_SUCCESS,
     GET_GRADE_SUCCESS,
+    GET_SUPPLIER_SUCCESS,
+    GET_SUPPLIER_CITY_SUCCESS,
+    GET_TECHNOLOGY_SUCCESS,
+    GET_CATEGORY_TYPE_SUCCESS,
+    GET_CATEGORY_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -34,7 +39,10 @@ export function fetchMasterDataAPI() {
         const API3 = axios.get(API.getPart, headers);
         const API4 = axios.get(API.getPlant, headers);
         const API5 = axios.get(API.getSupplier, headers);
-        Promise.all([API1, API2, API3, API4, API5])
+        const API6 = axios.get(API.getSupplierCity, headers);
+        const API7 = axios.get(API.getTechnology, headers);
+        const API8 = axios.get(API.getCategoryType, headers)
+        Promise.all([API1, API2, API3, API4, API5, API6, API7, API8])
             .then((response) => {
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
@@ -55,9 +63,21 @@ export function fetchMasterDataAPI() {
                     payload: response[3].data.SelectList,
                 });
                 dispatch({
-                    type: GET_PLANT_SUCCESS,
+                    type: GET_SUPPLIER_SUCCESS,
                     payload: response[4].data.SelectList,
-                });   
+                }); 
+                dispatch({
+                    type: GET_SUPPLIER_CITY_SUCCESS,
+                    payload: response[5].data.SelectList,
+                });
+                dispatch({
+                    type: GET_TECHNOLOGY_SUCCESS,
+                    payload: response[6].data.SelectList,
+                });
+                dispatch({
+                    type: GET_CATEGORY_TYPE_SUCCESS,
+                    payload: response[7].data.SelectList,
+                });  
             }).catch((error) => {
                 dispatch({
                     type: FETCH_MATER_DATA_FAILURE
@@ -272,5 +292,40 @@ export function fetchRMCategoryAPI(callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method fetchRMCategoryAPI
+ * @description Used to fetch row material category list
+ */
+export function fetchCategoryAPI(Id,callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if(Id == 0){
+            dispatch({
+                type: GET_CATEGORY_SUCCESS,
+                payload: []
+            });
+        }
+        else{
+            const request = axios.get(`${API.getCategory}/${Id}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_CATEGORY_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        }
+        
     };
 }
