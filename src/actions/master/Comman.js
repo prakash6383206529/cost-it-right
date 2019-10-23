@@ -13,6 +13,9 @@ import {
     GET_PLANT_SUCCESS,
     GET_ROW_MATERIAL_SUCCESS,
     GET_GRADE_SUCCESS,
+    GET_TECHNOLOGY_LIST_SUCCESS,
+    GET_OTHER_OPERATION_FORMDATA_SUCCESS,
+    GET_OTHER_OPERATION_FORMDATA_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
@@ -34,13 +37,15 @@ export function fetchMasterDataAPI() {
         const API3 = axios.get(API.getPart, headers);
         const API4 = axios.get(API.getPlant, headers);
         const API5 = axios.get(API.getSupplier, headers);
-        Promise.all([API1, API2, API3, API4, API5])
+        const API6 = axios.get(API.getTechnology, headers);
+        Promise.all([API1, API2, API3, API4, API5, API6])
             .then((response) => {
+                console.log('%c 🥗 response: ', 'font-size:20px;background-color: #FFDD4D;color:#fff;', response);
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
                     payload: response[0].data.SelectList,
                 });
-                
+
                 dispatch({
                     type: GET_MATERIAL_TYPE_SUCCESS,
                     payload: response[1].data.SelectList,
@@ -57,7 +62,11 @@ export function fetchMasterDataAPI() {
                 dispatch({
                     type: GET_PLANT_SUCCESS,
                     payload: response[4].data.SelectList,
-                });   
+                });
+                dispatch({
+                    type: GET_TECHNOLOGY_LIST_SUCCESS,
+                    payload: response[5].data.SelectList,
+                });
             }).catch((error) => {
                 dispatch({
                     type: FETCH_MATER_DATA_FAILURE
@@ -73,7 +82,7 @@ export function fetchMasterDataAPI() {
 export function fetchCountryDataAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCountry}`,headers);
+        const request = axios.get(`${API.getCountry}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -99,34 +108,34 @@ export function fetchCountryDataAPI(callback) {
 export function fetchStateDataAPI(countryId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-       if(countryId == 0){
-        dispatch({
-            type: GET_STATE_SUCCESS,
-            payload: []
-        });
-        dispatch({
-            type: GET_CITY_SUCCESS,
-            payload: [],
-        });
-        callback([]);
-       }else{
-        const request = axios.get(`${API.getState}/${countryId}`, headers);
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_STATE_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        }).catch((error) => {
-            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-       }
+        if (countryId == 0) {
+            dispatch({
+                type: GET_STATE_SUCCESS,
+                payload: []
+            });
+            dispatch({
+                type: GET_CITY_SUCCESS,
+                payload: [],
+            });
+            callback([]);
+        } else {
+            const request = axios.get(`${API.getState}/${countryId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_STATE_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        }
     };
 }
 
@@ -134,33 +143,33 @@ export function fetchStateDataAPI(countryId, callback) {
  * @method fetchCityDataAPI
  * @description Used to fetch city list
  */
-export function fetchCityDataAPI(stateId,callback) {
+export function fetchCityDataAPI(stateId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-       if(stateId == 0){
-        dispatch({
-            type: GET_CITY_SUCCESS,
-            payload: [],
-        });
-        callback([]);
-       }else{
-        const request = axios.get(`${API.getCity}/${stateId}`, headers);
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_CITY_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        }).catch((error) => {
-            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-       }
+        if (stateId == 0) {
+            dispatch({
+                type: GET_CITY_SUCCESS,
+                payload: [],
+            });
+            callback([]);
+        } else {
+            const request = axios.get(`${API.getCity}/${stateId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_CITY_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        }
     };
 }
 
@@ -220,15 +229,15 @@ export function fetchRowMaterialAPI(callback) {
  * @method fetchRMGradeAPI
  * @description Used to fetch row material grade list
  */
-export function fetchRMGradeAPI(Id ,callback) {
+export function fetchRMGradeAPI(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if(Id == 0){
+        if (Id == 0) {
             dispatch({
                 type: GET_GRADE_SUCCESS,
                 payload: []
             });
-        }else{
+        } else {
             const request = axios.get(`${API.getRowGrade}/${Id}`, headers);
             request.then((response) => {
                 if (response.data.Result) {
@@ -245,7 +254,7 @@ export function fetchRMGradeAPI(Id ,callback) {
                 callback(error);
                 apiErrors(error);
             });
-        } 
+        }
     };
 }
 
@@ -274,3 +283,30 @@ export function fetchRMCategoryAPI(callback) {
         });
     };
 }
+
+/**
+ * @method fetchRMCategoryAPI
+ * @description Used to fetch row material category list
+ */
+export function getOtherOperationData(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getOtherOperationsFormDataAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OTHER_OPERATION_FORMDATA_SUCCESS,
+                    payload: response.data.DynamicData,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: GET_OTHER_OPERATION_FORMDATA_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+

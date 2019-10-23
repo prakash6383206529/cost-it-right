@@ -74,8 +74,8 @@ class SideBar extends Component {
   render() {
     return (
       <nav>
-          <div className="flex-conatiner sign-social before-login">
-            {/* <Nav className="ml-auto top-menu">
+        <div className="flex-conatiner sign-social before-login">
+          {/* <Nav className="ml-auto top-menu">
               <NavItem>
                 <NavBtn className=" nav-link" to="/login">Sign In</NavBtn>
               </NavItem>
@@ -83,7 +83,7 @@ class SideBar extends Component {
                 <NavBtn className=" nav-link" to="/signup">Sign Up</NavBtn>
               </NavItem>
             </Nav> */}
-            {/* <div className="flex-conatiner social_icon">
+          {/* <div className="flex-conatiner social_icon">
               <a href="https://www.instagram.com/stage_n_set/" target="_blank">
                 <img src={require("../../assests/images/insta.png")} />
               </a>
@@ -94,62 +94,63 @@ class SideBar extends Component {
                 <img src={require("../../assests/images/twiiter.png")} />
               </a>
             </div> */}
-            <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
-          </div>
+          <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
+        </div>
         {/* )} */}
-       
-          <Nav className="ml-auto top-menu logout">
-            {/* <Link className="bell-notifcation-icon" to="/notifications">
+
+        <Nav className="ml-auto top-menu logout">
+          {/* <Link className="bell-notifcation-icon" to="/notifications">
               <span className="icon-notification"> </span>
               {this.state.notificationCount > 0 ? <Badge color="danger">{this.state.notificationCount > 0 ? this.state.notificationCount : ''}</Badge> : ''}
 
             </Link> */}
-            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-              <DropdownToggle nav caret className="userImg-header">
-                <div className="img-only">
-                  <img src="../../images/defaultUser.png" />
-                  {/* {imagePreview} */}
-                </div>
-                <span>
-                  priyanka
+          <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+            <DropdownToggle nav caret className="userImg-header">
+              <div className="img-only">
+                <img src="../../images/defaultUser.png" />
+                {/* {imagePreview} */}
+              </div>
+              <span>
+                priyanka
                 </span>
-              </DropdownToggle>
-            </Dropdown>
-            <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
-          </Nav>
+            </DropdownToggle>
+          </Dropdown>
+          <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
+        </Nav>
         <Navbar className="menu-bottom-list " expand="md">
 
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto menu-list">
-                <NavItem>
-                  <NavLink href="/dashboard">Dashboard</NavLink>
-                </NavItem>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href= '/UOMMaster'>UOM Master</a>
-                    <a className="dropdown-item" href="/PartMaster">Part Master</a>
-                    <a className="dropdown-item" href= '/category-master'>Category Master</a>
-                    <a className="dropdown-item" href="/material-master">Material Master</a>
-                    <a className="dropdown-item" href="/plant-master">Plant Master</a>
-                    <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
-                    <a className="dropdown-item" href="bom-master">BOM Master</a>
-                    <a className="dropdown-item" href="bop-master">BOP Master</a>
-                  </div>
-                </li>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Report</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href= '#'>Contribution Report</a>
-                  </div>
-                </li>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Technology</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href= '#'>Sheet metal</a>
-                  </div>
-                </li>
-                {/* <UncontrolledDropdown nav inNavbar>
+              <NavItem>
+                <NavLink href="/dashboard">Dashboard</NavLink>
+              </NavItem>
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href='/UOMMaster'>UOM Master</a>
+                  <a className="dropdown-item" href="/PartMaster">Part Master</a>
+                  <a className="dropdown-item" href='/category-master'>Category Master</a>
+                  <a className="dropdown-item" href="/material-master">Material Master</a>
+                  <a className="dropdown-item" href="/plant-master">Plant Master</a>
+                  <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
+                  <a className="dropdown-item" href="/bom-master">BOM Master</a>
+                  <a className="dropdown-item" href="/bop-master">BOP Master</a>
+                  <a className="dropdown-item" href="/other-operation">Other Operation</a>
+                </div>
+              </li>
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Report</a>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href='#'>Contribution Report</a>
+                </div>
+              </li>
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Technology</a>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href='#'>Sheet metal</a>
+                </div>
+              </li>
+              {/* <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>About</DropdownToggle>
                   <DropdownMenu right>
                     <DropdownItem tag="a" href="/about-us"> About us</DropdownItem>
@@ -171,7 +172,7 @@ class SideBar extends Component {
  * @desc map state containing organisation details from the api to props
  * @return object{}
  */
-function mapStateToProps({}) {
+function mapStateToProps({ }) {
   return {
 
   }

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Button, Table } from 'reactstrap';
+    Container, Row, Col, Button, Table
+} from 'reactstrap';
 import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../../actions/master/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
@@ -23,7 +24,7 @@ class UOMMaster extends Component {
      * @description  called before rendering the component
      */
     componentDidMount() {
-        this.props.getUnitOfMeasurementAPI(res => {});
+        this.props.getUnitOfMeasurementAPI(res => { });
     }
 
     /**
@@ -31,7 +32,7 @@ class UOMMaster extends Component {
      * @description  used to open filter form 
      */
     openModel = () => {
-        this.setState({ isOpen: true ,isEditFlag: false})
+        this.setState({ isOpen: true, isEditFlag: false })
     }
 
     /**
@@ -53,7 +54,7 @@ class UOMMaster extends Component {
             uomId: Id,
         })
     }
-    
+
     /**
     * @method deletePart
     * @description confirm delete part
@@ -73,14 +74,14 @@ class UOMMaster extends Component {
     * @description confirm delete unit of measurement
     */
     confirmDeleteUOM = (index, Id) => {
-        this.props.deleteUnitOfMeasurementAPI(index, Id , (res) => {
+        this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-                this.props.getUnitOfMeasurementAPI(res => {});
+                this.props.getUnitOfMeasurementAPI(res => { });
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
-        });   
+        });
     }
 
     /**
@@ -88,10 +89,10 @@ class UOMMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex, uomId } = this.state;
+        const { isOpen, isEditFlag, editIndex, uomId } = this.state;
         return (
             <Container className="top-margin">
-            {this.props.loading && <Loader/>}
+                {this.props.loading && <Loader />}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.UOM} ${CONSTANT.MASTER}`}</h3>
@@ -100,7 +101,7 @@ class UOMMaster extends Component {
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} UOM`}</Button>
                     </Col>
                 </Row>
-                
+
                 <hr />
                 <Row>
                     <Col>
@@ -108,43 +109,35 @@ class UOMMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                {/* <Table>
-                    <thead>
-                        <tr>
-                        <th>UOM Name</th>
-                        <th>UOM Title</th> 
-                        <th>UOM Description</th>
-                        <th>UOM Created By</th>
-                        </tr>
-                    </thead> */}
-                {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
-                    this.props.unitOfMeasurementList.map((item, index) => {
-                        return (
-                        <div key={index}> 
-                        <Table>
-                            <thead>
-                                <tr>
-                                <th>{`UOM ${CONSTANT.NAME}`}</th>
-                                <th>{`UOM ${CONSTANT.TITLE}`}</th> 
-                                <th>{`UOM ${CONSTANT.DESCRIPTION}`}</th>
-                                </tr>
-                            </thead>
-                            <tbody > 
-                                <tr >
-                                    <td >{item.Name}</td>
-                                    <td>{item.Title}</td> 
-                                    <td>{item.Description}</td>
-                                    <div>
-                                        <Button className="black-btn" onClick={() => this.editPartDetails(index,item.Id )}><i className="fas fa-pencil-alt"></i></Button> 
-                                        <Button className="black-btn" onClick={() => this.deletePart(index,item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                    </div>
-                                </tr>
-                            </tbody>  
-                        </Table> 
-                        </div>
-                        )
-                    })}
-                    {/* </Table> */}
+                    <Table className="table table-striped" bordered>
+                        <thead>
+                            <tr>
+                                <th>UOM Name</th>
+                                <th>UOM Title</th>
+                                <th>UOM Description</th>
+                                <th>UOM Created By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
+                                this.props.unitOfMeasurementList.map((item, index) => {
+                                    return (
+
+                                        <tr key={index}>
+                                            <td >{item.Name}</td>
+                                            <td>{item.Title}</td>
+                                            <td>{item.Description}</td>
+                                            <td>
+                                                <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
+                                            </td>
+                                        </tr>
+
+
+                                    )
+                                })}
+                        </tbody>
+                    </Table>
                 </Col>
                 {isOpen && (
                     <AddUOM
@@ -166,12 +159,12 @@ class UOMMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ unitOfMeasrement }) {
-    const {unitOfMeasurementList, loading} = unitOfMeasrement;
-    return { unitOfMeasurementList,loading}
+    const { unitOfMeasurementList, loading } = unitOfMeasrement;
+    return { unitOfMeasurementList, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI}
+    mapStateToProps, { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI }
 )(UOMMaster);
 

@@ -3,19 +3,19 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createMaterialAPI } from '../../../../actions/master/Material';
 import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT} from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant'
 
 class AddMaterial extends Component {
     constructor(props) {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
     }
 
@@ -23,8 +23,8 @@ class AddMaterial extends Component {
     * @method componentWillMount
     * @description called before render the component
     */
-    componentWillMount(){
-        this.props.fetchPlantDataAPI(res=> {});  
+    componentWillMount() {
+        this.props.fetchPlantDataAPI(res => { });
     }
 
     /**
@@ -42,9 +42,9 @@ class AddMaterial extends Component {
     renderTypeOfListing = () => {
         const { plantList } = this.props;
         const temp = [];
-            plantList && plantList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
+        plantList && plantList.map(item =>
+            temp.push({ Text: item.Text, Value: item.Value })
+        );
         return temp;
     }
 
@@ -66,11 +66,11 @@ class AddMaterial extends Component {
         this.props.createMaterialAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-                {this.toggleModel()}
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.Message);
             }
-        });   
+        });
     }
 
     /**
@@ -85,7 +85,7 @@ class AddMaterial extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -156,7 +156,7 @@ class AddMaterial extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-   const { plantList } = comman;
+    const { plantList } = comman;
     return { plantList }
 }
 

@@ -238,29 +238,29 @@ export function renderMultiSelectField(field) {
           <span className="asterisk-required">*</span>
         ) : (
             ""
-          )} 
+          )}
       </label>
-      <div className={inputbox} onClick = {field.onTouched}>
+      <div className={inputbox} onClick={field.onTouched}>
         <Select
           className={InputClassName}
           getOptionLabel={optionLabel}
           getOptionValue={optionValue}
           value={field.selection}
           isMulti
-        //  isDisabled={field.options}
+          //  isDisabled={field.options}
           options={field.options}
           classNamePrefix="select"
           closeMenuOnSelect="false"
           onChange={field.selectionChanged}
           placeholder={placeholder}
-          
+
         />
       </div>
       <div className="text-help">
         {isTouched &&
-        field.mendatory &&
-        field.selection &&
-        field.selection.length === 0
+          field.mendatory &&
+          field.selection &&
+          field.selection.length === 0
           ? "This field is required."
           : ""}
         {/* <div className="text-help">{field.isEmpty ? 'This field is required.' : ""}</div> */}
@@ -385,7 +385,7 @@ export function renderSelectField(field) {
     }`;
   let optionKey = field.optionValue;
   let optionText = field.optionLabel;
-
+  console.log("field.options", field.options)
   return (
     <div className={className}>
       <label>
@@ -619,3 +619,20 @@ export function renderDatePickerOneDayAgo(field) {
   )
 }
 
+export const searchableSelect = ({ input, label, required, handleChangeDescription, valueDescription, options, meta: { touched, error, dirty, visited }, multi, className }) => {
+  const { name, value, onBlur, onChange, onFocus } = input;
+  console.log('value: >>', options);
+  return (
+    <div>
+      {label && <label>{label}{(required == true) ? <span className="asterisk-required">*</span> : ''}</label>}
+      <Select
+        isClearable
+        options={options}
+        onChange={handleChangeDescription}
+        //onCreateOption={handleCreate}
+        value={valueDescription}
+      />
+      {/* <FormHelperText>{touched && error}</FormHelperText> */}
+    </div>
+  )
+}

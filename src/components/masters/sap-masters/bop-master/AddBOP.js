@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField, renderMultiSelectField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
 import { createBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
@@ -15,7 +15,7 @@ class AddBOP extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false,
+            isEditFlag: false,
             selectedParts: [],
         }
     }
@@ -24,8 +24,8 @@ class AddBOP extends Component {
     * @method componentWillMount
     * @description called before rendering the component
     */
-    componentWillMount(){
-        this.props.fetchMasterDataAPI(res => {});   
+    componentWillMount() {
+        this.props.fetchMasterDataAPI(res => { });
     }
 
     /**
@@ -46,10 +46,10 @@ class AddBOP extends Component {
         })
     }
 
-     /**
-     * @method handlePartSelection
-     * @description called
-     */
+    /**
+    * @method handlePartSelection
+    * @description called
+    */
     handlePartSelection = e => {
         this.setState({
             selectedParts: e
@@ -63,16 +63,15 @@ class AddBOP extends Component {
     renderSelectPartList = () => {
         const { partList } = this.props;
         const temp = [];
-        partList && partList.map(item =>
-            {
-                if(item.Value != 0){
-                    temp.push({ Text: item.Text, Value: item.Value })
-                }
+        partList && partList.map(item => {
+            if (item.Value != 0) {
+                temp.push({ Text: item.Text, Value: item.Value })
             }
+        }
         );
         return temp;
     }
-    
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -103,12 +102,12 @@ class AddBOP extends Component {
         this.props.createBOPAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.BOM_ADD_SUCCESS);
-                this.props.getAllPartsAPI(res => {})
-                {this.toggleModel()}
+                this.props.getAllPartsAPI(res => { })
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.message);
             }
-        }); 
+        });
     }
 
     /**
@@ -116,33 +115,33 @@ class AddBOP extends Component {
     * @description Used show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, partList,materialTypeList, plantList } = this.props;
+        const { uniOfMeasurementList, partList, materialTypeList, plantList } = this.props;
         const temp = [];
-        if(label === 'material'){
+        if (label === 'material') {
             materialTypeList && materialTypeList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'uom'){
+        if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'part'){
+        if (label === 'part') {
             partList && partList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'plant'){
+        if (label === 'plant') {
             plantList && plantList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        
+
     }
 
     /**
@@ -157,14 +156,14 @@ class AddBOP extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.BOM}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                        <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
-                                <Row>
-                                    <Col md="6">
+                                    <Row>
+                                        <Col md="6">
                                             <Field
                                                 label={`Basic Rate`}
                                                 name={"BasicRate"}
@@ -214,7 +213,7 @@ class AddBOP extends Component {
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                //component={renderSelectField}
+                                            //component={renderSelectField}
                                             />
                                         </Col>
                                         <Col md="6">
@@ -226,7 +225,7 @@ class AddBOP extends Component {
                                                 validate={[required]}
                                                 required={true}
                                                 component={renderText}
-                                               //options={this.renderTypeOfListing('uom')}
+                                                //options={this.renderTypeOfListing('uom')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -296,7 +295,7 @@ class AddBOP extends Component {
                                                 //component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
-                                        </Col>  
+                                        </Col>
                                         <Col md="6">
                                             <Field
                                                 label={`Destination Supplier City Id`}
@@ -382,14 +381,14 @@ class AddBOP extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                </Row>
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-sm-12 text-center">
-                                        <button type="submit" className="btn dark-pinkbtn" >
-                                            {`${CONSTANT.SAVE}`}
-                                        </button>
-                                    </div>
-                                </Row>
+                                    </Row>
+                                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                                        <div className="col-sm-12 text-center">
+                                            <button type="submit" className="btn dark-pinkbtn" >
+                                                {`${CONSTANT.SAVE}`}
+                                            </button>
+                                        </div>
+                                    </Row>
                                 </form>
                             </Container>
                         </Row>
@@ -406,8 +405,8 @@ class AddBOP extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-    const {uniOfMeasurementList, partList, materialTypeList, plantList} = comman;
-    return { uniOfMeasurementList, materialTypeList, partList,plantList }
+    const { uniOfMeasurementList, partList, materialTypeList, plantList } = comman;
+    return { uniOfMeasurementList, materialTypeList, partList, plantList }
 }
 
 /**

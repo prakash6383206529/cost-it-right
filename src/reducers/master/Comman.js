@@ -10,10 +10,13 @@ import {
     GET_PLANT_SUCCESS,
     GET_ROW_MATERIAL_SUCCESS,
     GET_GRADE_SUCCESS,
+    GET_TECHNOLOGY_LIST_SUCCESS,
+    GET_OTHER_OPERATION_FORMDATA_SUCCESS,
+    GET_OTHER_OPERATION_FORMDATA_FAILURE
 } from '../../config/constants';
 
 const initialState = {
-   
+    technologyList: []
 };
 
 export default function commanReducer(state = initialState, action) {
@@ -65,7 +68,7 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 cityList: action.payload
             };
-        case  GET_PLANT_SUCCESS:
+        case GET_PLANT_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -86,7 +89,27 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 rmGradeList: action.payload
             };
-        case  FETCH_MATER_DATA_FAILURE:
+        case FETCH_MATER_DATA_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
+        case GET_TECHNOLOGY_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                technologyList: action.payload
+            };
+        case GET_OTHER_OPERATION_FORMDATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                otherOperationFormData: action.payload
+            };
+        case GET_OTHER_OPERATION_FORMDATA_FAILURE:
             return {
                 ...state,
                 loading: false,

@@ -2,7 +2,7 @@ import React, { Component, Suspense } from "react";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { connect } from 'react-redux';
 import SideBar from './nav/NavBar';
-import {Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import ReduxToastr from 'react-redux-toastr';
 import Footer from "../components/footer/Footer";
 import Login from './login/Login';
@@ -19,6 +19,7 @@ import PlantMaster from './masters/sap-masters/plant-master';
 import SupplierMaster from './masters/sap-masters/supplier-master';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
+import OperationMaster from './masters/sap-masters/other-operation';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -55,10 +56,10 @@ class Main extends Component {
                   <div className="row ss-menu">
                     <div className="logo-section col-md-2 col-4">
                       <div className="inner-header">
-                          <div className="main-logo">
-                            <a href="javaScript:Void(0);"><img src={require('../assests/images/cir-logo.png')} alt='Cost It Rights' />
-                            </a>
-                          </div>
+                        <div className="main-logo">
+                          <a href="javaScript:Void(0);"><img src={require('../assests/images/cir-logo.png')} alt='Cost It Rights' />
+                          </a>
+                        </div>
                       </div>
                     </div>
 
@@ -69,10 +70,10 @@ class Main extends Component {
                           render={props => (
                             <SideBar
                               {...props}
-                              // isLoggedIn={this.props.isLoggedIn}
-                              // logUserIn={this.props.logUserIn}
-                              // logUserOut={this.props.logUserOut}
-                              // isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
+                            // isLoggedIn={this.props.isLoggedIn}
+                            // logUserIn={this.props.logUserIn}
+                            // logUserOut={this.props.logUserOut}
+                            // isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
                             />
                           )}
                         />
@@ -85,16 +86,16 @@ class Main extends Component {
           <div className=" middleContainer">
             <Switch>
               <Route exact path="/" component={Homepage} />
-               <Route path="/login" render={(props) =>
-                  <Login
-                    {...props}
-                    // isLoggedIn={this.props.isLoggedIn}
-                    // logUserIn={this.props.logUserIn}
-                    // logUserOut={this.props.logUserOut}
-                    // isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
-                  />
+              <Route path="/login" render={(props) =>
+                <Login
+                  {...props}
+                // isLoggedIn={this.props.isLoggedIn}
+                // logUserIn={this.props.logUserIn}
+                // logUserOut={this.props.logUserOut}
+                // isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
+                />
               } />
-              
+
               <Route
                 path="/signup"
                 render={props => (
@@ -107,7 +108,7 @@ class Main extends Component {
                   />
                 )}
               />
-             {props => <Signup {...props} />}
+              {props => <Signup {...props} />}
               <Route
                 path="/dashboard"
                 render={props => (
@@ -140,7 +141,7 @@ class Main extends Component {
                   />
                 )}
               />
-               <Route
+              <Route
                 path="/material-master"
                 render={props => (
                   <MaterialMaster
@@ -156,7 +157,7 @@ class Main extends Component {
                   />
                 )}
               />
-               <Route
+              <Route
                 path="/supplier-master"
                 render={props => (
                   <SupplierMaster
@@ -164,7 +165,7 @@ class Main extends Component {
                   />
                 )}
               />
-               <Route
+              <Route
                 path="/bom-master"
                 render={props => (
                   <BOMMaster
@@ -176,6 +177,14 @@ class Main extends Component {
                 path="/bop-master"
                 render={props => (
                   <BOPMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/other-operation"
+                render={props => (
+                  <OperationMaster
                     {...props}
                   />
                 )}
