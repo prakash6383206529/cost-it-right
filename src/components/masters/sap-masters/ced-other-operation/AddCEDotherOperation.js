@@ -4,21 +4,22 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
-import { fetchMasterDataAPI, getOtherOperationData } from '../../../../actions/master/Comman';
-import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
+import { fetchMasterDataAPI, getCEDOtherOperationComboData } from '../../../../actions/master/Comman';
+import { createCEDOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 
-class AddOtherOperation extends Component {
+class AddCEDotherOperation extends Component {
     constructor(props) {
         super(props);
         this.state = {
             processOperationValue: [],
             supplierValue: [],
             typeOfListing: [],
-            technologyValue: '',
+            SupplierId: '',
             uom: '',
-            PlantId: '',
+            transportUOM: '',
+            PlantId: ''
         }
     }
 
@@ -27,7 +28,7 @@ class AddOtherOperation extends Component {
     * @description called before rendering the component
     */
     componentWillMount() {
-        this.props.getOtherOperationData(() => { });
+        this.props.getCEDOtherOperationComboData(() => { });
     }
 
     /**
@@ -59,15 +60,16 @@ class AddOtherOperation extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { processOperationValue, supplierValue, uom, technologyValue, PlantId } = this.state;
+        const { processOperationValue, SupplierId, uom, transportUOM, PlantId } = this.state;
 
         values.OtherOperationName = processOperationValue.label;
         //"OperationCode": "string",
         //"Description": "string",
         //values.TechnologyId = technologyValue;
-        values.SupplierId = supplierValue.value;
+        values.SupplierId = SupplierId;
         values.OperationId = processOperationValue.value;
         values.UnitOfMeasurementId = uom;
+        values.TrasportUnitOfMeasurementId = transportUOM;
         values.PlantId = PlantId;
 
         console.log('values: >>sss', values);
@@ -92,11 +94,11 @@ class AddOtherOperation extends Component {
             //     }
             // });
         } else {
-            this.props.createOtherOperationsAPI(values, (res) => {
+            this.props.createCEDOtherOperationsAPI(values, (res) => {
                 if (res.data.Result === true) {
-                    toastr.success(MESSAGES.OTHER_OPERATION_ADD_SUCCESS);
+                    toastr.success(MESSAGES.CED_OTHER_OPERATION_ADD_SUCCESS);
                     { this.toggleModel() }
-                    this.props.getOtherOperationData(() => { });
+                    //this.props.getOtherOperationData(() => { });
                 } else {
                     toastr.error(res.data.message);
                 }
@@ -108,9 +110,9 @@ class AddOtherOperation extends Component {
         this.setState({ processOperationValue: newValue });
     };
 
-    technologyHandler = (e) => {
+    supplierHandler = (e) => {
         console.log('clicked')
-        this.setState({ technologyValue: this.props.Technologies[0].value });
+        this.setState({ SupplierId: e.target.value });
     }
 
     handleChangeSupplier = (newValue, actionMeta) => {
@@ -123,11 +125,18 @@ class AddOtherOperation extends Component {
         })
     }
 
+    transportUOMHandler = (e) => {
+        this.setState({
+            transportUOM: e.target.value
+        })
+    }
+
     plantHandler = (e) => {
         this.setState({
             PlantId: e.target.value
         })
     }
+
 
     /**
     * @method selectUnitOfMeasurement
@@ -161,14 +170,18 @@ class AddOtherOperation extends Component {
             );
             return temp;
         }
+        if (label == 'TransportUOM') {
+            UnitOfMeasurements && UnitOfMeasurements.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
         if (label == 'plant') {
             Plants && Plants.map(item =>
                 temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
-
-
     }
 
     /**
@@ -181,7 +194,7 @@ class AddOtherOperation extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update UOM' : 'Add Other Operation'}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update UOM' : 'Add CED Other Operation'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -193,36 +206,21 @@ class AddOtherOperation extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`Technology`}
-                                                name={"TechnologyId"}
+                                                label={`Supplier`}
+                                                name={"SupplierId"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
                                                 //required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('technology')}
+                                                options={this.renderTypeOfListing('supplier')}
                                                 //options={technologyOptions}
-                                                onChange={this.technologyHandler}
+                                                onChange={this.supplierHandler}
                                                 optionValue={'value'}
                                                 optionLabel={'label'}
                                                 component={renderSelectField}
                                             />
                                         </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Process Code"
-                                                name={"OperationCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 id="processOperation"
@@ -239,43 +237,22 @@ class AddOtherOperation extends Component {
                                                 valueDescription={this.state.processOperationValue}
                                             />
                                         </Col>
+
+                                    </Row>
+                                    <Row>
                                         <Col md="6">
                                             <Field
-                                                id="supplier"
-                                                name="supplier"
-                                                type="text"
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                label="Supplier"
-                                                component={searchableSelect}
-                                                //validate={[required, maxLength50]}
-                                                options={this.renderTypeOfListing('supplier')}
-                                                //options={supplierOptions}
-                                                required={true}
-                                                handleChangeDescription={this.handleChangeSupplier}
-                                                valueDescription={this.state.supplierValue}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="12">
-                                            <Field
-                                                label={`Plant`}
-                                                name={"PlantId"}
+                                                label="Operation Rate"
+                                                name={"OperationRate"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                maxLength={26}
-                                                options={this.renderTypeOfListing('plant')}
-                                                onChange={this.plantHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
+                                                //validate={[required]}
+                                                component={renderText}
+                                                //required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 label={`UOM`}
@@ -293,10 +270,61 @@ class AddOtherOperation extends Component {
                                                 component={renderSelectField}
                                             />
                                         </Col>
+                                    </Row>
+                                    <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Rate"
-                                                name={"Rate"}
+                                                label="Transportation Rate"
+                                                name={"TrasnportationRate"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                //required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Transportation UOM`}
+                                                name={"TrasportUnitOfMeasurementId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                className=" withoutBorder custom-select"
+                                                options={this.renderTypeOfListing('TransportUOM')}
+                                                //options={uomOptions}
+                                                onChange={this.transportUOMHandler}
+                                                optionValue={'value'}
+                                                optionLabel={'label'}
+                                                component={renderSelectField}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Plant`}
+                                                name={"PlantId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                maxLength={26}
+                                                options={this.renderTypeOfListing('plant')}
+                                                onChange={this.plantHandler}
+                                                optionValue={'value'}
+                                                optionLabel={'label'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Overhead/Profit(%)"
+                                                name={"OverheadProfit"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
@@ -331,8 +359,8 @@ class AddOtherOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-    if (comman && comman.otherOperationFormData) {
-        const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = comman.otherOperationFormData;
+    if (comman && comman.cedOtherOperationComboData) {
+        const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = comman.cedOtherOperationComboData;
         // console.log('technologyList: ', technologyList, technologyList);
         // let initialValues = {};
         // if (technologyList !== undefined && uniOfMeasurementList !== undefined) {
@@ -353,9 +381,9 @@ function mapStateToProps({ comman }) {
 */
 export default connect(mapStateToProps, {
     fetchMasterDataAPI,
-    getOtherOperationData,
-    createOtherOperationsAPI
+    getCEDOtherOperationComboData,
+    createCEDOtherOperationsAPI
 })(reduxForm({
     form: 'addOtherOperation',
     enableReinitialize: true,
-})(AddOtherOperation));
+})(AddCEDotherOperation));

@@ -1,14 +1,13 @@
 import {
     API_REQUEST,
     API_FAILURE,
-    GET_UOM_DATA_SUCCESS,
-    CREATE_PART_REQUEST,
-    CREATE_PART_FAILURE,
-    CREATE_PART_SUCCESS,
-    GET_UOM_SUCCESS,
-    GET_UOM_DATA_FAILURE,
+    CREATE_OTHER_OPERATION_REQUEST,
+    CREATE_OTHER_OPERATION_FAILURE,
     GET_OTHER_OPERATION_SUCCESS,
-    GET_OTHER_OPERATION_FAILURE
+    GET_OTHER_OPERATION_FAILURE,
+    CREATE_OTHER_OPERATION_SUCCESS,
+    GET_CED_OTHER_OPERATION_SUCCESS,
+    GET_CED_OTHER_OPERATION_FAILURE
 } from '../../config/constants';
 
 const initialState = {
@@ -27,7 +26,7 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false
             };
-        case CREATE_PART_REQUEST:
+        case CREATE_OTHER_OPERATION_REQUEST:
             return {
                 ...state,
                 loading: false
@@ -44,6 +43,18 @@ export default function OtherOperationReducer(state = initialState, action) {
                 loading: false,
                 //error: true
             };
+        case GET_CED_OTHER_OPERATION_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                cedOtherOperationList: action.payload
+            };
+        case GET_CED_OTHER_OPERATION_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                //error: true
+            };
         // case GET_UOM_SUCCESS:
         //     return {
         //         ...state,
@@ -51,19 +62,19 @@ export default function OtherOperationReducer(state = initialState, action) {
         //         unitOfMeasurementData: action.payload
         //     };
 
-        // case CREATE_PART_SUCCESS: {
-        //     return {
-        //         ...state,
-        //         loading: false,
-        //         error: false
-        //     };
-        // }
-        // case CREATE_PART_FAILURE:
-        //     return {
-        //         ...state,
-        //         loading: false,
-        //         error: true
-        //     };
+        case CREATE_OTHER_OPERATION_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                error: false
+            };
+        }
+        case CREATE_OTHER_OPERATION_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
 
         default:
             return state;

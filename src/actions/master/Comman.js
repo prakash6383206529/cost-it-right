@@ -15,7 +15,9 @@ import {
     GET_GRADE_SUCCESS,
     GET_TECHNOLOGY_LIST_SUCCESS,
     GET_OTHER_OPERATION_FORMDATA_SUCCESS,
-    GET_OTHER_OPERATION_FORMDATA_FAILURE
+    GET_OTHER_OPERATION_FORMDATA_FAILURE,
+    GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
+    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
@@ -310,3 +312,28 @@ export function getOtherOperationData(callback) {
     };
 }
 
+/**
+ * @method fetchRMCategoryAPI
+ * @description Used to fetch row material category list
+ */
+export function getCEDOtherOperationComboData(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCEDotherOperationsComboDataAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
+                    payload: response.data.DynamicData,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

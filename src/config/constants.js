@@ -72,7 +72,13 @@ export const API = {
 
   //API's for other operations
   getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-other-operation`,
-  getOtherOperationsFormDataAPI: `${BASE_URL}/masters-other-operation/get-other-operation`,
+  getOtherOperationsFormDataAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
+  createOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-other-operation`,
+
+  //API's for CED other operations
+  getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
+  createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
+  getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
 }
 
 
@@ -141,6 +147,15 @@ export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 //for Other Operation master
 export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS';
 export const GET_OTHER_OPERATION_FAILURE = 'GET_OTHER_OPERATION_FAILURE';
+export const CREATE_OTHER_OPERATION_REQUEST = 'CREATE_OTHER_OPERATION_REQUEST';
+export const CREATE_OTHER_OPERATION_FAILURE = 'CREATE_OTHER_OPERATION_FAILURE';
+export const CREATE_OTHER_OPERATION_SUCCESS = 'CREATE_OTHER_OPERATION_SUCCESS';
 export const GET_OTHER_OPERATION_FORMDATA_SUCCESS = 'GET_OTHER_OPERATION_FORMDATA_SUCCESS';
 export const GET_OTHER_OPERATION_FORMDATA_FAILURE = 'GET_OTHER_OPERATION_FORMDATA_FAILURE';
+
+//for CED Other Operation master
+export const GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS';
+export const GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE = 'GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE';
+export const GET_CED_OTHER_OPERATION_SUCCESS = 'GET_CED_OTHER_OPERATION_SUCCESS';
+export const GET_CED_OTHER_OPERATION_FAILURE = 'GET_CED_OTHER_OPERATION_FAILURE';
 

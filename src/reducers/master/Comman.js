@@ -12,7 +12,9 @@ import {
     GET_GRADE_SUCCESS,
     GET_TECHNOLOGY_LIST_SUCCESS,
     GET_OTHER_OPERATION_FORMDATA_SUCCESS,
-    GET_OTHER_OPERATION_FORMDATA_FAILURE
+    GET_OTHER_OPERATION_FORMDATA_FAILURE,
+    GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
+    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE
 } from '../../config/constants';
 
 const initialState = {
@@ -110,6 +112,19 @@ export default function commanReducer(state = initialState, action) {
                 otherOperationFormData: action.payload
             };
         case GET_OTHER_OPERATION_FORMDATA_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
+        case GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                cedOtherOperationComboData: action.payload
+            };
+        case GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE:
             return {
                 ...state,
                 loading: false,

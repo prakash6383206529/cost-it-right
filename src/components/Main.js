@@ -20,6 +20,7 @@ import SupplierMaster from './masters/sap-masters/supplier-master';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
 import OperationMaster from './masters/sap-masters/other-operation';
+import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -185,6 +186,14 @@ class Main extends Component {
                 path="/other-operation"
                 render={props => (
                   <OperationMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/ced-other-operation"
+                render={props => (
+                  <CEDoperationMaster
                     {...props}
                   />
                 )}
