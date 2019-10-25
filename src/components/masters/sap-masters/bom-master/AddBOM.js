@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField, renderMultiSelectField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
 import { createBOMAPI } from '../../../../actions/master/BillOfMaterial';
 import { toastr } from 'react-redux-toastr';
@@ -15,7 +15,7 @@ class AddBOM extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false,
+            isEditFlag: false,
             selectedParts: [],
         }
     }
@@ -24,8 +24,8 @@ class AddBOM extends Component {
     * @method componentWillMount
     * @description called before rendering the component
     */
-    componentWillMount(){
-        this.props.fetchMasterDataAPI(res => {});   
+    componentWillMount() {
+        this.props.fetchMasterDataAPI(res => { });
     }
 
     /**
@@ -46,10 +46,10 @@ class AddBOM extends Component {
         })
     }
 
-     /**
-     * @method handlePartSelection
-     * @description called
-     */
+    /**
+    * @method handlePartSelection
+    * @description called
+    */
     handlePartSelection = e => {
         this.setState({
             selectedParts: e
@@ -63,16 +63,15 @@ class AddBOM extends Component {
     renderSelectPartList = () => {
         const { partList } = this.props;
         const temp = [];
-        partList && partList.map(item =>
-            {
-                if(item.Value != 0){
-                    temp.push({ Text: item.Text, Value: item.Value })
-                }
+        partList && partList.map(item => {
+            if (item.Value != 0) {
+                temp.push({ Text: item.Text, Value: item.Value })
             }
+        }
         );
         return temp;
     }
-    
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -103,11 +102,11 @@ class AddBOM extends Component {
         this.props.createBOMAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.BOM_ADD_SUCCESS);
-                {this.toggleModel()}
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.message);
             }
-        }); 
+        });
     }
 
     /**
@@ -115,27 +114,27 @@ class AddBOM extends Component {
     * @description Used show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, partList,materialTypeList } = this.props;
+        const { uniOfMeasurementList, partList, materialTypeList } = this.props;
         const temp = [];
-        if(label === 'material'){
+        if (label === 'material') {
             materialTypeList && materialTypeList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'uom'){
+        if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label = 'part'){
+        if (label = 'part') {
             partList && partList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        
+
     }
 
     /**
@@ -150,7 +149,7 @@ class AddBOM extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.BOM}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                        <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -277,8 +276,8 @@ class AddBOM extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Row/>
-                                    <Row/>
+                                        <Row />
+                                        <Row />
                                         <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
@@ -367,7 +366,7 @@ class AddBOM extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-    const {uniOfMeasurementList, partList, materialTypeList} = comman;
+    const { uniOfMeasurementList, partList, materialTypeList } = comman;
     return { uniOfMeasurementList, materialTypeList, partList }
 }
 

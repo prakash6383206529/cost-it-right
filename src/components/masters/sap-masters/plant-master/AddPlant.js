@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createPlantAPI } from '../../../../actions/master/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT} from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant'
 
 class AddPlant extends Component {
     constructor(props) {
@@ -20,10 +20,10 @@ class AddPlant extends Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.props.fetchCountryDataAPI(res => {
             console.log('response of country', res);
-        });   
+        });
     }
     /**
     * @method toggleModel
@@ -42,13 +42,13 @@ class AddPlant extends Component {
             console.log('res of state: ', res);
         });
     }
-    
+
     /**
     * @method handleStateChange
     * @description  used to handle state selection
     */
     handleStateChange = (e) => {
-        this.props.fetchCityDataAPI(e.target.value, res => {console.log('res of city', res);});
+        this.props.fetchCityDataAPI(e.target.value, res => { console.log('res of city', res); });
     }
 
     /**
@@ -68,28 +68,28 @@ class AddPlant extends Component {
     selectType = (label) => {
         const { countryList, stateList, cityList } = this.props;
         const temp = [];
-        if(label === 'country'){
+        if (label === 'country') {
             countryList && countryList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
-                );
-                console.log('temp', countryList);
-                return temp;
+            );
+            console.log('temp', countryList);
+            return temp;
         }
-        if(label === 'state'){
+        if (label === 'state') {
             stateList && stateList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
-                );
-                console.log('temp', stateList);
-                return temp;
-        } 
-        if(label === 'city'){
+            );
+            console.log('temp', stateList);
+            return temp;
+        }
+        if (label === 'city') {
             cityList && cityList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
-                );
-                console.log('temp', cityList);
-                return temp;
+            );
+            console.log('temp', cityList);
+            return temp;
         }
-       
+
     }
     /**
     * @method onSubmit
@@ -97,20 +97,20 @@ class AddPlant extends Component {
     */
     onSubmit = (values) => {
         let formData = {
-            PlantName : values.PlantName,
-            PlantTitle : values.PlantTitle,
-            UnitNumber : values.UnitNumber,
+            PlantName: values.PlantName,
+            PlantTitle: values.PlantTitle,
+            UnitNumber: values.UnitNumber,
             Address: values.Address,
             CityId: values.CityId
         }
         this.props.createPlantAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
-                {this.toggleModel()}
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.Message);
             }
-        });   
+        });
     }
 
     /**
@@ -125,7 +125,7 @@ class AddPlant extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.PLANT}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -184,7 +184,7 @@ class AddPlant extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                         <Col md="6">
+                                        <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.COUNTRY}`}
                                                 name={"CountryId"}
@@ -194,7 +194,7 @@ class AddPlant extends Component {
                                                 //selection={this.state.countryListing}
                                                 required={true}
                                                 options={this.selectType('country')}
-                                                onChange={(Value)=>this.handleCountryChange(Value)}
+                                                onChange={(Value) => this.handleCountryChange(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -211,7 +211,7 @@ class AddPlant extends Component {
                                                 //selection={this.state.stateListing}
                                                 required={true}
                                                 options={this.selectType('state')}
-                                                onChange={(Value)=>this.handleStateChange(Value)}
+                                                onChange={(Value) => this.handleStateChange(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -228,7 +228,7 @@ class AddPlant extends Component {
                                                 //selection={this.state.cityListing}
                                                 required={true}
                                                 options={this.selectType('city')}
-                                                onChange={(Value)=>this.handleCityChange(Value)}
+                                                onChange={(Value) => this.handleCityChange(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -259,7 +259,7 @@ class AddPlant extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-   const { countryList, stateList, cityList} = comman
+    const { countryList, stateList, cityList } = comman
     return { countryList, stateList, cityList }
 }
 
@@ -269,8 +269,10 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createPlantAPI, fetchCountryDataAPI, 
-    fetchStateDataAPI, fetchCityDataAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createPlantAPI, fetchCountryDataAPI,
+    fetchStateDataAPI, fetchCityDataAPI
+})(reduxForm({
     form: 'AddPlant',
     enableReinitialize: true,
 })(AddPlant));

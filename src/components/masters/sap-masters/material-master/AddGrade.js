@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField} from "../../../layout/FormInputs";
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createRMGradeAPI } from '../../../../actions/master/Material';
 import { fetchRowMaterialAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
@@ -23,8 +23,8 @@ class AddGrade extends Component {
     * @method componentWillMount
     * @description call before rendering the component
     */
-    componentWillMount(){
-        this.props.fetchRowMaterialAPI(res => {});   
+    componentWillMount() {
+        this.props.fetchRowMaterialAPI(res => { });
     }
 
     /**
@@ -53,8 +53,8 @@ class AddGrade extends Component {
         const { rowMaterialList } = this.props;
         const temp = [];
         rowMaterialList && rowMaterialList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
+            temp.push({ Text: item.Text, Value: item.Value })
+        );
         return temp;
     }
 
@@ -66,11 +66,11 @@ class AddGrade extends Component {
         this.props.createRMGradeAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
-                {this.toggleModel()}
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.message);
             }
-        });   
+        });
     }
 
     /**
@@ -85,7 +85,7 @@ class AddGrade extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.GRADE}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -136,7 +136,7 @@ class AddGrade extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                             {CONSTANT.SAVE}
+                                                {CONSTANT.SAVE}
                                             </button>
                                         </div>
                                     </Row>
@@ -155,8 +155,8 @@ class AddGrade extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({comman }) {
-   const { rowMaterialList } = comman;
+function mapStateToProps({ comman }) {
+    const { rowMaterialList } = comman;
     return { rowMaterialList }
 }
 
@@ -166,7 +166,7 @@ function mapStateToProps({comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createRMGradeAPI,fetchRowMaterialAPI })(reduxForm({
+export default connect(mapStateToProps, { createRMGradeAPI, fetchRowMaterialAPI })(reduxForm({
     form: 'AddGrade',
     enableReinitialize: true,
 })(AddGrade));

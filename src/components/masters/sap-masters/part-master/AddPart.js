@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { createPartAPI, fetchMasterDataAPI, updatePartsAPI , getOnePartsAPI, getAllPartsAPI} from '../../../../actions/master/Part';
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
+import { createPartAPI, fetchMasterDataAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '../../../../actions/master/Part';
 import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -15,24 +15,24 @@ class AddPart extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
     }
 
-    componentWillMount(){
-        this.props.fetchMasterDataAPI(res => {}); 
-        this.props.fetchPlantDataAPI(res=> {});  
+    componentWillMount() {
+        this.props.fetchMasterDataAPI(res => { });
+        this.props.fetchPlantDataAPI(res => { });
     }
 
-    componentDidMount(){
-        const { partId,isEditFlag } = this.props;
+    componentDidMount() {
+        const { partId, isEditFlag } = this.props;
         console.log('isEditFlag', isEditFlag);
-        if(isEditFlag){
-            this.setState({isEditFlag},()=>{  
-            this.props.getOnePartsAPI(partId,true, res => {})   
-        })
-        }else{
-            this.props.getOnePartsAPI('',false, res => {})   
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getOnePartsAPI(partId, true, res => { })
+            })
+        } else {
+            this.props.getOnePartsAPI('', false, res => { })
         }
     }
     /**
@@ -58,41 +58,41 @@ class AddPart extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        if (this.props.isEditFlag) { 
+        if (this.props.isEditFlag) {
             const { partId } = this.props;
-            this.setState({ isSubmitted: true }); 
-                let formData = {
-                    PartNumber : values.PartNumber,
-                    PartName : values.PartName,
-                    MaterialTypeId : values.MaterialTypeId,
-                    MaterialGroupCode : values.MaterialGroupCode,
-                    UnitOfMeasurementId : values.UnitOfMeasurementId,
-                    PlantId : values.PlantId,
-                    PartDescription : values.PartDescription,
-                    PartId : partId
-                }
-                console.log('formData: ', formData);
+            this.setState({ isSubmitted: true });
+            let formData = {
+                PartNumber: values.PartNumber,
+                PartName: values.PartName,
+                MaterialTypeId: values.MaterialTypeId,
+                MaterialGroupCode: values.MaterialGroupCode,
+                UnitOfMeasurementId: values.UnitOfMeasurementId,
+                PlantId: values.PlantId,
+                PartDescription: values.PartDescription,
+                PartId: partId
+            }
+            console.log('formData: ', formData);
 
             this.props.updatePartsAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_PART_SUCESS);
-                    this.props.getAllPartsAPI(res => {})
+                    this.props.getAllPartsAPI(res => { })
                     this.toggleModel();
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        }else{
+        } else {
             this.props.createPartAPI(values, (res) => {
                 if (res.data.Result === true) {
-                  toastr.success(MESSAGES.PART_ADD_SUCCESS);
-                  this.props.getAllPartsAPI(res => {})
-                  {this.toggleModel()}
+                    toastr.success(MESSAGES.PART_ADD_SUCCESS);
+                    this.props.getAllPartsAPI(res => { })
+                    { this.toggleModel() }
                 } else {
-                  toastr.error(res.data.message);
+                    toastr.error(res.data.message);
                 }
             });
-        }   
+        }
     }
 
     /**
@@ -100,30 +100,30 @@ class AddPart extends Component {
     * @description Used show listing of unit of measurement
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, plantList,materialTypeList } = this.props;
+        const { uniOfMeasurementList, plantList, materialTypeList } = this.props;
         const temp = [];
-        if(label === 'material'){
+        if (label === 'material') {
             materialTypeList && materialTypeList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
-              );
-              console.log('temp', materialTypeList);
+            );
+            console.log('temp', materialTypeList);
             return temp;
         }
-        if(label === 'uom'){
+        if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
-              );
-              console.log('temp', uniOfMeasurementList);
+            );
+            console.log('temp', uniOfMeasurementList);
             return temp;
         }
-        if(label = 'plant'){
+        if (label = 'plant') {
             plantList && plantList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
-              );
-              console.log('temp', plantList);
+            );
+            console.log('temp', plantList);
             return temp;
         }
-        
+
     }
 
     /**
@@ -138,7 +138,7 @@ class AddPart extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Part' : 'Add Part'}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -169,8 +169,8 @@ class AddPart extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                    <Row/>
-                                    <Row/>
+                                        <Row />
+                                        <Row />
                                         <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.PART} ${CONSTANT.TYPE}`}
@@ -245,12 +245,12 @@ class AddPart extends Component {
                                                 className=" withoutBorder "
                                             />
                                         </Col>
-                                       
+
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {isEditFlag ? 'Update' : 'Save' }
+                                                {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </Row>
@@ -269,12 +269,12 @@ class AddPart extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part, comman}) {
-    const {uniOfMeasurementList, partData, materialTypeList} = part;
+function mapStateToProps({ part, comman }) {
+    const { uniOfMeasurementList, partData, materialTypeList } = part;
     console.log('partData: ', partData);
     const { plantList } = comman
     let initialValues = {};
-    if(partData && partData !== undefined){
+    if (partData && partData !== undefined) {
         initialValues = {
             PartNumber: partData.PartNumber,
             PartName: partData.PartName,
@@ -285,7 +285,7 @@ function mapStateToProps({ part, comman}) {
             PartDescription: partData.PartDescription,
         }
     }
-    return { uniOfMeasurementList, initialValues, materialTypeList,plantList }
+    return { uniOfMeasurementList, initialValues, materialTypeList, plantList }
 }
 
 /**
@@ -294,9 +294,11 @@ function mapStateToProps({ part, comman}) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, {createPartAPI,fetchMasterDataAPI, 
-    updatePartsAPI,getOnePartsAPI, 
-    fetchPlantDataAPI, getAllPartsAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createPartAPI, fetchMasterDataAPI,
+    updatePartsAPI, getOnePartsAPI,
+    fetchPlantDataAPI, getAllPartsAPI
+})(reduxForm({
     form: 'AddPart',
     enableReinitialize: true,
 })(AddPart));

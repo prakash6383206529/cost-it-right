@@ -11,7 +11,7 @@ export const MESSAGES = {
   UOM_ADD_SUCCESS: 'Unit Of measurement added successfully',
   UPDATE_UOM_SUCESS: 'Unit Of measurement updated successfully',
   DELETE_UOM_SUCCESS: 'Unit Of measurement deleted successfully',
-  CONFIRM_DELETE : 'Are you sure you want to delete This',
+  CONFIRM_DELETE: 'Are you sure you want to delete This',
   CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',
   CATEGORY_ADD_SUCCESS: 'Category created successfully',
   MATERIAL_ADDED_SUCCESS: 'Material added successfully',
@@ -23,6 +23,8 @@ export const MESSAGES = {
   BOP_ADD_SUCCESS: 'Bought out part added successfully',
   PROCESS_ADD_SUCCESS: 'Process added successfully',
   FUEL_ADD_SUCCESS: 'Fuel added successfully',
-  FUEL_DETAIL_ADD_SUCCESS: 'Fuel Details added successfully'
+  FUEL_DETAIL_ADD_SUCCESS: 'Fuel Details added successfully',
+  OTHER_OPERATION_ADD_SUCCESS: 'Other Operation added successfully',
+  CED_OTHER_OPERATION_ADD_SUCCESS: 'CED Other Operation added successfully',
 };
- 
+

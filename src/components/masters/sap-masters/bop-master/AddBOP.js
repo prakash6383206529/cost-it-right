@@ -16,7 +16,7 @@ class AddBOP extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false,
+            isEditFlag: false,
             selectedParts: [],
         }
     }
@@ -25,8 +25,8 @@ class AddBOP extends Component {
     * @method componentWillMount
     * @description called before rendering the component
     */
-    componentWillMount(){
-        this.props.fetchMasterDataAPI(res => {});   
+    componentWillMount() {
+        this.props.fetchMasterDataAPI(res => { });
     }
 
     /**
@@ -72,16 +72,15 @@ class AddBOP extends Component {
     renderSelectPartList = () => {
         const { partList } = this.props;
         const temp = [];
-        partList && partList.map(item =>
-            {
-                if(item.Value != 0){
-                    temp.push({ Text: item.Text, Value: item.Value })
-                }
+        partList && partList.map(item => {
+            if (item.Value != 0) {
+                temp.push({ Text: item.Text, Value: item.Value })
             }
+        }
         );
         return temp;
     }
-    
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -111,7 +110,7 @@ class AddBOP extends Component {
             } else {
                 toastr.error(res.data.Message);
             }
-        }); 
+        });
     }
 
     /**
@@ -122,25 +121,25 @@ class AddBOP extends Component {
         const { uniOfMeasurementList, partList,materialTypeList, plantList,
             supplierList, cityList,technologyList, categoryTypeList, categoryList} = this.props;
         const temp = [];
-        if(label === 'material'){
+        if (label === 'material') {
             materialTypeList && materialTypeList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'uom'){
+        if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'part'){
+        if (label === 'part') {
             partList && partList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'plant'){
+        if (label === 'plant') {
             plantList && plantList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
@@ -191,14 +190,14 @@ class AddBOP extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.BOPP}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                        <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
-                                <Row>
-                                    <Col md="6">
+                                    <Row>
+                                        <Col md="6">
                                             <Field
                                                 label={`Basic Rate`}
                                                 name={"BasicRate"}
@@ -359,7 +358,7 @@ class AddBOP extends Component {
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
-                                        </Col>  
+                                        </Col>
                                         <Col md="6">
                                             <Field
                                                 label={`Destination Supplier City Id`}
@@ -445,14 +444,14 @@ class AddBOP extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                </Row>
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-sm-12 text-center">
-                                        <button type="submit" className="btn dark-pinkbtn" >
-                                            {`${CONSTANT.SAVE}`}
-                                        </button>
-                                    </div>
-                                </Row>
+                                    </Row>
+                                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                                        <div className="col-sm-12 text-center">
+                                            <button type="submit" className="btn dark-pinkbtn" >
+                                                {`${CONSTANT.SAVE}`}
+                                            </button>
+                                        </div>
+                                    </Row>
                                 </form>
                             </Container>
                         </Row>

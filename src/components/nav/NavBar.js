@@ -74,8 +74,8 @@ class SideBar extends Component {
   render() {
     return (
       <nav>
-          <div className="flex-conatiner sign-social before-login">
-            {/* <Nav className="ml-auto top-menu">
+        <div className="flex-conatiner sign-social before-login">
+          {/* <Nav className="ml-auto top-menu">
               <NavItem>
                 <NavBtn className=" nav-link" to="/login">Sign In</NavBtn>
               </NavItem>
@@ -83,7 +83,7 @@ class SideBar extends Component {
                 <NavBtn className=" nav-link" to="/signup">Sign Up</NavBtn>
               </NavItem>
             </Nav> */}
-            {/* <div className="flex-conatiner social_icon">
+          {/* <div className="flex-conatiner social_icon">
               <a href="https://www.instagram.com/stage_n_set/" target="_blank">
                 <img src={require("../../assests/images/insta.png")} />
               </a>
@@ -94,29 +94,29 @@ class SideBar extends Component {
                 <img src={require("../../assests/images/twiiter.png")} />
               </a>
             </div> */}
-            <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
-          </div>
+          <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
+        </div>
         {/* )} */}
-       
-          <Nav className="ml-auto top-menu logout">
-            {/* <Link className="bell-notifcation-icon" to="/notifications">
+
+        <Nav className="ml-auto top-menu logout">
+          {/* <Link className="bell-notifcation-icon" to="/notifications">
               <span className="icon-notification"> </span>
               {this.state.notificationCount > 0 ? <Badge color="danger">{this.state.notificationCount > 0 ? this.state.notificationCount : ''}</Badge> : ''}
 
             </Link> */}
-            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-              <DropdownToggle nav caret className="userImg-header">
-                <div className="img-only">
-                  <img src="../../images/defaultUser.png" />
-                  {/* {imagePreview} */}
-                </div>
-                <span>
-                  priyanka
+          <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+            <DropdownToggle nav caret className="userImg-header">
+              <div className="img-only">
+                <img src="../../images/defaultUser.png" />
+                {/* {imagePreview} */}
+              </div>
+              <span>
+                priyanka
                 </span>
-              </DropdownToggle>
-            </Dropdown>
-            <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
-          </Nav>
+            </DropdownToggle>
+          </Dropdown>
+          <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
+        </Nav>
         <Navbar className="menu-bottom-list " expand="md">
 
           <Collapse isOpen={this.state.isOpen} navbar>
@@ -137,6 +137,8 @@ class SideBar extends Component {
                     <a className="dropdown-item" href="bop-master">BOP Master</a>
                     <a className="dropdown-item" href="/process-master">Process Master</a>
                     <a className="dropdown-item" href="/fuel-master">Fuel Master</a>
+                    <a className="dropdown-item" href="/other-operation">Other Operation</a>
+                    <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
                   </div>
                 </li>
                 <li className="nav-item dropdown">
@@ -173,7 +175,7 @@ class SideBar extends Component {
  * @desc map state containing organisation details from the api to props
  * @return object{}
  */
-function mapStateToProps({}) {
+function mapStateToProps({ }) {
   return {
 
   }

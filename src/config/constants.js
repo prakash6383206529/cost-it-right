@@ -10,7 +10,7 @@ const BASE_URL = 'http://183.182.84.29/cost-it-right-lite/api/v1';
 export const API = {
   //configure api's
   getPart: `${BASE_URL}/configuration/select-list-get-part`,
-  getMasterFilterUOMAPI : `${BASE_URL}/masters-unit-of-measurement/get`,
+  getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
   getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
   getTechnology: `${BASE_URL}/configuration/select-list-get-technology`,
@@ -54,16 +54,16 @@ export const API = {
   createUOMAPI: `${BASE_URL}/masters-unit-of-measurement/create`,
   getUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getAllMasterUOMAPI: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
-  updateUOMAPI : `${BASE_URL}/masters-unit-of-measurement/update`,
-  deleteUOMAPI : `${BASE_URL}/masters-unit-of-measurement/delete`,
+  updateUOMAPI: `${BASE_URL}/masters-unit-of-measurement/update`,
+  deleteUOMAPI: `${BASE_URL}/masters-unit-of-measurement/delete`,
 
   //Api for the part master
   partCreateAPI: `${BASE_URL}/masters-part/create`,
   getAllPartsAPI: `${BASE_URL}/masters-part/get`,
   getOnePartAPI: `${BASE_URL}/masters-part/get`,
-  filterPartAPI : `${BASE_URL}/masters-part/get`,
-  deletePartAPI : `${BASE_URL}/masters-part/delete`,
-  updatePartAPI : `${BASE_URL}/masters-part/update`,
+  filterPartAPI: `${BASE_URL}/masters-part/get`,
+  deletePartAPI: `${BASE_URL}/masters-part/delete`,
+  updatePartAPI: `${BASE_URL}/masters-part/update`,
 
   //Api for category master
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
@@ -74,7 +74,7 @@ export const API = {
   createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
   createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
-  createRMSpecificationAPI:`${BASE_URL}/masters-raw-material/create-specification` ,
+  createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
 
   //Api for plant master
   createPlantAPI: `${BASE_URL}/plant/create`,
@@ -100,11 +100,21 @@ export const API = {
   getFuelAPI: `${BASE_URL}/masters-fuel/get-fuel`,
   getFuelDetailAPI: `${BASE_URL}/masters-fuel/get-fuel-details`,
  
+
+  //API's for other operations
+  getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-other-operation`,
+  getOtherOperationsFormDataAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
+  createOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-other-operation`,
+
+  //API's for CED other operations
+  getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
+  createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
+  getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
 }
 
 
 //Api constants
-export const  API_REQUEST = 'API_REQUEST';
+export const API_REQUEST = 'API_REQUEST';
 export const API_FAILURE = 'API_FAILURE';
 
 // Masters api constant
@@ -119,6 +129,7 @@ export const GET_SUPPLIER_CITY_SUCCESS = 'GET_SUPPLIER_CITY_SUCCESS';
 export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
 export const  GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
+export const GET_TECHNOLOGY_LIST_SUCCESS = 'GET_TECHNOLOGY_LIST_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
@@ -183,3 +194,18 @@ export const GET_FUEL_FAILURE = 'GET_FUEL_FAILURE';
 export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE'; 
 export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS';
 export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS';
+//for Other Operation master
+export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS';
+export const GET_OTHER_OPERATION_FAILURE = 'GET_OTHER_OPERATION_FAILURE';
+export const CREATE_OTHER_OPERATION_REQUEST = 'CREATE_OTHER_OPERATION_REQUEST';
+export const CREATE_OTHER_OPERATION_FAILURE = 'CREATE_OTHER_OPERATION_FAILURE';
+export const CREATE_OTHER_OPERATION_SUCCESS = 'CREATE_OTHER_OPERATION_SUCCESS';
+export const GET_OTHER_OPERATION_FORMDATA_SUCCESS = 'GET_OTHER_OPERATION_FORMDATA_SUCCESS';
+export const GET_OTHER_OPERATION_FORMDATA_FAILURE = 'GET_OTHER_OPERATION_FORMDATA_FAILURE';
+
+//for CED Other Operation master
+export const GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS';
+export const GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE = 'GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE';
+export const GET_CED_OTHER_OPERATION_SUCCESS = 'GET_CED_OTHER_OPERATION_SUCCESS';
+export const GET_CED_OTHER_OPERATION_FAILURE = 'GET_CED_OTHER_OPERATION_FAILURE';
+

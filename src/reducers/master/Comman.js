@@ -15,11 +15,16 @@ import {
     GET_TECHNOLOGY_SUCCESS,
     GET_CATEGORY_TYPE_SUCCESS,
     GET_CATEGORY_SUCCESS,
-    GET_FUEL_SUCCESS
+    GET_FUEL_SUCCESS,
+    GET_TECHNOLOGY_LIST_SUCCESS,
+    GET_OTHER_OPERATION_FORMDATA_SUCCESS,
+    GET_OTHER_OPERATION_FORMDATA_FAILURE,
+    GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
+    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE
 } from '../../config/constants';
 
 const initialState = {
-   
+    technologyList: []
 };
 
 export default function commanReducer(state = initialState, action) {
@@ -134,7 +139,47 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 fuelList: action.payload
             };
+        case FETCH_MATER_DATA_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
+        case GET_TECHNOLOGY_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                technologyList: action.payload
+            };
+        case GET_OTHER_OPERATION_FORMDATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                otherOperationFormData: action.payload
+            };
+        case GET_OTHER_OPERATION_FORMDATA_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
+        case GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                cedOtherOperationComboData: action.payload
+            };
+           
         case  FETCH_MATER_DATA_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
+        case GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE:
             return {
                 ...state,
                 loading: false,

@@ -36,5 +36,7 @@ export const CONSTANT = {
     LOCATION: 'Location',
     DATE: 'Created Date',
     PROCESS: 'Process',
-    FUEL: 'Fuel'
+    FUEL: 'Fuel',
+    OTHER_OPERATION: 'Other Operation',
+    CED_OTHER_OPERATION: 'CED Other Operation'
   };

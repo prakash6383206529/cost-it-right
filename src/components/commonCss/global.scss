@@ -1,10 +1,10 @@
 @import "./cssVariable.scss";
-@import"./style.scss";
+@import "./style.scss";
 @import url("https://fonts.googleapis.com/css?family=Titillium+Web:300,400,600,700");
 
 body {
   font-family: "Titillium Web", sans-serif !important;
-  position   : relative;
+  position: relative;
 }
 
 button:focus {
@@ -13,7 +13,7 @@ button:focus {
 
 a:hover {
   text-decoration: none;
-  color          : $text-hover;
+  color: $text-hover;
 }
 
 :focus {
@@ -22,7 +22,6 @@ a:hover {
 
 img {
   max-width: 100%;
-
 }
 
 .mt-ten {
@@ -83,7 +82,7 @@ p {
 
 .text-border {
   border-bottom: 1px solid #000;
-  width        : fit-content;
+  width: fit-content;
 }
 
 .asterisk-required {
@@ -111,7 +110,7 @@ p {
 }
 
 .font-sizerem {
-  font-size: 1.2rem
+  font-size: 1.2rem;
 }
 
 .btn-secondary.focus,
@@ -126,28 +125,28 @@ p {
 }
 
 .semi-bold {
-  font-weight: 600
+  font-weight: 600;
 }
 
 .form-control:focus {
-  color           : #495057;
+  color: #495057;
   background-color: #fff;
-  border-color    : #000;
-  outline         : 0;
-  box-shadow      : none;
+  border-color: #000;
+  outline: 0;
+  box-shadow: none;
 }
 
 .custom-select:focus {
   border-color: #000;
-  outline     : 0;
-  box-shadow  : none;
+  outline: 0;
+  box-shadow: none;
 }
 
 .custom-select {
-  background-image   : url('../../assests/images/down-arrow2.svg');
-  background-repeat  : no-repeat;
+  background-image: url("../../assests/images/down-arrow2.svg");
+  background-repeat: no-repeat;
   background-position: right;
-  background-size    : 0.75rem;
+  background-size: 0.75rem;
 
   option {
     padding: 0 10px;
@@ -166,56 +165,56 @@ p {
 
 .lightGreybtn {
   background-color: #858a8e;
-  border-color    : #7f8386;
+  border-color: #7f8386;
 }
 
 .dark-pinkbtn {
-  background    : $colorPrimary;
-  color         : #fff;
-  border-color  : #f6c30f;
+  background: $colorPrimary;
+  color: #fff;
+  border-color: #f6c30f;
   text-transform: uppercase;
-  
+
   &:hover {
-    background  : $customPrimary-Hover;
+    background: $customPrimary-Hover;
     border-color: $customPrimary-Hover;
-    color       : #fff;
+    color: #fff;
   }
 
   .active {
-    background  : $customPrimary-Hover;
+    background: $customPrimary-Hover;
     border-color: $customPrimary-Hover;
   }
 }
 
 .dark-pinkbtn.active {
-  background  : $customPrimary-Hover;
+  background: $customPrimary-Hover;
   border-color: $customPrimary-Hover;
 }
 
 .dark-pinkbtn.btn-secondary {
-  background  : $colorPrimary;
-  color       : #fff;
+  background: $colorPrimary;
+  color: #fff;
   border-color: #f6c30f;
 
   &:hover {
-    background  : $customPrimary-Hover;
+    background: $customPrimary-Hover;
     border-color: $customPrimary-Hover;
-    color       : #fff;
+    color: #fff;
   }
 
   .active {
-    background  : $customPrimary-Hover;
+    background: $customPrimary-Hover;
     border-color: $customPrimary-Hover;
   }
 }
 
 .black-btn {
   background-color: #000;
-  color           : #fff;
+  color: #fff;
 
   &:hover {
     background-color: #494747;
-    color           : #fff;
+    color: #fff;
   }
 }
 
@@ -228,68 +227,68 @@ p {
 }
 
 .rounded-icons {
-  border-radius   : 50%;
-  width           : 60px;
-  height          : 60px;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
   background-color: #f6c30f;
-  border-color    : #f6c30f;
-  display         : flex;
-  justify-content : center;
-  align-items     : center;
-  border          : 2px solid #fff;
-  color           : #fff;
-  font-size       : 1.2rem;
-  box-shadow      : 0 3px 7px 1px rgba(0, 0, 0, 0.1);
-  transition      : 0.3s all ease-in-out;
+  border-color: #f6c30f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 1.2rem;
+  box-shadow: 0 3px 7px 1px rgba(0, 0, 0, 0.1);
+  transition: 0.3s all ease-in-out;
 
   &:hover {
     background-color: #e6b711;
   }
 }
 
-.nav-tabs.subtabs>li a.active,
-.nav-tabs.subtabs>li a:hover {
-  border-left-color : #fff;
-  border-bottom     : 2px solid #f6c413;
+.nav-tabs.subtabs > li a.active,
+.nav-tabs.subtabs > li a:hover {
+  border-left-color: #fff;
+  border-bottom: 2px solid #f6c413;
   border-right-color: #fff;
-  border-top-color  : #fff;
-  cursor            : pointer;
+  border-top-color: #fff;
+  cursor: pointer;
 }
 
 // custom file //
 .file-size {
   &::after {
-    content            : "\f030";
-    font-family        : "Fontawesome";
-    color              : black;
-    display            : flex;
-    border             : 1px solid #f6ca0c;
+    content: "\f030";
+    font-family: "Fontawesome";
+    color: black;
+    display: flex;
+    border: 1px solid #f6ca0c;
     -webkit-user-select: none;
-    cursor             : pointer;
-    font-size          : 15px;
-    width              : 35px;
-    height             : 35px;
-    border-radius      : 50%;
-    background         : #f6ca0b;
-    justify-content    : center;
-    align-items        : center;
-    position           : absolute;
-    z-index            : 9;
-    pointer-events     : none;
-    cursor             : pointer;
-    top                : -2px;
+    cursor: pointer;
+    font-size: 15px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #f6ca0b;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 9;
+    pointer-events: none;
+    cursor: pointer;
+    top: -2px;
   }
 
   .customFileInput {
-    display : block;
+    display: block;
     overflow: hidden;
-    opacity : 0;
-    height  : 35px;
+    opacity: 0;
+    height: 35px;
     position: relative;
-    cursor  : pointer;
+    cursor: pointer;
 
     input {
-      height     : 30px;
+      height: 30px;
       margin-left: -2px;
     }
 
@@ -297,50 +296,51 @@ p {
       visibility: hidden;
     }
 
-    &:hover::after {}
+    &:hover::after {
+    }
 
     &:active {
       outline: 0;
 
-      &::after {}
+      &::after {
+      }
     }
   }
 }
 
 .file-size {
-  display        : flex;
+  display: flex;
   justify-content: center;
-  align-items    : center;
-  position       : absolute;
-  right          : 5px;
-  bottom         : 5px;
-  width          : 35px;
+  align-items: center;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 35px;
 }
 
 .headshot-img {
-  width          : 300px;
-  height         : 150px;
-  position       : relative;
-  border         : 1px solid #ccc;
-  text-align     : center;
-  display        : flex;
-  align-items    : center;
+  width: 300px;
+  height: 150px;
+  position: relative;
+  border: 1px solid #ccc;
+  text-align: center;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin         : 0 auto 10px;
+  margin: 0 auto 10px;
 
   .headshot {
-    overflow       : hidden;
-    height         : 100%;
+    overflow: hidden;
+    height: 100%;
     justify-content: center;
-    display        : flex;
-    align-items    : center;
+    display: flex;
+    align-items: center;
 
     img {
-      width     : 300px;
-      max-width : 100%;
-      height    : 150px;
+      width: 300px;
+      max-width: 100%;
+      height: 150px;
       max-height: 150px;
-
     }
   }
 }
@@ -352,15 +352,15 @@ p {
 
     .modal-header {
       background: #b8c1c9;
-      color     : #fff;
+      color: #fff;
 
       .modal-title {
-        width     : 100%;
+        width: 100%;
         text-align: center;
       }
 
       .close {
-        color  : #fff;
+        color: #fff;
         opacity: 1;
       }
     }
@@ -384,15 +384,14 @@ button .fas {
 }
 
 .rrt-confirm-holder .rrt-confirm {
-  width        : 444px;
-  font-size    : 1rem;
-  border-radius: .3rem;
-
+  width: 444px;
+  font-size: 1rem;
+  border-radius: 0.3rem;
 }
 
 .cusrsor-color {
   cursor: pointer;
-  color : #87939f;
+  color: #87939f;
 
   &:hover {
     color: $text-hover !important;
@@ -403,11 +402,10 @@ button .fas {
   height: 35px;
 }
 
-
 .custom-checkbox {
-  position    : relative;
+  position: relative;
   padding-left: 27px;
-  margin-top  : 4px;
+  margin-top: 4px;
 
   input[type="checkbox"] {
     opacity: 0;
@@ -415,26 +413,26 @@ button .fas {
   }
 
   .before-box:before {
-    content         : "";
-    position        : absolute;
-    width           : 18px;
-    height          : 18px;
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
     background-color: transparent;
-    border          : 1px solid #a8b6c1;
-    top             : 6px;
-    left            : 0;
-    border-radius   : 3px;
+    border: 1px solid #a8b6c1;
+    top: 6px;
+    left: 0;
+    border-radius: 3px;
   }
 
-  input[type="checkbox"]:checked+.before-box:before {
-    content     : "\2714";
-    font-size   : 12px;
-    text-align  : center;
-    color       : #fff;
-    font-weight : 600;
-    line-height : 15px;
+  input[type="checkbox"]:checked + .before-box:before {
+    content: "\2714";
+    font-size: 12px;
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    line-height: 15px;
     border-color: #6cb827;
-    background  : #6cb827;
+    background: #6cb827;
   }
 }
 
@@ -477,27 +475,27 @@ button .fas {
 //   }
 // }
 .list-theatre {
-  padding   : 0 16px;
-  border    : 1px solid #eee;
+  padding: 0 16px;
+  border: 1px solid #eee;
   border-top: none;
 }
 
 footer {
   background: rgb(58, 53, 53);
-  padding   : 15px 0;
-  color     : #fff;
+  padding: 15px 0;
+  color: #fff;
   margin-top: 25px;
 
   a.nav-link {
-    color    : #fff;
+    color: #fff;
     font-size: 0.9rem;
   }
 }
 
 .footer-form {
   input {
-    margin-right   : 10px;
-    border-radius  : 0;
+    margin-right: 10px;
+    border-radius: 0;
     background-clip: unset;
   }
 
@@ -505,15 +503,14 @@ footer {
 }
 
 .form-line {
-  background   : transparent;
-  border       : none;
+  background: transparent;
+  border: none;
   border-bottom: 1px solid #000;
   border-radius: 0;
-  height       : 35px;
+  height: 35px;
 }
 
 .input-withouticon {
-
   // .input-group-prepend {   position: absolute;
   // right                            : 17px;
   // bottom                           : 21px;
@@ -524,27 +521,25 @@ footer {
 
   .text-help {
     position: absolute;
-    bottom  : 0;
+    bottom: 0;
   }
 }
 
 label {
   margin-bottom: 1px !important;
-  color        : #87939f;
+  color: #87939f;
 }
 
 form .form-control {
-  font-size  : 1rem;
+  font-size: 1rem;
   font-family: "Titillium Web", sans-serif;
-  padding    : 0;
+  padding: 0;
 }
 
 .award-list {
-  padding        : 5px 0;
-  display        : flex;
+  padding: 5px 0;
+  display: flex;
   justify-content: space-between;
-
-
 }
 
 .mutipleSelect .select__control {
@@ -554,15 +549,15 @@ form .form-control {
 }
 
 .maincontiner-profiles {
-  margin-top   : 6rem;
+  margin-top: 6rem;
   margin-bottom: 2rem;
 }
 
 .middleContainer {
-  display       : flex;
-  min-height    : calc(100vh - 222px);
+  display: flex;
+  min-height: calc(100vh - 222px);
   flex-direction: column;
-  width         : 100%;
+  width: 100%;
 }
 
 .noData {
@@ -571,16 +566,16 @@ form .form-control {
 }
 
 .spin-loader {
-  position       : absolute;
-  top            : 19px;
-  background     : rgba(17, 16, 16, 0.45);
-  width          : 100%;
-  bottom         : 20px;
-  z-index        : 9;
-  display        : flex;
+  position: absolute;
+  top: 19px;
+  background: rgba(17, 16, 16, 0.45);
+  width: 100%;
+  bottom: 20px;
+  z-index: 9;
+  display: flex;
   justify-content: center;
-  align-items    : center;
-  display        : none;
+  align-items: center;
+  display: none;
 }
 
 .basic-profile,
@@ -603,8 +598,8 @@ textarea.form-control {
 .userInfo {
   [class^="icon-"] {
     padding-right: 5px;
-    width        : 26px;
-    display      : inline-block;
+    width: 26px;
+    display: inline-block;
   }
 }
 
@@ -615,28 +610,28 @@ textarea.form-control {
 
 .rrt-confirm-holder .rrt-confirm {
   .rrt-buttons-holder {
-    padding   : 15px;
-    display   : inline-block;
-    width     : 100%;
+    padding: 15px;
+    display: inline-block;
+    width: 100%;
     text-align: center;
 
     .rrt-button {
-      background    : #000;
-      color         : #fff;
-      padding       : .375rem 2rem;
-      border-radius : 5px;
-      height        : 42px;
+      background: #000;
+      color: #fff;
+      padding: 0.375rem 2rem;
+      border-radius: 5px;
+      height: 42px;
       text-transform: uppercase;
-      margin        : 15px;
-      float         : inherit;
-      margin        : 0 10px;
+      margin: 15px;
+      float: inherit;
+      margin: 0 10px;
 
       &:hover {
-        color           : #fff;
+        color: #fff;
         background-color: #5a6268;
 
         &:active {
-          color           : #fff;
+          color: #fff;
           background-color: #5a6268;
         }
       }
@@ -646,11 +641,11 @@ textarea.form-control {
       background: $colorPrimary;
 
       &:hover {
-        background: $customPrimary-Hover
+        background: $customPrimary-Hover;
       }
 
       &:active {
-        background: $customPrimary-Hover
+        background: $customPrimary-Hover;
       }
     }
   }
@@ -672,14 +667,13 @@ textarea.form-control {
 
 .login-social {
   .socail-login-div {
-    background   : transparent !important;
-    border       : none !important;
+    background: transparent !important;
+    border: none !important;
     border-radius: 0 !important;
-    ;
     display: inline-block !important;
-    margin : 0 !important;
+    margin: 0 !important;
     padding: 0 !important;
-    cursor : pointer;
+    cursor: pointer;
   }
 }
 
@@ -695,62 +689,62 @@ textarea.form-control {
 
 .small-btn {
   font-size: 12px;
-  padding  : 6px 12px;
+  padding: 6px 12px;
 }
 
 .follow-user {
-  text-align : center;
+  text-align: center;
   line-height: 20px;
-  padding    : 0 15px;
+  padding: 0 15px;
 
   .follow-count {
-    color      : #000;
-    font-size  : 1.2rem;
+    color: #000;
+    font-size: 1.2rem;
     font-weight: 600;
-    min-height : 23px;
+    min-height: 23px;
   }
 
   .following-text {
     color: #bcc2c9;
   }
-   a{
-  &:hover {
-    .follow-count {
-      color: #dbdcde;
-    }
+  a {
+    &:hover {
+      .follow-count {
+        color: #dbdcde;
+      }
 
-    .following-text {
-      color: #dbdcde;
+      .following-text {
+        color: #dbdcde;
+      }
     }
-  }
   }
 }
 
 .blocked-btn {
   background-color: #000;
-  font-size       : 1.1rem;
-  border-color    : #000;
-  width           : 50px;
-  height          : 50px;
-  font-size       : 16px;
-  color           : #cececc;
+  font-size: 1.1rem;
+  border-color: #000;
+  width: 50px;
+  height: 50px;
+  font-size: 16px;
+  color: #cececc;
 
   &:hover {
-    color           : #fff;
+    color: #fff;
     background-color: #5a6268;
-    border-color    : #545b62;
+    border-color: #545b62;
   }
 }
 
 .follow-follwer-list {
   .tab-content {
-    border : none;
+    border: none;
     padding: 0;
   }
 }
 
 .plr-0 {
-  padding-left : 0;
+  padding-left: 0;
   padding-right: 0;
 }
 
@@ -770,24 +764,24 @@ textarea.form-control {
 
 .following-grey-btn {
   background-color: #e9ebef !important;
-  color           : #70767c;
-  border-color    : #ddd !important;
+  color: #70767c;
+  border-color: #ddd !important;
 
   &:hover {
     color: #6b6d6f;
   }
 }
 
-.follow-follwer-list .nav-tabs.subtabs>li a.active,
-.follow-follwer-list .nav-tabs.subtabs>li a:hover {
+.follow-follwer-list .nav-tabs.subtabs > li a.active,
+.follow-follwer-list .nav-tabs.subtabs > li a:hover {
   padding-bottom: 9px;
-  margin-bottom : 0;
-  color         : #f6c413;
+  margin-bottom: 0;
+  color: #f6c413;
 }
 
 .block-btn {
   background-color: #ed4867 !important;
-  border-color    : #ed4767 !important;
+  border-color: #ed4767 !important;
 }
 
 .show-more {
@@ -796,7 +790,7 @@ textarea.form-control {
 
 @media (max-width: 992px) {
   .maincontiner-profiles {
-    margin-top   : 2rem;
+    margin-top: 2rem;
     margin-bottom: 2rem;
   }
 
@@ -831,10 +825,10 @@ textarea.form-control {
   }
 
   .rrt-confirm-holder .rrt-confirm {
-    width    : 96%;
+    width: 96%;
     font-size: 1rem;
-    left     : 0;
-    margin   : 9px;
+    left: 0;
+    margin: 9px;
   }
 
   .custom-modalfooter {
@@ -852,15 +846,15 @@ textarea.form-control {
   }
 
   .menu-list .dropdown-menu {
-    left      : 0;
-    position  : static;
+    left: 0;
+    position: static;
     margin-top: 0;
   }
 
   .headshot-img {
     .headshot img {
-      width     : 100%;
-      max-width : 100%;
+      width: 100%;
+      max-width: 100%;
       object-fit: cover;
     }
   }
@@ -874,9 +868,8 @@ textarea.form-control {
   }
 
   .rounded-icons {
-
-    width    : 40px;
-    height   : 40px;
+    width: 40px;
+    height: 40px;
     font-size: 12px;
   }
 
@@ -885,17 +878,19 @@ textarea.form-control {
   }
 
   .small-btn {
-    padding  : 6px 10px;
+    padding: 6px 10px;
     font-size: 10px;
   }
-  .btn-black{background-color:#000;
-    &:hover{background-color: #000}
+  .btn-black {
+    background-color: #000;
+    &:hover {
+      background-color: #000;
+    }
   }
 }
 
 @media (max-width: 540px) {
   .follow-user .follow-count {
-   
     font-size: 1rem;
   }
   .follow-user.follower-withbtn {
@@ -909,22 +904,23 @@ textarea.form-control {
   .small-btn {
     padding: 6px 4px;
   }
- 
 }
 
 body {
-
-  // main tabs design		  
-  .btn-secondary {
-    background-color: rgb(12, 75, 146);
-    border-color    : rgb(18, 91, 173);
-    text-transform  : uppercase;
-  }
+  // main tabs design
+  // .btn-secondary {
+  //   background-color: rgb(12, 75, 146);
+  //   border-color    : rgb(18, 91, 173);
+  //   text-transform  : uppercase;
+  // }
 
   .custom-select:disabled {
     border-radius: 0;
-    padding-left : 6px;
+    padding-left: 6px;
   }
 }
 
-.step-first textarea {    min-height: 55px;resize: none;}
+.step-first textarea {
+  min-height: 55px;
+  resize: none;
+}

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField} from "../../../layout/FormInputs";
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createRMSpecificationAPI } from '../../../../actions/master/Material';
 import { fetchRowMaterialAPI, fetchRMGradeAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
@@ -15,7 +15,7 @@ class AddSpecification extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
     }
 
@@ -23,10 +23,10 @@ class AddSpecification extends Component {
     * @method componentWillMount
     * @description Called before render the component
     */
-    componentWillMount(){
-        this.props.fetchRowMaterialAPI(res => {});   
+    componentWillMount() {
+        this.props.fetchRowMaterialAPI(res => { });
     }
-    
+
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -40,7 +40,7 @@ class AddSpecification extends Component {
     * @description  used to handle type of listing selection
     */
     handleTypeOfListingChange = (e) => {
-        this.props.fetchRMGradeAPI(e.target.value, res => {})
+        this.props.fetchRMGradeAPI(e.target.value, res => { })
     }
 
     /**
@@ -48,7 +48,7 @@ class AddSpecification extends Component {
     * @description  used to handle type of listing change
     */
     handleTypeofListing = (e) => {
-        this.setState({ typeOfListing: e})
+        this.setState({ typeOfListing: e })
     }
 
     /**
@@ -58,20 +58,20 @@ class AddSpecification extends Component {
     renderTypeOfListing = (label) => {
         const { rowMaterialList, rmGradeList } = this.props;
         const temp = [];
-        if(label === 'rmList'){
+        if (label === 'rmList') {
             rowMaterialList && rowMaterialList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-        return temp;
+            return temp;
         }
 
-        if(label === 'rmGrade'){
+        if (label === 'rmGrade') {
             rmGradeList && rmGradeList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-        return temp;
+            return temp;
         }
-        
+
     }
 
     /**
@@ -82,11 +82,11 @@ class AddSpecification extends Component {
         this.props.createRMSpecificationAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
-                {this.toggleModel()}
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.message);
             }
-        });   
+        });
     }
 
     /**
@@ -101,7 +101,7 @@ class AddSpecification extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.SPECIFICATION}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -142,7 +142,7 @@ class AddSpecification extends Component {
                                                 required={true}
                                                 maxLength={26}
                                                 options={this.renderTypeOfListing('rmList')}
-                                                onChange={(Value)=>this.handleTypeOfListingChange(Value)}
+                                                onChange={(Value) => this.handleTypeOfListingChange(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -189,9 +189,9 @@ class AddSpecification extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({comman }) {
-   const { rowMaterialList, rmGradeList } = comman;
-    return { rowMaterialList,rmGradeList}
+function mapStateToProps({ comman }) {
+    const { rowMaterialList, rmGradeList } = comman;
+    return { rowMaterialList, rmGradeList }
 }
 
 /**
@@ -200,7 +200,7 @@ function mapStateToProps({comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createRMSpecificationAPI,fetchRowMaterialAPI, fetchRMGradeAPI })(reduxForm({
+export default connect(mapStateToProps, { createRMSpecificationAPI, fetchRowMaterialAPI, fetchRMGradeAPI })(reduxForm({
     form: 'AddSpecification',
     enableReinitialize: true,
 })(AddSpecification));
