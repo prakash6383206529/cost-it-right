@@ -79,6 +79,16 @@ export const API = {
   getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
   createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
   getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
+
+  //API's for MHR combo data
+  getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
+  createMHRMasterAPI: `${BASE_URL}/masters-machine-hour-rate/create`,
+  getMHRList: `${BASE_URL}/masters-machine-hour-rate/get`,
+
+  //API's for MHR combo data
+  getOperationsAPI: `${BASE_URL}/masters-other-operation/get-operation`,
+  createOperationAPI: `${BASE_URL}/masters-other-operation/create-operation`,
+
 }
 
 
@@ -159,3 +169,15 @@ export const GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE = 'GET_CED_OTHER_OPERATI
 export const GET_CED_OTHER_OPERATION_SUCCESS = 'GET_CED_OTHER_OPERATION_SUCCESS';
 export const GET_CED_OTHER_OPERATION_FAILURE = 'GET_CED_OTHER_OPERATION_FAILURE';
 
+//for MHR master
+export const GET_MHR_COMBO_DATA_SUCCESS = 'GET_MHR_COMBO_DATA_SUCCESS';
+export const GET_MHR_COMBO_DATA_FAILURE = 'GET_MHR_COMBO_DATA_FAILURE';
+export const GET_MHR_DATA_SUCCESS = 'GET_MHR_DATA_SUCCESS';
+
+//for common
+export const DATA_FAILURE = 'DATA_FAILURE';
+export const CREATE_SUCCESS = 'CREATE_SUCCESS';
+export const CREATE_FAILURE = 'CREATE_FAILURE';
+
+//for Operation
+export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';

@@ -12,6 +12,7 @@ import commanReducer from './master/Comman';
 import BOMReducer from './master/BillOfMaterial';
 import BOPReducer from './master/BoughtOutParts';
 import OtherOperationReducer from './master/OtherOperation';
+import MHRReducer from './master/MHR';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -35,6 +36,7 @@ const allReducers = combineReducers({
    billOfMaterial: BOMReducer,
    boughtOutparts: BOPReducer,
    otherOperation: OtherOperationReducer,
+   MHRReducer: MHRReducer,
 });
 
 export default rootReducer;

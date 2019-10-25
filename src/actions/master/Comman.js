@@ -17,7 +17,9 @@ import {
     GET_OTHER_OPERATION_FORMDATA_SUCCESS,
     GET_OTHER_OPERATION_FORMDATA_FAILURE,
     GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
-    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE
+    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE,
+    GET_MHR_COMBO_DATA_SUCCESS,
+    DATA_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
@@ -42,7 +44,6 @@ export function fetchMasterDataAPI() {
         const API6 = axios.get(API.getTechnology, headers);
         Promise.all([API1, API2, API3, API4, API5, API6])
             .then((response) => {
-                console.log('%c 🥗 response: ', 'font-size:20px;background-color: #FFDD4D;color:#fff;', response);
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
                     payload: response[0].data.SelectList,
@@ -332,6 +333,32 @@ export function getCEDOtherOperationComboData(callback) {
             }
         }).catch((error) => {
             dispatch({ type: GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchRMCategoryAPI
+ * @description Used to fetch row material category list
+ */
+export function getMHRMasterComboData(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMHRComboDataAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MHR_COMBO_DATA_SUCCESS,
+                    payload: response.data.DynamicData,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: DATA_FAILURE });
             callback(error);
             apiErrors(error);
         });

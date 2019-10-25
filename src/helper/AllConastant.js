@@ -33,5 +33,7 @@ export const CONSTANT = {
   BOPP: 'BOP',
   BILL: 'Bill',
   OTHER_OPERATION: 'Other Operation',
-  CED_OTHER_OPERATION: 'CED Other Operation'
+  CED_OTHER_OPERATION: 'CED Other Operation',
+  MHR: 'MHR',
+  OPERATION: 'Operation'
 };

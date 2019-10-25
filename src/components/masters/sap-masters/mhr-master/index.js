@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
-import AddOtherOperation from './AddOtherOperation';
-import { getOperationsAPI } from '../../../../actions/master/OtherOperation';
+import AddMHR from './AddMHR';
+import { fetchMHRListAPI } from '../../../../actions/master/MHRMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import moment from 'moment';
 
-class OtherOperationMaster extends Component {
+class MHRMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -25,7 +25,7 @@ class OtherOperationMaster extends Component {
      * @description  called before rendering the component
      */
     componentDidMount() {
-        this.props.getOperationsAPI(res => { });
+        this.props.fetchMHRListAPI(res => { });
     }
 
     /**
@@ -42,7 +42,7 @@ class OtherOperationMaster extends Component {
      */
     onCancel = () => {
         this.setState({ isOpen: false }, () => {
-            this.props.getOperationsAPI(res => { });
+            this.props.fetchMHRListAPI(res => { });
         })
     }
 
@@ -98,17 +98,17 @@ class OtherOperationMaster extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.ADD} ${CONSTANT.OTHER_OPERATION}`}</h3>
+                        <h3>{`${CONSTANT.ADD} ${CONSTANT.MHR}`}</h3>
                     </Col>
                     <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.OTHER_OPERATION}`}</Button>
+                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.MHR}`}</Button>
                     </Col>
                 </Row>
 
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.ADD} ${CONSTANT.OTHER_OPERATION} ${CONSTANT.DETAILS}`} </h5>
+                        <h5>{`${CONSTANT.MHR} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
                 <Col>
@@ -116,12 +116,14 @@ class OtherOperationMaster extends Component {
                         <Table className="table table-striped" bordered>
                             <thead>
                                 <tr>
-                                    <th>Process Code</th>
-                                    <th>Supplier</th>
-                                    <th>Process Operation</th>
-                                    <th>UOM</th>
                                     <th>Technology</th>
-                                    <th>Rate</th>
+                                    <th>Supplier Code</th>
+                                    <th>Supplier Name</th>
+                                    <th>Machine No.</th>
+                                    <th>Description</th>
+                                    <th>Machine Capacity</th>
+                                    <th>Machine Rate</th>
+                                    <th>UOM</th>
                                     <th>Initiator</th>
                                     <th>Created On</th>
                                     <th>Modifier</th>
@@ -129,20 +131,22 @@ class OtherOperationMaster extends Component {
                                 </tr>
                             </thead>
                             <tbody >
-                                {this.props.otherOperationList && this.props.otherOperationList.length > 0 &&
-                                    this.props.otherOperationList.map((item, index) => {
+                                {this.props.mhrMasterList && this.props.mhrMasterList.length > 0 &&
+                                    this.props.mhrMasterList.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td >{item.OperationCode}</td>
+                                                <td >{item.TechnologyName}</td>
                                                 <td>{item.SupplierName}</td>
-                                                <td>{item.ProcessName}</td>
+                                                <td>{item.SupplierName}</td>
+                                                <td>{item.MachineNumber}</td>
+                                                <td>{item.Description}</td>
+                                                <td>{item.MachineTonnage}</td>
+                                                <td>{item.BasicMachineRate}</td>
                                                 <td>{item.UnitOfMeasurementName}</td>
-                                                <td>{item.TechnologyName}</td>
-                                                <td>{item.Rate}</td>
                                                 <td>{''}</td>
-                                                <td>{moment(item.CreatedDate).format('L')}</td>
-                                                <td>{item.ModifiedBy}</td>
-                                                <td>{item.ModifiedDate}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
                                                 {/* <td>
                                                     <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
@@ -156,7 +160,7 @@ class OtherOperationMaster extends Component {
                     {/* </Table> */}
                 </Col>
                 {isOpen && (
-                    <AddOtherOperation
+                    <AddMHR
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
@@ -174,13 +178,13 @@ class OtherOperationMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ otherOperation }) {
-    const { otherOperationList, loading } = otherOperation;
-    return { otherOperationList, loading }
+function mapStateToProps({ MHRReducer }) {
+    const { mhrMasterList, loading } = MHRReducer;
+    return { mhrMasterList, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getOperationsAPI }
-)(OtherOperationMaster);
+    mapStateToProps, { fetchMHRListAPI }
+)(MHRMaster);
 

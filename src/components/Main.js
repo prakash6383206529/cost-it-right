@@ -19,8 +19,10 @@ import PlantMaster from './masters/sap-masters/plant-master';
 import SupplierMaster from './masters/sap-masters/supplier-master';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
-import OperationMaster from './masters/sap-masters/other-operation';
+import OtherOperationMaster from './masters/sap-masters/other-operation';
 import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
+import MHRMaster from './masters/sap-masters/mhr-master';
+import OperationMaster from './masters/sap-masters/operation';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -185,7 +187,7 @@ class Main extends Component {
               <Route
                 path="/other-operation"
                 render={props => (
-                  <OperationMaster
+                  <OtherOperationMaster
                     {...props}
                   />
                 )}
@@ -194,6 +196,22 @@ class Main extends Component {
                 path="/ced-other-operation"
                 render={props => (
                   <CEDoperationMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/mhr-master"
+                render={props => (
+                  <MHRMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/operation-master"
+                render={props => (
+                  <OperationMaster
                     {...props}
                   />
                 )}
