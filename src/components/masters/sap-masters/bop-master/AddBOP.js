@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { fetchMasterDataAPI,fetchCategoryAPI} from '../../../../actions/master/Comman';
+import { fetchBOPComboAPI,fetchCategoryAPI} from '../../../../actions/master/Comman';
 import { createBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -26,7 +26,7 @@ class AddBOP extends Component {
     * @description called before rendering the component
     */
     componentWillMount() {
-        this.props.fetchMasterDataAPI(res => { });
+        this.props.fetchBOPComboAPI(res => { });
     }
 
     /**
@@ -480,7 +480,7 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createBOPAPI, fetchMasterDataAPI,fetchCategoryAPI})(reduxForm({
+export default connect(mapStateToProps, { createBOPAPI, fetchBOPComboAPI,fetchCategoryAPI})(reduxForm({
     form: 'AddBOP',
     enableReinitialize: true,
 })(AddBOP));

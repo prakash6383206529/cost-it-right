@@ -2,20 +2,29 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
-import { renderText } from "../../../layout/FormInputs";
-import { createRMCategoryAPI } from '../../../../actions/master/Material';
+import { required } from "../../../../../helper/validation";
+import { renderText, renderSelectField } from "../../../../layout/FormInputs";
+import { createRMGradeAPI } from '../../../../../actions/master/Material';
+import { fetchRowMaterialAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { MESSAGES } from '../../../../../config/message';
+import { CONSTANT } from '../../../../../helper/AllConastant';
 
-class AddCategory extends Component {
+class AddGrade extends Component {
     constructor(props) {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
+    }
+
+    /**
+    * @method componentWillMount
+    * @description call before rendering the component
+    */
+    componentWillMount() {
+        this.props.fetchRowMaterialAPI(res => { });
     }
 
     /**
@@ -37,18 +46,31 @@ class AddCategory extends Component {
     }
 
     /**
+    * @method renderTypeOfListing
+    * @description Used show listing of row material
+    */
+    renderTypeOfListing = () => {
+        const { rowMaterialList } = this.props;
+        const temp = [];
+        rowMaterialList && rowMaterialList.map(item =>
+            temp.push({ Text: item.Text, Value: item.Value })
+        );
+        return temp;
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        this.props.createRMCategoryAPI(values, (res) => {
+        this.props.createRMGradeAPI(values, (res) => {
             if (res.data.Result) {
-                toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
-                {this.toggleModel()}
+                toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.message);
             }
-        });   
+        });
     }
 
     /**
@@ -60,10 +82,10 @@ class AddCategory extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.GRADE}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -72,8 +94,8 @@ class AddCategory extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}
-                                                name={"CategoryName"}
+                                                label={`${CONSTANT.GRADE}`}
+                                                name={"Grade"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -92,6 +114,22 @@ class AddCategory extends Component {
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="12">
+                                            <Field
+                                                label={`${CONSTANT.MATERIAL}`}
+                                                name={"RawMaterialId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                options={this.renderTypeOfListing()}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                     </Row>
@@ -117,9 +155,9 @@ class AddCategory extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ category }) {
-   const { categoryList } = category;
-    return { categoryList }
+function mapStateToProps({ comman }) {
+    const { rowMaterialList } = comman;
+    return { rowMaterialList }
 }
 
 /**
@@ -128,7 +166,7 @@ function mapStateToProps({ category }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createRMCategoryAPI })(reduxForm({
-    form: 'AddCategory',
+export default connect(mapStateToProps, { createRMGradeAPI, fetchRowMaterialAPI })(reduxForm({
+    form: 'AddGrade',
     enableReinitialize: true,
-})(AddCategory));
+})(AddGrade));
