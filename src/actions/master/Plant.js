@@ -4,7 +4,9 @@ import {
     API_REQUEST,
     API_FAILURE,
     CREATE_PLANT_SUCCESS,
-    CREATE_PLANT_FAILURE
+    CREATE_PLANT_FAILURE,
+    GET_PLANT_SUCCESS,
+    GET_PLANT_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
@@ -42,6 +44,29 @@ export function createPlantAPI(data, callback) {
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getPlantDataAPI
+ * @description get process list
+ */
+export function getPlantDataAPI() {
+    return (dispatch) => {
+        const request = axios.get(API.getPlantAPI, headers);
+        request.then((response) => {
+            console.log('response: ', response);
+            dispatch({
+                type: GET_PLANT_SUCCESS,
+                payload: response.data.DataList,
+            });
+                
+        }).catch((error) => {
+            dispatch({
+                type: GET_PLANT_FAILURE
             });
             apiErrors(error);
         });

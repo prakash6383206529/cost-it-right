@@ -1,4 +1,5 @@
 import {
+    API_FAILURE,
     API_REQUEST,
     GET_UOM_DATA_SUCCESS,
     GET_MATERIAL_TYPE_SUCCESS,
@@ -29,6 +30,11 @@ const initialState = {
 
 export default function commanReducer(state = initialState, action) {
     switch (action.type) {
+        case API_FAILURE:
+            return {
+                ...state,
+                loading: false
+            };
         case API_REQUEST:
             return {
                 ...state,

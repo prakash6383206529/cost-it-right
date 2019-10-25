@@ -362,7 +362,7 @@ export function fetchFuelComboAPI(callback) {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
-            dispatch({ type: GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE });
+            dispatch({ type: API_FAILURE });
             callback(error);
             apiErrors(error);
         });
@@ -411,6 +411,132 @@ export function getCEDOtherOperationComboData(callback) {
             }
         }).catch((error) => {
             dispatch({ type: GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchPartComboAPI
+ * @description Used to part form 
+ */
+export function fetchPartComboAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPartComboAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_UOM_DATA_SUCCESS,
+                    payload: response.data.DynamicData.UnitOfMeasurements,
+                });
+                dispatch({
+                    type: GET_MATERIAL_TYPE_SUCCESS,
+                    payload: response.data.DynamicData.MaterialTypes,
+                });
+                dispatch({
+                    type: GET_PLANT_SUCCESS,
+                    payload: response.data.DynamicData.Plants,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchPartComboAPI
+ * @description Used to BOP form 
+ */
+export function fetchBOPComboAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getBOPComboAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TECHNOLOGY_SUCCESS,
+                    payload: response.data.DynamicData.Technologies,
+                });
+                dispatch({
+                    type: GET_CATEGORY_TYPE_SUCCESS,
+                    payload: response.data.DynamicData.CategoryTypes,
+                });
+                dispatch({
+                    type: GET_CATEGORY_SUCCESS,
+                    payload: response.data.DynamicData.Categories,
+                });
+                dispatch({
+                    type: GET_PART_SUCCESS,
+                    payload: response.data.DynamicData.Parts,
+                });
+                dispatch({
+                    type: GET_MATERIAL_TYPE_SUCCESS,
+                    payload: response.data.DynamicData.MaterialTypes,
+                });
+                dispatch({
+                    type: GET_PLANT_SUCCESS,
+                    payload: response.data.DynamicData.Plants,
+                });
+                dispatch({
+                    type: GET_CITY_SUCCESS,
+                    payload: response.data.DynamicData.Cities,
+                });
+                dispatch({
+                    type: GET_SUPPLIER_SUCCESS,
+                    payload: response.data.DynamicData.Suppliers,
+                });
+                dispatch({
+                    type: GET_UOM_DATA_SUCCESS,
+                    payload: response.data.DynamicData.UnitOfMeasurements,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchBOMComboAPI
+ * @description Used to BOM form 
+ */
+export function fetchBOMComboAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getBOMComboAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PART_SUCCESS,
+                    payload: response.data.DynamicData.Parts,
+                });
+                dispatch({
+                    type: GET_MATERIAL_TYPE_SUCCESS,
+                    payload: response.data.DynamicData.MaterialTypes,
+                });
+                dispatch({
+                    type: GET_UOM_DATA_SUCCESS,
+                    payload: response.data.DynamicData.UnitOfMeasurements,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             callback(error);
             apiErrors(error);
         });

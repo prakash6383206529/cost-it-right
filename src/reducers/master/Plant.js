@@ -2,6 +2,8 @@ import {
     API_REQUEST,
     CREATE_PLANT_SUCCESS,
     CREATE_PLANT_FAILURE,
+    GET_PLANT_SUCCESS,
+    GET_PLANT_FAILURE
 } from '../../config/constants';
 
 const initialState = {
@@ -20,9 +22,21 @@ export default function plantReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                //plantList: action.payload
             };
         case CREATE_PLANT_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
+        case GET_PLANT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                plantDetail: action.payload
+            };
+        case GET_PLANT_FAILURE:
             return {
                 ...state,
                 loading: false,

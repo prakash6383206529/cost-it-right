@@ -4,7 +4,11 @@ import {
     API_REQUEST,
     API_FAILURE,
     CREATE_MATERIAL_SUCCESS,
-    CREATE_MATERIAL_FAILURE
+    CREATE_MATERIAL_FAILURE,
+    GET_RM_LIST_SUCCESS,
+    GET_RM_GRADE_LIST_SUCCESS,
+    GET_RM_CATEGORY_LIST_SUCCESS,
+    GET_RM_SPECIFICATION_LIST_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -138,5 +142,42 @@ export function createRMSpecificationAPI(data, callback) {
             });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getRowMaterialDataAPI
+ * @description get row material list
+ */
+export function getRowMaterialDataAPI() {
+    return (dispatch) => {
+        const API1 = axios.get(API.getRMMaterialAPI, headers);
+        const API2 = axios.get(API.getRMGradeAPI, headers);
+        const API3 = axios.get(API.getRMSpecificationAPI, headers);
+        const API4 = axios.get(API.getRMCategoryAPI, headers);
+        Promise.all([API1,API2,API3,API4])
+            .then((response) => {
+                dispatch({
+                    type: GET_RM_LIST_SUCCESS,
+                    payload: response[0].data.DataList,
+                });
+                dispatch({
+                    type: GET_RM_GRADE_LIST_SUCCESS,
+                    payload: response[1].data.DataList,
+                });
+                dispatch({
+                    type: GET_RM_CATEGORY_LIST_SUCCESS,
+                    payload: response[2].data.DataList,
+                });
+                dispatch({
+                    type: GET_RM_SPECIFICATION_LIST_SUCCESS,
+                    payload: response[3].data.DataList,
+                });
+            }).catch((error) => {
+                dispatch({
+                    type: API_FAILURE
+                });
+                apiErrors(error);
+            });
     };
 }

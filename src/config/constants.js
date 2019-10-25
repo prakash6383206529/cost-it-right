@@ -68,19 +68,28 @@ export const API = {
   //Api for category master
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/masters-category/create`,
+  getCategoryTypeAPI: `${BASE_URL}/masters-category/get-category-type`,
+  getCategoryAPI: `${BASE_URL}/masters-category/get-category`,
   fetchCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
 
-  //Api for material master
+  //Api for row material master
   createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
   createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
 
+  getRMMaterialAPI: `${BASE_URL}/masters-raw-material/get-raw-materials`,
+  getRMGradeAPI: `${BASE_URL}/masters-raw-material/get-raw-material-grades`,
+  getRMSpecificationAPI: `${BASE_URL}/masters-raw-material/get-raw-material-specifications`,
+  getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
+
   //Api for plant master
   createPlantAPI: `${BASE_URL}/plant/create`,
+  getPlantAPI: `${BASE_URL}/masters-plant/get`,
 
   //Api for supplier master
   createSupplierAPI: `${BASE_URL}/supplier/create`,
+  getSupplierAPI: `${BASE_URL}/supplier/get`,
 
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/add-bill-of-material`,
@@ -110,6 +119,7 @@ export const API = {
   getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
   createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
   getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
+
 }
 
 
@@ -153,16 +163,24 @@ export const CREATE_CATEGORY_FAILURE = 'CREATE_CATEGORY_FAILURE';
 export const CREATE_CATEGORY_SUCCESS = 'CREATE_CATEGORY_SUCCESS';
 export const FETCH_CATEGORY_DATA_FAILURE = 'FETCH_CATEGORY_DATA_FAILURE';
 export const GET_CATEGORY_DATA_SUCCESS = 'GET_CATEGORY_DATA_SUCCESS';
+export const GET_DATA_FAILURE = 'GET_DATA_FAILURE';
+export const GET_CATEGORY_LIST_SUCCESS = 'GET_CATEGORY_LIST_SUCCESS';
+export const GET_CATEGORY_TYPE_LIST_SUCCESS = 'GET_CATEGORY_TYPE_SUCCESS';
 
 //for material master
 export const CREATE_MATERIAL_SUCCESS = ' CREATE_MATERIAL_SUCCESS';
 export const CREATE_MATERIAL_FAILURE = 'CREATE_MATERIAL_FAILURE';
 export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';
+export const GET_RM_LIST_SUCCESS = 'GET_RM_LIST_SUCCESS';
+export const GET_RM_GRADE_LIST_SUCCESS = 'GET_RM_GRADE_LIST_SUCCESS';
+export const GET_RM_CATEGORY_LIST_SUCCESS = 'GET_RM_CATEGORY_LIST_SUCCESS';
+export const GET_RM_SPECIFICATION_LIST_SUCCESS = 'GET_RM_SPECIFICATION_LIST_SUCCESS';
 
 //for plant master
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS';
 export const CREATE_PLANT_FAILURE = 'CREATE_PLANT_FAILURE';
+export const GET_PLANT_FAILURE = 'GET_PLANT_FAILURE';
 
 //for supplier master
 export const CREATE_SUPPLIER_SUCCESS = 'CREATE_SUPPLIER_SUCCESS';
