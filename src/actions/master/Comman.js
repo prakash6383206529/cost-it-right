@@ -17,7 +17,8 @@ import {
     GET_SUPPLIER_CITY_SUCCESS,
     GET_TECHNOLOGY_SUCCESS,
     GET_CATEGORY_TYPE_SUCCESS,
-    GET_CATEGORY_SUCCESS
+    GET_CATEGORY_SUCCESS,
+    GET_FUEL_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -327,5 +328,37 @@ export function fetchCategoryAPI(Id,callback) {
             });
         }
         
+    };
+}
+
+//COMBO API"S
+
+/**
+ * @method fetchFuelComboAPI
+ * @description Used to fuel form 
+ */
+export function fetchFuelComboAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getFuelComboAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_FUEL_SUCCESS,
+                    payload: response.data.DynamicData.Fuels,
+                });
+                dispatch({
+                    type: GET_STATE_SUCCESS,
+                    payload: response.data.DynamicData.States,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

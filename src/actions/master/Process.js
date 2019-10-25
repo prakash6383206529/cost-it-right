@@ -3,15 +3,14 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_BOM_SUCCESS,
-    CREATE_BOM_FAILURE,
-    GET_BOP_SUCCESS,
-    GET_BOP_FAILURE
+    CREATE_PROCESS_SUCCESS,
+    CREATE_PROCESS_FAILURE,
+    GET_PROCESS_LIST_SUCCESS,
+    GET_PROCESS_LIST_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
 } from '../../helper/util';
-import { MESSAGES } from '../../config/message';
 import { toastr } from 'react-redux-toastr'
 
 const headers = {
@@ -20,24 +19,24 @@ const headers = {
 };
 
 /**
- * @method createBOPAPI
- * @description create baught out parts master
+ * @method createProcessAPI
+ * @description create process
  */
-export function createBOPAPI(data, callback) {
+export function createProcessAPI(data, callback) {
     return (dispatch) => {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createBOPAPI, data, headers);
+        const request = axios.post(API.createProcessAPI, data,headers);
         request.then((response) => {
             if (response.data.Result) {
                     dispatch({
-                        type: CREATE_BOM_SUCCESS,
-                        //payload: response.data.Data
+                        type: CREATE_PROCESS_SUCCESS,
+                        payload: response.data.Data
                     });
                     callback(response);
             } else {
-                dispatch({ type: CREATE_BOM_FAILURE });
+                dispatch({ type: CREATE_PROCESS_FAILURE });
                     if (response.data.Message) {
                         toastr.error(response.data.Message);
                     } 
@@ -52,26 +51,23 @@ export function createBOPAPI(data, callback) {
 }
 
 /**
- * @method getAllBOMAPI
- * @description get all bill of material list
+ * @method getProcessDataAPI
+ * @description get process list
  */
-export function getAllBOPAPI(callback) {
+export function getProcessDataAPI() {
     return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPAPI}`,headers);
+        const request = axios.get(API.getProcessAPI, headers);
         request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_BOP_SUCCESS,
-                    payload: response.data.DataList,
-                });
-                callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
+            console.log('response: ', response);
+            dispatch({
+                type: GET_PROCESS_LIST_SUCCESS,
+                payload: response.data.DataList,
+            });
+                
         }).catch((error) => {
-            dispatch({ type: GET_BOP_FAILURE });
-            callback(error);
+            dispatch({
+                type: GET_PROCESS_LIST_FAILURE
+            });
             apiErrors(error);
         });
     };

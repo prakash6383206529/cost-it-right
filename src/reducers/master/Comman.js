@@ -14,7 +14,8 @@ import {
     GET_SUPPLIER_CITY_SUCCESS,
     GET_TECHNOLOGY_SUCCESS,
     GET_CATEGORY_TYPE_SUCCESS,
-    GET_CATEGORY_SUCCESS
+    GET_CATEGORY_SUCCESS,
+    GET_FUEL_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -125,6 +126,13 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 rmGradeList: action.payload
+            };
+        case GET_FUEL_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                fuelList: action.payload
             };
         case  FETCH_MATER_DATA_FAILURE:
             return {

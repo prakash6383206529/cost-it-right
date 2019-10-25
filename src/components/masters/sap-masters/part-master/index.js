@@ -105,7 +105,7 @@ class PartMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                <Table>
+                <Table className="table table-striped" bordered>
                     <thead>
                         <tr>
                         <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
@@ -120,7 +120,7 @@ class PartMaster extends Component {
                         {this.props.partsListing && this.props.partsListing.length > 0 &&
                             this.props.partsListing.map((item, index) => {
                                 return (
-                                    <tr >
+                                    <tr key= {index}>
                                         <td >{item.PartNumber}</td>
                                         <td>{item.PartName}</td> 
                                         <td>{item.MaterialType ? item.MaterialType : 'N/A'}</td>

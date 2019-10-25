@@ -3,12 +3,13 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_CATEGORY_TYPE_SUCCESS,
-    CREATE_CATEGORY_TYPE_FAILURE,
-    CREATE_CATEGORY_FAILURE,
-    CREATE_CATEGORY_SUCCESS,
-    FETCH_CATEGORY_DATA_FAILURE,
-    GET_CATEGORY_DATA_SUCCESS
+    CREATE_FUEL_SUCCESS,
+    CREATE_FUEL_DETAIL_FAILURE,
+    CREATE_FUEL_DETAIL_SUCCESS,
+    CREATE_FUEL_FAILURE,
+    GET_FUEL_SUCCESS,
+    GET_FUEL_FAILURE,
+    GET_FUEL_DETAIL_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -21,24 +22,24 @@ const headers = {
 };
 
 /**
- * @method createCategoryTypeAPI
- * @description create category type
+ * @method createFuelAPI
+ * @description create fuel
  */
-export function createCategoryTypeAPI(data, callback) {
+export function createFuelAPI(data, callback) {
     return (dispatch) => {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createcategoryTypeAPI, data,headers);
+        const request = axios.post(API.createFuelAPI, data,headers);
         request.then((response) => {
             if (response.data.Result) {
                     dispatch({
-                        type: CREATE_CATEGORY_TYPE_SUCCESS,
+                        type: CREATE_FUEL_SUCCESS,
                         payload: response.data.Data
                     });
                     callback(response);
             } else {
-                dispatch({ type: CREATE_CATEGORY_TYPE_FAILURE });
+                dispatch({ type: CREATE_FUEL_FAILURE });
                     if (response.data.Message) {
                         toastr.error(response.data.Message);
                     } 
@@ -53,25 +54,25 @@ export function createCategoryTypeAPI(data, callback) {
 }
 
 /**
- * @method createCategoryAPI
- * @description create category category
+ * @method createFuelDetailAPI
+ * @description create fuel detail 
  */
-export function createCategoryAPI(data, callback) {
+export function createFuelDetailAPI(data, callback) {
     return (dispatch) => {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createCategoryAPI, data,headers);
+        const request = axios.post(API.createFuelDetailAPI, data,headers);
         request.then((response) => {
             console.log('response: ', response);
             if (response && response.data && response.data.Result) {
                     dispatch({
-                        type: CREATE_CATEGORY_SUCCESS,
+                        type: CREATE_FUEL_DETAIL_SUCCESS,
                         //payload: response.data.Data
                     });
                     callback(response);
             } else {
-                dispatch({ type: CREATE_CATEGORY_FAILURE });
+                dispatch({ type: CREATE_FUEL_DETAIL_FAILURE });
                     if (response.data.Message) {
                         toastr.error(response.data.Message);
                     } 
@@ -88,22 +89,42 @@ export function createCategoryAPI(data, callback) {
 }
 
 /**
- * @method fetchCategoryMasterDataAPI
- * @description create category category list
+ * @method getFuelDetailAPI
+ * @description create fuel detail list
  */
-export function fetchCategoryMasterDataAPI() {
+export function getFuelDetailAPI() {
     return (dispatch) => {
-        const API1 = axios.get(API.fetchCategoryType, headers);
-        Promise.all([API1])
-            .then((response) => {
+        const request = axios.get(API.getFuelDetailAPI, headers);
+            request.then((response) => {
                 dispatch({
-                    type: GET_CATEGORY_DATA_SUCCESS,
-                    payload: response[0].data.SelectList,
+                    type: GET_FUEL_SUCCESS,
+                    payload: response.data.DataList,
                 });
                  
             }).catch((error) => {
                 dispatch({
-                    type: FETCH_CATEGORY_DATA_FAILURE
+                    type: GET_FUEL_FAILURE
+                });
+                apiErrors(error);
+            });
+    };
+}
+/**
+ * @method getFuelAPI
+ * @description create fuel list
+ */
+export function getFuelAPI() {
+    return (dispatch) => {
+        const request = axios.get(API.getFuelAPI, headers);
+            request.then((response) => {
+                dispatch({
+                    type: GET_FUEL_DETAIL_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                 
+            }).catch((error) => {
+                dispatch({
+                    type: GET_FUEL_FAILURE
                 });
                 apiErrors(error);
             });

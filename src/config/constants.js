@@ -20,6 +20,18 @@ export const API = {
   getCategory: `${BASE_URL}/configuration/select-list-get-category`,
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
 
+  //Combo apis
+   //configure api's
+   getFuelComboAPI: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+   getOtherOperationComboAPI : `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
+   getCEDComboAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
+   getMHRComboAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
+   getPartComboAPI: `${BASE_URL}/configuration-master/get-part-combo-select-list`,
+   getRMComboAPI: `${BASE_URL}/configuration-master/get-raw-material-details-combo-select-list`,
+   getBOMComboAPI: `${BASE_URL}/configuration-master/get-bill-of-materials-combo-select-list`,
+   getBOPComboAPI: `${BASE_URL}/configuration-master/get-bought-out-part-combo-select-list`,
+   
+
   //api's for configure location
   getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-supplier-city`,
   getCountry: `${BASE_URL}/configuration-location/select-list-get-country`,
@@ -31,6 +43,12 @@ export const API = {
   getRowGrade: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
   getRowMaterialDetail: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
   getRowMaterialCategory: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-categoryy`,
+
+  //Api's for material
+  createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
+  createMaterial: `${BASE_URL}/masters-material/add-costing-raw-matrial-details`,
+  getMaterialType: `${BASE_URL}/masters-material/get-material-type`,
+  getMaterial: `${BASE_URL}/masters-material/create-material-type`,
 
   //Api for Unit of measurement master
   createUOMAPI: `${BASE_URL}/masters-unit-of-measurement/create`,
@@ -70,7 +88,18 @@ export const API = {
 
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
-  getBOPAPI: `${BASE_URL}/GET /api/v1/masters-bought-out-part/get`,
+  getBOPAPI: `${BASE_URL}/masters-bought-out-part/get`,
+
+  //Api's for process master
+  createProcessAPI: `${BASE_URL}/masters-process/create`,
+  getProcessAPI: `${BASE_URL}/masters-process/get`,
+
+  //Api's for fuel master
+  createFuelAPI: `${BASE_URL}/masters-fuel/create-fuel`,
+  createFuelDetailAPI: `${BASE_URL}/masters-fuel/create-fuel-details`,
+  getFuelAPI: `${BASE_URL}/masters-fuel/get-fuel`,
+  getFuelDetailAPI: `${BASE_URL}/masters-fuel/get-fuel-details`,
+ 
 }
 
 
@@ -138,4 +167,19 @@ export const GET_BOM_FAILURE = 'GET_BOM_FAILURE';
 export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';
 export const CREATE_BOP_FAILURE = 'CREATE_BOP_FAILURE';
 export const GET_BOP_SUCCESS = 'GET_BOP_SUCCESS';
-export const GET_BOP_FAILURE = 'GET_BOP_FAILURE'
+export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
+
+//For process master 
+export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS';
+export const CREATE_PROCESS_FAILURE = 'CREATE_PROCESS_FAILURE';
+export const GET_PROCESS_LIST_SUCCESS = 'GET_PROCESS_LIST_SUCCESS';
+export const GET_PROCESS_LIST_FAILURE = 'GET_PROCESS_LIST_FAILURE';
+
+//For Fuel master 
+export const CREATE_FUEL_SUCCESS = 'CREATE_FUEL_SUCCESS';
+export const CREATE_FUEL_FAILURE = 'CREATE_FUEL_FAILURE';
+export const GET_FUEL_SUCCESS = 'GET_FUEL_SUCCESS';
+export const GET_FUEL_FAILURE = 'GET_FUEL_FAILURE';
+export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE'; 
+export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS';
+export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS';

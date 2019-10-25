@@ -81,7 +81,7 @@ class BOMMaster extends Component {
                     {this.props.BOMListing && this.props.BOMListing.length > 0 &&
                         this.props.BOMListing.map((item, index) => {
                             return (
-                                <tr >
+                                <tr key= {index}>
                                     <td >{item.BillNumber}</td>
                                     <td>{item.BillOfMaterialCode}</td> 
                                     <td>{item.PartNumber ? item.PartNumber : 'N/A'}</td>

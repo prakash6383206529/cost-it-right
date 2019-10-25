@@ -4,12 +4,13 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { createCategoryAPI, fetchCategoryMasterDataAPI } from '../../../../actions/master/Category';
+import { createMaterialAPI } from '../../../../actions/master/Material';
+import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { CONSTANT} from '../../../../helper/AllConastant'
 
-class AddCategory extends Component {
+class AddMaterial extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -18,9 +19,6 @@ class AddCategory extends Component {
         }
     }
 
-    componentWillMount(){
-        this.props.fetchCategoryMasterDataAPI(res => {});   
-    }
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -44,34 +42,15 @@ class AddCategory extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log('values: ', values);
-        this.props.createCategoryAPI(values, (response) => {
-            if(response && response.data){
-            if (response && response.data && response.data.Result) {
-                toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
+        this.props.createMaterialAPI(values, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
                 {this.toggleModel()}
             } else {
-                toastr.error(response.data.Message);
+                toastr.error(res.data.Message);
             }
-        }
         });   
     }
-
-    /**
-    * @method selectUnitOfMeasurement
-    * @description Used show listing of unit of measurement
-    */
-    selectMaterialType = () => {
-        const {categoryList} = this.props;
-        console.log('categoryList',typeof(categoryList), categoryList)
-        const temp = [];
-        categoryList && categoryList !== undefined && categoryList.map(item =>
-          temp.push({ Text: item.Text, Value: item.Value })
-        );
-        console.log('temp', categoryList);
-        return temp;
-    }
-
 
     /**
     * @method render
@@ -82,7 +61,7 @@ class AddCategory extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL}`}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>     
@@ -94,8 +73,8 @@ class AddCategory extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Category"
-                                                name={"Category"}
+                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
+                                                name={"MaterialType"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -106,27 +85,8 @@ class AddCategory extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label="Category Type"
-                                                name={"CategoryType"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.selectMaterialType()}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                            />
-                                        </Col>
-                                    <Row/>
-                                    <Row/>
-                                        <Col md="12">
-                                            <Field
-                                                label="Description"
-                                                name={"Description"}
+                                                label={`${CONSTANT.DESCRIPTION}`}
+                                                name={"MaterialTypeDescription"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
@@ -139,7 +99,7 @@ class AddCategory extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                               {CONSTANT.SAVE}
+                                                {`${CONSTANT.SAVE}`}
                                             </button>
                                         </div>
                                     </Row>
@@ -158,10 +118,9 @@ class AddCategory extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ category }) {
-   const { categoryList } = category;
-   console.log('categoryList: ', categoryList);
-    return { categoryList }
+function mapStateToProps({ comman }) {
+   const { plantList } = comman;
+    return { plantList }
 }
 
 /**
@@ -170,7 +129,7 @@ function mapStateToProps({ category }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createCategoryAPI, fetchCategoryMasterDataAPI })(reduxForm({
-    form: 'AddCategory',
+export default connect(mapStateToProps, { createMaterialAPI, fetchPlantDataAPI })(reduxForm({
+    form: 'AddMaterial',
     enableReinitialize: true,
-})(AddCategory));
+})(AddMaterial));

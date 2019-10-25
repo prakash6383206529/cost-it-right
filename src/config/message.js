@@ -21,5 +21,8 @@ export const MESSAGES = {
   SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
   BOP_ADD_SUCCESS: 'Bought out part added successfully',
+  PROCESS_ADD_SUCCESS: 'Process added successfully',
+  FUEL_ADD_SUCCESS: 'Fuel added successfully',
+  FUEL_DETAIL_ADD_SUCCESS: 'Fuel Details added successfully'
 };
  

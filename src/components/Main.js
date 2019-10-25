@@ -14,11 +14,13 @@ import { Loader } from '../../src/components/common/Loader';
 import PartMaster from './masters/sap-masters/part-master';
 import UOMMaster from './masters/sap-masters/uom-master';
 import CategoryMaster from './masters/sap-masters/category-master';
-import MaterialMaster from './masters/sap-masters/material-master';
+import RowMaterialMaster from './masters/sap-masters/material-master';
 import PlantMaster from './masters/sap-masters/plant-master';
 import SupplierMaster from './masters/sap-masters/supplier-master';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
+import ProcessMaster from './masters/sap-masters/process-master';
+import FuelMaster from './masters/sap-masters/fuel-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -143,7 +145,7 @@ class Main extends Component {
                <Route
                 path="/material-master"
                 render={props => (
-                  <MaterialMaster
+                  <RowMaterialMaster
                     {...props}
                   />
                 )}
@@ -176,6 +178,22 @@ class Main extends Component {
                 path="/bop-master"
                 render={props => (
                   <BOPMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/process-master"
+                render={props => (
+                  <ProcessMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/fuel-master"
+                render={props => (
+                  <FuelMaster
                     {...props}
                   />
                 )}

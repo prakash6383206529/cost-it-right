@@ -31,5 +31,10 @@ export const CONSTANT = {
     REVISION: 'Revision',
     BOP: 'Bought out parts',
     BOPP: 'BOP',
-    BILL: 'Bill'
+    BILL: 'Bill',
+    TECHNOLOGY: 'Technology',
+    LOCATION: 'Location',
+    DATE: 'Created Date',
+    PROCESS: 'Process',
+    FUEL: 'Fuel'
   };

@@ -1,65 +1,71 @@
 import {
     API_REQUEST,
-    CREATE_CATEGORY_TYPE_SUCCESS,
-    CREATE_CATEGORY_TYPE_FAILURE,
-    CREATE_CATEGORY_FAILURE,
-    CREATE_CATEGORY_SUCCESS,
-    FETCH_CATEGORY_DATA_FAILURE,
-    GET_CATEGORY_DATA_SUCCESS
+    CREATE_FUEL_SUCCESS,
+    CREATE_FUEL_DETAIL_FAILURE,
+    CREATE_FUEL_DETAIL_SUCCESS,
+    CREATE_FUEL_FAILURE,
+    GET_FUEL_SUCCESS,
+    GET_FUEL_FAILURE,
+    GET_FUEL_DETAIL_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
    
 };
 
-export default function categoryReducer(state = initialState, action) {
+export default function fuelReducer(state = initialState, action) {
     switch (action.type) {
         case API_REQUEST:
             return {
                 ...state,
                 loading: true
             };
-        case GET_CATEGORY_DATA_SUCCESS:
+        case CREATE_FUEL_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                categoryList: action.payload
             };
-        case FETCH_CATEGORY_DATA_FAILURE:
+        case CREATE_FUEL_DETAIL_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true
             };
-        case CREATE_CATEGORY_TYPE_SUCCESS:
+        case CREATE_FUEL_DETAIL_FAILURE:
             return {
                 ...state,
                 loading: false,
-                //categoryTypeList : action.payload,
             };
-        case  CREATE_CATEGORY_SUCCESS: {
+        case  CREATE_FUEL_FAILURE: {
             return {
                 ...state,
-                //categoryList : action.payload,
                 loading: false,
                 error: false
             };
         }   
-        case CREATE_CATEGORY_FAILURE: {
+        case GET_FUEL_SUCCESS: {
             return {
                 ...state,
                 loading: false,
-                error: false
+                error: false,
+                fuelList: action.payload
             };
         }
-        case  CREATE_CATEGORY_TYPE_FAILURE:
+        case GET_FUEL_DETAIL_SUCCESS: {
             return {
                 ...state,
                 loading: false,
-                error: true
+                error: false,
+                fuelDetailList: action.payload
             };
-    
+        }
+        case  GET_FUEL_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            };
         default:
             return state;
     }

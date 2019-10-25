@@ -3,13 +3,14 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { createCategoryAPI, fetchCategoryMasterDataAPI } from '../../../../actions/master/Category';
+import { renderText,renderSelectField, renderNumberInputField } from "../../../layout/FormInputs";
+import { createProcessAPI } from '../../../../actions/master/Process';
+import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
 
-class AddCategory extends Component {
+class AddProcess extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -19,7 +20,7 @@ class AddCategory extends Component {
     }
 
     componentWillMount(){
-        this.props.fetchCategoryMasterDataAPI(res => {});   
+        this.props.fetchPlantDataAPI(res => {});   
     }
     /**
     * @method toggleModel
@@ -45,10 +46,10 @@ class AddCategory extends Component {
     */
     onSubmit = (values) => {
         console.log('values: ', values);
-        this.props.createCategoryAPI(values, (response) => {
+        this.props.createProcessAPI(values, (response) => {
             if(response && response.data){
             if (response && response.data && response.data.Result) {
-                toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
+                toastr.success(MESSAGES.PROCESS_ADD_SUCCESS);
                 {this.toggleModel()}
             } else {
                 toastr.error(response.data.Message);
@@ -70,6 +71,23 @@ class AddCategory extends Component {
         );
         console.log('temp', categoryList);
         return temp;
+    }
+
+    /**
+    * @method selectUnitOfMeasurement
+    * @description Used show listing of unit of measurement
+    */
+    renderTypeOfListing = (label) => {
+        const { plantList } = this.props;
+        const temp = [];
+        if(label = 'plant'){
+            plantList && plantList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            console.log('temp', plantList);
+            return temp;
+        }
+        
     }
 
 
@@ -94,8 +112,8 @@ class AddCategory extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Category"
-                                                name={"Category"}
+                                                label={`${CONSTANT.PROCESS} ${CONSTANT.NAME}`}
+                                                name={"ProcessName"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -106,26 +124,21 @@ class AddCategory extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label="Category Type"
-                                                name={"CategoryType"}
+                                                label={`${CONSTANT.PROCESS} ${CONSTANT.CODE}`}
+                                                name={"ProcessCode"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                //validate={[required]}
                                                 component={renderText}
-                                                required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.selectMaterialType()}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
+                                                //required={true}
+                                                className=" withoutBorder"
                                             />
                                         </Col>
                                     <Row/>
                                     <Row/>
-                                        <Col md="12">
+                                        <Col md="6">
                                             <Field
-                                                label="Description"
+                                                label={`${CONSTANT.DESCRIPTION}`}
                                                 name={"Description"}
                                                 type="text"
                                                 placeholder={''}
@@ -135,6 +148,36 @@ class AddCategory extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Basic ${CONSTANT.PROCESS} rate`}
+                                                name={"BasicProcessRate"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderNumberInputField}
+                                                //required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="12">
+                                            <Field
+                                                label={`${CONSTANT.PLANT}`}
+                                                name={"PlantId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                maxLength={26}
+                                                options={this.renderTypeOfListing('plant')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
@@ -158,10 +201,9 @@ class AddCategory extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ category }) {
-   const { categoryList } = category;
-   console.log('categoryList: ', categoryList);
-    return { categoryList }
+function mapStateToProps({ comman }) {
+   const { plantList } = comman
+    return { plantList }
 }
 
 /**
@@ -170,7 +212,7 @@ function mapStateToProps({ category }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createCategoryAPI, fetchCategoryMasterDataAPI })(reduxForm({
-    form: 'AddCategory',
+export default connect(mapStateToProps, { createProcessAPI,fetchPlantDataAPI })(reduxForm({
+    form: 'AddProcess',
     enableReinitialize: true,
-})(AddCategory));
+})(AddProcess));

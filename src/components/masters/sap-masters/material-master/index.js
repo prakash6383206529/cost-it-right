@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
-import AddMaterial from './AddMaterial';
+import AddRowMaterial from './AddRowMaterial';
 import AddRMCategory from './AddCategory';
 import AddRMGrade from './AddGrade';
 import AddSpecification from './AddSpecification';
@@ -13,7 +13,7 @@ import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import AddCategory from './AddCategory';
 
-class MaterialMaster extends Component {
+class RowMaterialMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -168,7 +168,7 @@ class MaterialMaster extends Component {
                     })} */}
                 </Col>
                 {isOpen && (
-                    <AddMaterial
+                    <AddRowMaterial
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                     />
@@ -210,5 +210,5 @@ function mapStateToProps({ }) {
 
 export default connect(
     mapStateToProps, null
-)(MaterialMaster);
+)(RowMaterialMaster);
 

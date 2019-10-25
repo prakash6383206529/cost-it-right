@@ -104,23 +104,6 @@ class AddBOP extends Component {
             PlantId: values.PlantId,
             PartId: values.PartId
         }
-        // {
-        //     "BasicRate": 66,
-        //     "Quantity": 4,
-        //     "NetLandedCost": 1300,
-        //     "PartNumber": "p123",
-        //     "TechnologyId": "af48ba6b-423e-4974-be31-545270e1b778",
-        //     "CategoryId": "c5ebf013-8788-4760-9b6b-3c7ad049a531",
-        //     "Specification": "ssss",
-        //     "MaterialTypesId": "2a86c2ad-730f-4586-8433-b35bdcf31987",
-        //     "SourceSupplierCityId": "b5b9b0ee-7849-4fe7-b5c1-117b59de6252",
-        //     "SourceSupplierId": "77ce4275-00b3-4852-b067-dceffc0a3e63",
-        //     "DestinationSupplierCityId": "c59fa16b-ec9a-443f-abac-53260c8ec775",
-        //     "DestinationSupplierId": "06d0df75-4cce-4c02-b996-21cec96f19fd",
-        //     "UnitOfMeasurementId": "6eacebed-2629-4102-b697-f8e2f14c7f16",
-        //     "PlantId": "48554a75-ffe9-4350-bca2-716a80b0829f",
-        //     "PartId": "b9c2786c-6164-41a6-a5c3-c329776e8363"
-        //   }
         this.props.createBOPAPI(formData, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.BOP_ADD_SUCCESS);

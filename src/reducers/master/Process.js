@@ -1,47 +1,48 @@
 import {
     API_REQUEST,
-    CREATE_BOM_SUCCESS,
-    CREATE_BOM_FAILURE,
-    GET_BOM_SUCCESS,
-    GET_BOM_FAILURE
+    API_FAILURE,
+    CREATE_PROCESS_SUCCESS,
+    CREATE_PROCESS_FAILURE,
+    GET_PROCESS_LIST_SUCCESS,
+    GET_PROCESS_LIST_FAILURE
 } from '../../config/constants';
 
 const initialState = {
    
 };
 
-export default function BOMReducer(state = initialState, action) {
+export default function processReducer(state = initialState, action) {
     switch (action.type) {
         case API_REQUEST:
             return {
                 ...state,
                 loading: true
             };
-        case CREATE_BOM_SUCCESS:
+        case CREATE_PROCESS_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
             };
-        case CREATE_BOM_FAILURE:
+        case CREATE_PROCESS_FAILURE:
             return {
                 ...state,
                 loading: false,
                 error: true
             };
-        case GET_BOM_SUCCESS:
+        case GET_PROCESS_LIST_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                error: true,
-                BOMListing: action.payload
+                processList : action.payload,
             };
-        case GET_BOM_FAILURE:
+        case GET_PROCESS_LIST_FAILURE: {
             return {
                 ...state,
                 loading: false,
-                error: true
+                error: false
             };
+        }   
         default:
             return state;
     }
