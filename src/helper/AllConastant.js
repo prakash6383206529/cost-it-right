@@ -47,4 +47,6 @@ export const CONSTANT = {
     NLC: 'Net Landed Cost',
     SOURCE: 'Source',
     DESTINATION: 'Destination',
+    LABOUR: 'Labour',
+    FREIGHT: 'Freight'
   };

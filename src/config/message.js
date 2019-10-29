@@ -25,6 +25,8 @@ export const MESSAGES = {
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel Details added successfully.',
   OTHER_OPERATION_ADD_SUCCESS: 'Other Operation added successfully.',
   CED_OTHER_OPERATION_ADD_SUCCESS: 'CED Other Operation added successfully.',
-  MATERIAL_ADD_SUCCESS: 'Row material details added successfully.'
+  MATERIAL_ADD_SUCCESS: 'Row material details added successfully.',
+  FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
+  LABOUR_ADDED_SUCCESS: 'Freight added successfully'
 };
 

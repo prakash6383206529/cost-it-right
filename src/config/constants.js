@@ -30,6 +30,8 @@ export const API = {
    getRMComboAPI: `${BASE_URL}/configuration-master/get-raw-material-details-combo-select-list`,
    getBOMComboAPI: `${BASE_URL}/configuration-master/get-bill-of-materials-combo-select-list`,
    getBOPComboAPI: `${BASE_URL}/configuration-master/get-bought-out-part-combo-select-list`,
+   getFreightComboAPI: `${BASE_URL}/configuration-master/get-freight-combo-select-list`,
+   getLabourComboAPI: `${BASE_URL}/configuration-master/get-labour-combo-select-list`,
    
 
   //api's for configure location
@@ -147,6 +149,7 @@ export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
 export const  GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
 export const GET_TECHNOLOGY_LIST_SUCCESS = 'GET_TECHNOLOGY_LIST_SUCCESS';
+export const GET_LABOUR_TYPE_SUCCESS = 'GET_LABOUR_TYPE_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
@@ -242,3 +245,9 @@ export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';
 export const CREATE_FREIGHT_FAILURE = 'CREATE_FREIGHT_FAILURE';
 export const GET_FREIGHT_SUCCESS = 'GET_FREIGHT_SUCCESS';
 export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
+
+//for labour master
+export const CREATE_LABOUR_SUCCESS = 'CREATE_LABOUR_SUCCESS';
+export const CREATE_LABOUR_FAILURE = 'CREATE_LABOUR_FAILURE';
+export const GET_LABOUR_SUCCESS = 'GET_LABOUR_SUCCESS';
+export const GET_LABOUR_FAILURE = 'GET_LABOUR_FAILURE';
