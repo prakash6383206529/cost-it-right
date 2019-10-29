@@ -14,6 +14,8 @@ import BOPReducer from './master/BoughtOutParts';
 import processReducer from './master/Process';
 import fuelReducer from './master/Fuel';
 import OtherOperationReducer from './master/OtherOperation';
+import freightReducer from './master/Freight';
+import labourReducer from './master/Labour';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -39,6 +41,8 @@ const allReducers = combineReducers({
    process             : processReducer,
    fuel                : fuelReducer,
    otherOperation      : OtherOperationReducer,
+   freight             : freightReducer,
+   labour              : labourReducer,
 });
 
 export default rootReducer;
