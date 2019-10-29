@@ -25,6 +25,7 @@ import {
     GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
+    GET_LABOUR_TYPE_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -671,5 +672,67 @@ export function fetchSpecificationDataAPI(rmGradeId, callback) {
                 apiErrors(error);
             });
         }
+    };
+}
+
+/**
+ * @method fetchFreightComboAPI
+ * @description Used in freight form 
+ */
+export function fetchFreightComboAPI(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getFreightComboAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CITY_SUCCESS,
+                    payload: response.data.DynamicData.Cities,
+                });
+                dispatch({
+                    type: GET_PLANT_SUCCESS,
+                    payload: response.data.DynamicData.Plants,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchLabourComboAPI
+ * @description Used in labour form 
+ */
+export function fetchLabourComboAPI(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getLabourComboAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TECHNOLOGY_SUCCESS,
+                    payload: response.data.DynamicData.Technologies,
+                });
+                dispatch({
+                    type: GET_LABOUR_TYPE_SUCCESS,
+                    payload: response.data.DynamicData.LabourTypes,
+                });
+                dispatch({
+                    type: GET_PLANT_SUCCESS,
+                    payload: response.data.DynamicData.Plants,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
