@@ -8,7 +8,9 @@ import {
     GET_RM_LIST_SUCCESS,
     GET_RM_GRADE_LIST_SUCCESS,
     GET_RM_CATEGORY_LIST_SUCCESS,
-    GET_RM_SPECIFICATION_LIST_SUCCESS
+    GET_RM_SPECIFICATION_LIST_SUCCESS,
+    GET_MATERIAL_LIST_SUCCESS,
+    GET_MATERIAL_LIST_TYPE_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -153,8 +155,8 @@ export function getRowMaterialDataAPI() {
     return (dispatch) => {
         const API1 = axios.get(API.getRMMaterialAPI, headers);
         const API2 = axios.get(API.getRMGradeAPI, headers);
-        const API3 = axios.get(API.getRMSpecificationAPI, headers);
-        const API4 = axios.get(API.getRMCategoryAPI, headers);
+        const API3 = axios.get(API.getRMCategoryAPI, headers);
+        const API4 = axios.get(API.getRMSpecificationAPI, headers);
         Promise.all([API1,API2,API3,API4])
             .then((response) => {
                 dispatch({
@@ -172,6 +174,94 @@ export function getRowMaterialDataAPI() {
                 dispatch({
                     type: GET_RM_SPECIFICATION_LIST_SUCCESS,
                     payload: response[3].data.DataList,
+                });
+            }).catch((error) => {
+                dispatch({
+                    type: API_FAILURE
+                });
+                apiErrors(error);
+            });
+    };
+}
+
+// action creator for material master
+
+/**
+ * @method createMaterialTypeAPI
+ * @description create material master
+ */
+export function createMaterialTypeAPI(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createMaterialType, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                    dispatch({
+                        type: CREATE_MATERIAL_SUCCESS,
+                        payload: response.data.Data
+                    });
+                    callback(response);
+            } else {
+                dispatch({ type: CREATE_MATERIAL_FAILURE });
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message);
+                    } 
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method createRMDetailAPI
+ * @description create material master
+ */
+export function createRMDetailAPI(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createMaterial, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                    dispatch({
+                        type: CREATE_MATERIAL_SUCCESS,
+                        payload: response.data.Data
+                    });
+                    callback(response);
+            } else {
+                dispatch({ type: CREATE_MATERIAL_FAILURE });
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message);
+                    } 
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getMaterialDetailAPI
+ * @description get row material list
+ */
+export function getMaterialDetailAPI() {
+    return (dispatch) => {
+        const API1 = axios.get(API.getMaterialType, headers);
+        const API2 = axios.get(API.getMaterial, headers);
+        Promise.all([API1,API2])
+            .then((response) => {
+                dispatch({
+                    type: GET_MATERIAL_LIST_TYPE_SUCCESS,
+                    payload: response[0].data.DataList,
+                });
+                dispatch({
+                    type: GET_MATERIAL_LIST_SUCCESS,
+                    payload: response[1].data.DataList,
                 });
             }).catch((error) => {
                 dispatch({

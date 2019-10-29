@@ -23,7 +23,8 @@ import {
     GET_OTHER_OPERATION_FORMDATA_SUCCESS,
     GET_OTHER_OPERATION_FORMDATA_FAILURE,
     GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
-    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE
+    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE,
+    GET_RM_SPECIFICATION_LIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -540,5 +541,135 @@ export function fetchBOMComboAPI(callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method fetchMaterialComboAPI
+ * @description Used to BOM form 
+ */
+export function fetchMaterialComboAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRMComboAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TECHNOLOGY_SUCCESS,
+                    payload: response.data.DynamicData.Technologies,
+                });
+                dispatch({
+                    type: GET_ROW_MATERIAL_SUCCESS,
+                    payload: response.data.DynamicData.RawMaterials,
+                });
+                dispatch({
+                    type: GET_GRADE_SUCCESS,
+                    payload: response.data.DynamicData.RawMaterialGrades,
+                });
+                dispatch({
+                    type: GET_RM_SPECIFICATION_LIST_SUCCESS,
+                    payload: response.data.DynamicData.RawMaterialSpecifications,
+                });
+                dispatch({
+                    type: GET_CATEGORY_SUCCESS,
+                    payload: response.data.DynamicData.RawMaterialCategories,
+                });
+                dispatch({
+                    type: GET_CITY_SUCCESS,
+                    payload: response.data.DynamicData.Cities,
+                });
+                dispatch({
+                    type: GET_SUPPLIER_SUCCESS,
+                    payload: response.data.DynamicData.Suppliers,
+                });
+                dispatch({
+                    type: GET_UOM_DATA_SUCCESS,
+                    payload: response.data.DynamicData.UnitOfMeasurements,
+                });
+                dispatch({
+                    type: GET_PLANT_SUCCESS,
+                    payload: response.data.DynamicData.Plants,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchGradeDataAPI
+ * @description Used to fetch state list
+ */
+export function fetchGradeDataAPI(rowMaterialId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (rowMaterialId == 0) {
+            dispatch({
+                type: GET_GRADE_SUCCESS,
+                payload: []
+            });
+            dispatch({
+                type: GET_RM_SPECIFICATION_LIST_SUCCESS,
+                payload: [],
+            });
+            callback([]);
+        } else {
+            const request = axios.get(`${API.getRowGrade}/${rowMaterialId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_GRADE_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        }
+    };
+}
+
+/**
+ * @method fetchSpecificationDataAPI
+ * @description Used to fetch city list
+ */
+export function fetchSpecificationDataAPI(rmGradeId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (rmGradeId == 0) {
+            dispatch({
+                type: GET_RM_SPECIFICATION_LIST_SUCCESS,
+                payload: [],
+            });
+            callback([]);
+        } else {
+            const request = axios.get(`${API.getRowMaterialSpecification}/${rmGradeId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_RM_SPECIFICATION_LIST_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        }
     };
 }
