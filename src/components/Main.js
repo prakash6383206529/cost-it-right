@@ -23,6 +23,7 @@ import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationMaster from './masters/sap-masters/other-operation';
 import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
+import MaterialMaster from './masters/sap-masters/material-master/material';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -145,7 +146,7 @@ class Main extends Component {
                 )}
               />
               <Route
-                path="/material-master"
+                path="/row-material-master"
                 render={props => (
                   <RowMaterialMaster
                     {...props}
@@ -212,6 +213,14 @@ class Main extends Component {
                   path="/ced-other-operation"
                   render={props => (
                     <CEDoperationMaster
+                      {...props}
+                    />
+                )}
+              />
+               <Route
+                  path="/material-master"
+                  render={props => (
+                    <MaterialMaster
                       {...props}
                     />
                 )}

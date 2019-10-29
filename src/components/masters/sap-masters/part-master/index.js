@@ -114,6 +114,7 @@ class PartMaster extends Component {
                         <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
                         <th>{`${CONSTANT.UOM}`}</th>
                         <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
+                        <th></th>
                         </tr>
                     </thead>
                     <tbody > 
@@ -128,8 +129,8 @@ class PartMaster extends Component {
                                         <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : 'N/A'}</td> 
                                         <td>{item.PartDescription}</td>
                                         <div>
-                                            <Button className="black-btn" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
-                                            <Button className="black-btn" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
+                                            <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
+                                            <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
                                         </div>
                                     </tr>
                                 )

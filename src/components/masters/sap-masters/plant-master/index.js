@@ -59,7 +59,7 @@ class PlantMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                <Table>
+                <Table className="table table-striped" bordered>
                     <thead>
                         <tr>
                         <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
@@ -70,18 +70,18 @@ class PlantMaster extends Component {
                         </tr>
                     </thead>
                     <tbody > 
-                {this.props.plantDetail && this.props.plantDetail.length > 0 &&
-                    this.props.plantDetail.map((item, index) => {
-                        return (                                       
-                            <tr key={index}>
-                                <td >{item.PlantName}</td>
-                                <td>{item.PlantTitle}</td> 
-                                <td>{item.UnitNumber}</td>
-                                <td>{item.Address}</td> 
-                                <td>{item.CityId}</td> 
-                            </tr>
-                        )
-                    })}
+                        {this.props.plantDetail && this.props.plantDetail.length > 0 &&
+                            this.props.plantDetail.map((item, index) => {
+                            return (                                       
+                                <tr key={index}>
+                                    <td >{item.PlantName}</td>
+                                    <td>{item.PlantTitle}</td> 
+                                    <td>{item.UnitNumber}</td>
+                                    <td>{item.Address}</td> 
+                                    <td>{item.CityId}</td> 
+                                </tr>
+                            )
+                        })}
                     </tbody>  
                 </Table> 
                 </Col>

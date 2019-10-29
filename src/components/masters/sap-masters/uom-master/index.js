@@ -115,7 +115,7 @@ class UOMMaster extends Component {
                                 <th>UOM Name</th>
                                 <th>UOM Title</th>
                                 <th>UOM Description</th>
-                                <th>UOM Created By</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>

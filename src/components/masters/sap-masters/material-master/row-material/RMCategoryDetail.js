@@ -4,7 +4,11 @@ import {
     Container, Row, Col, Table } from 'reactstrap';
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
-import { CONSTANT } from '../../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../../helper/AllConastant';
+import {
+    convertISOToUtcDate,
+} from '../../../../../helper';
+
 
 class RMCategoryDetail extends Component {
     constructor(props) {
@@ -39,6 +43,7 @@ class RMCategoryDetail extends Component {
                         <tr>
                         <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
                         <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
+                        <th>{`${CONSTANT.DATE}`}</th>
                         </tr>
                     </thead>
                     <tbody > 
@@ -48,6 +53,7 @@ class RMCategoryDetail extends Component {
                                     <tr key= {index}>
                                         <td >{item.CategoryName}</td>
                                         <td>{item.Description }</td>
+                                        <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                     </tr>
                                 )
                             })}

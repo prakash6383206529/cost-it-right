@@ -6,7 +6,9 @@ import {
     GET_RM_LIST_SUCCESS,
     GET_RM_GRADE_LIST_SUCCESS,
     GET_RM_CATEGORY_LIST_SUCCESS,
-    GET_RM_SPECIFICATION_LIST_SUCCESS
+    GET_RM_SPECIFICATION_LIST_SUCCESS,
+    GET_MATERIAL_LIST_SUCCESS,
+    GET_MATERIAL_LIST_TYPE_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -64,6 +66,20 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 rmSpecificationDetail: action.payload
+            };
+        case GET_MATERIAL_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rmDetail: action.payload
+            };
+        case GET_MATERIAL_LIST_TYPE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rmTypeDetail: action.payload
             };
         default:
             return state;

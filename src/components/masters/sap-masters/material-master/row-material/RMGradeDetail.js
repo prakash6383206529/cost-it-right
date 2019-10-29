@@ -9,8 +9,6 @@ import {
     convertISOToUtcDate,
 } from '../../../../../helper';
 
-
-
 class RMGradeDetail extends Component {
     constructor(props) {
         super(props);

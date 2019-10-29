@@ -1,27 +1,40 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, Button, Table } from "reactstrap";
+import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button} from "reactstrap";
 import AddFuelDetail from './AddFuelDetail';
 import AddFuel from './AddFuel';
+import FuelDetail from './FuelDetail';
+import FuelTypeDetail from './FuelTypeDetail';
 import { getFuelAPI, getFuelDetailAPI } from '../../../../actions/master/Fuel';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import {
-    convertISOToUtcDate,
-} from '../../../../helper';
-
+import classnames from 'classnames';
 
 class FuelMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
-            isOpenModel: false
+            isOpenModel: false,
+            activeTab: '1'
         }
     }
 
     componentDidMount() {
         this.props.getFuelDetailAPI(res => {});
     }
+
+     /**
+    * @method toggle
+    * @description toggling the tabs
+    */
+    toggle = (tab) => {
+        if (this.state.activeTab !== tab) {
+            this.setState({
+                activeTab: tab
+            });
+        }
+    }
+
     /**
      * @method openModel
      * @description  used to open filter form 
@@ -29,7 +42,12 @@ class FuelMaster extends Component {
     openModel = () => {
         this.setState({ isOpen: true })
     }
-    openCategoryModel = () => {
+
+     /**
+     * @method openFuelModel
+     * @description  used to open fuel form 
+     */
+    openFuelModel = () => {
         this.setState({ isOpenModel: true})
     }
 
@@ -54,44 +72,35 @@ class FuelMaster extends Component {
                         <h3>Fuel Master </h3>
                     </Col>
                     <Col>
-                        <Button onClick={this.openModel}>Add Fuel</Button>
+                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.FUEL}`}</Button>
                     </Col>
                     <Col>
-                        <Button onClick={this.openCategoryModel}>Add Fuel Detail</Button>
+                        <Button onClick={this.openFuelModel}>{`${CONSTANT.ADD} ${CONSTANT.FUEL} ${CONSTANT.DETAILS}`}</Button>
                     </Col>
                 </Row>
                 <hr />
-                <Row>
-                    <Col>
-                        <h5>{`Fuel ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row>
                 <Col>
-                <Table className="table table-striped" bordered>
-                    <thead>
-                        <tr>
-                        <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
-                        <th>{`${CONSTANT.UOM}`}</th> 
-                        <th>{`${CONSTANT.STATE} ${CONSTANT.NAME}`}</th>
-                        <th>{`${CONSTANT.DATE} To`}</th>
-                        <th>{`${CONSTANT.DATE} From`}</th>
-                        </tr>
-                    </thead>
-                    <tbody > 
-                        {this.props.fuelList && this.props.fuelList.length > 0 &&
-                            this.props.fuelList.map((item, index) => {
-                                return (
-                                    <tr key= {index}>
-                                        <td >{item.FuelName}</td>
-                                        <td>{item.UnitOfMeasurementName}</td> 
-                                        <td>{item.StateName}</td>
-                                        <td>{convertISOToUtcDate(item.ValidDateTo)}</td> 
-                                        <td>{convertISOToUtcDate(item.ValidDateFrom)}</td> 
-                                    </tr>
-                                )
-                            })}
-                    </tbody> 
-                </Table>
+                    <Nav tabs className="subtabs">
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                Fuel Details
+                            </NavLink>
+                        </NavItem>
+
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                Fuel Type Details
+                            </NavLink>
+                        </NavItem>
+                    </Nav>
+                    <TabContent activeTab={this.state.activeTab}>
+                        <TabPane tabId="1">
+                            <FuelDetail/>
+                        </TabPane>
+                        <TabPane tabId="2">
+                            <FuelTypeDetail/> 
+                        </TabPane>
+                    </TabContent>
                 </Col>
                 {isOpen && (
                     <AddFuel

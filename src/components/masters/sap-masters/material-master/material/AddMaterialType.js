@@ -2,15 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { createMaterialAPI } from '../../../../actions/master/Material';
-import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
+import { required } from "../../../../../helper/validation";
+import { renderText} from "../../../../layout/FormInputs";
+import { createMaterialTypeAPI,getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
-import { CONSTANT} from '../../../../helper/AllConastant'
+import { MESSAGES } from '../../../../../config/message';
+import { CONSTANT} from '../../../../../helper/AllConastant';
 
-class AddMaterial extends Component {
+class AddMaterialType extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -42,9 +41,10 @@ class AddMaterial extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        this.props.createMaterialAPI(values, (res) => {
-            if (res.data.Result === true) {
+        this.props.createMaterialTypeAPI(values, (res) => {
+            if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+                this.props.getMaterialDetailAPI(res => {});
                 {this.toggleModel()}
             } else {
                 toastr.error(res.data.Message);
@@ -86,7 +86,7 @@ class AddMaterial extends Component {
                                         <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.DESCRIPTION}`}
-                                                name={"MaterialTypeDescription"}
+                                                name={"Description"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
@@ -118,9 +118,7 @@ class AddMaterial extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-   const { plantList } = comman;
-    return { plantList }
+function mapStateToProps({ material }) {
 }
 
 /**
@@ -129,7 +127,7 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createMaterialAPI, fetchPlantDataAPI })(reduxForm({
-    form: 'AddMaterial',
-    enableReinitialize: true,
-})(AddMaterial));
+export default connect(mapStateToProps, { createMaterialTypeAPI, getMaterialDetailAPI })(reduxForm({
+    form: 'AddMaterialType',
+    //enableReinitialize: true,
+})(AddMaterialType));

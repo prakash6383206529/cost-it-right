@@ -70,11 +70,6 @@ class CategoryMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
-                {/* <Row>
-                    <Col>
-                        <h5>{`${CONSTANT.CATEGORY} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row> */}
                 <div>
                 <Nav tabs className="subtabs">
                             <NavItem>

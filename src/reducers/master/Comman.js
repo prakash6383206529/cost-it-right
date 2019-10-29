@@ -21,7 +21,8 @@ import {
     GET_OTHER_OPERATION_FORMDATA_SUCCESS,
     GET_OTHER_OPERATION_FORMDATA_FAILURE,
     GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
-    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE
+    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE,
+    GET_RM_SPECIFICATION_LIST_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -190,6 +191,13 @@ export default function commanReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true
+            };
+        case GET_RM_SPECIFICATION_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rmSpecification: action.payload
             };
         default:
             return state;

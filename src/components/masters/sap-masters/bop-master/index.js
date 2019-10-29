@@ -6,7 +6,9 @@ import AddBOP from './AddBOP';
 import { getAllBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-//import moment from "moment";
+import {
+    convertISOToUtcDate,
+} from '../../../../helper';
 
 
 class BOPMaster extends Component {
@@ -69,13 +71,13 @@ class BOPMaster extends Component {
                         <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
                         <th>{`${CONSTANT.TECHNOLOGY}`}</th>
                         <th>{`${CONSTANT.CATEGORY}` }</th>
-                        <th>{`Source ${CONSTANT.SUPPLIER}`}</th>
-                        <th>{`Source ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
-                        <th>{`Destination ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th> 
-                        <th>{`Destination ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th> 
+                        <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                        <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
+                        <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th> 
+                        <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th> 
                         <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
                         <th>{` ${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
-                        <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th>
+                        {/* <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th> */}
                         <th>{`Basic Rate`}</th>
                         <th>{`${CONSTANT.QUANTITY} `}</th>
                         <th>{` Net Landed Cost`}</th>
@@ -90,19 +92,20 @@ class BOPMaster extends Component {
                                 <tr >
                                     <td >{item.MaterialTypeName}</td>
                                     <td>{item.UnitOfMeasurementName}</td> 
+                                    <td>{item.PartNumber}</td> 
                                     <td>{item.TechnologyName}</td>
                                     <td>{item.CategoryName}</td> 
-                                    <td>{item.SourceSupplierLocation}</td> 
                                     <td>{item.SourceSupplierName}</td>
-                                    <td>{item.DestinationSupplierLocation}</td>
+                                    <td>{item.SourceSupplierLocation}</td> 
                                     <td>{item.DestinationSupplierName}</td>
+                                    <td>{item.DestinationSupplierLocation}</td>
                                     <td>{item.PlantName}</td>
                                     <td>{item.PartName}</td>
                                     <td>{item.BasicRate}</td>
                                     <td>{item.Quantity}</td>
                                     <td>{item.NetLandedCost}</td>
                                     <td>{item.Specification}</td>
-                                    {/* <td>{moment(item.CreatedDate).formate('L')}</td> */}
+                                    <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                     <div> 
                                     </div>
                                 </tr>

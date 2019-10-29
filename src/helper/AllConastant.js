@@ -38,5 +38,13 @@ export const CONSTANT = {
     PROCESS: 'Process',
     FUEL: 'Fuel',
     OTHER_OPERATION: 'Other Operation',
-    CED_OTHER_OPERATION: 'CED Other Operation'
+    CED_OTHER_OPERATION: 'CED Other Operation',
+    MATERIAL_MASTER: 'Material',
+    BASIC: 'Basic',
+    RATE: 'Rate',
+    SCRAP: 'Scrap',
+    REMARK: 'Remark',
+    NLC: 'Net Landed Cost',
+    SOURCE: 'Source',
+    DESTINATION: 'Destination',
   };

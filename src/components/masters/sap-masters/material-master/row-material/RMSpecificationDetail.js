@@ -4,7 +4,10 @@ import {
     Container, Row, Col, Table } from 'reactstrap';
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
-import { CONSTANT } from '../../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../../helper/AllConastant';
+import {
+    convertISOToUtcDate,
+} from '../../../../../helper';
 
 class RMSpecificationDetail extends Component {
     constructor(props) {
@@ -37,10 +40,10 @@ class RMSpecificationDetail extends Component {
                 <Table className="table table-striped" bordered>
                     <thead>
                         <tr>
-                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.SPECIFICATION}`}</th>
-                        <th>{`${CONSTANT.MATERIAL}`}</th> 
                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th> 
+                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.SPECIFICATION}`}</th> 
                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
+                        <th>{`${CONSTANT.DATE}`}</th>
                         </tr>
                     </thead>
                     <tbody > 
@@ -48,10 +51,10 @@ class RMSpecificationDetail extends Component {
                             this.props.rmSpecificationDetail.map((item, index) => {
                                 return (
                                     <tr key= {index}>
-                                        <td >{item.Specification}</td>
-                                        <td>{item.RawMaterialId}</td> 
                                         <td>{item.GradeName}</td> 
+                                        <td >{item.Specification}</td>
                                         <td>{item.Description }</td>
+                                        <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                     </tr>
                                 )
                             })}

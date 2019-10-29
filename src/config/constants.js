@@ -41,14 +41,14 @@ export const API = {
   //api's for configure row material
   getRowMaterial: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
   getRowGrade: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
-  getRowMaterialDetail: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
-  getRowMaterialCategory: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-categoryy`,
+  getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
+  getRowMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-categoryy`,
 
   //Api's for material
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
   createMaterial: `${BASE_URL}/masters-material/add-costing-raw-matrial-details`,
   getMaterialType: `${BASE_URL}/masters-material/get-material-type`,
-  getMaterial: `${BASE_URL}/masters-material/create-material-type`,
+  getMaterial: `${BASE_URL}/masters-material/get-costing-raw-matrials`,
 
   //Api for Unit of measurement master
   createUOMAPI: `${BASE_URL}/masters-unit-of-measurement/create`,
@@ -120,6 +120,13 @@ export const API = {
   createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
   getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
 
+  //Api's for fright master
+  createFreightAPI: `${BASE_URL}/masters-freight/create`,
+  getFreightAPI: `${BASE_URL}/masters-freight/get`,
+
+  //Api's for labour master
+  createLabourAPI: `${BASE_URL}/masters-labour/create`,
+  getLabourAPI: `${BASE_URL}/masters-labour/get`,
 }
 
 
@@ -176,6 +183,8 @@ export const GET_RM_LIST_SUCCESS = 'GET_RM_LIST_SUCCESS';
 export const GET_RM_GRADE_LIST_SUCCESS = 'GET_RM_GRADE_LIST_SUCCESS';
 export const GET_RM_CATEGORY_LIST_SUCCESS = 'GET_RM_CATEGORY_LIST_SUCCESS';
 export const GET_RM_SPECIFICATION_LIST_SUCCESS = 'GET_RM_SPECIFICATION_LIST_SUCCESS';
+export const GET_MATERIAL_LIST_SUCCESS = 'GET_MATERIAL_LIST_SUCCESS';
+export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS';
 
 //for plant master
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS';
@@ -185,6 +194,7 @@ export const GET_PLANT_FAILURE = 'GET_PLANT_FAILURE';
 //for supplier master
 export const CREATE_SUPPLIER_SUCCESS = 'CREATE_SUPPLIER_SUCCESS';
 export const CREATE_SUPPLIER_FAILURE = 'CREATE_SUPPLIER_FAILURE';
+export const GET_SUPPLIER_FAILURE = 'GET_SUPPLIER_FAILURE';
 
 //for BOM master
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
@@ -227,3 +237,8 @@ export const GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE = 'GET_CED_OTHER_OPERATI
 export const GET_CED_OTHER_OPERATION_SUCCESS = 'GET_CED_OTHER_OPERATION_SUCCESS';
 export const GET_CED_OTHER_OPERATION_FAILURE = 'GET_CED_OTHER_OPERATION_FAILURE';
 
+//for freight master
+export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';
+export const CREATE_FREIGHT_FAILURE = 'CREATE_FREIGHT_FAILURE';
+export const GET_FREIGHT_SUCCESS = 'GET_FREIGHT_SUCCESS';
+export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
