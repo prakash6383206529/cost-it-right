@@ -140,6 +140,8 @@ class SideBar extends Component {
                     <a className="dropdown-item" href="/other-operation">Other Operation</a>
                     <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
                     <a className="dropdown-item" href="/material-master">Material Master</a>
+                    <a className="dropdown-item" href="/freight-master">Freight Master</a>
+                    <a className="dropdown-item" href="/labour-master">Labour Master</a>
                   </div>
                 </li>
                 <li className="nav-item dropdown">

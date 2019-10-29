@@ -24,6 +24,8 @@ import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationMaster from './masters/sap-masters/other-operation';
 import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
 import MaterialMaster from './masters/sap-masters/material-master/material';
+import FreightMaster from './masters/sap-masters/freight-master';
+import LabourMaster from './masters/sap-masters/labour-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -217,7 +219,7 @@ class Main extends Component {
                     />
                 )}
               />
-               <Route
+              <Route
                   path="/material-master"
                   render={props => (
                     <MaterialMaster
@@ -225,22 +227,22 @@ class Main extends Component {
                     />
                 )}
               />
-              {/* <Route
-                path="/privacy-policy"
-                render={props => (
-                  <aboutus
-                    {...props}
-                  />
+              <Route
+                  path="/freight-master"
+                  render={props => (
+                    <FreightMaster
+                      {...props}
+                    />
                 )}
               />
               <Route
-                path="/contact-us"
-                render={props => (
-                  <Contact
-                    {...props}
-                  />
+                  path="/labour-master"
+                  render={props => (
+                    <LabourMaster
+                      {...props}
+                    />
                 )}
-              />  */}
+              />
               <Route
                 render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}
               />
