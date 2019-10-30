@@ -7,7 +7,8 @@ import {
     GET_OTHER_OPERATION_FAILURE,
     CREATE_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_SUCCESS,
-    GET_CED_OTHER_OPERATION_FAILURE
+    GET_CED_OTHER_OPERATION_FAILURE,
+    GET_OPERATION_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -55,13 +56,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 loading: false,
                 //error: true
             };
-        // case GET_UOM_SUCCESS:
-        //     return {
-        //         ...state,
-        //         loading: false, 
-        //         unitOfMeasurementData: action.payload
-        //     };
-
+        case GET_OPERATION_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                operationListData: action.payload
+            };
         case CREATE_OTHER_OPERATION_SUCCESS: {
             return {
                 ...state,

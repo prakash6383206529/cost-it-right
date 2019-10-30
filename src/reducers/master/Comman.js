@@ -22,6 +22,8 @@ import {
     GET_OTHER_OPERATION_FORMDATA_FAILURE,
     GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE,
+    GET_MHR_COMBO_DATA_SUCCESS,
+    DATA_FAILURE,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_LABOUR_TYPE_SUCCESS
 } from '../../config/constants';
@@ -119,7 +121,7 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 technologyList: action.payload
             };
-        case  GET_PLANT_SUCCESS:
+        case GET_PLANT_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -147,12 +149,12 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 fuelList: action.payload
             };
-        case FETCH_MATER_DATA_FAILURE:
-            return {
-                ...state,
-                loading: false,
-                error: true
-            };
+        // case FETCH_MATER_DATA_FAILURE:
+        //     return {
+        //         ...state,
+        //         loading: false,
+        //         error: true
+        //     };
         case GET_TECHNOLOGY_LIST_SUCCESS:
             return {
                 ...state,
@@ -180,14 +182,27 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 cedOtherOperationComboData: action.payload
             };
-           
-        case  FETCH_MATER_DATA_FAILURE:
+
+        case FETCH_MATER_DATA_FAILURE:
             return {
                 ...state,
                 loading: false,
                 error: true
             };
         case GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
+        case GET_MHR_COMBO_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                comboDataMHR: action.payload
+            };
+        case DATA_FAILURE:
             return {
                 ...state,
                 loading: false,

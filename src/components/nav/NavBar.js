@@ -121,42 +121,42 @@ class SideBar extends Component {
 
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto menu-list">
-                <NavItem>
-                  <NavLink href="/dashboard">Dashboard</NavLink>
-                </NavItem>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href= '/UOMMaster'>UOM Master</a>
-                    <a className="dropdown-item" href="/PartMaster">Part Master</a>
-                    <a className="dropdown-item" href= '/category-master'>Category Master</a>
-                    <a className="dropdown-item" href="/row-material-master">Row Material Master</a>
-                    <a className="dropdown-item" href="/plant-master">Plant Master</a>
-                    <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
-                    <a className="dropdown-item" href="bom-master">BOM Master</a>
-                    <a className="dropdown-item" href="bop-master">BOP Master</a>
-                    <a className="dropdown-item" href="/process-master">Process Master</a>
-                    <a className="dropdown-item" href="/fuel-master">Fuel Master</a>
-                    <a className="dropdown-item" href="/other-operation">Other Operation</a>
-                    <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
-                    <a className="dropdown-item" href="/material-master">Material Master</a>
-                    <a className="dropdown-item" href="/freight-master">Freight Master</a>
-                    <a className="dropdown-item" href="/labour-master">Labour Master</a>
-                  </div>
-                </li>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Report</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href= '#'>Contribution Report</a>
-                  </div>
-                </li>
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Technology</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href= '#'>Sheet metal</a>
-                  </div>
-                </li>
-                {/* <UncontrolledDropdown nav inNavbar>
+              <NavItem>
+                <NavLink href="/dashboard">Dashboard</NavLink>
+              </NavItem>
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href='/UOMMaster'>UOM Master</a>
+                  <a className="dropdown-item" href="/PartMaster">Part Master</a>
+                  <a className="dropdown-item" href='/category-master'>Category Master</a>
+                  <a className="dropdown-item" href="/material-master">Material Master</a>
+                  <a className="dropdown-item" href="/plant-master">Plant Master</a>
+                  <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
+                  <a className="dropdown-item" href="/bom-master">BOM Master</a>
+                  <a className="dropdown-item" href="/bop-master">BOP Master</a>
+                  <a className="dropdown-item" href="/other-operation">Other Operation</a>
+                  <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
+                  <a className="dropdown-item" href="/mhr-master">MHR Master</a>
+                  <a className="dropdown-item" href="/operation-master">Operation</a>
+                  <a className="dropdown-item" href="/material-master">Material Master</a>
+                  <a className="dropdown-item" href="/freight-master">Freight Master</a>
+                  <a className="dropdown-item" href="/labour-master">Labour Master</a>
+                </div>
+              </li>
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Report</a>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href='#'>Contribution Report</a>
+                </div>
+              </li>
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Technology</a>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href='#'>Sheet metal</a>
+                </div>
+              </li>
+              {/* <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>About</DropdownToggle>
                   <DropdownMenu right>
                     <DropdownItem tag="a" href="/about-us"> About us</DropdownItem>

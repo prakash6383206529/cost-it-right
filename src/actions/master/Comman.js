@@ -24,6 +24,8 @@ import {
     GET_OTHER_OPERATION_FORMDATA_FAILURE,
     GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE,
+    GET_MHR_COMBO_DATA_SUCCESS,
+    DATA_FAILURE,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_LABOUR_TYPE_SUCCESS
 } from '../../config/constants';
@@ -52,7 +54,6 @@ export function fetchMasterDataAPI() {
         const API8 = axios.get(API.getCategoryType, headers)
         Promise.all([API1, API2, API3, API4, API5, API6, API7, API8])
             .then((response) => {
-                console.log('%c 🥗 response: ', 'font-size:20px;background-color: #FFDD4D;color:#fff;', response);
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
                     payload: response[0].data.SelectList,
@@ -74,7 +75,7 @@ export function fetchMasterDataAPI() {
                 dispatch({
                     type: GET_SUPPLIER_SUCCESS,
                     payload: response[4].data.SelectList,
-                }); 
+                });
                 dispatch({
                     type: GET_SUPPLIER_CITY_SUCCESS,
                     payload: response[5].data.SelectList,
@@ -86,7 +87,7 @@ export function fetchMasterDataAPI() {
                 dispatch({
                     type: GET_CATEGORY_TYPE_SUCCESS,
                     payload: response[7].data.SelectList,
-                });  
+                });
             }).catch((error) => {
                 dispatch({
                     type: FETCH_MATER_DATA_FAILURE
@@ -308,16 +309,16 @@ export function fetchRMCategoryAPI(callback) {
  * @method fetchRMCategoryAPI
  * @description Used to fetch row material category list
  */
-export function fetchCategoryAPI(Id,callback) {
+export function fetchCategoryAPI(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if(Id == 0){
+        if (Id == 0) {
             dispatch({
                 type: GET_CATEGORY_SUCCESS,
                 payload: []
             });
         }
-        else{
+        else {
             const request = axios.get(`${API.getCategory}/${Id}`, headers);
             request.then((response) => {
                 if (response.data.Result) {
@@ -335,7 +336,7 @@ export function fetchCategoryAPI(Id,callback) {
                 apiErrors(error);
             });
         }
-        
+
     };
 }
 
@@ -348,7 +349,7 @@ export function fetchCategoryAPI(Id,callback) {
 export function fetchFuelComboAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelComboAPI}`,headers);
+        const request = axios.get(`${API.getFuelComboAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -426,7 +427,7 @@ export function getCEDOtherOperationComboData(callback) {
 export function fetchPartComboAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPartComboAPI}`,headers);
+        const request = axios.get(`${API.getPartComboAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -460,7 +461,7 @@ export function fetchPartComboAPI(callback) {
 export function fetchBOPComboAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPComboAPI}`,headers);
+        const request = axios.get(`${API.getBOPComboAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -518,7 +519,7 @@ export function fetchBOPComboAPI(callback) {
 export function fetchBOMComboAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOMComboAPI}`,headers);
+        const request = axios.get(`${API.getBOMComboAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -552,7 +553,7 @@ export function fetchBOMComboAPI(callback) {
 export function fetchMaterialComboAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRMComboAPI}`,headers);
+        const request = axios.get(`${API.getRMComboAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -681,7 +682,7 @@ export function fetchSpecificationDataAPI(rmGradeId, callback) {
  */
 export function fetchFreightComboAPI(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getFreightComboAPI}`,headers);
+        const request = axios.get(`${API.getFreightComboAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -710,7 +711,7 @@ export function fetchFreightComboAPI(callback) {
  */
 export function fetchLabourComboAPI(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getLabourComboAPI}`,headers);
+        const request = axios.get(`${API.getLabourComboAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -731,6 +732,33 @@ export function fetchLabourComboAPI(callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/*
+* @method fetchRMCategoryAPI
+* @description Used to fetch row material category list
+*/
+export function getMHRMasterComboData(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMHRComboDataAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MHR_COMBO_DATA_SUCCESS,
+                    payload: response.data.DynamicData,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: DATA_FAILURE });
             callback(error);
             apiErrors(error);
         });

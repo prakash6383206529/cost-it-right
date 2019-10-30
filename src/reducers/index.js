@@ -14,6 +14,7 @@ import BOPReducer from './master/BoughtOutParts';
 import processReducer from './master/Process';
 import fuelReducer from './master/Fuel';
 import OtherOperationReducer from './master/OtherOperation';
+import MHRReducer from './master/MHR';
 import freightReducer from './master/Freight';
 import labourReducer from './master/Labour';
 
@@ -25,24 +26,25 @@ const rootReducer = (state, action) => {
 };
 
 /**Combine all the reducers */
-const allReducers = combineReducers({   
-   form                : formReducer,
-   toastr              : toastrReducer,
-   auth                : AuthReducer, 
-   part                : partReducer,
-   unitOfMeasrement    : UOMREducer,
-   category            : categoryReducer,
-   material            : materialReducer,
-   plant               : plantReducer,
-   supplier            : supplierReducer,
-   comman              : commanReducer,
-   billOfMaterial      : BOMReducer,
-   boughtOutparts      : BOPReducer,
-   process             : processReducer,
-   fuel                : fuelReducer,
-   otherOperation      : OtherOperationReducer,
-   freight             : freightReducer,
-   labour              : labourReducer,
+const allReducers = combineReducers({
+   form: formReducer,
+   toastr: toastrReducer,
+   auth: AuthReducer,
+   part: partReducer,
+   unitOfMeasrement: UOMREducer,
+   category: categoryReducer,
+   material: materialReducer,
+   plant: plantReducer,
+   supplier: supplierReducer,
+   comman: commanReducer,
+   billOfMaterial: BOMReducer,
+   boughtOutparts: BOPReducer,
+   process: processReducer,
+   fuel: fuelReducer,
+   otherOperation: OtherOperationReducer,
+   MHRReducer: MHRReducer,
+   freight: freightReducer,
+   labour: labourReducer,
 });
 
 export default rootReducer;

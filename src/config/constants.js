@@ -21,18 +21,18 @@ export const API = {
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
 
   //Combo apis
-   //configure api's
-   getFuelComboAPI: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
-   getOtherOperationComboAPI : `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
-   getCEDComboAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
-   getMHRComboAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
-   getPartComboAPI: `${BASE_URL}/configuration-master/get-part-combo-select-list`,
-   getRMComboAPI: `${BASE_URL}/configuration-master/get-raw-material-details-combo-select-list`,
-   getBOMComboAPI: `${BASE_URL}/configuration-master/get-bill-of-materials-combo-select-list`,
-   getBOPComboAPI: `${BASE_URL}/configuration-master/get-bought-out-part-combo-select-list`,
-   getFreightComboAPI: `${BASE_URL}/configuration-master/get-freight-combo-select-list`,
-   getLabourComboAPI: `${BASE_URL}/configuration-master/get-labour-combo-select-list`,
-   
+  //configure api's
+  getFuelComboAPI: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+  getOtherOperationComboAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
+  getCEDComboAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
+  getMHRComboAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
+  getPartComboAPI: `${BASE_URL}/configuration-master/get-part-combo-select-list`,
+  getRMComboAPI: `${BASE_URL}/configuration-master/get-raw-material-details-combo-select-list`,
+  getBOMComboAPI: `${BASE_URL}/configuration-master/get-bill-of-materials-combo-select-list`,
+  getBOPComboAPI: `${BASE_URL}/configuration-master/get-bought-out-part-combo-select-list`,
+  getFreightComboAPI: `${BASE_URL}/configuration-master/get-freight-combo-select-list`,
+  getLabourComboAPI: `${BASE_URL}/configuration-master/get-labour-combo-select-list`,
+
 
   //api's for configure location
   getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-supplier-city`,
@@ -110,7 +110,7 @@ export const API = {
   createFuelDetailAPI: `${BASE_URL}/masters-fuel/create-fuel-details`,
   getFuelAPI: `${BASE_URL}/masters-fuel/get-fuel`,
   getFuelDetailAPI: `${BASE_URL}/masters-fuel/get-fuel-details`,
- 
+
 
   //API's for other operations
   getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-other-operation`,
@@ -121,6 +121,15 @@ export const API = {
   getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
   createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
   getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
+
+  //API's for MHR combo data
+  getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
+  createMHRMasterAPI: `${BASE_URL}/masters-machine-hour-rate/create`,
+  getMHRList: `${BASE_URL}/masters-machine-hour-rate/get`,
+
+  //API's for MHR combo data
+  getOperationsAPI: `${BASE_URL}/masters-other-operation/get-operation`,
+  createOperationAPI: `${BASE_URL}/masters-other-operation/create-operation`,
 
   //Api's for fright master
   createFreightAPI: `${BASE_URL}/masters-freight/create`,
@@ -147,7 +156,7 @@ export const GET_SUPPLIER_SUCCESS = 'GET_SUPPLIER_SUCCESS';
 export const GET_SUPPLIER_CITY_SUCCESS = 'GET_SUPPLIER_CITY_SUCCESS';
 export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
-export const  GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
+export const GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
 export const GET_TECHNOLOGY_LIST_SUCCESS = 'GET_TECHNOLOGY_LIST_SUCCESS';
 export const GET_LABOUR_TYPE_SUCCESS = 'GET_LABOUR_TYPE_SUCCESS';
 
@@ -222,7 +231,7 @@ export const CREATE_FUEL_SUCCESS = 'CREATE_FUEL_SUCCESS';
 export const CREATE_FUEL_FAILURE = 'CREATE_FUEL_FAILURE';
 export const GET_FUEL_SUCCESS = 'GET_FUEL_SUCCESS';
 export const GET_FUEL_FAILURE = 'GET_FUEL_FAILURE';
-export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE'; 
+export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE';
 export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS';
 export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS';
 //for Other Operation master
@@ -240,6 +249,18 @@ export const GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE = 'GET_CED_OTHER_OPERATI
 export const GET_CED_OTHER_OPERATION_SUCCESS = 'GET_CED_OTHER_OPERATION_SUCCESS';
 export const GET_CED_OTHER_OPERATION_FAILURE = 'GET_CED_OTHER_OPERATION_FAILURE';
 
+//for MHR master
+export const GET_MHR_COMBO_DATA_SUCCESS = 'GET_MHR_COMBO_DATA_SUCCESS';
+export const GET_MHR_COMBO_DATA_FAILURE = 'GET_MHR_COMBO_DATA_FAILURE';
+export const GET_MHR_DATA_SUCCESS = 'GET_MHR_DATA_SUCCESS';
+
+//for common
+export const DATA_FAILURE = 'DATA_FAILURE';
+export const CREATE_SUCCESS = 'CREATE_SUCCESS';
+export const CREATE_FAILURE = 'CREATE_FAILURE';
+
+//for Operation
+export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';
 //for freight master
 export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';
 export const CREATE_FREIGHT_FAILURE = 'CREATE_FREIGHT_FAILURE';

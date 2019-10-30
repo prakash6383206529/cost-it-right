@@ -19,10 +19,13 @@ import PlantMaster from './masters/sap-masters/plant-master';
 import SupplierMaster from './masters/sap-masters/supplier-master';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
+import OtherOperationMaster from './masters/sap-masters/other-operation';
+import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
+import MHRMaster from './masters/sap-masters/mhr-master';
+//import OperationMaster from './masters/sap-masters/operation';
 import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationMaster from './masters/sap-masters/other-operation';
-import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
 import MaterialMaster from './masters/sap-masters/material-master/material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourMaster from './masters/sap-masters/labour-master';
@@ -191,14 +194,14 @@ class Main extends Component {
                 path="/process-master"
                 render={props => (
                   <ProcessMaster
-                  {...props}
+                    {...props}
                   />
                 )}
               />
-               <Route
+              <Route
                 path="/other-operation"
                 render={props => (
-                  <OperationMaster
+                  <OtherOperationMaster
                     {...props}
                   />
                 )}
@@ -207,40 +210,64 @@ class Main extends Component {
                 path="/fuel-master"
                 render={props => (
                   <FuelMaster
-                  {...props}
+                    {...props}
                   />
-                  )}
-                />
-                <Route
-                  path="/ced-other-operation"
-                  render={props => (
-                    <CEDoperationMaster
-                      {...props}
-                    />
                 )}
               />
               <Route
-                  path="/material-master"
-                  render={props => (
-                    <MaterialMaster
-                      {...props}
-                    />
+                path="/ced-other-operation"
+                render={props => (
+                  <CEDoperationMaster
+                    {...props}
+                  />
                 )}
               />
               <Route
-                  path="/freight-master"
-                  render={props => (
-                    <FreightMaster
-                      {...props}
-                    />
+                path="/mhr-master"
+                render={props => (
+                  <MHRMaster
+                    {...props}
+                  />
                 )}
               />
               <Route
-                  path="/labour-master"
-                  render={props => (
-                    <LabourMaster
-                      {...props}
-                    />
+                path="/operation-master"
+                render={props => (
+                  <OperationMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/material-master"
+                render={props => (
+                  <MaterialMaster
+                    {...props}
+                  />
+                )}
+              />
+              {/* <Route
+                path="/privacy-policy"
+                render={props => (
+                  <aboutus
+                    {...props}
+                  />
+                )}
+                />*/}
+              <Route
+                path="/freight-master"
+                render={props => (
+                  <FreightMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/labour-master"
+                render={props => (
+                  <LabourMaster
+                    {...props}
+                  />
                 )}
               />
               <Route
