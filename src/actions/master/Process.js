@@ -66,7 +66,7 @@ export function getProcessDataAPI() {
                 
         }).catch((error) => {
             dispatch({
-                type: GET_PROCESS_LIST_FAILURE
+                type: API_FAILURE
             });
             apiErrors(error);
         });

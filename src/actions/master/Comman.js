@@ -19,11 +19,8 @@ import {
     GET_CATEGORY_TYPE_SUCCESS,
     GET_CATEGORY_SUCCESS,
     GET_FUEL_SUCCESS,
-    GET_TECHNOLOGY_LIST_SUCCESS,
     GET_OTHER_OPERATION_FORMDATA_SUCCESS,
-    GET_OTHER_OPERATION_FORMDATA_FAILURE,
     GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
-    GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE,
     GET_MHR_COMBO_DATA_SUCCESS,
     DATA_FAILURE,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
@@ -387,7 +384,7 @@ export function getOtherOperationData(callback) {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
-            dispatch({ type: GET_OTHER_OPERATION_FORMDATA_FAILURE });
+            dispatch({ type: FETCH_MATER_DATA_FAILURE });
             callback(error);
             apiErrors(error);
         });
@@ -413,7 +410,7 @@ export function getCEDOtherOperationComboData(callback) {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
-            dispatch({ type: GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE });
+            dispatch({ type: FETCH_MATER_DATA_FAILURE });
             callback(error);
             apiErrors(error);
         });

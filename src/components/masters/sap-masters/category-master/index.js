@@ -8,7 +8,6 @@ import CategoryDetail from './CategoryDetail';
 import CategoryTypeDetail from './CategoryTypeDetail';
 import classnames from 'classnames';
 
-
 class CategoryMaster extends Component {
     constructor(props) {
         super(props);
@@ -38,6 +37,11 @@ class CategoryMaster extends Component {
     openModel = () => {
         this.setState({ isOpen: true })
     }
+
+    /**
+     * @method openCategoryModel
+     * @description  used to open category type form 
+     */
     openCategoryModel = () => {
         this.setState({ isOpenModel: true})
     }
@@ -60,38 +64,38 @@ class CategoryMaster extends Component {
             <Container className="top-margin">
                 <Row>
                     <Col>
-                        <h3>Category Master </h3>
+                        <h3>{`${CONSTANT.CATEGORY} ${CONSTANT.MASTER}`}</h3>
                     </Col>
                     <Col>
-                        <button onClick={this.openModel}>Add Category</button>
+                        <button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</button>
                     </Col>
                     <Col>
-                        <button onClick={this.openCategoryModel}>Add Category Type</button>
+                        <button onClick={this.openCategoryModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</button>
                     </Col>
                 </Row>
                 <hr />
                 <div>
-                <Nav tabs className="subtabs">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Category Details
-                                </NavLink>
-                            </NavItem>
+                    <Nav tabs className="subtabs">
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                {`${CONSTANT.CATEGORY}`}
+                            </NavLink>
+                        </NavItem>
 
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Category Type Details
-                                </NavLink>
-                            </NavItem>
-                        </Nav>
-                        <TabContent activeTab={this.state.activeTab}>
-                            <TabPane tabId="1">
-                                <CategoryDetail/>
-                            </TabPane>
-                            <TabPane tabId="2">
-                               <CategoryTypeDetail/> 
-                            </TabPane>
-                        </TabContent>
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                {`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}
+                            </NavLink>
+                        </NavItem>
+                    </Nav>
+                    <TabContent activeTab={this.state.activeTab}>
+                        <TabPane tabId="1">
+                            <CategoryDetail/>
+                        </TabPane>
+                        <TabPane tabId="2">
+                            <CategoryTypeDetail/> 
+                        </TabPane>
+                    </TabContent>
                 </div>
                 {isOpen && (
                     <AddCategory
@@ -104,8 +108,7 @@ class CategoryMaster extends Component {
                         isOpen={isOpenModel}
                         onCancel={this.onCancel}
                     />
-                )}
-               
+                )} 
             </Container >
         );
     }

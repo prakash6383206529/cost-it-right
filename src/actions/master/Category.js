@@ -29,9 +29,6 @@ const headers = {
  */
 export function createCategoryTypeAPI(data, callback) {
     return (dispatch) => {
-        // dispatch({
-        //     type:  API_REQUEST,
-        // });
         const request = axios.post(API.createcategoryTypeAPI, data,headers);
         request.then((response) => {
             if (response.data.Result) {
@@ -61,16 +58,11 @@ export function createCategoryTypeAPI(data, callback) {
  */
 export function createCategoryAPI(data, callback) {
     return (dispatch) => {
-        // dispatch({
-        //     type:  API_REQUEST,
-        // });
         const request = axios.post(API.createCategoryAPI, data,headers);
         request.then((response) => {
-            console.log('response: ', response);
             if (response && response.data && response.data.Result) {
                     dispatch({
                         type: CREATE_CATEGORY_SUCCESS,
-                        //payload: response.data.Data
                     });
                     callback(response);
             } else {

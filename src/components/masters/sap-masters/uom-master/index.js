@@ -92,7 +92,7 @@ class UOMMaster extends Component {
         const { isOpen, isEditFlag, editIndex, uomId } = this.state;
         return (
             <Container className="top-margin">
-                {this.props.loading && <Loader />}
+                {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.UOM} ${CONSTANT.MASTER}`}</h3>

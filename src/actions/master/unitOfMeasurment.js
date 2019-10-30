@@ -45,7 +45,7 @@ export function getUnitOfMeasurementAPI(callback) {
             }).catch((error) => {
                 console.log('error',error.response ? error.response : error)
                 dispatch({
-                    type: GET_UOM_DATA_FAILURE
+                    type: API_FAILURE
                 });
                 callback(error);
                 apiErrors(error);
@@ -111,7 +111,7 @@ export function createUnitOfMeasurementAPI(data, callback) {
             }
         }).catch((error) => {
             dispatch({
-                type: CREATE_PART_FAILURE
+                type: API_FAILURE
             });
             apiErrors(error);
         });

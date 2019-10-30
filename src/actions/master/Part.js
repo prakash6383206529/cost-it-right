@@ -73,7 +73,7 @@ export function getAllPartsAPI(callback) {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
-            dispatch({ type: GET_ALL_PARTS_FAILURE });
+            dispatch({ type: FETCH_MATER_DATA_FAILURE });
             callback(error);
             apiErrors(error);
         });
@@ -105,7 +105,7 @@ export function createPartAPI(data, callback) {
             }
         }).catch((error) => {
             dispatch({
-                type: CREATE_PART_FAILURE
+                type: API_FAILURE
             });
             apiErrors(error);
         });

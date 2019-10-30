@@ -66,7 +66,7 @@ export function getPlantDataAPI() {
                 
         }).catch((error) => {
             dispatch({
-                type: GET_PLANT_FAILURE
+                type: API_FAILURE
             });
             apiErrors(error);
         });

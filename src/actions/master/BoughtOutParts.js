@@ -6,7 +6,6 @@ import {
     CREATE_BOM_SUCCESS,
     CREATE_BOM_FAILURE,
     GET_BOP_SUCCESS,
-    GET_BOP_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
@@ -70,7 +69,7 @@ export function getAllBOPAPI(callback) {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
-            dispatch({ type: GET_BOP_FAILURE });
+            dispatch({ type: API_FAILURE });
             callback(error);
             apiErrors(error);
         });
