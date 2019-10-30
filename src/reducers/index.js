@@ -17,6 +17,7 @@ import OtherOperationReducer from './master/OtherOperation';
 import MHRReducer from './master/MHR';
 import freightReducer from './master/Freight';
 import labourReducer from './master/Labour';
+import OverheadProfitReducer from './master/OverheadProfit';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -45,6 +46,7 @@ const allReducers = combineReducers({
    MHRReducer: MHRReducer,
    freight: freightReducer,
    labour: labourReducer,
+   overheadProfit: OverheadProfitReducer,
 });
 
 export default rootReducer;

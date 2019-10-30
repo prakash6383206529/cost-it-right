@@ -138,6 +138,11 @@ export const API = {
   //Api's for labour master
   createLabourAPI: `${BASE_URL}/masters-labour/create`,
   getLabourAPI: `${BASE_URL}/masters-labour/get`,
+
+  //Api's for overhead profit
+  getOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/get`,
+  getOverheadProfitComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
+  createOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/create`,
 }
 
 
@@ -272,3 +277,7 @@ export const CREATE_LABOUR_SUCCESS = 'CREATE_LABOUR_SUCCESS';
 export const CREATE_LABOUR_FAILURE = 'CREATE_LABOUR_FAILURE';
 export const GET_LABOUR_SUCCESS = 'GET_LABOUR_SUCCESS';
 export const GET_LABOUR_FAILURE = 'GET_LABOUR_FAILURE';
+
+//for overhead profit
+export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS';
+export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS';

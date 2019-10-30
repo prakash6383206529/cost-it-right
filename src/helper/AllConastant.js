@@ -45,5 +45,6 @@ export const CONSTANT = {
   SOURCE: 'Source',
   DESTINATION: 'Destination',
   LABOUR: 'Labour',
-  FREIGHT: 'Freight'
+  FREIGHT: 'Freight',
+  OVERHEAD_AND_PROFIT: 'OverHead and Profit',
 };

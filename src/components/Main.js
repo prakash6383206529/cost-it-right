@@ -29,6 +29,7 @@ import OperationMaster from './masters/sap-masters/other-operation';
 import MaterialMaster from './masters/sap-masters/material-master/material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourMaster from './masters/sap-masters/labour-master';
+import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -266,6 +267,14 @@ class Main extends Component {
                 path="/labour-master"
                 render={props => (
                   <LabourMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/overhead-profit-master"
+                render={props => (
+                  <OverheadProfit
                     {...props}
                   />
                 )}

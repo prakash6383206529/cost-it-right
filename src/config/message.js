@@ -27,5 +27,6 @@ export const MESSAGES = {
   MATERIAL_ADD_SUCCESS: 'Row material details added successfully.',
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
   LABOUR_ADDED_SUCCESS: 'Freight added successfully',
+  OVERHEAD_PROFIT_ADDED_SUCCESS: 'Overhead profit added successfully',
 };
 
