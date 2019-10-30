@@ -138,6 +138,11 @@ export const API = {
   //Api's for labour master
   createLabourAPI: `${BASE_URL}/masters-labour/create`,
   getLabourAPI: `${BASE_URL}/masters-labour/get`,
+
+  //Api's for depreciation master
+  createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation`,
+  getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
+
 }
 
 
@@ -272,3 +277,8 @@ export const CREATE_LABOUR_SUCCESS = 'CREATE_LABOUR_SUCCESS';
 export const CREATE_LABOUR_FAILURE = 'CREATE_LABOUR_FAILURE';
 export const GET_LABOUR_SUCCESS = 'GET_LABOUR_SUCCESS';
 export const GET_LABOUR_FAILURE = 'GET_LABOUR_FAILURE';
+
+//For depreciation
+//for labour master
+export const CREATE_DEPRICIATION_SUCCESS = 'CREATE_LABOUR_SUCCESS';
+export const GET_DEPRICIATION_SUCCESS = 'GET_LABOUR_SUCCESS';

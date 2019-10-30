@@ -48,4 +48,6 @@ export const CONSTANT = {
   FREIGHT: 'Freight',
   TECHNOLOGY: 'Technology',
   DATE: 'Created Date',
+  DEPRECIATION: 'Depreciation',
+  SHIFT: 'Shift',
 };
