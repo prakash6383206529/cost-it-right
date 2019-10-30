@@ -11,8 +11,12 @@ import supplierReducer from './master/Supplier';
 import commanReducer from './master/Comman';
 import BOMReducer from './master/BillOfMaterial';
 import BOPReducer from './master/BoughtOutParts';
+import processReducer from './master/Process';
+import fuelReducer from './master/Fuel';
 import OtherOperationReducer from './master/OtherOperation';
 import MHRReducer from './master/MHR';
+import freightReducer from './master/Freight';
+import labourReducer from './master/Labour';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -35,8 +39,12 @@ const allReducers = combineReducers({
    comman: commanReducer,
    billOfMaterial: BOMReducer,
    boughtOutparts: BOPReducer,
+   process: processReducer,
+   fuel: fuelReducer,
    otherOperation: OtherOperationReducer,
    MHRReducer: MHRReducer,
+   freight: freightReducer,
+   labour: labourReducer,
 });
 
 export default rootReducer;

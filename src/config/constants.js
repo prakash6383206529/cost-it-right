@@ -17,9 +17,25 @@ export const API = {
   getSupplier: `${BASE_URL}/configuration/select-list-get-supplier`,
   getSupplierCode: `${BASE_URL}/configuration/select-list-get-supplier-code`,
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
+  getCategory: `${BASE_URL}/configuration/select-list-get-category`,
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
 
+  //Combo apis
+  //configure api's
+  getFuelComboAPI: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+  getOtherOperationComboAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
+  getCEDComboAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
+  getMHRComboAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
+  getPartComboAPI: `${BASE_URL}/configuration-master/get-part-combo-select-list`,
+  getRMComboAPI: `${BASE_URL}/configuration-master/get-raw-material-details-combo-select-list`,
+  getBOMComboAPI: `${BASE_URL}/configuration-master/get-bill-of-materials-combo-select-list`,
+  getBOPComboAPI: `${BASE_URL}/configuration-master/get-bought-out-part-combo-select-list`,
+  getFreightComboAPI: `${BASE_URL}/configuration-master/get-freight-combo-select-list`,
+  getLabourComboAPI: `${BASE_URL}/configuration-master/get-labour-combo-select-list`,
+
+
   //api's for configure location
+  getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-supplier-city`,
   getCountry: `${BASE_URL}/configuration-location/select-list-get-country`,
   getState: `${BASE_URL}/configuration-location/select-list-get-state`,
   getCity: `${BASE_URL}/configuration-location/select-list-get-city`,
@@ -27,8 +43,14 @@ export const API = {
   //api's for configure row material
   getRowMaterial: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
   getRowGrade: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
-  getRowMaterialDetail: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
-  getRowMaterialCategory: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-categoryy`,
+  getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
+  getRowMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-categoryy`,
+
+  //Api's for material
+  createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
+  createMaterial: `${BASE_URL}/masters-material/add-costing-raw-matrial-details`,
+  getMaterialType: `${BASE_URL}/masters-material/get-material-type`,
+  getMaterial: `${BASE_URL}/masters-material/get-costing-raw-matrials`,
 
   //Api for Unit of measurement master
   createUOMAPI: `${BASE_URL}/masters-unit-of-measurement/create`,
@@ -48,27 +70,47 @@ export const API = {
   //Api for category master
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/masters-category/create`,
+  getCategoryTypeAPI: `${BASE_URL}/masters-category/get-category-type`,
+  getCategoryAPI: `${BASE_URL}/masters-category/get-category`,
   fetchCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
 
-  //Api for material master
+  //Api for row material master
   createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
   createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
 
+  getRMMaterialAPI: `${BASE_URL}/masters-raw-material/get-raw-materials`,
+  getRMGradeAPI: `${BASE_URL}/masters-raw-material/get-raw-material-grades`,
+  getRMSpecificationAPI: `${BASE_URL}/masters-raw-material/get-raw-material-specifications`,
+  getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
+
   //Api for plant master
   createPlantAPI: `${BASE_URL}/plant/create`,
+  getPlantAPI: `${BASE_URL}/masters-plant/get`,
 
   //Api for supplier master
   createSupplierAPI: `${BASE_URL}/supplier/create`,
+  getSupplierAPI: `${BASE_URL}/supplier/get`,
 
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/add-bill-of-material`,
   getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-material-list`,
 
   //Api's for bought out parts
-  createBOPAPI: `${BASE_URL}//masters-bought-out-part/create`,
-  getBOPAPI: `${BASE_URL}/GET /api/v1/masters-bought-out-part/get`,
+  createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
+  getBOPAPI: `${BASE_URL}/masters-bought-out-part/get`,
+
+  //Api's for process master
+  createProcessAPI: `${BASE_URL}/masters-process/create`,
+  getProcessAPI: `${BASE_URL}/masters-process/get`,
+
+  //Api's for fuel master
+  createFuelAPI: `${BASE_URL}/masters-fuel/create-fuel`,
+  createFuelDetailAPI: `${BASE_URL}/masters-fuel/create-fuel-details`,
+  getFuelAPI: `${BASE_URL}/masters-fuel/get-fuel`,
+  getFuelDetailAPI: `${BASE_URL}/masters-fuel/get-fuel-details`,
+
 
   //API's for other operations
   getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-other-operation`,
@@ -89,6 +131,13 @@ export const API = {
   getOperationsAPI: `${BASE_URL}/masters-other-operation/get-operation`,
   createOperationAPI: `${BASE_URL}/masters-other-operation/create-operation`,
 
+  //Api's for fright master
+  createFreightAPI: `${BASE_URL}/masters-freight/create`,
+  getFreightAPI: `${BASE_URL}/masters-freight/get`,
+
+  //Api's for labour master
+  createLabourAPI: `${BASE_URL}/masters-labour/create`,
+  getLabourAPI: `${BASE_URL}/masters-labour/get`,
 }
 
 
@@ -103,7 +152,13 @@ export const GET_COUNTRY_SUCCESS = 'GET_COUNTRY_SUCCESS';
 export const GET_STATE_SUCCESS = 'GET_STATE_SUCCESS';
 export const GET_CITY_SUCCESS = 'GET_CITY_SUCCESS';
 export const GET_PLANT_SUCCESS = 'GET_PLANT_SUCCESS';
+export const GET_SUPPLIER_SUCCESS = 'GET_SUPPLIER_SUCCESS';
+export const GET_SUPPLIER_CITY_SUCCESS = 'GET_SUPPLIER_CITY_SUCCESS';
+export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
+export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
+export const GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
 export const GET_TECHNOLOGY_LIST_SUCCESS = 'GET_TECHNOLOGY_LIST_SUCCESS';
+export const GET_LABOUR_TYPE_SUCCESS = 'GET_LABOUR_TYPE_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
@@ -127,20 +182,31 @@ export const CREATE_CATEGORY_FAILURE = 'CREATE_CATEGORY_FAILURE';
 export const CREATE_CATEGORY_SUCCESS = 'CREATE_CATEGORY_SUCCESS';
 export const FETCH_CATEGORY_DATA_FAILURE = 'FETCH_CATEGORY_DATA_FAILURE';
 export const GET_CATEGORY_DATA_SUCCESS = 'GET_CATEGORY_DATA_SUCCESS';
+export const GET_DATA_FAILURE = 'GET_DATA_FAILURE';
+export const GET_CATEGORY_LIST_SUCCESS = 'GET_CATEGORY_LIST_SUCCESS';
+export const GET_CATEGORY_TYPE_LIST_SUCCESS = 'GET_CATEGORY_TYPE_SUCCESS';
 
 //for material master
 export const CREATE_MATERIAL_SUCCESS = ' CREATE_MATERIAL_SUCCESS';
 export const CREATE_MATERIAL_FAILURE = 'CREATE_MATERIAL_FAILURE';
 export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';
+export const GET_RM_LIST_SUCCESS = 'GET_RM_LIST_SUCCESS';
+export const GET_RM_GRADE_LIST_SUCCESS = 'GET_RM_GRADE_LIST_SUCCESS';
+export const GET_RM_CATEGORY_LIST_SUCCESS = 'GET_RM_CATEGORY_LIST_SUCCESS';
+export const GET_RM_SPECIFICATION_LIST_SUCCESS = 'GET_RM_SPECIFICATION_LIST_SUCCESS';
+export const GET_MATERIAL_LIST_SUCCESS = 'GET_MATERIAL_LIST_SUCCESS';
+export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS';
 
 //for plant master
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS';
 export const CREATE_PLANT_FAILURE = 'CREATE_PLANT_FAILURE';
+export const GET_PLANT_FAILURE = 'GET_PLANT_FAILURE';
 
 //for supplier master
 export const CREATE_SUPPLIER_SUCCESS = 'CREATE_SUPPLIER_SUCCESS';
 export const CREATE_SUPPLIER_FAILURE = 'CREATE_SUPPLIER_FAILURE';
+export const GET_SUPPLIER_FAILURE = 'GET_SUPPLIER_FAILURE';
 
 //for BOM master
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
@@ -154,6 +220,20 @@ export const CREATE_BOP_FAILURE = 'CREATE_BOP_FAILURE';
 export const GET_BOP_SUCCESS = 'GET_BOP_SUCCESS';
 export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 
+//For process master 
+export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS';
+export const CREATE_PROCESS_FAILURE = 'CREATE_PROCESS_FAILURE';
+export const GET_PROCESS_LIST_SUCCESS = 'GET_PROCESS_LIST_SUCCESS';
+export const GET_PROCESS_LIST_FAILURE = 'GET_PROCESS_LIST_FAILURE';
+
+//For Fuel master 
+export const CREATE_FUEL_SUCCESS = 'CREATE_FUEL_SUCCESS';
+export const CREATE_FUEL_FAILURE = 'CREATE_FUEL_FAILURE';
+export const GET_FUEL_SUCCESS = 'GET_FUEL_SUCCESS';
+export const GET_FUEL_FAILURE = 'GET_FUEL_FAILURE';
+export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE';
+export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS';
+export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS';
 //for Other Operation master
 export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS';
 export const GET_OTHER_OPERATION_FAILURE = 'GET_OTHER_OPERATION_FAILURE';
@@ -181,3 +261,14 @@ export const CREATE_FAILURE = 'CREATE_FAILURE';
 
 //for Operation
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';
+//for freight master
+export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';
+export const CREATE_FREIGHT_FAILURE = 'CREATE_FREIGHT_FAILURE';
+export const GET_FREIGHT_SUCCESS = 'GET_FREIGHT_SUCCESS';
+export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
+
+//for labour master
+export const CREATE_LABOUR_SUCCESS = 'CREATE_LABOUR_SUCCESS';
+export const CREATE_LABOUR_FAILURE = 'CREATE_LABOUR_FAILURE';
+export const GET_LABOUR_SUCCESS = 'GET_LABOUR_SUCCESS';
+export const GET_LABOUR_FAILURE = 'GET_LABOUR_FAILURE';

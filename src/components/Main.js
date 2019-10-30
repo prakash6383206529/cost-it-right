@@ -14,7 +14,7 @@ import { Loader } from '../../src/components/common/Loader';
 import PartMaster from './masters/sap-masters/part-master';
 import UOMMaster from './masters/sap-masters/uom-master';
 import CategoryMaster from './masters/sap-masters/category-master';
-import MaterialMaster from './masters/sap-masters/material-master';
+import RowMaterialMaster from './masters/sap-masters/material-master/row-material';
 import PlantMaster from './masters/sap-masters/plant-master';
 import SupplierMaster from './masters/sap-masters/supplier-master';
 import BOMMaster from './masters/sap-masters/bom-master';
@@ -22,7 +22,13 @@ import BOPMaster from './masters/sap-masters/bop-master';
 import OtherOperationMaster from './masters/sap-masters/other-operation';
 import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
 import MHRMaster from './masters/sap-masters/mhr-master';
-import OperationMaster from './masters/sap-masters/operation';
+//import OperationMaster from './masters/sap-masters/operation';
+import ProcessMaster from './masters/sap-masters/process-master';
+import FuelMaster from './masters/sap-masters/fuel-master';
+import OperationMaster from './masters/sap-masters/other-operation';
+import MaterialMaster from './masters/sap-masters/material-master/material';
+import FreightMaster from './masters/sap-masters/freight-master';
+import LabourMaster from './masters/sap-masters/labour-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -145,9 +151,9 @@ class Main extends Component {
                 )}
               />
               <Route
-                path="/material-master"
+                path="/row-material-master"
                 render={props => (
-                  <MaterialMaster
+                  <RowMaterialMaster
                     {...props}
                   />
                 )}
@@ -185,9 +191,25 @@ class Main extends Component {
                 )}
               />
               <Route
+                path="/process-master"
+                render={props => (
+                  <ProcessMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
                 path="/other-operation"
                 render={props => (
                   <OtherOperationMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/fuel-master"
+                render={props => (
+                  <FuelMaster
                     {...props}
                   />
                 )}
@@ -216,6 +238,14 @@ class Main extends Component {
                   />
                 )}
               />
+              <Route
+                path="/material-master"
+                render={props => (
+                  <MaterialMaster
+                    {...props}
+                  />
+                )}
+              />
               {/* <Route
                 path="/privacy-policy"
                 render={props => (
@@ -223,15 +253,23 @@ class Main extends Component {
                     {...props}
                   />
                 )}
-              />
+                />*/}
               <Route
-                path="/contact-us"
+                path="/freight-master"
                 render={props => (
-                  <Contact
+                  <FreightMaster
                     {...props}
                   />
                 )}
-              />  */}
+              />
+              <Route
+                path="/labour-master"
+                render={props => (
+                  <LabourMaster
+                    {...props}
+                  />
+                )}
+              />
               <Route
                 render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}
               />

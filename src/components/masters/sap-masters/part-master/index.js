@@ -105,52 +105,38 @@ class PartMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                {/* <Table>
+                <Table className="table table-striped" bordered>
                     <thead>
                         <tr>
-                        <th>Part Number</th>
-                        <th>Part Name</th> 
-                        <th>Part Type</th>
-                        <th>Part Group Code</th>
-                        <th>Unit of Measurement</th>
-                        <th>Part Description</th>
+                        <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                        <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th> 
+                        <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
+                        <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
+                        <th>{`${CONSTANT.UOM}`}</th>
+                        <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
+                        <th></th>
                         </tr>
-                    </thead> */}
-                {this.props.partsListing && this.props.partsListing.length > 0 &&
-                    this.props.partsListing.map((item, index) => {
-                        return (
-                        <div key={index}> 
-                         <Table>
-                            <thead>
-                                <tr>
-                                <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                                <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th> 
-                                <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
-                                <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
-                                <th>{`${CONSTANT.UOM}`}</th>
-                                <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
-                                </tr>
-                            </thead>
-                            <tbody > 
-                                <tr >
-                                    <td >{item.PartNumber}</td>
-                                    <td>{item.PartName}</td> 
-                                    <td>{item.MaterialType ? item.MaterialType : 'N/A'}</td>
-                                    <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td> 
-                                    <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : 'N/A'}</td> 
-                                    <td>{item.PartDescription}</td>
-                                    <div>
-                                        <Button className="black-btn" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
-                                        <Button className="black-btn" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
-                                    </div>
-                                </tr>
-                            </tbody>  
-                            </Table> 
-                        </div>
-                        
-                        )
-                    })}
-                    {/* </Table> */}
+                    </thead>
+                    <tbody > 
+                        {this.props.partsListing && this.props.partsListing.length > 0 &&
+                            this.props.partsListing.map((item, index) => {
+                                return (
+                                    <tr key= {index}>
+                                        <td >{item.PartNumber}</td>
+                                        <td>{item.PartName}</td> 
+                                        <td>{item.MaterialType ? item.MaterialType : 'N/A'}</td>
+                                        <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td> 
+                                        <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : 'N/A'}</td> 
+                                        <td>{item.PartDescription}</td>
+                                        <div>
+                                            <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
+                                            <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
+                                        </div>
+                                    </tr>
+                                )
+                            })}
+                    </tbody> 
+                </Table>
                 </Col>
                 {isOpen && (
                     <AddPart

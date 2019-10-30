@@ -4,11 +4,14 @@ import {
     API_REQUEST,
     API_FAILURE,
     CREATE_BOM_SUCCESS,
-    CREATE_BOM_FAILURE
+    CREATE_BOM_FAILURE,
+    GET_BOP_SUCCESS,
+    GET_BOP_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
 } from '../../helper/util';
+import { MESSAGES } from '../../config/message';
 import { toastr } from 'react-redux-toastr'
 
 const headers = {
@@ -25,7 +28,7 @@ export function createBOPAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createBOMAPI, data, headers);
+        const request = axios.post(API.createBOPAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                     dispatch({
@@ -43,6 +46,32 @@ export function createBOPAPI(data, callback) {
             dispatch({
                 type: API_FAILURE
             });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAllBOMAPI
+ * @description get all bill of material list
+ */
+export function getAllBOPAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getBOPAPI}`,headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_BOP_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: GET_BOP_FAILURE });
+            callback(error);
             apiErrors(error);
         });
     };

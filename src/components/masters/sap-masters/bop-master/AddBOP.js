@@ -3,12 +3,13 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField, renderMultiSelectField } from "../../../layout/FormInputs";
-import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
+import { renderText,renderSelectField } from "../../../layout/FormInputs";
+import { fetchBOPComboAPI,fetchCategoryAPI} from '../../../../actions/master/Comman';
 import { createBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
+import { th } from 'date-fns/esm/locale';
 
 class AddBOP extends Component {
     constructor(props) {
@@ -25,7 +26,7 @@ class AddBOP extends Component {
     * @description called before rendering the component
     */
     componentWillMount() {
-        this.props.fetchMasterDataAPI(res => { });
+        this.props.fetchBOPComboAPI(res => { });
     }
 
     /**
@@ -47,9 +48,17 @@ class AddBOP extends Component {
     }
 
     /**
-    * @method handlePartSelection
-    * @description called
+    * @method handleCategoryType
+    * @description  used to handle category type selection
     */
+    handleCategoryType = (e) => {
+        this.props.fetchCategoryAPI(e.target.value, res => {})
+    }
+
+     /**
+     * @method handlePartSelection
+     * @description called
+     */
     handlePartSelection = e => {
         this.setState({
             selectedParts: e
@@ -77,35 +86,29 @@ class AddBOP extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedParts } = this.state;
-        let plantArray = [];
-        selectedParts.map((item, i) => {
-            return plantArray.push({ PartId: item.Value });
-        });
         const formData = {
-            BillNumber: values.BillNumber,
-            BillOfMaterialCode: values.BillOfMaterialCode,
-            PartNumber: values.PartNumber,
-            MaterialCode: values.MaterialCode,
-            MaterialDescription: values.MaterialDescription,
+            BasicRate: values.BasicRate,
             Quantity: values.Quantity,
-            AssemblyPartNumberMark: values.AssemblyPartNumberMark,
-            BOMLevel: values.BOMLevel,
-            EcoNumber: values.EcoNumber,
-            RevisionNumber: values.RevisionNumber,
-            MaterialTypeId: values.MaterialTypeId,
+            NetLandedCost: values.NetLandedCost,
+            PartNumber: values.PartNumber,
+            TechnologyId: values.TechnologyId,
+            CategoryId: values.CategoryId,
+            Specification: values.Specification,
+            MaterialTypesId: values.MaterialTypesId,
+            SourceSupplierCityId: values.SourceSupplierCityId,
+            SourceSupplierId: values.SourceSupplierId,
+            DestinationSupplierCityId: values.DestinationSupplierCityId,
+            DestinationSupplierId: values.DestinationSupplierId,
             UnitOfMeasurementId: values.UnitOfMeasurementId,
-            PartId: values.PartId,
-            PartsIncludedBOM: plantArray
+            PlantId: values.PlantId,
+            PartId: values.PartId
         }
-        console.log('formData: ', formData);
         this.props.createBOPAPI(formData, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.BOM_ADD_SUCCESS);
-                this.props.getAllPartsAPI(res => { })
-                { this.toggleModel() }
+            if (res.data.Result) {
+                toastr.success(MESSAGES.BOP_ADD_SUCCESS);
+                {this.toggleModel()}
             } else {
-                toastr.error(res.data.message);
+                toastr.error(res.data.Message);
             }
         });
     }
@@ -115,7 +118,8 @@ class AddBOP extends Component {
     * @description Used show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, partList, materialTypeList, plantList } = this.props;
+        const { uniOfMeasurementList, partList,materialTypeList, plantList,
+            supplierList, cityList,technologyList, categoryTypeList, categoryList} = this.props;
         const temp = [];
         if (label === 'material') {
             materialTypeList && materialTypeList.map(item =>
@@ -141,7 +145,37 @@ class AddBOP extends Component {
             );
             return temp;
         }
-
+        if(label === 'supplier'){
+            supplierList && supplierList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if(label === 'city'){
+            cityList && cityList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if(label === 'technology'){
+            technologyList && technologyList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if(label === 'categoryType'){
+            categoryTypeList && categoryTypeList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if(label === 'category'){
+            categoryList && categoryList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        
     }
 
     /**
@@ -153,7 +187,7 @@ class AddBOP extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.BOM}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.BOPP}`}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -189,6 +223,18 @@ class AddBOP extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
+                                                label={`Part Number`}
+                                                name={"PartNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
                                                 label={`Net Landed Cost`}
                                                 name={"NetLandedCost"}
                                                 type="text"
@@ -205,15 +251,32 @@ class AddBOP extends Component {
                                                 name={"TechnologyId"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                //validate={[required]}
                                                 component={renderText}
-                                                required={true}
+                                               // required={true}
                                                 className=" withoutBorder custom-select"
-                                                //options={this.renderTypeOfListing('material')}
+                                                options={this.renderTypeOfListing('technology')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                            //component={renderSelectField}
+                                                component={renderSelectField}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Category Type`}
+                                                name={"CategoryType"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                component={renderText}
+                                                options={this.renderTypeOfListing('categoryType')}
+                                                onChange={(Value)=>this.handleCategoryType(Value)}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                         <Col md="6">
@@ -225,11 +288,11 @@ class AddBOP extends Component {
                                                 validate={[required]}
                                                 required={true}
                                                 component={renderText}
-                                                //options={this.renderTypeOfListing('uom')}
+                                                options={this.renderTypeOfListing('category')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                //component={renderSelectField}
+                                                component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
@@ -271,11 +334,11 @@ class AddBOP extends Component {
                                                 validate={[required]}
                                                 component={renderText}
                                                 required={true}
-                                                //options={this.renderTypeOfListing('material')}
+                                                options={this.renderTypeOfListing('city')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                //component={renderSelectField}
+                                                component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
@@ -288,11 +351,11 @@ class AddBOP extends Component {
                                                 validate={[required]}
                                                 component={renderText}
                                                 required={true}
-                                                //options={this.renderTypeOfListing('material')}
+                                                options={this.renderTypeOfListing('supplier')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                //component={renderSelectField}
+                                                component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
@@ -305,11 +368,11 @@ class AddBOP extends Component {
                                                 validate={[required]}
                                                 component={renderText}
                                                 required={true}
-                                                //options={this.renderTypeOfListing('material')}
+                                                options={this.renderTypeOfListing('city')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                //component={renderSelectField}
+                                                component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
@@ -322,11 +385,11 @@ class AddBOP extends Component {
                                                 validate={[required]}
                                                 component={renderText}
                                                 required={true}
-                                                //options={this.renderTypeOfListing('material')}
+                                                options={this.renderTypeOfListing('supplier')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                //component={renderSelectField}
+                                                component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
@@ -405,8 +468,10 @@ class AddBOP extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-    const { uniOfMeasurementList, partList, materialTypeList, plantList } = comman;
-    return { uniOfMeasurementList, materialTypeList, partList, plantList }
+    const {uniOfMeasurementList, partList, materialTypeList, plantList, 
+        supplierList, cityList ,technologyList,categoryTypeList, categoryList} = comman;
+    return { uniOfMeasurementList, materialTypeList, partList,
+        plantList, supplierList, cityList, technologyList, categoryTypeList, categoryList }
 }
 
 /**
@@ -415,7 +480,7 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createBOPAPI, fetchMasterDataAPI })(reduxForm({
+export default connect(mapStateToProps, { createBOPAPI, fetchBOPComboAPI,fetchCategoryAPI})(reduxForm({
     form: 'AddBOP',
     enableReinitialize: true,
 })(AddBOP));

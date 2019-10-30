@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col } from "reactstrap";
+import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import AddCategory from './AddCategory';
-import AddCategoryType from './AddCategoryType'
+import AddCategoryType from './AddCategoryType';
+import { CONSTANT } from '../../../../helper/AllConastant';
+import CategoryDetail from './CategoryDetail';
+import CategoryTypeDetail from './CategoryTypeDetail';
+import classnames from 'classnames';
 
 
 class CategoryMaster extends Component {
@@ -10,7 +14,20 @@ class CategoryMaster extends Component {
         super(props);
         this.state = {
             isOpen: false,
-            isOpenModel: false
+            isOpenModel: false,
+            activeTab: '1'
+        }
+    }
+
+    /**
+    * @method toggle
+    * @description toggling the tabs
+    */
+    toggle = (tab) => {
+        if (this.state.activeTab !== tab) {
+            this.setState({
+                activeTab: tab
+            });
         }
     }
 
@@ -53,6 +70,29 @@ class CategoryMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
+                <div>
+                <Nav tabs className="subtabs">
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                    Category Details
+                                </NavLink>
+                            </NavItem>
+
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                    Category Type Details
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
+                        <TabContent activeTab={this.state.activeTab}>
+                            <TabPane tabId="1">
+                                <CategoryDetail/>
+                            </TabPane>
+                            <TabPane tabId="2">
+                               <CategoryTypeDetail/> 
+                            </TabPane>
+                        </TabContent>
+                </div>
                 {isOpen && (
                     <AddCategory
                         isOpen={isOpen}

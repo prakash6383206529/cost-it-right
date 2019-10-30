@@ -5,7 +5,9 @@ import {
     CREATE_CATEGORY_FAILURE,
     CREATE_CATEGORY_SUCCESS,
     FETCH_CATEGORY_DATA_FAILURE,
-    GET_CATEGORY_DATA_SUCCESS
+    GET_CATEGORY_DATA_SUCCESS,
+    GET_CATEGORY_LIST_SUCCESS,
+    GET_CATEGORY_TYPE_LIST_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -58,6 +60,20 @@ export default function categoryReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true
+            };
+        case GET_CATEGORY_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                categoryDetail: action.payload
+            };
+        case GET_CATEGORY_TYPE_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                categoryTypeDetail: action.payload
             };
     
         default:

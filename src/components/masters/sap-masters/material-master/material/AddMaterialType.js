@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
-import { renderText } from "../../../layout/FormInputs";
-import { createRMCategoryAPI } from '../../../../actions/master/Material';
+import { required } from "../../../../../helper/validation";
+import { renderText} from "../../../../layout/FormInputs";
+import { createMaterialTypeAPI,getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { MESSAGES } from '../../../../../config/message';
+import { CONSTANT} from '../../../../../helper/AllConastant';
 
-class AddCategory extends Component {
+class AddMaterialType extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -41,12 +41,13 @@ class AddCategory extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        this.props.createRMCategoryAPI(values, (res) => {
+        this.props.createMaterialTypeAPI(values, (res) => {
             if (res.data.Result) {
-                toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
+                toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+                this.props.getMaterialDetailAPI(res => {});
                 {this.toggleModel()}
             } else {
-                toastr.error(res.data.message);
+                toastr.error(res.data.Message);
             }
         });   
     }
@@ -60,7 +61,7 @@ class AddCategory extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL}`}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>     
@@ -72,8 +73,8 @@ class AddCategory extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}
-                                                name={"CategoryName"}
+                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
+                                                name={"MaterialType"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -98,7 +99,7 @@ class AddCategory extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {CONSTANT.SAVE}
+                                                {`${CONSTANT.SAVE}`}
                                             </button>
                                         </div>
                                     </Row>
@@ -117,9 +118,7 @@ class AddCategory extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ category }) {
-   const { categoryList } = category;
-    return { categoryList }
+function mapStateToProps({ material }) {
 }
 
 /**
@@ -128,7 +127,7 @@ function mapStateToProps({ category }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createRMCategoryAPI })(reduxForm({
-    form: 'AddCategory',
-    enableReinitialize: true,
-})(AddCategory));
+export default connect(mapStateToProps, { createMaterialTypeAPI, getMaterialDetailAPI })(reduxForm({
+    form: 'AddMaterialType',
+    //enableReinitialize: true,
+})(AddMaterialType));

@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
 import AddPlant from './AddPlant';
-//import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
-import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
+import { getPlantDataAPI } from '../../../../actions/master/Plant';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
 
@@ -18,9 +16,9 @@ class PlantMaster extends Component {
         }
     }
 
-    // componentDidMount() {
-    //     this.props.getAllPartsAPI(res => {});
-    // }
+    componentDidMount() {
+        this.props.getPlantDataAPI(res => {});
+    }
     /**
      * @method openModel
      * @description  used to open filter form 
@@ -38,55 +36,11 @@ class PlantMaster extends Component {
     }
 
     /**
-    * @method editPartDetails
-    * @description confirm delete part
-    */
-    // editPartDetails = (index, Id) => {
-    //     console.log('Id: ', Id);
-    //     this.setState({
-    //         isEditFlag: true,
-    //         isOpen: true,
-    //         PartId: Id,
-    //         editIndex: index,
-    //     })
-    // }
-    
-    /**
-    * @method deletePart
-    * @description confirm delete part
-    */
-    // deletePart = (index, Id) => {
-    //     const toastrConfirmOptions = {
-    //         onOk: () => {
-    //             this.confirmDeletePart(index,Id)
-    //         },
-    //         onCancel: () => console.log('CANCEL: clicked')
-    //     };
-    //     return toastr.confirm(`Are you sure you want to delete This part ?`, toastrConfirmOptions);
-    // }
-
-    /**
-    * @method confirmDeletePart
-    * @description confirm delete part
-    */
-    // confirmDeletePart = (index, PartId) => {
-    //     this.props.deletePartsAPI(PartId, (res) => {
-    //         if (res.data.Result === true) {
-    //             toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-    //             this.props.getAllPartsAPI(res => {});
-    //         } else {
-    //             toastr.error(MESSAGES.SOME_ERROR);
-    //         }
-    //     });
-        
-    // }
-
-    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex, PartId } = this.state;
+        const { isOpen } = this.state;
         return (
             <Container className="top-margin">
             {/* {this.props.loading && <Loader/>} */}
@@ -105,40 +59,31 @@ class PlantMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                {/* {this.props.partsListing && this.props.partsListing.length > 0 &&
-                    this.props.partsListing.map((item, index) => {
-                        return (
-                        <div key={index}> 
-                         <Table>
-                            <thead>
-                                <tr>
-                                <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                                <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th> 
-                                <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
-                                <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
-                                <th>{`${CONSTANT.UOM}`}t</th>
-                                <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
+                <Table className="table table-striped" bordered>
+                    <thead>
+                        <tr>
+                        <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                        <th>{`${CONSTANT.PLANT} ${CONSTANT.TITLE}`}</th> 
+                        <th>{`Unit ${CONSTANT.NUMBER}`}</th>
+                        <th>{`${CONSTANT.ADDRESS}`}</th>
+                        <th>{`${CONSTANT.CITY}`}</th>
+                        </tr>
+                    </thead>
+                    <tbody > 
+                        {this.props.plantDetail && this.props.plantDetail.length > 0 &&
+                            this.props.plantDetail.map((item, index) => {
+                            return (                                       
+                                <tr key={index}>
+                                    <td >{item.PlantName}</td>
+                                    <td>{item.PlantTitle}</td> 
+                                    <td>{item.UnitNumber}</td>
+                                    <td>{item.Address}</td> 
+                                    <td>{item.CityId}</td> 
                                 </tr>
-                            </thead>
-                            <tbody > 
-                                <tr >
-                                    <td >{item.PartNumber}</td>
-                                    <td>{item.PartName}</td> 
-                                    <td>{item.MaterialTypeId ? item.MaterialTypeId : 'N/A'}</td>
-                                    <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td> 
-                                    <td>{item.UnitOfMeasurementId ? item.UnitOfMeasurementId : 'N/A'}</td> 
-                                    <td>{item.PartDescription}</td>
-                                    <div>
-                                        <Button className="black-btn" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
-                                        <Button className="black-btn" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
-                                    </div>
-                                </tr>
-                            </tbody>  
-                            </Table> 
-                        </div>
-                        
-                        )
-                    })} */}
+                            )
+                        })}
+                    </tbody>  
+                </Table> 
                 </Col>
                 {isOpen && (
                     <AddPlant
@@ -156,14 +101,14 @@ class PlantMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-    // const { partsListing ,loading } = part;
-    // console.log('partsListing: ', partsListing);
-    // return { partsListing, loading }
+function mapStateToProps({ plant }) {
+    const { plantDetail ,loading } = plant;
+    console.log('plantDetail: ', plantDetail);
+    return { plantDetail, loading }
 }
 
 
 export default connect(
-    mapStateToProps, null
+    mapStateToProps, { getPlantDataAPI }
 )(PlantMaster);
 

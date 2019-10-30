@@ -4,7 +4,9 @@ import {
     API_REQUEST,
     API_FAILURE,
     CREATE_SUPPLIER_SUCCESS,
-    CREATE_SUPPLIER_FAILURE
+    CREATE_SUPPLIER_FAILURE,
+    GET_SUPPLIER_SUCCESS,
+    GET_SUPPLIER_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
@@ -42,6 +44,29 @@ export function createSupplierAPI(data, callback) {
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getSupplierDetailAPI
+ * @description get process list
+ */
+export function getSupplierDetailAPI() {
+    return (dispatch) => {
+        const request = axios.get(API.getSupplierAPI, headers);
+        request.then((response) => {
+            console.log('response: ', response);
+            dispatch({
+                type: GET_SUPPLIER_SUCCESS,
+                payload: response.data.DataList,
+            });
+                
+        }).catch((error) => {
+            dispatch({
+                type: GET_SUPPLIER_FAILURE
             });
             apiErrors(error);
         });

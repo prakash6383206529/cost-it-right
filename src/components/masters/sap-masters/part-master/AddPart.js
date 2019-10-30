@@ -4,8 +4,8 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
-import { createPartAPI, fetchMasterDataAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '../../../../actions/master/Part';
-import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
+import { createPartAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '../../../../actions/master/Part';
+import { fetchPartComboAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -20,8 +20,7 @@ class AddPart extends Component {
     }
 
     componentWillMount() {
-        this.props.fetchMasterDataAPI(res => { });
-        this.props.fetchPlantDataAPI(res => { });
+        this.props.fetchPartComboAPI(res => { });
     }
 
     componentDidMount() {
@@ -173,7 +172,7 @@ class AddPart extends Component {
                                         <Row />
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.PART} ${CONSTANT.TYPE}`}
+                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
                                                 name={"MaterialTypeId"}
                                                 type="text"
                                                 placeholder={''}
@@ -295,9 +294,9 @@ function mapStateToProps({ part, comman }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createPartAPI, fetchMasterDataAPI,
+    createPartAPI,
     updatePartsAPI, getOnePartsAPI,
-    fetchPlantDataAPI, getAllPartsAPI
+    fetchPartComboAPI, getAllPartsAPI
 })(reduxForm({
     form: 'AddPart',
     enableReinitialize: true,
