@@ -95,7 +95,129 @@ class AddFreight extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
-                                     <Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate/KG`}
+                                                name={"PartTruckLoadRatePerKilogram"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate in feet`}
+                                                name={"PartTruckLoadRateCubicFeet"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate 1 tone`}
+                                                name={"FullTruckLoadRateOneTon"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate 2 tone`}
+                                                name={"FullTruckLoadRateTwoTon"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate 5 tone`}
+                                                name={"FullTruckLoadRateFiveTon"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate 9 tone`}
+                                                name={"FullTruckLoadRateNineTon"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate 11 tone`}
+                                                name={"FullTruckLoadRateElevenTon"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate 16 tone`}
+                                                name={"FullTruckLoadRateSixteenTon"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate 25 tone`}
+                                                name={"FullTruckLoadRateTwentyFiveTon"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.PART} Truck Load Rate 31 tone`}
+                                                name={"FullTruckLoadRateThirtyOneTon"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderNumberInputField}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.SOURCE} ${CONSTANT.CITY}`}
@@ -128,7 +250,7 @@ class AddFreight extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        <Col md="12">
+                                        <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.PLANT}`}
                                                 name={"PlantId"}
@@ -144,120 +266,19 @@ class AddFreight extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate/KG`}
-                                                name={"PartTruckLoadRatePerKilogram"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate in feet`}
-                                                name={"PartTruckLoadRateCubicFeet"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate 1 tone`}
-                                                name={"FullTruckLoadRateOneTon"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                               // className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate 2 tone`}
-                                                name={"FullTruckLoadRateTwoTon"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate 5 tone`}
-                                                name={"FullTruckLoadRateFiveTon"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate 9 tone`}
-                                                name={"FullTruckLoadRateNineTon"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate 11 tone`}
-                                                name={"FullTruckLoadRateElevenTon"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate 16 tone`}
-                                                name={"FullTruckLoadRateSixteenTon"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate 25 tone`}
-                                                name={"FullTruckLoadRateTwentyFiveTon"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`${CONSTANT.PART} Truck Load Rate 31 tone`}
-                                                name={"FullTruckLoadRateThirtyOneTon"}
-                                                type="text"
-                                                placeholder={''}
-                                                component={renderNumberInputField}
-                                                //className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
+                                        <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.PART} Truck Load Rate Trailer`}
                                                 name={"FullTruckLoadRateTrailer"}
                                                 type="text"
                                                 placeholder={''}
+                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                //className=" withoutBorder"
+                                                required={true}
+                                                className=" withoutBorder"
                                             />
                                         </Col>  
                                     </Row>
-                                    
                                     <Row>
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
