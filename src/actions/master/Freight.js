@@ -6,7 +6,8 @@ import {
     CREATE_FREIGHT_SUCCESS,
     CREATE_FREIGHT_FAILURE,
     GET_FREIGHT_SUCCESS,
-    GET_FREIGHT_FAILURE
+    GET_FREIGHT_FAILURE,
+    GET_FREIGHT_DATA_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -66,5 +67,73 @@ export function getFreightDetailAPI() {
             });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getFreightByIdAPI
+ * @description get one freight based on id
+ */
+export function getFreightByIdAPI(freightId,isEditFlag,callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if(isEditFlag){
+            axios.get(`${API.getFreightAPI}/${freightId}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_FREIGHT_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+        }else{
+            dispatch({
+                type: GET_FREIGHT_DATA_SUCCESS,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+/**
+ * @method deleteFreightAPI
+ * @description delete Freigh
+ */
+export function deleteFreightAPI(Id ,callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteBOPAPI}/${Id}`, headers)
+            .then((response) => {
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateFreightAPI
+ * @description update freight
+ */
+export function updateFreightAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateFrightAPI}`,requestData, headers)
+            .then((response) => {
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
