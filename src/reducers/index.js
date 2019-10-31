@@ -18,6 +18,7 @@ import MHRReducer from './master/MHR';
 import freightReducer from './master/Freight';
 import labourReducer from './master/Labour';
 import OverheadProfitReducer from './master/OverheadProfit';
+import InterestRateReducer from './master/InterestRate';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -47,6 +48,7 @@ const allReducers = combineReducers({
    freight: freightReducer,
    labour: labourReducer,
    overheadProfit: OverheadProfitReducer,
+   interestRate: InterestRateReducer,
 });
 
 export default rootReducer;

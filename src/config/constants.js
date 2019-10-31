@@ -148,6 +148,11 @@ export const API = {
   createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation`,
   getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
 
+  //Api's for interest rate master
+  getInterestRateAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
+  getInterestRateComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
+  createInterestRateAPI: `${BASE_URL}/masters-overhead-and-profit/create`,
+
 }
 
 
@@ -290,3 +295,7 @@ export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO
 //For depreciation
 export const CREATE_DEPRICIATION_SUCCESS = 'CREATE_LABOUR_SUCCESS';
 export const GET_DEPRICIATION_SUCCESS = 'GET_LABOUR_SUCCESS';
+
+//For Interest Rate 
+export const GET_INTEREST_RATE_SUCCESS = 'GET_INTEREST_RATE_SUCCESS';
+export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DATA_SUCCESS';
