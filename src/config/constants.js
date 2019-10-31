@@ -88,6 +88,8 @@ export const API = {
   //Api for plant master
   createPlantAPI: `${BASE_URL}/plant/create`,
   getPlantAPI: `${BASE_URL}/masters-plant/get`,
+  updatePlantAPI: `${BASE_URL}/masters-plant/update`,
+  deletePlantAPI: `${BASE_URL}/masters-plant/delete`,
 
   //Api for supplier master
   createSupplierAPI: `${BASE_URL}/supplier/create`,
@@ -100,16 +102,23 @@ export const API = {
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
   getBOPAPI: `${BASE_URL}/masters-bought-out-part/get`,
+  updateBOPAPI: `${BASE_URL}/masters-bought-out-part/update`,
+  deleteBOPAPI: `${BASE_URL}/masters-bought-out-part/delete`,
 
   //Api's for process master
   createProcessAPI: `${BASE_URL}/masters-process/create`,
   getProcessAPI: `${BASE_URL}/masters-process/get`,
+  updateProcessAPI: `${BASE_URL}/masters-process/update`,
+  deleteProcessAPI: `${BASE_URL}/masters-process/delete`,
 
   //Api's for fuel master
   createFuelAPI: `${BASE_URL}/masters-fuel/create-fuel`,
   createFuelDetailAPI: `${BASE_URL}/masters-fuel/create-fuel-details`,
   getFuelAPI: `${BASE_URL}/masters-fuel/get-fuel`,
   getFuelDetailAPI: `${BASE_URL}/masters-fuel/get-fuel-details`,
+  deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
+  deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
+
 
 
   //API's for other operations
@@ -134,10 +143,14 @@ export const API = {
   //Api's for fright master
   createFreightAPI: `${BASE_URL}/masters-freight/create`,
   getFreightAPI: `${BASE_URL}/masters-freight/get`,
+  updateFrightAPI: `${BASE_URL}/masters-freight/update`,
+  deleteFrightAPI: `${BASE_URL}/masters-freight/delete`,
 
   //Api's for labour master
   createLabourAPI: `${BASE_URL}/masters-labour/create`,
   getLabourAPI: `${BASE_URL}/masters-labour/get`,
+  updateLabourAPI: `${BASE_URL}/masters-labour/update`,
+  deleteLabourAPI: `${BASE_URL}/masters-labour/delete`,
 
   //Api's for depreciation master
   createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation`,
