@@ -7,7 +7,7 @@ export const CONSTANT = {
   DESCRIPTION: 'Description',
   UOM: 'Unit Of Measurement',
   NUMBER: 'Number',
-  TYPE: 'type',
+  TYPE: 'Type',
   GROUPCODE: 'Group Code',
   MASTER: 'Master',
   DETAILS: 'Details',
@@ -52,4 +52,5 @@ export const CONSTANT = {
   DEPRECIATION: 'Depreciation',
   SHIFT: 'Shift',
   INTEREST_RATE: 'Interest Rate',
+  LOCATION: 'Location',
 };

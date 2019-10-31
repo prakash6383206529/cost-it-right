@@ -102,9 +102,7 @@ class AddFreight extends Component {
                                                 name={"PartTruckLoadRatePerKilogram"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -114,9 +112,7 @@ class AddFreight extends Component {
                                                 name={"PartTruckLoadRateCubicFeet"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -126,9 +122,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateOneTon"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -138,9 +132,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateTwoTon"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -150,9 +142,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateFiveTon"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -162,9 +152,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateNineTon"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -174,9 +162,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateElevenTon"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -186,9 +172,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateSixteenTon"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -198,9 +182,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateTwentyFiveTon"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -210,9 +192,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateThirtyOneTon"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -272,9 +252,7 @@ class AddFreight extends Component {
                                                 name={"FullTruckLoadRateTrailer"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>  

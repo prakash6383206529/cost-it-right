@@ -40,11 +40,6 @@ class MaterialDetail extends Component {
                 <Table className="table table-striped" bordered>
                     <thead>
                         <tr>
-                        <th>{`${CONSTANT.BASIC} ${CONSTANT.RATE}`}</th>
-                        <th>{`${CONSTANT.QUANTITY}`}</th> 
-                        <th>{`${CONSTANT.SCRAP} ${CONSTANT.RATE}`}</th>
-                        <th>{` ${CONSTANT.NLC}`}</th>
-                        <th>{`${CONSTANT.REMARK} `}</th>
                         <th>{`${CONSTANT.TECHNOLOGY}`}</th>
                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.NAME}`}</th>
                         <th>{`${CONSTANT.GRADE}`}</th>
@@ -56,6 +51,11 @@ class MaterialDetail extends Component {
                         <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th> 
                         <th>{` ${CONSTANT.UOM}`}</th>
                         <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                        <th>{`${CONSTANT.BASIC} ${CONSTANT.RATE}`}</th>
+                        <th>{`${CONSTANT.QUANTITY}`}</th> 
+                        <th>{`${CONSTANT.SCRAP} ${CONSTANT.RATE}`}</th>
+                        <th>{` ${CONSTANT.NLC}`}</th>
+                        <th>{`${CONSTANT.REMARK} `}</th>
                         <th>{`${CONSTANT.DATE}`}</th>
                         </tr>
                     </thead>
@@ -64,11 +64,6 @@ class MaterialDetail extends Component {
                             this.props.rmDetail.map((item, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td >{item.BasicRate}</td>
-                                        <td>{item.Quantity}</td> 
-                                        <td>{item.ScrapRate }</td>
-                                        <td >{item.NetLandedCost}</td>
-                                        <td>{item.Remark}</td> 
                                         <td>{item.TechnologyName }</td>
                                         <td >{item.RawMaterialName}</td>
                                         <td>{item.GradeName}</td> 
@@ -80,6 +75,11 @@ class MaterialDetail extends Component {
                                         <td>{item.DestinationSupplierLocation}</td> 
                                         <td>{item.UnitOfMeasurementName}</td> 
                                         <td>{item.PlantName }</td>
+                                        <td >{item.BasicRate}</td>
+                                        <td>{item.Quantity}</td> 
+                                        <td>{item.ScrapRate }</td>
+                                        <td >{item.NetLandedCost}</td>
+                                        <td>{item.Remark}</td> 
                                         <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                     </tr>
                                 )

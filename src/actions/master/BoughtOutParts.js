@@ -6,6 +6,7 @@ import {
     CREATE_BOM_SUCCESS,
     CREATE_BOM_FAILURE,
     GET_BOP_SUCCESS,
+    GET_BOP_DATA_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -73,5 +74,73 @@ export function getAllBOPAPI(callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getBOPByIdAPI
+ * @description get one bought out part based on id
+ */
+export function getBOPByIdAPI(bopId,isEditFlag,callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if(isEditFlag){
+            axios.get(`${API.getBOPAPI}/${bopId}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_BOP_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+        }else{
+            dispatch({
+                type: GET_BOP_DATA_SUCCESS,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+/**
+ * @method deleteBOPAPI
+ * @description delete BOP
+ */
+export function deleteBOPAPI(Id ,callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteBOPAPI}/${Id}`, headers)
+            .then((response) => {
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateBOPAPI
+ * @description update BOP
+ */
+export function updateBOPAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateBOPAPI}`,requestData, headers)
+            .then((response) => {
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
