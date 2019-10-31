@@ -251,9 +251,9 @@ class AddBOP extends Component {
                                                 name={"TechnologyId"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                               // required={true}
+                                                required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.renderTypeOfListing('technology')}
                                                 onChange={this.handleTypeofListing}

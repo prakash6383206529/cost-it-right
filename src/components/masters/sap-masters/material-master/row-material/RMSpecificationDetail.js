@@ -32,7 +32,7 @@ class RMSpecificationDetail extends Component {
             {this.props.loading && <Loader/>}
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.CATEGORY} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
+                        <h5>{`${CONSTANT.SPECIFICATION} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
                     </Col>
                 </Row>
                 <Col>

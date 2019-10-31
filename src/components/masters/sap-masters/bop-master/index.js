@@ -66,11 +66,12 @@ class BOPMaster extends Component {
                 <Table  className="table table-striped" bordered>
                     <thead>
                         <tr>
+                        <th>{`${CONSTANT.TECHNOLOGY}`}</th>
+                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                        <th>{`${CONSTANT.CATEGORY}` }</th>
+                        <th>{` ${CONSTANT.SPECIFICATION}`}</th>
                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
                         <th>{`${CONSTANT.UOM}`}</th> 
-                        <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                        <th>{`${CONSTANT.TECHNOLOGY}`}</th>
-                        <th>{`${CONSTANT.CATEGORY}` }</th>
                         <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
                         <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
                         <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th> 
@@ -81,7 +82,6 @@ class BOPMaster extends Component {
                         <th>{`Basic Rate`}</th>
                         <th>{`${CONSTANT.QUANTITY} `}</th>
                         <th>{` Net Landed Cost`}</th>
-                        <th>{` ${CONSTANT.SPECIFICATION}`}</th>
                         <th>{`${CONSTANT.DATE}`}</th>
                         </tr>
                     </thead>
@@ -90,11 +90,12 @@ class BOPMaster extends Component {
                         this.props.BOPListing.map((item, index) => {
                             return (
                                 <tr >
+                                    <td>{item.TechnologyName}</td>
+                                    <td>{item.PartNumber}</td> 
+                                    <td>{item.CategoryName}</td> 
+                                    <td>{item.Specification}</td>
                                     <td >{item.MaterialTypeName}</td>
                                     <td>{item.UnitOfMeasurementName}</td> 
-                                    <td>{item.PartNumber}</td> 
-                                    <td>{item.TechnologyName}</td>
-                                    <td>{item.CategoryName}</td> 
                                     <td>{item.SourceSupplierName}</td>
                                     <td>{item.SourceSupplierLocation}</td> 
                                     <td>{item.DestinationSupplierName}</td>
@@ -104,7 +105,6 @@ class BOPMaster extends Component {
                                     <td>{item.BasicRate}</td>
                                     <td>{item.Quantity}</td>
                                     <td>{item.NetLandedCost}</td>
-                                    <td>{item.Specification}</td>
                                     <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                     <div> 
                                     </div>
