@@ -30,6 +30,7 @@ import MaterialMaster from './masters/sap-masters/material-master/material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourMaster from './masters/sap-masters/labour-master';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
+import DepreciationMaster from './masters/sap-masters/depreciation-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -247,14 +248,6 @@ class Main extends Component {
                   />
                 )}
               />
-              {/* <Route
-                path="/privacy-policy"
-                render={props => (
-                  <aboutus
-                    {...props}
-                  />
-                )}
-                />*/}
               <Route
                 path="/freight-master"
                 render={props => (
@@ -275,6 +268,14 @@ class Main extends Component {
                 path="/overhead-profit-master"
                 render={props => (
                   <OverheadProfit
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/depreciation-master"
+                render={props => (
+                  <DepreciationMaster
                     {...props}
                   />
                 )}

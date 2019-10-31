@@ -5,6 +5,7 @@ import {
     API_FAILURE,
     DATA_FAILURE,
     GET_MHR_DATA_SUCCESS,
+    GET_DEPRICIATION_SUCCESS,
     CREATE_SUCCESS,
     CREATE_FAILURE
 } from '../../config/constants';
@@ -72,7 +73,64 @@ export function fetchMHRListAPI(callback) {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
-            dispatch({ type: CREATE_FAILURE, });
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method createDepreciationMasterAPI
+ * @description create depreciation
+ */
+export function createDepreciationMasterAPI(data, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: API_REQUEST
+        });
+        const request = axios.post(API.createDepreciationAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: CREATE_SUCCESS,
+                });
+                callback(response);
+            } else {
+                dispatch({ type: CREATE_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: CREATE_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getDepreciationDataAPI
+ * @description Used get depreciation detail
+ */
+export function getDepreciationDataAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getDepreciationAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_DEPRICIATION_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
             callback(error);
             apiErrors(error);
         });

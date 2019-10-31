@@ -66,7 +66,7 @@ export function getSupplierDetailAPI() {
                 
         }).catch((error) => {
             dispatch({
-                type: GET_SUPPLIER_FAILURE
+                type: API_FAILURE
             });
             apiErrors(error);
         });

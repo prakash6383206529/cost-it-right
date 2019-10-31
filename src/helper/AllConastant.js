@@ -47,4 +47,8 @@ export const CONSTANT = {
   LABOUR: 'Labour',
   FREIGHT: 'Freight',
   OVERHEAD_AND_PROFIT: 'OverHead and Profit',
+  TECHNOLOGY: 'Technology',
+  DATE: 'Created Date',
+  DEPRECIATION: 'Depreciation',
+  SHIFT: 'Shift',
 };

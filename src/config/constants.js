@@ -143,6 +143,11 @@ export const API = {
   getOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/get`,
   getOverheadProfitComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
   createOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/create`,
+
+  //Api's for depreciation master
+  createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation`,
+  getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
+
 }
 
 
@@ -281,3 +286,7 @@ export const GET_LABOUR_FAILURE = 'GET_LABOUR_FAILURE';
 //for overhead profit
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS';
 export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS';
+
+//For depreciation
+export const CREATE_DEPRICIATION_SUCCESS = 'CREATE_LABOUR_SUCCESS';
+export const GET_DEPRICIATION_SUCCESS = 'GET_LABOUR_SUCCESS';

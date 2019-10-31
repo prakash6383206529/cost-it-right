@@ -3,7 +3,8 @@ import {
     API_FAILURE,
     CREATE_SUCCESS,
     CREATE_FAILURE,
-    GET_MHR_DATA_SUCCESS
+    GET_MHR_DATA_SUCCESS,
+    GET_DEPRICIATION_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -45,6 +46,12 @@ export default function MHRReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true
+            };
+        case GET_DEPRICIATION_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                depreciationDetail: action.payload
             };
         default:
             return state;

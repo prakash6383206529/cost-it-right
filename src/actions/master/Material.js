@@ -184,7 +184,7 @@ export function getRowMaterialDataAPI() {
     };
 }
 
-// action creator for material master
+// Action Creator for material master
 
 /**
  * @method createMaterialTypeAPI
