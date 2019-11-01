@@ -47,7 +47,7 @@ export default function BOPReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false, 
-                BOPData: action.payload
+                bopData: action.payload
             };
         default:
             return state;

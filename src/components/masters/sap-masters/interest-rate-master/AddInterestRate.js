@@ -5,12 +5,12 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 //import { fetchMasterDataAPI, getOtherOperationData } from '../../../../actions/master/Comman';
-import { createOverheadProfitAPI, getOverheadProfitComboData } from '../../../../actions/master/OverheadProfit';
+import { createInterestRateAPI, getInterestRateComboData } from '../../../../actions/master/InterestRateMaster';
 //import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 
-class AddOverheadProfit extends Component {
+class AddInterestRate extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -31,7 +31,7 @@ class AddOverheadProfit extends Component {
     * @description called before rendering the component
     */
     componentWillMount() {
-        this.props.getOverheadProfitComboData(() => { });
+        this.props.getInterestRateComboData(() => { });
     }
 
     /**
@@ -99,7 +99,7 @@ class AddOverheadProfit extends Component {
             //     }
             // });
         } else {
-            this.props.createOverheadProfitAPI(values, (res) => {
+            this.props.createInterestRateAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.OVERHEAD_PROFIT_ADDED_SUCCESS);
                     { this.toggleModel() }
@@ -212,7 +212,7 @@ class AddOverheadProfit extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Overhead and Profit' : 'Add Overhead and Profit'}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Interest Rate' : 'Add Interest Rate'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -421,9 +421,9 @@ class AddOverheadProfit extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ overheadProfit }) {
-    if (overheadProfit && overheadProfit.overheadProfitComboData) {
-        const { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements } = overheadProfit.overheadProfitComboData;
+function mapStateToProps({ interestRate }) {
+    if (interestRate && interestRate.interestRateComboData) {
+        const { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements } = interestRate.interestRateComboData;
         // console.log('technologyList: ', technologyList, technologyList);
         // let initialValues = {};
         // if (technologyList !== undefined && uniOfMeasurementList !== undefined) {
@@ -444,9 +444,9 @@ function mapStateToProps({ overheadProfit }) {
 */
 export default connect(mapStateToProps, {
     //fetchMasterDataAPI,
-    getOverheadProfitComboData,
-    createOverheadProfitAPI
+    getInterestRateComboData,
+    createInterestRateAPI
 })(reduxForm({
-    form: 'addOverheadProfit',
+    form: 'addInterestRate',
     enableReinitialize: true,
-})(AddOverheadProfit));
+})(AddInterestRate));

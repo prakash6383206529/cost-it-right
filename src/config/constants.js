@@ -163,6 +163,11 @@ export const API = {
   createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation`,
   getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
 
+  //Api's for interest rate master
+  getInterestRateAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
+  getInterestRateComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
+  createInterestRateAPI: `${BASE_URL}/masters-overhead-and-profit/create`,
+
 }
 
 
@@ -245,8 +250,8 @@ export const GET_BOM_FAILURE = 'GET_BOM_FAILURE';
 export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';
 export const CREATE_BOP_FAILURE = 'CREATE_BOP_FAILURE';
 export const GET_BOP_SUCCESS = 'GET_BOP_SUCCESS';
-export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 export const GET_BOP_DATA_SUCCESS = 'GET_BOP_DATA_SUCCESS';
+export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 
 //For process master 
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS';
@@ -298,9 +303,8 @@ export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';
 export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';
 export const CREATE_FREIGHT_FAILURE = 'CREATE_FREIGHT_FAILURE';
 export const GET_FREIGHT_SUCCESS = 'GET_FREIGHT_SUCCESS';
-export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
 export const GET_FREIGHT_DATA_SUCCESS = 'GET_FREIGHT_DATA_SUCCESS';
-
+export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
 
 //for labour master
 export const CREATE_LABOUR_SUCCESS = 'CREATE_LABOUR_SUCCESS';
@@ -316,3 +320,7 @@ export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO
 //For depreciation
 export const CREATE_DEPRICIATION_SUCCESS = 'CREATE_LABOUR_SUCCESS';
 export const GET_DEPRICIATION_SUCCESS = 'GET_LABOUR_SUCCESS';
+
+//For Interest Rate 
+export const GET_INTEREST_RATE_SUCCESS = 'GET_INTEREST_RATE_SUCCESS';
+export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DATA_SUCCESS';

@@ -31,6 +31,7 @@ import FreightMaster from './masters/sap-masters/freight-master';
 import LabourMaster from './masters/sap-masters/labour-master';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import DepreciationMaster from './masters/sap-masters/depreciation-master';
+import InterestRate from './masters/sap-masters/interest-rate-master';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -276,6 +277,14 @@ class Main extends Component {
                 path="/depreciation-master"
                 render={props => (
                   <DepreciationMaster
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/interest-rate-master"
+                render={props => (
+                  <InterestRate
                     {...props}
                   />
                 )}

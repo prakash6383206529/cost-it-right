@@ -4,8 +4,8 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required, email, minLength7, maxLength70 } from "../../../../helper/validation";
 import { renderText, renderSelectField, renderEmailInputField, renderMultiSelectField, renderCheckboxInputField } from "../../../layout/FormInputs";
-import { createSupplierAPI } from '../../../../actions/master/Supplier';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchPlantDataAPI } from '../../../../actions/master/Comman';
+import { createSupplierAPI, updateSupplierAPI,getSupplierByIdAPI } from '../../../../actions/master/Supplier';
+import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -14,19 +14,33 @@ class AddSupplier extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            countryListing: [],
-            stateListing: [],
             cityListing: [],
             selectedPlants: [],
             plantsArray: []
         }
     }
 
-    componentDidMount() {
-        this.props.fetchCountryDataAPI(res => {
-            console.log('response of country', res);
-        });
-        this.props.fetchPlantDataAPI(res => { })
+    /**
+    * @method componentWillMount
+    * @description called before render the component
+    */
+    componentWillMount() {
+        this.props.fetchMasterDataAPI(res => {});
+    }
+
+     /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
+    componentDidMount(){
+        const { supplierId,isEditFlag } = this.props;
+        if(isEditFlag){
+            this.setState({isEditFlag},()=>{  
+            this.props.getSupplierByIdAPI(supplierId,true, res => {})   
+        })
+        }else{
+            this.props.getSupplierByIdAPI('',false, res => {})   
+        }
     }
     /**
     * @method toggleModel
@@ -45,32 +59,16 @@ class AddSupplier extends Component {
             selectedPlants: e
         });
     };
-    /**
-    * @method handleCountryChange
-    * @description  used to handle country selection
-    */
-    handleCountryChange = (e) => {
-        this.props.fetchStateDataAPI(e.target.value, res => {
-            // console.log('res of state: ', res);
-        });
-    }
-
-    /**
-    * @method handleStateChange
-    * @description  used to handle state selection
-    */
-    handleStateChange = (e) => {
-        this.props.fetchCityDataAPI(e.target.value, res => { });
-    }
+    
 
     /**
     * @method handleCityChange
     * @description  used to handle city selection
     */
     handleCityChange = (value) => {
-        // this.setState({
-        //     cityListing: value
-        // });
+        this.setState({
+            cityListing: value
+        });
     }
 
     /**
@@ -84,21 +82,18 @@ class AddSupplier extends Component {
             countryList && countryList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            //console.log('temp', countryList);
             return temp;
         }
         if (label === 'state') {
             stateList && stateList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            //console.log('temp', stateList);
             return temp;
         }
         if (label === 'city') {
             cityList && cityList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            //console.log('temp', cityList);
             return temp;
         }
     }
@@ -106,13 +101,12 @@ class AddSupplier extends Component {
     renderSelectPlantList = () => {
         const { plantList } = this.props;
         const temp = [];
-        plantList && plantList.map(item => {
-            if (item.Value != 0) {
-                temp.push({ Text: item.Text, Value: item.Value })
+            plantList && plantList.map(item => {
+                if (item.Value != 0) {
+                    temp.push({ Text: item.Text, Value: item.Value })
+                }
             }
-        }
         );
-        //console.log('temp', plantList);
         return temp;
     }
     /**
@@ -133,7 +127,6 @@ class AddSupplier extends Component {
             CityId: values.CityId,
             SelectedPlants: plantArray
         }
-        //console.log('submit form' , formData);
         this.props.createSupplierAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
@@ -217,40 +210,6 @@ class AddSupplier extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.COUNTRY}`}
-                                                name={"CountryId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                //selection={this.state.countryListing}
-                                                required={true}
-                                                options={this.selectType('country')}
-                                                onChange={(Value) => this.handleCountryChange(Value)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.STATE}`}
-                                                name={"StateId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                //selection={this.state.stateListing}
-                                                required={true}
-                                                options={this.selectType('state')}
-                                                onChange={(Value) => this.handleStateChange(Value)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
                                                 label={`${CONSTANT.CITY}`}
                                                 name={"CityId"}
                                                 type="text"
@@ -268,8 +227,8 @@ class AddSupplier extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                name="SelectedPlants"
                                                 label="Plants"
+                                                name="SelectedPlants"
                                                 placeholder="--Select Plant--"
                                                 selection={this.state.selectedPlants}
                                                 options={this.renderSelectPlantList()}
@@ -306,10 +265,20 @@ class AddSupplier extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-    const { countryList, stateList, cityList, plantList } = comman
-    // console.log('plantList: ', plantList);
-    return { countryList, stateList, cityList, plantList }
+function mapStateToProps({ comman, supplier }) {
+    const { countryList, stateList, cityList, plantList } = comman;
+    const { supplierData } = supplier;
+    let initialValues = {};
+    if(supplierData && supplierData !== undefined){
+        initialValues = {
+            SupplierName: supplierData.SupplierName,
+            SupplierCode: supplierData.SupplierCode,
+            SupplierEmail: supplierData.SupplierEmail,
+            Description: supplierData.Description,
+            CityId: supplierData.CityId,
+        }
+    }
+    return { countryList, stateList, cityList, plantList, initialValues }
 }
 
 /**
@@ -319,8 +288,7 @@ function mapStateToProps({ comman }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createSupplierAPI, fetchCountryDataAPI,
-    fetchStateDataAPI, fetchCityDataAPI, fetchPlantDataAPI
+    createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI,fetchMasterDataAPI
 })(reduxForm({
     form: 'AddSupplier',
     enableReinitialize: true,

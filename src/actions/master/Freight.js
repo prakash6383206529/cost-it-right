@@ -29,16 +29,16 @@ export function createFreightAPI(data, callback) {
         const request = axios.post(API.createFreightAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                    dispatch({
-                        type: CREATE_FREIGHT_SUCCESS,
-                        payload: response.data.Data
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_FREIGHT_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_FREIGHT_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -61,7 +61,7 @@ export function getFreightDetailAPI() {
                 type: GET_FREIGHT_SUCCESS,
                 payload: response.data.DataList,
             });
-                
+
         }).catch((error) => {
             dispatch({
                 type: GET_FREIGHT_FAILURE
@@ -75,27 +75,27 @@ export function getFreightDetailAPI() {
  * @method getFreightByIdAPI
  * @description get one freight based on id
  */
-export function getFreightByIdAPI(freightId,isEditFlag,callback) {
+export function getFreightByIdAPI(freightId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if(isEditFlag){
+        if (isEditFlag) {
             axios.get(`${API.getFreightAPI}/${freightId}`, headers)
-            .then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_FREIGHT_DATA_SUCCESS,
-                        payload: response.data.Data,
-                    });
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_FREIGHT_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
-                    callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-        }else{
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
             dispatch({
                 type: GET_FREIGHT_DATA_SUCCESS,
                 payload: {},
@@ -109,12 +109,12 @@ export function getFreightByIdAPI(freightId,isEditFlag,callback) {
  * @method deleteFreightAPI
  * @description delete Freigh
  */
-export function deleteFreightAPI(Id ,callback) {
+export function deleteFreightAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteBOPAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteFrightAPI}/${Id}`, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
@@ -129,9 +129,9 @@ export function deleteFreightAPI(Id ,callback) {
 export function updateFreightAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateFrightAPI}`,requestData, headers)
+        axios.put(`${API.updateFrightAPI}`, requestData, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });

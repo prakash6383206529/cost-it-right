@@ -29,5 +29,14 @@ export const MESSAGES = {
   LABOUR_ADDED_SUCCESS: 'Freight added successfully',
   OVERHEAD_PROFIT_ADDED_SUCCESS: 'Overhead profit added successfully',
   DEPRECIATION_ADD_SUCCESS: 'Depreciation added successfully',
+  DELETE_BOP_SUCCESS: 'Bought out part deleted successfully',
+  DELETE_FREIGHT_SUCCESS: 'Freight deleted successfully',
+  UPDATE_FREIGHT_SUCESS: 'Freight updated successfully',
+  DELETE_LABOUR_SUCCESS: 'Labour deleted successfully',
+  UPDATE_LABOUR_SUCESS: 'Labour updated successfully',
+  DELETE_SUPPLIER_SUCCESS: 'Supplier deleted successfully',
+  UPDATE_SUPPLIER_SUCESS: 'Supplier updated successfully',
+  UPDATE_BOP_SUCESS: 'BOP updated successfully',
+  DELETE_BOP_SUCCESS: 'BOP deleted successfully',
 };
 

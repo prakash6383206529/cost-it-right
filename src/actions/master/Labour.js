@@ -84,7 +84,7 @@ export function getLabourByIdAPI(labourId,isEditFlag,callback) {
                 if (response.data.Result) {
                     dispatch({
                         type: GET_LABOUR_DATA_SUCCESS,
-                        payload: response.data.Data,
+                        payload: response.data.Data[0],
                     });
                     callback(response);
                 } else {
@@ -106,10 +106,10 @@ export function getLabourByIdAPI(labourId,isEditFlag,callback) {
 }
 
 /**
- * @method deleteFreightAPI
- * @description delete Freigh
+ * @method deleteLabourAPI
+ * @description delete labour
  */
-export function deleteFreightAPI(Id ,callback) {
+export function deleteLabourAPI(Id ,callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteLabourAPI}/${Id}`, headers)
@@ -123,10 +123,10 @@ export function deleteFreightAPI(Id ,callback) {
 }
 
 /**
- * @method updateFreightAPI
- * @description update freight
+ * @method updateLabourAPI
+ * @description update labour
  */
-export function updateFreightAPI(requestData, callback) {
+export function updateLabourAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.updateLabourAPI}`,requestData, headers)

@@ -132,8 +132,6 @@ class UOMMaster extends Component {
                                                 <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
                                             </td>
                                         </tr>
-
-
                                     )
                                 })}
                         </tbody>

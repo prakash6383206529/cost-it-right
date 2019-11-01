@@ -124,7 +124,7 @@ class AddOperation extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update UOM' : 'Add CED Other Operation'}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Operation' : 'Add Operation'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>

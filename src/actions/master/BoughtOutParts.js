@@ -33,7 +33,6 @@ export function createBOPAPI(data, callback) {
             if (response.data.Result) {
                     dispatch({
                         type: CREATE_BOM_SUCCESS,
-                        //payload: response.data.Data
                     });
                     callback(response);
             } else {
@@ -57,7 +56,7 @@ export function createBOPAPI(data, callback) {
  */
 export function getAllBOPAPI(callback) {
     return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
+        dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getBOPAPI}`,headers);
         request.then((response) => {
             if (response.data.Result) {
@@ -87,6 +86,7 @@ export function getBOPByIdAPI(bopId,isEditFlag,callback) {
         if(isEditFlag){
             axios.get(`${API.getBOPAPI}/${bopId}`, headers)
             .then((response) => {
+                console.log('response: ', response);
                 if (response.data.Result) {
                     dispatch({
                         type: GET_BOP_DATA_SUCCESS,

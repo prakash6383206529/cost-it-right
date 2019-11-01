@@ -3,13 +3,14 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
 import AddSupplier from './AddSupplier';
-import { getSupplierDetailAPI } from '../../../../actions/master/Supplier';
+import { getSupplierDetailAPI, deleteSupplierAPI } from '../../../../actions/master/Supplier';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../helper';
-
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 class SupplierMaster extends Component {
     constructor(props) {
@@ -41,11 +42,52 @@ class SupplierMaster extends Component {
     }
 
     /**
+    * @method editDetails
+    * @description confirm delete bop
+    */
+    editDetails = (Id) => {
+        this.setState({
+            isEditFlag: true,
+            isOpen: true,
+            supplierId: Id,
+        })
+    }
+
+    /**
+    * @method delete 
+    * @description confirm delete bop
+    */
+    deleteBOP = (Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDelete(Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} this supplier ?`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDelete
+    * @description confirm delete bought out part
+    */
+    confirmDelete = (Id) => {
+        this.props.deleteSupplierAPI(Id, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
+                this.props.getSupplierDetailAPI(res => { });
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        });
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex, PartId } = this.state;
+        const { isOpen, isEditFlag,supplierId } = this.state;
         return (
             <Container className="top-margin">
             {/* {this.props.loading && <Loader/>} */}
@@ -75,25 +117,29 @@ class SupplierMaster extends Component {
                         <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.DESCRIPTION}`}</th>
                         <th>{`${CONSTANT.SUPPLIER} name with code`}</th>
                         <th>{`${CONSTANT.DATE}`}</th>
+                        <th></th>
                         </tr>
                     </thead>
                     <tbody > 
                         {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
                             this.props.supplierDetail.map((item, index) => {
                                 return (
-                                    <tr key={index}>
-                                        <td>{item.SupplierCode}</td> 
-                                        <td >{item.SupplierName}</td>
-                                        <td>{item.SupplierEmail}</td>
-                                        <td>{item.SupplierType}</td> 
-                                        <td>{item.CityName}</td> 
-                                        <td>{item.Description}</td> 
-                                        <td>{item.SupplierNameWithCode}</td>
-                                        <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                    </tr>
-
+                                <tr key={index}>
+                                    <td>{item.SupplierCode}</td> 
+                                    <td >{item.SupplierName}</td>
+                                    <td>{item.SupplierEmail}</td>
+                                    <td>{item.SupplierType}</td> 
+                                    <td>{item.CityName}</td> 
+                                    <td>{item.Description}</td> 
+                                    <td>{item.SupplierNameWithCode}</td>
+                                    <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                    <div>
+                                        <Button className="btn btn-secondary" onClick={() => this.editDetails(item.SupplierId)}><i className="fas fa-pencil-alt"></i></Button>
+                                        <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.SupplierId)}><i className="far fa-trash-alt"></i></Button>
+                                    </div> 
+                                </tr>
                                 )
-                        })}
+                            })}
                     </tbody>  
                 </Table> 
                 </Col>
@@ -101,6 +147,8 @@ class SupplierMaster extends Component {
                     <AddSupplier
                         isOpen={isOpen}
                         onCancel={this.onCancel}
+                        isEditFlag={isEditFlag}
+                        supplierId={supplierId}
                     />
                 )}
             </Container >
@@ -118,8 +166,7 @@ function mapStateToProps({ supplier }) {
     return { supplierDetail, loading }
 }
 
-
 export default connect(
-    mapStateToProps, { getSupplierDetailAPI }
+    mapStateToProps, { getSupplierDetailAPI, deleteSupplierAPI }
 )(SupplierMaster);
 

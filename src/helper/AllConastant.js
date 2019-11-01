@@ -51,5 +51,6 @@ export const CONSTANT = {
   DATE: 'Created Date',
   DEPRECIATION: 'Depreciation',
   SHIFT: 'Shift',
+  INTEREST_RATE: 'Interest Rate',
   LOCATION: 'Location',
 };
