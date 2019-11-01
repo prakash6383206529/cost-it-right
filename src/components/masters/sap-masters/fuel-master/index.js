@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button} from "reactstrap";
+import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
 import AddFuelDetail from './AddFuelDetail';
 import AddFuel from './AddFuel';
 import FuelDetail from './FuelDetail';
@@ -15,24 +15,28 @@ class FuelMaster extends Component {
         this.state = {
             isOpen: false,
             isOpenModel: false,
-            activeTab: '1'
+            activeTab: '1',
+            isEditFlag: false,
+            fuelId: '',
         }
     }
 
     componentDidMount() {
-        this.props.getFuelDetailAPI(res => {});
+        this.props.getFuelDetailAPI(res => { });
     }
 
-     /**
-    * @method toggle
-    * @description toggling the tabs
-    */
+    /**
+   * @method toggle
+   * @description toggling the tabs
+   */
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
                 activeTab: tab
             });
         }
+        this.props.getFuelDetailAPI(res => { });
+        this.props.getFuelAPI(res => { });
     }
 
     /**
@@ -40,15 +44,18 @@ class FuelMaster extends Component {
      * @description  used to open filter form 
      */
     openModel = () => {
-        this.setState({ isOpen: true })
+        this.setState({
+            isOpen: true,
+            isEditFlag: false,
+        })
     }
 
-     /**
-     * @method openFuelModel
-     * @description  used to open fuel form 
-     */
+    /**
+    * @method openFuelModel
+    * @description  used to open fuel form 
+    */
     openFuelModel = () => {
-        this.setState({ isOpenModel: true})
+        this.setState({ isOpenModel: true })
     }
 
     /**
@@ -56,7 +63,28 @@ class FuelMaster extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false, isOpenModel: false})
+        this.setState({
+            isOpen: false,
+            isOpenModel: false
+        }, () => {
+            this.props.getFuelDetailAPI(res => { });
+        })
+    }
+
+    editFuelDetails = (editFlag, isModelOpen, FuelId) => {
+        this.setState({
+            isEditFlag: editFlag,
+            isOpenModel: isModelOpen,
+            fuelId: FuelId,
+        })
+    }
+
+    editFuelTypeDetails = (editFlag, isModelOpen, FuelId) => {
+        this.setState({
+            isEditFlag: editFlag,
+            isOpen: isModelOpen,
+            fuelId: FuelId,
+        })
     }
 
     /**
@@ -64,7 +92,7 @@ class FuelMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen,isOpenModel } = this.state;
+        const { isOpen, isOpenModel, fuelId, isEditFlag } = this.state;
         return (
             <Container className="top-margin">
                 <Row>
@@ -79,42 +107,52 @@ class FuelMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
-                <Col>
-                    <Nav tabs className="subtabs">
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                Fuel Details
+                <Row>
+                    <Col>
+                        <Nav tabs className="subtabs">
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                    Fuel Details
                             </NavLink>
-                        </NavItem>
+                            </NavItem>
 
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                Fuel Type Details
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                    Fuel Type Details
                             </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <TabContent activeTab={this.state.activeTab}>
-                        <TabPane tabId="1">
-                            <FuelDetail/>
-                        </TabPane>
-                        <TabPane tabId="2">
-                            <FuelTypeDetail/> 
-                        </TabPane>
-                    </TabContent>
-                </Col>
+                            </NavItem>
+                        </Nav>
+                        <TabContent activeTab={this.state.activeTab}>
+                            <TabPane tabId="1">
+                                <FuelDetail
+                                    editFuelDetails={this.editFuelDetails}
+                                    toggle={this.toggle} />
+                            </TabPane>
+                            <TabPane tabId="2">
+                                <FuelTypeDetail
+                                    editFuelTypeDetails={this.editFuelTypeDetails}
+                                    toggle={this.toggle} />
+                            </TabPane>
+                        </TabContent>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddFuel
                         isOpen={isOpen}
                         onCancel={this.onCancel}
+                        fuelId={fuelId}
+                        isEditFlag={isEditFlag}
                     />
                 )}
                 {isOpenModel && (
                     <AddFuelDetail
                         isOpen={isOpenModel}
                         onCancel={this.onCancel}
+                        fuelId={fuelId}
+                        isEditFlag={isEditFlag}
                     />
                 )}
-               
+
             </Container >
         );
     }

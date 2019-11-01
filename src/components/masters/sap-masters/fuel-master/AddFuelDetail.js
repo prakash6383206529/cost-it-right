@@ -3,30 +3,53 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField, renderDatePicker } from "../../../layout/FormInputs";
-import { createFuelDetailAPI, getFuelDetailAPI } from '../../../../actions/master/Fuel';
+import { renderText, renderSelectField, renderDatePicker } from "../../../layout/FormInputs";
+import { createFuelDetailAPI, getFuelDetailAPI, getFuelDetailUnitAPI } from '../../../../actions/master/Fuel';
 import { fetchFuelComboAPI, fetchMasterDataAPI } from '../../../../actions/master/Comman'
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment';
 
 class AddFuelDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false,
+            isEditFlag: false,
             startDate: '',
             endDate: ''
         }
     }
 
-    componentWillMount(){
-        this.props.fetchFuelComboAPI(res => {});  
-        this.props.fetchMasterDataAPI(res => {});   
+    componentWillMount() {
+        this.props.fetchFuelComboAPI(res => { });
+        this.props.fetchMasterDataAPI(res => { });
     }
+
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
+    componentDidMount() {
+        const { fuelId, isEditFlag, initialValues } = this.props;
+        if (isEditFlag) {
+            //this.setState({ isEditFlag }, () => {
+            this.props.getFuelDetailUnitAPI(fuelId, true, res => {
+                //setTimeout(() => {
+                this.setState({
+                    //startDate: moment(initialValues.ValidDateTo).format('llll')
+                })
+                //}, 1000)
+            })
+            //})
+        } else {
+            this.props.getFuelDetailUnitAPI('', false, res => { })
+        }
+    }
+
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -45,22 +68,22 @@ class AddFuelDetail extends Component {
         })
     }
 
-     /**
-     * @method handleChange
-     * @description Handle user data
-     */
+    /**
+    * @method handleChange
+    * @description Handle user data
+    */
     handleChange = (date) => {
         this.setState({
-        startDate: date,
+            startDate: date,
         });
     };
-      /**
-     * @method handleChange
-     * @description Handle user data
-     */
+    /**
+   * @method handleChange
+   * @description Handle user data
+   */
     handleEndDateChange = (date) => {
         this.setState({
-        endDate: date,
+            endDate: date,
         });
     };
 
@@ -69,7 +92,7 @@ class AddFuelDetail extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { startDate,endDate } = this.state;
+        const { startDate, endDate } = this.state;
         const formData = {
             Rate: values.Rate,
             StateId: values.StateId,
@@ -80,16 +103,16 @@ class AddFuelDetail extends Component {
             Description: values.Description
         }
         this.props.createFuelDetailAPI(formData, (response) => {
-            if(response && response.data){
-            if (response && response.data && response.data.Result) {
-                toastr.success(MESSAGES.FUEL_DETAIL_ADD_SUCCESS);
-                this.props.getFuelDetailAPI(res => {});
-                {this.toggleModel()}
-            } else {
-                toastr.error(response.data.Message);
+            if (response && response.data) {
+                if (response && response.data && response.data.Result) {
+                    toastr.success(MESSAGES.FUEL_DETAIL_ADD_SUCCESS);
+                    this.props.getFuelDetailAPI(res => { });
+                    { this.toggleModel() }
+                } else {
+                    toastr.error(response.data.Message);
+                }
             }
-        }
-        });   
+        });
     }
 
     /**
@@ -97,21 +120,21 @@ class AddFuelDetail extends Component {
     * @description Used show listing of unit of measurement
     */
     selectMaterialType = (label) => {
-        const { uniOfMeasurementList, stateList, fuelList} = this.props;
+        const { uniOfMeasurementList, stateList, fuelList } = this.props;
         const temp = [];
-        if(label === 'state'){
+        if (label === 'state') {
             stateList && stateList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'uom'){
+        if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label = 'fuel'){
+        if (label = 'fuel') {
             fuelList && fuelList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
@@ -132,7 +155,7 @@ class AddFuelDetail extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -225,54 +248,54 @@ class AddFuelDetail extends Component {
                                                         onChangeRaw={(e) => e.preventDefault()}
                                                     />
                                                 </div>
-                                                </div>
-                                            </div> 
-                                           
-                                            <div className="col-md-6">
-                                                <div className="form-group">
+                                            </div>
+                                        </div>
+
+                                        <div className="col-md-6">
+                                            <div className="form-group">
                                                 <label>
                                                     Date From
                                                     <span className="asterisk-required">*</span>
                                                 </label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            name="ValidDateFrom"
-                                                            selected={this.state.endDate}
-                                                            onChange={this.handleEndDateChange}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dateFormat="MM/dd/yyyy"
-                                                            maxDate={new Date()}
-                                                            dropdownMode="select"
-                                                            placeholderText="Select end date"
-                                                            className="withoutBorder"
-                                                            autoComplete={'off'}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                        />
-                                                    </div>
+                                                <div className="inputbox date-section">
+                                                    <DatePicker
+                                                        name="ValidDateFrom"
+                                                        selected={this.state.endDate}
+                                                        onChange={this.handleEndDateChange}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dateFormat="MM/dd/yyyy"
+                                                        maxDate={new Date()}
+                                                        dropdownMode="select"
+                                                        placeholderText="Select end date"
+                                                        className="withoutBorder"
+                                                        autoComplete={'off'}
+                                                        disabledKeyboardNavigation
+                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                    />
                                                 </div>
-                                            </div>  
-                                        <Row/>
-                                        
-                                        <Row/>
-                                            <Col md="12">
-                                                <Field
-                                                    label="Description"
-                                                    name={"Description"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    //validate={[required]}
-                                                    component={renderText}
-                                                    //required={true}
-                                                    className=" withoutBorder"
-                                                />
-                                            </Col>
+                                            </div>
+                                        </div>
+                                        <Row />
+
+                                        <Row />
+                                        {/* <Col md="12">
+                                            <Field
+                                                label="Description"
+                                                name={"Description"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                //required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col> */}
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                               {CONSTANT.SAVE}
+                                                {CONSTANT.SAVE}
                                             </button>
                                         </div>
                                     </Row>
@@ -291,9 +314,23 @@ class AddFuelDetail extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-   const { stateList, fuelList, uniOfMeasurementList } = comman;
-    return { stateList, fuelList, uniOfMeasurementList}
+function mapStateToProps({ comman, fuel }) {
+    const { stateList, fuelList, uniOfMeasurementList } = comman;
+    const { fuelUnitData } = fuel;
+    let initialValues = {};
+    if (fuelUnitData && fuelUnitData !== undefined) {
+        console.log("date", moment(fuelUnitData.ValidDateTo).format('llll'))
+        initialValues = {
+            Rate: fuelUnitData.Rate,
+            Description: fuelUnitData.Description,
+            ValidDateTo: fuelUnitData.ValidDateTo,
+            ValidDateFrom: fuelUnitData.ValidDateFrom,
+            StateId: fuelUnitData.StateId,
+            FuelId: fuelUnitData.FuelId,
+            UnitOfMeasurementId: fuelUnitData.UnitOfMeasurementId,
+        }
+    }
+    return { stateList, fuelList, uniOfMeasurementList, fuelUnitData, initialValues }
 }
 
 /**
@@ -302,7 +339,13 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createFuelDetailAPI, fetchFuelComboAPI, fetchMasterDataAPI,getFuelDetailAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createFuelDetailAPI,
+    fetchFuelComboAPI,
+    fetchMasterDataAPI,
+    getFuelDetailAPI,
+    getFuelDetailUnitAPI
+})(reduxForm({
     form: 'AddFuelDetail',
     enableReinitialize: true,
 })(AddFuelDetail));

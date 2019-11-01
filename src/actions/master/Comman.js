@@ -761,3 +761,29 @@ export function getMHRMasterComboData(callback) {
         });
     };
 }
+
+/**
+ * @method fetchCityDataAPI
+ * @description Used to fetch city list
+ */
+export function fetchSupplierCityDataAPI(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSupplierCity}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CITY_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

@@ -29,5 +29,9 @@ export const MESSAGES = {
   LABOUR_ADDED_SUCCESS: 'Freight added successfully',
   OVERHEAD_PROFIT_ADDED_SUCCESS: 'Overhead profit added successfully',
   DEPRECIATION_ADD_SUCCESS: 'Depreciation added successfully',
+  DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
+  DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
+  DELETE_PLANT_SUCCESS: 'Plant deleted successfully',
+  UPDATE_PLANT_SUCESS: 'Plant updated successfully',
 };
 

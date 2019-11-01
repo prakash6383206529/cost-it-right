@@ -4,8 +4,8 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
-import { createPlantAPI } from '../../../../actions/master/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
+import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -21,9 +21,16 @@ class AddPlant extends Component {
     }
 
     componentDidMount() {
-        this.props.fetchCountryDataAPI(res => {
-            console.log('response of country', res);
-        });
+        const { PlantId, isEditFlag } = this.props;
+        // this.props.fetchCountryDataAPI(res => { });
+        this.props.fetchSupplierCityDataAPI(() => { })
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getPlantUnitAPI(PlantId, true, res => { })
+            })
+        } else {
+            this.props.getPlantUnitAPI('', false, res => { })
+        }
     }
     /**
     * @method toggleModel
@@ -72,21 +79,18 @@ class AddPlant extends Component {
             countryList && countryList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            console.log('temp', countryList);
             return temp;
         }
         if (label === 'state') {
             stateList && stateList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            console.log('temp', stateList);
             return temp;
         }
         if (label === 'city') {
             cityList && cityList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            console.log('temp', cityList);
             return temp;
         }
 
@@ -103,14 +107,37 @@ class AddPlant extends Component {
             Address: values.Address,
             CityId: values.CityId
         }
-        this.props.createPlantAPI(formData, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
-                { this.toggleModel() }
-            } else {
-                toastr.error(res.data.Message);
+        //console.log("formData", formData, values)
+        if (this.props.isEditFlag) {
+            console.log('values', values);
+            const { PlantId } = this.props;
+            this.setState({ isSubmitted: true });
+            let formData1 = {
+                PlantName: values.PlantName,
+                PlantTitle: values.PlantTitle,
+                UnitNumber: values.UnitNumber,
+                Address: values.Address,
+                CityId: values.CityId,
+                PlantId: PlantId
             }
-        });
+            this.props.updatePlantAPI(PlantId, formData1, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_PLANT_SUCESS);
+                    this.toggleModel();
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            });
+        } else {
+            this.props.createPlantAPI(formData, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
+                    { this.toggleModel() }
+                } else {
+                    toastr.error(res.data.Message);
+                }
+            });
+        }
     }
 
     /**
@@ -118,11 +145,11 @@ class AddPlant extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.PLANT}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Plant' : 'Add Plant'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -183,7 +210,7 @@ class AddPlant extends Component {
                                             />
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    {/* <Row>
                                         <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.COUNTRY}`}
@@ -218,6 +245,8 @@ class AddPlant extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+                                    </Row> */}
+                                    <Row>
                                         <Col md="12">
                                             <Field
                                                 label={`${CONSTANT.CITY}`}
@@ -258,9 +287,22 @@ class AddPlant extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-    const { countryList, stateList, cityList } = comman
-    return { countryList, stateList, cityList }
+function mapStateToProps({ comman, plant }) {
+    const { countryList, stateList, cityList } = comman;
+    const { plantUnitDetail } = plant;
+    let initialValues = {};
+    if (plantUnitDetail && plantUnitDetail !== undefined) {
+        initialValues = {
+            PlantName: plantUnitDetail.PlantName,
+            PlantTitle: plantUnitDetail.PlantTitle,
+            UnitNumber: plantUnitDetail.UnitNumber,
+            Address: plantUnitDetail.Address,
+            //CountryId: plantUnitDetail.CreatedBy,
+            //StateId: plantUnitDetail.CreatedBy,
+            CityId: plantUnitDetail.CityIdRef,
+        }
+    }
+    return { countryList, stateList, cityList, initialValues }
 }
 
 /**
@@ -271,7 +313,9 @@ function mapStateToProps({ comman }) {
 */
 export default connect(mapStateToProps, {
     createPlantAPI, fetchCountryDataAPI,
-    fetchStateDataAPI, fetchCityDataAPI
+    fetchStateDataAPI, fetchCityDataAPI,
+    getPlantUnitAPI, fetchSupplierCityDataAPI,
+    updatePlantAPI
 })(reduxForm({
     form: 'AddPlant',
     enableReinitialize: true,

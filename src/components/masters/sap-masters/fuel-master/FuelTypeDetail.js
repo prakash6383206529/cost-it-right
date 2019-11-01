@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, Table } from "reactstrap";
-import { getFuelAPI } from '../../../../actions/master/Fuel';
+import { Row, Container, Col, Table, Button } from "reactstrap";
+import { getFuelAPI, deleteFuelTypeAPI } from '../../../../actions/master/Fuel';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../helper';
+import { MESSAGES } from '../../../../config/message';
+import { toastr } from 'react-redux-toastr';
 
 
 class FuelTypeDetail extends Component {
@@ -16,7 +18,44 @@ class FuelTypeDetail extends Component {
     }
 
     componentDidMount() {
-        this.props.getFuelAPI(res => {});
+        this.props.getFuelAPI(res => { });
+    }
+
+    /**
+    * @method editPartDetails
+    * @description confirm delete part
+    */
+    editFuelDetails = (index, Id) => {
+        this.props.editFuelTypeDetails(true, true, Id);
+    }
+
+    /**
+    * @method deletePart
+    * @description confirm delete part
+    */
+    deleteRow = (index, Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDelete(index, Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDeleteUOM
+    * @description confirm delete unit of measurement
+    */
+    confirmDelete = (index, Id) => {
+        this.props.deleteFuelTypeAPI(index, Id, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_FUEL_TYPE_SUCCESS);
+                this.props.toggle('2');
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        });
     }
 
     /**
@@ -25,36 +64,43 @@ class FuelTypeDetail extends Component {
     */
     render() {
         return (
-            <Container className="top-margin">
+            <div>
+                {/* <Container className="top-margin"> */}
                 <Row>
                     <Col>
                         <h5>{`${CONSTANT.FUEL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
                 <Col>
-                <Table className="table table-striped" bordered>
-                    <thead>
-                        <tr>
-                        <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
-                        <th>{`${CONSTANT.DESCRIPTION}`}</th> 
-                        <th>{`${CONSTANT.DATE}`}</th>
-                        </tr>
-                    </thead>
-                    <tbody > 
-                        {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
-                            this.props.fuelDetailList.map((item, index) => {
-                                return (
-                                    <tr key= {index}>
-                                        <td >{item.FuelName}</td>
-                                        <td>{item.Description}</td> 
-                                        <td>{convertISOToUtcDate(item.CreatedDate)}</td> 
-                                    </tr>
-                                )
-                            })}
-                    </tbody> 
-                </Table>
+                    <Table className="table table-striped" bordered>
+                        <thead>
+                            <tr>
+                                <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
+                                <th>{`${CONSTANT.DESCRIPTION}`}</th>
+                                <th>{`${CONSTANT.DATE}`}</th>
+                                <th>{``}</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
+                                this.props.fuelDetailList.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td >{item.FuelName}</td>
+                                            <td>{item.Description}</td>
+                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                            <td>
+                                                <Button className="btn btn-secondary" onClick={() => this.editFuelDetails(index, item.FuelId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.FuelId)}><i className="far fa-trash-alt"></i></Button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                        </tbody>
+                    </Table>
                 </Col>
-            </Container >
+                {/* </Container > */}
+            </div>
         );
     }
 }
@@ -71,6 +117,6 @@ function mapStateToProps({ fuel }) {
 
 
 export default connect(
-    mapStateToProps, { getFuelAPI }
+    mapStateToProps, { getFuelAPI, deleteFuelTypeAPI }
 )(FuelTypeDetail);
 
