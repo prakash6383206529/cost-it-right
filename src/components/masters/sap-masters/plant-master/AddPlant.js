@@ -273,7 +273,7 @@ class AddPlant extends Component {
                                             />
                                         </Col>
                                     </Row>
-                                    {/* {isEditFlag &&
+                                    {isEditFlag &&
                                         <Col md="6">
                                             <Label>
                                                 <Input
@@ -286,7 +286,7 @@ class AddPlant extends Component {
                                                 Is Active
                                             </Label>
                                         </Col>
-                                    } */}
+                                    }
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
