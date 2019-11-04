@@ -98,7 +98,7 @@ class AddLabour extends Component {
             }
             this.props.updateLabourAPI(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_LABOUR_SUCESS);
+                    toastr.success(MESSAGES.UPDATE_LABOUR_SUCCESS);
                     this.toggleModel();
                     this.props.getLabourDetailAPI(res => {});
                 } else {
