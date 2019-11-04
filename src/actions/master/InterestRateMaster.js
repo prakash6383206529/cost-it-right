@@ -89,7 +89,7 @@ export function createInterestRateAPI(data, callback) {
         });
         const request = axios.post(API.createInterestRateAPI, data, headers);
         request.then((response) => {
-            if (response.data.Result === true) {
+            if (response.data.Result) {
                 dispatch({
                     type: CREATE_SUCCESS,
                 });
