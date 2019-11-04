@@ -3,7 +3,8 @@ import {
     CREATE_SUPPLIER_SUCCESS,
     CREATE_SUPPLIER_FAILURE,
     GET_SUPPLIER_SUCCESS,
-    GET_SUPPLIER_FAILURE
+    GET_SUPPLIER_FAILURE,
+    GET_SUPPLIER_DATA_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -41,6 +42,12 @@ export default function supplierReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true
+            };
+        case GET_SUPPLIER_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false, 
+                supplierData: action.payload
             };
         default:
             return state;

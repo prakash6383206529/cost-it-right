@@ -6,12 +6,14 @@ import {
     CREATE_LABOUR_SUCCESS,
     CREATE_LABOUR_FAILURE,
     GET_LABOUR_SUCCESS,
-    GET_LABOUR_FAILURE
+    GET_LABOUR_FAILURE,
+    GET_LABOUR_DATA_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
 } from '../../helper/util';
 import { toastr } from 'react-redux-toastr'
+import { MESSAGES } from '../../config/message';
 
 const headers = {
     'Content-Type': 'application/json',
@@ -66,5 +68,73 @@ export function getLabourDetailAPI() {
             });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getLabourByIdAPI
+ * @description get one labour based on id
+ */
+export function getLabourByIdAPI(labourId,isEditFlag,callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if(isEditFlag){
+            axios.get(`${API.getLabourAPI}/${labourId}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_LABOUR_DATA_SUCCESS,
+                        payload: response.data.Data[0],
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+        }else{
+            dispatch({
+                type: GET_LABOUR_DATA_SUCCESS,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+/**
+ * @method deleteLabourAPI
+ * @description delete labour
+ */
+export function deleteLabourAPI(Id ,callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteLabourAPI}/${Id}`, headers)
+            .then((response) => {
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateLabourAPI
+ * @description update labour
+ */
+export function updateLabourAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateLabourAPI}`,requestData, headers)
+            .then((response) => {
+                    callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }

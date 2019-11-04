@@ -3,12 +3,14 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
 import Addfreight from './AddFreight';
-import { getFreightDetailAPI } from '../../../../actions/master/Freight';
+import { getFreightDetailAPI, deleteFreightAPI } from '../../../../actions/master/Freight';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../helper';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 
 class FreightMaster extends Component {
@@ -16,6 +18,7 @@ class FreightMaster extends Component {
         super(props);
         this.state = {
             isOpen: false,
+            isEditFlag: false,
         }
     }
 
@@ -28,7 +31,7 @@ class FreightMaster extends Component {
      * @description  used to open filter form 
      */
     openModel = () => {
-        this.setState({ isOpen: true })
+        this.setState({ isOpen: true, isEditFlag: false })
     }
 
     /**
@@ -39,15 +42,56 @@ class FreightMaster extends Component {
         this.setState({ isOpen: false })
     }
 
+     /**
+    * @method editDetails
+    * @description confirm delete bop
+    */
+    editDetails = (Id) => {
+        this.setState({
+            isEditFlag: true,
+            isOpen: true,
+            freightId: Id,
+        })
+    }
+
+    /**
+    * @method delete 
+    * @description confirm delete bop
+    */
+    deleteBOP = (Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDelete(Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} BOP ?`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDelete
+    * @description confirm delete bought out part
+    */
+    confirmDelete = (Id) => {
+        this.props.deleteFreightAPI(Id, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.DELETE_FREIGHT_SUCCESS);
+                this.props.getFreightDetailAPI(res => { });
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        });
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen } = this.state;
+        const { isOpen, isEditFlag, freightId } = this.state;
         return (
             <Container className="top-margin">
-            {/* {this.props.loading && <Loader/>} */}
+            {this.props.loading && <Loader/>}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.FREIGHT} ${CONSTANT.MASTER}`}</h3>
@@ -105,6 +149,10 @@ class FreightMaster extends Component {
                                         <td>{item.FullTruckLoadRateThirtyOneTon}</td> 
                                         <td>{item.FullTruckLoadRateTrailer}</td>
                                         <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                        <div>
+                                            <Button className="btn btn-secondary" onClick={() => this.editDetails(item.FreightId)}><i className="fas fa-pencil-alt"></i></Button>
+                                            <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.FreightId)}><i className="far fa-trash-alt"></i></Button>
+                                        </div>  
                                     </tr>
                                 )
                             })}
@@ -115,6 +163,8 @@ class FreightMaster extends Component {
                     <Addfreight
                         isOpen={isOpen}
                         onCancel={this.onCancel}
+                        isEditFlag={isEditFlag}
+                        freightId={freightId}
                     />
                 )}
             </Container >
@@ -134,6 +184,6 @@ function mapStateToProps({ freight }) {
 
 
 export default connect(
-    mapStateToProps, { getFreightDetailAPI }
+    mapStateToProps, { getFreightDetailAPI,deleteFreightAPI }
 )(FreightMaster);
 

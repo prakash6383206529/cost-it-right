@@ -3,13 +3,14 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table } from 'reactstrap';
 import AddBOP from './AddBOP';
-import { getAllBOPAPI } from '../../../../actions/master/BoughtOutParts';
+import { getAllBOPAPI, deleteBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../helper';
-
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 class BOPMaster extends Component {
     constructor(props) {
@@ -20,6 +21,10 @@ class BOPMaster extends Component {
         }
     }
 
+    /**
+     * @method componentDidMount
+     * @description  called before mounting the component
+     */
     componentDidMount() {
         this.props.getAllBOPAPI(res => {});
     }
@@ -39,12 +44,53 @@ class BOPMaster extends Component {
         this.setState({ isOpen: false })
     }
 
+     /**
+    * @method editDetails
+    * @description confirm delete bop
+    */
+    editDetails = (Id) => {
+        this.setState({
+            isEditFlag: true,
+            isOpen: true,
+            bopId: Id,
+        })
+    }
+
+    /**
+    * @method delete 
+    * @description confirm delete bop
+    */
+    deleteBOP = (Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDelete(Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} BOP ?`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDelete
+    * @description confirm delete bought out part
+    */
+    confirmDelete = (Id) => {
+        this.props.deleteBOPAPI(Id, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.DELETE_BOP_SUCCESS);
+                this.props.getAllBOPAPI(res => { });
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        });
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen } = this.state;
+        const { isOpen, isEditFlag, bopId } = this.state;
         return (
             <Container className="top-margin">
             {this.props.loading && <Loader/>}
@@ -83,13 +129,15 @@ class BOPMaster extends Component {
                         <th>{`${CONSTANT.QUANTITY} `}</th>
                         <th>{` Net Landed Cost`}</th>
                         <th>{`${CONSTANT.DATE}`}</th>
+                        <th>{}</th>
+                        <th>{}</th>
                         </tr>
                     </thead>
                     <tbody > 
                     {this.props.BOPListing && this.props.BOPListing.length > 0 &&
                         this.props.BOPListing.map((item, index) => {
                             return (
-                                <tr >
+                                <tr key={index}>
                                     <td>{item.TechnologyName}</td>
                                     <td>{item.PartNumber}</td> 
                                     <td>{item.CategoryName}</td> 
@@ -106,8 +154,10 @@ class BOPMaster extends Component {
                                     <td>{item.Quantity}</td>
                                     <td>{item.NetLandedCost}</td>
                                     <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                    <div> 
-                                    </div>
+                                    <div>
+                                        <Button className="btn btn-secondary" onClick={() => this.editDetails(item.BopId)}><i className="fas fa-pencil-alt"></i></Button>
+                                        <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.BopId)}><i className="far fa-trash-alt"></i></Button>
+                                    </div>  
                                 </tr>
                             )
                         })}
@@ -118,7 +168,9 @@ class BOPMaster extends Component {
                     <AddBOP
                         isOpen={isOpen}
                         onCancel={this.onCancel}
-                    />
+                        isEditFlag={isEditFlag}
+                        bopId={bopId}
+                        />
                 )}
             </Container >
         );
@@ -131,13 +183,12 @@ class BOPMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ boughtOutparts }) {
-    const { BOPListing } = boughtOutparts;;
-    console.log('BOPListing: ', BOPListing);
-    return { BOPListing }
+    const { BOPListing, loading } = boughtOutparts;;
+    return { BOPListing, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getAllBOPAPI }
+    mapStateToProps, { getAllBOPAPI ,deleteBOPAPI}
 )(BOPMaster);
 

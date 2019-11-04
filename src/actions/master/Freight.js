@@ -112,7 +112,7 @@ export function getFreightByIdAPI(freightId, isEditFlag, callback) {
 export function deleteFreightAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteBOPAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteFrightAPI}/${Id}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {

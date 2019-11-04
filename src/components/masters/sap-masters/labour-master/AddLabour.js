@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderSelectField, renderNumberInputField } from "../../../layout/FormInputs";
-import { createLabourAPI,getLabourDetailAPI } from '../../../../actions/master/Labour';
+import { createLabourAPI,getLabourDetailAPI,getLabourByIdAPI, updateLabourAPI } from '../../../../actions/master/Labour';
 import { fetchLabourComboAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -18,8 +18,23 @@ class AddLabour extends Component {
         }
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.fetchLabourComboAPI(res => {});
+    }
+    
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
+    componentDidMount(){
+        const { labourId,isEditFlag } = this.props;
+        if(isEditFlag){
+            this.setState({isEditFlag},()=>{  
+            this.props.getLabourByIdAPI(labourId,true, res => {})   
+        })
+        }else{
+            this.props.getLabourByIdAPI('',false, res => {})   
+        }
     }
     /**
     * @method toggleModel
@@ -72,15 +87,36 @@ class AddLabour extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        this.props.createLabourAPI(values, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.LABOUR_ADDED_SUCCESS);
-                this.props.getLabourDetailAPI(res => {});
-                this.toggleModel()
-            } else {
-                toastr.error(res.data.Message);
+        if (this.props.isEditFlag) { 
+            const { labourId } = this.props;
+            let formData = {
+                LabourId : labourId,
+                LabourRate: values.LabourRate,
+                LabourTypeId: values.LabourTypeId,
+                PlantId: values.PlantId,
+                TechnologyId: values.TechnologyId,
             }
-        });
+            this.props.updateLabourAPI(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_LABOUR_SUCESS);
+                    this.toggleModel();
+                    this.props.getLabourDetailAPI(res => {});
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            });
+        }else{
+            this.props.createLabourAPI(values, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.LABOUR_ADDED_SUCCESS);
+                    this.props.getLabourDetailAPI(res => {});
+                    this.toggleModel()
+                } else {
+                    toastr.error(res.data.Message);
+                }
+            });
+        }
+       
     }
 
     /**
@@ -88,11 +124,11 @@ class AddLabour extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.LABOUR}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Labour Details' : 'Add Labour Details'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -170,7 +206,7 @@ class AddLabour extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {`${CONSTANT.SAVE}`}
+                                            {isEditFlag ? 'Update' : 'Add'}
                                             </button>
                                         </div>
                                     </Row>
@@ -189,9 +225,19 @@ class AddLabour extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps({ comman, labour }) {
     const { technologyList, plantList, labourType } = comman;
-    return { technologyList, plantList, labourType }
+    const { labourData } = labour;
+    let initialValues = {};
+    if(labourData && labourData !== undefined){
+        initialValues = {
+            LabourRate: labourData.LabourRate,
+            LabourTypeId: labourData.LabourTypeId,
+            PlantId: labourData.PlantId,
+            TechnologyId: labourData.TechnologyId,
+        }
+    }
+    return { technologyList, plantList, labourType, labourData, initialValues }
 }
 
 /**
@@ -201,8 +247,8 @@ function mapStateToProps({ comman }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createLabourAPI, getLabourDetailAPI, fetchLabourComboAPI
+    createLabourAPI, getLabourDetailAPI, fetchLabourComboAPI,getLabourByIdAPI, updateLabourAPI
 })(reduxForm({
     form: 'AddLabour',
-    //enableReinitialize: true,
+    enableReinitialize: true,
 })(AddLabour));

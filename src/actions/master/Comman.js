@@ -48,8 +48,9 @@ export function fetchMasterDataAPI() {
         const API5 = axios.get(API.getSupplier, headers);
         const API6 = axios.get(API.getSupplierCity, headers);
         const API7 = axios.get(API.getTechnology, headers);
-        const API8 = axios.get(API.getCategoryType, headers)
-        Promise.all([API1, API2, API3, API4, API5, API6, API7, API8])
+        const API8 = axios.get(API.getCategoryType, headers);
+        const API9 = axios.get(API.getSupplierCity, headers)
+        Promise.all([API1, API2, API3, API4, API5, API6, API7, API8, API9])
             .then((response) => {
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
@@ -84,6 +85,10 @@ export function fetchMasterDataAPI() {
                 dispatch({
                     type: GET_CATEGORY_TYPE_SUCCESS,
                     payload: response[7].data.SelectList,
+                });
+                dispatch({
+                    type: GET_CITY_SUCCESS,
+                    payload: response[8].data.SelectList,
                 });
             }).catch((error) => {
                 dispatch({
