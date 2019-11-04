@@ -26,7 +26,10 @@ class BOPMaster extends Component {
      * @description  called before mounting the component
      */
     componentDidMount() {
-        this.props.getAllBOPAPI(res => {});
+        const {BOPListing } = this.props;
+        // if(BOPListing && BOPListing.length > 0 ){
+            this.props.getAllBOPAPI(res => {});
+        // }
     }
     /**
      * @method openModel
@@ -41,7 +44,7 @@ class BOPMaster extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false })
+        this.setState({ isOpen: false });
     }
 
      /**
@@ -93,7 +96,7 @@ class BOPMaster extends Component {
         const { isOpen, isEditFlag, bopId } = this.state;
         return (
             <Container className="top-margin">
-            {this.props.loading && <Loader/>}
+            {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.BOP} ${CONSTANT.MASTER}`}</h3>
