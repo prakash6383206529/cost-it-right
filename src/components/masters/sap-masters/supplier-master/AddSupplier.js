@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required, email, minLength7, maxLength70 } from "../../../../helper/validation";
-import { renderText, renderSelectField, renderEmailInputField, renderMultiSelectField, renderCheckboxInputField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField, renderEmailInputField, renderMultiSelectField} from "../../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI,getSupplierByIdAPI } from '../../../../actions/master/Supplier';
 import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
@@ -14,6 +14,7 @@ class AddSupplier extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            supplierType: [],
             cityListing: [],
             selectedPlants: [],
             plantsArray: []
@@ -71,6 +72,12 @@ class AddSupplier extends Component {
         });
     }
 
+    supplierType = (e) => {
+        this.setState({
+            supplierType: e.target.value
+        });
+    }
+
     /**
     * @method selectType
     * @description Used show listing of unit of measurement
@@ -125,12 +132,13 @@ class AddSupplier extends Component {
             SupplierEmail: values.SupplierEmail,
             Description: values.Description,
             CityId: values.CityId,
+            SupplierType: this.state.supplierType,
             SelectedPlants: plantArray
         }
         this.props.createSupplierAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                { this.toggleModel() }
+                 this.toggleModel()
             } else {
                 toastr.error(res.data.Message);
             }
@@ -242,6 +250,12 @@ class AddSupplier extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
+                                    <Col>
+                                        <div onChange={this.supplierType}>
+                                            <input type="radio" value="ZBC" name="SupplierType"/> ZBC
+                                            <input type="radio" value="VBC" name="SupplierType"/> VBC
+                                        </div>
+                                    </Col>
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
