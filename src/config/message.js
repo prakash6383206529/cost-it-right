@@ -33,5 +33,8 @@ export const MESSAGES = {
   DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
   DELETE_PLANT_SUCCESS: 'Plant deleted successfully',
   UPDATE_PLANT_SUCESS: 'Plant updated successfully',
+  DELETE_PROCESS_SUCCESS: 'Process deleted successfully',
+  UPDATE_PROCESS_SUCCESS: 'Process updated successfully',
+  PROCESS_ADD_SUCCESS: 'Process added successfully'
 };
 

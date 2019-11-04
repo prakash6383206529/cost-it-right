@@ -177,7 +177,6 @@ export function getFuelDetailUnitAPI(fuelId, isEditFlag, callback) {
         if (isEditFlag) {
             axios.get(`${API.getFuelDetailAPI}/${fuelId}`, headers)
                 .then((response) => {
-                    console.log('%c 🥒 response: ', 'font-size:20px;background-color: #465975;color:#fff;', response);
                     if (response.data.Result === true) {
                         dispatch({
                             type: GET_FUEL_UNIT_DATA_SUCCESS,

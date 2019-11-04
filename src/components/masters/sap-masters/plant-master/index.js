@@ -114,6 +114,7 @@ class PlantMaster extends Component {
                                 <th>{`Unit ${CONSTANT.NUMBER}`}</th>
                                 <th>{`${CONSTANT.ADDRESS}`}</th>
                                 <th>{`${CONSTANT.CITY}`}</th>
+                                <th>{`Status`}</th>
                                 <th>{``}</th>
                             </tr>
                         </thead>
@@ -127,6 +128,7 @@ class PlantMaster extends Component {
                                             <td>{item.UnitNumber}</td>
                                             <td>{item.Address}</td>
                                             <td>{item.CityName}</td>
+                                            <td>{item && item.IsActive ? 'Active' : 'Inactive'}</td>
                                             <td>
                                                 <Button className="btn btn-secondary" onClick={() => this.editRow(index, item.PlantId)}><i className="fas fa-pencil-alt"></i></Button>
                                                 <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.PlantId)}><i className="far fa-trash-alt"></i></Button>

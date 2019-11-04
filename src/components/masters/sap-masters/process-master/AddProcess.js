@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField, renderNumberInputField } from "../../../layout/FormInputs";
-import { createProcessAPI } from '../../../../actions/master/Process';
+import { renderText, renderSelectField, renderNumberInputField } from "../../../layout/FormInputs";
+import { createProcessAPI, getProcessUnitAPI, updateProcessAPI } from '../../../../actions/master/Process';
 import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -15,12 +15,19 @@ class AddProcess extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            //isEditFlag:false
+            isActiveBox: true
         }
     }
 
-    componentWillMount(){
-        this.props.fetchPlantDataAPI(res => {});   
+    componentDidMount() {
+        const { ProcessId, isEditFlag } = this.props;
+        this.props.fetchPlantDataAPI(res => { });
+        if (isEditFlag) {
+            this.props.getProcessUnitAPI(ProcessId, true, res => { })
+        } else {
+            this.props.getProcessUnitAPI('', false, res => { })
+        }
     }
     /**
     * @method toggleModel
@@ -46,16 +53,33 @@ class AddProcess extends Component {
     */
     onSubmit = (values) => {
         console.log('values: ', values);
-        this.props.createProcessAPI(values, (response) => {
-            if(response && response.data){
-            if (response && response.data && response.data.Result) {
-                toastr.success(MESSAGES.PROCESS_ADD_SUCCESS);
-                {this.toggleModel()}
-            } else {
-                toastr.error(response.data.Message);
-            }
+        const { ProcessId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            values.ProcessId = ProcessId;
+            values.IsActive = this.state.isActiveBox;
+            console.log("update clicked ")
+            this.setState({ isSubmitted: true });
+            this.props.updateProcessAPI(ProcessId, values, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_PROCESS_SUCCESS);
+                    this.toggleModel();
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            });
+        } else {
+            console.log("add clicked ")
+            this.props.createProcessAPI(values, (response) => {
+                if (response && response.data) {
+                    if (response && response.data && response.data.Result) {
+                        toastr.success(MESSAGES.PROCESS_ADD_SUCCESS);
+                        { this.toggleModel() }
+                    } else {
+                        toastr.error(response.data.Message);
+                    }
+                }
+            });
         }
-        });   
     }
 
     /**
@@ -63,13 +87,11 @@ class AddProcess extends Component {
     * @description Used show listing of unit of measurement
     */
     selectMaterialType = () => {
-        const {categoryList} = this.props;
-        console.log('categoryList',typeof(categoryList), categoryList)
+        const { categoryList } = this.props;
         const temp = [];
         categoryList && categoryList !== undefined && categoryList.map(item =>
-          temp.push({ Text: item.Text, Value: item.Value })
+            temp.push({ Text: item.Text, Value: item.Value })
         );
-        console.log('temp', categoryList);
         return temp;
     }
 
@@ -80,14 +102,18 @@ class AddProcess extends Component {
     renderTypeOfListing = (label) => {
         const { plantList } = this.props;
         const temp = [];
-        if(label = 'plant'){
+        if (label = 'plant') {
             plantList && plantList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            console.log('temp', plantList);
             return temp;
         }
-        
+    }
+
+    activeHandler = () => {
+        this.setState({
+            isActiveBox: !this.state.isActiveBox
+        })
     }
 
 
@@ -96,14 +122,14 @@ class AddProcess extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag, processUnitData } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Process' : 'Add Process'}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -134,8 +160,8 @@ class AddProcess extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                    <Row/>
-                                    <Row/>
+                                        <Row />
+                                        <Row />
                                         <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.DESCRIPTION}`}
@@ -177,12 +203,26 @@ class AddProcess extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        
+
                                     </Row>
+                                    {isEditFlag &&
+                                        <Col md="6">
+                                            <Label>
+                                                <Input
+                                                    type="checkbox"
+                                                    id="checkbox2"
+                                                    defaultChecked={processUnitData && processUnitData.IsActive ? true : false}
+                                                    checked={this.state.isActiveBox}
+                                                    onChange={this.activeHandler}
+                                                    name="IsActive" />{' '}
+                                                Is Active
+                                            </Label>
+                                        </Col>
+                                    }
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                               {CONSTANT.SAVE}
+                                                {CONSTANT.SAVE}
                                             </button>
                                         </div>
                                     </Row>
@@ -201,9 +241,20 @@ class AddProcess extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-   const { plantList } = comman
-    return { plantList }
+function mapStateToProps({ comman, process }) {
+    const { plantList } = comman
+    const { processUnitData } = process;
+    let initialValues = {};
+    if (processUnitData && processUnitData !== undefined) {
+        initialValues = {
+            ProcessName: processUnitData.ProcessName,
+            ProcessCode: processUnitData.ProcessCode,
+            Description: processUnitData.Description,
+            BasicProcessRate: processUnitData.BasicProcessRate,
+            PlantId: processUnitData.PlantId,
+        }
+    }
+    return { plantList, initialValues, processUnitData }
 }
 
 /**
@@ -212,7 +263,12 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createProcessAPI,fetchPlantDataAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createProcessAPI,
+    fetchPlantDataAPI,
+    getProcessUnitAPI,
+    updateProcessAPI
+})(reduxForm({
     form: 'AddProcess',
     enableReinitialize: true,
 })(AddProcess));

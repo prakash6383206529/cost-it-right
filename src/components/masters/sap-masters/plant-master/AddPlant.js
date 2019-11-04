@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
@@ -17,6 +17,7 @@ class AddPlant extends Component {
             countryListing: [],
             stateListing: [],
             cityListing: [],
+            isActiveBox: true,
         }
     }
 
@@ -118,7 +119,8 @@ class AddPlant extends Component {
                 UnitNumber: values.UnitNumber,
                 Address: values.Address,
                 CityId: values.CityId,
-                PlantId: PlantId
+                PlantId: PlantId,
+                IsActive: this.state.isActiveBox
             }
             this.props.updatePlantAPI(PlantId, formData1, (res) => {
                 if (res.data.Result) {
@@ -140,12 +142,18 @@ class AddPlant extends Component {
         }
     }
 
+    activeHandler = () => {
+        this.setState({
+            isActiveBox: !this.state.isActiveBox
+        })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, plantUnitDetail } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -265,6 +273,20 @@ class AddPlant extends Component {
                                             />
                                         </Col>
                                     </Row>
+                                    {/* {isEditFlag &&
+                                        <Col md="6">
+                                            <Label>
+                                                <Input
+                                                    type="checkbox"
+                                                    id="checkbox2"
+                                                    defaultChecked={plantUnitDetail && plantUnitDetail.IsActive ? true : false}
+                                                    checked={this.state.isActiveBox}
+                                                    onChange={this.activeHandler}
+                                                    name="IsActive" />{' '}
+                                                Is Active
+                                            </Label>
+                                        </Col>
+                                    } */}
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
@@ -302,7 +324,7 @@ function mapStateToProps({ comman, plant }) {
             CityId: plantUnitDetail.CityIdRef,
         }
     }
-    return { countryList, stateList, cityList, initialValues }
+    return { countryList, stateList, cityList, initialValues, plantUnitDetail }
 }
 
 /**

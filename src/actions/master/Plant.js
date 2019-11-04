@@ -94,8 +94,8 @@ export function deletePlantAPI(index, Id, callback) {
 }
 
 /**
- * @method getOneUnitOfMeasurementAPI
- * @description get one UOM based on id
+ * @method getOneUnitOfPlantAPI
+ * @description get one Plant based on id
  */
 export function getPlantUnitAPI(plantId, isEditFlag, callback) {
     return (dispatch) => {
@@ -131,10 +131,10 @@ export function getPlantUnitAPI(plantId, isEditFlag, callback) {
  * @method updateUnitOfMeasurementAPI
  * @description update UOM
  */
-export function updatePlantAPI(plantId, requestData, callback) {
+export function updatePlantAPI(plantId, request, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updatePlantAPI}`, requestData, headers)
+        axios.put(`${API.updatePlantAPI}`, request, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {

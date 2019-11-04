@@ -3,8 +3,9 @@
  */
 
 //hosting url for api of cost-it-right
-const BASE_URL = 'http://183.182.84.29/cost-it-right-lite/api/v1';
-
+//const BASE_URL = 'http://183.182.84.29/cost-it-right-lite/api/v1';
+//const BASE_URL = 'http://10.10.1.100/cost-it-right-lite/swagger/ui/index#/';
+const BASE_URL = 'http://10.10.1.100:8090/api/v1';
 
 /** Export API */
 export const API = {
@@ -255,6 +256,7 @@ export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS';
 export const CREATE_PROCESS_FAILURE = 'CREATE_PROCESS_FAILURE';
 export const GET_PROCESS_LIST_SUCCESS = 'GET_PROCESS_LIST_SUCCESS';
 export const GET_PROCESS_LIST_FAILURE = 'GET_PROCESS_LIST_FAILURE';
+export const GET_PROCESS_UNIT_DATA_SUCCESS = 'GET_PROCESS_UNIT_DATA_SUCCESS';
 
 //For Fuel master 
 export const CREATE_FUEL_SUCCESS = 'CREATE_FUEL_SUCCESS';
