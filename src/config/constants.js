@@ -3,7 +3,8 @@
  */
 
 //hosting url for api of cost-it-right
-const BASE_URL = 'http://183.182.84.29/cost-it-right-lite/api/v1';
+//const BASE_URL = 'http://183.182.84.29/cost-it-right-lite/api/v1';
+const BASE_URL = 'http://10.10.1.100:8090/api/v1';
 
 
 /** Export API */
@@ -86,7 +87,8 @@ export const API = {
   getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
 
   //Api for plant master
-  createPlantAPI: `${BASE_URL}/plant/create`,
+  //createPlantAPI: `${BASE_URL}/plant/create`,
+  createPlantAPI: `${BASE_URL}/masters-plant/create`,
   getPlantAPI: `${BASE_URL}/masters-plant/get`,
   updatePlantAPI: `${BASE_URL}/masters-plant/update`,
   deletePlantAPI: `${BASE_URL}/masters-plant/delete`,
@@ -164,9 +166,10 @@ export const API = {
   getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
 
   //Api's for interest rate master
-  getInterestRateAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
-  getInterestRateComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
-  createInterestRateAPI: `${BASE_URL}/masters-overhead-and-profit/create`,
+  getInterestRateAPI: `${BASE_URL}/supplier/get-supplier-interest-rate`,
+  updateInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
+  deleteInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
+  createInterestRateAPI: `${BASE_URL}/supplier/create-supplier-interest-rate`,
 
 }
 

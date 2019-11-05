@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
-import AddInterestRate from './AddInterestRate';
+import SupplierInterestRate from './SupplierInterestRate';
 import { getInterestRateAPI } from '../../../../actions/master/InterestRateMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -166,7 +166,7 @@ class InterestRate extends Component {
                     {/* </Table> */}
                 </Col>
                 {isOpen && (
-                    <AddInterestRate
+                    <SupplierInterestRate
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
