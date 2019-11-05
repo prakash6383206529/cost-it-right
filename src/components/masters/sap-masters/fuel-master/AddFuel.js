@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText } from "../../../layout/FormInputs";
-import { createFuelAPI } from '../../../../actions/master/Fuel';
+import { createFuelAPI, getFuelUnitAPI } from '../../../../actions/master/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -14,7 +14,22 @@ class AddFuel extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
+        }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
+    componentDidMount() {
+        const { fuelId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getFuelUnitAPI(fuelId, true, res => { })
+            })
+        } else {
+            this.props.getFuelUnitAPI('', false, res => { })
         }
     }
 
@@ -32,15 +47,15 @@ class AddFuel extends Component {
     */
     onSubmit = (values) => {
         this.props.createFuelAPI(values, (response) => {
-            if(response && response.data){
-            if (response && response.data && response.data.Result) {
-                toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
-                {this.toggleModel()}
-            } else {
-                toastr.error(response.data.Message);
+            if (response && response.data) {
+                if (response && response.data && response.data.Result) {
+                    toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
+                    { this.toggleModel() }
+                } else {
+                    toastr.error(response.data.Message);
+                }
             }
-        }
-        });   
+        });
     }
 
 
@@ -51,12 +66,13 @@ class AddFuel extends Component {
     render() {
         const { handleSubmit } = this.props;
         return (
-            <Container className="top-margin">
+            <div>
+                {/* <Container className="top-margin"> */}
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.FUEL}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -87,12 +103,12 @@ class AddFuel extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                    <Row/> 
+                                        <Row />
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                               {CONSTANT.SAVE}
+                                                {CONSTANT.SAVE}
                                             </button>
                                         </div>
                                     </Row>
@@ -101,7 +117,8 @@ class AddFuel extends Component {
                         </Row>
                     </ModalBody>
                 </Modal>
-            </Container >
+                {/* </Container > */}
+            </div>
         );
     }
 }
@@ -111,7 +128,16 @@ class AddFuel extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
+function mapStateToProps({ fuel }) {
+    const { fuelUnitData } = fuel;
+    let initialValues = {};
+    if (fuelUnitData && fuelUnitData !== undefined) {
+        initialValues = {
+            FuelName: fuelUnitData.FuelName,
+            Description: fuelUnitData.Description,
+        }
+    }
+    return { fuelUnitData, initialValues };
 }
 
 /**
@@ -120,7 +146,11 @@ function mapStateToProps({ }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createFuelAPI })(reduxForm({
-    form: 'AddFuel',
-    enableReinitialize: true,
-})(AddFuel));
+export default connect(mapStateToProps,
+    {
+        createFuelAPI,
+        getFuelUnitAPI
+    })(reduxForm({
+        form: 'AddFuel',
+        enableReinitialize: true,
+    })(AddFuel));

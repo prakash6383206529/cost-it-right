@@ -5,12 +5,13 @@ import {
     CREATE_FUEL_DETAIL_SUCCESS,
     CREATE_FUEL_FAILURE,
     GET_FUEL_SUCCESS,
+    GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
-   
+
 };
 
 export default function fuelReducer(state = initialState, action) {
@@ -37,19 +38,27 @@ export default function fuelReducer(state = initialState, action) {
                 ...state,
                 loading: false,
             };
-        case  CREATE_FUEL_FAILURE: {
+        case CREATE_FUEL_FAILURE: {
             return {
                 ...state,
                 loading: false,
                 error: false
             };
-        }   
+        }
         case GET_FUEL_SUCCESS: {
             return {
                 ...state,
                 loading: false,
                 error: false,
                 fuelList: action.payload
+            };
+        }
+        case GET_FUEL_UNIT_DATA_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                fuelUnitData: action.payload
             };
         }
         case GET_FUEL_DETAIL_SUCCESS: {
@@ -60,7 +69,7 @@ export default function fuelReducer(state = initialState, action) {
                 fuelDetailList: action.payload
             };
         }
-        case  GET_FUEL_FAILURE:
+        case GET_FUEL_FAILURE:
             return {
                 ...state,
                 loading: false,

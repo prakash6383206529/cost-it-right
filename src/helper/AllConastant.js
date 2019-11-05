@@ -53,4 +53,6 @@ export const CONSTANT = {
   SHIFT: 'Shift',
   INTEREST_RATE: 'Interest Rate',
   LOCATION: 'Location',
+  FUEL: 'Fuel',
+  PROCESS: 'Process',
 };

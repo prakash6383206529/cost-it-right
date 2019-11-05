@@ -4,11 +4,12 @@ import {
     CREATE_PROCESS_SUCCESS,
     CREATE_PROCESS_FAILURE,
     GET_PROCESS_LIST_SUCCESS,
-    GET_PROCESS_LIST_FAILURE
+    GET_PROCESS_LIST_FAILURE,
+    GET_PROCESS_UNIT_DATA_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
-   
+
 };
 
 export default function processReducer(state = initialState, action) {
@@ -34,7 +35,13 @@ export default function processReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                processList : action.payload,
+                processList: action.payload,
+            };
+        case GET_PROCESS_UNIT_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                processUnitData: action.payload,
             };
         case GET_PROCESS_LIST_FAILURE: {
             return {
@@ -42,7 +49,7 @@ export default function processReducer(state = initialState, action) {
                 loading: false,
                 error: false
             };
-        }   
+        }
         default:
             return state;
     }

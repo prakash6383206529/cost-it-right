@@ -8,6 +8,7 @@ import {
     CREATE_FUEL_DETAIL_SUCCESS,
     CREATE_FUEL_FAILURE,
     GET_FUEL_SUCCESS,
+    GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS
 } from '../../config/constants';
@@ -15,6 +16,7 @@ import {
     apiErrors
 } from '../../helper/util';
 import { toastr } from 'react-redux-toastr'
+import { MESSAGES } from '../../config/message';
 
 const headers = {
     'Content-Type': 'application/json',
@@ -30,19 +32,19 @@ export function createFuelAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createFuelAPI, data,headers);
+        const request = axios.post(API.createFuelAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                    dispatch({
-                        type: CREATE_FUEL_SUCCESS,
-                        payload: response.data.Data
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_FUEL_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_FUEL_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -62,21 +64,21 @@ export function createFuelDetailAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createFuelDetailAPI, data,headers);
+        const request = axios.post(API.createFuelDetailAPI, data, headers);
         request.then((response) => {
             console.log('response: ', response);
             if (response && response.data && response.data.Result) {
-                    dispatch({
-                        type: CREATE_FUEL_DETAIL_SUCCESS,
-                        //payload: response.data.Data
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_FUEL_DETAIL_SUCCESS,
+                    //payload: response.data.Data
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_FUEL_DETAIL_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
-                    callback(response);
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+                callback(response);
             }
         }).catch((error) => {
             dispatch({
@@ -95,18 +97,18 @@ export function createFuelDetailAPI(data, callback) {
 export function getFuelDetailAPI() {
     return (dispatch) => {
         const request = axios.get(API.getFuelDetailAPI, headers);
-            request.then((response) => {
-                dispatch({
-                    type: GET_FUEL_SUCCESS,
-                    payload: response.data.DataList,
-                });
-                 
-            }).catch((error) => {
-                dispatch({
-                    type: GET_FUEL_FAILURE
-                });
-                apiErrors(error);
+        request.then((response) => {
+            dispatch({
+                type: GET_FUEL_SUCCESS,
+                payload: response.data.DataList,
             });
+
+        }).catch((error) => {
+            dispatch({
+                type: GET_FUEL_FAILURE
+            });
+            apiErrors(error);
+        });
     };
 }
 /**
@@ -116,17 +118,119 @@ export function getFuelDetailAPI() {
 export function getFuelAPI() {
     return (dispatch) => {
         const request = axios.get(API.getFuelAPI, headers);
-            request.then((response) => {
-                dispatch({
-                    type: GET_FUEL_DETAIL_SUCCESS,
-                    payload: response.data.DataList,
+        request.then((response) => {
+            dispatch({
+                type: GET_FUEL_DETAIL_SUCCESS,
+                payload: response.data.DataList,
+            });
+
+        }).catch((error) => {
+            dispatch({
+                type: GET_FUEL_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getOneUnitOfMeasurementAPI
+ * @description get one UOM based on id
+ */
+export function getFuelUnitAPI(fuelId, isEditFlag, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if (isEditFlag) {
+            axios.get(`${API.getFuelAPI}/${fuelId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_FUEL_UNIT_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
+                    callback(response);
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
                 });
-                 
+        } else {
+            dispatch({
+                type: GET_FUEL_UNIT_DATA_SUCCESS,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+/**
+ * @method getOneUnitOfMeasurementAPI
+ * @description get one UOM based on id
+ */
+export function getFuelDetailUnitAPI(fuelId, isEditFlag, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if (isEditFlag) {
+            axios.get(`${API.getFuelDetailAPI}/${fuelId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_FUEL_UNIT_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
+                    callback(response);
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_FUEL_UNIT_DATA_SUCCESS,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+/**
+ * @method deleteFuelDetailsAPI
+ * @description delete UOM 
+ */
+export function deleteFuelDetailAPI(index, Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteFuelDetailAPI}/${Id}`, headers)
+            .then((response) => {
+                callback(response);
             }).catch((error) => {
-                dispatch({
-                    type: GET_FUEL_FAILURE
-                });
                 apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteFuelDetailsAPI
+ * @description delete UOM 
+ */
+export function deleteFuelTypeAPI(index, Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteFuelAPI}/${Id}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
             });
     };
 }

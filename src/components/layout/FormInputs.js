@@ -385,7 +385,6 @@ export function renderSelectField(field) {
     }`;
   let optionKey = field.optionValue;
   let optionText = field.optionLabel;
-  //console.log("field.options", field.options)
   return (
     <div className={className}>
       <label>
