@@ -50,11 +50,11 @@ class InterestRate extends Component {
     * @method editPartDetails
     * @description confirm delete part
     */
-    editPartDetails = (index, Id) => {
+    editPartDetails = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
-            uomId: Id,
+            interestRateId: Id,
         })
     }
 
@@ -92,7 +92,7 @@ class InterestRate extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, uomId } = this.state;
+        const { isOpen, isEditFlag, interestRateId } = this.state;
         return (
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader />} */}
@@ -166,8 +166,7 @@ class InterestRate extends Component {
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        uomId={uomId}
+                        interestRateId={interestRateId}
                     />
                 )}
             </Container >
