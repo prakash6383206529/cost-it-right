@@ -44,12 +44,12 @@ export const MESSAGES = {
   DELETE_SUPPLIER_SUCCESS: 'Supplier deleted successfully',
   UPDATE_SUPPLIER_SUCESS: 'Supplier updated successfully',
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
-  DELETE_BOP_SUCCESS: 'BOP deleted successfully',
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
   FUEL_ADD_SUCCESS: 'Fuel added successfully',
   ADD_BOP_SUCCESS: 'BOP added successfully',
   BOP_ADD_SUCCESS: 'BOP added successfully',
   INTEREST_RATE_ADDED_SUCCESS: 'Suppiler interest rate added successfully',
   DELETE_INTEREST_RATE_SUCCESS: 'Supplier interest rate deleted successfully',
+  UPDATE_INTEREST_RATE_SUCESS: 'Supplier interest rate updated successfully',
 };
 
