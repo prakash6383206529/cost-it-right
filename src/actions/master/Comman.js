@@ -819,3 +819,29 @@ export function fetchCostingHeadsAPI(costingHeads,callback) {
         });
     };
 }
+
+/**
+ * @method fetchSupplierDataAPI
+ * @description Used to fetch city list
+ */
+export function fetchSupplierDataAPI(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSupplier}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SUPPLIER_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
