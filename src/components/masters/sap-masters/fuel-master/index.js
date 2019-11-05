@@ -165,7 +165,6 @@ class FuelMaster extends Component {
 */
 function mapStateToProps({ fuel }) {
     const { fuelList } = fuel;
-    console.log('fuelList: ', fuelList);
     return { fuelList }
 }
 

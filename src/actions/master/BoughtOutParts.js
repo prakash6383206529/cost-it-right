@@ -6,7 +6,8 @@ import {
     CREATE_BOM_SUCCESS,
     CREATE_BOM_FAILURE,
     GET_BOP_SUCCESS,
-    GET_BOP_DATA_SUCCESS
+    GET_BOP_DATA_SUCCESS,
+    UPDATE_BOP_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -31,15 +32,15 @@ export function createBOPAPI(data, callback) {
         const request = axios.post(API.createBOPAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                    dispatch({
-                        type: CREATE_BOM_SUCCESS,
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_BOM_SUCCESS,
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_BOM_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -57,7 +58,7 @@ export function createBOPAPI(data, callback) {
 export function getAllBOPAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPAPI}`,headers);
+        const request = axios.get(`${API.getBOPAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -80,28 +81,28 @@ export function getAllBOPAPI(callback) {
  * @method getBOPByIdAPI
  * @description get one bought out part based on id
  */
-export function getBOPByIdAPI(bopId,isEditFlag,callback) {
+export function getBOPByIdAPI(bopId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if(isEditFlag){
+        if (isEditFlag) {
             axios.get(`${API.getBOPAPI}/${bopId}`, headers)
-            .then((response) => {
-                console.log('response: ', response);
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_BOP_DATA_SUCCESS,
-                        payload: response.data.Data,
-                    });
+                .then((response) => {
+                    console.log('response: ', response);
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_BOP_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
-                    callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-        }else{
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
             dispatch({
                 type: GET_BOP_DATA_SUCCESS,
                 payload: {},
@@ -115,12 +116,12 @@ export function getBOPByIdAPI(bopId,isEditFlag,callback) {
  * @method deleteBOPAPI
  * @description delete BOP
  */
-export function deleteBOPAPI(Id ,callback) {
+export function deleteBOPAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteBOPAPI}/${Id}`, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
@@ -135,9 +136,10 @@ export function deleteBOPAPI(Id ,callback) {
 export function updateBOPAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPAPI}`,requestData, headers)
+        axios.put(`${API.updateBOPAPI}`, requestData, headers)
             .then((response) => {
-                    callback(response);
+                dispatch({ type: UPDATE_BOP_SUCCESS });
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });

@@ -7,14 +7,14 @@ import { renderText } from "../../../layout/FormInputs";
 import { createCategoryTypeAPI } from '../../../../actions/master/Category';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT} from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant'
 
 class AddCategoryType extends Component {
     constructor(props) {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
     }
 
@@ -23,7 +23,7 @@ class AddCategoryType extends Component {
     * @description Used to cancel modal
     */
     toggleModel = () => {
-        this.props.onCancel();
+        this.props.onCancel('2');
     }
 
     /**
@@ -44,11 +44,11 @@ class AddCategoryType extends Component {
         this.props.createCategoryTypeAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.CATEGORY_TYPE_ADDED_SUCCESS);
-                {this.toggleModel()}
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.message);
             }
-        });   
+        });
     }
 
     /**
@@ -78,7 +78,7 @@ class AddCategoryType extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -132,9 +132,9 @@ class AddCategoryType extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({}) {
-   
-    return { }
+function mapStateToProps({ }) {
+
+    return {}
 }
 
 /**

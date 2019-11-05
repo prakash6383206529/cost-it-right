@@ -7,6 +7,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import CategoryDetail from './CategoryDetail';
 import CategoryTypeDetail from './CategoryTypeDetail';
 import classnames from 'classnames';
+import { getCategoryDataAPI } from '../../../../actions/master/Category';
 
 class CategoryMaster extends Component {
     constructor(props) {
@@ -43,15 +44,20 @@ class CategoryMaster extends Component {
      * @description  used to open category type form 
      */
     openCategoryModel = () => {
-        this.setState({ isOpenModel: true})
+        this.setState({ isOpenModel: true })
     }
 
     /**
      * @method onCancel
      * @description  used to cancel filter form
      */
-    onCancel = () => {
-        this.setState({ isOpen: false, isOpenModel: false})
+    onCancel = (tab) => {
+        this.setState({
+            isOpen: false,
+            isOpenModel: false,
+        }, () => {
+            this.props.getCategoryDataAPI(res => { });
+        })
     }
 
     /**
@@ -59,7 +65,7 @@ class CategoryMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen,isOpenModel } = this.state;
+        const { isOpen, isOpenModel } = this.state;
         return (
             <Container className="top-margin">
                 <Row>
@@ -90,10 +96,10 @@ class CategoryMaster extends Component {
                     </Nav>
                     <TabContent activeTab={this.state.activeTab}>
                         <TabPane tabId="1">
-                            <CategoryDetail/>
+                            <CategoryDetail />
                         </TabPane>
                         <TabPane tabId="2">
-                            <CategoryTypeDetail/> 
+                            <CategoryTypeDetail />
                         </TabPane>
                     </TabContent>
                 </div>
@@ -108,7 +114,7 @@ class CategoryMaster extends Component {
                         isOpen={isOpenModel}
                         onCancel={this.onCancel}
                     />
-                )} 
+                )}
             </Container >
         );
     }
@@ -120,10 +126,10 @@ class CategoryMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ }) {
+    return {}
 }
 
 
-export default connect(
-    null, null
+export default connect(mapStateToProps, { getCategoryDataAPI }
 )(CategoryMaster);
 

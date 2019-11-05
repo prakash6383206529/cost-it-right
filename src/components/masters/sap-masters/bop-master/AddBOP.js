@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
-import { fetchBOPComboAPI,fetchCategoryAPI} from '../../../../actions/master/Comman';
-import { createBOPAPI, getBOPByIdAPI,updateBOPAPI, getAllBOPAPI} from '../../../../actions/master/BoughtOutParts';
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
+import { fetchBOPComboAPI, fetchCategoryAPI } from '../../../../actions/master/Comman';
+import { createBOPAPI, getBOPByIdAPI, updateBOPAPI, getAllBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -32,14 +32,14 @@ class AddBOP extends Component {
     * @method componentDidMount
     * @description called after render the component
         */
-    componentDidMount(){
-        const { bopId,isEditFlag } = this.props;
-        if(isEditFlag){
-            this.setState({isEditFlag},()=>{  
-            this.props.getBOPByIdAPI(bopId,true, res => {})   
-        })
-        }else{
-            this.props.getBOPByIdAPI('',false, res => {})   
+    componentDidMount() {
+        const { bopId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getBOPByIdAPI(bopId, true, res => { })
+            })
+        } else {
+            this.props.getBOPByIdAPI('', false, res => { })
         }
     }
 
@@ -66,13 +66,13 @@ class AddBOP extends Component {
     * @description  used to handle category type selection
     */
     handleCategoryType = (e) => {
-        this.props.fetchCategoryAPI(e.target.value, res => {})
+        this.props.fetchCategoryAPI(e.target.value, res => { })
     }
 
-     /**
-     * @method handlePartSelection
-     * @description called
-     */
+    /**
+    * @method handlePartSelection
+    * @description called
+    */
     handlePartSelection = e => {
         this.setState({
             selectedParts: e
@@ -100,11 +100,11 @@ class AddBOP extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        if (this.props.isEditFlag) { 
+        if (this.props.isEditFlag) {
             const { bopId } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
-                BoughtOutPartId : bopId,
+                BoughtOutPartId: bopId,
                 BasicRate: values.BasicRate,
                 Quantity: values.Quantity,
                 NetLandedCost: values.NetLandedCost,
@@ -120,6 +120,7 @@ class AddBOP extends Component {
                 UnitOfMeasurementId: values.UnitOfMeasurementId,
                 PlantId: values.PlantId,
                 PartId: values.PartId,
+                IsActive: true,
             }
             this.props.updateBOPAPI(formData, (res) => {
                 if (res.data.Result) {
@@ -129,7 +130,7 @@ class AddBOP extends Component {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        }else{
+        } else {
             const formData = {
                 BasicRate: values.BasicRate,
                 Quantity: values.Quantity,
@@ -150,12 +151,12 @@ class AddBOP extends Component {
             this.props.createBOPAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.BOP_ADD_SUCCESS);
-                    {this.toggleModel()}
+                    { this.toggleModel() }
                 } else {
                     toastr.error(res.data.Message);
                 }
             });
-        }   
+        }
     }
 
     /**
@@ -163,8 +164,8 @@ class AddBOP extends Component {
     * @description Used show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, partList,materialTypeList, plantList,
-            supplierList, cityList,technologyList, categoryTypeList, categoryList} = this.props;
+        const { uniOfMeasurementList, partList, materialTypeList, plantList,
+            supplierList, cityList, technologyList, categoryTypeList, categoryList } = this.props;
         const temp = [];
         if (label === 'material') {
             materialTypeList && materialTypeList.map(item =>
@@ -190,37 +191,37 @@ class AddBOP extends Component {
             );
             return temp;
         }
-        if(label === 'supplier'){
+        if (label === 'supplier') {
             supplierList && supplierList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'city'){
+        if (label === 'city') {
             cityList && cityList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'technology'){
+        if (label === 'technology') {
             technologyList && technologyList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'categoryType'){
+        if (label === 'categoryType') {
             categoryTypeList && categoryTypeList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'category'){
+        if (label === 'category') {
             categoryList && categoryList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        
+
     }
 
     /**
@@ -317,7 +318,7 @@ class AddBOP extends Component {
                                                 required={true}
                                                 component={renderText}
                                                 options={this.renderTypeOfListing('categoryType')}
-                                                onChange={(Value)=>this.handleCategoryType(Value)}
+                                                onChange={(Value) => this.handleCategoryType(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -493,7 +494,7 @@ class AddBOP extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                            {isEditFlag ? 'Update' : 'Add'}
+                                                {isEditFlag ? 'Update' : 'Add'}
                                             </button>
                                         </div>
                                     </Row>
@@ -513,11 +514,11 @@ class AddBOP extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, boughtOutparts }) {
-    const {uniOfMeasurementList, partList, materialTypeList, plantList, 
-        supplierList, cityList ,technologyList,categoryTypeList, categoryList} = comman;
-    const {bopData} = boughtOutparts;
+    const { uniOfMeasurementList, partList, materialTypeList, plantList,
+        supplierList, cityList, technologyList, categoryTypeList, categoryList } = comman;
+    const { bopData } = boughtOutparts;
     let initialValues = {};
-    if(bopData && bopData !== undefined){
+    if (bopData && bopData !== undefined) {
         initialValues = {
             BasicRate: bopData.BasicRate,
             Quantity: bopData.Quantity,
@@ -537,8 +538,10 @@ function mapStateToProps({ comman, boughtOutparts }) {
             PartId: bopData.PartId,
         }
     }
-    return { uniOfMeasurementList, materialTypeList, partList,
-        plantList, supplierList, cityList, technologyList, categoryTypeList, categoryList,bopData, initialValues }
+    return {
+        uniOfMeasurementList, materialTypeList, partList,
+        plantList, supplierList, cityList, technologyList, categoryTypeList, categoryList, bopData, initialValues
+    }
 }
 
 /**
@@ -547,8 +550,10 @@ function mapStateToProps({ comman, boughtOutparts }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createBOPAPI, fetchBOPComboAPI,updateBOPAPI,
-    fetchCategoryAPI, getBOPByIdAPI})(reduxForm({
+export default connect(mapStateToProps, {
+    createBOPAPI, fetchBOPComboAPI, updateBOPAPI,
+    fetchCategoryAPI, getBOPByIdAPI
+})(reduxForm({
     form: 'AddBOP',
     enableReinitialize: true,
 })(AddBOP));

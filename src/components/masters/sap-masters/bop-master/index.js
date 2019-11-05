@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Button, Table } from 'reactstrap';
+    Container, Row, Col, Button, Table
+} from 'reactstrap';
 import AddBOP from './AddBOP';
 import { getAllBOPAPI, deleteBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { Loader } from '../../../common/Loader';
@@ -26,7 +27,7 @@ class BOPMaster extends Component {
      * @description  called before mounting the component
      */
     componentDidMount() {
-        this.props.getAllBOPAPI(res => {});
+        this.props.getAllBOPAPI(res => { });
     }
     /**
      * @method openModel
@@ -41,13 +42,15 @@ class BOPMaster extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false })
+        this.setState({ isOpen: false }, () => {
+            this.props.getAllBOPAPI(res => { });
+        })
     }
 
-     /**
-    * @method editDetails
-    * @description confirm delete bop
-    */
+    /**
+   * @method editDetails
+   * @description confirm delete bop
+   */
     editDetails = (Id) => {
         this.setState({
             isEditFlag: true,
@@ -93,7 +96,7 @@ class BOPMaster extends Component {
         const { isOpen, isEditFlag, bopId } = this.state;
         return (
             <Container className="top-margin">
-            {this.props.loading && <Loader/>}
+                {this.props.loading && <Loader />}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.BOP} ${CONSTANT.MASTER}`}</h3>
@@ -109,60 +112,60 @@ class BOPMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                <Table  className="table table-striped" bordered>
-                    <thead>
-                        <tr>
-                        <th>{`${CONSTANT.TECHNOLOGY}`}</th>
-                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                        <th>{`${CONSTANT.CATEGORY}` }</th>
-                        <th>{` ${CONSTANT.SPECIFICATION}`}</th>
-                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
-                        <th>{`${CONSTANT.UOM}`}</th> 
-                        <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
-                        <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
-                        <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th> 
-                        <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th> 
-                        <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                        <th>{` ${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
-                        {/* <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th> */}
-                        <th>{`Basic Rate`}</th>
-                        <th>{`${CONSTANT.QUANTITY} `}</th>
-                        <th>{` Net Landed Cost`}</th>
-                        <th>{`${CONSTANT.DATE}`}</th>
-                        <th>{}</th>
-                        <th>{}</th>
-                        </tr>
-                    </thead>
-                    <tbody > 
-                    {this.props.BOPListing && this.props.BOPListing.length > 0 &&
-                        this.props.BOPListing.map((item, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{item.TechnologyName}</td>
-                                    <td>{item.PartNumber}</td> 
-                                    <td>{item.CategoryName}</td> 
-                                    <td>{item.Specification}</td>
-                                    <td >{item.MaterialTypeName}</td>
-                                    <td>{item.UnitOfMeasurementName}</td> 
-                                    <td>{item.SourceSupplierName}</td>
-                                    <td>{item.SourceSupplierLocation}</td> 
-                                    <td>{item.DestinationSupplierName}</td>
-                                    <td>{item.DestinationSupplierLocation}</td>
-                                    <td>{item.PlantName}</td>
-                                    <td>{item.PartName}</td>
-                                    <td>{item.BasicRate}</td>
-                                    <td>{item.Quantity}</td>
-                                    <td>{item.NetLandedCost}</td>
-                                    <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                    <div>
-                                        <Button className="btn btn-secondary" onClick={() => this.editDetails(item.BopId)}><i className="fas fa-pencil-alt"></i></Button>
-                                        <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.BopId)}><i className="far fa-trash-alt"></i></Button>
-                                    </div>  
-                                </tr>
-                            )
-                        })}
-                    </tbody> 
-                </Table>
+                    <Table className="table table-striped" bordered>
+                        <thead>
+                            <tr>
+                                <th>{`${CONSTANT.TECHNOLOGY}`}</th>
+                                <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                                <th>{`${CONSTANT.CATEGORY}`}</th>
+                                <th>{` ${CONSTANT.SPECIFICATION}`}</th>
+                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
+                                <th>{`${CONSTANT.UOM}`}</th>
+                                <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                                <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
+                                <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                                <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
+                                <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                <th>{` ${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
+                                {/* <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th> */}
+                                <th>{`Basic Rate`}</th>
+                                <th>{`${CONSTANT.QUANTITY} `}</th>
+                                <th>{` Net Landed Cost`}</th>
+                                <th>{`${CONSTANT.DATE}`}</th>
+                                <th>{}</th>
+                                {/* <th>{}</th> */}
+                            </tr>
+                        </thead>
+                        <tbody >
+                            {this.props.BOPListing && this.props.BOPListing.length > 0 &&
+                                this.props.BOPListing.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>{item.TechnologyName}</td>
+                                            <td>{item.PartNumber}</td>
+                                            <td>{item.CategoryName}</td>
+                                            <td>{item.Specification}</td>
+                                            <td >{item.MaterialTypeName}</td>
+                                            <td>{item.UnitOfMeasurementName}</td>
+                                            <td>{item.SourceSupplierName}</td>
+                                            <td>{item.SourceSupplierLocation}</td>
+                                            <td>{item.DestinationSupplierName}</td>
+                                            <td>{item.DestinationSupplierLocation}</td>
+                                            <td>{item.PlantName}</td>
+                                            <td>{item.PartName}</td>
+                                            <td>{item.BasicRate}</td>
+                                            <td>{item.Quantity}</td>
+                                            <td>{item.NetLandedCost}</td>
+                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                            <td>
+                                                <Button className="btn btn-secondary" onClick={() => this.editDetails(item.BopId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.BopId)}><i className="far fa-trash-alt"></i></Button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                        </tbody>
+                    </Table>
                 </Col>
                 {isOpen && (
                     <AddBOP
@@ -170,7 +173,7 @@ class BOPMaster extends Component {
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
                         bopId={bopId}
-                        />
+                    />
                 )}
             </Container >
         );
@@ -189,6 +192,6 @@ function mapStateToProps({ boughtOutparts }) {
 
 
 export default connect(
-    mapStateToProps, { getAllBOPAPI ,deleteBOPAPI}
+    mapStateToProps, { getAllBOPAPI, deleteBOPAPI }
 )(BOPMaster);
 

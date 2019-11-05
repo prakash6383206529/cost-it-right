@@ -34,13 +34,13 @@ class AddFuelDetail extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { fuelId, isEditFlag, initialValues } = this.props;
+        const { fuelId, isEditFlag, initialValues, fuelUnitData } = this.props;
         if (isEditFlag) {
             //this.setState({ isEditFlag }, () => {
             this.props.getFuelDetailUnitAPI(fuelId, true, res => {
                 //setTimeout(() => {
                 this.setState({
-                    //startDate: moment(initialValues.ValidDateTo).format('llll')
+                    startDate: new Date(fuelUnitData.ValidDateFrom)
                 })
                 //}, 1000)
             })
@@ -148,11 +148,11 @@ class AddFuelDetail extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update fuel detail' : 'Add fuel detail'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -317,14 +317,15 @@ class AddFuelDetail extends Component {
 function mapStateToProps({ comman, fuel }) {
     const { stateList, fuelList, uniOfMeasurementList } = comman;
     const { fuelUnitData } = fuel;
+    console.log("fuelUnitData >> ", new Date(), fuelUnitData)
     let initialValues = {};
     if (fuelUnitData && fuelUnitData !== undefined) {
         console.log("date", moment(fuelUnitData.ValidDateTo).format('llll'))
         initialValues = {
             Rate: fuelUnitData.Rate,
             Description: fuelUnitData.Description,
-            ValidDateTo: fuelUnitData.ValidDateTo,
-            ValidDateFrom: fuelUnitData.ValidDateFrom,
+            //ValidDateTo: fuelUnitData.ValidDateTo,
+            //ValidDateFrom: fuelUnitData.ValidDateFrom,
             StateId: fuelUnitData.StateId,
             FuelId: fuelUnitData.FuelId,
             UnitOfMeasurementId: fuelUnitData.UnitOfMeasurementId,

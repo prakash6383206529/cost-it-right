@@ -4,11 +4,12 @@ import {
     CREATE_BOP_FAILURE,
     GET_BOP_SUCCESS,
     GET_BOP_FAILURE,
-    GET_BOP_DATA_SUCCESS
+    GET_BOP_DATA_SUCCESS,
+    UPDATE_BOP_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
-   
+
 };
 
 export default function BOPReducer(state = initialState, action) {
@@ -30,7 +31,7 @@ export default function BOPReducer(state = initialState, action) {
                 loading: false,
                 error: true
             };
-        case  GET_BOP_SUCCESS:
+        case GET_BOP_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -46,8 +47,14 @@ export default function BOPReducer(state = initialState, action) {
         case GET_BOP_DATA_SUCCESS:
             return {
                 ...state,
-                loading: false, 
+                loading: false,
                 bopData: action.payload
+            };
+        case UPDATE_BOP_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
             };
         default:
             return state;

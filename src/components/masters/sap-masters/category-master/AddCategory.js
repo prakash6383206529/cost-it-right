@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText,renderSelectField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createCategoryAPI, fetchCategoryMasterDataAPI } from '../../../../actions/master/Category';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -14,19 +14,19 @@ class AddCategory extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
     }
 
-    componentWillMount(){
-        this.props.fetchCategoryMasterDataAPI(res => {});   
+    componentWillMount() {
+        this.props.fetchCategoryMasterDataAPI(res => { });
     }
     /**
     * @method toggleModel
     * @description Used to cancel modal
     */
     toggleModel = () => {
-        this.props.onCancel();
+        this.props.onCancel('1');
     }
 
     /**
@@ -46,15 +46,15 @@ class AddCategory extends Component {
     onSubmit = (values) => {
         console.log('values: ', values);
         this.props.createCategoryAPI(values, (response) => {
-            if(response && response.data){
-            if (response && response.data && response.data.Result) {
-                toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
-                {this.toggleModel()}
-            } else {
-                toastr.error(response.data.Message);
+            if (response && response.data) {
+                if (response && response.data && response.data.Result) {
+                    toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
+                    { this.toggleModel() }
+                } else {
+                    toastr.error(response.data.Message);
+                }
             }
-        }
-        });   
+        });
     }
 
     /**
@@ -62,11 +62,11 @@ class AddCategory extends Component {
     * @description Used show listing of unit of measurement
     */
     selectMaterialType = () => {
-        const {categoryList} = this.props;
-        console.log('categoryList',typeof(categoryList), categoryList)
+        const { categoryList } = this.props;
+        console.log('categoryList', typeof (categoryList), categoryList)
         const temp = [];
         categoryList && categoryList !== undefined && categoryList.map(item =>
-          temp.push({ Text: item.Text, Value: item.Value })
+            temp.push({ Text: item.Text, Value: item.Value })
         );
         console.log('temp', categoryList);
         return temp;
@@ -85,7 +85,7 @@ class AddCategory extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -121,8 +121,8 @@ class AddCategory extends Component {
                                                 component={renderSelectField}
                                             />
                                         </Col>
-                                    <Row/>
-                                    <Row/>
+                                        <Row />
+                                        <Row />
                                         <Col md="12">
                                             <Field
                                                 label="Description"
@@ -139,7 +139,7 @@ class AddCategory extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                               {CONSTANT.SAVE}
+                                                {CONSTANT.SAVE}
                                             </button>
                                         </div>
                                     </Row>
@@ -159,8 +159,8 @@ class AddCategory extends Component {
 * @param {*} state
 */
 function mapStateToProps({ category }) {
-   const { categoryList } = category;
-   console.log('categoryList: ', categoryList);
+    const { categoryList } = category;
+    console.log('categoryList: ', categoryList);
     return { categoryList }
 }
 

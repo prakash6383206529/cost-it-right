@@ -4,8 +4,9 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText } from "../../../layout/FormInputs";
-import { createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI,
-     getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
+import {
+    createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI,
+    getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
 } from '../../../../actions/master/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
@@ -21,14 +22,14 @@ class AddUOM extends Component {
     * @method componentDidMount
     * @description called after render the component
     */
-    componentDidMount(){
-        const { uomId,isEditFlag } = this.props;
-        if(isEditFlag){
-            this.setState({isEditFlag},()=>{  
-            this.props.getOneUnitOfMeasurementAPI(uomId,true, res => {})   
-        })
-        }else{
-            this.props.getOneUnitOfMeasurementAPI('',false, res => {})   
+    componentDidMount() {
+        const { uomId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
+            })
+        } else {
+            this.props.getOneUnitOfMeasurementAPI('', false, res => { })
         }
     }
 
@@ -45,36 +46,37 @@ class AddUOM extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        if (this.props.isEditFlag) { 
+        if (this.props.isEditFlag) {
             console.log('values', values);
             const { uomId } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
-                Name : values.Name,
-                Title : values.Title,
-                Description : values.Description,
-                Id : uomId
+                Name: values.Name,
+                Title: values.Title,
+                Description: values.Description,
+                Id: uomId,
+                IsActive: true,
             }
-            this.props.updateUnitOfMeasurementAPI(uomId,formData, (res) => {
+            this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
                     this.toggleModel();
-                    this.props.getUnitOfMeasurementAPI(res => {});
+                    this.props.getUnitOfMeasurementAPI(res => { });
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        }else{
+        } else {
             this.props.createUnitOfMeasurementAPI(values, (res) => {
                 if (res.data.Result === true) {
-                  toastr.success(MESSAGES.UOM_ADD_SUCCESS);
-                  {this.toggleModel()}
-                  this.props.getUnitOfMeasurementAPI(res => {});
+                    toastr.success(MESSAGES.UOM_ADD_SUCCESS);
+                    { this.toggleModel() }
+                    this.props.getUnitOfMeasurementAPI(res => { });
                 } else {
-                  toastr.error(res.data.message);
+                    toastr.error(res.data.message);
                 }
             });
-        }   
+        }
     }
 
     /**
@@ -89,7 +91,7 @@ class AddUOM extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update UOM' : 'Add UOM'}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -135,11 +137,11 @@ class AddUOM extends Component {
                                             />
                                         </Col>
                                     </Row>
-                                    
+
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {isEditFlag ? 'Update' : 'Save' }
+                                                {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </Row>
@@ -161,7 +163,7 @@ class AddUOM extends Component {
 function mapStateToProps({ unitOfMeasrement }) {
     const { unitOfMeasurementData, unitOfMeasurementList } = unitOfMeasrement;
     let initialValues = {};
-    if(unitOfMeasurementData && unitOfMeasurementData !== undefined){
+    if (unitOfMeasurementData && unitOfMeasurementData !== undefined) {
         initialValues = {
             Name: unitOfMeasurementData.Name,
             Title: unitOfMeasurementData.Title,
@@ -169,7 +171,7 @@ function mapStateToProps({ unitOfMeasrement }) {
             CreatedBy: unitOfMeasurementData.CreatedBy,
         }
     }
-    return {unitOfMeasurementData, initialValues, unitOfMeasurementList };
+    return { unitOfMeasurementData, initialValues, unitOfMeasurementList };
 }
 
 /**
@@ -178,7 +180,8 @@ function mapStateToProps({ unitOfMeasrement }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, {createUnitOfMeasurementAPI,
+export default connect(mapStateToProps, {
+    createUnitOfMeasurementAPI,
     updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
 })(reduxForm({
     form: 'addUOM',

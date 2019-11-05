@@ -45,5 +45,7 @@ export const MESSAGES = {
   UPDATE_SUPPLIER_SUCESS: 'Supplier updated successfully',
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
   DELETE_BOP_SUCCESS: 'BOP deleted successfully',
+  FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
+  FUEL_ADD_SUCCESS: 'Fuel added successfully'
 };
 
