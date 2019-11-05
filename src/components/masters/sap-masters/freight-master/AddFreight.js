@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderSelectField, renderNumberInputField, renderText } from "../../../layout/FormInputs";
 import { createFreightAPI, getFreightDetailAPI, updateFreightAPI, getFreightByIdAPI } from '../../../../actions/master/Freight';
@@ -198,9 +198,9 @@ class AddFreight extends Component {
        
     }
 
-    freightType = (e) => {
+    freightTypeHandler = (value) => {
         this.setState({
-            freightType: e.target.value
+            freightType: value
         });
     }
 
@@ -222,16 +222,35 @@ class AddFreight extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
-                                   <Row>
-                                   <Col md='12'>
-                                       <label>Select Freight Type</label>
-                                       <hr/>
-                                        <div onChange={this.freightType}>
-                                            <input type="radio" value="Freight" name="SupplierType"/> Freight 
-                                            <input type="radio" value="Packaging" name="SupplierType"/> Packaging 
-                                        </div>
-                                    </Col>
-                                   </Row>
+                                   <Row className={'supplierRadio'}>
+                                        <Col className='form-group'>
+                                            <Label
+                                                className={'zbcwrapper'}
+                                                onChange={() => this.freightTypeHandler('Freight')}
+                                                check>
+                                                <Input
+                                                    type="radio"
+                                                    className={'Freight'}
+                                                    checked={this.state.freightType == 'Freight' ? true : false}
+                                                    name="FreightType"
+                                                    value="Freight" />{' '}
+                                                Freight
+                                            </Label>
+                                            {' '}
+                                            <Label
+                                                className={'vbcwrapper'}
+                                                onChange={() => this.freightTypeHandler('Packaging')}
+                                                check>
+                                                <Input
+                                                    type="radio"
+                                                    className={'Packaging'}
+                                                    checked={this.state.freightType == 'Packaging' ? true : false}
+                                                    name="FreightType"
+                                                    value="Packaging" />{' '}
+                                                Packaging
+                                            </Label>
+                                        </Col>
+                                    </Row>
                                    <hr/>
                                    {this.state.freightType === 'Freight' &&
                                      <Row>
