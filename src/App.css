@@ -37,48 +37,48 @@
   border-radius: 5px;
 } */
 
-ul.tab{
-  margin:0;
-  padding:0;
-  border-bottom:none
+ul.tab {
+  margin: 0;
+  padding: 0;
+  border-bottom: none;
 }
-ul.tab li{
-  width:50%;
+ul.tab li {
+  width: 50%;
 }
-.tab-item{
-  display:block;
-  font-size:18px;
-  color:#333;
-  background-color:#fff;
-  width:100%;
-  line-height:39px;
-  text-align:center;
-  text-decoration:none;
-  font-weight:600;
-  border-bottom:transparent 3px solid;
+.tab-item {
+  display: block;
+  font-size: 18px;
+  color: #333;
+  background-color: #fff;
+  width: 100%;
+  line-height: 39px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: transparent 3px solid;
   padding: 0px;
   border-radius: 0px;
 }
-.tab-item.active{
-  color:#007bff;
-  border-bottom:#007bff 3px solid
+.tab-item.active {
+  color: #007bff;
+  border-bottom: #007bff 3px solid;
 }
-.tab-item .fas{
-  margin-right:8px;
+.tab-item .fas {
+  margin-right: 8px;
 }
-.tab-item:hover{
-  text-decoration:none;
-}
-
-.list-group-item{
-  padding:10px;
-  margin-bottom:8px;
-  border-radius:7px !important;
+.tab-item:hover {
+  text-decoration: none;
 }
 
-.list-title{
-  font-size:20px;
-  font-weight:600;
+.list-group-item {
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 7px !important;
+}
+
+.list-title {
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .input-search-left {
@@ -87,7 +87,7 @@ ul.tab li{
 
 .search-close {
   border-radius: 0px;
-  margin: -0px -0px!important;
+  margin: -0px -0px !important;
 }
 
 .search-append {
@@ -98,25 +98,30 @@ ul.tab li{
   width: 120px;
 }
 
-@media (max-width: 767px) { 
+@media (max-width: 767px) {
   .map-thumb {
     width: 100px;
   }
   .list-title {
     font-size: 18px;
   }
-  .col, .col-auto{
-    padding-left:10px;
-    padding-right:10px;
+  .col,
+  .col-auto {
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
 
-@media (max-width: 574px) { 
+@media (max-width: 574px) {
   .map-thumb {
     width: 50px;
-    margin-top:7px;
+    margin-top: 7px;
   }
   .list-title {
     font-size: 16px;
   }
+}
+
+.supplierRadio {
+  margin-left: 5px;
 }

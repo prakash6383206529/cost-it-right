@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getMHRMasterComboData } from '../../../../actions/master/Comman';
@@ -16,7 +16,8 @@ class AddMHR extends Component {
             SupplierId: '',
             uom: '',
             TechnologyId: '',
-            PlantId: ''
+            PlantId: '',
+            supplierType: 'vbc'
         }
     }
 
@@ -57,13 +58,14 @@ class AddMHR extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { SupplierId, uom, PlantId, TechnologyId } = this.state;
+        const { SupplierId, uom, PlantId, TechnologyId, supplierType } = this.state;
         const { Technologies } = this.props;
 
         values.TechnologyId = TechnologyId != '' ? TechnologyId : Technologies[0].Value;
         values.SupplierId = SupplierId;
         values.UnitOfMeasurementId = uom;
         values.PlantId = PlantId;
+        values.supplierType = supplierType;
 
         console.log('values: >>sss', values);
 
@@ -165,6 +167,13 @@ class AddMHR extends Component {
         }
     }
 
+    supplierTypeHandler = (value) => {
+        console.log('valueeeee', value)
+        this.setState({
+            supplierType: value
+        })
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -184,6 +193,36 @@ class AddMHR extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
+                                    <Row className={'supplierRadio'}>
+                                        <Col className='form-group'>
+                                            <Label
+                                                className={'zbcwrapper'}
+                                                onChange={() => this.supplierTypeHandler('zbc')}
+                                                check>
+                                                <Input
+                                                    type="radio"
+                                                    className={'zbc'}
+                                                    checked={this.state.supplierType == 'zbc' ? true : false}
+                                                    name="SupplierType"
+                                                    value="zbc" />{' '}
+                                                ZBC
+                                            </Label>
+                                            {' '}
+                                            <Label
+                                                className={'vbcwrapper'}
+                                                onChange={() => this.supplierTypeHandler('vbc')}
+                                                check>
+                                                <Input
+                                                    type="radio"
+                                                    className={'vbc'}
+                                                    checked={this.state.supplierType == 'vbc' ? true : false}
+                                                    name="SupplierType"
+                                                    value="vbc" />{' '}
+                                                VBC
+                                            </Label>
+                                        </Col>
+
+                                    </Row>
                                     <Row>
                                         <Col md="6">
                                             <Field
@@ -316,7 +355,7 @@ class AddMHR extends Component {
                                     <Row>
 
                                         <Col>
-                                            <Field
+                                            {/* <Field
                                                 label="SupplierType"
                                                 name={"SupplierType"}
                                                 type="text"
@@ -326,9 +365,12 @@ class AddMHR extends Component {
                                                 required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
-                                            />
+                                            /> */}
+
                                         </Col>
+
                                     </Row>
+
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
