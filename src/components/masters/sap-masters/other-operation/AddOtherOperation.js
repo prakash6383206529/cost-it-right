@@ -104,25 +104,45 @@ class AddOtherOperation extends Component {
         }
     }
 
+    /**
+    * @method processOperationHandler
+    * @description Used to process operation handle
+    */
     processOperationHandler = (newValue, actionMeta) => {
         this.setState({ processOperationValue: newValue });
     };
 
+    /**
+    * @method technologyHandler
+    * @description Used to technology handle
+    */
     technologyHandler = (e) => {
         console.log('clicked')
         this.setState({ technologyValue: this.props.Technologies[0].value });
     }
 
+    /**
+    * @method handleChangeSupplier
+    * @description Used to Supplier handle
+    */
     handleChangeSupplier = (newValue, actionMeta) => {
         this.setState({ supplierValue: newValue });
     };
 
+    /**
+    * @method uomHandler
+    * @description Used to UOM handle
+    */
     uomHandler = (e) => {
         this.setState({
             uom: e.target.value
         })
     }
 
+    /**
+    * @method plantHandler
+    * @description Used to plant handle
+    */
     plantHandler = (e) => {
         this.setState({
             PlantId: e.target.value
@@ -130,13 +150,12 @@ class AddOtherOperation extends Component {
     }
 
     /**
-    * @method selectUnitOfMeasurement
-    * @description Used show listing of unit of measurement
+    * @method renderTypeOfListing
+    * @description Used show listing
     */
     renderTypeOfListing = (label) => {
         const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = this.props;
         const temp = [];
-        //const tempSupplier = [];
         if (label == 'technology') {
             Technologies && Technologies.map(item =>
                 temp.push({ label: item.Text, value: item.Value })

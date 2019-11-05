@@ -15,7 +15,8 @@ class AddMaterial extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag: false
+            isEditFlag: false,
+            PlantId: ''
         }
     }
 
@@ -63,6 +64,8 @@ class AddMaterial extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { PlantId } = this.state;
+        values.PlantId = PlantId;
         this.props.createMaterialAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
@@ -71,6 +74,16 @@ class AddMaterial extends Component {
                 toastr.error(res.data.Message);
             }
         });
+    }
+
+    /**
+    * @method plantHandler
+    * @description Used to plant handle
+    */
+    plantHandler = (e) => {
+        this.setState({
+            PlantId: e.target.value
+        })
     }
 
     /**
@@ -94,8 +107,8 @@ class AddMaterial extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
-                                                name={"MaterialType"}
+                                                label={`Raw Material Name`}
+                                                name={"RawMaterialName"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -125,7 +138,7 @@ class AddMaterial extends Component {
                                                 validate={[required]}
                                                 required={true}
                                                 options={this.renderTypeOfListing()}
-                                                onChange={this.handleTypeofListing}
+                                                onChange={this.plantHandler}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
