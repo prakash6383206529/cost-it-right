@@ -36,15 +36,13 @@ class AddFuelDetail extends Component {
     componentDidMount() {
         const { fuelId, isEditFlag, initialValues, fuelUnitData } = this.props;
         if (isEditFlag) {
-            //this.setState({ isEditFlag }, () => {
             this.props.getFuelDetailUnitAPI(fuelId, true, res => {
-                //setTimeout(() => {
+                const { fuelUnitData } = this.props;
                 this.setState({
-                    startDate: new Date(fuelUnitData.ValidDateFrom)
+                    startDate: new Date(fuelUnitData.ValidDateFrom),
+                    endDate: new Date(fuelUnitData.ValidDateTo)
                 })
-                //}, 1000)
             })
-            //})
         } else {
             this.props.getFuelDetailUnitAPI('', false, res => { })
         }
@@ -98,8 +96,8 @@ class AddFuelDetail extends Component {
             StateId: values.StateId,
             FuelId: values.FuelId,
             UnitOfMeasurementId: values.UnitOfMeasurementId,
-            ValidDateTo: startDate,
-            ValidDateFrom: endDate,
+            ValidDateFrom: startDate,
+            ValidDateTo: endDate,
             Description: values.Description
         }
         this.props.createFuelDetailAPI(formData, (response) => {
@@ -225,15 +223,16 @@ class AddFuelDetail extends Component {
                                                 component={renderSelectField}
                                             />
                                         </Col>
+
                                         <div className="col-md-6">
                                             <div className="form-group">
                                                 <label>
-                                                    Date To
+                                                    Date From
                                                     <span className="asterisk-required">*</span>
                                                 </label>
                                                 <div className="inputbox date-section">
                                                     <DatePicker
-                                                        name="ValidDateTo"
+                                                        name="ValidDateFrom"
                                                         selected={this.state.startDate}
                                                         onChange={this.handleChange}
                                                         showMonthDropdown
@@ -254,12 +253,12 @@ class AddFuelDetail extends Component {
                                         <div className="col-md-6">
                                             <div className="form-group">
                                                 <label>
-                                                    Date From
+                                                    Date To
                                                     <span className="asterisk-required">*</span>
                                                 </label>
                                                 <div className="inputbox date-section">
                                                     <DatePicker
-                                                        name="ValidDateFrom"
+                                                        name="ValidDateTo"
                                                         selected={this.state.endDate}
                                                         onChange={this.handleEndDateChange}
                                                         showMonthDropdown
@@ -276,6 +275,8 @@ class AddFuelDetail extends Component {
                                                 </div>
                                             </div>
                                         </div>
+
+
                                         <Row />
 
                                         <Row />

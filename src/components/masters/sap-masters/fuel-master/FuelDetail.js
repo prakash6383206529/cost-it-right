@@ -81,8 +81,8 @@ class FuelDetail extends Component {
                                     <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
                                     <th>{`${CONSTANT.UOM}`}</th>
                                     <th>{`${CONSTANT.STATE} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.DATE} To`}</th>
                                     <th>{`${CONSTANT.DATE} From`}</th>
+                                    <th>{`${CONSTANT.DATE} To`}</th>
                                     <th>{``}</th>
 
                                 </tr>
@@ -96,8 +96,8 @@ class FuelDetail extends Component {
                                                 <td >{item.FuelName}</td>
                                                 <td>{item.UnitOfMeasurementName}</td>
                                                 <td>{item.StateName}</td>
-                                                <td>{convertISOToUtcDate(item.ValidDateTo)}</td>
                                                 <td>{convertISOToUtcDate(item.ValidDateFrom)}</td>
+                                                <td>{convertISOToUtcDate(item.ValidDateTo)}</td>
                                                 <td>
                                                     <Button className="btn btn-secondary" onClick={() => this.editFuelDetails(index, item.FuelDetailId)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.FuelDetailId)}><i className="far fa-trash-alt"></i></Button>
