@@ -24,7 +24,8 @@ import {
     GET_MHR_COMBO_DATA_SUCCESS,
     DATA_FAILURE,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
-    GET_LABOUR_TYPE_SUCCESS
+    GET_LABOUR_TYPE_SUCCESS,
+    GET_COSTING_HEAD_SUCCESS
 } from '../../config/constants';
 import {
     apiErrors
@@ -779,6 +780,32 @@ export function fetchSupplierCityDataAPI(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_CITY_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchCostingHeadsAPI
+ * @description Used to fetch costing heads
+ */
+export function fetchCostingHeadsAPI(costingHeads,callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCostingHeads}?text=${costingHeads}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_HEAD_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);

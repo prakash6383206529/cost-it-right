@@ -26,7 +26,7 @@ export const MESSAGES = {
   OPERATION_ADD_SUCCESS: 'Operation added successfully',
   MATERIAL_ADD_SUCCESS: 'Row material details added successfully.',
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
-  LABOUR_ADDED_SUCCESS: 'Freight added successfully',
+  LABOUR_ADDED_SUCCESS: 'Labour added successfully',
   OVERHEAD_PROFIT_ADDED_SUCCESS: 'Overhead profit added successfully',
   DEPRECIATION_ADD_SUCCESS: 'Depreciation added successfully',
   DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
@@ -40,12 +40,16 @@ export const MESSAGES = {
   DELETE_FREIGHT_SUCCESS: 'Freight deleted successfully',
   UPDATE_FREIGHT_SUCESS: 'Freight updated successfully',
   DELETE_LABOUR_SUCCESS: 'Labour deleted successfully',
-  UPDATE_LABOUR_SUCESS: 'Labour updated successfully',
+  UPDATE_LABOUR_SUCCESS: 'Labour updated successfully',
   DELETE_SUPPLIER_SUCCESS: 'Supplier deleted successfully',
   UPDATE_SUPPLIER_SUCESS: 'Supplier updated successfully',
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
   DELETE_BOP_SUCCESS: 'BOP deleted successfully',
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
-  FUEL_ADD_SUCCESS: 'Fuel added successfully'
+  FUEL_ADD_SUCCESS: 'Fuel added successfully',
+  ADD_BOP_SUCCESS: 'BOP added successfully',
+  BOP_ADD_SUCCESS: 'BOP added successfully',
+  INTEREST_RATE_ADDED_SUCCESS: 'Suppiler interest rate added successfully',
+  DELETE_INTEREST_RATE_SUCCESS: 'Supplier interest rate deleted successfully',
 };
 

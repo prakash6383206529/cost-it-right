@@ -17,6 +17,8 @@ class AddBOP extends Component {
             typeOfListing: [],
             isEditFlag: false,
             selectedParts: [],
+            isActive: false,
+
         }
     }
 
@@ -43,6 +45,11 @@ class AddBOP extends Component {
         }
     }
 
+    toggleChange = () => {
+        this.setState({
+            isActive: !this.state.isActive,
+        });
+    }
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -101,7 +108,7 @@ class AddBOP extends Component {
     */
     onSubmit = (values) => {
         if (this.props.isEditFlag) {
-            const { bopId } = this.props;
+            const { bopId, BOPListing } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
                 BoughtOutPartId: bopId,
@@ -120,11 +127,14 @@ class AddBOP extends Component {
                 UnitOfMeasurementId: values.UnitOfMeasurementId,
                 PlantId: values.PlantId,
                 PartId: values.PartId,
-                IsActive: true,
+                IsActive: this.state.isActive
             }
             this.props.updateBOPAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
+                    if (BOPListing && BOPListing.length > 0) {
+                        this.props.getAllBOPAPI(res => { });
+                    }
                     this.toggleModel();
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
@@ -273,7 +283,7 @@ class AddBOP extends Component {
                                                 name={"PartNumber"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                //validate={[required]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -297,8 +307,7 @@ class AddBOP extends Component {
                                                 name={"TechnologyId"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
+                                                //validate={[required]}
                                                 required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.renderTypeOfListing('technology')}
@@ -316,7 +325,6 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                component={renderText}
                                                 options={this.renderTypeOfListing('categoryType')}
                                                 onChange={(Value) => this.handleCategoryType(Value)}
                                                 optionValue={'Value'}
@@ -333,7 +341,6 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                component={renderText}
                                                 options={this.renderTypeOfListing('category')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
@@ -361,7 +368,6 @@ class AddBOP extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('material')}
                                                 onChange={this.handleTypeofListing}
@@ -378,7 +384,6 @@ class AddBOP extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('city')}
                                                 onChange={this.handleTypeofListing}
@@ -395,7 +400,6 @@ class AddBOP extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('supplier')}
                                                 onChange={this.handleTypeofListing}
@@ -412,7 +416,6 @@ class AddBOP extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('city')}
                                                 onChange={this.handleTypeofListing}
@@ -429,7 +432,6 @@ class AddBOP extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('supplier')}
                                                 onChange={this.handleTypeofListing}
@@ -446,7 +448,6 @@ class AddBOP extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('uom')}
                                                 onChange={this.handleTypeofListing}
@@ -464,7 +465,6 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                component={renderText}
                                                 options={this.renderTypeOfListing('plant')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
@@ -481,7 +481,6 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                component={renderText}
                                                 options={this.renderTypeOfListing('part')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
@@ -490,6 +489,16 @@ class AddBOP extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+                                        {isEditFlag &&
+                                            <Col>
+                                                <label>
+                                                    <input type="checkbox"
+                                                        checked={this.state.isActive}
+                                                        onChange={this.toggleChange}
+                                                    />
+                                                    Is Active!
+                                            </label>
+                                            </Col>}
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
@@ -516,7 +525,7 @@ class AddBOP extends Component {
 function mapStateToProps({ comman, boughtOutparts }) {
     const { uniOfMeasurementList, partList, materialTypeList, plantList,
         supplierList, cityList, technologyList, categoryTypeList, categoryList } = comman;
-    const { bopData } = boughtOutparts;
+    const { bopData, BOPListing } = boughtOutparts;
     let initialValues = {};
     if (bopData && bopData !== undefined) {
         initialValues = {
@@ -539,7 +548,7 @@ function mapStateToProps({ comman, boughtOutparts }) {
         }
     }
     return {
-        uniOfMeasurementList, materialTypeList, partList,
+        uniOfMeasurementList, materialTypeList, partList, BOPListing,
         plantList, supplierList, cityList, technologyList, categoryTypeList, categoryList, bopData, initialValues
     }
 }
@@ -551,7 +560,7 @@ function mapStateToProps({ comman, boughtOutparts }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createBOPAPI, fetchBOPComboAPI, updateBOPAPI,
+    createBOPAPI, fetchBOPComboAPI, updateBOPAPI, getAllBOPAPI,
     fetchCategoryAPI, getBOPByIdAPI
 })(reduxForm({
     form: 'AddBOP',

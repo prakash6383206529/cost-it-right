@@ -25,7 +25,8 @@ import {
     GET_MHR_COMBO_DATA_SUCCESS,
     DATA_FAILURE,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
-    GET_LABOUR_TYPE_SUCCESS
+    GET_LABOUR_TYPE_SUCCESS,
+    GET_COSTING_HEAD_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -222,6 +223,13 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 labourType: action.payload
             };
+        case GET_COSTING_HEAD_SUCCESS:
+                return {
+                    ...state,
+                    loading: false,
+                    error: true,
+                    costingHead: action.payload
+                };
         default:
             return state;
     }

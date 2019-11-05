@@ -222,7 +222,7 @@ class AddInterestRate extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`Technology`}
                                                 name={"TechnologyId"}
@@ -238,7 +238,7 @@ class AddInterestRate extends Component {
                                                 optionLabel={'label'}
                                                 component={renderSelectField}
                                             />
-                                        </Col>
+                                        </Col> */}
                                         <Col md="6">
                                             <Field
                                                 id="supplier"
@@ -256,7 +256,7 @@ class AddInterestRate extends Component {
                                             />
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    {/* <Row>
                                         <Col md="6">
                                             <Field
                                                 label="Supplier Code"
@@ -286,7 +286,7 @@ class AddInterestRate extends Component {
                                                 valueDescription={this.state.overHeadValue}
                                             />
                                         </Col>
-                                    </Row>
+                                    </Row> */}
                                     <Row>
                                         <Col md="6">
                                             <Field
