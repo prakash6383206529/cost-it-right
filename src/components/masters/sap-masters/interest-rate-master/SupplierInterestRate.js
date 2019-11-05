@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, searchableSelect } from "../../../layout/FormInputs";
-import { createInterestRateAPI, getInterestRateComboData } from '../../../../actions/master/InterestRateMaster';
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
+import { createInterestRateAPI } from '../../../../actions/master/InterestRateMaster';
+import { fetchCostingHeadsAPI, fetchBOPComboAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 
@@ -12,22 +13,18 @@ class AddSupplierInterestRate extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            rmInvemtoryCost: [],
-            wipInventoryCost: [],
-            paymentTermCost: [],
-            supplierValue: [],
+            typeOfListing: []
         }
     }
 
-    // /**
-    // * @method componentWillMount
-    // * @description called before rendering the component
-    // */
-    // componentWillMount() {
-    //     this.props.getInterestRateComboData(() => { });
-    // }
-
-   
+    /**
+    * @method componentWillMount
+    * @description called before rendering the component
+    */
+    componentWillMount() {
+        this.props.fetchCostingHeadsAPI('--Select-Inventory-Cost',() => {});
+        this.props.fetchBOPComboAPI(() => {});
+    }
 
     /**
     * @method toggleModel
@@ -73,32 +70,32 @@ class AddSupplierInterestRate extends Component {
         }
     }
 
-    handleChangeRMInventory = (newValue) => {
-        this.setState({ rmInvemtoryCost: newValue });
-    };
-
-    handleChangeWIPInventory = (e) => {
-        this.setState({ wipInventoryCost: e.target.value });
+    /**
+    * @method handleTypeofListing
+    * @description Used to handle listing
+    */
+    handleTypeofListing = (e) => {
+        this.setState({
+            typeOfListing: e
+        })
     }
-
-    handleChangeSupplier = (newValue, actionMeta) => {
-        this.setState({ supplierValue: newValue });
-    };
-
-    handleChangePaymentTerm = (newValue, actionMeta) => {
-        this.setState({ paymentTermCost: newValue });
-    };
 
     /**
     * @method selectUnitOfMeasurement
     * @description Used show listing of unit of measurement
     */
     renderTypeOfListing = (label) => {
-        const { Suppliers } = this.props;
+        const { costingHead, supplierList } = this.props;
         const temp = [];
+        if (label === 'costingHeads') {
+            costingHead && costingHead.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
         if (label === 'supplier') {
-            Suppliers && Suppliers.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
+            supplierList && supplierList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
@@ -223,30 +220,34 @@ class AddSupplierInterestRate extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                id="supplier"
-                                                name="SupplierId"
+                                                label={`Supplier`}
+                                                name={"SupplierId"}
                                                 type="text"
-                                                label="Supplier"
-                                                component={searchableSelect}
-                                                options={this.renderTypeOfListing('supplier')}
+                                                placeholder={''}
+                                                validate={[required]}
                                                 required={true}
-                                                handleChangeDescription={this.handleChangeSupplier}
-                                                valueDescription={this.state.supplierValue}
-                                                className=" withoutBorder"
+                                                options={this.renderTypeOfListing('supplier')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                id="RMInventoryCostingHeadsId"
-                                                name="RMInventoryCostingHeadsId"
+                                                label={`RM Inventory Costing`}
+                                                name={"RMInventoryCostingHeadsId"}
                                                 type="text"
-                                                label="RM Inventory Costing"
-                                                component={searchableSelect}
-                                                options={this.renderTypeOfListing('profitTypes')}
+                                                placeholder={''}
+                                                validate={[required]}
                                                 required={true}
-                                                handleChangeDescription={this.handleChangeRMInventory}
-                                                valueDescription={this.state.rmInvemtoryCost}
-                                                className=" withoutBorder"
+                                                options={this.renderTypeOfListing('costingHeads')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                     </Row>
@@ -254,28 +255,34 @@ class AddSupplierInterestRate extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                id="WIPInventoryCostingHeadsId"
-                                                name="WIPInventoryCostingHeadsId"
+                                                label={`WIP Inventory Costing`}
+                                                name={"WIPInventoryCostingHeadsId"}
                                                 type="text"
-                                                label="WIP Inventory Costing"
-                                                component={searchableSelect}
-                                                options={this.renderTypeOfListing('profitTypes')}
+                                                placeholder={''}
+                                                validate={[required]}
                                                 required={true}
-                                                handleChangeDescription={this.handleChangeWIPInventory}
-                                                valueDescription={this.state.wipInventoryCost}
+                                                options={this.renderTypeOfListing('costingHeads')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                id="PaymentTermCostingHeadsId"
-                                                name="PaymentTermCostingHeadsId"
+                                                label={`Payment Term Costing`}
+                                                name={"PaymentTermCostingHeadsId"}
                                                 type="text"
-                                                label="Payment Term Costing"
-                                                component={searchableSelect}
-                                                options={this.renderTypeOfListing('profitTypes')}
+                                                placeholder={''}
+                                                validate={[required]}
                                                 required={true}
-                                                handleChangeDescription={this.handleChangePaymentTerm}
-                                                valueDescription={this.state.paymentTermCost}
+                                                options={this.renderTypeOfListing('costingHeads')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                     </Row>
@@ -301,19 +308,9 @@ class AddSupplierInterestRate extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ interestRate }) {
-    if (interestRate && interestRate.interestRateComboData) {
-        const { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements } = interestRate.interestRateComboData;
-        // console.log('technologyList: ', technologyList, technologyList);
-        // let initialValues = {};
-        // if (technologyList !== undefined && uniOfMeasurementList !== undefined) {
-        //     initialValues = {
-        //         technologyList,
-        //         uniOfMeasurementList
-        //     }
-        // }
-        return { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements };
-    }
+function mapStateToProps({ comman }) {
+    const { costingHead , supplierList} = comman;
+    return { costingHead, supplierList };
 }
 
 /**
@@ -323,10 +320,9 @@ function mapStateToProps({ interestRate }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    //fetchMasterDataAPI,
-    getInterestRateComboData,
+    fetchCostingHeadsAPI,fetchBOPComboAPI,
     createInterestRateAPI
 })(reduxForm({
-    form: 'addInterestRate',
+    form: 'AddSupplierInterestRate',
     enableReinitialize: true,
 })(AddSupplierInterestRate));

@@ -4,7 +4,7 @@ import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
 import SupplierInterestRate from './SupplierInterestRate';
-import { getInterestRateAPI } from '../../../../actions/master/InterestRateMaster';
+import { getInterestRateAPI, deleteInterestRateAPI } from '../../../../actions/master/InterestRateMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -62,29 +62,29 @@ class InterestRate extends Component {
     * @method deletePart
     * @description confirm delete part
     */
-    deletePart = (index, Id) => {
+    deletePart = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index, Id)
+                this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} interest rate ?`, toastrConfirmOptions);
     }
 
     /**
-    * @method confirmDeleteUOM
-    * @description confirm delete unit of measurement
+    * @method confirmDelete
+    * @description confirm delete interest rate
     */
-    confirmDeleteUOM = (index, Id) => {
-        // this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-        //         this.props.getUnitOfMeasurementAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+    confirmDelete = (Id) => {
+        this.props.deleteInterestRateAPI(Id, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
+                this.props.getInterestRateAPI(res => { });
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+         });
     }
 
     /**
@@ -116,22 +116,19 @@ class InterestRate extends Component {
                         <Table className="table table-striped" bordered>
                             <thead>
                                 <tr>
-                                    <th>Average for Year</th>
-                                    <th>Supplier</th>
-                                    <th>Number of Month</th>
-                                    <th>Annual Rate of Intereat</th>
-                                    <th>ICC</th>
-                                    <th>Cost of Credit</th>
-                                    <th>RMInventoryCostICCApplicability</th>
-                                    <th>WIPInventoryCostICCApplicability</th>
-                                    <th>PaymenttermCostICCApplicability</th>
-                                    <th>RMInventoryPercentage</th>
-                                    <th>WIPInventoryPercentage</th>
-                                    <th>PaymenttermPercentage</th>
-                                    <th>Initiator</th>
+                                    <th>Supplier Name</th>
+                                    <th>RM Inventory Costing HeadName</th>
+                                    <th>WIP Inventory Costing HeadName</th>
+                                    <th>Payment Term Costing HeadName</th>
+                                    <th>Annual RateOfInterest Percent</th>
+                                    <th>Repayment Period</th>
+                                    <th>Average Year Percent</th>
+                                    <th>ICC Percent</th>
+                                    <th>CostOfCredit Percent</th>
+                                    <th>RM Inventory Percentage</th>
+                                    <th>WIP Inventory Percent</th>
+                                    <th>Payment Term Percent</th>
                                     <th>Created On</th>
-                                    {/* <th>Modifier</th>
-                                    <th>Modified On</th> */}
                                 </tr>
                             </thead>
                             <tbody >
@@ -139,24 +136,23 @@ class InterestRate extends Component {
                                     this.props.interestRateList.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                {/* <td >{item.SupplierCode}</td>
-                                                <td>{item.SupplierName}</td>
-                                                <td>{item.TechnologyName}</td>
-                                                <td>{item.OverheadTypeName}</td>
-                                                <td>{item.OverheadPercentage}</td>
-                                                <td>{item.ProfitTypeName}</td>
-                                                <td>{item.ProfitPercentage}</td>
-                                                <td>{item.OverheadMachiningCCPercentage}</td>
-                                                <td>{item.ProfitMachiningCCPercentage}</td>
-                                                <td>{item.ModelTypeName}</td>
-                                                <td>{item.CreatedBy}</td>
-                                                <td>{moment(item.CreatedDate).format('L')}</td> */}
-                                                {/* <td>{item.ModifiedBy}</td>
-                                                <td>{item.ModifiedDate}</td> */}
-                                                {/* <td>
-                                                    <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                                </td> */}
+                                                <td >{item.SupplierName}</td>
+                                                <td>{item.RMInventoryCostingHeadName}</td>
+                                                <td>{item.WIPInventoryCostingHeadName}</td>
+                                                <td>{item.PaymentTermCostingHeadName}</td>
+                                                <td>{item.AnnualRateOfInterestPercent}</td>
+                                                <td>{item.RepaymentPeriod}</td>
+                                                <td>{item.AverageForTheYearPercent}</td>
+                                                <td>{item.ICCPercent}</td>
+                                                <td>{item.CostOfCreditPercent}</td>
+                                                <td>{item.RMInventoryPercent}</td>
+                                                <td>{item.WIPInventoryPercent}</td>
+                                                <td>{item.PaymentTermPercent}</td>
+                                                <td>{moment(item.CreatedDate).format('L')}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editPartDetails(item.SupplierInterestRateId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deletePart(item.SupplierInterestRateId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
                                             </tr>
                                         )
                                     })}
@@ -190,6 +186,6 @@ function mapStateToProps({ interestRate }) {
 }
 
 export default connect(
-    mapStateToProps, { getInterestRateAPI }
+    mapStateToProps, { getInterestRateAPI, deleteInterestRateAPI }
 )(InterestRate);
 

@@ -4,7 +4,6 @@
 
 //hosting url for api of cost-it-right
 //const BASE_URL = 'http://183.182.84.29/cost-it-right-lite/api/v1';
-//const BASE_URL = 'http://10.10.1.100/cost-it-right-lite/swagger/ui/index#/';
 const BASE_URL = 'http://10.10.1.100:8090/api/v1';
 
 /** Export API */
@@ -20,6 +19,7 @@ export const API = {
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
   getCategory: `${BASE_URL}/configuration/select-list-get-category`,
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
+  getCostingHeads: `${BASE_URL}/configuration/select-list-get-costing-heads`,
 
   //Combo apis
   //configure api's
@@ -168,9 +168,8 @@ export const API = {
   //Api's for interest rate master
   getInterestRateAPI: `${BASE_URL}/supplier/get-supplier-interest-rate`,
   updateInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
-  deleteInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
+  deleteInterestRateAPI: `${BASE_URL}/supplier/delete-supplier-interest-rate`,
   createInterestRateAPI: `${BASE_URL}/supplier/create-supplier-interest-rate`,
-
 }
 
 
@@ -192,6 +191,7 @@ export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
 export const GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
 export const GET_TECHNOLOGY_LIST_SUCCESS = 'GET_TECHNOLOGY_LIST_SUCCESS';
 export const GET_LABOUR_TYPE_SUCCESS = 'GET_LABOUR_TYPE_SUCCESS';
+export const GET_COSTING_HEAD_SUCCESS = 'GET_COSTING_HEAD_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
@@ -330,3 +330,4 @@ export const GET_DEPRICIATION_SUCCESS = 'GET_LABOUR_SUCCESS';
 //For Interest Rate 
 export const GET_INTEREST_RATE_SUCCESS = 'GET_INTEREST_RATE_SUCCESS';
 export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DATA_SUCCESS';
+export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS';

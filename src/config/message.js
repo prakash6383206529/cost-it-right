@@ -46,5 +46,6 @@ export const MESSAGES = {
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
   ADD_BOP_SUCCESS: 'BOP added successfully',
   INTEREST_RATE_ADDED_SUCCESS: 'Suppiler interest rate added successfully',
+  DELETE_INTEREST_RATE_SUCCESS: 'Supplier interest rate deleted successfully',
 };
 
