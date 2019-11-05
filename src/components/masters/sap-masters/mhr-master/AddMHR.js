@@ -67,8 +67,6 @@ class AddMHR extends Component {
         values.PlantId = PlantId;
         values.supplierType = supplierType;
 
-        console.log('values: >>sss', values);
-
         if (this.props.isEditFlag) {
             // console.log('values', values);
             // const { uomId } = this.props;
@@ -100,20 +98,36 @@ class AddMHR extends Component {
         }
     }
 
+    /**
+    * @method technologyHandler
+    * @description Used to technologyHandler
+    */
     technologyHandler = (e) => {
         this.setState({ TechnologyId: e.target.value });
     }
 
+    /**
+    * @method supplierHandler
+    * @description Used to supplierHandler
+    */
     supplierHandler = (e) => {
         this.setState({ SupplierId: e.target.value });
     }
 
+    /**
+    * @method uomHandler
+    * @description Used to uomHandler
+    */
     uomHandler = (e) => {
         this.setState({
             uom: e.target.value
         })
     }
 
+    /**
+    * @method plantHandler
+    * @description Used to plantHandler
+    */
     plantHandler = (e) => {
         this.setState({
             PlantId: e.target.value
