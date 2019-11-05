@@ -12,6 +12,7 @@ import RMGradeDetail from './RMGradeDetail';
 import RMCategoryDetail from './RMCategoryDetail';
 import RMSpecificationDetail from './RMSpecificationDetail';
 import classnames from 'classnames';
+import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 
 class RowMaterialMaster extends Component {
     constructor(props) {
@@ -47,13 +48,13 @@ class RowMaterialMaster extends Component {
     }
 
     openCategorymodel = () => {
-        this.setState({ isCategory: true})
+        this.setState({ isCategory: true })
     }
     openGrademodel = () => {
-        this.setState({ isGrade: true})
+        this.setState({ isGrade: true })
     }
     openSpecificationmodel = () => {
-        this.setState({ isSpecification: true})
+        this.setState({ isSpecification: true })
     }
 
     /**
@@ -61,7 +62,9 @@ class RowMaterialMaster extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false, isCategory: false, isGrade: false, isSpecification: false })
+        this.setState({ isOpen: false, isCategory: false, isGrade: false, isSpecification: false }, () => {
+            this.props.getRowMaterialDataAPI(res => { });
+        })
     }
 
     /**
@@ -69,10 +72,10 @@ class RowMaterialMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen,isCategory, isGrade, isSpecification } = this.state;
+        const { isOpen, isCategory, isGrade, isSpecification } = this.state;
         return (
             <Container className="top-margin">
-            {/* {this.props.loading && <Loader/>} */}
+                {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER}`}</h3>
@@ -123,16 +126,16 @@ class RowMaterialMaster extends Component {
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
                             <TabPane tabId="1">
-                                <RMDetail/>
+                                <RMDetail />
                             </TabPane>
                             <TabPane tabId="2">
-                                <RMGradeDetail/> 
+                                <RMGradeDetail />
                             </TabPane>
                             <TabPane tabId="3">
-                                <RMCategoryDetail/>
+                                <RMCategoryDetail />
                             </TabPane>
                             <TabPane tabId="4">
-                            <   RMSpecificationDetail/> 
+                                <   RMSpecificationDetail />
                             </TabPane>
                         </TabContent>
                     </div>
@@ -143,19 +146,19 @@ class RowMaterialMaster extends Component {
                         onCancel={this.onCancel}
                     />
                 )}
-                {isCategory && 
+                {isCategory &&
                     <AddRMCategory
                         isOpen={isCategory}
                         onCancel={this.onCancel}
                     />
                 }
-                {isGrade && 
+                {isGrade &&
                     <AddRMGrade
                         isOpen={isGrade}
                         onCancel={this.onCancel}
                     />
                 }
-                {isSpecification && 
+                {isSpecification &&
                     <AddSpecification
                         isOpen={isSpecification}
                         onCancel={this.onCancel}
@@ -179,6 +182,6 @@ function mapStateToProps({ }) {
 
 
 export default connect(
-    mapStateToProps, null
+    mapStateToProps, { getRowMaterialDataAPI }
 )(RowMaterialMaster);
 

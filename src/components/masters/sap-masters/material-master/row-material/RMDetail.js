@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Table } from 'reactstrap';
+    Container, Row, Col, Table
+} from 'reactstrap';
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -19,7 +20,7 @@ class RMDetail extends Component {
     }
 
     componentDidMount() {
-        this.props.getRowMaterialDataAPI(res => {});
+        this.props.getRowMaterialDataAPI(res => { });
     }
 
     /**
@@ -28,40 +29,40 @@ class RMDetail extends Component {
     */
     render() {
         return (
-            <Container className="top-margin">
-            {this.props.loading && <Loader/>}
+            <div>
+                {this.props.loading && <Loader />}
                 <Row>
                     <Col>
                         <h5>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
                     </Col>
                 </Row>
                 <Col>
-                <hr/>
-                <Table className="table table-striped" bordered>
-                    <thead>
-                        <tr>
-                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
-                        <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> 
-                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
-                        <th>{`${CONSTANT.DATE}`}</th>
-                        </tr>
-                    </thead>
-                    <tbody > 
-                        {this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
-                            this.props.rowMaterialDetail.map((item, index) => {
-                                return (
-                                    <tr key= {index}>
-                                        <td >{item.RawMaterialName}</td>
-                                        <td>{item.PlantName}</td> 
-                                        <td>{item.Description }</td>
-                                        <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                    </tr>
-                                )
-                            })}
-                    </tbody> 
-                </Table>
+                    <hr />
+                    <Table className="table table-striped" bordered>
+                        <thead>
+                            <tr>
+                                <th>{`Raw Material Name`}</th>
+                                <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
+                                <th>{`${CONSTANT.DATE}`}</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            {this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
+                                this.props.rowMaterialDetail.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td >{item.RawMaterialName}</td>
+                                            <td>{item.PlantName}</td>
+                                            <td>{item.Description}</td>
+                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                        </tr>
+                                    )
+                                })}
+                        </tbody>
+                    </Table>
                 </Col>
-            </Container >
+            </div>
         );
     }
 }
@@ -78,6 +79,6 @@ function mapStateToProps({ material }) {
 
 
 export default connect(
-    mapStateToProps, {getRowMaterialDataAPI}
+    mapStateToProps, { getRowMaterialDataAPI }
 )(RMDetail);
 

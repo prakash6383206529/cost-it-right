@@ -76,7 +76,8 @@ export const API = {
   fetchCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
 
   //Api for row material master
-  createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
+  //createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
+  createMaterialAPI: `${BASE_URL}/masters-raw-material/create`,
   createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,

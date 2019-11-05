@@ -14,7 +14,7 @@ class AddCategory extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
     }
 
@@ -44,11 +44,11 @@ class AddCategory extends Component {
         this.props.createRMCategoryAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
-                {this.toggleModel()}
+                { this.toggleModel() }
             } else {
                 toastr.error(res.data.message);
             }
-        });   
+        });
     }
 
     /**
@@ -63,7 +63,7 @@ class AddCategory extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"
@@ -118,7 +118,7 @@ class AddCategory extends Component {
 * @param {*} state
 */
 function mapStateToProps({ category }) {
-   const { categoryList } = category;
+    const { categoryList } = category;
     return { categoryList }
 }
 
