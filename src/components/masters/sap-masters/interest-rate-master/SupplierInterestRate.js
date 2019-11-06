@@ -26,6 +26,10 @@ class AddSupplierInterestRate extends Component {
         this.props.fetchBOPComboAPI(() => {});
     }
 
+     /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount() {
         const { isEditFlag,interestRateId  } = this.props;
         if(isEditFlag){
@@ -36,6 +40,7 @@ class AddSupplierInterestRate extends Component {
             this.props.getInterestRateByIdAPI('',false, res => {})   
         }
     }
+
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -49,6 +54,7 @@ class AddSupplierInterestRate extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        /** Updating details of existing interest rate master**/
         if (this.props.isEditFlag) {
             const { interestRateId } = this.props;
             let formData = {
@@ -74,7 +80,7 @@ class AddSupplierInterestRate extends Component {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        } else {
+        } else { /** Adding new details for creating interest rate master**/
             this.props.createInterestRateAPI(values, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
@@ -122,8 +128,7 @@ class AddSupplierInterestRate extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
-
+        const { handleSubmit, isEditFlag, reset } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -267,7 +272,6 @@ class AddSupplierInterestRate extends Component {
                                             />
                                         </Col>
                                     </Row>
-                                    
                                     <Row>
                                         <Col md="6">
                                             <Field
@@ -307,6 +311,10 @@ class AddSupplierInterestRate extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {isEditFlag ? 'Update' : 'Save'}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>
@@ -327,7 +335,6 @@ class AddSupplierInterestRate extends Component {
 function mapStateToProps({ comman, interestRate }) {
     const { costingHead , supplierList} = comman;
     const { interestRateDetail } = interestRate;
-    console.log('interestRateDetail: ', interestRateDetail);
     let initialValues = {};
     if (interestRateDetail && interestRateDetail !== undefined) {
         initialValues = {

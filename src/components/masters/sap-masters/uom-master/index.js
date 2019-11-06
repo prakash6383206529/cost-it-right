@@ -75,7 +75,7 @@ class UOMMaster extends Component {
     */
     confirmDeleteUOM = (index, Id) => {
         this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
-            if (res.data.Result === true) {
+            if (res.data.Result) {
                 toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
                 this.props.getUnitOfMeasurementAPI(res => { });
             } else {
@@ -160,7 +160,6 @@ function mapStateToProps({ unitOfMeasrement }) {
     const { unitOfMeasurementList, loading } = unitOfMeasrement;
     return { unitOfMeasurementList, loading }
 }
-
 
 export default connect(
     mapStateToProps, { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI }

@@ -18,6 +18,10 @@ class AddCategory extends Component {
         }
     }
 
+    /**
+    * @method componentWillMount
+    * @description called before render the component
+    */
     componentWillMount() {
         this.props.fetchCategoryMasterDataAPI(res => { });
     }
@@ -58,17 +62,15 @@ class AddCategory extends Component {
     }
 
     /**
-    * @method selectUnitOfMeasurement
-    * @description Used show listing of unit of measurement
+    * @method selectType
+    * @description Used to show listing of category type listing
     */
-    selectMaterialType = () => {
+   selectType = () => {
         const { categoryList } = this.props;
-        console.log('categoryList', typeof (categoryList), categoryList)
         const temp = [];
         categoryList && categoryList !== undefined && categoryList.map(item =>
             temp.push({ Text: item.Text, Value: item.Value })
         );
-        console.log('temp', categoryList);
         return temp;
     }
 
@@ -111,18 +113,15 @@ class AddCategory extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.selectMaterialType()}
+                                                options={this.selectType()}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
                                             />
                                         </Col>
-                                        <Row />
-                                        <Row />
                                         <Col md="12">
                                             <Field
                                                 label="Description"
@@ -160,7 +159,6 @@ class AddCategory extends Component {
 */
 function mapStateToProps({ category }) {
     const { categoryList } = category;
-    console.log('categoryList: ', categoryList);
     return { categoryList }
 }
 

@@ -82,7 +82,7 @@ class AddSpecification extends Component {
         this.props.createRMSpecificationAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
-                { this.toggleModel() }
+                this.toggleModel();
             } else {
                 toastr.error(res.data.message);
             }

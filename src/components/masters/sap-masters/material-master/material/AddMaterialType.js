@@ -45,7 +45,7 @@ class AddMaterialType extends Component {
             if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
                 this.props.getMaterialDetailAPI(res => {});
-                {this.toggleModel()}
+                this.toggleModel()
             } else {
                 toastr.error(res.data.Message);
             }

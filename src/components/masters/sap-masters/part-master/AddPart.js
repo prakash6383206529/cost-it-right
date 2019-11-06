@@ -19,10 +19,18 @@ class AddPart extends Component {
         }
     }
 
+    /**
+    * @method componentWillMount
+    * @description Called before rendering the component
+    */
     componentWillMount() {
         this.props.fetchPartComboAPI(res => { });
     }
 
+    /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount() {
         const { partId, isEditFlag } = this.props;
         console.log('isEditFlag', isEditFlag);
@@ -34,6 +42,7 @@ class AddPart extends Component {
             this.props.getOnePartsAPI('', false, res => { })
         }
     }
+
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -57,6 +66,7 @@ class AddPart extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        /** Updating the existing part master detail **/
         if (this.props.isEditFlag) {
             const { partId } = this.props;
             this.setState({ isSubmitted: true });
@@ -70,8 +80,6 @@ class AddPart extends Component {
                 PartDescription: values.PartDescription,
                 PartId: partId
             }
-            console.log('formData: ', formData);
-
             this.props.updatePartsAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_PART_SUCESS);
@@ -81,12 +89,12 @@ class AddPart extends Component {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        } else {
+        } else { /** Adding new part master detail **/
             this.props.createPartAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.PART_ADD_SUCCESS);
                     this.props.getAllPartsAPI(res => { })
-                    { this.toggleModel() }
+                     this.toggleModel();
                 } else {
                     toastr.error(res.data.message);
                 }
@@ -105,21 +113,18 @@ class AddPart extends Component {
             materialTypeList && materialTypeList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            console.log('temp', materialTypeList);
             return temp;
         }
         if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            console.log('temp', uniOfMeasurementList);
             return temp;
         }
-        if (label = 'plant') {
+        if (label === 'plant') {
             plantList && plantList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
-            console.log('temp', plantList);
             return temp;
         }
 
@@ -130,7 +135,7 @@ class AddPart extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, reset } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -251,6 +256,10 @@ class AddPart extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {isEditFlag ? 'Update' : 'Save'}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>

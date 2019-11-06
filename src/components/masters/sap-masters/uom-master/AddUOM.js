@@ -46,8 +46,8 @@ class AddUOM extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+         /** Update detail of the existing UOM  */
         if (this.props.isEditFlag) {
-            console.log('values', values);
             const { uomId } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
@@ -67,10 +67,11 @@ class AddUOM extends Component {
                 }
             });
         } else {
+             /** Add detail for creating new UOM  */
             this.props.createUnitOfMeasurementAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.UOM_ADD_SUCCESS);
-                    { this.toggleModel() }
+                    this.toggleModel();
                     this.props.getUnitOfMeasurementAPI(res => { });
                 } else {
                     toastr.error(res.data.message);
@@ -84,7 +85,7 @@ class AddUOM extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, reset } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -143,6 +144,10 @@ class AddUOM extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {isEditFlag ? 'Update' : 'Save'}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>

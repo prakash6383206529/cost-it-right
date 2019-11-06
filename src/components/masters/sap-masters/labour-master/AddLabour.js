@@ -18,6 +18,10 @@ class AddLabour extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentWillMount() {
         this.props.fetchLabourComboAPI(res => {});
     }
@@ -36,6 +40,7 @@ class AddLabour extends Component {
             this.props.getLabourByIdAPI('',false, res => {})   
         }
     }
+
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -124,7 +129,7 @@ class AddLabour extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag,reset } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -208,6 +213,10 @@ class AddLabour extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                             {isEditFlag ? 'Update' : 'Add'}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>

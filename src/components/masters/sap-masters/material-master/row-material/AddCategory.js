@@ -44,7 +44,7 @@ class AddCategory extends Component {
         this.props.createRMCategoryAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
-                { this.toggleModel() }
+                this.toggleModel();
             } else {
                 toastr.error(res.data.message);
             }

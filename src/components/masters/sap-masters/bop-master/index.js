@@ -165,7 +165,7 @@ class BOPMaster extends Component {
                                         </tr>
                                     )
                                 })}
-                            {this.props.BOPListing == undefined && <NoContentFound title={'No Content Found'} />}
+                            {this.props.BOPListing === undefined && <NoContentFound title={'No Content Found'} />}
                         </tbody>
                     </Table>
                 </Col>

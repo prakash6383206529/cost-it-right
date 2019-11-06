@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField, renderDatePicker } from "../../../layout/FormInputs";
+import { renderText, renderSelectField} from "../../../layout/FormInputs";
 import { createFuelDetailAPI, getFuelDetailAPI, getFuelDetailUnitAPI } from '../../../../actions/master/Fuel';
 import { fetchFuelComboAPI, fetchMasterDataAPI } from '../../../../actions/master/Comman'
 import { toastr } from 'react-redux-toastr';
@@ -24,6 +24,10 @@ class AddFuelDetail extends Component {
         }
     }
 
+    /**
+    * @method componentWillMount
+    * @description called before render the component
+    */
     componentWillMount() {
         this.props.fetchFuelComboAPI(res => { });
         this.props.fetchMasterDataAPI(res => { });
@@ -34,7 +38,7 @@ class AddFuelDetail extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { fuelId, isEditFlag, initialValues, fuelUnitData } = this.props;
+        const { fuelId, isEditFlag } = this.props;
         if (isEditFlag) {
             this.props.getFuelDetailUnitAPI(fuelId, true, res => {
                 const { fuelUnitData } = this.props;
@@ -106,7 +110,7 @@ class AddFuelDetail extends Component {
                 if (response && response.data && response.data.Result) {
                     toastr.success(MESSAGES.FUEL_DETAIL_ADD_SUCCESS);
                     this.props.getFuelDetailAPI(res => { });
-                    { this.toggleModel() }
+                    this.toggleModel();
                 } else {
                     toastr.error(response.data.Message);
                 }
@@ -133,7 +137,7 @@ class AddFuelDetail extends Component {
             );
             return temp;
         }
-        if (label = 'fuel') {
+        if (label === 'fuel') {
             fuelList && fuelList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
@@ -180,7 +184,6 @@ class AddFuelDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.selectMaterialType('state')}
@@ -197,7 +200,6 @@ class AddFuelDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.selectMaterialType('fuel')}
@@ -214,7 +216,6 @@ class AddFuelDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.selectMaterialType('uom')}

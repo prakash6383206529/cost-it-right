@@ -51,7 +51,7 @@ class AddFuel extends Component {
             if (response && response.data) {
                 if (response && response.data && response.data.Result) {
                     toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
-                    { this.toggleModel() }
+                    this.toggleModel();
                 } else {
                     toastr.error(response.data.Message);
                 }

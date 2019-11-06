@@ -19,6 +19,10 @@ class MaterialDetail extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount() {
         this.props.getMaterialDetailAPI(res => { });
     }
@@ -102,7 +106,6 @@ function mapStateToProps({ material }) {
     const { rmDetail } = material;
     return { rmDetail }
 }
-
 
 export default connect(
     mapStateToProps, { getMaterialDetailAPI }

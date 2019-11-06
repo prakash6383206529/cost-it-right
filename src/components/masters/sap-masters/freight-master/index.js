@@ -24,6 +24,10 @@ class FreightMaster extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
         this.props.getFreightDetailAPI(res => {});
     }

@@ -18,6 +18,10 @@ class FuelDetail extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
         this.props.getFuelDetailAPI(res => { });
     }

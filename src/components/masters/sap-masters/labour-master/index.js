@@ -21,6 +21,10 @@ class LabourMaster extends Component {
         }
     }
 
+     /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount() {
         this.props.getLabourDetailAPI(res => {});
     }

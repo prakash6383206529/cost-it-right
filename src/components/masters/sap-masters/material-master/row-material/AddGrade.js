@@ -66,7 +66,7 @@ class AddGrade extends Component {
         this.props.createRMGradeAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
-                { this.toggleModel() }
+                this.toggleModel();
             } else {
                 toastr.error(res.data.message);
             }
