@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
-import { createInterestRateAPI, updateInterestRateAPI } from '../../../../actions/master/InterestRateMaster';
+import { createInterestRateAPI, updateInterestRateAPI, getInterestRateByIdAPI } from '../../../../actions/master/InterestRateMaster';
 import { fetchCostingHeadsAPI, fetchBOPComboAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
@@ -26,6 +26,16 @@ class AddSupplierInterestRate extends Component {
         this.props.fetchBOPComboAPI(() => {});
     }
 
+    componentDidMount() {
+        const { isEditFlag,interestRateId  } = this.props;
+        if(isEditFlag){
+            this.setState({isEditFlag},()=>{  
+            this.props.getInterestRateByIdAPI(interestRateId,true, res => {})   
+            })
+        }else{
+            this.props.getInterestRateByIdAPI('',false, res => {})   
+        }
+    }
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -317,6 +327,7 @@ class AddSupplierInterestRate extends Component {
 function mapStateToProps({ comman, interestRate }) {
     const { costingHead , supplierList} = comman;
     const { interestRateDetail } = interestRate;
+    console.log('interestRateDetail: ', interestRateDetail);
     let initialValues = {};
     if (interestRateDetail && interestRateDetail !== undefined) {
         initialValues = {
@@ -334,7 +345,7 @@ function mapStateToProps({ comman, interestRate }) {
             IsActive: interestRateDetail.IsActive,
         }
     }
-    return { costingHead, supplierList };
+    return { costingHead, supplierList, initialValues };
 }
 
 /**
@@ -345,7 +356,7 @@ function mapStateToProps({ comman, interestRate }) {
 */
 export default connect(mapStateToProps, {
     fetchCostingHeadsAPI,fetchBOPComboAPI,
-    createInterestRateAPI, updateInterestRateAPI
+    createInterestRateAPI, updateInterestRateAPI, getInterestRateByIdAPI
 })(reduxForm({
     form: 'AddSupplierInterestRate',
     enableReinitialize: true,
