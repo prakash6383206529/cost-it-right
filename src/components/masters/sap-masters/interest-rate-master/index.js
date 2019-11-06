@@ -124,7 +124,7 @@ class InterestRate extends Component {
                                     <th>Repayment Period</th>
                                     <th>Average Year Percent</th>
                                     <th>ICC Percent</th>
-                                    <th>CostOfCredit Percent</th>
+                                    {/* <th>CostOfCredit Percent</th> */}
                                     <th>RM Inventory Percentage</th>
                                     <th>WIP Inventory Percent</th>
                                     <th>Payment Term Percent</th>
@@ -144,7 +144,7 @@ class InterestRate extends Component {
                                                 <td>{item.RepaymentPeriod}</td>
                                                 <td>{item.AverageForTheYearPercent}</td>
                                                 <td>{item.ICCPercent}</td>
-                                                <td>{item.CostOfCreditPercent}</td>
+                                                {/* <td>{item.CostOfCreditPercent}</td> */}
                                                 <td>{item.RMInventoryPercent}</td>
                                                 <td>{item.WIPInventoryPercent}</td>
                                                 <td>{item.PaymentTermPercent}</td>

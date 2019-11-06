@@ -15,7 +15,7 @@ class AddFreight extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            freightType: '',
+            freightType: 'Freight',
             packagingType: ''
         }
     }
@@ -33,7 +33,7 @@ class AddFreight extends Component {
     /**
     * @method componentDidMount
     * @description called after render the component
-        */
+    */
     componentDidMount() {
         const { freightId, isEditFlag } = this.props;
         if (isEditFlag) {
@@ -105,24 +105,56 @@ class AddFreight extends Component {
         /** Update detail of the existing Freight  */
         if (this.props.isEditFlag) {
             const { freightId } = this.props;
-            let formData = {
-                FreightId: freightId,
-                SourceCityId: values.SourceCityId,
-                DestinationCityId: values.DestinationCityId,
-                PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
-                PartTruckLoadRateCubicFeet: values.PartTruckLoadRateCubicFeet,
-                FullTruckLoadRateOneTon: values.FullTruckLoadRateOneTon,
-                FullTruckLoadRateTwoTon: values.FullTruckLoadRateTwoTon,
-                FullTruckLoadRateFiveTon: values.FullTruckLoadRateFiveTon,
-                FullTruckLoadRateNineTon: values.FullTruckLoadRateNineTon,
-                FullTruckLoadRateElevenTon: values.FullTruckLoadRateElevenTon,
-                FullTruckLoadRateSixteenTon: values.FullTruckLoadRateSixteenTon,
-                FullTruckLoadRateTwentyFiveTon: values.FullTruckLoadRateTwentyFiveTon,
-                FullTruckLoadRateThirtyOneTon: values.FullTruckLoadRateThirtyOneTon,
-                FullTruckLoadRateTrailer: values.FullTruckLoadRateTrailer,
-                PlantId: values.PlantId,
-                IsActive: true
+            let formData = {};
+            if (this.state.freightType === 'Freight') {
+                formData = {
+                    FreightId: freightId,
+                    SourceCityId: values.SourceCityId,
+                    DestinationCityId: values.DestinationCityId,
+                    PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
+                    PartTruckLoadRateCubicFeet: values.PartTruckLoadRateCubicFeet,
+                    FullTruckLoadRateOneTon: values.FullTruckLoadRateOneTon,
+                    FullTruckLoadRateTwoTon: values.FullTruckLoadRateTwoTon,
+                    FullTruckLoadRateFiveTon: values.FullTruckLoadRateFiveTon,
+                    FullTruckLoadRateNineTon: values.FullTruckLoadRateNineTon,
+                    FullTruckLoadRateElevenTon: values.FullTruckLoadRateElevenTon,
+                    FullTruckLoadRateSixteenTon: values.FullTruckLoadRateSixteenTon,
+                    FullTruckLoadRateTwentyFiveTon: values.FullTruckLoadRateTwentyFiveTon,
+                    FullTruckLoadRateThirtyOneTon: values.FullTruckLoadRateThirtyOneTon,
+                    FullTruckLoadRateTrailer: values.FullTruckLoadRateTrailer,
+                    PlantId: values.PlantId,
+                    IsActive: true
+                }
             }
+            if (this.state.freightType === 'Packaging') {
+                formData = {
+                    FreightType: 2,
+                    SourceCityId: '',
+                    DestinationCityId: '',
+                    PartTruckLoadRatePerKilogram: '',
+                    PartTruckLoadRateCubicFeet: '',
+                    FullTruckLoadRateOneTon: '',
+                    FullTruckLoadRateTwoTon: '',
+                    FullTruckLoadRateFiveTon: '',
+                    FullTruckLoadRateNineTon: '',
+                    FullTruckLoadRateElevenTon: '',
+                    FullTruckLoadRateSixteenTon: '',
+                    FullTruckLoadRateTwentyFiveTon: '',
+                    FullTruckLoadRateThirtyOneTon: '',
+                    FullTruckLoadRateTrailer: '',
+                    FreightId: freightId,
+                    PlantId: values.PlantId,
+                    SupplierId: values.SupplierId,
+                    PerTrip: values.PerTrip,
+                    PackagingCostingHeadsId: values.PackagingCostingHeadsId,
+                    Packaging: values.Packaging,
+                    PerKilogram: values.PerKilogram,
+                    LodingUnloadingCostingHeadsId: values.LodingUnloadingCostingHeadsId,
+                    LodingUnloading: values.LodingUnloading,
+                    IsActive: true
+                }
+            }
+            console.log('formData: ', formData);
             this.props.updateFreightAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_FREIGHT_SUCESS);
@@ -134,8 +166,9 @@ class AddFreight extends Component {
         } else {
             let formData = {};
             if (this.state.freightType === 'Freight') {
+                console.log('this.state.freightType: ', this.state.freightType);
                 formData = {
-                    FreightType: 0,
+                    FreightType: 1,
                     SourceCityId: values.SourceCityId,
                     DestinationCityId: values.DestinationCityId,
                     PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
@@ -160,8 +193,9 @@ class AddFreight extends Component {
                 }
             }
             if (this.state.freightType === 'Packaging') {
+                console.log('this.state.freightType: ', this.state.freightType);
                 formData = {
-                    FreightType: 1,
+                    FreightType: 2,
                     SourceCityId: '',
                     DestinationCityId: '',
                     PartTruckLoadRatePerKilogram: '',
@@ -186,7 +220,7 @@ class AddFreight extends Component {
                 }
             }
             console.log('values: ', formData);
-            this.props.createFreightAPI(values, (res) => {
+            this.props.createFreightAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.FREIGHT_ADDED_SUCCESS);
                     this.props.getFreightDetailAPI(res => { });
@@ -199,6 +233,10 @@ class AddFreight extends Component {
 
     }
 
+    /**
+    * @method freightTypeHandler
+    * @description handle selection of freight type
+    */
     freightTypeHandler = (value) => {
         this.setState({
             freightType: value
@@ -255,7 +293,7 @@ class AddFreight extends Component {
                                     <hr />
                                     {this.state.freightType === 'Freight' &&
                                         <Row>
-                                            <Col md="6">
+                                            {/* <Col md="6">
                                                 <Field
                                                     label={`Freight To From`}
                                                     name={"FreightToFrom"}
@@ -264,7 +302,7 @@ class AddFreight extends Component {
                                                     component={renderText}
                                                     className=" withoutBorder"
                                                 />
-                                            </Col>
+                                            </Col> */}
                                             <Col md="6">
                                                 <Field
                                                     label={`${CONSTANT.PART} Truck Load Rate/KG`}
@@ -365,7 +403,7 @@ class AddFreight extends Component {
                                                     className=" withoutBorder"
                                                 />
                                             </Col>
-                                            <Col md="6">
+                                            <Col md="12">
                                                 <Field
                                                     label={`${CONSTANT.PART} Truck Load Rate Trailer`}
                                                     name={"FullTruckLoadRateTrailer"}
@@ -586,8 +624,14 @@ function mapStateToProps({ comman, freight }) {
             DestinationCityId: freightData.DestinationCityId,
             PlantId: freightData.PlantId,
             FullTruckLoadRateTrailer: freightData.FullTruckLoadRateTrailer,
-            FreightToFrom: freightData.FreightToFrom
-
+            FreightToFrom: freightData.FreightToFrom,
+            SupplierId: freightData.SupplierId,
+            PerTrip: freightData.PerTrip,
+            PackagingCostingHeadsId: freightData.PackagingCostingHeadsId,
+            Packaging: freightData.Packaging,
+            PerKilogram: freightData.PerKilogram,
+            LodingUnloadingCostingHeadsId: freightData.LodingUnloadingCostingHeadsId,
+            LodingUnloading: freightData.LodingUnloading,
         }
     }
     return { cityList, plantList, supplierList, costingHead, initialValues }

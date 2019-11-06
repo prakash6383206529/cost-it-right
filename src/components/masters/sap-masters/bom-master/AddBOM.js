@@ -102,7 +102,7 @@ class AddBOM extends Component {
         this.props.createBOMAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.BOM_ADD_SUCCESS);
-                { this.toggleModel() }
+                this.toggleModel();
             } else {
                 toastr.error(res.data.message);
             }
@@ -128,7 +128,7 @@ class AddBOM extends Component {
             );
             return temp;
         }
-        if (label = 'part') {
+        if (label === 'part') {
             partList && partList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
