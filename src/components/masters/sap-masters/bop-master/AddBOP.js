@@ -145,7 +145,7 @@ class AddBOP extends Component {
                 PartNumber: values.PartNumber,
                 TechnologyId: values.TechnologyId,
                 CategoryId: values.CategoryId,
-                CategoryTypeId: values.CategoryType,
+                //CategoryTypeId: values.CategoryType,
                 Specification: values.Specification,
                 MaterialTypesId: values.MaterialTypesId,
                 SourceSupplierCityId: values.SourceSupplierCityId,
@@ -268,7 +268,7 @@ class AddBOP extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, reset, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -534,6 +534,10 @@ class AddBOP extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {isEditFlag ? 'Update' : 'Add'}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>
