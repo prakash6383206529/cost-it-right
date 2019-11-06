@@ -19,9 +19,14 @@ class BOMMaster extends Component {
         }
     }
 
+    /**
+     * @method componentDidMount
+     * @description  Called before rendering the component
+     */
     componentDidMount() {
         this.props.getAllBOMAPI(res => {});
     }
+
     /**
      * @method openModel
      * @description  used to open filter form 
@@ -118,7 +123,6 @@ class BOMMaster extends Component {
 */
 function mapStateToProps({ billOfMaterial}) {
     const { BOMListing ,loading } = billOfMaterial;;
-    console.log('BOMListing: ', BOMListing);
     return { BOMListing, loading }
 }
 
