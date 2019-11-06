@@ -7,8 +7,8 @@ import { getAllBOMAPI } from '../../../../actions/master/BillOfMaterial';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
-import { CONSTANT } from '../../../../helper/AllConastant'
-
+import { CONSTANT } from '../../../../helper/AllConastant';
+import NoContentFound from '../../../common/NoContentFound';
 
 class BOMMaster extends Component {
     constructor(props) {
@@ -68,6 +68,7 @@ class BOMMaster extends Component {
                 </Row>
                 <Col>
                 <Table  className="table table-striped" bordered>
+                { this.props.BOMListing && this.props.BOMListing.length > 0 &&
                     <thead>
                         <tr>
                         <th>{`${CONSTANT.BILL} ${CONSTANT.NUMBER}`}</th>
@@ -81,7 +82,7 @@ class BOMMaster extends Component {
                         <th>{`ECO ${CONSTANT.NUMBER}`}</th>
                         <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th>
                         </tr>
-                    </thead>
+                    </thead> }
                     <tbody > 
                     {this.props.BOMListing && this.props.BOMListing.length > 0 &&
                         this.props.BOMListing.map((item, index) => {
@@ -102,6 +103,7 @@ class BOMMaster extends Component {
                                 </tr>
                             )
                         })}
+                        {this.props.BOMListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                     </tbody> 
                 </Table>
                 </Col>

@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import moment from 'moment';
+import NoContentFound from '../../../common/NoContentFound';
 
 class OperationMaster extends Component {
     constructor(props) {
@@ -114,6 +114,7 @@ class OperationMaster extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
+                        { this.props.operationListData && this.props.operationListData.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>Operation Name</th>
@@ -125,7 +126,7 @@ class OperationMaster extends Component {
                                     <th>Modifier</th>
                                     <th>Modified On</th> */}
                                 </tr>
-                            </thead>
+                            </thead>}
                             <tbody >
                                 {this.props.operationListData && this.props.operationListData.length > 0 &&
                                     this.props.operationListData.map((item, index) => {
@@ -146,6 +147,7 @@ class OperationMaster extends Component {
                                             </tr>
                                         )
                                     })}
+                                     {this.props.operationListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

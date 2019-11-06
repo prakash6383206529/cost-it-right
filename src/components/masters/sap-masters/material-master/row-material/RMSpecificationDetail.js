@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Table
+     Row, Col, Table
 } from 'reactstrap';
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
@@ -9,6 +9,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../../helper';
+import NoContentFound from '../../../../common/NoContentFound';
 
 class RMSpecificationDetail extends Component {
     constructor(props) {
@@ -43,6 +44,7 @@ class RMSpecificationDetail extends Component {
                 <Col>
                     <hr />
                     <Table className="table table-striped" bordered>
+                    { this.props.rmSpecificationDetail && this.props.rmSpecificationDetail.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th>
@@ -50,7 +52,7 @@ class RMSpecificationDetail extends Component {
                                 <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
                                 <th>{`${CONSTANT.DATE}`}</th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.rmSpecificationDetail && this.props.rmSpecificationDetail.length > 0 &&
                                 this.props.rmSpecificationDetail.map((item, index) => {
@@ -63,6 +65,7 @@ class RMSpecificationDetail extends Component {
                                         </tr>
                                     )
                                 })}
+                                 {this.props.rmSpecificationDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

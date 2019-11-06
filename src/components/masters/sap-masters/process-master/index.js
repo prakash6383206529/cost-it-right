@@ -8,6 +8,7 @@ import { getProcessDataAPI, deleteProcessAPI } from '../../../../actions/master/
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
+import NoContentFound from '../../../common/NoContentFound';
 
 class ProcessMaster extends Component {
     constructor(props) {
@@ -104,6 +105,7 @@ class ProcessMaster extends Component {
                 <hr />
                 <Col>
                     <Table className="table table-striped" bordered>
+                    {this.props.processList && this.props.processList.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.PROCESS} ${CONSTANT.NAME}`}</th>
@@ -113,7 +115,7 @@ class ProcessMaster extends Component {
                                 <th>{`Status`}</th>
                                 <th>{``}</th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.processList && this.props.processList.length > 0 &&
                                 this.props.processList.map((item, index) => {
@@ -131,6 +133,7 @@ class ProcessMaster extends Component {
                                         </tr>
                                     )
                                 })}
+                                {this.props.processList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

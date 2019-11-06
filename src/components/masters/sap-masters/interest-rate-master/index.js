@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import moment from 'moment';
+import NoContentFound from '../../../common/NoContentFound';
 
 class InterestRate extends Component {
     constructor(props) {
@@ -114,6 +115,7 @@ class InterestRate extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
+                        { this.props.interestRateList && this.props.interestRateList.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>Supplier Name</th>
@@ -130,7 +132,7 @@ class InterestRate extends Component {
                                     <th>Payment Term Percent</th>
                                     <th>Created On</th>
                                 </tr>
-                            </thead>
+                            </thead>}
                             <tbody >
                                 {this.props.interestRateList && this.props.interestRateList.length > 0 &&
                                     this.props.interestRateList.map((item, index) => {
@@ -156,6 +158,7 @@ class InterestRate extends Component {
                                             </tr>
                                         )
                                     })}
+                                     {this.props.interestRateList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

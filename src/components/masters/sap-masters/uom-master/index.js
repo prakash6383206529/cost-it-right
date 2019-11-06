@@ -9,6 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
+import NoContentFound from '../../../common/NoContentFound';
 
 class UOMMaster extends Component {
     constructor(props) {
@@ -110,6 +111,7 @@ class UOMMaster extends Component {
                 </Row>
                 <Col>
                     <Table className="table table-striped" bordered>
+                    {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
                         <thead>
                             <tr>
                                 <th>UOM Name</th>
@@ -117,7 +119,7 @@ class UOMMaster extends Component {
                                 <th>UOM Description</th>
                                 <th></th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody>
                             {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
                                 this.props.unitOfMeasurementList.map((item, index) => {
@@ -134,6 +136,7 @@ class UOMMaster extends Component {
                                         </tr>
                                     )
                                 })}
+                                {this.props.unitOfMeasurementList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

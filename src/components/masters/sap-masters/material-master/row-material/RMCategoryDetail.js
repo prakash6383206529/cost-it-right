@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Table
+     Row, Col, Table
 } from 'reactstrap';
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
@@ -9,6 +9,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../../helper';
+import NoContentFound from '../../../../common/NoContentFound';
 
 
 class RMCategoryDetail extends Component {
@@ -44,13 +45,14 @@ class RMCategoryDetail extends Component {
                 <Col>
                     <hr />
                     <Table className="table table-striped" bordered>
+                    { this.props.rowMaterialCategoryDetail && this.props.rowMaterialCategoryDetail.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
                                 <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
                                 <th>{`${CONSTANT.DATE}`}</th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.rowMaterialCategoryDetail && this.props.rowMaterialCategoryDetail.length > 0 &&
                                 this.props.rowMaterialCategoryDetail.map((item, index) => {
@@ -62,6 +64,7 @@ class RMCategoryDetail extends Component {
                                         </tr>
                                     )
                                 })}
+                                {this.props.rowMaterialCategoryDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

@@ -9,7 +9,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import moment from 'moment';
+import NoContentFound from '../../../common/NoContentFound';
+
 
 class CEDoperationMaster extends Component {
     constructor(props) {
@@ -108,12 +109,13 @@ class CEDoperationMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.ADD} ${CONSTANT.CED_OTHER_OPERATION} ${CONSTANT.DETAILS}`} </h5>
+                        <h5>{` ${CONSTANT.CED_OTHER_OPERATION} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
+                        { this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>Supplier Code</th>
@@ -127,7 +129,7 @@ class CEDoperationMaster extends Component {
                                     <th>Initiator</th>
                                     <th>Created On</th>
                                 </tr>
-                            </thead>
+                            </thead>}
                             <tbody >
                                 {this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
                                     this.props.cedOtherOperationList.map((item, index) => {
@@ -150,6 +152,7 @@ class CEDoperationMaster extends Component {
                                             </tr>
                                         )
                                     })}
+                                     {this.props.cedOtherOperationList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>
