@@ -149,8 +149,8 @@ class AddInterestRate extends Component {
     }
 
     /**
-    * @method selectUnitOfMeasurement
-    * @description Used show listing of unit of measurement
+    * @method renderTypeOfListing
+    * @description Used show listing of types
     */
     renderTypeOfListing = (label) => {
         const { ModelTypes, ProfitTypes, OverheadTypes, Plants, Suppliers, Technologies, UnitOfMeasurements } = this.props;

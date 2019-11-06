@@ -100,6 +100,7 @@ class AddFuelDetail extends Component {
             ValidDateTo: endDate,
             Description: values.Description
         }
+        /** Add new detail of Fuel  */
         this.props.createFuelDetailAPI(formData, (response) => {
             if (response && response.data) {
                 if (response && response.data && response.data.Result) {

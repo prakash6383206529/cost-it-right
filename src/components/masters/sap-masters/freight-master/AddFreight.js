@@ -14,7 +14,7 @@ class AddFreight extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            typeOfListing: [],   
+            typeOfListing: [],
         }
     }
 
@@ -23,21 +23,22 @@ class AddFreight extends Component {
         * @description called before rendering the component
         */
     componentWillMount() {
-        this.props.fetchFreightComboAPI(res => {});
+        this.props.fetchFreightComboAPI(res => { });
     }
 
     /**
     * @method componentDidMount
     * @description called after render the component
         */
-    componentDidMount(){
-        const { freightId,isEditFlag } = this.props;
-        if(isEditFlag){
-            this.setState({isEditFlag},()=>{  
-            this.props.getFreightByIdAPI(freightId,true, res => {})   
-        })
-        }else{
-            this.props.getFreightByIdAPI('',false, res => {})   
+    componentDidMount() {
+        const { freightId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            /** Get unit detail of the freight  */
+            this.setState({ isEditFlag }, () => {
+                this.props.getFreightByIdAPI(freightId, true, res => { })
+            })
+        } else {
+            this.props.getFreightByIdAPI('', false, res => { })
         }
     }
 
@@ -85,10 +86,11 @@ class AddFreight extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        if (this.props.isEditFlag) { 
+        /** Update detail of the existing Freight  */
+        if (this.props.isEditFlag) {
             const { freightId } = this.props;
             let formData = {
-                FreightId : freightId,
+                FreightId: freightId,
                 SourceCityId: values.SourceCityId,
                 DestinationCityId: values.DestinationCityId,
                 PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
@@ -108,23 +110,22 @@ class AddFreight extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_FREIGHT_SUCESS);
                     this.toggleModel();
-                    //this.props.getUnitOfMeasurementAPI(res => {});
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        }else{
+        } else { /** Add new detail of the Freight  */
             this.props.createFreightAPI(values, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.FREIGHT_ADDED_SUCCESS);
-                    this.props.getFreightDetailAPI(res => {});
+                    this.props.getFreightDetailAPI(res => { });
                     this.toggleModel();
                 } else {
                     toastr.error(res.data.Message);
                 }
             });
         }
-       
+
     }
 
     /**
@@ -305,14 +306,14 @@ class AddFreight extends Component {
                                                 component={renderNumberInputField}
                                                 className=" withoutBorder"
                                             />
-                                        </Col>  
+                                        </Col>
                                     </Row>
                                     <Row>
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                            {isEditFlag ? 'Update' : 'Save'}
+                                                {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </Row>
@@ -332,10 +333,10 @@ class AddFreight extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, freight }) {
-    const {cityList, plantList } = comman;
+    const { cityList, plantList } = comman;
     const { freightData } = freight;
     let initialValues = {};
-    if(freightData && freightData !== undefined){
+    if (freightData && freightData !== undefined) {
         initialValues = {
             PartTruckLoadRatePerKilogram: freightData.PartTruckLoadRatePerKilogram,
             PartTruckLoadRateCubicFeet: freightData.PartTruckLoadRateCubicFeet,
@@ -351,10 +352,10 @@ function mapStateToProps({ comman, freight }) {
             DestinationCityId: freightData.DestinationCityId,
             PlantId: freightData.PlantId,
             FullTruckLoadRateTrailer: freightData.FullTruckLoadRateTrailer,
-            
+
         }
     }
-    return { cityList, plantList,initialValues }
+    return { cityList, plantList, initialValues }
 }
 
 /**
@@ -363,8 +364,10 @@ function mapStateToProps({ comman, freight }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createFreightAPI,updateFreightAPI, getFreightByIdAPI,
-    fetchFreightComboAPI, getFreightDetailAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createFreightAPI, updateFreightAPI, getFreightByIdAPI,
+    fetchFreightComboAPI, getFreightDetailAPI
+})(reduxForm({
     form: 'AddFreight',
     enableReinitialize: true,
 })(AddFreight));

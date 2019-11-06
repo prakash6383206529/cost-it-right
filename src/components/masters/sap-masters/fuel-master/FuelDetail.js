@@ -66,7 +66,6 @@ class FuelDetail extends Component {
     render() {
         return (
             <div>
-                {/* <Container className="top-margin"> */}
                 <Row>
                     <Col>
                         <h5>{`${CONSTANT.FUEL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
@@ -109,7 +108,6 @@ class FuelDetail extends Component {
                         </Table>
                     </Col>
                 </Row>
-                {/* </Container > */}
             </div>
         );
     }

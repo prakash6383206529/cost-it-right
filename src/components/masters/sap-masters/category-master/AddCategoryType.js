@@ -41,6 +41,7 @@ class AddCategoryType extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        /** Add new detail of the Category Type  */
         this.props.createCategoryTypeAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.CATEGORY_TYPE_ADDED_SUCCESS);

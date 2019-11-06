@@ -46,6 +46,7 @@ class AddFuel extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        /** Add new detail of Fuel  */
         this.props.createFuelAPI(values, (response) => {
             if (response && response.data) {
                 if (response && response.data && response.data.Result) {

@@ -30,8 +30,8 @@ class FuelTypeDetail extends Component {
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteRow
+    * @description confirm delete Fuel
     */
     deleteRow = (index, Id) => {
         const toastrConfirmOptions = {
@@ -44,8 +44,8 @@ class FuelTypeDetail extends Component {
     }
 
     /**
-    * @method confirmDeleteUOM
-    * @description confirm delete unit of measurement
+    * @method confirmDelete
+    * @description confirm delete Fuel
     */
     confirmDelete = (index, Id) => {
         this.props.deleteFuelTypeAPI(index, Id, (res) => {

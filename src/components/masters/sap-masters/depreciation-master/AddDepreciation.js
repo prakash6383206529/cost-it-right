@@ -29,10 +29,11 @@ class AddDepreciation extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        /** Add new detail of the depreciation  */
         this.props.createDepreciationMasterAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DEPRECIATION_ADD_SUCCESS);
-                { this.toggleModel() }
+                this.toggleModel()
             } else {
                 toastr.error(res.data.message);
             }
@@ -122,8 +123,8 @@ class AddDepreciation extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({  }) {
-   
+function mapStateToProps({ }) {
+
 }
 
 /**

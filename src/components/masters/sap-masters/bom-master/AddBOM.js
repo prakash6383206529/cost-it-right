@@ -82,6 +82,7 @@ class AddBOM extends Component {
         selectedParts.map((item, i) => {
             return plantArray.push({ PartId: item.Value });
         });
+        /** Add new detail of the BOM  */
         const formData = {
             BillNumber: values.BillNumber,
             BillOfMaterialCode: values.BillOfMaterialCode,
@@ -98,7 +99,6 @@ class AddBOM extends Component {
             PartId: values.PartId,
             PartsIncludedBOM: plantArray
         }
-        console.log('formData: ', formData);
         this.props.createBOMAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.BOM_ADD_SUCCESS);

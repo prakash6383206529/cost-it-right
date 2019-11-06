@@ -68,6 +68,7 @@ export function getAllBOPAPI(callback) {
                 callback(response);
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
+                dispatch({ type: API_FAILURE });
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });

@@ -107,7 +107,9 @@ class AddBOP extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
         if (this.props.isEditFlag) {
+            /** Update detail of the existing BOP  */
             const { bopId, BOPListing } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
@@ -140,7 +142,7 @@ class AddBOP extends Component {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        } else {
+        } else { /** Add new detail of the BOP  */
             const formData = {
                 BasicRate: values.BasicRate,
                 Quantity: values.Quantity,

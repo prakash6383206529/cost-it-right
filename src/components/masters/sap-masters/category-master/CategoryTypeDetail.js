@@ -27,7 +27,6 @@ class CategoryTypeDetail extends Component {
     render() {
         return (
             <div>
-                {/* <Container className="top-margin"> */}
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
@@ -56,7 +55,6 @@ class CategoryTypeDetail extends Component {
                         </tbody>
                     </Table>
                 </Col>
-                {/* </Container > */}
             </div>
         );
     }

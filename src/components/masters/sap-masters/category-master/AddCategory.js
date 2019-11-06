@@ -44,12 +44,12 @@ class AddCategory extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log('values: ', values);
+        /** Add new detail of the Category  */
         this.props.createCategoryAPI(values, (response) => {
             if (response && response.data) {
                 if (response && response.data && response.data.Result) {
                     toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
-                    { this.toggleModel() }
+                    this.toggleModel()
                 } else {
                     toastr.error(response.data.Message);
                 }

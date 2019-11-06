@@ -37,7 +37,6 @@ class AddCEDotherOperation extends Component {
     */
     componentDidMount() {
         const { uomId, isEditFlag } = this.props;
-
         // if (isEditFlag) {
         //     this.setState({ isEditFlag }, () => {
         //         this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
@@ -63,17 +62,12 @@ class AddCEDotherOperation extends Component {
         const { processOperationValue, SupplierId, uom, transportUOM, PlantId } = this.state;
 
         values.OtherOperationName = processOperationValue.label;
-        //"OperationCode": "string",
-        //"Description": "string",
-        //values.TechnologyId = technologyValue;
         values.SupplierId = SupplierId;
         values.OperationId = processOperationValue.value;
         values.UnitOfMeasurementId = uom;
         values.TrasportUnitOfMeasurementId = transportUOM;
         values.PlantId = PlantId;
-
-        console.log('values: >>sss', values);
-
+        /** Update detail of the existing CED Other Operation  */
         if (this.props.isEditFlag) {
             // console.log('values', values);
             // const { uomId } = this.props;
@@ -93,12 +87,11 @@ class AddCEDotherOperation extends Component {
             //         toastr.error(MESSAGES.SOME_ERROR);
             //     }
             // });
-        } else {
+        } else {  /** Add new detail of the CED Other Operation  */
             this.props.createCEDOtherOperationsAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.CED_OTHER_OPERATION_ADD_SUCCESS);
-                    { this.toggleModel() }
-                    //this.props.getOtherOperationData(() => { });
+                    this.toggleModel()
                 } else {
                     toastr.error(res.data.message);
                 }
@@ -106,31 +99,55 @@ class AddCEDotherOperation extends Component {
         }
     }
 
+    /**
+    * @method processOperationHandler
+    * @description Used to handle process operation
+    */
     processOperationHandler = (newValue, actionMeta) => {
         this.setState({ processOperationValue: newValue });
     };
 
+    /**
+    * @method supplierHandler
+    * @description Used to handle supplier
+    */
     supplierHandler = (e) => {
         console.log('clicked')
         this.setState({ SupplierId: e.target.value });
     }
 
+    /**
+    * @method handleChangeSupplier
+    * @description Used to handle supplier change
+    */
     handleChangeSupplier = (newValue, actionMeta) => {
         this.setState({ supplierValue: newValue });
     };
 
+    /**
+    * @method uomHandler
+    * @description Used to handle UOM
+    */
     uomHandler = (e) => {
         this.setState({
             uom: e.target.value
         })
     }
 
+    /**
+    * @method transportUOMHandler
+    * @description Used to handle transport UOM
+    */
     transportUOMHandler = (e) => {
         this.setState({
             transportUOM: e.target.value
         })
     }
 
+    /**
+    * @method plantHandler
+    * @description Used to handle plant id
+    */
     plantHandler = (e) => {
         this.setState({
             PlantId: e.target.value

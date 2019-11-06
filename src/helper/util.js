@@ -10,7 +10,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 * @param res
 */
 export const apiErrors = (res) => {
-    console.log('apiErrors=> ', res);
+    console.log('apiErrors=> ', res, res.response);
     const response = res ? res.response : undefined;
     if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
@@ -23,11 +23,14 @@ export const apiErrors = (res) => {
             toastr.error('Your session has been expired. Please login again');
         } else if (response && response.status === 403) {
             toastr.error('Server error occurred, please try again after sometime.');
+        } else if (response && response.status === 412) {
+            const errMsg = response && response.data && response.data.Message ? response.data.Message : 'Something went wrong please try again.';
+            toastr.error(errMsg);
         } else if (response && (response.status === 500 || response.status === 501 || response.status === 503 || response.status === 502)) {
             toastr.error('Server error occurred, please try again after sometime.');
-        } else if(response.status && response.status === 404) {
+        } else if (response.status && response.status === 404) {
             toastr.error('this record does not exist.');
-        }else {
+        } else {
             toastr.error('Something went wrong please try again.');
         }
     } else {
