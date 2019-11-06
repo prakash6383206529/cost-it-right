@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, Modal, ModalHeader, ModalBody,Label,Input } from 'reactstrap';
 import { required, email, minLength7, maxLength70 } from "../../../../helper/validation";
 import { renderText, renderSelectField, renderEmailInputField, renderMultiSelectField} from "../../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI,getSupplierByIdAPI } from '../../../../actions/master/Supplier';
@@ -34,11 +34,22 @@ class AddSupplier extends Component {
     * @description called after render the component
     */
     componentDidMount(){
-        const { supplierId,isEditFlag } = this.props;
+        const { supplierId,isEditFlag,supplierData } = this.props;
+        let plantArray = [];
+        if (supplierData && supplierData !== undefined) {
+            supplierData.SelectedPlants.map((val, index) => {
+                const plantObj = supplierData.SelectedPlants.find(item => item.Value === val);
+                return plantArray.push(plantObj);
+            });
+        }
+        this.setState({
+            SelectedPlants: plantArray,
+        });
+
         if(isEditFlag){
             this.setState({isEditFlag},()=>{  
             this.props.getSupplierByIdAPI(supplierId,true, res => {})   
-        })
+            })
         }else{
             this.props.getSupplierByIdAPI('',false, res => {})   
         }
@@ -135,14 +146,45 @@ class AddSupplier extends Component {
             SupplierType: this.state.supplierType,
             SelectedPlants: plantArray
         }
-        this.props.createSupplierAPI(formData, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                 this.toggleModel()
-            } else {
-                toastr.error(res.data.Message);
+        if (this.props.isEditFlag) {
+            const { supplierId } = this.props;
+            formData = {
+                SupplierName: values.SupplierName,
+                SupplierCode: values.SupplierCode,
+                SupplierEmail: values.SupplierEmail,
+                Description: values.Description,
+                CityId: values.CityId,
+                SupplierType: this.state.supplierType,
+                SelectedPlants: plantArray,
+                SupplierId: supplierId,
+                IsActive: true,
             }
-        });
+            this.setState({ isSubmitted: true });
+            this.props.updateSupplierAPI(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
+                    this.toggleModel();
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            });
+        }else{
+            this.props.createSupplierAPI(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
+                     this.toggleModel()
+                } else {
+                    toastr.error(res.data.Message);
+                }
+            });
+        }
+       
+    }
+    supplierTypeHandler = (value) => {
+        console.log('valueeeee', value)
+        this.setState({
+            supplierType: value
+        })
     }
 
     /**
@@ -150,11 +192,11 @@ class AddSupplier extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.SUPPLIER}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Supplier detail' : 'Add Supplier Detail'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -163,6 +205,36 @@ class AddSupplier extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
+                                     <Row className={'supplierRadio'}>
+                                        <Col className='form-group'>
+                                            <Label
+                                                className={'zbcwrapper'}
+                                                onChange={() => this.supplierTypeHandler('zbc')}
+                                                check>
+                                                <Input
+                                                    type="radio"
+                                                    className={'zbc'}
+                                                    checked={this.state.supplierType == 'zbc' ? true : false}
+                                                    name="SupplierType"
+                                                    value="zbc" />{' '}
+                                                ZBC
+                                            </Label>
+                                            {' '}
+                                            <Label
+                                                className={'vbcwrapper'}
+                                                onChange={() => this.supplierTypeHandler('vbc')}
+                                                check>
+                                                <Input
+                                                    type="radio"
+                                                    className={'vbc'}
+                                                    checked={this.state.supplierType == 'vbc' ? true : false}
+                                                    name="SupplierType"
+                                                    value="vbc" />{' '}
+                                                VBC
+                                            </Label>
+                                        </Col>
+                                    </Row>
+                                    <hr/>
                                     <Row>
                                         <Col md="6">
                                             <Field
@@ -250,17 +322,17 @@ class AddSupplier extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                    <Col>
+                                    {/* <Col>
                                         <div onChange={this.supplierType}>
                                             <input type="radio" value="ZBC" name="SupplierType"/> ZBC
                                             <input type="radio" value="VBC" name="SupplierType"/> VBC
                                         </div>
-                                    </Col>
+                                    </Col> */}
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {`${CONSTANT.SAVE}`}
+                                                {isEditFlag ? 'Update' : 'Add'}
                                             </button>
                                         </div>
                                     </Row>
@@ -280,7 +352,7 @@ class AddSupplier extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, supplier }) {
-    const { countryList, stateList, cityList, plantList } = comman;
+    const { cityList, plantList } = comman;
     const { supplierData } = supplier;
     let initialValues = {};
     if(supplierData && supplierData !== undefined){
@@ -290,9 +362,10 @@ function mapStateToProps({ comman, supplier }) {
             SupplierEmail: supplierData.SupplierEmail,
             Description: supplierData.Description,
             CityId: supplierData.CityId,
+            SupplierType: supplierData.SupplierType,
         }
     }
-    return { countryList, stateList, cityList, plantList, initialValues }
+    return { cityList, plantList, initialValues }
 }
 
 /**

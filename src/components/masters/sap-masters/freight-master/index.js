@@ -91,7 +91,7 @@ class FreightMaster extends Component {
         const { isOpen, isEditFlag, freightId } = this.state;
         return (
             <Container className="top-margin">
-            {this.props.loading && <Loader/>}
+            {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.FREIGHT} ${CONSTANT.MASTER}`}</h3>

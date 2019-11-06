@@ -38,7 +38,9 @@ class SupplierMaster extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false })
+        this.setState({ isOpen: false }, () => {
+            this.props.getSupplierDetailAPI(res => {});
+        });
     }
 
     /**

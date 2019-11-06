@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
-import { createInterestRateAPI } from '../../../../actions/master/InterestRateMaster';
+import { createInterestRateAPI, updateInterestRateAPI } from '../../../../actions/master/InterestRateMaster';
 import { fetchCostingHeadsAPI, fetchBOPComboAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
@@ -40,24 +40,30 @@ class AddSupplierInterestRate extends Component {
     */
     onSubmit = (values) => {
         if (this.props.isEditFlag) {
-            // console.log('values', values);
-            // const { uomId } = this.props;
-            // this.setState({ isSubmitted: true });
-            // let formData = {
-            //     Name: values.Name,
-            //     Title: values.Title,
-            //     Description: values.Description,
-            //     Id: uomId
-            // }
-            // this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
-            //         this.toggleModel();
-            //         this.props.getUnitOfMeasurementAPI(res => { });
-            //     } else {
-            //         toastr.error(MESSAGES.SOME_ERROR);
-            //     }
-            // });
+            const { interestRateId } = this.props;
+            let formData = {
+                SupplierInterestRateId: interestRateId,
+                AnnualRateOfInterestPercent: values.AnnualRateOfInterestPercent,
+                RepaymentPeriod: values.RepaymentPeriod,
+                AverageForTheYearPercent: values.AverageForTheYearPercent,
+                ICCPercent: values.ICCPercent,
+                RMInventoryPercent: values.RMInventoryPercent,
+                WIPInventoryPercent: values.WIPInventoryPercent,
+                PaymentTermPercent: values.PaymentTermPercent,
+                SupplierId: values.SupplierId,
+                RMInventoryCostingHeadsId: values.RMInventoryCostingHeadsId,
+                WIPInventoryCostingHeadsId: values.WIPInventoryCostingHeadsId,
+                PaymentTermCostingHeadsId: values.PaymentTermCostingHeadsId,
+                IsActive: true,
+            }
+            this.props.updateInterestRateAPI(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                    this.toggleModel();
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            });
         } else {
             this.props.createInterestRateAPI(values, (res) => {
                 if (res.data.Result) {
@@ -308,8 +314,26 @@ class AddSupplierInterestRate extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps({ comman, interestRate }) {
     const { costingHead , supplierList} = comman;
+    const { interestRateDetail } = interestRate;
+    let initialValues = {};
+    if (interestRateDetail && interestRateDetail !== undefined) {
+        initialValues = {
+            AnnualRateOfInterestPercent: interestRateDetail.AnnualRateOfInterestPercent,
+            RepaymentPeriod: interestRateDetail.RepaymentPeriod,
+            AverageForTheYearPercent: interestRateDetail.AverageForTheYearPercent,
+            ICCPercent: interestRateDetail.ICCPercent,
+            RMInventoryPercent: interestRateDetail.RMInventoryPercent,
+            WIPInventoryPercent: interestRateDetail.WIPInventoryPercent,
+            PaymentTermPercent: interestRateDetail.PaymentTermPercent,
+            SupplierId: interestRateDetail.SupplierId,
+            RMInventoryCostingHeadsId: interestRateDetail.RMInventoryCostingHeadsId,
+            WIPInventoryCostingHeadsId: interestRateDetail.WIPInventoryCostingHeadsId,
+            PaymentTermCostingHeadsId: interestRateDetail.PaymentTermCostingHeadsId,
+            IsActive: interestRateDetail.IsActive,
+        }
+    }
     return { costingHead, supplierList };
 }
 
@@ -321,7 +345,7 @@ function mapStateToProps({ comman }) {
 */
 export default connect(mapStateToProps, {
     fetchCostingHeadsAPI,fetchBOPComboAPI,
-    createInterestRateAPI
+    createInterestRateAPI, updateInterestRateAPI
 })(reduxForm({
     form: 'AddSupplierInterestRate',
     enableReinitialize: true,
