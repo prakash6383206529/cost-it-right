@@ -14,7 +14,7 @@ class AddSupplier extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            supplierType: [],
+            supplierType: 'ZBC',
             cityListing: [],
             selectedPlants: [],
             plantsArray: []
@@ -48,7 +48,11 @@ class AddSupplier extends Component {
 
         if(isEditFlag){
             this.setState({isEditFlag},()=>{  
-            this.props.getSupplierByIdAPI(supplierId,true, res => {})   
+            this.props.getSupplierByIdAPI(supplierId,true, res => {
+                this.setState({
+                    supplierType: res.data.Data.SupplierType
+                });
+            });   
             })
         }else{
             this.props.getSupplierByIdAPI('',false, res => {})   
@@ -209,27 +213,27 @@ class AddSupplier extends Component {
                                         <Col className='form-group'>
                                             <Label
                                                 className={'zbcwrapper'}
-                                                onChange={() => this.supplierTypeHandler('zbc')}
+                                                onChange={() => this.supplierTypeHandler('ZBC')}
                                                 check>
                                                 <Input
                                                     type="radio"
-                                                    className={'zbc'}
-                                                    checked={this.state.supplierType == 'zbc' ? true : false}
+                                                    className={'ZBC'}
+                                                    checked={this.state.supplierType == 'ZBC' ? true : false}
                                                     name="SupplierType"
-                                                    value="zbc" />{' '}
+                                                    value="ZBC" />{' '}
                                                 ZBC
                                             </Label>
                                             {' '}
                                             <Label
                                                 className={'vbcwrapper'}
-                                                onChange={() => this.supplierTypeHandler('vbc')}
+                                                onChange={() => this.supplierTypeHandler('VBC')}
                                                 check>
                                                 <Input
                                                     type="radio"
-                                                    className={'vbc'}
-                                                    checked={this.state.supplierType == 'vbc' ? true : false}
+                                                    className={'VBC'}
+                                                    checked={this.state.supplierType == 'VBC' ? true : false}
                                                     name="SupplierType"
-                                                    value="vbc" />{' '}
+                                                    value="VBC" />{' '}
                                                 VBC
                                             </Label>
                                         </Col>
@@ -322,12 +326,6 @@ class AddSupplier extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                    {/* <Col>
-                                        <div onChange={this.supplierType}>
-                                            <input type="radio" value="ZBC" name="SupplierType"/> ZBC
-                                            <input type="radio" value="VBC" name="SupplierType"/> VBC
-                                        </div>
-                                    </Col> */}
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
