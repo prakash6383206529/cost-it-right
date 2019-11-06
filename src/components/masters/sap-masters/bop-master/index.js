@@ -12,6 +12,7 @@ import {
 } from '../../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
+import NoContentFound from '../../../common/NoContentFound';
 
 class BOPMaster extends Component {
     constructor(props) {
@@ -164,6 +165,7 @@ class BOPMaster extends Component {
                                         </tr>
                                     )
                                 })}
+                            {this.props.BOPListing == undefined && <NoContentFound title={'No Content Found'} />}
                         </tbody>
                     </Table>
                 </Col>

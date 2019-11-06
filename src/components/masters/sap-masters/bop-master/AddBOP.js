@@ -18,7 +18,7 @@ class AddBOP extends Component {
             isEditFlag: false,
             selectedParts: [],
             isActive: false,
-
+            categoryIds: []
         }
     }
 
@@ -37,12 +37,37 @@ class AddBOP extends Component {
     componentDidMount() {
         const { bopId, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.setState({ isEditFlag }, () => {
-                this.props.getBOPByIdAPI(bopId, true, res => { })
+            this.props.getBOPByIdAPI(bopId, true, res => {
+                const responseData = res && res.data && res.data.Data ? res.data.Data : '';
+                this.props.fetchCategoryAPI(responseData.CategoryTypeId, res1 => {
+                    this.getCategoryIdEdit(res1);
+                })
             })
         } else {
             this.props.getBOPByIdAPI('', false, res => { })
         }
+    }
+
+    getCategoryIdEdit = (response) => {
+        const { bopData } = this.props;
+        const categoryList = response.data.SelectList;
+        console.log('categoryList', categoryList)
+        const temp = [];
+
+        categoryList && categoryList.map(item =>
+            temp.push({ Text: item.Text, Value: item.Value })
+        );
+
+        if (temp) {
+            this.setState({
+                categoryIds: temp,
+                isActive: bopData.IsActive
+            }, () => {
+                this.props.change("CategoryId", bopData.CategoryId)
+            })
+        }
+
+
     }
 
     toggleChange = () => {
@@ -120,6 +145,7 @@ class AddBOP extends Component {
                 PartNumber: values.PartNumber,
                 TechnologyId: values.TechnologyId,
                 CategoryId: values.CategoryId,
+                CategoryTypeId: values.CategoryType,
                 Specification: values.Specification,
                 MaterialTypesId: values.MaterialTypesId,
                 SourceSupplierCityId: values.SourceSupplierCityId,
@@ -150,6 +176,7 @@ class AddBOP extends Component {
                 PartNumber: values.PartNumber,
                 TechnologyId: values.TechnologyId,
                 CategoryId: values.CategoryId,
+                CategoryTypeId: values.CategoryType,
                 Specification: values.Specification,
                 MaterialTypesId: values.MaterialTypesId,
                 SourceSupplierCityId: values.SourceSupplierCityId,
@@ -536,7 +563,7 @@ function mapStateToProps({ comman, boughtOutparts }) {
             PartNumber: bopData.PartNumber,
             NetLandedCost: bopData.NetLandedCost,
             TechnologyId: bopData.TechnologyId,
-            CategoryType: bopData.CategoryType,
+            CategoryType: bopData.CategoryTypeId,
             CategoryId: bopData.CategoryId,
             Specification: bopData.Specification,
             MaterialTypesId: bopData.MaterialTypesId,
@@ -551,7 +578,8 @@ function mapStateToProps({ comman, boughtOutparts }) {
     }
     return {
         uniOfMeasurementList, materialTypeList, partList, BOPListing,
-        plantList, supplierList, cityList, technologyList, categoryTypeList, categoryList, bopData, initialValues
+        plantList, supplierList, cityList, technologyList, categoryTypeList,
+        categoryList, bopData, initialValues
     }
 }
 
