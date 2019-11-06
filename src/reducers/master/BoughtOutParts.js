@@ -1,5 +1,6 @@
 import {
     API_REQUEST,
+    API_FAILURE,
     CREATE_BOP_SUCCESS,
     CREATE_BOP_FAILURE,
     GET_BOP_SUCCESS,
@@ -18,6 +19,11 @@ export default function BOPReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: true
+            };
+        case API_FAILURE:
+            return {
+                ...state,
+                loading: false
             };
         case CREATE_BOP_SUCCESS:
             return {

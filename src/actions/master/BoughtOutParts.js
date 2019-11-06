@@ -60,6 +60,7 @@ export function getAllBOPAPI(callback) {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getBOPAPI}`, headers);
         request.then((response) => {
+            console.log('%c 🍛 response: ', 'font-size:20px;background-color: #E41A6A;color:#fff;', response);
             if (response.data.Result) {
                 dispatch({
                     type: GET_BOP_SUCCESS,
@@ -67,7 +68,7 @@ export function getAllBOPAPI(callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                //toastr.error(MESSAGES.SOME_ERROR);
                 dispatch({ type: API_FAILURE });
             }
         }).catch((error) => {
@@ -88,7 +89,6 @@ export function getBOPByIdAPI(bopId, isEditFlag, callback) {
         if (isEditFlag) {
             axios.get(`${API.getBOPAPI}/${bopId}`, headers)
                 .then((response) => {
-                    console.log('response: ', response);
                     if (response.data.Result) {
                         dispatch({
                             type: GET_BOP_DATA_SUCCESS,
