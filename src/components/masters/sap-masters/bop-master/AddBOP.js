@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
@@ -9,6 +9,7 @@ import { createBOPAPI, getBOPByIdAPI, updateBOPAPI, getAllBOPAPI } from '../../.
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
+const selector = formValueSelector('AddBOP');
 
 class AddBOP extends Component {
     constructor(props) {
@@ -190,7 +191,7 @@ class AddBOP extends Component {
             this.props.createBOPAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.BOP_ADD_SUCCESS);
-                    this.toggleModel() 
+                    this.toggleModel()
                 } else {
                     toastr.error(res.data.Message);
                 }
@@ -260,7 +261,10 @@ class AddBOP extends Component {
             );
             return temp;
         }
+    }
 
+    basicRateKeyUp = (e) => {
+        this.props.change("NetLandedCost", e.target.value)
     }
 
     /**
@@ -292,6 +296,7 @@ class AddBOP extends Component {
                                                 component={renderText}
                                                 required={true}
                                                 className="withoutBorder"
+                                                onChange={(e) => this.basicRateKeyUp(e)}
                                             />
                                         </Col>
                                         <Col md="6">
@@ -328,6 +333,9 @@ class AddBOP extends Component {
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
+                                                value={this.props.basicRateSelector}
+                                                disabled={true}
+                                                title={'Basic Rate'}
                                             />
                                         </Col>
                                         <Col md="6">
@@ -555,7 +563,8 @@ class AddBOP extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, boughtOutparts }) {
+function mapStateToProps(state) {
+    const { comman, boughtOutparts } = state;
     const { uniOfMeasurementList, partList, materialTypeList, plantList,
         supplierList, cityList, technologyList, categoryTypeList, categoryList } = comman;
     const { bopData, BOPListing } = boughtOutparts;
