@@ -24,7 +24,14 @@ class AddProcess extends Component {
         const { ProcessId, isEditFlag } = this.props;
         this.props.fetchPlantDataAPI(res => { });
         if (isEditFlag) {
-            this.props.getProcessUnitAPI(ProcessId, true, res => { })
+            const { processUnitData } = this.props;
+            this.props.getProcessUnitAPI(ProcessId, true, res => {
+                console.log("processUnitData", res.data.Data.IsActive)
+                const isActive = res && res.data && res.data.Data && res.data.Data.IsActive;
+                this.setState({
+                    isActiveBox: isActive
+                })
+            })
         } else {
             this.props.getProcessUnitAPI('', false, res => { })
         }

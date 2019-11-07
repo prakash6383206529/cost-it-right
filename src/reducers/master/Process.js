@@ -38,6 +38,7 @@ export default function processReducer(state = initialState, action) {
                 processList: action.payload,
             };
         case GET_PROCESS_UNIT_DATA_SUCCESS:
+            console.log("action.payload", action.payload)
             return {
                 ...state,
                 loading: false,
