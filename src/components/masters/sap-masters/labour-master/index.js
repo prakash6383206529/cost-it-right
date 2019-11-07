@@ -11,6 +11,7 @@ import {
 } from '../../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
+import NoContentFound from '../../../common/NoContentFound';
 
 class LabourMaster extends Component {
     constructor(props) {
@@ -21,6 +22,10 @@ class LabourMaster extends Component {
         }
     }
 
+     /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount() {
         this.props.getLabourDetailAPI(res => {});
     }
@@ -106,6 +111,7 @@ class LabourMaster extends Component {
                 </Row>
                 <Col>
                 <Table className="table table-striped" bordered>
+                { this.props.labourDetail && this.props.labourDetail.length > 0 &&
                     <thead>
                         <tr>
                         <th>{`${CONSTANT.TECHNOLOGY} ${CONSTANT.NAME}`}</th>
@@ -115,7 +121,7 @@ class LabourMaster extends Component {
                         <th>{`${CONSTANT.DATE}`}</th>
                         <th></th>
                         </tr>
-                    </thead>
+                    </thead>}
                     <tbody > 
                         {this.props.labourDetail && this.props.labourDetail.length > 0 &&
                             this.props.labourDetail.map((item, index) => {
@@ -133,6 +139,7 @@ class LabourMaster extends Component {
                                 </tr>
                             )
                         })}
+                        {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                     </tbody>  
                 </Table> 
                 </Col>

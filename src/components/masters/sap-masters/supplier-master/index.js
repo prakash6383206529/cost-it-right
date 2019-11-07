@@ -11,6 +11,7 @@ import {
 } from '../../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
+import NoContentFound from '../../../common/NoContentFound';
 
 class SupplierMaster extends Component {
     constructor(props) {
@@ -109,6 +110,7 @@ class SupplierMaster extends Component {
                 </Row>
                 <Col>
                 <Table className="table table-striped" bordered>
+                {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
                     <thead>
                         <tr>
                         <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.CODE}`}</th>
@@ -121,7 +123,7 @@ class SupplierMaster extends Component {
                         <th>{`${CONSTANT.DATE}`}</th>
                         <th></th>
                         </tr>
-                    </thead>
+                    </thead>}
                     <tbody > 
                         {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
                             this.props.supplierDetail.map((item, index) => {
@@ -142,6 +144,7 @@ class SupplierMaster extends Component {
                                 </tr>
                                 )
                             })}
+                            {this.props.supplierDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                     </tbody>  
                 </Table> 
                 </Col>

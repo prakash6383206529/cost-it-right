@@ -76,7 +76,6 @@ class AddSupplier extends Component {
         });
     };
     
-
     /**
     * @method handleCityChange
     * @description  used to handle city selection
@@ -120,6 +119,10 @@ class AddSupplier extends Component {
         }
     }
 
+    /**
+    * @method renderSelectPlantList
+    * @description Used to render listing of selected plants
+    */
     renderSelectPlantList = () => {
         const { plantList } = this.props;
         const temp = [];
@@ -131,6 +134,7 @@ class AddSupplier extends Component {
         );
         return temp;
     }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -150,6 +154,7 @@ class AddSupplier extends Component {
             SupplierType: this.state.supplierType,
             SelectedPlants: plantArray
         }
+        /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
             const { supplierId } = this.props;
             formData = {
@@ -172,7 +177,7 @@ class AddSupplier extends Component {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        }else{
+        }else{/** Add new detail for creating supplier master **/
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
@@ -184,8 +189,12 @@ class AddSupplier extends Component {
         }
        
     }
+
+    /**
+    * @method supplierTypeHandler
+    * @description Used to handle selection of supplier type
+    */
     supplierTypeHandler = (value) => {
-        console.log('valueeeee', value)
         this.setState({
             supplierType: value
         })
@@ -196,7 +205,7 @@ class AddSupplier extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, reset } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -332,6 +341,10 @@ class AddSupplier extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {isEditFlag ? 'Update' : 'Add'}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>

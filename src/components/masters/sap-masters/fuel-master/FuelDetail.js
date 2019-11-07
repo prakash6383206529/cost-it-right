@@ -8,7 +8,7 @@ import {
 } from '../../../../helper';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
-
+import NoContentFound from '../../../common/NoContentFound';
 
 class FuelDetail extends Component {
     constructor(props) {
@@ -18,6 +18,10 @@ class FuelDetail extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
         this.props.getFuelDetailAPI(res => { });
     }
@@ -74,6 +78,7 @@ class FuelDetail extends Component {
                 <Row>
                     <Col>
                         <Table className="table table-striped" bordered>
+                        { this.props.fuelList && this.props.fuelList.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>{`Rate`}</th>
@@ -85,7 +90,7 @@ class FuelDetail extends Component {
                                     <th>{``}</th>
 
                                 </tr>
-                            </thead>
+                            </thead>}
                             <tbody >
                                 {this.props.fuelList && this.props.fuelList.length > 0 &&
                                     this.props.fuelList.map((item, index) => {
@@ -104,6 +109,7 @@ class FuelDetail extends Component {
                                             </tr>
                                         )
                                     })}
+                                     {this.props.fuelList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </Col>

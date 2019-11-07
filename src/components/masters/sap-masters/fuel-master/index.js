@@ -21,6 +21,10 @@ class FuelMaster extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
         this.props.getFuelDetailAPI(res => { });
     }
@@ -71,6 +75,10 @@ class FuelMaster extends Component {
         })
     }
 
+     /**
+     * @method editFuelDetails
+     * @description  used to edit fuel details
+     */
     editFuelDetails = (editFlag, isModelOpen, FuelId) => {
         this.setState({
             isEditFlag: editFlag,
@@ -79,6 +87,10 @@ class FuelMaster extends Component {
         })
     }
 
+     /**
+     * @method editFuelTypeDetails
+     * @description  used to edit fuel type details
+     */
     editFuelTypeDetails = (editFlag, isModelOpen, FuelId) => {
         this.setState({
             isEditFlag: editFlag,

@@ -7,7 +7,8 @@ import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part'
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant';
+import NoContentFound from '../../../common/NoContentFound';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -106,6 +107,7 @@ class PartMaster extends Component {
                 </Row>
                 <Col>
                 <Table className="table table-striped" bordered>
+                {this.props.partsListing && this.props.partsListing.length > 0 &&
                     <thead>
                         <tr>
                         <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
@@ -116,7 +118,7 @@ class PartMaster extends Component {
                         <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
                         <th></th>
                         </tr>
-                    </thead>
+                    </thead>}
                     <tbody > 
                         {this.props.partsListing && this.props.partsListing.length > 0 &&
                             this.props.partsListing.map((item, index) => {
@@ -135,6 +137,7 @@ class PartMaster extends Component {
                                     </tr>
                                 )
                             })}
+                             {this.props.partsListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                     </tbody> 
                 </Table>
                 </Col>
@@ -159,7 +162,6 @@ class PartMaster extends Component {
 */
 function mapStateToProps({ part}) {
     const { partsListing ,loading } = part;
-    console.log('partsListing: ', partsListing);
     return { partsListing, loading }
 }
 

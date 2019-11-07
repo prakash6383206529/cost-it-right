@@ -69,7 +69,7 @@ class AddMaterial extends Component {
         this.props.createMaterialAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-                { this.toggleModel() }
+                this.toggleModel();
             } else {
                 toastr.error(res.data.Message);
             }
@@ -83,7 +83,7 @@ class AddMaterial extends Component {
     plantHandler = (e) => {
         this.setState({
             PlantId: e.target.value
-        })
+        });
     }
 
     /**

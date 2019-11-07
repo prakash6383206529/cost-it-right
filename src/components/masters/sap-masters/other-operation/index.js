@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import moment from 'moment';
+import NoContentFound from '../../../common/NoContentFound';
 
 class OtherOperationMaster extends Component {
     constructor(props) {
@@ -114,6 +115,7 @@ class OtherOperationMaster extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
+                        { this.props.otherOperationList && this.props.otherOperationList.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>Process Code</th>
@@ -127,7 +129,7 @@ class OtherOperationMaster extends Component {
                                     <th>Modifier</th>
                                     <th>Modified On</th>
                                 </tr>
-                            </thead>
+                            </thead>}
                             <tbody >
                                 {this.props.otherOperationList && this.props.otherOperationList.length > 0 &&
                                     this.props.otherOperationList.map((item, index) => {
@@ -150,6 +152,7 @@ class OtherOperationMaster extends Component {
                                             </tr>
                                         )
                                     })}
+                                    {this.props.otherOperationList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

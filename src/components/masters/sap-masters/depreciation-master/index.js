@@ -10,6 +10,8 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../helper';
+import NoContentFound from '../../../common/NoContentFound';
+import { MESSAGES } from '../../../../config/message';
 
 class DepreciationMaster extends Component {
     constructor(props) {
@@ -51,7 +53,7 @@ class DepreciationMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, uomId } = this.state;
+        const { isOpen } = this.state;
         return (
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader />} */}
@@ -73,6 +75,7 @@ class DepreciationMaster extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
+                        { this.props.depreciationDetail && this.props.depreciationDetail.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>{`${CONSTANT.DEPRECIATION} ${CONSTANT.TYPE}`}</th>
@@ -80,7 +83,7 @@ class DepreciationMaster extends Component {
                                     <th>{`${CONSTANT.DEPRECIATION} ${CONSTANT.RATE}`}</th>
                                     <th>{`${CONSTANT.DATE}`}</th>
                                 </tr>
-                            </thead>
+                            </thead>}
                             <tbody >
                                 {this.props.depreciationDetail && this.props.depreciationDetail.length > 0 &&
                                     this.props.depreciationDetail.map((item, index) => {
@@ -93,6 +96,7 @@ class DepreciationMaster extends Component {
                                             </tr>
                                         )
                                     })}
+                                     {this.props.depreciationDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

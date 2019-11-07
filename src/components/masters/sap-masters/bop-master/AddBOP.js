@@ -190,7 +190,7 @@ class AddBOP extends Component {
             this.props.createBOPAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.BOP_ADD_SUCCESS);
-                    { this.toggleModel() }
+                    this.toggleModel() 
                 } else {
                     toastr.error(res.data.Message);
                 }

@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import moment from 'moment';
+import NoContentFound from '../../../common/NoContentFound';
 
 class OverheadProfit extends Component {
     constructor(props) {
@@ -98,7 +99,7 @@ class OverheadProfit extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.ADD} ${CONSTANT.OVERHEAD_AND_PROFIT}`}</h3>
+                        <h3>{`${CONSTANT.OVERHEAD_AND_PROFIT} ${CONSTANT.MASTER}`}</h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.OVERHEAD_AND_PROFIT}`}</Button>
@@ -108,12 +109,13 @@ class OverheadProfit extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.ADD} ${CONSTANT.OVERHEAD_AND_PROFIT} ${CONSTANT.DETAILS}`} </h5>
+                        <h5>{`${CONSTANT.OVERHEAD_AND_PROFIT} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
+                        { this.props.overheadProfitList && this.props.overheadProfitList.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>Supplier Code</th>
@@ -131,7 +133,7 @@ class OverheadProfit extends Component {
                                     {/* <th>Modifier</th>
                                     <th>Modified On</th> */}
                                 </tr>
-                            </thead>
+                            </thead>}
                             <tbody >
                                 {this.props.overheadProfitList && this.props.overheadProfitList.length > 0 &&
                                     this.props.overheadProfitList.map((item, index) => {
@@ -158,6 +160,7 @@ class OverheadProfit extends Component {
                                             </tr>
                                         )
                                     })}
+                                     {this.props.overheadProfitList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

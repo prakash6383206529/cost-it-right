@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import moment from 'moment';
+import NoContentFound from '../../../common/NoContentFound';
 
 class MHRMaster extends Component {
     constructor(props) {
@@ -114,6 +114,7 @@ class MHRMaster extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
+                        { this.props.mhrMasterList && this.props.mhrMasterList.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>Technology</th>
@@ -129,7 +130,7 @@ class MHRMaster extends Component {
                                     <th>Modifier</th>
                                     <th>Modified On</th>
                                 </tr>
-                            </thead>
+                            </thead>}
                             <tbody >
                                 {this.props.mhrMasterList && this.props.mhrMasterList.length > 0 &&
                                     this.props.mhrMasterList.map((item, index) => {
@@ -154,6 +155,7 @@ class MHRMaster extends Component {
                                             </tr>
                                         )
                                     })}
+                                    {this.props.mhrMasterList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

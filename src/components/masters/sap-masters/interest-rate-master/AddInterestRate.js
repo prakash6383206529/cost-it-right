@@ -102,7 +102,7 @@ class AddInterestRate extends Component {
             this.props.createInterestRateAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.OVERHEAD_PROFIT_ADDED_SUCCESS);
-                    { this.toggleModel() }
+                    { zthis.toggleModel() }
                 } else {
                     toastr.error(res.data.message);
                 }

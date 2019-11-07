@@ -11,6 +11,7 @@ import {
 } from '../../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
+import NoContentFound from '../../../common/NoContentFound';
 
 
 class FreightMaster extends Component {
@@ -24,6 +25,10 @@ class FreightMaster extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
         this.props.getFreightDetailAPI(res => {});
     }
@@ -110,6 +115,7 @@ class FreightMaster extends Component {
                 </Row>
                 <Col>
                 <Table className="table table-striped" bordered>
+                { this.props.freightDetail && this.props.freightDetail.length > 0 &&
                     <thead>
                         <tr>
                         <th>{`${CONSTANT.FREIGHT} ${CONSTANT.TYPE}`}</th>
@@ -138,7 +144,7 @@ class FreightMaster extends Component {
                         <th>{`${CONSTANT.DATE}`}</th>
                         <th>{'Status '}</th>
                         </tr>
-                    </thead>
+                    </thead>}
                     <tbody > 
                         {this.props.freightDetail && this.props.freightDetail.length > 0 &&
                             this.props.freightDetail.map((item, index) => {
@@ -176,6 +182,7 @@ class FreightMaster extends Component {
                                     </tr>
                                 )
                             })}
+                            {this.props.freightDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                     </tbody>  
                 </Table> 
                 </Col>

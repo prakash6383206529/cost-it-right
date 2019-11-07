@@ -52,12 +52,10 @@ class AddProcess extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log('values: ', values);
         const { ProcessId, isEditFlag } = this.props;
         if (isEditFlag) {
             values.ProcessId = ProcessId;
             values.IsActive = this.state.isActiveBox;
-            console.log("update clicked ")
             this.setState({ isSubmitted: true });
             this.props.updateProcessAPI(ProcessId, values, (res) => {
                 if (res.data.Result) {
@@ -68,12 +66,11 @@ class AddProcess extends Component {
                 }
             });
         } else {
-            console.log("add clicked ")
             this.props.createProcessAPI(values, (response) => {
                 if (response && response.data) {
                     if (response && response.data && response.data.Result) {
                         toastr.success(MESSAGES.PROCESS_ADD_SUCCESS);
-                        { this.toggleModel() }
+                        this.toggleModel();
                     } else {
                         toastr.error(response.data.Message);
                     }
@@ -102,7 +99,7 @@ class AddProcess extends Component {
     renderTypeOfListing = (label) => {
         const { plantList } = this.props;
         const temp = [];
-        if (label = 'plant') {
+        if (label === 'plant') {
             plantList && plantList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
@@ -110,12 +107,15 @@ class AddProcess extends Component {
         }
     }
 
+    /**
+    * @method activeHandler
+    * @description Used to handle detail active or not
+    */
     activeHandler = () => {
         this.setState({
             isActiveBox: !this.state.isActiveBox
-        })
+        });
     }
-
 
     /**
     * @method render

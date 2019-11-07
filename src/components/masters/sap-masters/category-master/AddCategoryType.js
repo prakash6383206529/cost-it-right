@@ -45,27 +45,12 @@ class AddCategoryType extends Component {
         this.props.createCategoryTypeAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.CATEGORY_TYPE_ADDED_SUCCESS);
-                { this.toggleModel() }
+                this.toggleModel();
             } else {
                 toastr.error(res.data.message);
             }
         });
     }
-
-    /**
-    * @method selectUnitOfMeasurement
-    * @description Used show listing of unit of measurement
-    */
-    selectUnitOfMeasurement = () => {
-        // const {uniOfMeasurementList} = this.props;
-        // const temp = [];
-        // uniOfMeasurementList && uniOfMeasurementList.map(item =>
-        //   temp.push({ Text: item.Text, Value: item.Value })
-        // );
-        // console.log('temp', uniOfMeasurementList);
-        // return temp;
-    }
-
 
     /**
     * @method render

@@ -9,6 +9,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../../helper';
+import NoContentFound from '../../../../common/NoContentFound';
 
 class RMDetail extends Component {
     constructor(props) {
@@ -19,6 +20,10 @@ class RMDetail extends Component {
         }
     }
 
+     /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount() {
         this.props.getRowMaterialDataAPI(res => { });
     }
@@ -39,6 +44,7 @@ class RMDetail extends Component {
                 <Col>
                     <hr />
                     <Table className="table table-striped" bordered>
+                    { this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`Raw Material Name`}</th>
@@ -46,7 +52,7 @@ class RMDetail extends Component {
                                 <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
                                 <th>{`${CONSTANT.DATE}`}</th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
                                 this.props.rowMaterialDetail.map((item, index) => {
@@ -59,6 +65,7 @@ class RMDetail extends Component {
                                         </tr>
                                     )
                                 })}
+                                {this.props.rowMaterialDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

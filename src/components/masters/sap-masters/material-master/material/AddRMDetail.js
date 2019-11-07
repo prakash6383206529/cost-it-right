@@ -20,9 +20,14 @@ class AddRMDetail extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount(){
         this.props.fetchMaterialComboAPI(res => {});
     }
+    
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -118,7 +123,7 @@ class AddRMDetail extends Component {
             if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
                 this.props.getMaterialDetailAPI(res => {});
-                {this.toggleModel()}
+                this.toggleModel();
             } else {
                 toastr.error(res.data.Message);
             }
@@ -127,7 +132,7 @@ class AddRMDetail extends Component {
 
     /**
     * @method renderTypeOfListing
-    * @description Used show type of listing
+    * @description Used to show type of listing
     */
     renderTypeOfListing = (label) => {
         const {uniOfMeasurementList, rowMaterialList,rmGradeList,rmSpecification,plantList, 
@@ -275,9 +280,7 @@ class AddRMDetail extends Component {
                                                 name={"TechnologyId"}
                                                 type="text"
                                                 placeholder={''}
-                                                component={renderText}
                                                 //validate={[required]}
-                                                component={renderText}
                                                // required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.renderTypeOfListing('technology')}
@@ -294,7 +297,6 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
-                                                component={renderText}
                                                // required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.renderTypeOfListing('material')}
@@ -311,7 +313,6 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
-                                                component={renderText}
                                                // required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.renderTypeOfListing('grade')}
@@ -328,7 +329,6 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
-                                                component={renderText}
                                                // required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.renderTypeOfListing('specification')}
@@ -346,7 +346,6 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                component={renderText}
                                                 options={this.renderTypeOfListing('category')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
@@ -362,7 +361,6 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('supplier')}
                                                 onChange={this.handleTypeofListing}
@@ -379,7 +377,6 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('city')}
                                                 onChange={this.handleTypeofListing}
@@ -396,7 +393,6 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('supplier')}
                                                 onChange={this.handleTypeofListing}
@@ -413,7 +409,6 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('city')}
                                                 onChange={this.handleTypeofListing}
@@ -430,7 +425,6 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 options={this.renderTypeOfListing('uom')}
                                                 onChange={this.handleTypeofListing}
@@ -448,7 +442,6 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                component={renderText}
                                                 options={this.renderTypeOfListing('plant')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}

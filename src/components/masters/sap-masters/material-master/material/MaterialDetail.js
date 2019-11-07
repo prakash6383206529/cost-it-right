@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Table
+     Row, Col, Table
 } from 'reactstrap';
 import { getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
@@ -9,6 +9,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import {
     convertISOToUtcDate,
 } from '../../../../../helper';
+import NoContentFound from '../../../../common/NoContentFound';
 
 class MaterialDetail extends Component {
     constructor(props) {
@@ -19,6 +20,10 @@ class MaterialDetail extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount() {
         this.props.getMaterialDetailAPI(res => { });
     }
@@ -39,6 +44,7 @@ class MaterialDetail extends Component {
                 <Col>
                     <hr />
                     <Table className="table table-striped" bordered>
+                    { this.props.rmDetail && this.props.rmDetail.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.TECHNOLOGY}`}</th>
@@ -59,7 +65,7 @@ class MaterialDetail extends Component {
                                 <th>{`${CONSTANT.REMARK} `}</th>
                                 <th>{`${CONSTANT.DATE}`}</th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.rmDetail && this.props.rmDetail.length > 0 &&
                                 this.props.rmDetail.map((item, index) => {
@@ -85,6 +91,7 @@ class MaterialDetail extends Component {
                                         </tr>
                                     )
                                 })}
+                                {this.props.rmDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>
@@ -102,7 +109,6 @@ function mapStateToProps({ material }) {
     const { rmDetail } = material;
     return { rmDetail }
 }
-
 
 export default connect(
     mapStateToProps, { getMaterialDetailAPI }

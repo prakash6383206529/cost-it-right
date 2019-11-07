@@ -9,6 +9,7 @@ import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
+import NoContentFound from '../../../common/NoContentFound';
 
 class PlantMaster extends Component {
     constructor(props) {
@@ -107,6 +108,7 @@ class PlantMaster extends Component {
                 </Row>
                 <Col>
                     <Table className="table table-striped" bordered>
+                    {this.props.plantDetail && this.props.plantDetail.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
@@ -117,7 +119,7 @@ class PlantMaster extends Component {
                                 <th>{`Status`}</th>
                                 <th>{``}</th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.plantDetail && this.props.plantDetail.length > 0 &&
                                 this.props.plantDetail.map((item, index) => {
@@ -136,6 +138,7 @@ class PlantMaster extends Component {
                                         </tr>
                                     )
                                 })}
+                                {this.props.plantDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

@@ -55,4 +55,5 @@ export const CONSTANT = {
   LOCATION: 'Location',
   FUEL: 'Fuel',
   PROCESS: 'Process',
+  EMPTY_DATA : 'No Content Found'
 };

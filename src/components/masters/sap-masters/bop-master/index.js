@@ -114,6 +114,7 @@ class BOPMaster extends Component {
                 </Row>
                 <Col>
                     <Table className="table table-striped" bordered>
+                    {this.props.BOPListing && this.props.BOPListing.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.TECHNOLOGY}`}</th>
@@ -136,7 +137,7 @@ class BOPMaster extends Component {
                                 <th>{}</th>
                                 {/* <th>{}</th> */}
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.BOPListing && this.props.BOPListing.length > 0 &&
                                 this.props.BOPListing.map((item, index) => {
@@ -165,7 +166,7 @@ class BOPMaster extends Component {
                                         </tr>
                                     )
                                 })}
-                            {this.props.BOPListing == undefined && <NoContentFound title={'No Content Found'} />}
+                            {this.props.BOPListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

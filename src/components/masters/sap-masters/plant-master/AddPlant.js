@@ -21,9 +21,12 @@ class AddPlant extends Component {
         }
     }
 
+    /**
+    * @method toggleModel
+    * @description Used to cancel modal
+    */
     componentDidMount() {
         const { PlantId, isEditFlag } = this.props;
-        // this.props.fetchCountryDataAPI(res => { });
         this.props.fetchSupplierCityDataAPI(() => { })
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
@@ -33,6 +36,7 @@ class AddPlant extends Component {
             this.props.getPlantUnitAPI('', false, res => { })
         }
     }
+
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -64,9 +68,9 @@ class AddPlant extends Component {
     * @description  used to handle city selection
     */
     handleCityChange = (value) => {
-        // this.setState({
-        //     cityListing: value
-        // });
+        this.setState({
+            cityListing: value
+        });
     }
 
     /**
@@ -96,6 +100,7 @@ class AddPlant extends Component {
         }
 
     }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -108,7 +113,6 @@ class AddPlant extends Component {
             Address: values.Address,
             CityId: values.CityId
         }
-        //console.log("formData", formData, values)
         if (this.props.isEditFlag) {
             console.log('values', values);
             const { PlantId } = this.props;
@@ -134,7 +138,7 @@ class AddPlant extends Component {
             this.props.createPlantAPI(formData, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
-                    { this.toggleModel() }
+                    this.toggleModel();
                 } else {
                     toastr.error(res.data.Message);
                 }
@@ -142,6 +146,10 @@ class AddPlant extends Component {
         }
     }
 
+    /**
+    * @method activeHandler
+    * @description Used to handle plant detail active or not
+    */
     activeHandler = () => {
         this.setState({
             isActiveBox: !this.state.isActiveBox
@@ -153,7 +161,7 @@ class AddPlant extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, plantUnitDetail } = this.props;
+        const { handleSubmit, isEditFlag, plantUnitDetail, reset } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -292,6 +300,10 @@ class AddPlant extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {`${CONSTANT.SAVE}`}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>

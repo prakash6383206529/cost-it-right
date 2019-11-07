@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Table
+    Row, Col, Table
 } from 'reactstrap';
 import { getCategoryDataAPI } from '../../../../actions/master/Category';
 import { Loader } from '../../../common/Loader';
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant';
+import NoContentFound from '../../../common/NoContentFound';
+import { MESSAGES } from '../../../../config/message';
 
 class CategoryTypeDetail extends Component {
     constructor(props) {
@@ -16,6 +18,10 @@ class CategoryTypeDetail extends Component {
         }
     }
 
+     /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
         this.props.getCategoryDataAPI(res => { });
     }
@@ -36,12 +42,13 @@ class CategoryTypeDetail extends Component {
                 <Col>
                     <hr />
                     <Table className="table table-striped" bordered>
+                        { this.props.categoryTypeDetail && this.props.categoryTypeDetail.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</th>
                                 <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.categoryTypeDetail && this.props.categoryTypeDetail.length > 0 &&
                                 this.props.categoryTypeDetail.map((item, index) => {
@@ -52,6 +59,7 @@ class CategoryTypeDetail extends Component {
                                         </tr>
                                     )
                                 })}
+                                {this.props.categoryTypeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

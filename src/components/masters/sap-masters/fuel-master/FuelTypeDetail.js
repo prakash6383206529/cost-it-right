@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, Table, Button } from "reactstrap";
+import { Row, Col, Table, Button } from "reactstrap";
 import { getFuelAPI, deleteFuelTypeAPI } from '../../../../actions/master/Fuel';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import {
@@ -8,7 +8,7 @@ import {
 } from '../../../../helper';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
-
+import NoContentFound from '../../../common/NoContentFound';
 
 class FuelTypeDetail extends Component {
     constructor(props) {
@@ -17,6 +17,10 @@ class FuelTypeDetail extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
         this.props.getFuelAPI(res => { });
     }
@@ -73,6 +77,7 @@ class FuelTypeDetail extends Component {
                 </Row>
                 <Col>
                     <Table className="table table-striped" bordered>
+                    { this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
@@ -80,7 +85,7 @@ class FuelTypeDetail extends Component {
                                 <th>{`${CONSTANT.DATE}`}</th>
                                 <th>{``}</th>
                             </tr>
-                        </thead>
+                        </thead>}
                         <tbody >
                             {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
                                 this.props.fuelDetailList.map((item, index) => {
@@ -96,6 +101,7 @@ class FuelTypeDetail extends Component {
                                         </tr>
                                     )
                                 })}
+                                {this.props.fuelDetailList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>
