@@ -34,26 +34,22 @@ class AddSupplier extends Component {
     * @description called after render the component
     */
     componentDidMount(){
-        const { supplierId,isEditFlag,supplierData } = this.props;
-        let plantArray = [];
-        if (supplierData && supplierData !== undefined) {
-            supplierData.SelectedPlants.map((val, index) => {
-                const plantObj = supplierData.SelectedPlants.find(item => item.Value === val);
-                return plantArray.push(plantObj);
-            });
-        }
-        this.setState({
-            SelectedPlants: plantArray,
-        });
-
+        const { supplierId,isEditFlag } = this.props;
         if(isEditFlag){
             this.setState({isEditFlag},()=>{  
-            this.props.getSupplierByIdAPI(supplierId,true, res => {
-                this.setState({
-                    supplierType: res.data.Data.SupplierType
-                });
-            });   
-            })
+                this.props.getSupplierByIdAPI(supplierId,true, res => {
+                let plantArray = [];
+                const AssociatedPlants = res.data.Data.AssociatedPlants;
+                    AssociatedPlants.map((Value, index) => {
+                        const plantObj = AssociatedPlants.find(item => item.PlantId === Value.PlantId);
+                        return plantArray.push({ Text: plantObj.PlantName, Value: plantObj.PlantId });
+                    });
+                    this.setState({
+                        supplierType: res.data.Data.SupplierType,
+                        selectedPlants: plantArray
+                    });
+                });   
+            });
         }else{
             this.props.getSupplierByIdAPI('',false, res => {})   
         }
