@@ -106,7 +106,7 @@ export function getProcessUnitAPI(processId, isEditFlag, callback) {
                     if (response.data.Result === true) {
                         dispatch({
                             type: GET_PROCESS_UNIT_DATA_SUCCESS,
-                            payload: response.data.Data[0],
+                            payload: response.data.Data,
                         });
                         callback(response);
                     } else {

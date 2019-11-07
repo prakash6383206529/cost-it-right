@@ -130,7 +130,7 @@ class SideBar extends Component {
                   <a className="dropdown-item" href='/UOMMaster'>UOM Master</a>
                   <a className="dropdown-item" href="/PartMaster">Part Master</a>
                   <a className="dropdown-item" href='/category-master'>Category Master</a>
-                  <a className="dropdown-item" href="/row-material-master">Row Material Master</a>
+                  <a className="dropdown-item" href="/row-material-master">Raw Material Master</a>
                   <a className="dropdown-item" href="/plant-master">Plant Master</a>
                   <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
                   <a className="dropdown-item" href="/bom-master">BOM Master</a>
@@ -165,7 +165,7 @@ class SideBar extends Component {
                   <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
                   <a className="dropdown-item" href="/mhr-master">MHR Master</a> */}
                   <a className="dropdown-item" href="/operation-master">Operation</a>
-                  <a className="dropdown-item" href="/material-master">Material Master</a>
+                  <a className="dropdown-item" href="/material-master">Raw Material Detail Master</a>
                   <a className="dropdown-item" href="/freight-master">Freight Master</a>
                   <a className="dropdown-item" href="/labour-master">Labour Master</a>
                   <a className="dropdown-item" href="/overhead-profit-master">Overhead and Profit</a>

@@ -77,34 +77,34 @@ class RowMaterialMaster extends Component {
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
-                    <Col>
+                    <Col sm="4">
                         <h3>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER}`}</h3>
                     </Col>
-                    <Col>
+                    <Col sm="2">
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL} `}</Button>
                     </Col>
-                    <Col>
+                    <Col sm="2">
                         <Button onClick={this.openCategorymodel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY} `}</Button>
                     </Col>
-                    <Col>
+                    <Col sm="2">
                         <Button onClick={this.openGrademodel}>{`${CONSTANT.ADD} ${CONSTANT.GRADE} `}</Button>
                     </Col>
-                    <Col>
+                    <Col sm="2">
                         <Button onClick={this.openSpecificationmodel}>{`${CONSTANT.ADD} ${CONSTANT.SPECIFICATION} `}</Button>
                     </Col>
                 </Row>
                 <hr />
-                <Row>
+                {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
                     </Col>
-                </Row>
+                </Row> */}
                 <Col>
                     <div>
                         <Nav tabs className="subtabs">
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Row Material Details
+                                    Raw Material Details
                                 </NavLink>
                             </NavItem>
 

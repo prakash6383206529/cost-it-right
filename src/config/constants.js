@@ -49,9 +49,9 @@ export const API = {
 
   //Api's for material
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
-  createMaterial: `${BASE_URL}/masters-material/add-costing-raw-matrial-details`,
+  createMaterial: `${BASE_URL}/masters-raw-material/add-costing-raw-material-details`,
   getMaterialType: `${BASE_URL}/masters-material/get-material-type`,
-  getMaterial: `${BASE_URL}/masters-material/get-costing-raw-matrials`,
+  getMaterial: `${BASE_URL}/masters-raw-material/get-costing-raw-material-details`,
 
   //Api for Unit of measurement master
   createUOMAPI: `${BASE_URL}/masters-unit-of-measurement/create`,

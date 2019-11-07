@@ -36,7 +36,7 @@ export const CONSTANT = {
   CED_OTHER_OPERATION: 'CED Other Operation',
   MHR: 'MHR',
   OPERATION: 'Operation',
-  MATERIAL_MASTER: 'Material',
+  MATERIAL_MASTER: 'Raw Material',
   BASIC: 'Basic',
   RATE: 'Rate',
   SCRAP: 'Scrap',

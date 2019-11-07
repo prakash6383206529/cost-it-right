@@ -103,7 +103,7 @@ class ProcessMaster extends Component {
                 </Row>
                 <hr />
                 <Col>
-                    <Table className="table table-striped" bordered>
+                    <Table className="table table-striped" hover bordered>
                         <thead>
                             <tr>
                                 <th>{`${CONSTANT.PROCESS} ${CONSTANT.NAME}`}</th>

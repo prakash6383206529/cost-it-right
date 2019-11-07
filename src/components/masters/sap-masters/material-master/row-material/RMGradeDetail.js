@@ -31,11 +31,11 @@ class RMGradeDetail extends Component {
         return (
             <div>
                 {this.props.loading && <Loader />}
-                <Row>
+                {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
                     </Col>
-                </Row>
+                </Row> */}
                 <Col>
                     <hr />
                     <Table className="table table-striped" bordered>

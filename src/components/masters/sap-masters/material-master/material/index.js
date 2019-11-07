@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink,Button } from "reactstrap";
+import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
 import AddMaterialType from './AddMaterialType';
 import AddRMDetail from './AddRMDetail';
 import MaterialDetail from './MaterialDetail';
@@ -27,10 +27,10 @@ class MaterialMaster extends Component {
     openModel = () => {
         this.setState({ isOpen: true })
     }
-     /**
-     * @method openRMModel
-     * @description  used to open filter form 
-     */
+    /**
+    * @method openRMModel
+    * @description  used to open filter form 
+    */
     openRMModel = () => {
         this.setState({ isRMOpen: true })
     }
@@ -43,10 +43,10 @@ class MaterialMaster extends Component {
         this.setState({ isOpen: false, isRMOpen: false })
     }
 
-     /**
-    * @method toggle
-    * @description toggling the tabs
-    */
+    /**
+   * @method toggle
+   * @description toggling the tabs
+   */
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
@@ -60,13 +60,13 @@ class MaterialMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen,isRMOpen } = this.state;
+        const { isOpen, isRMOpen } = this.state;
         return (
             <Container className="top-margin">
-            {/* {this.props.loading && <Loader/>} */}
+                {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.MATERIAL_MASTER} ${CONSTANT.MASTER}`}</h3>
+                        <h3>{`${CONSTANT.MATERIAL_MASTER} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL_MASTER} ${CONSTANT.TYPE}`}</Button>
@@ -76,33 +76,33 @@ class MaterialMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
-                <Row>
+                {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.MATERIAL_MASTER} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
-                </Row>
+                </Row> */}
                 <div>
-                <Nav tabs className="subtabs">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Material Details
+                    <Nav tabs className="subtabs">
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                Material Details
                                 </NavLink>
-                            </NavItem>
+                        </NavItem>
 
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Material Type Details
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                Material Type Details
                                 </NavLink>
-                            </NavItem>
-                        </Nav>
-                        <TabContent activeTab={this.state.activeTab}>
-                            <TabPane tabId="1">
-                                <MaterialDetail/>
-                            </TabPane>
-                            <TabPane tabId="2">
-                               <MaterialTypeDetail/> 
-                            </TabPane>
-                        </TabContent>
+                        </NavItem>
+                    </Nav>
+                    <TabContent activeTab={this.state.activeTab}>
+                        <TabPane tabId="1">
+                            <MaterialDetail />
+                        </TabPane>
+                        <TabPane tabId="2">
+                            <MaterialTypeDetail />
+                        </TabPane>
+                    </TabContent>
                 </div>
                 {isOpen && (
                     <AddMaterialType
