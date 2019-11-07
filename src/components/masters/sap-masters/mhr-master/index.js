@@ -98,7 +98,7 @@ class MHRMaster extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.ADD} ${CONSTANT.MHR}`}</h3>
+                        <h3>{`${CONSTANT.MHR} ${CONSTANT.MASTER} `}</h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.MHR}`}</Button>

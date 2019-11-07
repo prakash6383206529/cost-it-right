@@ -98,7 +98,7 @@ class OperationMaster extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.ADD} ${CONSTANT.OPERATION}`}</h3>
+                        <h3>{`${CONSTANT.OPERATION} ${CONSTANT.MASTER}`}</h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.OPERATION}`}</Button>

@@ -70,11 +70,12 @@ class FuelTypeDetail extends Component {
         return (
             <div>
                 {/* <Container className="top-margin"> */}
-                <Row>
+                {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.FUEL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
-                </Row>
+                </Row> */}
+                <hr/>
                 <Col>
                     <Table className="table table-striped" bordered>
                     { this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&

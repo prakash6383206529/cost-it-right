@@ -22,7 +22,9 @@ class PlantMaster extends Component {
     }
 
     componentDidMount() {
-        this.props.getPlantDataAPI(res => { });
+        this.props.getPlantDataAPI(res => { 
+            
+        });
     }
     /**
      * @method openModel

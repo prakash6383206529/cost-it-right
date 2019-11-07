@@ -99,7 +99,7 @@ class InterestRate extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.ADD} ${CONSTANT.INTEREST_RATE}`}</h3>
+                        <h3>{`${CONSTANT.INTEREST_RATE} ${CONSTANT.MASTER} `}</h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.INTEREST_RATE}`}</Button>
@@ -109,7 +109,7 @@ class InterestRate extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.ADD} ${CONSTANT.INTEREST_RATE} ${CONSTANT.DETAILS}`} </h5>
+                        <h5>{`${CONSTANT.INTEREST_RATE} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row>
                 <Col>
