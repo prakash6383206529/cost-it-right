@@ -33,6 +33,8 @@ import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import DepreciationMaster from './masters/sap-masters/depreciation-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
 
+import Costing from './costing';
+
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
 import termCondition from "./about/term&condition";
@@ -285,6 +287,14 @@ class Main extends Component {
                 path="/interest-rate-master"
                 render={props => (
                   <InterestRate
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/costing"
+                render={props => (
+                  <Costing
                     {...props}
                   />
                 )}

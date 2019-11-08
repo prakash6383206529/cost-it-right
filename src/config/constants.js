@@ -171,6 +171,11 @@ export const API = {
   updateInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
   deleteInterestRateAPI: `${BASE_URL}/supplier/delete-supplier-interest-rate`,
   createInterestRateAPI: `${BASE_URL}/supplier/create-supplier-interest-rate`,
+
+  //Api's for costing
+  getPlantCombo: `${BASE_URL}/costing-sheet-metal/get-plant-combo-select-list`,
+  getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
+  createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
 }
 
 
@@ -333,3 +338,8 @@ export const GET_DEPRICIATION_SUCCESS = 'GET_LABOUR_SUCCESS';
 export const GET_INTEREST_RATE_SUCCESS = 'GET_INTEREST_RATE_SUCCESS';
 export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DATA_SUCCESS';
 export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS';
+
+//for costing 
+export const GET_PLANT_COMBO_SUCCESS = 'GET_PLANT_COMBO_SUCCESS';
+export const GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS = 'GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS';
+export const CREATE_PART_WITH_SUPPLIER_SUCCESS = 'CREATE_PART_WITH_SUPPLIER_SUCCESS';

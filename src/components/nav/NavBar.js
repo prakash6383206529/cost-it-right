@@ -184,7 +184,7 @@ class SideBar extends Component {
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Technology</a>
                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a className="dropdown-item" href='#'>Sheet metal</a>
+                  <a className="dropdown-item" href='/costing'>Sheet metal</a>
                 </div>
               </li>
               {/* <UncontrolledDropdown nav inNavbar>

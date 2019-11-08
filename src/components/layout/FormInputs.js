@@ -375,9 +375,7 @@ export function renderTextInputField(field) {
 @desc: Render select input
 */
 export function renderSelectField(field) {
-  const {
-    meta: { touched, error, active }
-  } = field;
+  const { disabled, meta: { touched, error, active } } = field;
   const inputbox = `inputbox ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `form-control ${
@@ -385,6 +383,7 @@ export function renderSelectField(field) {
     }`;
   let optionKey = field.optionValue;
   let optionText = field.optionLabel;
+  const disabledSelect = disabled ? true : false;
   return (
     <div className={className}>
       <label>
@@ -396,7 +395,7 @@ export function renderSelectField(field) {
           )}
       </label>
       <div className={inputbox}>
-        <select className={InputClassName} {...field.input}>
+        <select disabled={disabledSelect} className={InputClassName} {...field.input}>
           {field.isSelect === false &&
             <option value="">Select</option>
           }
