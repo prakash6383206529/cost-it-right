@@ -59,7 +59,7 @@ class DepreciationMaster extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.ADD} ${CONSTANT.DEPRECIATION}`}</h3>
+                        <h3>{`${CONSTANT.DEPRECIATION} ${CONSTANT.MASTER} `}</h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.DEPRECIATION}`}</Button>

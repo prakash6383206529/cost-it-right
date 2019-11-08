@@ -99,7 +99,7 @@ class CEDoperationMaster extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.ADD} ${CONSTANT.CED_OTHER_OPERATION}`}</h3>
+                        <h3>{`${CONSTANT.CED_OTHER_OPERATION} ${CONSTANT.MASTER} `}</h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.CED_OTHER_OPERATION}`}</Button>

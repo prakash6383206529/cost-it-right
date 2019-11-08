@@ -696,6 +696,14 @@ export function fetchFreightComboAPI(callback) {
                     type: GET_PLANT_SUCCESS,
                     payload: response.data.DynamicData.Plants,
                 });
+                dispatch({
+                    type: GET_SUPPLIER_SUCCESS,
+                    payload: response.data.DynamicData.Suppliers,
+                });
+                dispatch({
+                    type: GET_COSTING_HEAD_SUCCESS,
+                    payload: response.data.DynamicData.CostingHeads,
+                });
                 callback(response);
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);

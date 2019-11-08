@@ -70,11 +70,12 @@ class FuelDetail extends Component {
     render() {
         return (
             <div>
-                <Row>
+                {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.FUEL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
-                </Row>
+                </Row> */}
+                <hr/>
                 <Row>
                     <Col>
                         <Table className="table table-striped" bordered>

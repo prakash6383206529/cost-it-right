@@ -5,7 +5,7 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from
 import { required } from "../../../../helper/validation";
 import { renderSelectField, renderNumberInputField, renderText } from "../../../layout/FormInputs";
 import { createFreightAPI, getFreightDetailAPI, updateFreightAPI, getFreightByIdAPI } from '../../../../actions/master/Freight';
-import { fetchFreightComboAPI, fetchCostingHeadsAPI, fetchSupplierDataAPI } from '../../../../actions/master/Comman';
+import { fetchFreightComboAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -26,8 +26,6 @@ class AddFreight extends Component {
     */
     componentWillMount() {
         this.props.fetchFreightComboAPI(res => { });
-        this.props.fetchCostingHeadsAPI('--Select-Cost', () => { });
-        this.props.fetchSupplierDataAPI(() => { })
     }
 
     /**
@@ -39,7 +37,11 @@ class AddFreight extends Component {
         if (isEditFlag) {
             /** Get unit detail of the freight  */
             this.setState({ isEditFlag }, () => {
-                this.props.getFreightByIdAPI(freightId, true, res => { })
+                this.props.getFreightByIdAPI(freightId, true, res => { 
+                    // this.setState({
+                    //     freightType: res.data.Data.FreightType
+                    // });
+                })
             })
         } else {
             this.props.getFreightByIdAPI('', false, res => { })
@@ -158,6 +160,7 @@ class AddFreight extends Component {
             this.props.updateFreightAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_FREIGHT_SUCESS);
+                    this.props.getFreightDetailAPI(res => { });
                     this.toggleModel();
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
@@ -649,7 +652,7 @@ function mapStateToProps({ comman, freight }) {
 */
 export default connect(mapStateToProps, {
     createFreightAPI, updateFreightAPI, getFreightByIdAPI,
-    fetchFreightComboAPI, getFreightDetailAPI, fetchCostingHeadsAPI, fetchSupplierDataAPI
+    fetchFreightComboAPI, getFreightDetailAPI
 })(reduxForm({
     form: 'AddFreight',
     enableReinitialize: true,

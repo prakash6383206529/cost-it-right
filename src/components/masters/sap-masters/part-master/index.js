@@ -110,6 +110,7 @@ class PartMaster extends Component {
                 {this.props.partsListing && this.props.partsListing.length > 0 &&
                     <thead>
                         <tr>
+                        {/* <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
                         <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
                         <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th> 
                         <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
@@ -124,6 +125,7 @@ class PartMaster extends Component {
                             this.props.partsListing.map((item, index) => {
                                 return (
                                     <tr key= {index}>
+                                        {/* <td >{item.PlantName}</td> */}
                                         <td >{item.PartNumber}</td>
                                         <td>{item.PartName}</td> 
                                         <td>{item.MaterialType ? item.MaterialType : 'N/A'}</td>
