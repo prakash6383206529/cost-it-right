@@ -78,11 +78,39 @@ export function createPartWithSupplier(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.createPartWithSupplier, data, headers);
         request.then((response) => {
+            console.log('%c 🍚 response: create', response);
+            // if (response.data.Result) {
+            //     dispatch({
+            //         type: CREATE_PART_WITH_SUPPLIER_SUCCESS,
+            //         payload: response.data.Data
+            //     });
+            // } else {
+            //     dispatch({ type: API_FAILURE });
+            //     if (response.data.Message) {
+            //         toastr.error(response.data.Message);
+            //     }
+            // }
+            callback(response);
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method createFreightAPI
+ * @description create freight master
+ */
+export function checkPartWithTechnology(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkPartWithTechnology, data, headers);
+        request.then((response) => {
+            console.log("response >>", response)
             if (response.data.Result) {
-                dispatch({
-                    type: CREATE_PART_WITH_SUPPLIER_SUCCESS,
-                    payload: response.data.Data
-                });
                 callback(response);
             } else {
                 dispatch({ type: API_FAILURE });

@@ -176,6 +176,7 @@ export const API = {
   getPlantCombo: `${BASE_URL}/costing-sheet-metal/get-plant-combo-select-list`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
+  checkPartWithTechnology: `${BASE_URL}/costing-sheet-metal/check-part-with-technology`,
 }
 
 

@@ -15,7 +15,8 @@ class Costing extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
-            activeTab: '1'
+            activeTab: '1',
+            supplierId: ''
         }
     }
 
@@ -39,12 +40,20 @@ class Costing extends Component {
         }
     }
 
+    supplierCosting = (supplierId) => {
+        console.log('%c 🦑 supplierId: ', 'font-size:20px;background-color: #B03734;color:#fff;', supplierId);
+        this.setState({
+            activeTab: '2',
+            supplierId: supplierId
+        });
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag } = this.state;
+        const { isOpen, isEditFlag, supplierId } = this.state;
         return (
             <Container>
                 {this.props.loading && <Loader />}
@@ -71,11 +80,13 @@ class Costing extends Component {
                     <TabContent activeTab={this.state.activeTab}>
                         <TabPane tabId="1">
                             <Col>
-                                <CostSummary />
+                                <CostSummary
+                                    supplierCosting={this.supplierCosting} />
                             </Col>
                         </TabPane>
                         <TabPane tabId="2">
-                            <CostWorking />
+                            <CostWorking
+                                supplierId={supplierId} />
                         </TabPane>
                     </TabContent>
 

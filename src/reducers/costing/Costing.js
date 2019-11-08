@@ -35,7 +35,7 @@ export default function costingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                supplierDetail: action.payload
+                existingSupplierDetail: action.payload
             };
         case CREATE_PART_WITH_SUPPLIER_SUCCESS:
             return {
