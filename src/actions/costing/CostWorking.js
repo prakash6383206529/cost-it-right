@@ -6,7 +6,8 @@ import {
     GET_WEIGHT_CALC_INFO_SUCCESS,
     CREATE_WEIGHT_CALC_COSTING_SUCCESS,
     UPDATE_WEIGHT_CALC_SUCCESS,
-    GET_WEIGHT_CALC_LAYOUT_SUCCESS
+    GET_WEIGHT_CALC_LAYOUT_SUCCESS,
+    GET_COSTING_BY_SUPPLIER_SUCCESS
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -112,5 +113,31 @@ export function updateWeightCalculationCosting(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method getAllBOMAPI
+ * @description get all bill of material list
+ */
+export function getCostingBySupplier(supplierId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCostingBySupplier}/${supplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_BY_SUPPLIER_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
