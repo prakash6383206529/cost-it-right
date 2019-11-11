@@ -418,6 +418,7 @@ export function renderSelectField(field) {
 @desc: Render number input
 */
 export function renderNumberInputField(field) {
+  console.log('field: ', field.Value);
   const {
     input,
     meta: { touched, error },
@@ -442,6 +443,7 @@ export function renderNumberInputField(field) {
           type="number"
           className={InputClassName}
           maxLength={field.maxLength}
+          value = {field.Value}
           {...input}
         />
         {/* <div className="input-group-prepend">

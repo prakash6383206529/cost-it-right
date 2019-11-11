@@ -13,7 +13,18 @@ class AddWeightCosting extends Component {
         super(props);
         this.state = {
             weightType: '',
-            typeOfListing: []
+            typeOfListing: [],
+            thickness: '',
+            width: '',
+            length: '',
+            total: 0,
+            meter: 0,
+            milimeter: 0,
+            feet: 0,
+            inch: 0,
+            surfaceArea: '',
+            overlapArea: '',
+            NFS: ''
         }
     }
 
@@ -57,14 +68,15 @@ class AddWeightCosting extends Component {
             return temp;
         }
     }
+
     /**
     * @method handleTypeofListing
     * @description  used to handle type of listing selection
-        */
+    */
        handleTypeofListing = (e) => {
         this.setState({
             typeOfListing: e
-        })
+        });
     }
 
     /**
@@ -72,6 +84,8 @@ class AddWeightCosting extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        console.log('value', values);
+        
          /** Update detail of the existing UOM  */
         // if (this.props.isEditFlag) {
         //     const { uomId } = this.props;
@@ -94,7 +108,7 @@ class AddWeightCosting extends Component {
         //     });
         // } else {
         //      /** Add detail for creating new UOM  */
-        //     this.props.createUnitOfMeasurementAPI(values, (res) => {
+        //     this.props.createWeightCalculationCosting(values, (res) => {
         //         if (res.data.Result === true) {
         //             toastr.success(MESSAGES.UOM_ADD_SUCCESS);
         //             this.toggleModel();
@@ -105,6 +119,63 @@ class AddWeightCosting extends Component {
         //     });
         // }
     }
+    /**
+    * @method handleCalculation
+    * @description  handle all calculation
+    */
+    handleCalculation = () => {
+        const {thickness, width, length, surfaceArea, overlapArea} = this.state;
+        const WT =((thickness*width*length*7.85)/1000000).toFixed(6);
+        const netSurfaceArea = overlapArea-surfaceArea;
+        this.setState({total : WT, NFS: netSurfaceArea});
+    }
+    /**
+    * @method onChangeSurfaceArea
+    * @description  handle surface area change event
+    */
+    onChangeSurfaceArea = (e) => {
+        this.setState({surfaceArea : e.target.value}, ()=> {this.handleCalculation()});
+    }
+    /**
+    * @method onChangeOverlapArea
+    * @description  handle overlap area change event
+    */
+    onChangeOverlapArea = (e) => {
+        this.setState({overlapArea : e.target.value}, ()=> {this.handleCalculation()});
+    }
+    /**
+    * @method handleChangeThickness
+    * @description  handle thickness change event
+    */
+    handleChangeThickness = (e)=>{
+        this.setState({thickness : e.target.value}, ()=> {this.handleCalculation()});
+    }
+    /**
+    * @method handleChangeWidth
+    * @description  handle width change event
+    */
+    handleChangeWidth = (e)=>{
+        this.setState({width : e.target.value}, ()=> {this.handleCalculation()});
+    }
+    /**
+    * @method handleChangeLength
+    * @description  handle length change event
+    */
+    handleChangeLength = (e)=>{
+        this.setState({length : e.target.value}, ()=> {this.handleCalculation()});
+    }
+
+    /** handle milimeter change event */
+    uomCalculatorMeter = (e) => { this.setState({meter: e.target.value}) }
+
+    /** handle milimeter change event */
+    uomCalculatorMiliMeter = (e) => {this.setState({milimeter: e.target.value})}
+
+     /** handle feet change event */
+    uomCalculatorFeetMeter = (e) => {this.setState({feet: e.target.value})}
+
+     /** handle inch change event */
+    uomCalculatorInchMeter = (e) => {this.setState({inch: e.target.value})}
 
     /**
     * @method render
@@ -113,10 +184,12 @@ class AddWeightCosting extends Component {
     render() {
         const { handleSubmit, isEditFlag, reset } = this.props;
         const { weightType } = this.state;
+        //console.log('this.state', this.state);
+        
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update UOM' : 'Add UOM'}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Weight Costing' : 'Add Weight Costing'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -124,7 +197,46 @@ class AddWeightCosting extends Component {
                                     noValidate
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
+                                > 
+                                    <Label>UOM Calculator</Label>
+                                    <Row>
+                                        <Col md="3">
+                                            <Label>m2</Label>
+                                            <input
+                                                type="number"
+                                                onChange={this.uomCalculatorMeter}
+                                                //value = {this.state.total}
+                                                className = 'form-control'
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Label>mm2</Label>
+                                            <input
+                                                type="number"
+                                                onChange={this.uomCalculatorMiliMeter}
+                                                //value = {this.state.total}
+                                                className = 'form-control'
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Label>ft2</Label>
+                                            <input
+                                                type="number"
+                                                onChange={this.uomCalculatorFeetMeter}
+                                                //value = {this.state.total}
+                                                className = 'form-control'
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Label>inch2</Label>
+                                            <input
+                                                type="number"
+                                                onChange={this.uomCalculatorInchMeter}
+                                                //value = {this.state.total}
+                                                className = 'form-control'
+                                            />
+                                        </Col>
+                                    </Row>
                                     <Label>Layouting</Label>
                                     <hr/>
                                      <Row className={'supplierRadio'}>
@@ -292,16 +404,14 @@ class AddWeightCosting extends Component {
                                     </Row>
                                     <Row>
                                         <Col md="3">
-                                            <Field
+                                            <Label>GrossWeight</Label>
+                                            <input
                                                 label="GrossWeight"
                                                 name={"GrossWeight"}
-                                                type="text"
-                                                readOnly
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderNumberInputField}
-                                                //required={true}
-                                                //className=" withoutBorder"
+                                                type="number"
+                                                value = {this.state.total}
+                                                className = 'form-control'
+                                                disabled = {true}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -311,6 +421,7 @@ class AddWeightCosting extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
+                                                onChange={this.onChangeFinishWeightArea}
                                                 component={renderNumberInputField}
                                                 //required={true}
                                                // className=" withoutBorder"
@@ -322,10 +433,11 @@ class AddWeightCosting extends Component {
                                                 label="SurfaceArea"
                                                 name={"SurfaceArea"}
                                                 type="text"
+                                                onChange={this.onChangeSurfaceArea}
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                //required={true}
+                                                required={true}
                                                 //className=" withoutBorder"
                                             />
                                         </Col>}
@@ -335,6 +447,7 @@ class AddWeightCosting extends Component {
                                                 label="OverlapArea"
                                                 name={"OverlapArea"}
                                                 type="text"
+                                                onChange={this.onChangeOverlapArea}
                                                 placeholder={''}
                                                 //validate={[required]}
                                                 component={renderNumberInputField}
@@ -344,16 +457,14 @@ class AddWeightCosting extends Component {
                                         </Col>}
                                         {weightType === 'BRACKET_PART' &&
                                         <Col md="6">
-                                            <Field
-                                                label="NetSurfaceArea"
+                                            <Label>NetSurfaceArea</Label>
+                                            <input
+                                                label="GrossWeight"
                                                 name={"NetSurfaceArea"}
-                                                type="text"
-                                                readOnly
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderNumberInputField}
-                                                //required={true}
-                                                //className=" withoutBorder"
+                                                type="number"
+                                                value = {this.state.NFS}
+                                                className = 'form-control'
+                                                disabled = {true}
                                             />
                                         </Col>}
                                     </Row>
@@ -365,6 +476,7 @@ class AddWeightCosting extends Component {
                                                 name={"Thickness"}
                                                 type="text"
                                                 placeholder={''}
+                                                onChange={this.handleChangeThickness}
                                                 //validate={[required]}
                                                 component={renderNumberInputField}
                                                 //required={true}
@@ -378,6 +490,7 @@ class AddWeightCosting extends Component {
                                                 name={"Width"}
                                                 type="text"
                                                 placeholder={''}
+                                                onChange={this.handleChangeWidth}
                                                 //validate={[required]}
                                                 component={renderNumberInputField}
                                                 //required={true}
@@ -391,6 +504,7 @@ class AddWeightCosting extends Component {
                                                 name={"Length"}
                                                 type="text"
                                                 placeholder={''}
+                                                onChange={this.handleChangeLength}
                                                 //validate={[required]}
                                                 component={renderNumberInputField}
                                                 //required={true}
@@ -399,16 +513,14 @@ class AddWeightCosting extends Component {
                                         </Col>}
                                         {(weightType === 'BRACKET_PART' || weightType === 'PIPE') &&
                                         <Col md="3">
-                                            <Field
+                                            <Label>WeightUnitKg</Label>
+                                            <input
                                                 label="WeightUnitKg"
                                                 name={"WeightUnitKg"}
-                                                type="text"
-                                                readOnly
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderNumberInputField}
-                                                //required={true}
-                                                //className=" withoutBorder"
+                                                type="number"
+                                                value = {this.state.total}
+                                                className = 'form-control'
+                                                disabled = {true}
                                             />
                                         </Col>}
                                     </Row>
@@ -569,10 +681,12 @@ class AddWeightCosting extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ costWorking }) {
+function mapStateToProps({ costWorking, state }) {
    const { weightLayoutType } = costWorking;
-   console.log('weightLayoutType: ', weightLayoutType);
-    return { weightLayoutType };
+   const initialValues = {
+    //WeightUnitKg: state.WeightUnitKg
+    }
+    return { weightLayoutType, initialValues };
 }
 
 /**
