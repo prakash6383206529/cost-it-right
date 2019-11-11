@@ -33,6 +33,7 @@ export const API = {
   getBOPComboAPI: `${BASE_URL}/configuration-master/get-bought-out-part-combo-select-list`,
   getFreightComboAPI: `${BASE_URL}/configuration-master/get-freight-combo-select-list`,
   getLabourComboAPI: `${BASE_URL}/configuration-master/get-labour-combo-select-list`,
+  getWeightCalculationLayoutType: `${BASE_URL}/configuration/radio-button-list-get-weight-calculate-layout-type`,
 
 
   //api's for configure location
@@ -177,6 +178,11 @@ export const API = {
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
   checkPartWithTechnology: `${BASE_URL}/costing-sheet-metal/check-part-with-technology`,
+
+  //weight calculation costing
+  getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
+  AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
+  UpdateCostingWeightCalculation: `${BASE_URL}/api/v1/costing-sheet-metal/update-costing-weight-calculation`,
 }
 
 
@@ -344,3 +350,9 @@ export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS';
 export const GET_PLANT_COMBO_SUCCESS = 'GET_PLANT_COMBO_SUCCESS';
 export const GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS = 'GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS';
 export const CREATE_PART_WITH_SUPPLIER_SUCCESS = 'CREATE_PART_WITH_SUPPLIER_SUCCESS';
+
+//weight calculation costing
+export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
+export const CREATE_WEIGHT_CALC_COSTING_SUCCESS = 'CREATE_WEIGHT_CALC_COSTING_SUCCESS';
+export const UPDATE_WEIGHT_CALC_SUCCESS = 'UPDATE_WEIGHT_CALC_SUCCESS';
+export const GET_WEIGHT_CALC_LAYOUT_SUCCESS = 'GET_WEIGHT_CALC_LAYOUT_SUCCESS';

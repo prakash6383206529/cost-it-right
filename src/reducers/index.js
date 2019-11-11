@@ -20,6 +20,7 @@ import labourReducer from './master/Labour';
 import OverheadProfitReducer from './master/OverheadProfit';
 import InterestRateReducer from './master/InterestRate';
 import costingReducer from './costing/Costing';
+import CostWorkingReducer from './costing/CostWorking';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -51,6 +52,7 @@ const allReducers = combineReducers({
    overheadProfit: OverheadProfitReducer,
    interestRate: InterestRateReducer,
    costing: costingReducer,
+   costWorking : CostWorkingReducer
 });
 
 export default rootReducer;

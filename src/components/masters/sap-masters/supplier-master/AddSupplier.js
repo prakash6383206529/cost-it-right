@@ -141,19 +141,10 @@ class AddSupplier extends Component {
         selectedPlants.map((item, i) => {
             return plantArray.push({ PlantId: item.Value, PlantName: item.Text });
         });
-        let formData = {
-            SupplierName: values.SupplierName,
-            SupplierCode: values.SupplierCode,
-            SupplierEmail: values.SupplierEmail,
-            Description: values.Description,
-            CityId: values.CityId,
-            SupplierType: this.state.supplierType,
-            SelectedPlants: plantArray
-        }
         /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
             const { supplierId } = this.props;
-            formData = {
+           let formData = {
                 SupplierName: values.SupplierName,
                 SupplierCode: values.SupplierCode,
                 SupplierEmail: values.SupplierEmail,
@@ -174,6 +165,15 @@ class AddSupplier extends Component {
                 }
             });
         }else{/** Add new detail for creating supplier master **/
+            let formData = {
+                SupplierName: values.SupplierName,
+                SupplierCode: values.SupplierCode,
+                SupplierEmail: values.SupplierEmail,
+                Description: values.Description,
+                CityId: values.CityId,
+                SupplierType: this.state.supplierType,
+                SelectedPlants: plantArray
+            }
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);

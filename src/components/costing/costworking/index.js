@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col } from 'reactstrap';
+import { UncontrolledCollapse, Button, CardBody, Card,Col } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
+import AddWeightCosting from './AddWeightCosting';
 
 
 class CostWorking extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: '1'
+            activeTab: '1',
+            isOpen: false
         }
     }
 
@@ -36,16 +38,59 @@ class CostWorking extends Component {
     }
 
     /**
+     * @method openModel
+     * @description  used to open filter form 
+     */
+    openModel = () => {
+        this.setState({ isOpen: true, isEditFlag: false })
+    }
+
+    /**
+     * @method onCancel
+     * @description  used to cancel filter form
+     */
+    onCancel = () => {
+        this.setState({ isOpen: false });
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
     render() {
+        const { isOpen } = this.state;
         return (
             <div>
                 {this.props.loading && <Loader />}
                 <Col md="12">
-                    <h5>{`Cost working1`}</h5>
+                    <h5>{`Cost working`}</h5>
+                    <hr/>
+                    <Button color="secondary" id="toggler" style={{ marginBottom: '3rem' }}>
+                        New Costing
+                    </Button>
+                    <UncontrolledCollapse toggler="#toggler">
+                    <Card>
+                        <CardBody>
+                           <Col><button>Add RM</button></Col> 
+                           <hr/>
+                           <Col><button onClick={this.openModel}>Add Weight</button></Col>
+                           <hr/>
+                           <Col><button>Add BOP</button></Col>
+                           <hr/>
+                           <Col><button>Add Process</button></Col>
+                           <hr/>
+                           <Col><button>Add other operation</button></Col>
+                           <hr/>
+                        </CardBody>
+                    </Card>
+                    </UncontrolledCollapse>
                 </Col>
+                {isOpen && (
+                    <AddWeightCosting
+                        isOpen={isOpen}
+                        onCancel={this.onCancel}
+                    />
+                )}
 
             </div >
         );
