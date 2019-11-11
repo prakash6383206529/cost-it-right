@@ -65,7 +65,7 @@ class CostSummary extends Component {
     * @description Used to show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { supplierDropdown1Array } = this.state;
+        const { supplierDropdown1Array, supplierDropdown2Array, supplierDropdown3Array } = this.state;
         const { technologyList, plantList, Parts, Suppliers } = this.props;
         const temp = [];
 
@@ -117,6 +117,20 @@ class CostSummary extends Component {
             );
             return temp;
         }
+
+        if (label === 'supplierDropdown2') {
+            supplierDropdown2Array && supplierDropdown2Array.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'supplierDropdown3') {
+            supplierDropdown3Array && supplierDropdown3Array.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
     }
 
     /**
@@ -160,9 +174,9 @@ class CostSummary extends Component {
             const existSuppliers = existingSupplierDetail && existingSupplierDetail.ExistingSupplierDetails;
             //console.log('%c 🍤 existSuppliers: 11', 'font-size:20px;background-color: #ED9EC7;color:#fff;', existSuppliers);
 
-            let supplierArray = [];
-            let supplier2Array = [];
-            let supplier3Array = [];
+            let supplierArray = {};
+            let supplier2Array = {};
+            let supplier3Array = {};
             let supplierDropdown1Array = [];
             let supplierDropdown2Array = [];
             let supplierDropdown3Array = [];
@@ -188,12 +202,18 @@ class CostSummary extends Component {
                 if (index == 1) {
                     this.props.change("POPrice2", Value.PurchaseOrderPrice)
                     supplierDropdown2Array = Value.ActiveCostingSelectList;
+                    this.setState({
+                        supplierTwoName: supplierObj.Text.substring(0, supplierObj.Text.indexOf('(')),
+                    })
                     //return supplier2Array.push({ label: supplierObj.Text, value: supplierObj.Value });
                     return supplier2Array = { label: supplierObj.Text, value: supplierObj.Value };
                 }
                 if (index == 2) {
                     this.props.change("POPrice3", Value.PurchaseOrderPrice)
                     supplierDropdown3Array = Value.ActiveCostingSelectList;
+                    this.setState({
+                        supplierThreeName: supplierObj.Text.substring(0, supplierObj.Text.indexOf('(')),
+                    })
                     //return supplier3Array.push({ label: supplierObj.Text, value: supplierObj.Value });
                     return supplier3Array = { label: supplierObj.Text, value: supplierObj.Value };
                 }
@@ -208,9 +228,9 @@ class CostSummary extends Component {
                 supplierDropdown1Array: supplierDropdown1Array,
                 supplierDropdown2Array: supplierDropdown2Array,
                 supplierDropdown3Array: supplierDropdown3Array,
-                addSupplier1: supplierArray ? true : false,
-                addSupplier2: supplier2Array ? true : false,
-                addSupplier3: supplier3Array ? true : false,
+                addSupplier1: supplierArray.hasOwnProperty('label') ? true : false,
+                addSupplier2: supplier2Array.hasOwnProperty('label') ? true : false,
+                addSupplier3: supplier3Array.hasOwnProperty('label') ? true : false,
             }, () => {
                 this.setSupplierCode()
             });
@@ -268,10 +288,10 @@ class CostSummary extends Component {
         console.log('%c 🌮 newValue: ', 'font-size:20px;background-color: #E41A6A;color:#fff;', newValue);
         this.setState({ supplier: newValue }, () => {
             const { supplier } = this.state;
-            const phrase = supplier.label;
+            const phrase = supplier && supplier.label;
             const myRegexp = /-(.*)/;
             const match = myRegexp.exec(phrase);
-            var result = match[1].slice(1, -1);
+            var result = match && match[1].slice(1, -1);
             this.props.change("SupplierCode", result)
         });
     };
@@ -283,10 +303,10 @@ class CostSummary extends Component {
     supplier2Handler = (newValue, actionMeta) => {
         this.setState({ supplier2: newValue }, () => {
             const { supplier2 } = this.state;
-            const phrase = supplier2.label;
+            const phrase = supplier2 && supplier2.label;
             const myRegexp = /-(.*)/;
             const match = myRegexp.exec(phrase);
-            var result = match[1].slice(1, -1);
+            var result = match && match[1].slice(1, -1);
             this.props.change("SupplierCode2", result)
         });
     };
@@ -298,10 +318,10 @@ class CostSummary extends Component {
     supplier3Handler = (newValue, actionMeta) => {
         this.setState({ supplier3: newValue }, () => {
             const { supplier3 } = this.state;
-            const phrase = supplier3.label;
+            const phrase = supplier3 && supplier3.label;
             const myRegexp = /-(.*)/;
             const match = myRegexp.exec(phrase);
-            var result = match[1].slice(1, -1);
+            var result = match && match[1].slice(1, -1);
             this.props.change("SupplierCode3", result)
         });
     };
@@ -371,6 +391,18 @@ class CostSummary extends Component {
     activeSupplierHandler1 = (e) => {
         this.setState({
             activeSupplier1: e.target.value
+        })
+    }
+
+    activeSupplierHandler2 = (e) => {
+        this.setState({
+            activeSupplier2: e.target.value
+        })
+    }
+
+    activeSupplierHandler3 = (e) => {
+        this.setState({
+            activeSupplier3: e.target.value
         })
     }
 
@@ -625,9 +657,9 @@ class CostSummary extends Component {
                     </Row>
                     <hr />
                     <Row>
-                        <Col md="2">ZBC V/s VBC</Col>
+                        <Col md="1">ZBC V/s VBC</Col>
                         <Col md="2">ZBC</Col>
-                        <Col md="2">
+                        <Col md="3">
                             {!this.state.addSupplier1 && this.state.supplierOneName == '' && <div>Supplier1</div>}
                             {this.state.supplierOneName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier.value)} >{`${this.state.supplierOneName}`}</a>}
                             {this.state.addSupplier1 &&
@@ -649,44 +681,44 @@ class CostSummary extends Component {
                                 </div>
                             }
                         </Col>
-                        <Col md="2">
-                            {!this.state.addSupplier2 && <div>Supplier2</div>}
+                        <Col md="3">
+                            {!this.state.addSupplier2 && this.state.supplierTwoName == '' && <div>Supplier2</div>}
+                            {this.state.supplierTwoName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier.value)} >{`${this.state.supplierTwoName}`}</a>}
                             {this.state.addSupplier2 &&
-                                // <Field
-                                //     label={`Part No.`}
-                                //     name={"part"}
-                                //     type="text"
-                                //     placeholder={''}
-                                //     //validate={[required]}
-                                //     // required={true}
-                                //     className=" withoutBorder custom-select"
-                                //     options={this.renderTypeOfListing('part')}
-                                //     onChange={this.partHandler}
-                                //     optionValue={'Value'}
-                                //     optionLabel={'Text'}
-                                //     component={renderSelectField}
-                                // />
-                                <a href="#">{this.state.supplierTwoName}</a>
+                                <Field
+                                    label={``}
+                                    name={"activeSupplier2"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('supplierDropdown2')}
+                                    onChange={this.activeSupplierHandler2}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
                             }
                         </Col>
-                        <Col md="2">
-                            {!this.state.addSupplier3 && <div>Supplier3</div>}
+                        <Col md="3">
+                            {!this.state.addSupplier3 && this.state.supplierTwoName == '' && <div>Supplier3</div>}
+                            {this.state.supplierThreeName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier.value)} >{`${this.state.supplierThreeName}`}</a>}
                             {this.state.addSupplier3 &&
-                                // <Field
-                                //     label={`Part No.`}
-                                //     name={"part"}
-                                //     type="text"
-                                //     placeholder={''}
-                                //     //validate={[required]}
-                                //     // required={true}
-                                //     className=" withoutBorder custom-select"
-                                //     options={this.renderTypeOfListing('part')}
-                                //     onChange={this.partHandler}
-                                //     optionValue={'Value'}
-                                //     optionLabel={'Text'}
-                                //     component={renderSelectField}
-                                // />
-                                <a href="#">{this.state.supplierThreeName}</a>
+                                <Field
+                                    label={``}
+                                    name={"activeSupplier3"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('supplierDropdown3')}
+                                    onChange={this.activeSupplierHandler3}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
                             }</Col>
                     </Row>
                 </form>

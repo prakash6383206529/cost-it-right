@@ -7,6 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
 import CostSummary from './costsummary';
 import CostWorking from './costworking';
+import { getCostingBySupplier } from '../../actions/costing/CostWorking'
 
 
 class Costing extends Component {
@@ -46,6 +47,7 @@ class Costing extends Component {
             activeTab: '2',
             supplierId: supplierId
         });
+        this.props.getCostingBySupplier(supplierId, () => { })
     }
 
     /**
@@ -107,6 +109,6 @@ function mapStateToProps({ }) {
 
 
 export default connect(
-    mapStateToProps, null
+    mapStateToProps, { getCostingBySupplier }
 )(Costing);
 
