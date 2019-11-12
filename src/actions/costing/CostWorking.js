@@ -7,7 +7,9 @@ import {
     CREATE_WEIGHT_CALC_COSTING_SUCCESS,
     UPDATE_WEIGHT_CALC_SUCCESS,
     GET_WEIGHT_CALC_LAYOUT_SUCCESS,
-    GET_COSTING_BY_SUPPLIER_SUCCESS
+    GET_COSTING_BY_SUPPLIER_SUCCESS,
+    GET_RM_LIST_BY_SUPPLIER_SUCCESS,
+    ADD_RAW_MATERIAL_COSTING_SUCCESS
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -137,6 +139,63 @@ export function getCostingBySupplier(supplierId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getAllBOMAPI
+ * @description get all bill of material list
+ */
+export function getRawMaterialListBySupplierId(supplierId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRawMaterialListBySupplierId}/${supplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_RM_LIST_BY_SUPPLIER_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method createBOMAPI
+ * @description create bill of material master
+ */
+export function addCostingRawMaterial(data, callback) {
+    return (dispatch) => {
+        // dispatch({
+        //     type:  API_REQUEST,
+        // });
+        const request = axios.post(API.addCostingRawMaterial, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({ type: ADD_RAW_MATERIAL_COSTING_SUCCESS });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
             apiErrors(error);
         });
     };

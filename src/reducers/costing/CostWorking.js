@@ -6,6 +6,8 @@ import {
     UPDATE_WEIGHT_CALC_SUCCESS,
     GET_WEIGHT_CALC_LAYOUT_SUCCESS,
     GET_COSTING_BY_SUPPLIER_SUCCESS,
+    GET_RM_LIST_BY_SUPPLIER_SUCCESS,
+    ADD_RAW_MATERIAL_COSTING_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
@@ -51,6 +53,19 @@ export default function CostWorkingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 costingData: action.payload
+            };
+        case GET_RM_LIST_BY_SUPPLIER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rmListData: action.payload
+            };
+        case ADD_RAW_MATERIAL_COSTING_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
             };
         default:
             return state;

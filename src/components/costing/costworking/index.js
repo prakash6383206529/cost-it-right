@@ -6,6 +6,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
 import AddWeightCosting from './AddWeightCosting';
+import AddRawMaterialCosting from './AddRawMaterialCosting';
 import NoContentFound from '../../common/NoContentFound';
 
 
@@ -15,6 +16,7 @@ class CostWorking extends Component {
         this.state = {
             activeTab: '1',
             isOpen: false,
+            isOpenRMmodel: false,
             isCollapes: false,
         }
     }
@@ -52,11 +54,23 @@ class CostWorking extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false });
+        this.setState({ isOpen: false, isOpenRMmodel: false });
     }
 
+    /**
+     * @method openModel
+     * @description  used to open filter form 
+     */
     collapsHandler = () => {
         this.setState({ isCollapes: !this.state.isCollapes })
+    }
+
+    /**
+     * @method openRMModel
+     * @description  used to open openRMModel 
+     */
+    openRMModel = () => {
+        this.setState({ isOpenRMmodel: !this.state.isOpenRMmodel })
     }
 
     /**
@@ -64,8 +78,8 @@ class CostWorking extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isCollapes } = this.state;
-        const { costingData } = this.props;
+        const { isOpen, isCollapes, isOpenRMmodel } = this.state;
+        const { costingData, supplierId } = this.props;
         // const { PartDetail, TechnologyDetail } = costingData;
         return (
             <div>
@@ -93,7 +107,7 @@ class CostWorking extends Component {
                                 costingData.ActiveCostingDetatils.map((item, index) => {
                                     return (
                                         <tr key={index}>
-                                            <td><div onClick={this.collapsHandler} color="secondary" id="toggler">{item.PartNumber}</div></td>
+                                            <td><a href="javascript:void(0)" onClick={this.collapsHandler} color="secondary" id="toggler">{item.PartNumber}</a></td>
                                             <td>{costingData.TechnologyDetail && costingData.TechnologyDetail.TechnologyName}</td>
                                             <td>{item.PlantName}</td>
                                             <td>{item.DisplayCreatedDate}</td>
@@ -134,7 +148,7 @@ class CostWorking extends Component {
                                 </thead>
                                 <tbody >
                                     <tr >
-                                        <td><button>Add</button></td>
+                                        <td><button onClick={this.openRMModel}>Add</button></td>
                                         <td>{''}</td>
                                         <td>{''}</td>
                                         <td><button onClick={this.openModel}>Add</button></td>
@@ -161,6 +175,14 @@ class CostWorking extends Component {
                     <AddWeightCosting
                         isOpen={isOpen}
                         onCancel={this.onCancel}
+                    />
+                )}
+                {isOpenRMmodel && (
+                    <AddRawMaterialCosting
+                        isOpen={isOpenRMmodel}
+                        onCancel={this.onCancel}
+                        supplierId={supplierId}
+                        costingId={'f69efbcd-83e8-41e8-8c9e-ad3ef729e45b'}
                     />
                 )}
             </div >

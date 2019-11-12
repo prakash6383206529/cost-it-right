@@ -420,7 +420,7 @@ class CostSummary extends Component {
     }
 
     supplierCosting = (supplierId) => {
-        this.props.supplierCosting(supplierId, this.state.partNo)
+        this.props.supplierCosting(supplierId, this.state.plant.value)
     }
 
     /**
