@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {createNewCosting } from '../../../actions/costing/CostWorking';
-import { UncontrolledCollapse, Button, CardBody, Card, Col, Table } from 'reactstrap';
+import {createNewCosting, getCostingBySupplier } from '../../../actions/costing/CostWorking';
+import { Button, Col, Table } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import classnames from 'classnames';
 import AddWeightCosting from './AddWeightCosting';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-
 
 class CostWorking extends Component {
     constructor(props) {
@@ -18,6 +16,7 @@ class CostWorking extends Component {
             activeTab: '1',
             isOpen: false,
             isCollapes: false,
+            PartId: ''
         }
     }
 
@@ -57,48 +56,56 @@ class CostWorking extends Component {
         this.setState({ isOpen: false });
     }
 
-    collapsHandler = () => {
-        this.setState({ isCollapes: !this.state.isCollapes })
-    }
+    /**haldle the cost working details collapes */
+    collapsHandler = () => { this.setState({ isCollapes: !this.state.isCollapes }) }
 
     /**
      * @method createNewCosting
      * @description  used to create new costing 
      */
     createNewCosting = () => {
-        const sheetmetalCostingData = {
-            PlantId: "ad7c2b9c-f292-42af-9891-e0cdb3c032f0",
-            PartId: "b9b2b3b4-f8bc-4859-beae-1bd3e85d0feb",
-            SupplierId: "1f8fca58-ed3f-43cf-94b7-392c6ddc15b2",
-        }
-        this.props.createNewCosting()
-        this.props.createNewCosting(sheetmetalCostingData, (res) => {
+        const {supplierId, plantId } = this.props;
+        const { costingData } = this.props;
+        /** getting part id from active costing list */
+        if(costingData && costingData.ActiveCostingDetatils.length > 0){   
+            const sheetmetalCostingData = {
+                PartId: costingData.ActiveCostingDetatils[0].PartId,
+                PlantId: plantId,
+                SupplierId: supplierId,
+                CreatedBy: 'string'
+            } 
+            /** create new costing on basis of selected supplier, part, and plat */
+            this.props.createNewCosting(sheetmetalCostingData, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
+                /** fetching records of supplier costing details */
+                this.props.getCostingBySupplier(supplierId, (res) => { console.log('res', res) })
                 this.toggleModel();
             } else {
                 toastr.error(res.data.message);
             }
-        });
+            });
+        } 
     }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
         const { isOpen, isCollapes } = this.state;
-        const { costingData } = this.props;
-        // const { PartDetail, TechnologyDetail } = costingData;
+        const { costingData,supplierId, plantId } = this.props;
         return (
             <div>
                 {this.props.loading && <Loader />}
                 <Col md="12">
                     {costingData && `Part No. : ${costingData.PartDetail.PartNumber} Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
                     <hr />
+                    {supplierId && plantId &&
                     <Button color="secondary" onClick={() => this.createNewCosting()} >
                         New Costing
-                    </Button>
-                    <h5><b>{`Costing Supplier List`}</b></h5>
+                    </Button>}
+                    {supplierId && plantId &&<h5><b>{`Costing Supplier List`}</b></h5>}
                     <Table className="table table-striped" bordered>
                         {costingData && costingData.ActiveCostingDetatils.length > 0 &&
                             <thead>
@@ -123,7 +130,7 @@ class CostWorking extends Component {
                                         </tr>
                                     )
                                 })}
-
+                            {/* {this.props.item === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />} */}
                         </tbody>
                     </Table>
                     <hr />
@@ -202,6 +209,6 @@ function mapStateToProps({ costWorking }) {
 
 
 export default connect(
-    mapStateToProps, {createNewCosting}
+    mapStateToProps, { createNewCosting, getCostingBySupplier}
 )(CostWorking);
 
