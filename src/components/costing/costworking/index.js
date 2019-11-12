@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {createNewCosting, getCostingBySupplier } from '../../../actions/costing/CostWorking';
+import {createNewCosting, getCostingBySupplier,getCostingDetailsById } from '../../../actions/costing/CostWorking';
 import { Button, Col, Table } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -16,7 +16,8 @@ class CostWorking extends Component {
             activeTab: '1',
             isOpen: false,
             isCollapes: false,
-            PartId: ''
+            PartId: '',
+            isEditFlag: false
         }
     }
 
@@ -57,7 +58,18 @@ class CostWorking extends Component {
     }
 
     /**haldle the cost working details collapes */
-    collapsHandler = () => { this.setState({ isCollapes: !this.state.isCollapes }) }
+    collapsHandler = (costingId) => { 
+        this.setState({ 
+            isCollapes: !this.state.isCollapes,
+            isEditFlag: true
+        }, () => {
+            if (this.state.isEditFlag) {
+                this.props.getCostingDetailsById(costingId, true, res => {console.log('res from updating costing details ', res)}) 
+            } else {
+                this.props.getCostingDetailsById('', false, res => { })
+            }
+        }) 
+    }
 
     /**
      * @method createNewCosting
@@ -79,7 +91,8 @@ class CostWorking extends Component {
             if (res.data.Result) {
                 toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
                 /** fetching records of supplier costing details */
-                this.props.getCostingBySupplier(supplierId, (res) => { console.log('res', res) })
+                this.props.getCostingBySupplier(supplierId, (res) => { console.log('res', res) });
+                this.setState({isCollapes: true})
                 this.toggleModel();
             } else {
                 toastr.error(res.data.message);
@@ -122,7 +135,7 @@ class CostWorking extends Component {
                                 costingData.ActiveCostingDetatils.map((item, index) => {
                                     return (
                                         <tr key={index}>
-                                            <td><div onClick={this.collapsHandler} color="secondary" id="toggler">{item.PartNumber}</div></td>
+                                            <td><div onClick={() => this.collapsHandler(item.CostingId)} color="secondary" id="toggler">{item.PartNumber}</div></td>
                                             <td>{costingData.TechnologyDetail && costingData.TechnologyDetail.TechnologyName}</td>
                                             <td>{item.PlantName}</td>
                                             <td>{item.DisplayCreatedDate}</td>
@@ -203,12 +216,13 @@ class CostWorking extends Component {
 * @param {*} state
 */
 function mapStateToProps({ costWorking }) {
-    const { costingData } = costWorking;
-    return { costingData }
+    const { costingData, getCostingData } = costWorking;
+    console.log('getCostingData: ', getCostingData);
+    return { costingData, getCostingData }
 }
 
 
 export default connect(
-    mapStateToProps, { createNewCosting, getCostingBySupplier}
+    mapStateToProps, { createNewCosting, getCostingBySupplier, getCostingDetailsById}
 )(CostWorking);
 
