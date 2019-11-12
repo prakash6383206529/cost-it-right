@@ -52,6 +52,13 @@ class AddWeightCosting extends Component {
         this.setState({
             weightType: value
         });
+        // const toastrConfirmOptions = {
+        //     onOk: () => {
+        //         this.setState({thickness :'', width: '', length: '', surfaceArea:'', overlapArea:'', WT:'',NFS:''})
+        //     },
+        //     onCancel: () => console.log('CANCEL: clicked')
+        // };
+        // return toastr.confirm(`Are you sure you want to move another type?`, toastrConfirmOptions);
     }
 
      /**
