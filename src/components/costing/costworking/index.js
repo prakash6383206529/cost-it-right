@@ -61,11 +61,12 @@ class CostWorking extends Component {
     render() {
         const { isOpen } = this.state;
         const { costingData } = this.props;
+        // const { PartDetail, TechnologyDetail } = costingData;
         return (
             <div>
                 {this.props.loading && <Loader />}
                 <Col md="12">
-                    {costingData && `Part No. : ${'SMTEST'} Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
+                    {costingData && `Part No. : ${costingData.PartDetail.PartNumber} Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
                     <hr />
                     <h5><b>{`Costing Supplier List`}</b></h5>
                     <Table className="table table-striped" bordered>
@@ -85,7 +86,7 @@ class CostWorking extends Component {
                                     return (
                                         <tr key={index}>
                                             <td >{item.PartNumber}</td>
-                                            <td>{''}</td>
+                                            <td>{costingData.TechnologyDetail && costingData.TechnologyDetail.TechnologyName}</td>
                                             <td>{item.PlantName}</td>
                                             <td>{item.DisplayCreatedDate}</td>
                                             <td>{item.StatusName}</td>
