@@ -49,7 +49,7 @@ class Costing extends Component {
             supplierId: supplierId,
             plantId: plantId
         });
-        this.props.getCostingBySupplier(supplierId, () => { })
+        this.props.getCostingBySupplier(supplierId, (res) => { console.log('res', res) })
     }
 
     /**

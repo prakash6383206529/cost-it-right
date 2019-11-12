@@ -14,7 +14,8 @@ class CostWorking extends Component {
         super(props);
         this.state = {
             activeTab: '1',
-            isOpen: false
+            isOpen: false,
+            isCollapes: false,
         }
     }
 
@@ -54,12 +55,16 @@ class CostWorking extends Component {
         this.setState({ isOpen: false });
     }
 
+    collapsHandler = () => {
+        this.setState({ isCollapes: !this.state.isCollapes })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen } = this.state;
+        const { isOpen, isCollapes } = this.state;
         const { costingData } = this.props;
         // const { PartDetail, TechnologyDetail } = costingData;
         return (
@@ -68,6 +73,9 @@ class CostWorking extends Component {
                 <Col md="12">
                     {costingData && `Part No. : ${costingData.PartDetail.PartNumber} Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
                     <hr />
+                    <Button color="secondary">
+                        New Costing
+                    </Button>
                     <h5><b>{`Costing Supplier List`}</b></h5>
                     <Table className="table table-striped" bordered>
                         {costingData && costingData.ActiveCostingDetatils.length > 0 &&
@@ -85,7 +93,7 @@ class CostWorking extends Component {
                                 costingData.ActiveCostingDetatils.map((item, index) => {
                                     return (
                                         <tr key={index}>
-                                            <td >{item.PartNumber}</td>
+                                            <td><div onClick={this.collapsHandler} color="secondary" id="toggler">{item.PartNumber}</div></td>
                                             <td>{costingData.TechnologyDetail && costingData.TechnologyDetail.TechnologyName}</td>
                                             <td>{item.PlantName}</td>
                                             <td>{item.DisplayCreatedDate}</td>
@@ -93,37 +101,68 @@ class CostWorking extends Component {
                                         </tr>
                                     )
                                 })}
-                            {/* {costingData.ActiveCostingDetatils === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />} */}
+
                         </tbody>
                     </Table>
                     <hr />
-                    <Button color="secondary" id="toggler" style={{ marginBottom: '3rem' }}>
-                        New Costing
-                    </Button>
-                    <UncontrolledCollapse toggler="#toggler">
-                        <Card>
-                            <CardBody>
-                                <Col><button>Add RM</button></Col>
-                                <hr />
-                                <Col><button onClick={this.openModel}>Add Weight</button></Col>
-                                <hr />
-                                <Col><button>Add BOP</button></Col>
-                                <hr />
-                                <Col><button>Add Process</button></Col>
-                                <hr />
-                                <Col><button>Add other operation</button></Col>
-                                <hr />
-                            </CardBody>
-                        </Card>
-                    </UncontrolledCollapse>
                 </Col>
+
+                {isCollapes && (
+                    <Col md="12">
+                        <div className={'create-costing-grid'}>
+                            <Table className="table table-striped" bordered>
+                                <thead>
+                                    <tr>
+                                        <th>{`RM Specification`}</th>
+                                        <th>{`RM rate/Kg`}</th>
+                                        <th>{`Scrap Rate (Rs/kg)`}</th>
+                                        <th>{`Weight Specification`}</th>
+                                        <th>{`Gross weight`}</th>
+                                        <th>{`finish weight`}</th>
+                                        <th>{`Net RM Cost`}</th>
+                                        <th>{`BOP/pc.`}</th>
+                                        <th>{`Total BOP Cost/Assy`}</th>
+                                        <th>{`BOM`}</th>
+                                        <th>{`Process`}</th>
+                                        <th>{`Total Process Cost`}</th>
+                                        <th>{`Total Process Cost/Assy`}</th>
+                                        <th>{`Other operation`}</th>
+                                        <th>{`Surface Treatment Cost`}</th>
+                                        <th>{`Surface Treatment Cost/Assy`}</th>
+                                        <th>{`RM + CC`}</th>
+                                    </tr>
+                                </thead>
+                                <tbody >
+                                    <tr >
+                                        <td><button>Add</button></td>
+                                        <td>{''}</td>
+                                        <td>{''}</td>
+                                        <td><button onClick={this.openModel}>Add</button></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><button>Add</button></td>
+                                        <td></td>
+                                        <td><button>Add</button></td>
+                                        <td><button>Add</button></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><button>Add</button></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                        </div>
+                    </Col>
+                )}
                 {isOpen && (
                     <AddWeightCosting
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                     />
                 )}
-
             </div >
         );
     }
