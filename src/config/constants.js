@@ -178,6 +178,7 @@ export const API = {
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
   checkPartWithTechnology: `${BASE_URL}/costing-sheet-metal/check-part-with-technology`,
+  createNewCosting: `${BASE_URL}/costing-sheet-metal/create`,
 
   //weight calculation costing
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -353,6 +354,7 @@ export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS';
 export const GET_PLANT_COMBO_SUCCESS = 'GET_PLANT_COMBO_SUCCESS';
 export const GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS = 'GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS';
 export const CREATE_PART_WITH_SUPPLIER_SUCCESS = 'CREATE_PART_WITH_SUPPLIER_SUCCESS';
+export const CREATE_SHEETMETAL_COSTING_SUCCESS = 'CREATE_SHEETMETAL_COSTING_SUCCESS';
 
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';

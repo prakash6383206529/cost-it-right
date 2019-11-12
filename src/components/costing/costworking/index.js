@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import {createNewCosting } from '../../../actions/costing/CostWorking';
 import { UncontrolledCollapse, Button, CardBody, Card, Col, Table } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -7,6 +8,7 @@ import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
 import AddWeightCosting from './AddWeightCosting';
 import NoContentFound from '../../common/NoContentFound';
+import { MESSAGES } from '../../../config/message';
 
 
 class CostWorking extends Component {
@@ -55,6 +57,26 @@ class CostWorking extends Component {
     }
 
     /**
+     * @method createNewCosting
+     * @description  used to create new costing 
+     */
+    createNewCosting = () => {
+        const sheetmetalCostingData = {
+            PlantId: "ad7c2b9c-f292-42af-9891-e0cdb3c032f0",
+            PartId: "b9b2b3b4-f8bc-4859-beae-1bd3e85d0feb",
+            SupplierId: "1f8fca58-ed3f-43cf-94b7-392c6ddc15b2",
+        }
+        this.props.createNewCosting()
+        this.props.createNewCosting(sheetmetalCostingData, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
+                this.toggleModel();
+            } else {
+                toastr.error(res.data.message);
+            }
+        });
+    }
+    /**
     * @method render
     * @description Renders the component
     */
@@ -67,7 +89,7 @@ class CostWorking extends Component {
                 <Col md="12">
                     {costingData && `Part No. : ${'SMTEST'} Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
                     <hr />
-                    <Button color="secondary">
+                    <Button color="secondary" onClick={() => this.createNewCosting()} >
                         New Costing
                     </Button>
                     <h5><b>{`Costing Supplier List`}</b></h5>
@@ -173,6 +195,6 @@ function mapStateToProps({ costWorking }) {
 
 
 export default connect(
-    mapStateToProps, {}
+    mapStateToProps, {createNewCosting}
 )(CostWorking);
 

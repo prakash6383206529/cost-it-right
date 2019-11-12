@@ -7,7 +7,8 @@ import {
     CREATE_WEIGHT_CALC_COSTING_SUCCESS,
     UPDATE_WEIGHT_CALC_SUCCESS,
     GET_WEIGHT_CALC_LAYOUT_SUCCESS,
-    GET_COSTING_BY_SUPPLIER_SUCCESS
+    GET_COSTING_BY_SUPPLIER_SUCCESS,
+    CREATE_SHEETMETAL_COSTING_SUCCESS
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -137,6 +138,35 @@ export function getCostingBySupplier(supplierId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method createNewCosting
+ * @description Create new costing for selected supplier
+ */
+export function createNewCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createNewCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: CREATE_SHEETMETAL_COSTING_SUCCESS,
+                });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
             apiErrors(error);
         });
     };
