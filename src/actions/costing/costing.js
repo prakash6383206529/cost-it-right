@@ -71,25 +71,16 @@ export function getExistingSupplierDetailByPartId(partId, callback) {
 
 
 /**
- * @method createFreightAPI
- * @description create freight master
+ * @method createPartWithSupplier
+ * @description create part with supplier
  */
 export function createPartWithSupplier(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.createPartWithSupplier, data, headers);
         request.then((response) => {
-            console.log('%c 🍚 response: create', response);
-            // if (response.data.Result) {
-            //     dispatch({
-            //         type: CREATE_PART_WITH_SUPPLIER_SUCCESS,
-            //         payload: response.data.Data
-            //     });
-            // } else {
-            //     dispatch({ type: API_FAILURE });
-            //     if (response.data.Message) {
-            //         toastr.error(response.data.Message);
-            //     }
-            // }
+            if (response.data.Result) {
+                toastr.success(MESSAGES.ADD_PART_WITH_SUPPLIER_SUCCESS);
+            }
             callback(response);
         }).catch((error) => {
             dispatch({

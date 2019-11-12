@@ -36,6 +36,7 @@ class CostSummary extends Component {
             supplierDropdown1Array: [],
             supplierDropdown2Array: [],
             supplierDropdown3Array: [],
+            activeZBCSupplier: ''
         }
     }
 
@@ -66,7 +67,7 @@ class CostSummary extends Component {
     */
     renderTypeOfListing = (label) => {
         const { supplierDropdown1Array, supplierDropdown2Array, supplierDropdown3Array } = this.state;
-        const { technologyList, plantList, Parts, Suppliers } = this.props;
+        const { technologyList, plantList, Parts, Suppliers, ZBCSupplier } = this.props;
         const temp = [];
 
         if (label === 'technology') {
@@ -127,6 +128,13 @@ class CostSummary extends Component {
 
         if (label === 'supplierDropdown3') {
             supplierDropdown3Array && supplierDropdown3Array.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'zbcSupplierDropdown') {
+            ZBCSupplier && ZBCSupplier.ZBCCostings.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
@@ -369,7 +377,6 @@ class CostSummary extends Component {
 
     addSupplier3 = () => {
         const { supplier3, addSupplier1, partNo } = this.state;
-        console.log("supplier3", supplier3.value)
         const requestData = {
             PartId: partNo,
             SupplierId: supplier3.value
@@ -385,6 +392,12 @@ class CostSummary extends Component {
                 addSupplier3: true
             })
 
+        })
+    }
+
+    activeZBCSupplierHandler = (e) => {
+        this.setState({
+            activeZBCSupplier: e.target.value
         })
     }
 
@@ -423,7 +436,7 @@ class CostSummary extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, ZBCSupplier } = this.props;
         const { supplier } = this.state;
         return (
             <div>
@@ -658,7 +671,26 @@ class CostSummary extends Component {
                     <hr />
                     <Row>
                         <Col md="1">ZBC V/s VBC</Col>
-                        <Col md="2">ZBC</Col>
+                        <Col md="2">
+                            <div>ZBC</div>
+                            {ZBCSupplier && <a href="javascript:void(0)" >{`${ZBCSupplier.SupplierName}`}</a>}
+                            {ZBCSupplier && ZBCSupplier.ZBCCostings &&
+                                <Field
+                                    label={``}
+                                    name={"zbcSupplier"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('zbcSupplierDropdown')}
+                                    onChange={this.activeZBCSupplierHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                            }
+                        </Col>
                         <Col md="3">
                             {!this.state.addSupplier1 && this.state.supplierOneName == '' && <div>Supplier1</div>}
                             {this.state.supplierOneName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier.value)} >{`${this.state.supplierOneName}`}</a>}
@@ -736,8 +768,8 @@ function mapStateToProps({ comman, costing }) {
     const { plantList, technologyList } = comman;
     if (costing && costing.plantComboDetail) {
         const { existingSupplierDetail } = costing;
-        const { Plants, Parts, Suppliers } = costing.plantComboDetail;
-        return { technologyList, plantList, Plants, Parts, Suppliers, existingSupplierDetail }
+        const { Plants, Parts, Suppliers, ZBCSupplier } = costing.plantComboDetail;
+        return { technologyList, plantList, Plants, Parts, Suppliers, ZBCSupplier, existingSupplierDetail }
     }
 
 }
