@@ -122,7 +122,7 @@ class CostWorking extends Component {
     */
     render() {
         const { isOpen, isCollapes, isEditFlag, isOpenRMmodel, costingId } = this.state;
-        const { costingData, supplierId, plantId, getCostingData } = this.props;
+        const { costingData, supplierId, plantId, getCostingData, costingGridRMData } = this.props;
         return (
             <div>
                 {this.props.loading && <Loader />}
@@ -216,9 +216,10 @@ class CostWorking extends Component {
                                 </thead>
                                 <tbody >
                                     <tr >
-                                        <td><button onClick={this.openRMModel}>Add</button></td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
+                                        <td><button onClick={this.openRMModel}>{costingGridRMData ? 'RawMaterialName' : 'Add'}</button></td>
+                                        <td>{costingGridRMData ? costingGridRMData.RawMaterialRate : 0}</td>
+                                        <td>{costingGridRMData ? costingGridRMData.RawMaterialScrapRate : 0}</td>
                                         <td><button onClick={this.openModel}>Add</button></td>
                                         <td>{isEditFlag ? '0' : ''}</td>
                                         <td>{isEditFlag ? '0' : ''}</td>
@@ -263,9 +264,9 @@ class CostWorking extends Component {
 * @param {*} state
 */
 function mapStateToProps({ costWorking }) {
-    const { costingData, getCostingData } = costWorking;
+    const { costingData, getCostingData, costingGridRMData } = costWorking;
     console.log('getCostingData: ', getCostingData);
-    return { costingData, getCostingData }
+    return { costingData, getCostingData, costingGridRMData }
 }
 
 

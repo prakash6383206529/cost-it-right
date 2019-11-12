@@ -213,7 +213,10 @@ export function addCostingRawMaterial(data, callback) {
         const request = axios.post(API.addCostingRawMaterial, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({ type: ADD_RAW_MATERIAL_COSTING_SUCCESS });
+                dispatch({
+                    type: ADD_RAW_MATERIAL_COSTING_SUCCESS,
+                    payload: response.data.Data
+                });
                 callback(response);
             } else {
                 dispatch({ type: API_FAILURE });

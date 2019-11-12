@@ -67,6 +67,7 @@ export default function CostWorkingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
+                costingGridRMData: action.payload
             };
         case GET_COSTING_DATA_SUCCESS:
             return {
