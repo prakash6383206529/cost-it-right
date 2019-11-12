@@ -65,14 +65,13 @@ class CostWorking extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <Col md="12">
-                    {costingData && `Part No. : SMTEST Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
+                    {costingData && `Part No. : ${'SMTEST'} Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
                     <hr />
                     <Button color="secondary">
                         New Costing
                     </Button>
-                    <h5><b>{`Material Details`}</b></h5>
-                    <Table className="table table-striped" bordered> 
-                    {/* {costingData.ActiveCostingDetatils === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />} */}
+                    <h5><b>{`Costing Supplier List`}</b></h5>
+                    <Table className="table table-striped" bordered>
                         {costingData && costingData.ActiveCostingDetatils.length > 0 &&
                             <thead>
                                 <tr>
