@@ -87,7 +87,7 @@ class AddRawMaterialCosting extends Component {
             CreatedBy: ""
         }
         this.props.addCostingRawMaterial(requestData, res => {
-            //this.toggleModel()
+            this.toggleModel()
         })
     }
 

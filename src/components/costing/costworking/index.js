@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { UncontrolledCollapse, Button, CardBody, Card, Col, Table } from 'reactstrap';
+import { createNewCosting, getCostingBySupplier, getCostingDetailsById } from '../../../actions/costing/CostWorking';
+import { Button, Col, Table, Label } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import classnames from 'classnames';
 import AddWeightCosting from './AddWeightCosting';
 import AddRawMaterialCosting from './AddRawMaterialCosting';
 import NoContentFound from '../../common/NoContentFound';
-
+import { MESSAGES } from '../../../config/message';
 
 class CostWorking extends Component {
     constructor(props) {
@@ -18,6 +18,9 @@ class CostWorking extends Component {
             isOpen: false,
             isOpenRMmodel: false,
             isCollapes: false,
+            PartId: '',
+            isEditFlag: false,
+            costingId: ''
         }
     }
 
@@ -57,12 +60,52 @@ class CostWorking extends Component {
         this.setState({ isOpen: false, isOpenRMmodel: false });
     }
 
+    /**haldle the cost working details collapes */
+    collapsHandler = (costingId) => {
+        this.setState({
+            isCollapes: !this.state.isCollapes,
+            isEditFlag: true
+        }, () => {
+            if (this.state.isEditFlag) {
+                this.props.getCostingDetailsById(costingId, true, res => { })
+            } else {
+                this.props.getCostingDetailsById('', false, res => { })
+            }
+        })
+    }
+
     /**
-     * @method openModel
-     * @description  used to open filter form 
+     * @method createNewCosting
+     * @description  used to create new costing 
      */
-    collapsHandler = () => {
-        this.setState({ isCollapes: !this.state.isCollapes })
+    createNewCosting = () => {
+        const { supplierId, plantId } = this.props;
+        const { costingData } = this.props;
+        /** getting part id from active costing list */
+        if (costingData && costingData.ActiveCostingDetatils.length > 0) {
+            const sheetmetalCostingData = {
+                PartId: costingData.ActiveCostingDetatils[0].PartId,
+                PlantId: plantId,
+                SupplierId: supplierId,
+                CreatedBy: ''
+            }
+            /** create new costing on basis of selected supplier, part, and plat */
+            this.props.createNewCosting(sheetmetalCostingData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
+                    /** fetching records of supplier costing details */
+                    this.props.getCostingBySupplier(supplierId, (res) => { console.log('res', res) });
+                    this.setState({
+                        isCollapes: true,
+                        isEditFlag: true,
+                        costingId: res.data.Identity
+                    })
+                    this.toggleModel();
+                } else {
+                    toastr.error(res.data.message);
+                }
+            });
+        }
     }
 
     /**
@@ -78,19 +121,19 @@ class CostWorking extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isCollapes, isOpenRMmodel } = this.state;
-        const { costingData, supplierId } = this.props;
-        // const { PartDetail, TechnologyDetail } = costingData;
+        const { isOpen, isCollapes, isEditFlag, isOpenRMmodel, costingId } = this.state;
+        const { costingData, supplierId, plantId, getCostingData } = this.props;
         return (
             <div>
                 {this.props.loading && <Loader />}
                 <Col md="12">
                     {costingData && `Part No. : ${costingData.PartDetail.PartNumber} Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
                     <hr />
-                    <Button color="secondary">
-                        New Costing
-                    </Button>
-                    <h5><b>{`Costing Supplier List`}</b></h5>
+                    {supplierId && plantId &&
+                        <Button color="secondary" onClick={() => this.createNewCosting()} >
+                            New Costing
+                    </Button>}
+                    {supplierId && plantId && <h5><b>{`Costing Supplier List`}</b></h5>}
                     <Table className="table table-striped" bordered>
                         {costingData && costingData.ActiveCostingDetatils.length > 0 &&
                             <thead>
@@ -107,7 +150,7 @@ class CostWorking extends Component {
                                 costingData.ActiveCostingDetatils.map((item, index) => {
                                     return (
                                         <tr key={index}>
-                                            <td><a href="javascript:void(0)" onClick={this.collapsHandler} color="secondary" id="toggler">{item.PartNumber}</a></td>
+                                            <td><div onClick={() => this.collapsHandler(item.CostingId)} color="secondary" id="toggler">{item.PartNumber}</div></td>
                                             <td>{costingData.TechnologyDetail && costingData.TechnologyDetail.TechnologyName}</td>
                                             <td>{item.PlantName}</td>
                                             <td>{item.DisplayCreatedDate}</td>
@@ -115,7 +158,7 @@ class CostWorking extends Component {
                                         </tr>
                                     )
                                 })}
-
+                            {/* {this.props.item === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />} */}
                         </tbody>
                     </Table>
                     <hr />
@@ -123,6 +166,32 @@ class CostWorking extends Component {
 
                 {isCollapes && (
                     <Col md="12">
+                        <Label><th>{`Cost Working With : `}{isEditFlag ? getCostingData && getCostingData.DisplayCreatedDate : ''}</th></Label>
+                        {isEditFlag &&
+                            <div className={'create-costing-grid'}>
+                                <Table className="table table-striped" bordered>
+                                    <thead>
+                                        <tr>
+                                            <th>{`BOM Level`}</th>
+                                            <th>{`Assy Part No.`}</th>
+                                            <th>{`Child Part No.`}</th>
+                                            <th>{`Part Description`}</th>
+                                            <th>{`Costing Heads`}</th>
+                                            <th>{`Qty/Assy`}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        <tr >
+                                            <td>{costingData.PartDetail.BillOfMaterialLevel}</td>
+                                            <td>{costingData.PartDetail.PartNumber}</td>
+                                            <td>{''}</td>
+                                            <td>{costingData.PartDetail.PartDescription}</td>
+                                            <td>{}</td>
+                                            <td>{}</td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </div>}
                         <div className={'create-costing-grid'}>
                             <Table className="table table-striped" bordered>
                                 <thead>
@@ -136,7 +205,6 @@ class CostWorking extends Component {
                                         <th>{`Net RM Cost`}</th>
                                         <th>{`BOP/pc.`}</th>
                                         <th>{`Total BOP Cost/Assy`}</th>
-                                        <th>{`BOM`}</th>
                                         <th>{`Process`}</th>
                                         <th>{`Total Process Cost`}</th>
                                         <th>{`Total Process Cost/Assy`}</th>
@@ -149,22 +217,21 @@ class CostWorking extends Component {
                                 <tbody >
                                     <tr >
                                         <td><button onClick={this.openRMModel}>Add</button></td>
-                                        <td>{''}</td>
-                                        <td>{''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                         <td><button onClick={this.openModel}>Add</button></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                         <td><button>Add</button></td>
-                                        <td></td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                         <td><button>Add</button></td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                         <td><button>Add</button></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td><button>Add</button></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                     </tr>
                                 </tbody>
                             </Table>
@@ -182,7 +249,7 @@ class CostWorking extends Component {
                         isOpen={isOpenRMmodel}
                         onCancel={this.onCancel}
                         supplierId={supplierId}
-                        costingId={'f69efbcd-83e8-41e8-8c9e-ad3ef729e45b'}
+                        costingId={costingId}
                     />
                 )}
             </div >
@@ -196,12 +263,13 @@ class CostWorking extends Component {
 * @param {*} state
 */
 function mapStateToProps({ costWorking }) {
-    const { costingData } = costWorking;
-    return { costingData }
+    const { costingData, getCostingData } = costWorking;
+    console.log('getCostingData: ', getCostingData);
+    return { costingData, getCostingData }
 }
 
 
 export default connect(
-    mapStateToProps, {}
+    mapStateToProps, { createNewCosting, getCostingBySupplier, getCostingDetailsById }
 )(CostWorking);
 

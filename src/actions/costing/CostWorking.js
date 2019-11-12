@@ -9,7 +9,9 @@ import {
     GET_WEIGHT_CALC_LAYOUT_SUCCESS,
     GET_COSTING_BY_SUPPLIER_SUCCESS,
     GET_RM_LIST_BY_SUPPLIER_SUCCESS,
-    ADD_RAW_MATERIAL_COSTING_SUCCESS
+    ADD_RAW_MATERIAL_COSTING_SUCCESS,
+    CREATE_SHEETMETAL_COSTING_SUCCESS,
+    GET_COSTING_DATA_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -166,6 +168,33 @@ export function getRawMaterialListBySupplierId(supplierId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
+        });
+    };
+}
+
+/*
+ * @method createNewCosting
+ * @description Create new costing for selected supplier
+ */
+export function createNewCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createNewCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: CREATE_SHEETMETAL_COSTING_SUCCESS,
+                });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
             apiErrors(error);
         });
     };
@@ -198,5 +227,39 @@ export function addCostingRawMaterial(data, callback) {
             });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getCostingDetailsById
+ * @description get costing details by id
+ */
+export function getCostingDetailsById(costingId, isEditFlag, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if (isEditFlag) {
+            axios.get(`${API.getCostingDetailsById}/${costingId}`, headers)
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_COSTING_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
+                    callback(response);
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_COSTING_DATA_SUCCESS,
+                payload: {},
+            });
+            callback({});
+        }
     };
 }
