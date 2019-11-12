@@ -45,9 +45,9 @@ class Costing extends Component {
         console.log('%c 🦑 supplierId: ', 'font-size:20px;background-color: #B03734;color:#fff;', supplierId);
         this.setState({
             activeTab: '2',
-            supplierId: supplierId
+            supplierId: 'd883225e-586c-4b4a-84d1-3759764afbb3'
         });
-        this.props.getCostingBySupplier(supplierId, () => { })
+        this.props.getCostingBySupplier(supplierId, (res) => {console.log('res', res) })
     }
 
     /**

@@ -407,7 +407,9 @@ class CostSummary extends Component {
     }
 
     supplierCosting = (supplierId) => {
-        this.props.supplierCosting(supplierId)
+        console.log('supplierId: in cost summary', supplierId);
+        
+        this.props.supplierCosting('d883225e-586c-4b4a-84d1-3759764afbb3')
     }
 
     /**
