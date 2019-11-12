@@ -420,9 +420,7 @@ class CostSummary extends Component {
     }
 
     supplierCosting = (supplierId) => {
-        console.log('supplierId: in cost summary', supplierId);
-        
-        this.props.supplierCosting('d883225e-586c-4b4a-84d1-3759764afbb3')
+        this.props.supplierCosting(supplierId, this.state.partNo)
     }
 
     /**
@@ -439,7 +437,7 @@ class CostSummary extends Component {
     */
     render() {
         const { handleSubmit, ZBCSupplier } = this.props;
-        const { supplier } = this.state;
+        const { supplier, supplier2, supplier3 } = this.state;
         return (
             <div>
                 {this.props.loading && <Loader />}
@@ -717,7 +715,7 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             {!this.state.addSupplier2 && this.state.supplierTwoName == '' && <div>Supplier2</div>}
-                            {this.state.supplierTwoName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier.value)} >{`${this.state.supplierTwoName}`}</a>}
+                            {this.state.supplierTwoName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier2.value)} >{`${this.state.supplierTwoName}`}</a>}
                             {this.state.addSupplier2 &&
                                 <Field
                                     label={``}
@@ -737,7 +735,7 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             {!this.state.addSupplier3 && this.state.supplierTwoName == '' && <div>Supplier3</div>}
-                            {this.state.supplierThreeName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier.value)} >{`${this.state.supplierThreeName}`}</a>}
+                            {this.state.supplierThreeName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier3.value)} >{`${this.state.supplierThreeName}`}</a>}
                             {this.state.addSupplier3 &&
                                 <Field
                                     label={``}
