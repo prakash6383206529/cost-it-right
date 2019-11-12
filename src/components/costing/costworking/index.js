@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {createNewCosting, getCostingBySupplier,getCostingDetailsById } from '../../../actions/costing/CostWorking';
-import { Button, Col, Table } from 'reactstrap';
+import { Button, Col, Table, Label } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
@@ -64,7 +64,7 @@ class CostWorking extends Component {
             isEditFlag: true
         }, () => {
             if (this.state.isEditFlag) {
-                this.props.getCostingDetailsById(costingId, true, res => {console.log('res from updating costing details ', res)}) 
+                this.props.getCostingDetailsById(costingId, true, res => {}) 
             } else {
                 this.props.getCostingDetailsById('', false, res => { })
             }
@@ -84,7 +84,7 @@ class CostWorking extends Component {
                 PartId: costingData.ActiveCostingDetatils[0].PartId,
                 PlantId: plantId,
                 SupplierId: supplierId,
-                CreatedBy: 'string'
+                CreatedBy: ''
             } 
             /** create new costing on basis of selected supplier, part, and plat */
             this.props.createNewCosting(sheetmetalCostingData, (res) => {
@@ -106,8 +106,8 @@ class CostWorking extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isCollapes } = this.state;
-        const { costingData,supplierId, plantId } = this.props;
+        const { isOpen, isCollapes, isEditFlag } = this.state;
+        const { costingData,supplierId, plantId, getCostingData } = this.props;
         return (
             <div>
                 {this.props.loading && <Loader />}
@@ -151,6 +151,32 @@ class CostWorking extends Component {
 
                 {isCollapes && (
                     <Col md="12">
+                         <Label><th>{`Cost Working With : `}{isEditFlag ? getCostingData && getCostingData.DisplayCreatedDate : ''}</th></Label>
+                         {isEditFlag &&
+                         <div className={'create-costing-grid'}>
+                            <Table className="table table-striped" bordered>
+                                <thead>
+                                    <tr>
+                                        <th>{`BOM Level`}</th>
+                                        <th>{`Assy Part No.`}</th>
+                                        <th>{`Child Part No.`}</th>
+                                        <th>{`Part Description`}</th>
+                                        <th>{`Costing Heads`}</th>
+                                        <th>{`Qty/Assy`}</th>
+                                    </tr>
+                                </thead>
+                                <tbody >
+                                    <tr >
+                                        <td>{costingData.PartDetail.BillOfMaterialLevel}</td>
+                                        <td>{costingData.PartDetail.PartNumber}</td>
+                                        <td>{''}</td>
+                                        <td>{costingData.PartDetail.PartDescription}</td>
+                                        <td>{}</td>
+                                        <td>{}</td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                        </div>}
                         <div className={'create-costing-grid'}>
                             <Table className="table table-striped" bordered>
                                 <thead>
@@ -164,7 +190,6 @@ class CostWorking extends Component {
                                         <th>{`Net RM Cost`}</th>
                                         <th>{`BOP/pc.`}</th>
                                         <th>{`Total BOP Cost/Assy`}</th>
-                                        <th>{`BOM`}</th>
                                         <th>{`Process`}</th>
                                         <th>{`Total Process Cost`}</th>
                                         <th>{`Total Process Cost/Assy`}</th>
@@ -177,22 +202,21 @@ class CostWorking extends Component {
                                 <tbody >
                                     <tr >
                                         <td><button>Add</button></td>
-                                        <td>{''}</td>
-                                        <td>{''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                         <td><button onClick={this.openModel}>Add</button></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                         <td><button>Add</button></td>
-                                        <td></td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                         <td><button>Add</button></td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                         <td><button>Add</button></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td><button>Add</button></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isEditFlag ? '0' : ''}</td>
                                     </tr>
                                 </tbody>
                             </Table>
