@@ -8,11 +8,14 @@ import {
     GET_COSTING_BY_SUPPLIER_SUCCESS,
     GET_RM_LIST_BY_SUPPLIER_SUCCESS,
     ADD_RAW_MATERIAL_COSTING_SUCCESS,
-    GET_COSTING_DATA_SUCCESS
+    GET_COSTING_DATA_SUCCESS,
+    UPDATE_COSTING_RM_SUCCESS,
+    GET_BOP_LIST_SUCCESS,
+    ADD_BOP_COSTING_SUCCESS
 } from '../../config/constants';
 
 const initialState = {
-
+    //getCostingDetailData: []
 };
 
 export default function CostWorkingReducer(state = initialState, action) {
@@ -53,7 +56,7 @@ export default function CostWorkingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                costingData: action.payload
+                activeCostingListData: action.payload
             };
         case GET_RM_LIST_BY_SUPPLIER_SUCCESS:
             return {
@@ -62,6 +65,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 error: true,
                 rmListData: action.payload
             };
+        case GET_BOP_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                bopListData: action.payload
+            };
         case ADD_RAW_MATERIAL_COSTING_SUCCESS:
             return {
                 ...state,
@@ -69,12 +79,25 @@ export default function CostWorkingReducer(state = initialState, action) {
                 error: true,
                 costingGridRMData: action.payload
             };
+        case ADD_BOP_COSTING_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingGridBOPData: action.payload
+            };
         case GET_COSTING_DATA_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                getCostingData: action.payload
+                getCostingDetailData: action.payload
+            };
+        case UPDATE_COSTING_RM_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
             };
         default:
             return state;

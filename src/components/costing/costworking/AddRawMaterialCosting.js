@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input, Table } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText, renderNumberInputField, renderSelectField } from "../../layout/FormInputs";
-import { getRawMaterialListBySupplierId, addCostingRawMaterial } from '../../../actions/costing/CostWorking';
+import { getRawMaterialListBySupplierId, addCostingRawMaterial, getCostingDetailsById } from '../../../actions/costing/CostWorking';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -77,8 +77,9 @@ class AddRawMaterialCosting extends Component {
     }
 
     rawMaterialHandler = (item) => {
+        const { isRMEditFlag, costingId } = this.props;
         const requestData = {
-            CostingId: this.props.costingId,
+            CostingId: costingId,
             RawMaterialDetailId: item.RawMaterialDetailsId,
             RawMaterialName: item.RawMaterialName,
             GrandTotal: item.BasicRate * item.Quantity,
@@ -86,10 +87,30 @@ class AddRawMaterialCosting extends Component {
             RawMaterialScrapRate: item.ScrapRate,
             CreatedBy: ""
         }
+        // if (isRMEditFlag) {
+        //     requestData = {
+        //         CostingRawMaterialDetailId: item.RawMaterialId,
+        //         CostingId: costingId,
+        //         RawMaterialDetailId: item.RawMaterialDetailsId,
+        //         RawMaterialName: item.RawMaterialName,
+        //         GrandTotal: item.BasicRate * item.Quantity,
+        //         RawMaterialRate: item.BasicRate,
+        //         RawMaterialScrapRate: item.ScrapRate,
+        //         CreatedBy: ""
+        //     }
+        // }
         this.props.addCostingRawMaterial(requestData, res => {
-            this.toggleModel()
+            this.props.getCostingDetailsById(costingId, true, res => {
+                // this.setState({
+                //     isCollapes: true,
+                //     isEditFlag: true,
+                //     isNewCostingFlag: false
+                // })
+                this.toggleModel()
+            })
         })
     }
+
 
     /**
     * @method render
@@ -177,7 +198,8 @@ function mapStateToProps({ costWorking, state }) {
 */
 export default connect(mapStateToProps, {
     getRawMaterialListBySupplierId,
-    addCostingRawMaterial
+    addCostingRawMaterial,
+    getCostingDetailsById
 })(reduxForm({
     form: 'AddRawMaterialCosting',
     enableReinitialize: true,

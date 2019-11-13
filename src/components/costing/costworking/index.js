@@ -7,6 +7,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import AddWeightCosting from './AddWeightCosting';
 import AddRawMaterialCosting from './AddRawMaterialCosting';
+import AddBOPCosting from './AddBOPCosting';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 
@@ -20,7 +21,10 @@ class CostWorking extends Component {
             isCollapes: false,
             PartId: '',
             isEditFlag: false,
-            costingId: ''
+            isNewCostingFlag: false,
+            costingId: '',
+            isRMEditFlag: false,
+            isOpenBOPModal: false,
         }
     }
 
@@ -57,21 +61,35 @@ class CostWorking extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false, isOpenRMmodel: false });
+        this.setState({
+            isOpen: false,
+            isOpenRMmodel: false,
+            isOpenBOPModal: false
+        });
     }
 
     /**haldle the cost working details collapes */
     collapsHandler = (costingId) => {
-        this.setState({
-            isCollapes: !this.state.isCollapes,
-            isEditFlag: true
-        }, () => {
-            if (this.state.isEditFlag) {
-                this.props.getCostingDetailsById(costingId, true, res => { })
-            } else {
-                this.props.getCostingDetailsById('', false, res => { })
-            }
+        // this.setState({
+        //     isCollapes: !this.state.isCollapes,
+        //     isEditFlag: true
+        // }, () => {
+        //     if (this.state.isEditFlag) {
+        //         this.props.getCostingDetailsById(costingId, true, res => { })
+        //     } else {
+        //         this.props.getCostingDetailsById('', false, res => { })
+        //     }
+        // })
+
+        this.props.getCostingDetailsById(costingId, true, res => {
+            this.setState({
+                isCollapes: true,
+                isEditFlag: true,
+                isNewCostingFlag: false,
+                costingId: costingId
+            })
         })
+
     }
 
     /**
@@ -80,11 +98,11 @@ class CostWorking extends Component {
      */
     createNewCosting = () => {
         const { supplierId, plantId } = this.props;
-        const { costingData } = this.props;
+        const { activeCostingListData } = this.props;
         /** getting part id from active costing list */
-        if (costingData && costingData.ActiveCostingDetatils.length > 0) {
+        if (activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0) {
             const sheetmetalCostingData = {
-                PartId: costingData.ActiveCostingDetatils[0].PartId,
+                PartId: activeCostingListData.ActiveCostingDetatils[0].PartId,
                 PlantId: plantId,
                 SupplierId: supplierId,
                 CreatedBy: ''
@@ -92,15 +110,25 @@ class CostWorking extends Component {
             /** create new costing on basis of selected supplier, part, and plat */
             this.props.createNewCosting(sheetmetalCostingData, (res) => {
                 if (res.data.Result) {
+                    const newCostingId = res.data.Identity;
                     toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
                     /** fetching records of supplier costing details */
-                    this.props.getCostingBySupplier(supplierId, (res) => { console.log('res', res) });
-                    this.setState({
-                        isCollapes: true,
-                        isEditFlag: true,
-                        costingId: res.data.Identity
+                    // this.props.getCostingBySupplier(supplierId, (res) => {
+                    //     this.setState({
+                    //         isCollapes: true,
+                    //         isNewCostingFlag: true,
+                    //         isEditFlag: false,
+                    //         costingId: newCostingId
+                    //     })
+                    //     //this.toggleModel();
+                    // });
+                    this.props.getCostingDetailsById(newCostingId, true, res => {
+                        this.setState({
+                            isCollapes: true,
+                            isEditFlag: true,
+                            isNewCostingFlag: false
+                        })
                     })
-                    this.toggleModel();
                 } else {
                     toastr.error(res.data.message);
                 }
@@ -113,7 +141,21 @@ class CostWorking extends Component {
      * @description  used to open openRMModel 
      */
     openRMModel = () => {
-        this.setState({ isOpenRMmodel: !this.state.isOpenRMmodel })
+        this.setState({
+            isOpenRMmodel: !this.state.isOpenRMmodel,
+            isRMEditFlag: this.props.getCostingDetailData.RawMaterialDetails.length > 0 ? true : false,
+        })
+    }
+
+    /**
+     * @method openBOPModal
+     * @description  used to open openBOPModal 
+     */
+    openBOPModal = () => {
+        this.setState({
+            isOpenBOPModal: !this.state.isOpenBOPModal,
+            //isBOPEditFlag: this.props.getCostingDetailData.BoughtOutPartDetails.length > 0 ? true : false,
+        })
     }
 
     /**
@@ -121,21 +163,23 @@ class CostWorking extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isCollapes, isEditFlag, isOpenRMmodel, costingId } = this.state;
-        const { costingData, supplierId, plantId, getCostingData, costingGridRMData } = this.props;
+        const { isOpen, isCollapes, isEditFlag, isNewCostingFlag, isOpenRMmodel, costingId, isRMEditFlag,
+            isOpenBOPModal, isBOPEditFlag } = this.state;
+        const { activeCostingListData, supplierId, plantId, getCostingData, costingGridRMData, getCostingDetailData,
+            BoughtOutPartDetails } = this.props;
         return (
             <div>
                 {this.props.loading && <Loader />}
                 <Col md="12">
-                    {costingData && `Part No. : ${costingData.PartDetail.PartNumber} Costing Type : ${costingData.SupplierType} Supplier Name : ${costingData.SupplierName} Supplier Code : ${costingData.SupplierCode} Created On : `}
+                    {activeCostingListData && `Part No. : ${activeCostingListData.PartDetail.PartNumber} Costing Type : ${activeCostingListData.SupplierType} Supplier Name : ${activeCostingListData.SupplierName} Supplier Code : ${activeCostingListData.SupplierCode} Created On : `}
                     <hr />
                     {supplierId && plantId &&
-                        <Button color="secondary" onClick={() => this.createNewCosting()} >
+                        <Button color="secondary" onClick={this.createNewCosting} >
                             New Costing
-                    </Button>}
+                        </Button>}
                     {supplierId && plantId && <h5><b>{`Costing Supplier List`}</b></h5>}
                     <Table className="table table-striped" bordered>
-                        {costingData && costingData.ActiveCostingDetatils.length > 0 &&
+                        {activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0 &&
                             <thead>
                                 <tr>
                                     <th>{`Assy Part No.`}</th>
@@ -146,12 +190,12 @@ class CostWorking extends Component {
                                 </tr>
                             </thead>}
                         <tbody >
-                            {costingData && costingData.ActiveCostingDetatils.length > 0 &&
-                                costingData.ActiveCostingDetatils.map((item, index) => {
+                            {activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0 &&
+                                activeCostingListData.ActiveCostingDetatils.map((item, index) => {
                                     return (
                                         <tr key={index}>
-                                            <td><div onClick={() => this.collapsHandler(item.CostingId)} color="secondary" id="toggler">{item.PartNumber}</div></td>
-                                            <td>{costingData.TechnologyDetail && costingData.TechnologyDetail.TechnologyName}</td>
+                                            <td><div onClick={() => this.collapsHandler(item.CostingId)} color="secondary" className={'select-costing'} id="toggler">{item.PartNumber}</div></td>
+                                            <td>{activeCostingListData.TechnologyDetail && activeCostingListData.TechnologyDetail.TechnologyName}</td>
                                             <td>{item.PlantName}</td>
                                             <td>{item.DisplayCreatedDate}</td>
                                             <td>{item.StatusName}</td>
@@ -167,31 +211,31 @@ class CostWorking extends Component {
                 {isCollapes && (
                     <Col md="12">
                         <Label><th>{`Cost Working With : `}{isEditFlag ? getCostingData && getCostingData.DisplayCreatedDate : ''}</th></Label>
-                        {isEditFlag &&
-                            <div className={'create-costing-grid'}>
-                                <Table className="table table-striped" bordered>
-                                    <thead>
-                                        <tr>
-                                            <th>{`BOM Level`}</th>
-                                            <th>{`Assy Part No.`}</th>
-                                            <th>{`Child Part No.`}</th>
-                                            <th>{`Part Description`}</th>
-                                            <th>{`Costing Heads`}</th>
-                                            <th>{`Qty/Assy`}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody >
-                                        <tr >
-                                            <td>{costingData.PartDetail.BillOfMaterialLevel}</td>
-                                            <td>{costingData.PartDetail.PartNumber}</td>
-                                            <td>{''}</td>
-                                            <td>{costingData.PartDetail.PartDescription}</td>
-                                            <td>{}</td>
-                                            <td>{}</td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                            </div>}
+
+                        <div className={'create-costing-grid'}>
+                            <Table className="table table-striped" bordered>
+                                <thead>
+                                    <tr>
+                                        <th>{`BOM Level`}</th>
+                                        <th>{`Assy Part No.`}</th>
+                                        <th>{`Child Part No.`}</th>
+                                        <th>{`Part Description`}</th>
+                                        <th>{`Costing Heads`}</th>
+                                        <th>{`Qty/Assy`}</th>
+                                    </tr>
+                                </thead>
+                                <tbody >
+                                    <tr >
+                                        <td>{activeCostingListData.PartDetail.BillOfMaterialLevel}</td>
+                                        <td>{activeCostingListData.PartDetail.PartNumber}</td>
+                                        <td>{activeCostingListData.PartDetail.PartNumber}</td>
+                                        <td>{activeCostingListData.PartDetail.PartDescription}</td>
+                                        <td>{''}</td>
+                                        <td>{''}</td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                        </div>
                         <div className={'create-costing-grid'}>
                             <Table className="table table-striped" bordered>
                                 <thead>
@@ -217,22 +261,26 @@ class CostWorking extends Component {
                                 <tbody >
                                     <tr >
                                         {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
-                                        <td><button onClick={this.openRMModel}>{costingGridRMData ? 'RawMaterialName' : 'Add'}</button></td>
-                                        <td>{costingGridRMData ? costingGridRMData.RawMaterialRate : 0}</td>
-                                        <td>{costingGridRMData ? costingGridRMData.RawMaterialScrapRate : 0}</td>
+                                        <td><button onClick={this.openRMModel}>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
+                                        <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
+                                        <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
+
                                         <td><button onClick={this.openModel}>Add</button></td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
+                                        <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
+                                        <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
+
+                                        <td><button onClick={this.openBOPModal}>{getCostingDetailData && getCostingDetailData.BoughtOutPartDetails.length > 0 ? getCostingDetailData.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
+                                        <td>{getCostingDetailData && getCostingDetailData.BoughtOutPartDetails.length > 0 ? getCostingDetailData.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
+
                                         <td><button>Add</button></td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isNewCostingFlag ? '0' : ''}</td>
+                                        <td>{isNewCostingFlag ? '0' : ''}</td>
+
                                         <td><button>Add</button></td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
-                                        <td><button>Add</button></td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
-                                        <td>{isEditFlag ? '0' : ''}</td>
+                                        <td>{isNewCostingFlag ? '0' : ''}</td>
+                                        <td>{isNewCostingFlag ? '0' : ''}</td>
+                                        <td>{isNewCostingFlag ? '0' : ''}</td>
                                     </tr>
                                 </tbody>
                             </Table>
@@ -251,6 +299,16 @@ class CostWorking extends Component {
                         onCancel={this.onCancel}
                         supplierId={supplierId}
                         costingId={costingId}
+                        isRMEditFlag={isRMEditFlag}
+                    />
+                )}
+                {isOpenBOPModal && (
+                    <AddBOPCosting
+                        isOpen={isOpenBOPModal}
+                        onCancel={this.onCancel}
+                        supplierId={supplierId}
+                        costingId={costingId}
+                    //isBOPEditFlag={isBOPEditFlag}
                     />
                 )}
             </div >
@@ -264,13 +322,16 @@ class CostWorking extends Component {
 * @param {*} state
 */
 function mapStateToProps({ costWorking }) {
-    const { costingData, getCostingData, costingGridRMData } = costWorking;
-    console.log('getCostingData: ', getCostingData);
-    return { costingData, getCostingData, costingGridRMData }
+    const { activeCostingListData, getCostingDetailData, costingGridRMData } = costWorking;
+
+    return { activeCostingListData, getCostingDetailData, costingGridRMData }
 }
 
-
 export default connect(
-    mapStateToProps, { createNewCosting, getCostingBySupplier, getCostingDetailsById }
+    mapStateToProps, {
+    createNewCosting,
+    getCostingBySupplier,
+    getCostingDetailsById
+}
 )(CostWorking);
 

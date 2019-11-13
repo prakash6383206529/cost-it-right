@@ -12,6 +12,9 @@ import {
     ADD_RAW_MATERIAL_COSTING_SUCCESS,
     CREATE_SHEETMETAL_COSTING_SUCCESS,
     GET_COSTING_DATA_SUCCESS,
+    UPDATE_COSTING_RM_SUCCESS,
+    GET_BOP_LIST_SUCCESS,
+    ADD_BOP_COSTING_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -248,6 +251,11 @@ export function getCostingDetailsById(costingId, isEditFlag, callback) {
                             type: GET_COSTING_DATA_SUCCESS,
                             payload: response.data.Data,
                         });
+                        // Empty data in costing edit case by clicked on list
+                        dispatch({
+                            type: ADD_RAW_MATERIAL_COSTING_SUCCESS,
+                            payload: {},
+                        });
                         callback(response);
                     } else {
                         toastr.error(MESSAGES.SOME_ERROR);
@@ -264,5 +272,80 @@ export function getCostingDetailsById(costingId, isEditFlag, callback) {
             });
             callback({});
         }
+    };
+}
+
+/**
+ * @method updateBOPAPI
+ * @description update BOP
+ */
+export function updateCostingRawMatrial(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateCostingRawMatrial}`, requestData, headers)
+            .then((response) => {
+                dispatch({ type: UPDATE_COSTING_RM_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getBoughtOutPartList
+ * @description get all BOP list
+ */
+export function getBoughtOutPartList(supplierId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getBoughtOutPartList}/${supplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_BOP_LIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+        });
+    };
+}
+
+/**
+ * @method addCostingBoughtOutPart
+ * @description add bought out part to costing
+ */
+export function addCostingBoughtOutPart(data, callback) {
+    return (dispatch) => {
+        // dispatch({
+        //     type:  API_REQUEST,
+        // });
+        const request = axios.post(API.addCostingBoughtOutPart, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: ADD_BOP_COSTING_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
     };
 }
