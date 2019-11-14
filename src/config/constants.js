@@ -193,6 +193,8 @@ export const API = {
   updateCostingRawMatrial: `${BASE_URL}/costing-sheet-metal/update-costing-raw-material`,
   getBoughtOutPartList: `${BASE_URL}/costing-sheet-metal/get-bought-out-part-by-supplier`,
   addCostingBoughtOutPart: `${BASE_URL}/costing-sheet-metal/add-costing-bought-out-part`,
+  getOtherOperationList: `${BASE_URL}/costing-sheet-metal/get-other-operation-by-supplier`,
+  addCostingOtherOperation: `${BASE_URL}/costing-sheet-metal/add-costing-other-operations`,
 }
 
 
@@ -374,3 +376,5 @@ export const ADD_RAW_MATERIAL_COSTING_SUCCESS = 'ADD_RAW_MATERIAL_COSTING_SUCCES
 export const UPDATE_COSTING_RM_SUCCESS = 'UPDATE_COSTING_RM_SUCCESS';
 export const GET_BOP_LIST_SUCCESS = 'GET_BOP_LIST_SUCCESS';
 export const ADD_BOP_COSTING_SUCCESS = 'ADD_BOP_COSTING_SUCCESS';
+export const GET_OTHER_OPERATION_LIST_SUCCESS = 'GET_OTHER_OPERATION_LIST_SUCCESS';
+export const ADD_OTHER_OPERATION_COSTING_SUCCESS = 'ADD_OTHER_OPERATION_COSTING_SUCCESS';

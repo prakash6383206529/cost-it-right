@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createNewCosting, getCostingBySupplier, getCostingDetailsById } from '../../../actions/costing/CostWorking';
-import { Button, Col, Table, Label } from 'reactstrap';
+import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import AddWeightCosting from './AddWeightCosting';
 import AddRawMaterialCosting from './AddRawMaterialCosting';
 import AddBOPCosting from './AddBOPCosting';
+import OtherOperationGrid from './OtherOperationGrid';
+import ProcessGrid from './ProcessGrid';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 
@@ -25,6 +27,11 @@ class CostWorking extends Component {
             costingId: '',
             isRMEditFlag: false,
             isOpenBOPModal: false,
+            isOpenProcessModal: false,
+            isOpenProcessTable: false,
+            rowsCount: [1],
+            isShowOtherOperation: false,
+            isShowProcessGrid: false
         }
     }
 
@@ -154,7 +161,36 @@ class CostWorking extends Component {
     openBOPModal = () => {
         this.setState({
             isOpenBOPModal: !this.state.isOpenBOPModal,
-            //isBOPEditFlag: this.props.getCostingDetailData.BoughtOutPartDetails.length > 0 ? true : false,
+        })
+    }
+
+    /**
+     * @method openProcessModal
+     * @description  used to open openProcessModal 
+     */
+    openProcessModal = () => {
+        this.setState({
+            isOpenProcessModal: !this.state.isOpenProcessModal,
+        })
+    }
+
+    /**
+     * @method toggleOtherOperation
+     * @description  used to toggle OtherOperation
+     */
+    toggleOtherOperation = () => {
+        this.setState({
+            isShowOtherOperation: !this.state.isShowOtherOperation
+        })
+    }
+
+    /**
+     * @method toggleProcessGrid
+     * @description  used to toggle OtherOperation
+     */
+    toggleProcessGrid = () => {
+        this.setState({
+            isShowProcessGrid: !this.state.isShowProcessGrid
         })
     }
 
@@ -163,10 +199,13 @@ class CostWorking extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isCollapes, isEditFlag, isNewCostingFlag, isOpenRMmodel, costingId, isRMEditFlag,
-            isOpenBOPModal, isBOPEditFlag } = this.state;
-        const { activeCostingListData, supplierId, plantId, getCostingData, costingGridRMData, getCostingDetailData,
-            BoughtOutPartDetails } = this.props;
+        const { isOpen, isCollapes, isEditFlag, isNewCostingFlag, isOpenRMmodel, costingId,
+            isRMEditFlag, isOpenBOPModal, isBOPEditFlag, isOpenProcessModal, isOpenProcessTable,
+            rowsCount, isShowOtherOperation, isShowProcessGrid } = this.state;
+
+        const { activeCostingListData, supplierId, plantId, getCostingData, costingGridRMData,
+            getCostingDetailData, BoughtOutPartDetails } = this.props;
+
         return (
             <div>
                 {this.props.loading && <Loader />}
@@ -178,6 +217,8 @@ class CostWorking extends Component {
                             New Costing
                         </Button>}
                     {supplierId && plantId && <h5><b>{`Costing Supplier List`}</b></h5>}
+
+                    {/* Listing of active costings */}
                     <Table className="table table-striped" bordered>
                         {activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0 &&
                             <thead>
@@ -212,79 +253,102 @@ class CostWorking extends Component {
                     <Col md="12">
                         <Label><th>{`Cost Working With : `}{isEditFlag ? getCostingData && getCostingData.DisplayCreatedDate : ''}</th></Label>
 
-                        <div className={'create-costing-grid'}>
-                            <Table className="table table-striped" bordered>
-                                <thead>
-                                    <tr>
-                                        <th>{`BOM Level`}</th>
-                                        <th>{`Assy Part No.`}</th>
-                                        <th>{`Child Part No.`}</th>
-                                        <th>{`Part Description`}</th>
-                                        <th>{`Costing Heads`}</th>
-                                        <th>{`Qty/Assy`}</th>
-                                    </tr>
-                                </thead>
-                                <tbody >
-                                    <tr >
-                                        <td>{activeCostingListData.PartDetail.BillOfMaterialLevel}</td>
-                                        <td>{activeCostingListData.PartDetail.PartNumber}</td>
-                                        <td>{activeCostingListData.PartDetail.PartNumber}</td>
-                                        <td>{activeCostingListData.PartDetail.PartDescription}</td>
-                                        <td>{''}</td>
-                                        <td>{''}</td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-                        </div>
-                        <div className={'create-costing-grid'}>
-                            <Table className="table table-striped" bordered>
-                                <thead>
-                                    <tr>
-                                        <th>{`RM Specification`}</th>
-                                        <th>{`RM rate/Kg`}</th>
-                                        <th>{`Scrap Rate (Rs/kg)`}</th>
-                                        <th>{`Weight Specification`}</th>
-                                        <th>{`Gross weight`}</th>
-                                        <th>{`finish weight`}</th>
-                                        <th>{`Net RM Cost`}</th>
-                                        <th>{`BOP/pc.`}</th>
-                                        <th>{`Total BOP Cost/Assy`}</th>
-                                        <th>{`Process`}</th>
-                                        <th>{`Total Process Cost`}</th>
-                                        <th>{`Total Process Cost/Assy`}</th>
-                                        <th>{`Other operation`}</th>
-                                        <th>{`Surface Treatment Cost`}</th>
-                                        <th>{`Surface Treatment Cost/Assy`}</th>
-                                        <th>{`RM + CC`}</th>
-                                    </tr>
-                                </thead>
-                                <tbody >
-                                    <tr >
-                                        {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
-                                        <td><button onClick={this.openRMModel}>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
-                                        <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
-                                        <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
+                        {/* Close below table in case process table open */}
+                        {(!isShowProcessGrid && !isShowOtherOperation) &&
+                            <div className={'create-costing-grid'}>
+                                <Table className="table table-striped" bordered>
+                                    <thead>
+                                        <tr>
+                                            <th>{`BOM Level`}</th>
+                                            <th>{`Assy Part No.`}</th>
+                                            <th>{`Child Part No.`}</th>
+                                            <th>{`Part Description`}</th>
+                                            <th>{`Material Type`}</th>
+                                            <th>{`Qty/Assy`}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        <tr >
+                                            <td>{activeCostingListData.PartDetail.BillOfMaterialLevel}</td>
+                                            <td>{activeCostingListData.PartDetail.PartNumber}</td>
+                                            <td>{activeCostingListData.PartDetail.PartNumber}</td>
+                                            <td>{activeCostingListData.PartDetail.PartDescription}</td>
+                                            <td>{''}</td>
+                                            <td>{''}</td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </div>}
 
-                                        <td><button onClick={this.openModel}>Add</button></td>
-                                        <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
-                                        <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
-                                        <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
 
-                                        <td><button onClick={this.openBOPModal}>{getCostingDetailData && getCostingDetailData.BoughtOutPartDetails.length > 0 ? getCostingDetailData.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
-                                        <td>{getCostingDetailData && getCostingDetailData.BoughtOutPartDetails.length > 0 ? getCostingDetailData.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
+                        {/* Close below table in case process table open */}
+                        {(!isShowProcessGrid && !isShowOtherOperation) &&
+                            <div className={'create-costing-grid'}>
+                                <Table className="table table-striped" bordered>
+                                    <thead>
+                                        <tr>
+                                            <th>{`RM Specification`}</th>
+                                            <th>{`RM rate/Kg`}</th>
+                                            <th>{`Scrap Rate (Rs/kg)`}</th>
+                                            <th>{`Weight Specification`}</th>
+                                            <th>{`Gross weight`}</th>
+                                            <th>{`finish weight`}</th>
+                                            <th>{`Net RM Cost`}</th>
+                                            <th>{`BOP/pc.`}</th>
+                                            <th>{`Total BOP Cost/Assy`}</th>
+                                            <th>{`Process`}</th>
+                                            <th>{`Total Process Cost`}</th>
+                                            <th>{`Total Process Cost/Assy`}</th>
+                                            <th>{`Other operation`}</th>
+                                            <th>{`Surface Treatment Cost`}</th>
+                                            <th>{`Surface Treatment Cost/Assy`}</th>
+                                            <th>{`RM + CC`}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        <tr >
+                                            {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
+                                            <td><button onClick={this.openRMModel}>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
+                                            <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
+                                            <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
 
-                                        <td><button>Add</button></td>
-                                        <td>{isNewCostingFlag ? '0' : ''}</td>
-                                        <td>{isNewCostingFlag ? '0' : ''}</td>
+                                            <td><button onClick={this.openModel}>Add</button></td>
+                                            <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
+                                            <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
+                                            <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
 
-                                        <td><button>Add</button></td>
-                                        <td>{isNewCostingFlag ? '0' : ''}</td>
-                                        <td>{isNewCostingFlag ? '0' : ''}</td>
-                                        <td>{isNewCostingFlag ? '0' : ''}</td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-                        </div>
+                                            <td><button onClick={this.openBOPModal}>{getCostingDetailData && getCostingDetailData.BoughtOutPartDetails.length > 0 ? getCostingDetailData.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
+                                            <td>{getCostingDetailData && getCostingDetailData.BoughtOutPartDetails.length > 0 ? getCostingDetailData.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
+
+                                            <td><button onClick={this.toggleProcessGrid}>Add</button></td>
+                                            <td>{isNewCostingFlag ? '0' : ''}</td>
+                                            <td>{isNewCostingFlag ? '0' : ''}</td>
+
+                                            <td><button onClick={this.toggleOtherOperation}>Add</button></td>
+                                            <td>{isNewCostingFlag ? '0' : ''}</td>
+                                            <td>{isNewCostingFlag ? '0' : ''}</td>
+                                            <td>{isNewCostingFlag ? '0' : ''}</td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </div>}
+
+                        {/* Open below table when process costing add */}
+
+                        {isShowOtherOperation &&
+                            <OtherOperationGrid
+                                onCancelOperationGrid={this.toggleOtherOperation}
+                                supplierId={supplierId}
+                                costingId={costingId}
+                                partName={getCostingDetailData.PartDetail.PartNumber} />}
+
+                        {isShowProcessGrid &&
+                            <ProcessGrid
+                                onCancelProcessGrid={this.toggleProcessGrid}
+                                supplierId={supplierId}
+                                costingId={costingId}
+                            />}
+
                     </Col>
                 )}
                 {isOpen && (
@@ -311,6 +375,7 @@ class CostWorking extends Component {
                     //isBOPEditFlag={isBOPEditFlag}
                     />
                 )}
+
             </div >
         );
     }

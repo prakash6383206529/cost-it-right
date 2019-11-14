@@ -11,7 +11,9 @@ import {
     GET_COSTING_DATA_SUCCESS,
     UPDATE_COSTING_RM_SUCCESS,
     GET_BOP_LIST_SUCCESS,
-    ADD_BOP_COSTING_SUCCESS
+    ADD_BOP_COSTING_SUCCESS,
+    GET_OTHER_OPERATION_LIST_SUCCESS,
+    ADD_OTHER_OPERATION_COSTING_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -72,6 +74,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 error: true,
                 bopListData: action.payload
             };
+        case GET_OTHER_OPERATION_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                otherOperationListData: action.payload
+            };
         case ADD_RAW_MATERIAL_COSTING_SUCCESS:
             return {
                 ...state,
@@ -85,6 +94,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 costingGridBOPData: action.payload
+            };
+        case ADD_OTHER_OPERATION_COSTING_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingGridOtherOperationData: action.payload
             };
         case GET_COSTING_DATA_SUCCESS:
             return {

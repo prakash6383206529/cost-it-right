@@ -15,6 +15,8 @@ import {
     UPDATE_COSTING_RM_SUCCESS,
     GET_BOP_LIST_SUCCESS,
     ADD_BOP_COSTING_SUCCESS,
+    GET_OTHER_OPERATION_LIST_SUCCESS,
+    ADD_OTHER_OPERATION_COSTING_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -332,6 +334,64 @@ export function addCostingBoughtOutPart(data, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: ADD_BOP_COSTING_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getBoughtOutPartList
+ * @description get all BOP list
+ */
+export function getOtherOperationList(supplierId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getOtherOperationList}/${supplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OTHER_OPERATION_LIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+        });
+    };
+}
+
+/**
+ * @method addCostingOtherOperation
+ * @description add other operation to costing
+ */
+export function addCostingOtherOperation(costingId, callback) {
+    return (dispatch) => {
+        // dispatch({
+        //     type:  API_REQUEST,
+        // });
+        const request = axios.get(`${API.addCostingOtherOperation}/${costingId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: ADD_OTHER_OPERATION_COSTING_SUCCESS,
                     payload: response.data.Data
                 });
                 callback(response);
