@@ -265,28 +265,6 @@ class CostWorking extends Component {
                                             <th>{`Part Description`}</th>
                                             <th>{`Material Type`}</th>
                                             <th>{`Qty/Assy`}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody >
-                                        <tr >
-                                            <td>{activeCostingListData.PartDetail.BillOfMaterialLevel}</td>
-                                            <td>{activeCostingListData.PartDetail.PartNumber}</td>
-                                            <td>{activeCostingListData.PartDetail.PartNumber}</td>
-                                            <td>{activeCostingListData.PartDetail.PartDescription}</td>
-                                            <td>{''}</td>
-                                            <td>{''}</td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                            </div>}
-
-
-                        {/* Close below table in case process table open */}
-                        {(!isShowProcessGrid && !isShowOtherOperation) &&
-                            <div className={'create-costing-grid'}>
-                                <Table className="table table-striped" bordered>
-                                    <thead>
-                                        <tr>
                                             <th>{`RM Specification`}</th>
                                             <th>{`RM rate/Kg`}</th>
                                             <th>{`Scrap Rate (Rs/kg)`}</th>
@@ -307,6 +285,12 @@ class CostWorking extends Component {
                                     </thead>
                                     <tbody >
                                         <tr >
+                                            <td>{activeCostingListData.PartDetail.BillOfMaterialLevel}</td>
+                                            <td>{activeCostingListData.PartDetail.PartNumber}</td>
+                                            <td>{activeCostingListData.PartDetail.PartNumber}</td>
+                                            <td>{activeCostingListData.PartDetail.PartDescription}</td>
+                                            <td>{''}</td>
+                                            <td>{''}</td>
                                             {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
                                             <td><button onClick={this.openRMModel}>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
                                             <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialRate : '0'}</td>

@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input, Table } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText, renderNumberInputField, renderSelectField } from "../../layout/FormInputs";
-import { addCostingOtherOperation, getOtherOperationList, getCostingDetailsById } from '../../../actions/costing/CostWorking';
+import { addCostingUnitOtherOperationData, getOtherOperationList, getCostingDetailsById } from '../../../actions/costing/CostWorking';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -36,20 +36,10 @@ class AddOtherOperationCosting extends Component {
     }
 
     otherOperationHandler = (item) => {
-        const { costingId } = this.props;
-        // const requestData = {
-        //     CostingId: costingId,
-        //     BoughtOutPartId: item.BoughtOutPartId,
-        //     GrandTotal: item.BasicRate * item.Quantity,
-        //     BoughtOutParRate: item.BasicRate,
-        //     AssyBoughtOutParRate: item.BasicRate,
-        //     CreatedBy: ""
-        // }
+        const { costingId, selectedIndex } = this.props;
 
-        this.props.addCostingOtherOperation(costingId, res => {
-            // this.props.getCostingDetailsById(costingId, true, res => {
+        this.props.addCostingUnitOtherOperationData(item, selectedIndex, res => {
             this.toggleModel()
-            // })
         })
     }
 
@@ -126,7 +116,7 @@ function mapStateToProps({ costWorking, state }) {
 */
 export default connect(mapStateToProps, {
     getOtherOperationList,
-    addCostingOtherOperation,
+    addCostingUnitOtherOperationData,
     getCostingDetailsById
 })(reduxForm({
     form: 'AddOtherOperationCosting',

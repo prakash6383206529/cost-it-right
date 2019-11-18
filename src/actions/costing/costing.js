@@ -5,7 +5,8 @@ import {
     API_FAILURE,
     GET_PLANT_COMBO_SUCCESS,
     GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
-    CREATE_PART_WITH_SUPPLIER_SUCCESS
+    CREATE_PART_WITH_SUPPLIER_SUCCESS,
+    GET_COSTING_BY_COSTINGID
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -113,6 +114,32 @@ export function checkPartWithTechnology(data, callback) {
             dispatch({
                 type: API_FAILURE
             });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getCostingByCostingId
+ * @description get costing by costingId
+ */
+export function getCostingByCostingId(costingId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCostingByCostingId}/${costingId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_BY_COSTINGID,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
             apiErrors(error);
         });
     };

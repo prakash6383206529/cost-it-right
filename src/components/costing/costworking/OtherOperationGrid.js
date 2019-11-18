@@ -18,6 +18,7 @@ class OtherOperationGrid extends Component {
             isOpenOtherOperationModal: false,
             quantity: '',
             netcost: '',
+            selectedIndex: ''
         }
     }
 
@@ -64,9 +65,10 @@ class OtherOperationGrid extends Component {
      * @method openOtherOperationModal
      * @description  used to open Other Operation Modal 
      */
-    openOtherOperationModal = () => {
+    openOtherOperationModal = (selectedIndex) => {
         this.setState({
             isOpenOtherOperationModal: !this.state.isOpenOtherOperationModal,
+            selectedIndex: selectedIndex
         })
     }
 
@@ -104,7 +106,7 @@ class OtherOperationGrid extends Component {
 
     render() {
 
-        const { rowsCount, isOpenOtherOperationModal } = this.state;
+        const { rowsCount, isOpenOtherOperationModal, selectedIndex } = this.state;
         const { supplierId, costingId, costingGridOtherOperationData } = this.props;
         const OtherOperations = costingGridOtherOperationData && costingGridOtherOperationData.OtherOperations;
         return (
@@ -135,37 +137,41 @@ class OtherOperationGrid extends Component {
                             </tr>
                         </thead>
                         <tbody >
-                            <tr>
-                                <td>
-                                    <button onClick={this.openOtherOperationModal}>{'Add'}</button>
-                                </td>
-                                <td>{OtherOperations ? '' : '0'}</td>
-                                <td>{OtherOperations ? '' : '0'}</td>
-                                <td>{OtherOperations ? '' : '0'}</td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        name="quantity"
-                                        onChange={this.quantityHandler}
-                                        value={this.state.quantity}
-                                        id="quantity"
-                                        placeholder=""
-                                    />
-                                </td>
-                                <td>
-                                    <Input
-                                        type="text"
-                                        name="netcost"
-                                        onChange={this.netcostHandler}
-                                        value={this.state.netcost}
-                                        id="netcost"
-                                        placeholder=""
-                                    />
-                                </td>
-                                <td>
-                                    <button onClick={this.deleteRows} className={'btn btn-danger'}>Delete</button>
-                                </td>
-                            </tr>
+                            {OtherOperations && OtherOperations.map((ops, index) => {
+                                return (
+                                    <tr>
+                                        <td>
+                                            <button onClick={() => this.openOtherOperationModal(index)}>{ops && ops.ProcessName != null ? ops.ProcessName : 'Add'}</button>
+                                        </td>
+                                        <td>{ops ? ops.OperationCode : '0'}</td>
+                                        <td>{ops ? ops.Rate : '0'}</td>
+                                        <td>{ops ? ops.UnitOfMeasurementName : '0'}</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="quantity"
+                                                onChange={this.quantityHandler}
+                                                value={this.state.quantity}
+                                                id="quantity"
+                                                placeholder=""
+                                            />
+                                        </td>
+                                        <td>
+                                            <Input
+                                                type="text"
+                                                name="netcost"
+                                                onChange={this.netcostHandler}
+                                                value={this.state.netcost}
+                                                id="netcost"
+                                                placeholder=""
+                                            />
+                                        </td>
+                                        <td>
+                                            <button onClick={this.deleteRows} className={'btn btn-danger'}>Delete</button>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </Table>
                 </Col>
@@ -175,6 +181,7 @@ class OtherOperationGrid extends Component {
                         onCancel={this.onCancel}
                         supplierId={supplierId}
                         costingId={costingId}
+                        selectedIndex={selectedIndex}
                     />
                 )}
             </div>

@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Row, Container, Col } from 'reactstrap';
+import { Row, Container, Col, CardTitle } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { renderText, renderSelectField, searchableSelect } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI } from '../../../actions/master/Comman';
 import {
     getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier,
-    checkPartWithTechnology
+    checkPartWithTechnology, getCostingByCostingId
 } from '../../../actions/costing/costing';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
@@ -36,7 +36,11 @@ class CostSummary extends Component {
             supplierDropdown1Array: [],
             supplierDropdown2Array: [],
             supplierDropdown3Array: [],
-            activeZBCSupplier: ''
+            activeZBCSupplier: '',
+            netRMCostZBC: '',
+            netRMCostSupplier1: '',
+            netRMCostSupplier2: '',
+            netRMCostSupplier3: '',
         }
     }
 
@@ -239,6 +243,9 @@ class CostSummary extends Component {
                 addSupplier1: supplierArray.hasOwnProperty('label') ? true : false,
                 addSupplier2: supplier2Array.hasOwnProperty('label') ? true : false,
                 addSupplier3: supplier3Array.hasOwnProperty('label') ? true : false,
+                activeSupplier1: '',
+                activeSupplier2: '',
+                activeSupplier3: '',
             }, () => {
                 this.setSupplierCode()
             });
@@ -410,6 +417,8 @@ class CostSummary extends Component {
     activeSupplierHandler2 = (e) => {
         this.setState({
             activeSupplier2: e.target.value
+        }, () => {
+            this.props.getCostingByCostingId(this.state.activeSupplier2, () => { })
         })
     }
 
@@ -753,6 +762,1777 @@ class CostSummary extends Component {
                                 />
                             }</Col>
                     </Row>
+                    <hr />
+
+                    {/* ---------------Material Cost start------------------ */}
+                    <Row className={'divider'} >
+                        <Col>A) Material Cost</Col>
+                    </Row>
+                    <Row>
+                        <Col md="1">
+                            Net RM Cost
+                        </Col>
+                        <Col md="2">
+                            <input
+                                type="text"
+                                disabled
+                                className={'mt20'}
+                                value={this.state.netRMCostZBC}
+                                title="NET NRM Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input
+                                type="text"
+                                disabled
+                                className={'mt20'}
+                                value={this.state.netRMCostSupplier1}
+                                title="NET NRM Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input
+                                type="text"
+                                disabled
+                                className={'mt20'}
+                                value={this.state.netRMCostSupplier2}
+                                title="NET NRM Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input
+                                type="text"
+                                disabled
+                                className={'mt20'}
+                                value={this.state.netRMCostSupplier3}
+                                title="NET NRM Cost" />
+                        </Col>
+
+                        <Col md="1" className={'mt20'}>
+                            ECO No.
+                        </Col>
+                        <Col md="2">
+                            <input
+                                type="text"
+                                className={'mt20'}
+                                value={this.state.ecoNoZBC}
+                                title="Enter ECO No" />
+                        </Col>
+                        <Col md="3">
+                            <input
+                                type="text"
+                                className={'mt20'}
+                                value={this.state.ecoNoSupplier1}
+                                title="Enter ECO No" />
+                        </Col>
+                        <Col md="3">
+                            <input
+                                type="text"
+                                className={'mt20'}
+                                value={this.state.ecoNoSupplier2}
+                                title="Enter ECO No" />
+                        </Col>
+                        <Col md="3">
+                            <input
+                                type="text"
+                                className={'mt20'}
+                                value={this.state.ecoNoSupplier3}
+                                title="Enter ECO No" />
+                        </Col>
+
+                        <Col md="1" className={'mt20'}>
+                            Rev No.
+                        </Col>
+                        <Col md="2">
+                            <input
+                                type="text"
+                                className={'mt20'}
+                                value={this.state.revNoZBC}
+                                title="Enter Rev No" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" className={'mt20'} value={this.state.revNoSupplier1} title="Enter Rev No" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" className={'mt20'} value={this.state.revNoSupplier2} title="Enter Rev No" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" className={'mt20'} value={this.state.revNoSupplier3} title="Enter Rev No" />
+                        </Col>
+                    </Row>
+                    <hr />
+                    {/* ------------------Material Cost end----------------- */}
+
+                    {/* ------------------BOP/Job cost start---------------- */}
+                    <Row className={'divider'} >
+                        <Col>B) BOP/Job Cost</Col>
+                    </Row>
+                    <Row>
+                        <Col md="1">
+                            Total BOP/Job Cost
+                        </Col>
+                        <Col md="2">
+                            <input type="text" disabled value={this.state.totalBOPCostZBC} className={'mt20'} title="Total BOP/Job Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.totalBOPCostSupplier1} className={'mt20'} title="Total BOP/Job Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.totalBOPCostSupplier2} className={'mt20'} title="Total BOP/Job Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.totalBOPCostSupplier3} className={'mt20'} title="Total BOP/Job Cost" />
+                        </Col>
+                    </Row>
+                    <hr />
+                    {/* ----------------BOP/Job cost end------------------- */}
+
+
+                    {/* ------------------Conversion Cost start---------------- */}
+                    <Row className={'divider'} >
+                        <Col>C) Conversion Cost</Col>
+                    </Row>
+                    <Row>
+                        <Col md="1">
+                            Process Cost
+                        </Col>
+                        <Col md="2">
+                            <input type="text" disabled value={this.state.processCostZBC} className={'mt20'} title="Process Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.processCostSupplier1} className={'mt20 supplier-input'} title="Process Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.processCostSupplier2} className={'mt20 supplier-input'} title="Process Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.processCostSupplier3} className={'mt20 supplier-input'} title="Process Cost" />
+                        </Col>
+
+                        <Col md="1">
+                            Other Operation Cost
+                        </Col>
+                        <Col md="2">
+                            <input type="text" disabled value={this.state.otherOpsCostZBC} className={'mt20 zbc-input'} title="Other Operation Cost" />
+                            <button className={'btn btn-primary'}>Show</button>
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.otherOpsCostSupplier1} className={'mt20'} title="Other Operation Cost" />
+                            <button className={'btn btn-primary'}>Show</button>
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.otherOpsCostSupplier2} className={'mt20'} title="Other Operation Cost" />
+                            <button className={'btn btn-primary'}>Show</button>
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.otherOpsCostSupplier3} className={'mt20'} title="Other Operation Cost" />
+                            <button className={'btn btn-primary'}>Show</button>
+                        </Col>
+
+                        <Col md="1">
+                            Surface Treatment
+                        </Col>
+                        <Col md="2">
+                            <input type="text" value={this.state.surfaceTreatmentZBC} className={'mt20 zbc-input'} title="Surface Treatment" />
+                            <button className={'btn btn-primary'}>Show</button>
+                        </Col>
+                        <Col md="3">
+                            <input type="text" value={this.state.surfaceTreatmentSupplier1} className={'mt20'} title="Surface Treatment" />
+                            <button className={'btn btn-primary'}>Show</button>
+                        </Col>
+                        <Col md="3">
+                            <input type="text" value={this.state.surfaceTreatmentSupplier2} className={'mt20'} title="Surface Treatment" />
+                            <button className={'btn btn-primary'}>Show</button>
+                        </Col>
+                        <Col md="3">
+                            <input type="text" value={this.state.surfaceTreatmentSupplier3} className={'mt20'} title="Surface Treatment" />
+                            <button className={'btn btn-primary'}>Show</button>
+                        </Col>
+
+                        <Col md="1">
+                            Total Conversion Cost
+                        </Col>
+                        <Col md="2">
+                            <input type="text" disabled value={this.state.totalConvCostZBC} className={'mt20 zbc-input'} title="Total Conversion Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.totalConvCostSupplier1} className={'mt20 supplier-input'} title="Total Conversion Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.totalConvCostSupplier2} className={'mt20 supplier-input'} title="Total Conversion Cost" />
+                        </Col>
+                        <Col md="3">
+                            <input type="text" disabled value={this.state.totalConvCostSupplier3} className={'mt20 supplier-input'} title="Total Conversion Cost" />
+                        </Col>
+
+                    </Row>
+                    <hr />
+                    {/* ----------------Conversion Cost end------------------- */}
+
+                    {/* ------------------Other Cost start---------------- */}
+                    <Row className={'divider'} >
+                        <Col>D) Other Cost</Col>
+                    </Row>
+                    <Row>
+                        <Col md="1">
+                            {''}
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>Base</div>
+                            <div className={'base-cost'}>Cost</div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>Base</div>
+                            <div className={'base-cost'}>Cost</div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>Base</div>
+                            <div className={'base-cost'}>Cost</div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>Base</div>
+                            <div className={'base-cost'}>Cost</div>
+                        </Col>
+
+                        {/* ----------------ModelType-Overhead/Profit------------------- */}
+                        <Col md="1">
+                            ModelType-Overhead/Profit
+                        </Col>
+                        <Col md="2">
+                            <Field
+                                label={``}
+                                name={"overhead-profit-zbc"}
+                                type="text"
+                                placeholder={'Select Model Type'}
+                                //validate={[required]}
+                                // required={true}
+                                className=" withoutBorder custom-select"
+                                options={this.renderTypeOfListing('part')}
+                                onChange={this.partHandler}
+                                optionValue={'Value'}
+                                optionLabel={'Text'}
+                                component={renderSelectField}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <Field
+                                label={``}
+                                name={"overhead-profit-supplier1"}
+                                type="text"
+                                placeholder={'Select Model Type'}
+                                //validate={[required]}
+                                // required={true}
+                                className=" withoutBorder custom-select"
+                                options={this.renderTypeOfListing('part')}
+                                onChange={this.partHandler}
+                                optionValue={'Value'}
+                                optionLabel={'Text'}
+                                component={renderSelectField}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <Field
+                                label={``}
+                                name={"overhead-profit-supplier2"}
+                                type="text"
+                                placeholder={'Select Model Type'}
+                                //validate={[required]}
+                                // required={true}
+                                className=" withoutBorder custom-select"
+                                options={this.renderTypeOfListing('part')}
+                                onChange={this.partHandler}
+                                optionValue={'Value'}
+                                optionLabel={'Text'}
+                                component={renderSelectField}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <Field
+                                label={``}
+                                name={"overhead-profit-supplier3"}
+                                type="text"
+                                placeholder={'Select Model Type'}
+                                //validate={[required]}
+                                // required={true}
+                                className=" withoutBorder custom-select"
+                                options={this.renderTypeOfListing('part')}
+                                onChange={this.partHandler}
+                                optionValue={'Value'}
+                                optionLabel={'Text'}
+                                component={renderSelectField}
+                            />
+                        </Col>
+                        {/* ----------------ModelType-Overhead/Profit------------------- */}
+
+                        {/* ----------------Overhead Percent start------------------- */}
+                        <Col md="1">
+                            {'Overhead % on'}
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled value={this.state.overheadPercentZBC} className={'mt20 overhead-percent-zbc'} title="OverHead Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled value={this.state.overheadCostZBC} className={'mt20 overhead-percent-zbc'} title="OverHead Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled value={this.state.overheadPercentSupplier1} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled value={this.state.overheadCostSupplier1} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled value={this.state.overheadPercentSupplier2} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled value={this.state.overheadCostSupplier2} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled value={this.state.overheadPercentSupplier3} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled value={this.state.overheadCostSupplier3} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------------Overhead Percent ended------------------- */}
+
+                        {/* ----------------Rejection (% on Matl + Conv.) start------------------- */}
+                        <Col md="1">
+                            Rejection (% on Matl + Conv.)
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Rejection Type`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={'---Select---'}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('part')}
+                                    onChange={this.partHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                                <Field
+                                    label={`Rejection(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Rejection Type`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={'---Select---'}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('part')}
+                                    onChange={this.partHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                                <Field
+                                    label={`Rejection(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Rejection Type`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={'---Select---'}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('part')}
+                                    onChange={this.partHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                                <Field
+                                    label={`Rejection(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Rejection Type`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={'---Select---'}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('part')}
+                                    onChange={this.partHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                                <Field
+                                    label={`Rejection(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------------Rejection (% on Matl + Conv.) end------------------- */}
+
+                        {/* ----------------RM inventorycost (% on No of days) start------------------- */}
+                        <Col md="1">
+                            RM inventorycost (% on No of days)
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Days`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                                <button>Ref ICC</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="(((WIP Inventorycost / 100) * TotalBOP) + NetRM + Tcc) * WIP Inventory Days) / 365)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%) on RM+CC`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                                <button>Ref ICC</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Cost`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                                <button>Refresh ICC</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                                <button>Refresh ICC</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------------Rejection (% on Matl + Conv.) end------------------- */}
+
+
+                        {/* ----------------WIP inventory cost start------------------- */}
+                        <Col md="1">
+                            WIP inventory cost (% on No of days)
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Days`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="(((WIP Inventorycost / 100) * TotalBOP) + NetRM + Tcc) * WIP Inventory Days) / 365)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%) on RM+CC`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Cost`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Cost`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Cost`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------------WIP inventory cost end------------------- */}
+
+                        {/* ----------------Payment terms Credit start------------------- */}
+                        <Col md="1">
+                            Payment terms Credit (No of days)
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Days`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="((((WIP Inventory Cost) / 100) * (((((RM Inventory Cost) + (WIP Inventory Cost) + (Rejection Cost) + (Overhead Cost) + (Other Cost If Any) + (Packaging Cost) + (Freight Cost) +(Profit Cost))) + (Total BOP) + (Net Casting Cost ) + (Total Conversion Cost ))) * (Payment terms Credit )) / 365)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%) on RM+CC`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Cost`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title={'(RM + CC) * ICC(%) / 100'}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Cost`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`ICC(%)`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder rm-inventory"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={`Cost`}
+                                    name={"rejection-zbc"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------------Payment terms Credit end------------------- */}
+
+                        {/* ----------------Profit start------------------- */}
+                        <Col md="1">
+                            {'Profit (% on'}
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-zbc'} title="Profit Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-zbc'} title="Profit Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="Profit Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="Profit Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="Profit Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="Profit Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="Profit Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="Profit Cost" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------------Profit ended------------------- */}
+
+
+                        {/* ----------------Freight start------------------- */}
+                        <Col md="1">
+                            Freight
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={``}
+                                    name={"freight-zbc"}
+                                    type="text"
+                                    placeholder={'---Select---'}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('part')}
+                                    onChange={this.partHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                                <input type="text" className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={``}
+                                    name={"freight-supplier1"}
+                                    type="text"
+                                    placeholder={'---Select---'}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('part')}
+                                    onChange={this.partHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                                <input type="text" className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={``}
+                                    name={"freight-supplier2"}
+                                    type="text"
+                                    placeholder={'---Select---'}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('part')}
+                                    onChange={this.partHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                                <input type="text" className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <Field
+                                    label={``}
+                                    name={"freight-supplier3"}
+                                    type="text"
+                                    placeholder={'---Select---'}
+                                    //validate={[required]}
+                                    // required={true}
+                                    className=" withoutBorder custom-select"
+                                    options={this.renderTypeOfListing('part')}
+                                    onChange={this.partHandler}
+                                    optionValue={'Value'}
+                                    optionLabel={'Text'}
+                                    component={renderSelectField}
+                                />
+                                <input type="text" className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------------Rejection (% on Matl + Conv.) end------------------- */}
+
+                        {/* ----------------Additional Freight start------------------- */}
+                        <Col md="1">
+                            Additional Freight
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                <button>Add Freight</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                {''}
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                <button>Add Freight</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                {''}
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                <button>Add Freight</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                {''}
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                <button>Add Freight</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                {''}
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------------Additional Freight end------------------- */}
+
+                    </Row>
+                    <hr />
+                    {/* ------------------Other Cost end---------------- */}
+
+
+                    {/* ------------------CED cost start---------------- */}
+                    <Row className={'divider'} >
+                        <Col>E) CED / Plating Other Operation costs</Col>
+                    </Row>
+                    <Row>
+                        {/* --------------CED Cost ----------------- */}
+                        <Col md="1">
+                            CED Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <label>Operation</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+
+                                <button title="Select CED Other Operation">CED Add</button>
+
+                                <label>Rate</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Net Surface Area</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+
+                                <button title="Toggle Disabled">Toggle</button>
+
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>Operation</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+
+                                <button title="Select CED Other Operation">CED Add</button>
+
+                                <label>Rate</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Net Surface Area</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+
+                                <button title="Toggle Disabled">Toggle</button>
+
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>Operation</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+
+                                <button title="Select CED Other Operation">CED Add</button>
+
+                                <label>Rate</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Net Surface Area</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+
+                                <button title="Toggle Disabled">Toggle</button>
+
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>Operation</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+
+                                <button title="Select CED Other Operation">CED Add</button>
+
+                                <label>Rate</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Net Surface Area</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+
+                                <button title="Toggle Disabled">Toggle</button>
+
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ------------------CED Cost end---------------- */}
+
+                        {/* ------------------Transportation Cost start---------------- */}
+                        <Col md="1">
+                            Transportation Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <label>Trans. Rate</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Transportation Rate" />
+
+                                <label>Net FinishWt</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" />
+                                <button title="Toggle Disable">Toggle</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>Trans. Rate</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Transportation Rate" />
+
+                                <label>Net FinishWt</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" />
+                                <button title="Toggle Disable">Toggle</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>Trans. Rate</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Transportation Rate" />
+
+                                <label>Net FinishWt</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" />
+                                <button title="Toggle Disable">Toggle</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>Trans. Rate</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Transportation Rate" />
+
+                                <label>Net FinishWt</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" />
+                                <button title="Toggle Disable">Toggle</button>
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------Transportation Cost end ----------------- */}
+
+
+                        {/* ------------------CED Overhead/Profit Cost start---------------- */}
+                        <Col md="1">
+                            CED Overhead/Profit Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <label>OH/Profit (%)</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>OH/Profit (%)</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>OH/Profit (%)</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <label>OH/Profit (%)</label>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <label>Cost</label>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------CED Overhead/Profit Cost end ----------------- */}
+
+
+                        {/* ------------------CED Remarks start---------------- */}
+                        <Col md="1">
+                            Remarks
+                        </Col>
+                        <Col md="2">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        {/* ----------CED Remarks end ----------------- */}
+
+
+                    </Row>
+                    <Row className={'dark-divider'} >
+                        <Col md="1">
+                            CED Total Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " />
+                            </div>
+                        </Col>
+                    </Row>
+
+                    <Row>
+                        <Col md="1">
+                            Packaging Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                            </div>
+                        </Col>
+
+                        {/* ------------------CED Remarks start---------------- */}
+                        <Col md="1" className={'mt20'}>
+                            Remarks
+                        </Col>
+                        <Col md="2">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        {/* ----------CED Remarks end ----------------- */}
+
+                        {/* ------------------Other Cost start---------------- */}
+                        <Col md="1" className={'mt20'}>
+                            Other cost if Any
+                        </Col>
+                        <Col md="2">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                            </div>
+                        </Col>
+                        {/* ----------Other Cost end ----------------- */}
+
+                        {/* ------------------Other Cost start---------------- */}
+                        <Col md="1" className={'mt20'}>
+                            Total Other Costs
+                        </Col>
+                        <Col md="2">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" />
+                            </div>
+                        </Col>
+                        {/* ----------Other Cost end ----------------- */}
+
+                    </Row>
+                    <hr />
+                    {/* ----------------CED / Plating Other Operation end------------------- */}
+
+
+                    {/* ----------------Tool costs start------------------- */}
+                    <Row className={'divider'}>
+                        <Col>F) Tool costs</Col>
+                    </Row>
+                    <Row>
+                        {/* ------------------Other Cost start---------------- */}
+                        <Col md="1" className={'mt20'}>
+                            Tool Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        {/* ----------Other Cost end ----------------- */}
+
+                        {/* ------------------Tool Maintenance Cost start---------------- */}
+                        <Col md="1" className={'mt20'}>
+                            Tool Maintenance Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" />
+                            </div>
+                        </Col>
+                        {/* ----------Tool Maintenance Cost end ----------------- */}
+
+                        {/* ------------------Tool Amortization Cost start---------------- */}
+                        <Col md="1" className={'mt20'}>
+                            Tool Amortization Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        {/* ----------Tool Amortization Cost Cost end ----------------- */}
+
+                        {/* ------------------Total Cost start---------------- */}
+                        <Col md="1" className={'dark-divider'}>
+                            Total Cost
+                        </Col>
+                        <Col md="2" className={'dark-divider'}>
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        {/* ----------Total Cost end ----------------- */}
+
+                        {/* ------------------Hundi/ Other Discount start---------------- */}
+                        <Col md="1">
+                            Hundi/ Other Discount
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Hundi/Other Discount in Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(Total Cost * Hundi or Other Discount)/100" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------Hundi/ Other Discount end ----------------- */}
+
+                        {/* ------------------Other Base/Cost start---------------- */}
+                        <Col md="1">
+                            Other Base/Cost
+                        </Col>
+                        <Col md="2">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Other Base" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Other Base" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Other Base" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="Other Base" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------Other Base/Cost end ----------------- */}
+
+                        {/* ------------------Total cost Remarks start---------------- */}
+                        <Col md="1" className={'mt20'}>
+                            Remarks
+                        </Col>
+                        <Col md="2">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className={'remarks'}>
+                                <textarea className={'mt10 overhead-percent-supplier'} />
+                            </div>
+                        </Col>
+                        {/* ----------Total cost Remarks end ----------------- */}
+
+
+                        {/* ------------------Net PO Price start---------------- */}
+                        <Col md="1" className={'dark-divider'}>
+                            Net PO Price
+                        </Col>
+                        <Col md="2" className={'dark-divider'}>
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Total Cost - Hundi Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Total Cost - Hundi Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Total Cost - Hundi Cost" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'full-width'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                            </div>
+                        </Col>
+                        {/* ----------Net PO Price end ----------------- */}
+
+                        {/* ------------------Landed Factor(%) start---------------- */}
+                        <Col md="1" className={'dark-divider'}>
+                            Landed Factor(%)
+                        </Col>
+                        <Col md="2" className={'dark-divider'}>
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'dark-divider'}>
+                            <div className={'base-cost'}>
+                                <input type="text" className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" />
+                            </div>
+                            <div className={'base-cost'}>
+                                <input type="text" disabled className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" />
+                            </div>
+                        </Col>
+                        <hr />
+                        {/* ----------Landed Factor(%) end ----------------- */}
+
+                        {/* ------------------Attachment start---------------- */}
+                        <Col md="1" className={'divider'}>
+                            Attachment
+                        </Col>
+                        <Col md="2" className={'divider'}>
+                            <div className={'full-width'}>
+                                <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'divider'}>
+                            <div className={'full-width'}>
+                                <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'divider'}>
+                            <div className={'full-width'}>
+                                <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
+                            </div>
+                        </Col>
+                        <Col md="3" className={'divider'}>
+                            <div className={'full-width'}>
+                                <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
+                            </div>
+                        </Col>
+                        {/* ----------Attachment end ----------------- */}
+
+                    </Row>
+                    <hr />
+                    {/* ----------------Tool costs end------------------- */}
+
+                    <Row>
+                        <Col md="3" className={'divider'}>
+                            <div>ZBC</div>
+                            {ZBCSupplier && <a href="javascript:void(0)" >{`${ZBCSupplier.SupplierName}`}</a>}
+                        </Col>
+                        <Col md="3" className={'divider'}>
+                            {!this.state.addSupplier1 && this.state.supplierOneName == '' && <div>Supplier1</div>}
+                            {this.state.supplierOneName != '' && <a href="javascript:void(0)" >{`${this.state.supplierOneName}`}</a>}
+
+                        </Col>
+                        <Col md="3" className={'divider'}>
+                            {!this.state.addSupplier2 && this.state.supplierTwoName == '' && <div>Supplier2</div>}
+                            {this.state.supplierTwoName != '' && <a href="javascript:void(0)"  >{`${this.state.supplierTwoName}`}</a>}
+
+                        </Col>
+                        <Col md="3" className={'divider'}>
+                            {!this.state.addSupplier3 && this.state.supplierTwoName == '' && <div>Supplier3</div>}
+                            {this.state.supplierThreeName != '' && <a href="javascript:void(0)" >{`${this.state.supplierThreeName}`}</a>}
+                        </Col>
+                    </Row>
+                    <hr />
+
+                    <Row>
+                        <Col md="3" >
+                            <button className={'btn btn-primary mr5'}>Save</button>
+                            <button className={'btn btn-primary'}>Send For Approval</button>
+                            <button className={'btn btn-warning'}>Copy Costing</button>
+                        </Col>
+                        <Col md="3" >
+                            <button className={'btn btn-primary mr5'}>Save</button>
+                            <button className={'btn btn-primary'}>Send For Approval</button>
+                            <button className={'btn btn-warning'}>Copy Costing</button>
+                        </Col>
+                        <Col md="3" >
+                            <button className={'btn btn-primary mr5'}>Save</button>
+                            <button className={'btn btn-primary'}>Send For Approval</button>
+                            <button className={'btn btn-warning'}>Copy Costing</button>
+                        </Col>
+                        <Col md="3" >
+                            <button className={'btn btn-primary mr5'}>Save</button>
+                            <button className={'btn btn-primary'}>Send For Approval</button>
+                            <button className={'btn btn-warning'}>Copy Costing</button>
+                        </Col>
+                    </Row>
+                    <hr />
+
                 </form>
             </div >
         );
@@ -763,13 +2543,23 @@ class CostSummary extends Component {
 * @method mapStateToProps
 * @description return state to component as props
 * @param {*} state
-*/
+        */
 function mapStateToProps({ comman, costing }) {
     const { plantList, technologyList } = comman;
     if (costing && costing.plantComboDetail) {
-        const { existingSupplierDetail } = costing;
+        const { existingSupplierDetail, supplier2CostingData } = costing;
         const { Plants, Parts, Suppliers, ZBCSupplier } = costing.plantComboDetail;
-        return { technologyList, plantList, Plants, Parts, Suppliers, ZBCSupplier, existingSupplierDetail }
+
+        return {
+            technologyList,
+            plantList,
+            Plants,
+            Parts,
+            Suppliers,
+            ZBCSupplier,
+            existingSupplierDetail,
+            supplier2CostingData
+        }
     }
 
 }
@@ -780,7 +2570,8 @@ export default connect(mapStateToProps, {
     getPlantCombo,
     getExistingSupplierDetailByPartId,
     createPartWithSupplier,
-    checkPartWithTechnology
+    checkPartWithTechnology,
+    getCostingByCostingId
 })(reduxForm({
     form: 'CostSummary',
     enableReinitialize: true,

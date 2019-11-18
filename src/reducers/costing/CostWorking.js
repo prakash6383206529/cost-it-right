@@ -14,11 +14,33 @@ import {
     ADD_BOP_COSTING_SUCCESS,
     GET_OTHER_OPERATION_LIST_SUCCESS,
     ADD_OTHER_OPERATION_COSTING_SUCCESS,
+    ADD_UNIT_OTHER_OPERATION_COSTING_DATA
 } from '../../config/constants';
 
 const initialState = {
-    //getCostingDetailData: []
+    costingGridOtherOperationData: []
 };
+
+const otherOpsObj = {
+    "OtherOperationId": "",
+    "Rate": null,
+    "OtherOperationName": null,
+    "OperationCode": null,
+    "Description": null,
+    "TechnologyId": null,
+    "SupplierId": null,
+    "OperationId": null,
+    "UnitOfMeasurementId": null,
+    "PlantId": null,
+    "PlantName": null,
+    "TechnologyName": null,
+    "SupplierName": null,
+    "ProcessName": null,
+    "UnitOfMeasurementName": null,
+    "CreatedDate": null,
+    "CreatedBy": null,
+    "IsActive": false
+}
 
 export default function CostWorkingReducer(state = initialState, action) {
     switch (action.type) {
@@ -96,12 +118,30 @@ export default function CostWorkingReducer(state = initialState, action) {
                 costingGridBOPData: action.payload
             };
         case ADD_OTHER_OPERATION_COSTING_SUCCESS:
+            let costingData = action.payload;
+            costingData.OtherOperations = [otherOpsObj]
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingGridOtherOperationData: costingData
+            };
+        case ADD_UNIT_OTHER_OPERATION_COSTING_DATA:
+            console.log("reducer", state.costingGridOtherOperationData, action.payload)
             return {
                 ...state,
                 loading: false,
                 error: true,
                 costingGridOtherOperationData: action.payload
             };
+        // return {
+        //     ...state,
+        //     loading: false,
+        //     error: true,
+        //     costingGridOtherOperationData: {
+        //         OtherOperations: action.payload
+        //     }
+        //   };
         case GET_COSTING_DATA_SUCCESS:
             return {
                 ...state,

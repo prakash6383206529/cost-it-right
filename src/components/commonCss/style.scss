@@ -342,7 +342,58 @@ body {
 .mr10 {
   margin-right: 15px;
 }
-
+.mr5 {
+  margin-right: 5px;
+}
 .ml10 {
   margin-left: 15px;
+}
+.mt20 {
+  margin-top: 20px;
+}
+.mt10 {
+  margin-top: 10px;
+}
+.mt5 {
+  margin-top: 5px;
+}
+.divider {
+  padding: 5px;
+  background-color: #f8b2b2;
+}
+.zbc-input {
+  width: 90px;
+}
+.supplier-input {
+  width: 100%;
+}
+.base-cost {
+  width: 50%;
+  float: left;
+  font-weight: bold;
+}
+.overhead-percent-zbc,
+.overhead-percent-supplier {
+  width: 85%;
+}
+hr {
+  width: 100%;
+}
+.rm-inventory {
+  width: 85%;
+}
+label {
+  width: 100%;
+}
+.remarks {
+  width: 100%;
+}
+.dark-divider {
+  background-color: #707478;
+}
+.full-width {
+  width: 100%;
+}
+.not-allowed {
+  cursor: not-allowed;
 }

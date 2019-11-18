@@ -17,6 +17,7 @@ import {
     ADD_BOP_COSTING_SUCCESS,
     GET_OTHER_OPERATION_LIST_SUCCESS,
     ADD_OTHER_OPERATION_COSTING_SUCCESS,
+    ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -408,4 +409,19 @@ export function addCostingOtherOperation(costingId, callback) {
             apiErrors(error);
         });
     };
+}
+
+/**
+ * @method addCostingUnitOtherOperationData
+ * @description add unit other operation to costing
+ */
+export function addCostingUnitOtherOperationData(data, selectedIndex, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
+            payload: data,
+            selectedIndex: selectedIndex
+        });
+        callback();
+    }
 }
