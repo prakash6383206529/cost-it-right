@@ -26,7 +26,8 @@ import {
     DATA_FAILURE,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_LABOUR_TYPE_SUCCESS,
-    GET_COSTING_HEAD_SUCCESS
+    GET_COSTING_HEAD_SUCCESS,
+    GET_MODEL_TYPE_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -224,12 +225,19 @@ export default function commanReducer(state = initialState, action) {
                 labourType: action.payload
             };
         case GET_COSTING_HEAD_SUCCESS:
-                return {
-                    ...state,
-                    loading: false,
-                    error: true,
-                    costingHead: action.payload
-                };
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingHead: action.payload
+            };
+        case GET_MODEL_TYPE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                modelTypes: action.payload
+            };
         default:
             return state;
     }

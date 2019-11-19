@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Button, Table } from 'reactstrap';
+    Container, Row, Col, Button, Table
+} from 'reactstrap';
 import AddPart from './AddPart';
 import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
@@ -20,7 +21,7 @@ class PartMaster extends Component {
     }
 
     componentDidMount() {
-        this.props.getAllPartsAPI(res => {});
+        this.props.getAllPartsAPI(res => { });
     }
     /**
      * @method openModel
@@ -51,7 +52,7 @@ class PartMaster extends Component {
             editIndex: index,
         })
     }
-    
+
     /**
     * @method deletePart
     * @description confirm delete part
@@ -59,7 +60,7 @@ class PartMaster extends Component {
     deletePart = (index, Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeletePart(index,Id)
+                this.confirmDeletePart(index, Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
@@ -74,12 +75,12 @@ class PartMaster extends Component {
         this.props.deletePartsAPI(PartId, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.props.getAllPartsAPI(res => {});
+                this.props.getAllPartsAPI(res => { });
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         });
-        
+
     }
 
     /**
@@ -87,10 +88,10 @@ class PartMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag,editIndex, PartId } = this.state;
+        const { isOpen, isEditFlag, editIndex, PartId } = this.state;
         return (
             <Container className="top-margin">
-            {this.props.loading && <Loader/>}
+                {this.props.loading && <Loader />}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.PART} ${CONSTANT.MASTER}`}</h3>
@@ -100,48 +101,48 @@ class PartMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
-                <Row>
+                {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.PART} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
                     </Col>
-                </Row>
+                </Row> */}
                 <Col>
-                <Table className="table table-striped" bordered>
-                {this.props.partsListing && this.props.partsListing.length > 0 &&
-                    <thead>
-                        <tr>
-                        {/* <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
-                        <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                        <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th> 
-                        <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
-                        <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
-                        <th>{`${CONSTANT.UOM}`}</th>
-                        <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
-                        <th></th>
-                        </tr>
-                    </thead>}
-                    <tbody > 
+                    <Table className="table table-striped" bordered>
                         {this.props.partsListing && this.props.partsListing.length > 0 &&
-                            this.props.partsListing.map((item, index) => {
-                                return (
-                                    <tr key= {index}>
-                                        {/* <td >{item.PlantName}</td> */}
-                                        <td >{item.PartNumber}</td>
-                                        <td>{item.PartName}</td> 
-                                        <td>{item.MaterialType ? item.MaterialType : 'N/A'}</td>
-                                        <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td> 
-                                        <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : 'N/A'}</td> 
-                                        <td>{item.PartDescription}</td>
-                                        <div>
-                                            <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index,item.PartId)}><i className="fas fa-pencil-alt"></i></Button> 
-                                            <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
-                                        </div>
-                                    </tr>
-                                )
-                            })}
-                             {this.props.partsListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                    </tbody> 
-                </Table>
+                            <thead>
+                                <tr>
+                                    {/* <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
+                                    <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                                    <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
+                                    <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
+                                    <th>{`${CONSTANT.UOM}`}</th>
+                                    <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
+                                    <th></th>
+                                </tr>
+                            </thead>}
+                        <tbody >
+                            {this.props.partsListing && this.props.partsListing.length > 0 &&
+                                this.props.partsListing.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            {/* <td >{item.PlantName}</td> */}
+                                            <td >{item.PartNumber}</td>
+                                            <td>{item.PartName}</td>
+                                            <td>{item.MaterialType ? item.MaterialType : 'N/A'}</td>
+                                            <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td>
+                                            <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : 'N/A'}</td>
+                                            <td>{item.PartDescription}</td>
+                                            <div>
+                                                <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.PartId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
+                                            </div>
+                                        </tr>
+                                    )
+                                })}
+                            {this.props.partsListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                        </tbody>
+                    </Table>
                 </Col>
                 {isOpen && (
                     <AddPart
@@ -162,13 +163,13 @@ class PartMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part}) {
-    const { partsListing ,loading } = part;
+function mapStateToProps({ part }) {
+    const { partsListing, loading } = part;
     return { partsListing, loading }
 }
 
 
 export default connect(
-    mapStateToProps, {getAllPartsAPI, deletePartsAPI}
+    mapStateToProps, { getAllPartsAPI, deletePartsAPI }
 )(PartMaster);
 

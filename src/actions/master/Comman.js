@@ -25,7 +25,8 @@ import {
     DATA_FAILURE,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_LABOUR_TYPE_SUCCESS,
-    GET_COSTING_HEAD_SUCCESS
+    GET_COSTING_HEAD_SUCCESS,
+    GET_MODEL_TYPE_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -504,9 +505,10 @@ export function fetchBOPComboAPI(callback) {
                     payload: response.data.DynamicData.UnitOfMeasurements,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
+            // else {
+            //     toastr.error(MESSAGES.SOME_ERROR);
+            // }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
@@ -806,7 +808,7 @@ export function fetchSupplierCityDataAPI(callback) {
  * @method fetchCostingHeadsAPI
  * @description Used to fetch costing heads
  */
-export function fetchCostingHeadsAPI(costingHeads,callback) {
+export function fetchCostingHeadsAPI(costingHeads, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getCostingHeads}?text=${costingHeads}`, headers);
@@ -840,6 +842,32 @@ export function fetchSupplierDataAPI(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_SUPPLIER_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchCostingHeadsAPI
+ * @description Used to fetch costing heads
+ */
+export function fetchModelTypeAPI(modelTypeHeading, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getModelTypes}?text=${modelTypeHeading}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MODEL_TYPE_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);

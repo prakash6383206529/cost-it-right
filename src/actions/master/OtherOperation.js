@@ -34,18 +34,16 @@ export function getOperationsAPI(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getOtherOperationsAPI, { headers })
             .then((response) => {
-                console.log("response.data.Result ", response.data.Result)
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: GET_OTHER_OPERATION_SUCCESS,
-                        payload: response.data.DataList,
-                    });
-                    callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
+                //if (response.data.Result === true) {
+                dispatch({
+                    type: GET_OTHER_OPERATION_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+                // } else {
+                //     toastr.error(MESSAGES.SOME_ERROR);
+                // }
             }).catch((error) => {
-                console.log('error', error.response ? error.response : error)
                 dispatch({
                     type: GET_OTHER_OPERATION_FAILURE
                 });
@@ -126,18 +124,17 @@ export function getCEDOtherOperationsAPI(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getCEDOtherOperationsAPI, { headers })
             .then((response) => {
-                console.log("response.data.Result ", response.data.Result)
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: GET_CED_OTHER_OPERATION_SUCCESS,
-                        payload: response.data.DataList,
-                    });
-                    callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
+                //console.log("response.data.Result ", response.data.Result)
+                //if (response.data.Result === true) {
+                dispatch({
+                    type: GET_CED_OTHER_OPERATION_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+                // } else {
+                //     toastr.error(MESSAGES.SOME_ERROR);
+                // }
             }).catch((error) => {
-                console.log('error', error.response ? error.response : error)
                 dispatch({
                     type: GET_CED_OTHER_OPERATION_FAILURE
                 });

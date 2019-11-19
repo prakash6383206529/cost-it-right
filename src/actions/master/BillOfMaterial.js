@@ -32,16 +32,16 @@ export function createBOMAPI(data, callback) {
         const request = axios.post(API.createBOPAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                    dispatch({
-                        type: CREATE_BOP_SUCCESS,
-                        //payload: response.data.Data
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_BOP_SUCCESS,
+                    //payload: response.data.Data
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_BOP_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -59,17 +59,17 @@ export function createBOMAPI(data, callback) {
 export function getAllBOMAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOMAPI}`,headers);
+        const request = axios.get(`${API.getBOMAPI}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_BOM_SUCCESS,
-                    payload: response.data.DataList,
-                });
-                callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
+            //if (response.data.Result) {
+            dispatch({
+                type: GET_BOM_SUCCESS,
+                payload: response.data.DataList,
+            });
+            callback(response);
+            // } else {
+            //     toastr.error(MESSAGES.SOME_ERROR);
+            // }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);

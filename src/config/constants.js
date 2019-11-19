@@ -20,6 +20,7 @@ export const API = {
   getCategory: `${BASE_URL}/configuration/select-list-get-category`,
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
   getCostingHeads: `${BASE_URL}/configuration/select-list-get-costing-heads`,
+  getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
 
   //Combo apis
   //configure api's
@@ -220,6 +221,7 @@ export const GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
 export const GET_TECHNOLOGY_LIST_SUCCESS = 'GET_TECHNOLOGY_LIST_SUCCESS';
 export const GET_LABOUR_TYPE_SUCCESS = 'GET_LABOUR_TYPE_SUCCESS';
 export const GET_COSTING_HEAD_SUCCESS = 'GET_COSTING_HEAD_SUCCESS';
+export const GET_MODEL_TYPE_SUCCESS = 'GET_MODEL_TYPE_SUCCESS';
 
 //For unit of measurement master
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';

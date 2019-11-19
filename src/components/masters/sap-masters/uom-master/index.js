@@ -104,22 +104,22 @@ class UOMMaster extends Component {
                 </Row>
 
                 <hr />
-                <Row>
+                {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.UOM} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
-                </Row>
+                </Row> */}
                 <Col>
                     <Table className="table table-striped" bordered>
-                    {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>UOM Name</th>
-                                <th>UOM Title</th>
-                                <th>UOM Description</th>
-                                <th></th>
-                            </tr>
-                        </thead>}
+                        {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>UOM Name</th>
+                                    <th>UOM Title</th>
+                                    <th>UOM Description</th>
+                                    <th></th>
+                                </tr>
+                            </thead>}
                         <tbody>
                             {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
                                 this.props.unitOfMeasurementList.map((item, index) => {
@@ -136,7 +136,7 @@ class UOMMaster extends Component {
                                         </tr>
                                     )
                                 })}
-                                {this.props.unitOfMeasurementList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.props.unitOfMeasurementList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

@@ -40,11 +40,11 @@ export function fetchMasterDataAPI() {
                     type: GET_UOM_DATA_SUCCESS,
                     payload: response[0].data.SelectList,
                 });
-                
+
                 dispatch({
                     type: GET_MATERIAL_TYPE_SUCCESS,
                     payload: response[1].data.SelectList,
-                });  
+                });
             }).catch((error) => {
                 dispatch({
                     type: FETCH_MATER_DATA_FAILURE
@@ -61,17 +61,17 @@ export function fetchMasterDataAPI() {
 export function getAllPartsAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllPartsAPI}`,headers);
+        const request = axios.get(`${API.getAllPartsAPI}`, headers);
         request.then((response) => {
-            if (response.data.Result === true) {
-                dispatch({
-                    type: GET_ALL_PARTS_SUCCESS,
-                    payload: response.data.DataList,
-                });
-                callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
+            //if (response.data.Result === true) {
+            dispatch({
+                type: GET_ALL_PARTS_SUCCESS,
+                payload: response.data.DataList,
+            });
+            callback(response);
+            // } else {
+            //     toastr.error(MESSAGES.SOME_ERROR);
+            // }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE });
             callback(error);
@@ -90,18 +90,18 @@ export function createPartAPI(data, callback) {
         dispatch({
             type: CREATE_PART_REQUEST
         });
-        const request = axios.post(API.partCreateAPI, data,headers);
+        const request = axios.post(API.partCreateAPI, data, headers);
         request.then((response) => {
             if (response.data.Result === true) {
-                    dispatch({
-                        type: CREATE_PART_SUCCESS,
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_PART_SUCCESS,
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_PART_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -119,11 +119,11 @@ export function createPartAPI(data, callback) {
 export function deletePartsAPI(PartId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePartAPI}/${PartId}`,headers)
+        axios.delete(`${API.deletePartAPI}/${PartId}`, headers)
             .then((response) => {
                 // getUserProfileAPIForUpdatingProps(dispatch, id, () => {
-                    callback(response);
-                   // dispatch({ type: DELETE_USER_MEDIA_SUCCESS });
+                callback(response);
+                // dispatch({ type: DELETE_USER_MEDIA_SUCCESS });
                 // });
             }).catch((error) => {
                 apiErrors(error);
@@ -140,9 +140,9 @@ export function updatePartsAPI(requestData, callback) {
     console.log('requestData: ', requestData);
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updatePartAPI}`, requestData,headers)
+        axios.put(`${API.updatePartAPI}`, requestData, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
@@ -155,27 +155,27 @@ export function updatePartsAPI(requestData, callback) {
  * @method getOnePartsAPI
  * @description get one part based on id
  */
-export function getOnePartsAPI(PartId,isEditFlag, callback) {
+export function getOnePartsAPI(PartId, isEditFlag, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if(isEditFlag){
-            axios.get(`${API.getOnePartAPI}/${PartId}`,headers)
-            .then((response) => {
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: GET_PART_SUCCESS,
-                        payload: response.data.Data,
-                    });
+        if (isEditFlag) {
+            axios.get(`${API.getOnePartAPI}/${PartId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_PART_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
-                    callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-        }else{
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
             dispatch({
                 type: GET_PART_SUCCESS,
                 payload: {},

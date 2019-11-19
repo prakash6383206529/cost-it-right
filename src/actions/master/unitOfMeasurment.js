@@ -31,19 +31,20 @@ const headers = {
 export function getUnitOfMeasurementAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(API.getUOMAPI, {headers})
+        axios.get(API.getUOMAPI, { headers })
             .then((response) => {
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: GET_UOM_DATA_SUCCESS,
-                        payload: response.data.DataList,
-                    });
-                    callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
+                console.log("ressss >>>>>", response)
+                //if (response.data.Result === true) {
+                dispatch({
+                    type: GET_UOM_DATA_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+                // } else {
+                //     toastr.error(MESSAGES.SOME_ERROR);
+                // }
             }).catch((error) => {
-                console.log('error',error.response ? error.response : error)
+                console.log('error', error.response ? error.response : error)
                 dispatch({
                     type: API_FAILURE
                 });
@@ -57,27 +58,27 @@ export function getUnitOfMeasurementAPI(callback) {
  * @method getOneUnitOfMeasurementAPI
  * @description get one UOM based on id
  */
-export function getOneUnitOfMeasurementAPI(uomId,isEditFlag,callback) {
+export function getOneUnitOfMeasurementAPI(uomId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if(isEditFlag){
+        if (isEditFlag) {
             axios.get(`${API.getUOMAPI}/${uomId}`, headers)
-            .then((response) => {
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: GET_UOM_SUCCESS,
-                        payload: response.data.Data,
-                    });
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_UOM_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
-                    callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-        }else{
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
             dispatch({
                 type: GET_UOM_SUCCESS,
                 payload: {},
@@ -99,15 +100,15 @@ export function createUnitOfMeasurementAPI(data, callback) {
         const request = axios.post(API.createUOMAPI, data, headers);
         request.then((response) => {
             if (response.data.Result === true) {
-                    dispatch({
-                        type: CREATE_PART_SUCCESS,
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_PART_SUCCESS,
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_PART_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -122,12 +123,12 @@ export function createUnitOfMeasurementAPI(data, callback) {
  * @method deleteUnitOfMeasurementAPI
  * @description delete UOM 
  */
-export function deleteUnitOfMeasurementAPI(index,Id ,callback) {
+export function deleteUnitOfMeasurementAPI(index, Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteUOMAPI}/${Id}`, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
@@ -139,14 +140,14 @@ export function deleteUnitOfMeasurementAPI(index,Id ,callback) {
  * @method updateUnitOfMeasurementAPI
  * @description update UOM
  */
-export function updateUnitOfMeasurementAPI(uomId,requestData, callback) {
+export function updateUnitOfMeasurementAPI(uomId, requestData, callback) {
     console.log('requestData', requestData);
-    
+
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateUOMAPI}`,requestData, headers)
+        axios.put(`${API.updateUOMAPI}`, requestData, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
