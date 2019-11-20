@@ -20,6 +20,7 @@ class Costing extends Component {
             activeTab: '1',
             supplierId: '',
             plantId: '',
+            partId: '',
             isShowFileUpload: false,
             cols: [],
             rows: [],
@@ -47,14 +48,16 @@ class Costing extends Component {
         }
     }
 
-    supplierCosting = (supplierId, plantId) => {
-        console.log('%c 🦑 supplierId: ', 'font-size:20px;background-color: #B03734;color:#fff;', supplierId);
+    supplierCosting = (reqData) => {
         this.setState({
             activeTab: '2',
-            supplierId: supplierId,
-            plantId: plantId
-        });
-        this.props.getCostingBySupplier(supplierId, (res) => { console.log('res', res) })
+            supplierId: reqData.supplierId,
+            plantId: reqData.plantId,
+            partId: reqData.partId,
+        }, () =>
+            this.props.getCostingBySupplier(this.state.supplierId, (res) => { console.log('res', res) })
+        );
+
     }
 
     /**
@@ -148,7 +151,7 @@ class Costing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, supplierId, plantId, isShowFileUpload } = this.state;
+        const { isOpen, isEditFlag, supplierId, plantId, partId, isShowFileUpload } = this.state;
         return (
             <Container>
                 {this.props.loading && <Loader />}
@@ -183,7 +186,8 @@ class Costing extends Component {
                         <TabPane tabId="2">
                             <CostWorking
                                 supplierId={supplierId}
-                                plantId={plantId} />
+                                plantId={plantId}
+                                partId={partId} />
                         </TabPane>
                     </TabContent>
 

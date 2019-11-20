@@ -104,43 +104,44 @@ class CostWorking extends Component {
      * @description  used to create new costing 
      */
     createNewCosting = () => {
-        const { supplierId, plantId } = this.props;
+        const { supplierId, plantId, partId } = this.props;
         const { activeCostingListData } = this.props;
         /** getting part id from active costing list */
-        if (activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0) {
-            const sheetmetalCostingData = {
-                PartId: activeCostingListData.ActiveCostingDetatils[0].PartId,
-                PlantId: plantId,
-                SupplierId: supplierId,
-                CreatedBy: ''
-            }
-            /** create new costing on basis of selected supplier, part, and plat */
-            this.props.createNewCosting(sheetmetalCostingData, (res) => {
-                if (res.data.Result) {
-                    const newCostingId = res.data.Identity;
-                    toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
-                    /** fetching records of supplier costing details */
-                    // this.props.getCostingBySupplier(supplierId, (res) => {
-                    //     this.setState({
-                    //         isCollapes: true,
-                    //         isNewCostingFlag: true,
-                    //         isEditFlag: false,
-                    //         costingId: newCostingId
-                    //     })
-                    //     //this.toggleModel();
-                    // });
-                    this.props.getCostingDetailsById(newCostingId, true, res => {
-                        this.setState({
-                            isCollapes: true,
-                            isEditFlag: true,
-                            isNewCostingFlag: false
-                        })
-                    })
-                } else {
-                    toastr.error(res.data.message);
-                }
-            });
+        //if (activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0) {
+        const sheetmetalCostingData = {
+            //PartId: activeCostingListData.ActiveCostingDetatils[0].PartId,
+            PartId: partId,
+            PlantId: plantId,
+            SupplierId: supplierId,
+            CreatedBy: ''
         }
+        /** create new costing on basis of selected supplier, part, and plat */
+        this.props.createNewCosting(sheetmetalCostingData, (res) => {
+            if (res.data.Result) {
+                const newCostingId = res.data.Identity;
+                toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
+                /** fetching records of supplier costing details */
+                // this.props.getCostingBySupplier(supplierId, (res) => {
+                //     this.setState({
+                //         isCollapes: true,
+                //         isNewCostingFlag: true,
+                //         isEditFlag: false,
+                //         costingId: newCostingId
+                //     })
+                //     //this.toggleModel();
+                // });
+                this.props.getCostingDetailsById(newCostingId, true, res => {
+                    this.setState({
+                        isCollapes: true,
+                        isEditFlag: true,
+                        isNewCostingFlag: false
+                    })
+                })
+            } else {
+                toastr.error(res.data.message);
+            }
+        });
+        //}
     }
 
     /**
@@ -254,7 +255,7 @@ class CostWorking extends Component {
                         <Label><th>{`Cost Working With : `}{isEditFlag ? getCostingData && getCostingData.DisplayCreatedDate : ''}</th></Label>
 
                         {/* Close below table in case process table open */}
-                        {(!isShowProcessGrid && !isShowOtherOperation) &&
+                        {(!isShowProcessGrid && !isShowOtherOperation) && activeCostingListData &&
                             <div className={'create-costing-grid'}>
                                 <Table className="table table-striped" bordered>
                                     <thead>

@@ -456,7 +456,12 @@ class CostSummary extends Component {
     }
 
     supplierCosting = (supplierId) => {
-        this.props.supplierCosting(supplierId, this.state.plant.value)
+        const data = {
+            supplierId: supplierId,
+            plantId: this.state.plant.value,
+            partId: this.state.partNo
+        }
+        this.props.supplierCosting(data)
     }
 
     modelTypeHandlerZBC = (e) => {
