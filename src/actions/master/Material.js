@@ -10,7 +10,8 @@ import {
     GET_RM_CATEGORY_LIST_SUCCESS,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_MATERIAL_LIST_SUCCESS,
-    GET_MATERIAL_LIST_TYPE_SUCCESS
+    GET_MATERIAL_LIST_TYPE_SUCCESS,
+    RAWMATERIAL_ADDED_FOR_COSTING,
 } from '../../config/constants';
 import {
     apiErrors
@@ -266,5 +267,18 @@ export function getMaterialDetailAPI() {
                 });
                 apiErrors(error);
             });
+    };
+}
+
+/**
+ * @method getMaterialDetailAPI
+ * @description get row material list
+ */
+export function rawMaterialForCosting(data) {
+    return (dispatch) => {
+        dispatch({
+            type: RAWMATERIAL_ADDED_FOR_COSTING,
+            payload: data
+        });
     };
 }

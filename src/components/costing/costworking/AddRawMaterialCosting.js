@@ -5,6 +5,7 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input, Table
 import { required } from "../../../helper/validation";
 import { renderText, renderNumberInputField, renderSelectField } from "../../layout/FormInputs";
 import { getRawMaterialListBySupplierId, addCostingRawMaterial, getCostingDetailsById } from '../../../actions/costing/CostWorking';
+import { rawMaterialForCosting } from '../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -106,6 +107,7 @@ class AddRawMaterialCosting extends Component {
                 //     isEditFlag: true,
                 //     isNewCostingFlag: false
                 // })
+                this.props.rawMaterialForCosting(item);
                 this.toggleModel()
             })
         })
@@ -199,7 +201,8 @@ function mapStateToProps({ costWorking, state }) {
 export default connect(mapStateToProps, {
     getRawMaterialListBySupplierId,
     addCostingRawMaterial,
-    getCostingDetailsById
+    getCostingDetailsById,
+    rawMaterialForCosting
 })(reduxForm({
     form: 'AddRawMaterialCosting',
     enableReinitialize: true,

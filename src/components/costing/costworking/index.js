@@ -340,6 +340,7 @@ class CostWorking extends Component {
                     <AddWeightCosting
                         isOpen={isOpen}
                         onCancel={this.onCancel}
+                        costingId={costingId}
                     />
                 )}
                 {isOpenRMmodel && (

@@ -419,14 +419,9 @@ export function renderSelectField(field) {
 */
 export function renderNumberInputField(field) {
   console.log('field: ', field.Value);
-  const {
-    input,
-    meta: { touched, error },
-    ...others
-  } = field;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
-    }`;
+  const { input, disabled, meta: { touched, error }, ...others } = field;
+  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const disabledLabel = disabled ? true : false;
   return (
     <div className="form-group">
       <label>
@@ -443,7 +438,8 @@ export function renderNumberInputField(field) {
           type="number"
           className={InputClassName}
           maxLength={field.maxLength}
-          value = {field.Value}
+          value={field.Value}
+          disabled={disabledLabel}
           {...input}
         />
         {/* <div className="input-group-prepend">

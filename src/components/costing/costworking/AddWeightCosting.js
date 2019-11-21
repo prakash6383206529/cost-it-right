@@ -27,14 +27,22 @@ class AddWeightCosting extends Component {
             overlapArea: '',
             NFS: '',
             oneSide: 'oneSide',
-            oneSideInput: '',
-            twoSideInput: '',
+            oneSideInput: 0,
+            twoSideInput: 0,
             isPartBlankDisabled: true,
             noOfPartsBlank: '',
             disabledSurfaceArea: '',
             pipeWeight: '',
             OD: '',
             ID: '',
+            grossWeightOther: 0,
+            flangeWidth1: '',
+            webWidth: '',
+            flangeWidth2: '',
+            widthOther: '',
+            finishWeight: '',
+            depth: '',
+            tubeWeightKG: '',
         }
     }
 
@@ -59,6 +67,7 @@ class AddWeightCosting extends Component {
     * @description handle selection of freight type
     */
     weightTypeHandler = (value) => {
+        this.props.reset();
         this.setState({
             weightType: value
         });
@@ -141,13 +150,14 @@ class AddWeightCosting extends Component {
     * @description  handle all calculation
     */
     handleCalculation = () => {
-        const { thickness, width, length, surfaceArea, overlapArea, OD, ID, lengthOfPipe } = this.state;
+        const { weightType, thickness, width, length, surfaceArea, overlapArea, OD, ID, lengthOfPipe,
+            flangeWidth1, webWidth, flangeWidth2, noOfPartsBlank, finishWeight, depth, tubeWeightKG } = this.state;
         const { weightFields } = this.props;
 
         // Bracket Part calculation
-        const WT = ((thickness * width * length * 7.85) / 1000000).toFixed(6);
-        const disabledNetSurface = ((weightFields.FinishWeight * 1000000 * surfaceArea) / (thickness * 7.85 * 25.4 * 25.4)).toFixed(3)
-        const grossWt = WT / weightFields.partBlank
+        const WT = ((thickness * width * length * 7.85) / 1000000);
+        const disabledNetSurface = (finishWeight * 1000000 * surfaceArea) / (thickness * 7.85 * 25.4 * 25.4)
+        const grossWt = WT / noOfPartsBlank;
         const netSurfaceArea = disabledNetSurface - overlapArea;
 
         // Pipe layout surface area for one side and two side
@@ -157,17 +167,58 @@ class AddWeightCosting extends Component {
         const numberOfPipe1 = length / lengthOfPipe
         const pipeGrossWeight = wtInKgPipe / numberOfPipe1
 
+        //L_Sec, Plate, C_Sec, Z sec layout calculation
+        const weightOther = '';
+
+        if (weightType == 'L_Sec') {
+            weightOther = (((flangeWidth1 + webWidth) - (2 * thickness) * thickness * length) * (7.85 / 1000000))
+        } else if (weightType == 'Plate') {
+            weightOther = (flangeWidth1 * webWidth * thickness) * 7.85 / 1000000
+        } else if (weightType == 'C_Sec') {
+            weightOther = ((flangeWidth1 + webWidth + flangeWidth2) - (2 * 2 * thickness)) * thickness * length * (7.85 / 1000000)
+        } else if (weightType == 'Z_Sec') {
+            weightOther = ((flangeWidth1 + webWidth + flangeWidth2) - (1.5 * 2 * thickness)) * thickness * length * (7.85 / 1000000)
+        }
+
+        //Tube layout calculation 
+        const Formula1 = (width - (4 * thickness)) + (webWidth - (4 * thickness)) + (1.5 * 3.14 * thickness);
+        const Formula2 = (Formula1 * 2 * thickness) / 100;
+        const formula3 = Formula2 * .785;
+        const WeightPerPc = formula3 * (length / 1000);
+
         this.setState({
             grossWeight: grossWt,
             total: WT,
             NFS: netSurfaceArea.toFixed(6),
             disabledSurfaceArea: disabledNetSurface,
             grossWeightPipe: pipeGrossWeight,
-            oneSideInput: oneSideInputValue,
-            twoSideInput: twoSideInputValue,
+            oneSideInput: typeof oneSideInputValue == 'NaN' ? 0 : oneSideInputValue,
+            twoSideInput: typeof twoSideInputValue == 'NaN' ? 0 : twoSideInputValue,
             pipeWeight: wtInKgPipe,
-            numberOfPipe: numberOfPipe1
+            numberOfPipe: numberOfPipe1,
+            weightOther: weightOther,
+            grossWeightOther: weightOther
         });
+
+        // For Bracket layout calculation
+        this.props.change("GrossWeight", grossWt.toFixed(3))
+        this.props.change("disabledSurfaceArea", disabledNetSurface)
+        this.props.change("NetSurfaceArea", netSurfaceArea.toFixed(6))
+        this.props.change("WeightUnitKg", WT)
+
+        // For pipe layout
+        this.props.change("GrossWeightPipe", pipeGrossWeight.toFixed(3))
+        this.props.change("oneSide", oneSideInputValue.toFixed(3))
+        this.props.change("twoSide", twoSideInputValue.toFixed(3))
+        this.props.change("PipeWeight", wtInKgPipe.toFixed(3))
+        this.props.change("NumberOfPipe", numberOfPipe1)
+
+        //L_Sec, Plate, C_Sec, Z sec, and tube layout calculation
+        this.props.change("GrossWeightOther", weightOther)
+        this.props.change("WeightOther", weightOther)
+
+        //Tube layout calculation
+        this.props.change("WeightPerPc", WeightPerPc)
     }
     /**
     * @method onChangeSurfaceArea
@@ -205,6 +256,14 @@ class AddWeightCosting extends Component {
         this.setState({ length: e.target.value }, () => { this.handleCalculation() });
     }
 
+    numberOfPartsHandler = (e) => {
+        this.setState({ noOfPartsBlank: e.target.value }, () => { this.handleCalculation() });
+    }
+
+    onChangeFinishWeightArea = (e) => {
+        this.setState({ finishWeight: e.target.value }, () => { this.handleCalculation() });
+    }
+
     // Pipe layouting handlers
     handleOD = (e) => { this.setState({ OD: e.target.value }, () => this.handleCalculation()) }
     handleID = (e) => { this.setState({ ID: e.target.value }, () => this.handleCalculation()) }
@@ -227,14 +286,56 @@ class AddWeightCosting extends Component {
         this.setState({ oneSide: value }, () => this.handleCalculation())
     }
 
+
+    /** handle other section side change event */
+    flangeWidthOneHandler = (e) => {
+        this.setState({ flangeWidth1: e.target.value }, () => { this.handleCalculation() })
+    }
+
+    webWidthHandler = (e) => {
+        this.setState({ webWidth: e.target.value }, () => { this.handleCalculation() })
+    }
+
+    flangeWidthTwoHandler = (e) => {
+        this.setState({ flangeWidth2: e.target.value }, () => { this.handleCalculation() })
+    }
+
+    tubeDepthHandler = (e) => {
+        this.setState({ depth: e.target.value }, () => { this.handleCalculation() })
+    }
+
+    tubeWeightKGHandler = (e) => {
+        this.setState({ tubeWeightKG: e.target.value }, () => { this.handleCalculation() })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, reset, getCostingDetailData } = this.props;
         const { weightType, isPartBlankDisabled } = this.state;
         //console.log('this.state', this.state);
+        let weightTitle = '';
+        if (weightType == 'L_Sec') {
+            weightTitle = '(((flangeWidth1 + webWidth) - (2 * thickness) * thickness * length) * (7.85 / 1000000))'
+        } else if (weightType == 'Plate') {
+            weightTitle = '(flangeWidth1 * webWidth * thickness ) * 7.85 / 1000000)'
+        } else if (weightType == 'C_Sec') {
+            weightTitle = '((flangeWidth1 + webWidth + flangeWidth2) - (2 * 2 * thickness)) * thickness * length * (7.85 / 1000000)'
+        } else if (weightType == 'Z_Sec') {
+            weightTitle = '((flangeWidth1 + webWidth+ flangeWidth2) - (1.5 * 2 * thickness)) * thickness * length * (7.85 / 1000000)'
+        }
+
+        let costingOption = [{
+            Text: getCostingDetailData.PartDetail.PartNumber,
+            Value: getCostingDetailData.CostingId
+        }]
+
+        let partOption = [{
+            Text: getCostingDetailData.PartDetail.PartNumber,
+            Value: getCostingDetailData.PartDetail.PartId
+        }]
 
         return (
             <Container className="top-margin">
@@ -379,7 +480,7 @@ class AddWeightCosting extends Component {
                                                     checked={this.state.weightType == 'Tube' ? true : false}
                                                     name="weightType"
                                                     value="Tube" />{' '}
-                                                PIPE
+                                                Tube wt per mtr
                                             </Label>
                                         </Col>
                                     </Row>
@@ -393,12 +494,13 @@ class AddWeightCosting extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                //options={this.renderTypeOfListing('material')}
+                                                options={costingOption}
                                                 //onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                component={renderText}
+                                                component={renderSelectField}
                                                 className="custom-select"
+                                                disabled={true}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -426,12 +528,13 @@ class AddWeightCosting extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                //options={this.renderTypeOfListing('material')}
+                                                options={[]}
                                                 //onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                component={renderText}
+                                                component={renderSelectField}
                                                 className="custom-select"
+                                                disabled={true}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -442,12 +545,13 @@ class AddWeightCosting extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                //options={this.renderTypeOfListing('material')}
+                                                options={partOption}
                                                 //onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
-                                                component={renderText}
+                                                component={renderSelectField}
                                                 className=" custom-select"
+                                                disabled={true}
                                             />
                                         </Col>
                                     </Row>
@@ -465,15 +569,19 @@ class AddWeightCosting extends Component {
                                     <Row>
                                         {(weightType === 'BRACKET_PART') &&
                                             <Col md="6">
-                                                <Label>GrossWeight</Label>
-                                                <input
+                                                <Field
                                                     label="GrossWeight"
                                                     name={"GrossWeight"}
                                                     type="number"
-                                                    value={this.state.grossWeight}
-                                                    className='form-control'
+                                                    //onChange={this.onChangeSurfaceArea}
+                                                    Value={this.state.grossWeight}
+                                                    placeholder={''}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
                                                     title={'GrossWt=Wt/No of Parts'}
+                                                    //required={true}
                                                     disabled={true}
+                                                //className=" withoutBorder"
                                                 />
                                             </Col>}
                                         {(weightType === 'PIPE') &&
@@ -493,6 +601,29 @@ class AddWeightCosting extends Component {
                                                 //className=" withoutBorder"
                                                 />
                                             </Col>}
+
+                                        {((weightType == 'L_Sec') ||
+                                            (weightType == 'Plate') ||
+                                            (weightType == 'C_Sec') ||
+                                            (weightType == 'Z_Sec') ||
+                                            (weightType == 'Tube')) &&
+                                            <Col md="6">
+                                                <Field
+                                                    label="GrossWeight"
+                                                    name={"GrossWeightOther"}
+                                                    type="number"
+                                                    //onChange={this.onChangeSurfaceArea}
+                                                    Value={this.state.grossWeightOther}
+                                                    placeholder={''}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    title={'GrossWt=Weight'}
+                                                    disabled={true}
+                                                //required={true}
+                                                //className=" withoutBorder"
+                                                />
+                                            </Col>}
+
                                         <Col md="6">
                                             <Field
                                                 label="FinishWeight"
@@ -519,7 +650,7 @@ class AddWeightCosting extends Component {
                                                     label="No of Parts/Blank"
                                                     name={"partBlank"}
                                                     type="text"
-                                                    onChange={this.handleCalculation}
+                                                    onChange={this.numberOfPartsHandler}
                                                     value={this.state.noOfPartsBlank}
                                                     placeholder={''}
                                                     validate={[required]}
@@ -573,15 +704,17 @@ class AddWeightCosting extends Component {
                                                 />
                                             </Col>
                                             <Col md="3">
-                                                <Label>NetSurfaceArea</Label>
-                                                <input
-                                                    label={''}
+                                                <Field
+                                                    label="NetSurfaceArea"
                                                     name={"NetSurfaceArea"}
                                                     type="number"
-                                                    value={this.state.NFS}
-                                                    className='form-control'
+                                                    placeholder={''}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
                                                     title={'Net Surface Area=(Overlap Area - Suface Area)'}
                                                     disabled={true}
+                                                //required={true}
+                                                //className=" withoutBorder"
                                                 />
                                             </Col>
                                         </Row>
@@ -639,14 +772,13 @@ class AddWeightCosting extends Component {
                                                 />
                                             </Col>
                                             <Col md="2">
-                                                <Label>Wt. in Kg</Label>
-                                                <input
-                                                    label={''}
+                                                <Field
+                                                    label={'Wt. in Kg'}
                                                     name={"WeightUnitKg"}
                                                     type="number"
-                                                    value={this.state.total}
                                                     className='form-control'
                                                     disabled={true}
+                                                    component={renderNumberInputField}
                                                     title={'Wt=((Thickness*Width(mm)*Length(mm)*7.85)/1000000)'}
                                                 />
                                             </Col>
@@ -659,13 +791,13 @@ class AddWeightCosting extends Component {
                                             <label>Surface Area</label>
                                             <Row>
                                                 <Col md="3">
-                                                    <Label>One Side</Label>
-                                                    <input
+                                                    <Field
                                                         label="One Side"
                                                         name={"oneSide"}
                                                         type="text"
-                                                        value={this.state.oneSideInput}
+                                                        //value={this.state.oneSideInput}
                                                         className='form-control'
+                                                        component={renderNumberInputField}
                                                         disabled={true}
                                                         title={"((2*3.14*(OD/2)*Length of Pipe)+(2*(3.14*(OD/2)*(OD/2))-(3.14*(ID/2)*(ID/2))"}
                                                     />
@@ -683,13 +815,13 @@ class AddWeightCosting extends Component {
                                                         </Label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <Label>Two Side</Label>
-                                                    <input
+                                                    <Field
                                                         label="Two Side"
                                                         name={"twoSide"}
                                                         type="text"
-                                                        value={this.state.twoSideInput}
+                                                        //value={this.state.twoSideInput}
                                                         className='form-control'
+                                                        component={renderNumberInputField}
                                                         disabled={true}
                                                         title={"((2*3.14*(ID/2)*Length of Pipe)+(2*3.14*(OD/2)*Length of Pipe)+(2*(3.14*(OD/2)*(OD/2))-(3.14*(ID/2)*(ID/2))"}
                                                     />
@@ -711,24 +843,6 @@ class AddWeightCosting extends Component {
 
                                     <Row>
                                     </Row>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -790,7 +904,7 @@ class AddWeightCosting extends Component {
 
                                                 <Field
                                                     label="Wt. In Kg"
-                                                    name={"WeightUnitKg"}
+                                                    name={"PipeWeight"}
                                                     type="text"
                                                     placeholder={''}
                                                     //validate={[required]}
@@ -836,101 +950,188 @@ class AddWeightCosting extends Component {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                                    {(weightType === 'L_Sec' || weightType === 'Plate' || weightType === 'Z_Sec' || weightType === 'C_Sec' || weightType === 'Tube') &&
+                                        <Row>
+                                            <Col><h4><b>Size</b></h4></Col>
+                                        </Row>
+                                    }
 
 
                                     {(weightType === 'L_Sec' || weightType === 'Plate' || weightType === 'Z_Sec' || weightType === 'C_Sec') &&
                                         <Row>
-                                            <Col md="3">
+                                            <Col md="2">
+                                                <lable>Name</lable>
+                                                <div>Available</div>
+                                            </Col>
+                                            <Col md="2">
                                                 <Field
-                                                    label="FlangeWidthOne"
+                                                    label="(Flange width 1)"
                                                     name={"FlangeWidthOne"}
                                                     type="text"
                                                     placeholder={''}
+                                                    //validate={[required]}
+                                                    onChange={this.flangeWidthOneHandler}
+                                                    component={renderNumberInputField}
+                                                //required={true}
+                                                // className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label="(Web width)"
+                                                    name={"WebWidth"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    //validate={[required]}
+                                                    onChange={this.webWidthHandler}
+                                                    component={renderNumberInputField}
+                                                //required={true}
+                                                //className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label="(Flange width 2)"
+                                                    name={"FlangeWidthTwo"}
+                                                    type="number"
+                                                    readOnly
+                                                    placeholder={''}
+                                                    //validate={[required]}
+                                                    onChange={this.flangeWidthTwoHandler}
+                                                    component={renderNumberInputField}
+                                                    disabled={(weightType === 'L_Sec' || weightType === 'Plate') ? true : false}
+                                                //required={true}
+                                                //className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label="(Thickness)"
+                                                    name={"Thickness"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    onChange={this.handleChangeThickness}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
                                                 // className=" withoutBorder"
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="2">
                                                 <Field
-                                                    label="FlangeWidthTwo"
-                                                    name={"FlangeWidthTwo"}
+                                                    label="Length"
+                                                    name={"LengthOther"}
                                                     type="text"
-                                                    readOnly
                                                     placeholder={''}
+                                                    onChange={this.handleChangeLength}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
                                                 //className=" withoutBorder"
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="2">
                                                 <Field
-                                                    label="WebWidth"
-                                                    name={"WebWidth"}
+                                                    label="Weight"
+                                                    name={"WeightOther"}
                                                     type="text"
                                                     placeholder={''}
+                                                    Value={this.state.weightOther}
+                                                    //onChange={this.widthOtherhandler}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
+                                                    disabled="true"
+                                                    title={weightTitle}
                                                 //required={true}
                                                 //className=" withoutBorder"
                                                 />
                                             </Col>
                                         </Row>}
+
+
                                     {(weightType === 'Tube') &&
                                         <Row>
-                                            <Col md="3">
+                                            <Col md="2">
+                                                <lable>Name</lable>
+                                                <div>Available</div>
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label="(Width)"
+                                                    name={"Width"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    onChange={this.handleChangeWidth}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                //required={true}
+                                                //className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
                                                 <Field
                                                     label="Depth"
                                                     name={"Depth"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required]}
+                                                    onChange={this.tubeDepthHandler}
+                                                    //validate={[required]}
                                                     component={renderNumberInputField}
                                                     required={true}
                                                 //className=" withoutBorder"
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="2">
                                                 <Field
-                                                    label="WeightPerPice"
-                                                    name={"WeightPerPice"}
+                                                    label="Weight Pr Pc"
+                                                    name={"WeightPerPc"}
                                                     type="text"
-                                                    readOnly
+                                                    //readOnly
                                                     placeholder={''}
-                                                    validate={[required]}
+                                                    //validate={[required]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
+                                                    disabled={true}
                                                 //className=" withoutBorder"
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="2">
                                                 <Field
-                                                    label="WeightUnitKg"
-                                                    name={"WeightUnitKg"}
+                                                    label="(IS WT/Unit (Kg))"
+                                                    name={"TubeWeightUnitKg"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required]}
+                                                    //validate={[required]}
+                                                    onChange={this.tubeWeightKGHandler}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                //required={true}
                                                 //className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label="Length"
+                                                    name={"Length"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    onChange={this.handleChangeLength}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                //required={true}
+                                                //className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label="Thickness"
+                                                    name={"Thickness"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    onChange={this.handleChangeThickness}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                //required={true}
+                                                // className=" withoutBorder"
                                                 />
                                             </Col>
                                         </Row>}
@@ -965,11 +1166,11 @@ function mapStateToProps(state) {
     const weightFields = selector(state, 'FinishWeight', 'partBlank', 'Thickness', 'Width', 'Length', 'WeightUnitKg', 'OD', 'ID',
         'LengthSLPIPE', 'LengthOfPipe', 'NumberOfPipe')
 
-    const { weightLayoutType } = costWorking;
+    const { weightLayoutType, getCostingDetailData } = costWorking;
     const initialValues = {
         //WeightUnitKg: state.WeightUnitKg
     }
-    return { weightLayoutType, initialValues, weightFields };
+    return { weightLayoutType, initialValues, weightFields, getCostingDetailData };
 }
 
 /**

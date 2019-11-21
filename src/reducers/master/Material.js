@@ -8,11 +8,12 @@ import {
     GET_RM_CATEGORY_LIST_SUCCESS,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_MATERIAL_LIST_SUCCESS,
-    GET_MATERIAL_LIST_TYPE_SUCCESS
+    GET_MATERIAL_LIST_TYPE_SUCCESS,
+    RAWMATERIAL_ADDED_FOR_COSTING,
 } from '../../config/constants';
 
 const initialState = {
-   
+
 };
 
 export default function materialReducer(state = initialState, action) {
@@ -80,6 +81,13 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 rmTypeDetail: action.payload
+            };
+        case RAWMATERIAL_ADDED_FOR_COSTING:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                selectedRawMaterialDetail: action.payload
             };
         default:
             return state;
