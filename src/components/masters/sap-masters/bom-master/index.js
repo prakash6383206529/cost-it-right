@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Button, Table } from 'reactstrap';
+    Container, Row, Col, Button, Table
+} from 'reactstrap';
 import AddBOM from './AddBOM';
 import { getAllBOMAPI } from '../../../../actions/master/BillOfMaterial';
 import { toastr } from 'react-redux-toastr';
@@ -16,6 +17,7 @@ class BOMMaster extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            BOMId: ''
         }
     }
 
@@ -24,7 +26,7 @@ class BOMMaster extends Component {
      * @description  Called before rendering the component
      */
     componentDidMount() {
-        this.props.getAllBOMAPI(res => {});
+        this.props.getAllBOMAPI(res => { });
     }
 
     /**
@@ -44,6 +46,48 @@ class BOMMaster extends Component {
     }
 
     /**
+    * @method editItem
+    * @description confirm delete item
+    */
+    editItem = (index, Id) => {
+        this.setState({
+            isEditFlag: true,
+            isOpen: true,
+            BOMId: Id,
+            editIndex: index,
+        })
+    }
+
+    /**
+        * @method deleteItem
+        * @description confirm delete item
+        */
+    deleteItem = (index, Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDeletePart(index, Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`Are you sure you want to delete This BOM ?`, toastrConfirmOptions);
+    }
+
+    /**
+        * @method confirmDeletePart
+        * @description confirm delete part
+        */
+    confirmDeletePart = (index, PartId) => {
+        // this.props.deletePartsAPI(PartId, (res) => {
+        //     if (res.data.Result === true) {
+        //         toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+        //         this.props.getAllPartsAPI(res => { });
+        //     } else {
+        //         toastr.error(MESSAGES.SOME_ERROR);
+        //     }
+        // });
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
@@ -51,7 +95,7 @@ class BOMMaster extends Component {
         const { isOpen } = this.state;
         return (
             <Container className="top-margin">
-            {this.props.loading && <Loader/>}
+                {this.props.loading && <Loader />}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.BOM} ${CONSTANT.MASTER}`}</h3>
@@ -67,45 +111,48 @@ class BOMMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                <Table  className="table table-striped" bordered>
-                { this.props.BOMListing && this.props.BOMListing.length > 0 &&
-                    <thead>
-                        <tr>
-                        <th>{`${CONSTANT.BILL} ${CONSTANT.NUMBER}`}</th>
-                        <th>{`${CONSTANT.BOM} ${CONSTANT.CODE}`}</th> 
-                        <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.CODE}`}</th>
-                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}` }</th>
-                        <th>{`${CONSTANT.QUANTITY}`}</th>
-                        <th>{`Assembly ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                        <th>{`${CONSTANT.BOM} ${CONSTANT.LEVEL}`}</th> 
-                        <th>{`ECO ${CONSTANT.NUMBER}`}</th>
-                        <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th>
-                        </tr>
-                    </thead> }
-                    <tbody > 
-                    {this.props.BOMListing && this.props.BOMListing.length > 0 &&
-                        this.props.BOMListing.map((item, index) => {
-                            return (
-                                <tr key= {index}>
-                                    <td >{item.BillNumber}</td>
-                                    <td>{item.BillOfMaterialCode}</td> 
-                                    <td>{item.PartNumber ? item.PartNumber : 'N/A'}</td>
-                                    <td>{item.MaterialCode ? item.MaterialCode : 'N/A'}</td> 
-                                    <td>{item.MaterialDescription ? item.MaterialDescription : 'N/A'}</td> 
-                                    <td>{item.Quantity}</td>
-                                    <td>{item.AssemblyPartNumberMark}</td>
-                                    <td>{item.BOMLevel}</td>
-                                    <td>{item.EcoNumber}</td>
-                                    <td>{item.RevisionNumber}</td>
-                                    <div> 
-                                    </div>
+                    <Table className="table table-striped" bordered>
+                        {this.props.BOMListing && this.props.BOMListing.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>{`${CONSTANT.BILL} ${CONSTANT.NUMBER}`}</th>
+                                    <th>{`${CONSTANT.BOM} ${CONSTANT.CODE}`}</th>
+                                    <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                                    <th>{`Material Type Name`}</th>
+                                    <th>{'Material Description'}</th>
+                                    <th>{`${CONSTANT.QUANTITY}`}</th>
+                                    <th>{`Assembly ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                                    <th>{`BOM Level`}</th>
+                                    <th>{`Eco Number`}</th>
+                                    <th>{`Revision Number`}</th>
+                                    <th>{`Action`}</th>
                                 </tr>
-                            )
-                        })}
-                        {this.props.BOMListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                    </tbody> 
-                </Table>
+                            </thead>}
+                        <tbody >
+                            {this.props.BOMListing && this.props.BOMListing.length > 0 &&
+                                this.props.BOMListing.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td >{item.BillNumber}</td>
+                                            <td>{item.BillOfMaterialCode}</td>
+                                            <td>{item.PartNumber ? item.PartNumber : 'N/A'}</td>
+                                            <td>{item.MaterialTypeName}</td>
+                                            <td>{item.MaterialDescription}</td>
+                                            <td>{item.Quantity}</td>
+                                            <td>{item.AssemblyPartNumberMark}</td>
+                                            <td>{item.BOMLevel}</td>
+                                            <td>{item.EcoNumber}</td>
+                                            <td>{item.RevisionNumber}</td>
+                                            <td>
+                                                <Button className="btn btn-secondary" onClick={() => this.editItem(index, item.BillOfMaterialId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.BillOfMaterialId)}><i className="far fa-trash-alt"></i></Button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            {this.props.BOMListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                        </tbody>
+                    </Table>
                 </Col>
                 {isOpen && (
                     <AddBOM
@@ -123,13 +170,13 @@ class BOMMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ billOfMaterial}) {
-    const { BOMListing ,loading } = billOfMaterial;;
+function mapStateToProps({ billOfMaterial }) {
+    const { BOMListing, loading } = billOfMaterial;;
     return { BOMListing, loading }
 }
 
 
 export default connect(
-    mapStateToProps, {getAllBOMAPI}
+    mapStateToProps, { getAllBOMAPI }
 )(BOMMaster);
 

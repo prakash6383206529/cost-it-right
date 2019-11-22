@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField, renderCheckboxInputField } from "../../../layout/FormInputs";
 import { createPartAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '../../../../actions/master/Part';
 import { fetchPartComboAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
@@ -15,7 +15,8 @@ class AddPart extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag: false
+            isEditFlag: false,
+            IsPartAssociatedWithBOM: false
         }
     }
 
@@ -36,7 +37,10 @@ class AddPart extends Component {
         console.log('isEditFlag', isEditFlag);
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
-                this.props.getOnePartsAPI(partId, true, res => { })
+                this.props.getOnePartsAPI(partId, true, res => {
+                    const { partData } = this.props;
+                    this.setState({ IsPartAssociatedWithBOM: partData.IsPartAssociatedWithBOM })
+                })
             })
         } else {
             this.props.getOnePartsAPI('', false, res => { })
@@ -66,6 +70,7 @@ class AddPart extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        console.log('%c 🥪 values: ', 'font-size:20px;background-color: #ED9EC7;color:#fff;', values);
         /** Updating the existing part master detail **/
         if (this.props.isEditFlag) {
             const { partId } = this.props;
@@ -73,12 +78,14 @@ class AddPart extends Component {
             let formData = {
                 PartNumber: values.PartNumber,
                 PartName: values.PartName,
+                IndustrialIdentity: values.PartName,
                 MaterialTypeId: values.MaterialTypeId,
                 MaterialGroupCode: values.MaterialGroupCode,
                 UnitOfMeasurementId: values.UnitOfMeasurementId,
                 PlantId: values.PlantId,
                 PartDescription: values.PartDescription,
-                PartId: partId
+                PartId: partId,
+                IsPartAssociatedWithBOM: this.state.IsPartAssociatedWithBOM,
             }
             this.props.updatePartsAPI(formData, (res) => {
                 if (res.data.Result) {
@@ -90,11 +97,13 @@ class AddPart extends Component {
                 }
             });
         } else { /** Adding new part master detail **/
+            values.IndustrialIdentity = values.PartName;
+            values.IsPartAssociatedWithBOM = this.state.IsPartAssociatedWithBOM;
             this.props.createPartAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.PART_ADD_SUCCESS);
                     this.props.getAllPartsAPI(res => { })
-                     this.toggleModel();
+                    this.toggleModel();
                 } else {
                     toastr.error(res.data.message);
                 }
@@ -130,12 +139,16 @@ class AddPart extends Component {
 
     }
 
+    onPressAssociatedWithBOM = () => {
+        this.setState({ IsPartAssociatedWithBOM: !this.state.IsPartAssociatedWithBOM });
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, reset, partData } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -148,6 +161,22 @@ class AddPart extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
+                                    <Row>
+                                        <Col>
+                                            <label
+                                                className="custom-checkbox"
+                                                onChange={this.onPressAssociatedWithBOM}
+                                            >
+                                                Is Part Associated With BOM
+                                                <input type="checkbox" checked={this.state.IsPartAssociatedWithBOM} />
+                                                <span
+                                                    className=" before-box"
+                                                    checked={this.state.IsPartAssociatedWithBOM}
+                                                    onChange={this.onPressAssociatedWithBOM}
+                                                />
+                                            </label>
+                                        </Col>
+                                    </Row>
                                     <Row>
                                         <Col md="6">
                                             <Field
@@ -167,9 +196,9 @@ class AddPart extends Component {
                                                 name={"PartName"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                //validate={[required]}
                                                 component={renderText}
-                                                required={true}
+                                                //required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -293,7 +322,7 @@ function mapStateToProps({ part, comman }) {
             PartDescription: partData.PartDescription,
         }
     }
-    return { uniOfMeasurementList, initialValues, materialTypeList, plantList }
+    return { uniOfMeasurementList, initialValues, materialTypeList, plantList, partData }
 }
 
 /**

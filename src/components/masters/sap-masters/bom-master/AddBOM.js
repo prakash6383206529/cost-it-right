@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField, renderMultiSelectField } from "../../../layout/FormInputs";
-import { fetchBOMComboAPI } from '../../../../actions/master/Comman';
+import { renderText, renderSelectField, renderMultiSelectField, searchableSelect } from "../../../layout/FormInputs";
+import { fetchBOMComboAPI, fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { createBOMAPI } from '../../../../actions/master/BillOfMaterial';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -17,6 +17,12 @@ class AddBOM extends Component {
             typeOfListing: [],
             isEditFlag: false,
             selectedParts: [],
+            assyPartNo: [],
+            ChildPart: [],
+            isBOMDisabled: false,
+            materialType: [],
+            selectedUOM: [],
+            plantID: '',
         }
     }
 
@@ -26,6 +32,7 @@ class AddBOM extends Component {
     */
     componentWillMount() {
         this.props.fetchBOMComboAPI(res => { });
+        this.props.fetchPlantDataAPI(() => { })
     }
 
     /**
@@ -70,6 +77,17 @@ class AddBOM extends Component {
         }
         );
         return temp;
+
+
+    }
+
+    renderAssyPartList = () => {
+        const { partList } = this.props;
+        let temp = [];
+        partList && partList.map(item =>
+            temp.push({ label: item.Text, value: item.Value })
+        );
+        return temp;
     }
 
     /**
@@ -77,28 +95,48 @@ class AddBOM extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedParts } = this.state;
+        console.log("values", values)
+        const { selectedParts, materialType, selectedUOM, assyPartNo, ChildPart, plantID } = this.state;
         let plantArray = [];
-        selectedParts.map((item, i) => {
+        selectedParts && selectedParts.map((item, i) => {
             return plantArray.push({ PartId: item.Value });
         });
         /** Add new detail of the BOM  */
         const formData = {
+            MaterialTypeName: materialType.label,
+            UnitOfMeasurementName: selectedUOM.label,
+            AssemblyBOMId: assyPartNo.value,
             BillNumber: values.BillNumber,
-            BillOfMaterialCode: values.BillOfMaterialCode,
-            PartNumber: values.PartNumber,
-            MaterialCode: values.MaterialCode,
             MaterialDescription: values.MaterialDescription,
             Quantity: values.Quantity,
-            AssemblyPartNumberMark: values.AssemblyPartNumberMark,
+            AssemblyPartNumberMark: assyPartNo.label,
             BOMLevel: values.BOMLevel,
             EcoNumber: values.EcoNumber,
             RevisionNumber: values.RevisionNumber,
-            MaterialTypeId: values.MaterialTypeId,
-            UnitOfMeasurementId: values.UnitOfMeasurementId,
-            PartId: values.PartId,
-            PartsIncludedBOM: plantArray
+            MaterialTypeId: materialType.value,
+            UnitOfMeasurementId: selectedUOM.value,
+            AssemblyBOMPartId: assyPartNo.value,
+            AssemblyBOMPartNumber: assyPartNo.label,
+            PlantId: plantID,
+            CreatedBy: "",
+            SerialNumber: 0,
+            PartType: materialType.label,
+            IsActive: true
         }
+
+        if (assyPartNo && ChildPart) {
+            if (assyPartNo.value == ChildPart.value) {
+                formData.PartId = assyPartNo.value;
+                formData.PartNumber = assyPartNo.label;
+            } else {
+                formData.PartId = ChildPart.value;
+                formData.PartNumber = ChildPart.label;
+            }
+        } else {
+            formData.PartId = assyPartNo.value;
+            formData.PartNumber = assyPartNo.label;
+        }
+
         this.props.createBOMAPI(formData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.BOM_ADD_SUCCESS);
@@ -114,17 +152,17 @@ class AddBOM extends Component {
     * @description Used show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, partList, materialTypeList } = this.props;
+        const { uniOfMeasurementList, partList, materialTypeList, plantList } = this.props;
         const temp = [];
         if (label === 'material') {
             materialTypeList && materialTypeList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
         if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, Value: item.Value })
             );
             return temp;
         }
@@ -134,7 +172,72 @@ class AddBOM extends Component {
             );
             return temp;
         }
+        if (label === 'plant') {
+            plantList && plantList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+    }
 
+    /**
+    * @method assyPartNoHandler
+    * @description Used to handle 
+    */
+    assyPartNoHandler = (newValue, actionMeta) => {
+        this.setState({ assyPartNo: newValue }, () => {
+            this.checkIsPartIdSame()
+        });
+    };
+
+    checkIsPartIdSame = () => {
+        const { assyPartNo, ChildPart } = this.state;
+        if (assyPartNo && ChildPart) {
+            if (assyPartNo.value == ChildPart.value) {
+                this.props.change("BOMLevel", 0)
+                this.setState({ isBOMDisabled: true })
+            } else {
+                this.props.change("BOMLevel", '')
+                this.setState({ isBOMDisabled: false })
+            }
+        } else {
+            this.props.change("BOMLevel", '')
+            this.setState({ isBOMDisabled: false })
+        }
+    }
+
+    /**
+    * @method ChildPartHandler
+    * @description Used to handle 
+    */
+    ChildPartHandler = (newValue, actionMeta) => {
+        this.setState({ ChildPart: newValue }, () => {
+            this.checkIsPartIdSame()
+        });
+    };
+
+    onPressAddChildPart = () => {
+        this.setState({ IsChildPart: !this.state.IsChildPart })
+    }
+
+    /**
+    * @method ChildPartHandler
+    * @description Used to handle 
+    */
+    materialTypeHandler = (newValue, actionMeta) => {
+        this.setState({ materialType: newValue });
+    };
+
+    /**
+    * @method uomHandler
+    * @description Used to handle 
+    */
+    uomHandler = (newValue, actionMeta) => {
+        this.setState({ selectedUOM: newValue });
+    };
+
+    plantHandler = (e) => {
+        this.setState({ plantID: e.target.value })
     }
 
     /**
@@ -156,9 +259,56 @@ class AddBOM extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
+                                        <Col className={'pull-right'}>
+                                            <label
+                                                className="custom-checkbox pull-right"
+                                                onChange={this.onPressAddChildPart}
+                                            >
+                                                Add Child Part
+                                                <input type="checkbox" checked={this.state.IsChildPart} />
+                                                <span
+                                                    className=" before-box"
+                                                    checked={this.state.IsChildPart}
+                                                    onChange={this.onPressAddChildPart}
+                                                />
+                                            </label>
+                                        </Col>
+                                    </Row>
+
+                                    <Row>
+                                        <Col md={this.state.IsChildPart ? "6" : "12"}>
+                                            <Field
+                                                name="AssyPartNo"
+                                                type="text"
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                label="Assy Part No."
+                                                component={searchableSelect}
+                                                //validate={[required, maxLength50]}
+                                                options={this.renderAssyPartList()}
+                                                //options={options}
+                                                //required={true}
+                                                handleChangeDescription={this.assyPartNoHandler}
+                                                valueDescription={this.state.assyPartNo}
+                                            />
+                                        </Col>
+                                        {this.state.IsChildPart && <Col md="6">
+                                            <Field
+                                                label={'Child Part'}
+                                                name={'ChildPart'}
+                                                type="text"
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                component={searchableSelect}
+                                                //validate={[required, maxLength50]}
+                                                options={this.renderAssyPartList()}
+                                                //options={options}
+                                                //required={true}
+                                                handleChangeDescription={this.ChildPartHandler}
+                                                valueDescription={this.state.ChildPart}
+                                            />
+                                        </Col>}
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.BOM} ${CONSTANT.NUMBER}`}
+                                                label={`BOM Number`}
                                                 name={"BillNumber"}
                                                 type="text"
                                                 placeholder={''}
@@ -170,43 +320,7 @@ class AddBOM extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.BOM} ${CONSTANT.CODE}`}
-                                                name={"BillOfMaterialCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.PART} ${CONSTANT.NUMBER}`}
-                                                name={"PartNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.CODE}`}
-                                                name={"MaterialCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}
+                                                label={`Material Description`}
                                                 name={"MaterialDescription"}
                                                 type="text"
                                                 placeholder={''}
@@ -242,7 +356,7 @@ class AddBOM extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.BOM} ${CONSTANT.LEVEL}`}
+                                                label={`BOM Level`}
                                                 name={"BOMLevel"}
                                                 type="text"
                                                 placeholder={''}
@@ -250,6 +364,7 @@ class AddBOM extends Component {
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
+                                                disabled={this.state.isBOMDisabled}
                                             />
                                         </Col>
                                         <Col md="6">
@@ -276,72 +391,51 @@ class AddBOM extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Row />
-                                        <Row />
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
-                                                name={"MaterialTypeId"}
+                                                label="Material Type"
+                                                name="MaterialTypeId"
                                                 type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                className=" withoutBorder custom-select"
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                component={searchableSelect}
+                                                //validate={[required, maxLength50]}
                                                 options={this.renderTypeOfListing('material')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
+                                                //options={options}
+                                                //required={true}
+                                                handleChangeDescription={this.materialTypeHandler}
+                                                valueDescription={this.state.materialType}
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.UOM}`}
-                                                name={"UnitOfMeasurementId"}
+                                                label={'Unit Of Measurement'}
+                                                name={'UnitOfMeasurementId'}
                                                 type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                component={searchableSelect}
+                                                //validate={[required]}
                                                 options={this.renderTypeOfListing('uom')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
+                                                //required={true}
+                                                handleChangeDescription={this.uomHandler}
+                                                valueDescription={this.state.selectedUOM}
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.PART}`}
-                                                name={"PartId"}
+                                                label={`Plant`}
+                                                name={"PlantId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('part')}
-                                                onChange={this.handleTypeofListing}
+                                                options={this.renderTypeOfListing('plant')}
+                                                onChange={this.plantHandler}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.PART} Included ${CONSTANT.BOM}`}
-                                                name={"PartsIncludedBOM"}
-                                                placeholder="--Select Part included Bom--"
-                                                selection={this.state.selectedParts}
-                                                options={this.renderSelectPartList()}
-                                                selectionChanged={this.handlePartSelection}
-                                                optionValue={option => option.Value}
-                                                optionLabel={option => option.Text}
-                                                component={renderMultiSelectField}
-                                                className="withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
@@ -366,8 +460,8 @@ class AddBOM extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-    const { uniOfMeasurementList, partList, materialTypeList } = comman;
-    return { uniOfMeasurementList, materialTypeList, partList }
+    const { uniOfMeasurementList, partList, materialTypeList, plantList } = comman;
+    return { uniOfMeasurementList, materialTypeList, partList, plantList }
 }
 
 /**
@@ -376,7 +470,11 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createBOMAPI, fetchBOMComboAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createBOMAPI,
+    fetchBOMComboAPI,
+    fetchPlantDataAPI
+})(reduxForm({
     form: 'AddBOM',
     enableReinitialize: true,
 })(AddBOM));

@@ -128,10 +128,10 @@ class PartMaster extends Component {
                                         <tr key={index}>
                                             {/* <td >{item.PlantName}</td> */}
                                             <td >{item.PartNumber}</td>
-                                            <td>{item.PartName}</td>
-                                            <td>{item.MaterialType ? item.MaterialType : 'N/A'}</td>
-                                            <td>{item.MaterialGroupCode ? item.MaterialGroupCode : 'N/A'}</td>
-                                            <td>{item.UnitOfMeasurement ? item.UnitOfMeasurement : 'N/A'}</td>
+                                            <td>{item.PartName ? item.PartName : item.PartNumber}</td>
+                                            <td>{item.MaterialTypeName}</td>
+                                            <td>{item.MaterialGroupCode}</td>
+                                            <td>{item.UnitOfMeasurementName}</td>
                                             <td>{item.PartDescription}</td>
                                             <div>
                                                 <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.PartId)}><i className="fas fa-pencil-alt"></i></Button>

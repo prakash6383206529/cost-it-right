@@ -111,6 +111,7 @@ export function renderCheckboxInputField(field) {
         id={field.input.name}
         className="m-0 align-middle"
         {...input}
+        checked={field.checked}
       />
       <label
         htmlFor={field.input.name}
@@ -528,17 +529,9 @@ export const focusOnError = errors => {
  ********************************/
 
 export function renderText(field) {
-  const {
-    input,
-    meta: { touched, error },
-    ...others
-  } = field;
-  const className = `form-group inputbox ${
-    touched && error ? "has-danger" : ""
-    }`;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
-    }`;
+  const { input, meta: { touched, error }, ...others } = field;
+  const className = `form-group inputbox ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""}`;
   return (
     <div className={className}>
       <label>
@@ -558,6 +551,18 @@ export function renderText(field) {
       />
 
       <div className="text-help">{touched ? error : ""}</div>
+    </div>
+  );
+}
+
+export function InputHiddenField(field) {
+  const { input, meta: { touched, error }, ...others } = field;
+  return (
+    <div>
+      <input
+        {...input}
+        {...others}
+      />
     </div>
   );
 }

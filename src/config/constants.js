@@ -104,7 +104,7 @@ export const API = {
 
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/add-bill-of-material`,
-  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-material-list`,
+  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-materials`,
 
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,

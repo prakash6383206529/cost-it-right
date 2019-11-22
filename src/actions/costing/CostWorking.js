@@ -32,10 +32,10 @@ const headers = {
  * @method getWeightCalculationCosting
  * @description Get Weight Calculation Costing details
  */
-export function getWeightCalculationCosting(callback) {
+export function getWeightCalculationCosting(CostingId = '', callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getWeightCalculationInfo}`, headers);
+        const request = axios.get(`${API.getWeightCalculationInfo}/${CostingId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

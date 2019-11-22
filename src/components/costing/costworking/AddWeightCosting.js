@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import { required } from "../../../helper/validation";
-import { renderText, renderNumberInputField, renderSelectField } from "../../layout/FormInputs";
-import { createWeightCalculationCosting, getWeightCalculationLayoutType } from '../../../actions/costing/CostWorking';
+import { renderText, renderNumberInputField, renderSelectField, InputHiddenField } from "../../layout/FormInputs";
+import { createWeightCalculationCosting, getWeightCalculationCosting, getWeightCalculationLayoutType } from '../../../actions/costing/CostWorking';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 const selector = formValueSelector('AddWeightCostingForm');
@@ -52,6 +52,7 @@ class AddWeightCosting extends Component {
     */
     componentWillMount() {
         this.props.getWeightCalculationLayoutType(res => { });
+        this.props.getWeightCalculationCosting(this.props.costingId, () => { })
     }
 
     /**
@@ -152,7 +153,7 @@ class AddWeightCosting extends Component {
     handleCalculation = () => {
         const { weightType, thickness, width, length, surfaceArea, overlapArea, OD, ID, lengthOfPipe,
             flangeWidth1, webWidth, flangeWidth2, noOfPartsBlank, finishWeight, depth, tubeWeightKG } = this.state;
-        const { weightFields } = this.props;
+        const { } = this.props;
 
         // Bracket Part calculation
         const WT = ((thickness * width * length * 7.85) / 1000000);
@@ -269,17 +270,75 @@ class AddWeightCosting extends Component {
     handleID = (e) => { this.setState({ ID: e.target.value }, () => this.handleCalculation()) }
     handleLengthOfPipe = (e) => { this.setState({ lengthOfPipe: e.target.value }, () => this.handleCalculation()) }
 
+
+    uomCalculation = () => {
+        const { miliMeter, miliMeterSqr, feet, inch } = this.state;
+
+
+    }
     /** handle milimeter change event */
-    uomCalculatorMeter = (e) => { this.setState({ meter: e.target.value }) }
+    uomCalculatorMiliMeter = (e) => {
+        const value = e.target.value;
+        this.setState({ miliMeter: value }, () => {
+
+            const miliMeterSqr = value * 1000000;
+            const feet = value * 10.76391041671;
+            const inch = value * 1550.0031000062;
+
+            this.props.change("uom_mm2", miliMeterSqr.toFixed(5))
+            this.props.change("uom_ft2", feet.toFixed(5))
+            this.props.change("uom_inch2", inch.toFixed(5))
+
+        })
+    }
 
     /** handle milimeter change event */
-    uomCalculatorMiliMeter = (e) => { this.setState({ milimeter: e.target.value }) }
+    uomCalculatorMiliMeterSqr = (e) => {
+        const value = e.target.value;
+        this.setState({ miliMeterSqr: value }, () => {
+
+            const feet = value * 0.00001076391;
+            const inch = value * 0.0015500031;
+            const miliMeter = value * 0.000001;
+
+            this.props.change("uom_m2", miliMeter.toFixed(5))
+            this.props.change("uom_ft2", feet.toFixed(5))
+            this.props.change("uom_inch2", inch.toFixed(5))
+
+        })
+    }
 
     /** handle feet change event */
-    uomCalculatorFeetMeter = (e) => { this.setState({ feet: e.target.value }) }
+    uomCalculatorFeetMeter = (e) => {
+        const value = e.target.value;
+        this.setState({ feet: value }, () => {
+
+            const miliMeter = value * 92903.04;
+            const miliMeterSqr = value * 0.09290304;
+            const inch = value * 144;
+
+            this.props.change("uom_m2", miliMeter.toFixed(5))
+            this.props.change("uom_mm2", miliMeterSqr.toFixed(5))
+            this.props.change("uom_inch2", inch.toFixed(5))
+
+        })
+    }
 
     /** handle inch change event */
-    uomCalculatorInchMeter = (e) => { this.setState({ inch: e.target.value }) }
+    uomCalculatorInchMeter = (e) => {
+        const value = e.target.value;
+        this.setState({ inch: value }, () => {
+
+            const miliMeter = value / 0.0015500031; //1 square inch = 645.16 square millimeters"
+            const miliMeterSqr = value * 0.00064516; //1 square inch = 0.00064516 m2
+            const feet = value / 144; //1 square inch =0.00694444~ 0.007 ft2
+
+            this.props.change("uom_m2", miliMeter.toFixed(5))
+            this.props.change("uom_mm2", miliMeterSqr.toFixed(5))
+            this.props.change("uom_ft2", feet.toFixed(5))
+
+        })
+    }
 
     /** handle pipe side change event */
     pipeSideHandler = (value) => {
@@ -327,11 +386,6 @@ class AddWeightCosting extends Component {
             weightTitle = '((flangeWidth1 + webWidth+ flangeWidth2) - (1.5 * 2 * thickness)) * thickness * length * (7.85 / 1000000)'
         }
 
-        let costingOption = [{
-            Text: getCostingDetailData.PartDetail.PartNumber,
-            Value: getCostingDetailData.CostingId
-        }]
-
         let partOption = [{
             Text: getCostingDetailData.PartDetail.PartNumber,
             Value: getCostingDetailData.PartDetail.PartId
@@ -352,39 +406,63 @@ class AddWeightCosting extends Component {
                                     <Label>UOM Calculator</Label>
                                     <Row>
                                         <Col md="3">
-                                            <Label>m2</Label>
-                                            <input
-                                                type="number"
-                                                onChange={this.uomCalculatorMeter}
-                                                //value = {this.state.total}
-                                                className='form-control'
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Label>mm2</Label>
-                                            <input
-                                                type="number"
+                                            <Field
+                                                label="m2"
+                                                name={"uom_m2"}
+                                                type="text"
                                                 onChange={this.uomCalculatorMiliMeter}
-                                                //value = {this.state.total}
-                                                className='form-control'
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                title={''}
+                                            //required={true}
+                                            //disabled={true}
+                                            //className=" withoutBorder"
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <Label>ft2</Label>
-                                            <input
-                                                type="number"
+                                            <Field
+                                                label="mm2"
+                                                name={"uom_mm2"}
+                                                type="text"
+                                                onChange={this.uomCalculatorMiliMeterSqr}
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                title={''}
+                                            //required={true}
+                                            //disabled={true}
+                                            //className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label="ft2"
+                                                name={"uom_ft2"}
+                                                type="text"
                                                 onChange={this.uomCalculatorFeetMeter}
-                                                //value = {this.state.total}
-                                                className='form-control'
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                title={''}
+                                            //required={true}
+                                            //disabled={true}
+                                            //className=" withoutBorder"
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <Label>inch2</Label>
-                                            <input
-                                                type="number"
+                                            <Field
+                                                label={'inch2'}
+                                                name={"uom_inch2"}
+                                                type="text"
                                                 onChange={this.uomCalculatorInchMeter}
-                                                //value = {this.state.total}
-                                                className='form-control'
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                title={''}
+                                            //required={true}
+                                            //disabled={true}
+                                            //className=" withoutBorder"
                                             />
                                         </Col>
                                     </Row>
@@ -488,70 +566,63 @@ class AddWeightCosting extends Component {
                                     <Row>
                                         <Col md="3">
                                             <Field
-                                                label={`Costing Id`}
-                                                name={"CostingId"}
+                                                label={'Costing Number'}
+                                                name={"CostingNumber"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={costingOption}
-                                                //onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className="custom-select"
+                                                //validate={[required]}
+                                                component={renderText}
+                                                title={''}
                                                 disabled={true}
+                                            //required={true}
+                                            //className=" withoutBorder"
+                                            />
+                                            <Field
+                                                component={InputHiddenField}
+                                                name="costingId"
+                                                type="hidden"
+                                                placeholder={''}
                                             />
                                         </Col>
                                         <Col md="3">
                                             <Field
-                                                label={`LayoutingId`}
-                                                name={"LayoutingId"}
+                                                label={'Raw Material Name'}
+                                                name={"RawMaterialName"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('layoutType')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className="custom-select"
+                                                //validate={[required]}
+                                                component={renderText}
+                                                title={''}
+                                                disabled={true}
+                                            //required={true}
+                                            //className=" withoutBorder"
+                                            />
+                                            <Field
+                                                component={InputHiddenField}
+                                                name="RawMaterialId"
+                                                type="hidden"
+                                                placeholder={''}
                                             />
                                         </Col>
+                                        <Col md="3">
 
-                                        <Col md="3">
                                             <Field
-                                                label={`RawMaterialId`}
-                                                name={"RawMaterialId"}
+                                                label={'Part Number'}
+                                                name={"PartNumber"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={[]}
-                                                //onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className="custom-select"
+                                                //validate={[required]}
+                                                component={renderText}
+                                                title={''}
                                                 disabled={true}
+                                            //required={true}
+                                            //className=" withoutBorder"
                                             />
-                                        </Col>
-                                        <Col md="3">
                                             <Field
-                                                label={`PartId`}
-                                                name={"PartId"}
-                                                type="text"
+                                                component={InputHiddenField}
+                                                name="PartId"
+                                                type="hidden"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={partOption}
-                                                //onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" custom-select"
-                                                disabled={true}
                                             />
                                         </Col>
                                     </Row>
@@ -1163,14 +1234,22 @@ class AddWeightCosting extends Component {
 */
 function mapStateToProps(state) {
     const { costWorking } = state;
-    const weightFields = selector(state, 'FinishWeight', 'partBlank', 'Thickness', 'Width', 'Length', 'WeightUnitKg', 'OD', 'ID',
-        'LengthSLPIPE', 'LengthOfPipe', 'NumberOfPipe')
 
-    const { weightLayoutType, getCostingDetailData } = costWorking;
-    const initialValues = {
-        //WeightUnitKg: state.WeightUnitKg
+    const { weightLayoutType, getCostingDetailData, weightCostingInfo } = costWorking;
+    let initialValues = {}
+
+    if (weightCostingInfo) {
+        initialValues = {
+            costingId: weightCostingInfo.CostingId,
+            CostingNumber: weightCostingInfo.PartNumber,
+            RawMaterialId: weightCostingInfo.RawMaterialId,
+            RawMaterialName: weightCostingInfo.RawMaterialName,
+            PartId: weightCostingInfo.PartId,
+            PartNumber: weightCostingInfo.PartNumber,
+        }
     }
-    return { weightLayoutType, initialValues, weightFields, getCostingDetailData };
+
+    return { weightLayoutType, initialValues, getCostingDetailData, weightCostingInfo };
 }
 
 /**
@@ -1180,7 +1259,9 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createWeightCalculationCosting, getWeightCalculationLayoutType
+    createWeightCalculationCosting,
+    getWeightCalculationLayoutType,
+    getWeightCalculationCosting,
 })(reduxForm({
     form: 'AddWeightCostingForm',
     enableReinitialize: true,
