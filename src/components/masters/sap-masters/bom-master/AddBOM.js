@@ -117,14 +117,18 @@ class AddBOM extends Component {
             UnitOfMeasurementId: selectedUOM.value,
             AssemblyBOMPartId: assyPartNo.value,
             AssemblyBOMPartNumber: assyPartNo.label,
+            PartId: assyPartNo.value,
+            PartNumber: assyPartNo.label,
             PlantId: plantID,
             CreatedBy: "",
             SerialNumber: 0,
             PartType: materialType.label,
             IsActive: true
         }
+        console.log("formData1", formData)
 
-        if (assyPartNo && ChildPart) {
+        if (assyPartNo.hasOwnProperty('value') && ChildPart.hasOwnProperty('value')) {
+            console.log("if >>>>", assyPartNo, ChildPart)
             if (assyPartNo.value == ChildPart.value) {
                 formData.PartId = assyPartNo.value;
                 formData.PartNumber = assyPartNo.label;
@@ -132,10 +136,8 @@ class AddBOM extends Component {
                 formData.PartId = ChildPart.value;
                 formData.PartNumber = ChildPart.label;
             }
-        } else {
-            formData.PartId = assyPartNo.value;
-            formData.PartNumber = assyPartNo.label;
         }
+        console.log("formData2", formData)
 
         this.props.createBOMAPI(formData, (res) => {
             if (res.data.Result === true) {
@@ -162,7 +164,7 @@ class AddBOM extends Component {
         }
         if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
-                temp.push({ label: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
@@ -217,7 +219,9 @@ class AddBOM extends Component {
     };
 
     onPressAddChildPart = () => {
-        this.setState({ IsChildPart: !this.state.IsChildPart })
+        this.setState({ IsChildPart: !this.state.IsChildPart }, () => {
+            this.setState({ ChildPart: [] })
+        })
     }
 
     /**

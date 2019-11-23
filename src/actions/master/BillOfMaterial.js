@@ -6,6 +6,7 @@ import {
     CREATE_BOP_SUCCESS,
     CREATE_BOP_FAILURE,
     GET_BOM_SUCCESS,
+    UPLOAD_BOM_XLS_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -29,8 +30,9 @@ export function createBOMAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createBOPAPI, data, headers);
+        const request = axios.post(API.createBOMAPI, data, headers);
         request.then((response) => {
+            console.log('res >>', response)
             if (response.data.Result) {
                 dispatch({
                     type: CREATE_BOP_SUCCESS,
@@ -75,5 +77,55 @@ export function getAllBOMAPI(callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method BOM Upload XLS file
+ * @description Upload BOM xls file to create multiple BOM
+ */
+export function uploadBOMxlsAPI(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.uploadBOMxlsAPI, data, headers);
+        request.then((response) => {
+            console.log('res xls >>', response)
+            if (response.data.Result) {
+                dispatch({
+                    type: UPLOAD_BOM_XLS_SUCCESS,
+                    //payload: response.data.Data
+                });
+                callback(response);
+            } else {
+                dispatch({ type: CREATE_BOP_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method deleteBOMAPI
+ * @description delete BOM
+ */
+export function deleteBOMAPI(BomId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteBOMAPI}/${BomId}`, headers)
+            .then((response) => {
+                // getUserProfileAPIForUpdatingProps(dispatch, id, () => {
+                callback(response);
+                // dispatch({ type: DELETE_USER_MEDIA_SUCCESS });
+                // });
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }

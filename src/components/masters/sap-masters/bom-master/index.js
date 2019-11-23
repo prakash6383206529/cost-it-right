@@ -4,7 +4,7 @@ import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
 import AddBOM from './AddBOM';
-import { getAllBOMAPI } from '../../../../actions/master/BillOfMaterial';
+import { getAllBOMAPI, deleteBOMAPI } from '../../../../actions/master/BillOfMaterial';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -73,18 +73,18 @@ class BOMMaster extends Component {
     }
 
     /**
-        * @method confirmDeletePart
-        * @description confirm delete part
+        * @method confirmDeleteBOM
+        * @description confirm delete BOM
         */
-    confirmDeletePart = (index, PartId) => {
-        // this.props.deletePartsAPI(PartId, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-        //         this.props.getAllPartsAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+    confirmDeletePart = (index, BomId) => {
+        this.props.deleteBOMAPI(BomId, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.BOM_DELETE_SUCCESS);
+                this.props.getAllBOMAPI(res => { });
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        });
     }
 
     /**
@@ -115,8 +115,8 @@ class BOMMaster extends Component {
                         {this.props.BOMListing && this.props.BOMListing.length > 0 &&
                             <thead>
                                 <tr>
-                                    <th>{`${CONSTANT.BILL} ${CONSTANT.NUMBER}`}</th>
-                                    <th>{`${CONSTANT.BOM} ${CONSTANT.CODE}`}</th>
+                                    <th>{`BOM Number`}</th>
+                                    {/* <th>{`${CONSTANT.BOM} ${CONSTANT.CODE}`}</th> */}
                                     <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
                                     <th>{`Material Type Name`}</th>
                                     <th>{'Material Description'}</th>
@@ -134,7 +134,7 @@ class BOMMaster extends Component {
                                     return (
                                         <tr key={index}>
                                             <td >{item.BillNumber}</td>
-                                            <td>{item.BillOfMaterialCode}</td>
+                                            {/* <td>{item.BillOfMaterialCode}</td> */}
                                             <td>{item.PartNumber ? item.PartNumber : 'N/A'}</td>
                                             <td>{item.MaterialTypeName}</td>
                                             <td>{item.MaterialDescription}</td>
@@ -177,6 +177,9 @@ function mapStateToProps({ billOfMaterial }) {
 
 
 export default connect(
-    mapStateToProps, { getAllBOMAPI }
+    mapStateToProps, {
+    getAllBOMAPI,
+    deleteBOMAPI
+}
 )(BOMMaster);
 

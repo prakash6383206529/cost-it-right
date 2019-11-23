@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Field, reduxForm } from "redux-form";
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from 'reactstrap';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
@@ -8,7 +9,11 @@ import classnames from 'classnames';
 import CostSummary from './costsummary';
 import CostWorking from './costworking';
 import { getCostingBySupplier } from '../../actions/costing/CostWorking';
+import { fetchPlantDataAPI } from '../../actions/master/Comman';
+import { uploadBOMxlsAPI } from '../../actions/master/BillOfMaterial';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
+import { searchableSelect } from '../../components/layout/FormInputs'
+import DownloadBOMxls from './DownloadBOMxls';
 
 
 class Costing extends Component {
@@ -24,7 +29,8 @@ class Costing extends Component {
             isShowFileUpload: false,
             cols: [],
             rows: [],
-            fileData: []
+            fileData: [],
+            uploadBOMplantID: [],
         }
     }
 
@@ -33,7 +39,7 @@ class Costing extends Component {
      * @description  called before mounting the component
      */
     componentDidMount() {
-
+        this.props.fetchPlantDataAPI(() => { })
     }
 
     /**
@@ -75,11 +81,11 @@ class Costing extends Component {
      * @description called for profile pic change
      */
     fileHandler = event => {
+        const { uploadBOMplantID } = this.state;
         let fileObj = event.target.files[0];
         let fileHeads = [];
         let fileName = fileObj.name;
         let fileType = fileName.substr(fileName.indexOf('.'));
-        console.log('filename', fileName, fileName.substr(fileName.indexOf('.')))
 
         //pass the fileObj as parameter
         if (fileType != '.xls' || fileName != 'BOM.xls') {
@@ -95,11 +101,40 @@ class Costing extends Component {
                     console.log(err);
                 } else {
 
-                    fileHeads = resp.rows[0];
+                    //fileHeads = resp.rows[0];
+                    fileHeads = ["SerialNumber", "BillNumber", "AssemblyBOMPartNumber", "PartNumber", "MaterialDescription",
+                        "MaterialTypeName", "UnitOfMeasurementName", "Quantity", "AssemblyPartNumberMark", "BOMLevel", "EcoNumber",
+                        "RevisionNumber"]
+
+                    // fileHeads = {
+                    //     MaterialTypeName: "string",
+                    //     UnitOfMeasurementName: "string",
+                    //     //AssemblyBOMId: "00000000-0000-0000-0000-000000000000",
+                    //     BillNumber: "string",
+                    //     MaterialDescription: "string",
+                    //     Quantity: 0,
+                    //     AssemblyPartNumberMark: "string",
+                    //     BOMLevel: 0,
+                    //     EcoNumber: "string",
+                    //     RevisionNumber: "string",
+                    //     //MaterialTypeId: "00000000-0000-0000-0000-000000000000",
+                    //     //UnitOfMeasurementId: "00000000-0000-0000-0000-000000000000",
+                    //     //AssemblyBOMPartId: "00000000-0000-0000-0000-000000000000",
+                    //     AssemblyBOMPartNumber: "string",
+                    //     //PartId: "00000000-0000-0000-0000-000000000000",
+                    //     PartNumber: "string",
+                    //     PlantId: "00000000-0000-0000-0000-000000000000",
+                    //     CreatedBy: "",
+                    //     SerialNumber: 0,
+                    //     PartType: "string",
+                    //     IsActive: true
+                    // }
+
                     let fileData = [];
                     resp.rows.map((val, index) => {
+                        console.log("val >>>", val)
                         if (index > 0) {
-                            let obj = {}
+                            let obj = { PlantId: uploadBOMplantID.value }
                             val.map((el, i) => {
                                 obj[fileHeads[i]] = el
                             })
@@ -107,7 +142,6 @@ class Costing extends Component {
                             obj = {}
                         }
                     })
-
                     console.log("customData", fileData)
                     this.setState({
                         cols: resp.cols,
@@ -119,8 +153,38 @@ class Costing extends Component {
         }
     }
 
+    UploadBOMHandler = () => {
+        const { fileData } = this.state;
+        console.log("clicked")
+        this.props.uploadBOMxlsAPI(fileData, () => { });
+    }
+
+    /**
+    * @method BOMplantHandler
+    * @description Used to handle plant
+    */
+    BOMplantHandler = (newValue, actionMeta) => {
+        this.setState({ uploadBOMplantID: newValue });
+    };
+
+    /**
+    * @method renderTypeOfListing
+    * @description Used to show type of listing
+    */
+    renderTypeOfListing = (label) => {
+        const { plantList } = this.props;
+        const temp = [];
+
+        if (label === 'plant') {
+            plantList && plantList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+    }
+
     fileUploadSection = () => {
-        const { isShowFileUpload, rows } = this.state;
+        const { isShowFileUpload, rows, uploadBOMplantID } = this.state;
         return (
             <div>
                 <Row>
@@ -129,17 +193,45 @@ class Costing extends Component {
                     </Col>
                 </Row>
                 {isShowFileUpload && <Row>
-                    <Col md="6" className={'mt20'}>
-                        <input type="file"
+                    <hr />
+                    <Col md="4" className={'mt20'}>
+                        <Field
+                            id="PlantId"
+                            name="PlantId"
+                            type="text"
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            label="Plant"
+                            component={searchableSelect}
+                            //validate={[required, maxLength50]}
+                            options={this.renderTypeOfListing('plant')}
+                            //options={options}
+                            required={true}
+                            handleChangeDescription={this.BOMplantHandler}
+                            valueDescription={this.state.uploadBOMplantID}
+                        />
+                    </Col>
+                    <Col md="3" className={'mt20'}>
+                        <label>Choose BOM upload file</label>
+                        <input
+                            type="file"
                             name="bomFile"
                             onChange={this.fileHandler}
                             //accept="xls/*"
                             className="" />
-                        <button onClick={this.onUploadFile} className={'btn btn-primary pull-right'}>Save</button>
                     </Col>
-                    <Col md="6" className={'mt20'}>
-                        <button className={'btn btn-primary pull-right'}>BOM Format</button>
+                    <Col md="2" className={'mt40'}>
+                        <button
+                            onClick={this.UploadBOMHandler}
+                            disabled={uploadBOMplantID && uploadBOMplantID.hasOwnProperty('value') ? false : true}
+                            className={'btn btn-primary pull-right'}>Save</button>
                     </Col>
+                    <Col md="3" className={'mt40'}>
+                        <DownloadBOMxls />
+                        {/* <button
+                            onClick={this.downloadBOM}
+                            className={'btn btn-primary pull-right'}>Download BOM Format</button> */}
+                    </Col>
+                    <hr />
                 </Row>}
             </div>
         )
@@ -202,12 +294,20 @@ class Costing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-    return {}
+function mapStateToProps({ comman }) {
+    const { plantList } = comman;
+    return { plantList }
 }
 
 
 export default connect(
-    mapStateToProps, { getCostingBySupplier }
-)(Costing);
+    mapStateToProps, {
+    getCostingBySupplier,
+    fetchPlantDataAPI,
+    uploadBOMxlsAPI,
+}
+)(reduxForm({
+    form: 'CostingForm',
+    enableReinitialize: true,
+})(Costing));
 

@@ -103,8 +103,10 @@ export const API = {
   deleteSupplierAPI: `${BASE_URL}/supplier/delete`,
 
   //Api's for bill of materail
-  createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/add-bill-of-material`,
+  createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
   getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-materials`,
+  uploadBOMxlsAPI: `${BASE_URL}/masters-part-bill-of-material/upload-bill-of-material`,
+  deleteBOMAPI: `${BASE_URL}/masters-part-bill-of-material/delete-bill-of-material`,
 
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
@@ -280,6 +282,7 @@ export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
 export const CREATE_BOM_FAILURE = 'CREATE_BOM_FAILURE';
 export const GET_BOM_SUCCESS = 'GET_BOM_SUCCESS';
 export const GET_BOM_FAILURE = 'GET_BOM_FAILURE';
+export const UPLOAD_BOM_XLS_SUCCESS = 'UPLOAD_BOM_XLS_SUCCESS';
 
 //for BOP master
 export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';

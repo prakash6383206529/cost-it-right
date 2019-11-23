@@ -52,6 +52,7 @@ export const MESSAGES = {
   DELETE_INTEREST_RATE_SUCCESS: 'Supplier interest rate deleted successfully',
   UPDATE_INTEREST_RATE_SUCESS: 'Supplier interest rate updated successfully',
   ADD_PART_WITH_SUPPLIER_SUCCESS: 'Supplier has been added successfully.',
-  NEW_COSTING_CREATE_SUCCESS: 'New sheetmetal costing created successfully'
+  NEW_COSTING_CREATE_SUCCESS: 'New sheetmetal costing created successfully',
+  BOM_DELETE_SUCCESS: 'BOM has been deleted.',
 };
 
