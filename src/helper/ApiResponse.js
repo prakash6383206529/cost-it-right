@@ -789,23 +789,23 @@ export function formatGetMessageDetails(result) {
     if (result && result !== undefined) {
         result.map((data, index) => {
             console.log('data: from us ', data);
-                const actObj = {
-                    id : index,
-                    // id: data.receiverUserId,
-                    text: data.message,
-                    createdAt: new Date(data.messageDate),
-                    user: {
-                        id: data.senderUserId,
-                        name: data.name,
+            const actObj = {
+                id: index,
+                // id: data.receiverUserId,
+                text: data.message,
+                createdAt: new Date(data.messageDate),
+                user: {
+                    id: data.senderUserId,
+                    name: data.name,
 
-                        //avatar: this.props.user.avatar  , 
-                        //'https://placeimg.com/140/140/any',
-                    },
-                    chatId: data._id
-                }
-                userMessage.push(actObj);
-                console.log('actObj: ', actObj);
-            });
+                    //avatar: this.props.user.avatar  , 
+                    //'https://placeimg.com/140/140/any',
+                },
+                chatId: data._id
+            }
+            userMessage.push(actObj);
+            console.log('actObj: ', actObj);
+        });
         userMessageDataObject = userMessage;
     }
     return userMessageDataObject;
@@ -821,7 +821,7 @@ export function formatCreateResumeBuilderResult() {
         gender: '',
         birthDate: '',
         contactNumber: '',
-        unionStatus:'',
+        unionStatus: '',
         height: '',
         weight: '',
         address: '',
@@ -831,10 +831,10 @@ export function formatCreateResumeBuilderResult() {
         country: '',
         aboutSummary: '',
         categories: [],
-        appearance  : [],
-        sport   : [],
-        performance : [],
-        links : [],
+        appearance: [],
+        sport: [],
+        performance: [],
+        links: [],
         award: [],
         languages: [],
         accents: [],

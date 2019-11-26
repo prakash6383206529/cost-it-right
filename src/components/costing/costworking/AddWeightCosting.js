@@ -106,46 +106,7 @@ class AddWeightCosting extends Component {
         });
     }
 
-    /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-    onSubmit = (values) => {
-        console.log('value', values);
 
-        /** Update detail of the existing UOM  */
-        // if (this.props.isEditFlag) {
-        //     const { uomId } = this.props;
-        //     this.setState({ isSubmitted: true });
-        //     let formData = {
-        //         Name: values.Name,
-        //         Title: values.Title,
-        //         Description: values.Description,
-        //         Id: uomId,
-        //         IsActive: true,
-        //     }
-        //     this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
-        //         if (res.data.Result) {
-        //             toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
-        //             this.toggleModel();
-        //             this.props.getUnitOfMeasurementAPI(res => { });
-        //         } else {
-        //             toastr.error(MESSAGES.SOME_ERROR);
-        //         }
-        //     });
-        // } else {
-        //      /** Add detail for creating new UOM  */
-        //     this.props.createWeightCalculationCosting(values, (res) => {
-        //         if (res.data.Result === true) {
-        //             toastr.success(MESSAGES.UOM_ADD_SUCCESS);
-        //             this.toggleModel();
-        //             this.props.getUnitOfMeasurementAPI(res => { });
-        //         } else {
-        //             toastr.error(res.data.message);
-        //         }
-        //     });
-        // }
-    }
     /**
     * @method handleCalculation
     * @description  handle all calculation
@@ -368,6 +329,94 @@ class AddWeightCosting extends Component {
     }
 
     /**
+    * @method onSubmit
+    * @description Used to Submit the form
+    */
+    onSubmit = (values) => {
+        const { weightType, grossWeight, grossWeightPipe, grossWeightOther, noOfPartsBlank, disabledSurfaceArea,
+            pipeWeight, numberOfPipe, weightOther } = this.state;
+        console.log('value', values);
+
+        let ActualGrossWight = '';
+
+        if (weightType === 'PIPE') {
+            ActualGrossWight = grossWeightPipe;
+        } else if (weightType === 'BRACKET_PART') {
+            ActualGrossWight = grossWeight;
+        } else {
+            ActualGrossWight = grossWeightOther;
+        }
+
+        let weightCalculationData = {
+            CostingId: values.costingId,
+            LayoutingId: weightType,
+            RawMaterialId: values.RawMaterialId,
+            PartId: values.PartId,
+            GrossWeight: ActualGrossWight,
+            FinishWeight: values.FinishWeight,
+            WeightSpecification: "",
+            NoOfPartsAndBlank: noOfPartsBlank,
+            SurfaceArea: values.SurfaceArea,
+            CalculateSurfaceArea: disabledSurfaceArea,
+            SurfaceAreaSide: 0,   //TODO discuss later about key
+            OverlapArea: values.OverlapArea,
+            NetSurfaceArea: values.NetSurfaceArea,
+            CalculateNetSurfaceArea: 0,  //TODO discuss later about key
+            Thickness: values.Thickness,
+            Width: values.Width,
+            Length: values.Length,
+            OD: values.OD,
+            ID: values.ID,
+            LengthOfPipe: values.LengthSLPIPE,
+            NumberOfPipe: numberOfPipe,
+            TotalWeight: pipeWeight,
+            SizeName: "",   //TODO discuss later about key
+            FlangeWidthOne: values.FlangeWidthOne,
+            FlangeWidthTwo: values.FlangeWidthTwo,
+            WebWidth: values.WebWidth,
+            Depth: values.Depth,
+            WeightPerPice: values.WeightPerPc,
+            WeightUnitKg: weightOther,
+            IsActive: true,
+            CreatedDate: "",
+            CreatedBy: "",
+            ModifiedBy: ""
+        }
+
+        /** Update detail of the existing UOM  */
+        // if (this.props.isEditFlag) {
+        //     const { uomId } = this.props;
+        //     this.setState({ isSubmitted: true });
+        //     let formData = {
+        //         Name: values.Name,
+        //         Title: values.Title,
+        //         Description: values.Description,
+        //         Id: uomId,
+        //         IsActive: true,
+        //     }
+        //     this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
+        //         if (res.data.Result) {
+        //             toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
+        //             this.toggleModel();
+        //             this.props.getUnitOfMeasurementAPI(res => { });
+        //         } else {
+        //             toastr.error(MESSAGES.SOME_ERROR);
+        //         }
+        //     });
+        // } else {
+        /** Add detail for creating new UOM  */
+        this.props.createWeightCalculationCosting(weightCalculationData, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.UOM_ADD_SUCCESS);
+                this.toggleModel();
+            } else {
+                toastr.error(res.data.message);
+            }
+        });
+        //}
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
@@ -385,11 +434,6 @@ class AddWeightCosting extends Component {
         } else if (weightType == 'Z_Sec') {
             weightTitle = '((flangeWidth1 + webWidth+ flangeWidth2) - (1.5 * 2 * thickness)) * thickness * length * (7.85 / 1000000)'
         }
-
-        let partOption = [{
-            Text: getCostingDetailData.PartDetail.PartNumber,
-            Value: getCostingDetailData.PartDetail.PartId
-        }]
 
         return (
             <Container className="top-margin">
@@ -911,11 +955,8 @@ class AddWeightCosting extends Component {
                                                 </Col>
                                             </Row>
                                         </Col>}
-
                                     <Row>
                                     </Row>
-
-
 
                                     {(weightType === 'PIPE') &&
                                         <Row>

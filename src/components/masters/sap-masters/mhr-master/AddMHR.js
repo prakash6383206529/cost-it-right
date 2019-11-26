@@ -367,22 +367,19 @@ class AddMHR extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-
-                                        <Col>
-                                            {/* <Field
-                                                label="SupplierType"
-                                                name={"SupplierType"}
+                                        <Col md="6">
+                                            <Field
+                                                label="Machine Rate"
+                                                name={"BasicMachineRate"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
-                                            /> */}
-
+                                            />
                                         </Col>
-
                                     </Row>
 
 

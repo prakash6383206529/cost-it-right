@@ -78,7 +78,7 @@ class AddRawMaterialCosting extends Component {
     }
 
     rawMaterialHandler = (item) => {
-        const { isRMEditFlag, costingId } = this.props;
+        const { isRMEditFlag, costingId, selectedIndex, partId, PartNumber } = this.props;
         const requestData = {
             CostingId: costingId,
             RawMaterialDetailId: item.RawMaterialDetailsId,
@@ -86,6 +86,8 @@ class AddRawMaterialCosting extends Component {
             GrandTotal: item.BasicRate * item.Quantity,
             RawMaterialRate: item.BasicRate,
             RawMaterialScrapRate: item.ScrapRate,
+            PartId: partId,
+            PartNumber: PartNumber,
             CreatedBy: ""
         }
         // if (isRMEditFlag) {
@@ -100,16 +102,16 @@ class AddRawMaterialCosting extends Component {
         //         CreatedBy: ""
         //     }
         // }
-        this.props.addCostingRawMaterial(requestData, res => {
-            this.props.getCostingDetailsById(costingId, true, res => {
-                // this.setState({
-                //     isCollapes: true,
-                //     isEditFlag: true,
-                //     isNewCostingFlag: false
-                // })
-                this.props.rawMaterialForCosting(item);
-                this.toggleModel()
-            })
+        this.props.addCostingRawMaterial(requestData, selectedIndex, res => {
+            // this.props.getCostingDetailsById(costingId, true, res => {
+            //     // this.setState({
+            //     //     isCollapes: true,
+            //     //     isEditFlag: true,
+            //     //     isNewCostingFlag: false
+            //     // })
+            //     this.props.rawMaterialForCosting(item);
+            this.toggleModel()
+            // })
         })
     }
 

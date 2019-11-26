@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input, Table } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText, renderNumberInputField, renderSelectField } from "../../layout/FormInputs";
-import { getOtherOperationList, addCostingOtherOperation, getCostingDetailsById } from '../../../actions/costing/CostWorking';
+import { getMHRCostingList, addMHRForProcess, getCostingDetailsById } from '../../../actions/costing/CostWorking';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -24,7 +24,7 @@ class AddMHRCosting extends Component {
     */
     componentDidMount() {
         const { supplierId, costingId } = this.props;
-        this.props.getOtherOperationList(supplierId, res => { });
+        this.props.getMHRCostingList(supplierId, res => { });
     }
 
     /**
@@ -35,27 +35,29 @@ class AddMHRCosting extends Component {
         this.props.onCancel();
     }
 
-    otherOperationHandler = (item) => {
-        const { costingId } = this.props;
-        const requestData = {
-            CostingId: costingId,
-            BoughtOutPartId: item.BoughtOutPartId,
-            GrandTotal: item.BasicRate * item.Quantity,
-            BoughtOutParRate: item.BasicRate,
-            AssyBoughtOutParRate: item.BasicRate,
-            CreatedBy: ""
-        }
+    addMHRHandler = (item) => {
+        //this.props.addMHRitemToProcess(item)
+        const { costingId, supplierId } = this.props;
+        this.props.setRowData(item)
+        // const requestData = {
+        //     CostingId: costingId,
+        //     BoughtOutPartId: item.BoughtOutPartId,
+        //     GrandTotal: item.BasicRate * item.Quantity,
+        //     BoughtOutParRate: item.BasicRate,
+        //     AssyBoughtOutParRate: item.BasicRate,
+        //     CreatedBy: ""
+        // }
 
-        this.props.addCostingOtherOperation(requestData, res => {
-            this.props.getCostingDetailsById(costingId, true, res => {
-                // this.setState({
-                //     isCollapes: true,
-                //     isEditFlag: true,
-                //     isNewCostingFlag: false
-                // })
-                this.toggleModel()
-            })
-        })
+        //this.props.addMHRForProcess(item, res => {
+        //this.props.getCostingDetailsById(costingId, true, res => {
+        // this.setState({
+        //     isCollapes: true,
+        //     isEditFlag: true,
+        //     isNewCostingFlag: false
+        // })
+        this.toggleModel()
+        //})
+        //})
     }
 
 
@@ -64,7 +66,7 @@ class AddMHRCosting extends Component {
     * @description Renders the component
     */
     render() {
-        const { otherOperationListData } = this.props;
+        const { getMHRCostingListData } = this.props;
 
         return (
             <Container>
@@ -77,31 +79,39 @@ class AddMHRCosting extends Component {
                                     <thead>
                                         <tr>
                                             <th>{``}</th>
-                                            <th>{`Process Code`}</th>
-                                            <th>{`Supplier`}</th>
-                                            <th>{`Process Operation`}</th>
-                                            <th>{`UOM`}</th>
                                             <th>{`Technology`}</th>
-                                            <th>{`Rate`}</th>
+                                            <th>{`Supplier Code`}</th>
+                                            <th>{`Supplier Name`}</th>
+                                            <th>{`Machine No.`}</th>
+                                            <th>{`Description`}</th>
+                                            <th>{`Machine Capacity`}</th>
+                                            <th>{`Machine Rate`}</th>
+                                            <th>{`UOM`}</th>
+                                            <th>{`Initiator`}</th>
+                                            <th>{`Created On`}</th>
                                         </tr>
                                     </thead>
                                     <tbody >
-                                        {/* {otherOperationListData && otherOperationListData.map((item, index) => {
+                                        {getMHRCostingListData && getMHRCostingListData.map((item, index) => {
                                             return (
                                                 <tr row={index} >
-                                                    <td><div onClick={() => this.otherOperationHandler(item)}>{'Add'}</div></td>
-                                                    <td>{item.OperationCode}</td>
-                                                    <td>{item.SupplierName}</td>
-                                                    <td>{item.OtherOperationName}</td>
-                                                    <td>{item.UnitOfMeasurementName}</td>
+                                                    <td><div onClick={() => this.addMHRHandler(item)}>{'Add'}</div></td>
                                                     <td>{item.TechnologyName}</td>
-                                                    <td>{item.Rate}</td>
+                                                    <td>{'N/A'}</td> { /** TODO Supplier code need to add */}
+                                                    <td>{item.SupplierName}</td>
+                                                    <td>{item.MachineNumber}</td>
+                                                    <td>{item.Description}</td>
+                                                    <td>{item.MachineTonnage}</td>
+                                                    <td>{item.BasicMachineRate}</td>
+                                                    <td>{item.UnitOfMeasurementName}</td>
+                                                    <td>{item.CreatedBy}</td>
+                                                    <td>{item.CreatedDate}</td>
                                                 </tr>
                                             )
                                         })
-                                        } */}
+                                        }
                                     </tbody>
-                                    {/* {this.props.otherOperationListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />} */}
+                                    {this.props.getMHRCostingListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                 </Table>
                             </div>
                         </Row>
@@ -118,9 +128,9 @@ class AddMHRCosting extends Component {
 * @param {*} state
 */
 function mapStateToProps({ costWorking, state }) {
-    const { otherOperationListData } = costWorking;
+    const { getMHRCostingListData } = costWorking;
 
-    return { otherOperationListData };
+    return { getMHRCostingListData };
 }
 
 /**
@@ -130,8 +140,8 @@ function mapStateToProps({ costWorking, state }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getOtherOperationList,
-    addCostingOtherOperation,
+    getMHRCostingList,
+    addMHRForProcess,
     getCostingDetailsById
 })(reduxForm({
     form: 'AddMHRCosting',

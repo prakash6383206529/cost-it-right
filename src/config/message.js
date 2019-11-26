@@ -54,5 +54,6 @@ export const MESSAGES = {
   ADD_PART_WITH_SUPPLIER_SUCCESS: 'Supplier has been added successfully.',
   NEW_COSTING_CREATE_SUCCESS: 'New sheetmetal costing created successfully',
   BOM_DELETE_SUCCESS: 'BOM has been deleted.',
+  WEIGHT_ADD_SUCCESS: 'Weight specification added successfully',
 };
 

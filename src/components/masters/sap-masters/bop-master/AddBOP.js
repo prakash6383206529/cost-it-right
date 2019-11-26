@@ -376,8 +376,8 @@ class AddBOP extends Component {
                                                 name={"CategoryId"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                required={true}
+                                                //validate={[required]}
+                                                //required={true}
                                                 options={this.renderTypeOfListing('category')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}

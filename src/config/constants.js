@@ -198,6 +198,10 @@ export const API = {
   addCostingBoughtOutPart: `${BASE_URL}/costing-sheet-metal/add-costing-bought-out-part`,
   getOtherOperationList: `${BASE_URL}/costing-sheet-metal/get-other-operation-by-supplier`,
   addCostingOtherOperation: `${BASE_URL}/costing-sheet-metal/add-costing-other-operations`,
+  getMHRCostingList: `${BASE_URL}/costing-sheet-metal/get-machine-hour-rate-by-supplier`,
+  getProcessesSelectList: `${BASE_URL}/configuration/select-list-get-process`,
+  saveProcessCosting: `${BASE_URL}/costing-sheet-metal/save-costing-process`,
+
 
   //cost summary 
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -390,3 +394,7 @@ export const ADD_OTHER_OPERATION_COSTING_SUCCESS = 'ADD_OTHER_OPERATION_COSTING_
 export const ADD_UNIT_OTHER_OPERATION_COSTING_DATA = 'ADD_UNIT_OTHER_OPERATION_COSTING_DATA';
 
 export const GET_COSTING_BY_COSTINGID = 'GET_COSTING_BY_COSTINGID';
+export const GET_MHR_LIST_SUCCESS = 'GET_MHR_LIST_SUCCESS';
+export const ADD_MHR_FOR_PROCESS_GRID_DATA = 'ADD_MHR_FOR_PROCESS_GRID_DATA';
+export const GET_PROCESSES_LIST_SUCCESS = 'GET_PROCESSES_LIST_SUCCESS';
+export const SAVE_PROCESS_COSTING_SUCCESS = 'SAVE_PROCESS_COSTING_SUCCESS';

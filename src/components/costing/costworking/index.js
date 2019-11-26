@@ -27,11 +27,11 @@ class CostWorking extends Component {
             costingId: '',
             isRMEditFlag: false,
             isOpenBOPModal: false,
-            isOpenProcessModal: false,
             isOpenProcessTable: false,
-            rowsCount: [1],
             isShowOtherOperation: false,
-            isShowProcessGrid: false
+            isShowProcessGrid: false,
+            selectedIndex: '',
+            PartNumber: '',
         }
     }
 
@@ -40,7 +40,12 @@ class CostWorking extends Component {
      * @description  called before mounting the component
      */
     componentDidMount() {
-
+        const { activeCostingListData } = this.props;
+        if (activeCostingListData && activeCostingListData.PartDetail) {
+            this.setState({
+                PartNumber: activeCostingListData.PartDetail.PartNumber
+            })
+        }
     }
 
     /**
@@ -59,8 +64,12 @@ class CostWorking extends Component {
      * @method openModel
      * @description  used to open filter form 
      */
-    openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
+    openModel = (selectedIndex) => {
+        this.setState({
+            isOpen: true,
+            isEditFlag: false,
+            selectedIndex: selectedIndex,
+        })
     }
 
     /**
@@ -68,10 +77,13 @@ class CostWorking extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
+        const { costingId } = this.state;
         this.setState({
             isOpen: false,
             isOpenRMmodel: false,
             isOpenBOPModal: false
+        }, () => {
+            this.props.getCostingDetailsById(costingId, true, res => { })
         });
     }
 
@@ -148,10 +160,11 @@ class CostWorking extends Component {
      * @method openRMModel
      * @description  used to open openRMModel 
      */
-    openRMModel = () => {
+    openRMModel = (selectedIndex) => {
         this.setState({
             isOpenRMmodel: !this.state.isOpenRMmodel,
-            isRMEditFlag: this.props.getCostingDetailData.RawMaterialDetails.length > 0 ? true : false,
+            selectedIndex: selectedIndex,
+            //isRMEditFlag: this.props.getCostingDetailData.RawMaterialDetails.length > 0 ? true : false,
         })
     }
 
@@ -159,19 +172,10 @@ class CostWorking extends Component {
      * @method openBOPModal
      * @description  used to open openBOPModal 
      */
-    openBOPModal = () => {
+    openBOPModal = (selectedIndex) => {
         this.setState({
             isOpenBOPModal: !this.state.isOpenBOPModal,
-        })
-    }
-
-    /**
-     * @method openProcessModal
-     * @description  used to open openProcessModal 
-     */
-    openProcessModal = () => {
-        this.setState({
-            isOpenProcessModal: !this.state.isOpenProcessModal,
+            selectedIndex: selectedIndex,
         })
     }
 
@@ -189,9 +193,13 @@ class CostWorking extends Component {
      * @method toggleProcessGrid
      * @description  used to toggle OtherOperation
      */
-    toggleProcessGrid = () => {
+    toggleProcessGrid = (selectedIndex) => {
+        const { costingId } = this.state;
         this.setState({
-            isShowProcessGrid: !this.state.isShowProcessGrid
+            isShowProcessGrid: !this.state.isShowProcessGrid,
+            selectedIndex: selectedIndex,
+        }, () => {
+            this.props.getCostingDetailsById(costingId, true, res => { })
         })
     }
 
@@ -201,11 +209,13 @@ class CostWorking extends Component {
     */
     render() {
         const { isOpen, isCollapes, isEditFlag, isNewCostingFlag, isOpenRMmodel, costingId,
-            isRMEditFlag, isOpenBOPModal, isBOPEditFlag, isOpenProcessModal, isOpenProcessTable,
-            rowsCount, isShowOtherOperation, isShowProcessGrid } = this.state;
+            isRMEditFlag, isOpenBOPModal, isBOPEditFlag, isOpenProcessTable,
+            selectedIndex, isShowOtherOperation, isShowProcessGrid } = this.state;
 
-        const { activeCostingListData, supplierId, plantId, getCostingData, costingGridRMData,
+        const { activeCostingListData, supplierId, plantId, partId, getCostingData, costingGridRMData,
             getCostingDetailData, BoughtOutPartDetails } = this.props;
+
+        const PartNumber = activeCostingListData && activeCostingListData.PartDetail.PartNumber;
 
         return (
             <div>
@@ -255,7 +265,7 @@ class CostWorking extends Component {
                         <Label><th>{`Cost Working With : `}{isEditFlag ? getCostingData && getCostingData.DisplayCreatedDate : ''}</th></Label>
 
                         {/* Close below table in case process table open */}
-                        {(!isShowProcessGrid && !isShowOtherOperation) && activeCostingListData &&
+                        {(!isShowProcessGrid && !isShowOtherOperation) && getCostingDetailData &&
                             <div className={'create-costing-grid'}>
                                 <Table className="table table-striped" bordered>
                                     <thead>
@@ -285,35 +295,39 @@ class CostWorking extends Component {
                                         </tr>
                                     </thead>
                                     <tbody >
-                                        <tr >
-                                            <td>{activeCostingListData.PartDetail.BillOfMaterialLevel}</td>
-                                            <td>{activeCostingListData.PartDetail.PartNumber}</td>
-                                            <td>{activeCostingListData.PartDetail.PartNumber}</td>
-                                            <td>{activeCostingListData.PartDetail.PartDescription}</td>
-                                            <td>{''}</td>
-                                            <td>{''}</td>
-                                            {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
-                                            <td><button onClick={this.openRMModel}>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
-                                            <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
-                                            <td>{getCostingDetailData && getCostingDetailData.RawMaterialDetails.length > 0 ? getCostingDetailData.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
+                                        {getCostingDetailData && getCostingDetailData.AssemblyPartDetail.map((data, index) => {
+                                            return (
+                                                <tr >
+                                                    <td>{data.BOMLevel}</td>
+                                                    <td>{data.PartNumber}</td>
+                                                    <td>{data.PartNumber}</td>
+                                                    <td>{data.PartDescription}</td>
+                                                    <td>{''}</td>
+                                                    <td>{data.Quantity}</td>
+                                                    {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
+                                                    <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
+                                                    <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
+                                                    <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
 
-                                            <td><button onClick={this.openModel}>Add</button></td>
-                                            <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
-                                            <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
-                                            <td>{getCostingDetailData && getCostingDetailData.WeightCalculationDetails.length > 0 ? 'Dummy 1' : '0'}</td>
+                                                    <td><button onClick={() => this.openModel(index)}>Add</button></td>
+                                                    <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].GrossWeight : '0'}</td>
+                                                    <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : '0'}</td>
+                                                    <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].WeightSpecification : '0'}</td>
 
-                                            <td><button onClick={this.openBOPModal}>{getCostingDetailData && getCostingDetailData.BoughtOutPartDetails.length > 0 ? getCostingDetailData.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
-                                            <td>{getCostingDetailData && getCostingDetailData.BoughtOutPartDetails.length > 0 ? getCostingDetailData.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
+                                                    <td><button onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
+                                                    <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
 
-                                            <td><button onClick={this.toggleProcessGrid}>Add</button></td>
-                                            <td>{isNewCostingFlag ? '0' : ''}</td>
-                                            <td>{isNewCostingFlag ? '0' : ''}</td>
+                                                    <td><button onClick={() => this.toggleProcessGrid(index)}>Add</button></td>
+                                                    <td>{data && data.ProcessDetails.length > 0 ? '0' : '0'}</td>
+                                                    <td>{data && data.ProcessDetails.length > 0 ? '0' : '0'}</td>
 
-                                            <td><button onClick={this.toggleOtherOperation}>Add</button></td>
-                                            <td>{isNewCostingFlag ? '0' : ''}</td>
-                                            <td>{isNewCostingFlag ? '0' : ''}</td>
-                                            <td>{isNewCostingFlag ? '0' : ''}</td>
-                                        </tr>
+                                                    <td><button onClick={this.toggleOtherOperation}>Add</button></td>
+                                                    <td>{data && data.OtherOperationDetails.length > 0 ? '0' : '0'}</td>
+                                                    <td>{data && data.OtherOperationDetails.length > 0 ? '0' : '0'}</td>
+                                                    <td>{data && data.OtherOperationDetails.length > 0 ? '0' : '0'}</td>
+                                                </tr>
+                                            )
+                                        })}
                                     </tbody>
                                 </Table>
                             </div>}
@@ -325,13 +339,19 @@ class CostWorking extends Component {
                                 onCancelOperationGrid={this.toggleOtherOperation}
                                 supplierId={supplierId}
                                 costingId={costingId}
-                                partName={getCostingDetailData.PartDetail.PartNumber} />}
+                                partId={partId}
+                                PartNumber={PartNumber}
+                                partName={PartNumber}
+                            />}
 
                         {isShowProcessGrid &&
                             <ProcessGrid
                                 onCancelProcessGrid={this.toggleProcessGrid}
                                 supplierId={supplierId}
                                 costingId={costingId}
+                                PartId={partId}
+                                PartNumber={PartNumber}
+                                selectedIndex={selectedIndex}
                             />}
 
                     </Col>
@@ -341,6 +361,9 @@ class CostWorking extends Component {
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         costingId={costingId}
+                        partId={partId}
+                        selectedIndex={selectedIndex}
+                        PartNumber={PartNumber}
                     />
                 )}
                 {isOpenRMmodel && (
@@ -349,6 +372,9 @@ class CostWorking extends Component {
                         onCancel={this.onCancel}
                         supplierId={supplierId}
                         costingId={costingId}
+                        partId={partId}
+                        PartNumber={PartNumber}
+                        selectedIndex={selectedIndex}
                         isRMEditFlag={isRMEditFlag}
                     />
                 )}
@@ -358,6 +384,9 @@ class CostWorking extends Component {
                         onCancel={this.onCancel}
                         supplierId={supplierId}
                         costingId={costingId}
+                        PartId={partId}
+                        PartNumber={PartNumber}
+                        selectedIndex={selectedIndex}
                     //isBOPEditFlag={isBOPEditFlag}
                     />
                 )}

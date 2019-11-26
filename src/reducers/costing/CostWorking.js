@@ -14,11 +14,16 @@ import {
     ADD_BOP_COSTING_SUCCESS,
     GET_OTHER_OPERATION_LIST_SUCCESS,
     ADD_OTHER_OPERATION_COSTING_SUCCESS,
-    ADD_UNIT_OTHER_OPERATION_COSTING_DATA
+    ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
+    GET_MHR_LIST_SUCCESS,
+    ADD_MHR_FOR_PROCESS_GRID_DATA,
+    GET_PROCESSES_LIST_SUCCESS,
+    SAVE_PROCESS_COSTING_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
-    costingGridOtherOperationData: []
+    costingGridOtherOperationData: [],
+    addMHRForProcessGrid: []
 };
 
 const otherOpsObj = {
@@ -104,11 +109,17 @@ export default function CostWorkingReducer(state = initialState, action) {
                 otherOperationListData: action.payload
             };
         case ADD_RAW_MATERIAL_COSTING_SUCCESS:
+            const data = state.getCostingDetailData;
+
+            if (data) {
+                data.AssemblyPartDetail[action.selectedIndex].RawMaterialDetails[0] = action.payload;
+            }
+
             return {
                 ...state,
                 loading: false,
                 error: true,
-                costingGridRMData: action.payload
+                getCostingDetailData: data
             };
         case ADD_BOP_COSTING_SUCCESS:
             return {
@@ -150,6 +161,33 @@ export default function CostWorkingReducer(state = initialState, action) {
                 getCostingDetailData: action.payload
             };
         case UPDATE_COSTING_RM_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            };
+        case GET_MHR_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                getMHRCostingListData: action.payload
+            };
+        case ADD_MHR_FOR_PROCESS_GRID_DATA:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                addMHRForProcessGrid: action.payload
+            };
+        case GET_PROCESSES_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                processSelectList: action.payload
+            };
+        case SAVE_PROCESS_COSTING_SUCCESS:
             return {
                 ...state,
                 loading: false,

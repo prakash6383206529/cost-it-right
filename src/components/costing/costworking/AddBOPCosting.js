@@ -36,13 +36,15 @@ class AddBOPCosting extends Component {
     }
 
     bopHandler = (item) => {
-        const { isRMEditFlag, costingId } = this.props;
+        const { isRMEditFlag, costingId, PartId, PartNumber } = this.props;
         const requestData = {
             CostingId: costingId,
             BoughtOutPartId: item.BoughtOutPartId,
             GrandTotal: item.BasicRate * item.Quantity,
             BoughtOutParRate: item.BasicRate,
             AssyBoughtOutParRate: item.BasicRate,
+            PartId: PartId,
+            PartNumber: PartNumber,
             CreatedBy: ""
         }
 

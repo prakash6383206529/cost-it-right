@@ -2,6 +2,7 @@ import React from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import moment from 'moment';
+import PropTypes from 'prop-types'
 import "./formInputs.css";
 
 /*
@@ -636,4 +637,108 @@ export const searchableSelect = ({ input, label, required, handleChangeDescripti
       {/* <FormHelperText>{touched && error}</FormHelperText> */}
     </div>
   )
+}
+
+
+
+
+
+export const RFReactSelect = ({ input, labelKey, label, mendatory, disabled, isLoading, valueKey, options, onChangeHsn, onMaterialChange, rowIndex, selType, meta: { touched, error }, multi, className }) => {
+  const { name, value, required, onBlur, onChange, onFocus } = input;
+  const transformedValue = transformValue(value, options, multi, valueKey);
+  let isDisable = (disabled && disabled == true) ? true : false;
+  let loader = (isLoading && isLoading == true) ? true : false;
+  return (
+    <div>
+      {label && <label>{label}{mendatory && <span className="asterisk-required">*</span>}</label>}
+      <Select
+        placeholder={'Select'}
+        valueKey={valueKey}
+        labelKey={labelKey}
+        name={name}
+        required={required}
+        value={transformedValue}
+        disabled={isDisable}
+        matchProp={'any'}
+        multi={multi}
+        isLoading={loader}
+        options={options}
+        onChange={multi
+          ? multiChangeHandler(onChange, valueKey)
+          : singleChangeHandler(onChange, onChangeHsn, onMaterialChange, rowIndex, valueKey, selType)
+        }
+        onBlur={() => onBlur(value)}
+        onFocus={onFocus}
+        className={className}
+      />
+      {touched && error}
+    </div>
+  )
+}
+
+RFReactSelect.defaultProps = {
+  multi: false,
+  className: ""
+}
+
+RFReactSelect.propTypes = {
+  input: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    //value: PropTypes.string.isRequired,
+    onBlur: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onFocus: PropTypes.func.isRequired,
+  }).isRequired,
+  options: PropTypes.array.isRequired,
+  multi: PropTypes.bool,
+  className: PropTypes.string
+};
+
+
+/**
+* onChange from Redux Form Field has to be called explicity.
+*/
+function singleChangeHandler(func, getHsnDetail, onMaterialChange, rowIndex, key, type) {
+  return function handleSingleChange(value) {
+    func(value ? value[key] : '');
+
+    if (onMaterialChange != undefined) {
+
+      setTimeout(function () {
+        onMaterialChange(value ? value : '', rowIndex);
+      }, 1000)
+
+    }
+
+    if (getHsnDetail != undefined) {
+      if (type != undefined) {
+        setTimeout(function () {
+          getHsnDetail(value ? value[key] : '', rowIndex, type);
+        }, 1000)
+      } else {
+        getHsnDetail(value ? value[key] : '');
+      }
+    }
+  };
+}
+
+/**
+* onBlur from Redux Form Field has to be called explicity.
+*/
+function multiChangeHandler(func, key) {
+  return function handleMultiHandler(values) {
+    func(values.map(value => value[key]));
+  };
+}
+
+function transformValue(value, options, multi, key) {
+  if (multi && typeof value === 'string') return []
+
+  const filteredOptions = options.filter(option => {
+    return multi
+      ? value.indexOf(option[key]) !== -1
+      : option[key] === value
+  });
+
+  return multi ? filteredOptions : filteredOptions[0]
 }

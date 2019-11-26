@@ -18,6 +18,10 @@ import {
     GET_OTHER_OPERATION_LIST_SUCCESS,
     ADD_OTHER_OPERATION_COSTING_SUCCESS,
     ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
+    GET_MHR_LIST_SUCCESS,
+    ADD_MHR_FOR_PROCESS_GRID_DATA,
+    GET_PROCESSES_LIST_SUCCESS,
+    SAVE_PROCESS_COSTING_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -211,7 +215,7 @@ export function createNewCosting(data, callback) {
  * @method createBOMAPI
  * @description create bill of material master
  */
-export function addCostingRawMaterial(data, callback) {
+export function addCostingRawMaterial(data, selectedIndex, callback) {
     return (dispatch) => {
         // dispatch({
         //     type:  API_REQUEST,
@@ -221,7 +225,8 @@ export function addCostingRawMaterial(data, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: ADD_RAW_MATERIAL_COSTING_SUCCESS,
-                    payload: response.data.Data
+                    payload: data,
+                    selectedIndex: selectedIndex,
                 });
                 callback(response);
             } else {
@@ -255,10 +260,10 @@ export function getCostingDetailsById(costingId, isEditFlag, callback) {
                             payload: response.data.Data,
                         });
                         // Empty data in costing edit case by clicked on list
-                        dispatch({
-                            type: ADD_RAW_MATERIAL_COSTING_SUCCESS,
-                            payload: {},
-                        });
+                        // dispatch({
+                        //     type: ADD_RAW_MATERIAL_COSTING_SUCCESS,
+                        //     payload: {},
+                        // });
                         callback(response);
                     } else {
                         toastr.error(MESSAGES.SOME_ERROR);
@@ -424,4 +429,100 @@ export function addCostingUnitOtherOperationData(data, selectedIndex, callback) 
         });
         callback();
     }
+}
+
+
+/**
+ * @method getBoughtOutPartList
+ * @description get all BOP list
+ */
+export function getMHRCostingList(supplierId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMHRCostingList}/${supplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MHR_LIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+        });
+    };
+}
+
+/**
+ * @method addCostingUnitOtherOperationData
+ * @description add unit other operation to costing
+ */
+export function addMHRForProcess(data, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: ADD_MHR_FOR_PROCESS_GRID_DATA,
+            payload: data,
+        });
+        callback();
+    }
+}
+
+/**
+ * @method getProcessesSelectList
+ * @description Get Processes select list in process grid
+ */
+export function getProcessesSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getProcessesSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PROCESSES_LIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method saveProcessCosting
+ * @description save Process Costing
+ */
+export function saveProcessCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.saveProcessCosting, data, headers);
+        request.then((response) => {
+            console.log("response success >>>>>", response)
+            if (response.data.Result) {
+                dispatch({
+                    type: SAVE_PROCESS_COSTING_SUCCESS,
+                });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
 }

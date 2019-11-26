@@ -106,33 +106,8 @@ class Costing extends Component {
                         "MaterialTypeName", "UnitOfMeasurementName", "Quantity", "AssemblyPartNumberMark", "BOMLevel", "EcoNumber",
                         "RevisionNumber"]
 
-                    // fileHeads = {
-                    //     MaterialTypeName: "string",
-                    //     UnitOfMeasurementName: "string",
-                    //     //AssemblyBOMId: "00000000-0000-0000-0000-000000000000",
-                    //     BillNumber: "string",
-                    //     MaterialDescription: "string",
-                    //     Quantity: 0,
-                    //     AssemblyPartNumberMark: "string",
-                    //     BOMLevel: 0,
-                    //     EcoNumber: "string",
-                    //     RevisionNumber: "string",
-                    //     //MaterialTypeId: "00000000-0000-0000-0000-000000000000",
-                    //     //UnitOfMeasurementId: "00000000-0000-0000-0000-000000000000",
-                    //     //AssemblyBOMPartId: "00000000-0000-0000-0000-000000000000",
-                    //     AssemblyBOMPartNumber: "string",
-                    //     //PartId: "00000000-0000-0000-0000-000000000000",
-                    //     PartNumber: "string",
-                    //     PlantId: "00000000-0000-0000-0000-000000000000",
-                    //     CreatedBy: "",
-                    //     SerialNumber: 0,
-                    //     PartType: "string",
-                    //     IsActive: true
-                    // }
-
                     let fileData = [];
                     resp.rows.map((val, index) => {
-                        console.log("val >>>", val)
                         if (index > 0) {
                             let obj = { PlantId: uploadBOMplantID.value }
                             val.map((el, i) => {

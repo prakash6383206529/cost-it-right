@@ -1,13 +1,173 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Field, FieldArray, reduxForm } from "redux-form";
 import { addCostingOtherOperation } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
+import { renderText, renderSelectField, InputHiddenField, searchableSelect, RFReactSelect } from "../../layout/FormInputs";
 import AddOtherOperationCosting from './AddOtherOperationCosting';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
+
+
+
+const renderMembers = ({ fields, processHandler, meta: { error, submitFailed } }) => {
+
+    return (
+
+        <>
+            <div>
+                <button type="button" onClick={() => fields.push({})}>
+                    Add New Row
+                </button>
+                {/* {submitFailed && error && <span>{error}</span>} */}
+            </div>
+            {fields.map((cost, index) => {
+                return (
+                    // <li key={index}>
+                    <tr key={index}>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.ProcessId`}
+                                component={RFReactSelect}
+                                options={[]}
+                                labelKey={'label'}
+                                valueKey={'value'}
+                                onChangeHsn={processHandler}
+                                //validate={[required]}
+                                //mendatory={false}
+                                selType={'ProcessId'}
+                                rowIndex={index}
+                                disabled={false}
+                            />
+                        </td>
+                        <td>
+                            <button>{'Add'}</button>
+                        </td>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.UMO`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                //required={true}
+                                className=" withoutBorder"
+                                disabled={true}
+                            />
+                        </td>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.Rate`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                //required={true}
+                                className=" withoutBorder"
+                                disabled={true}
+                            />
+                            <Field
+                                label={''}
+                                name={`${cost}.MachineHourRateId`}
+                                type="hidden"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={InputHiddenField}
+                                //required={true}
+                                className=" withoutBorder"
+                                disabled={true}
+                            />
+                        </td>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.CycleTime`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                //required={true}
+                                //onChange={(e) => handlerCycleTime(e, index)}
+                                className=" withoutBorder"
+                                disabled={false}
+                            />
+                        </td>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.Efficiency`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                //required={true}
+                                //onChange={(e) => handlerEfficiency(e, index)}
+                                className=" withoutBorder"
+                                disabled={false}
+                            />
+                        </td>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.Quantity`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                //required={true}
+                                //onChange={(e) => handlerQuantity(e, index)}
+                                className=" withoutBorder"
+                                disabled={false}
+                            />
+                        </td>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.Cavity`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                //required={true}
+                                //onChange={(e) => handlerCavity(e, index)}
+                                className=" withoutBorder"
+                                disabled={false}
+                            />
+                        </td>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.NetCost`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                //required={true}
+                                className=" withoutBorder"
+                                disabled={true}
+                            />
+                        </td>
+                        <td>
+                            <button
+                                type="button"
+                                className={'btn btn-danger'}
+                                title="Delete"
+                                onClick={() => fields.remove(index)}
+                            >Delete</button>
+                        </td>
+                    </tr>)
+            }
+                // </li>
+            )}
+        </>
+    )
+}
 
 class OtherOperationGrid extends Component {
     constructor(props) {
@@ -102,6 +262,16 @@ class OtherOperationGrid extends Component {
         });
     }
 
+    /**
+    * @method processHandler
+    * @description Used to handle process
+    */
+
+    processHandler = (value, index, type) => {
+        console.log(">>>>", value, index, type)
+        //this.setState({ processSelected: newValue });
+    };
+
 
 
     render() {
@@ -136,42 +306,20 @@ class OtherOperationGrid extends Component {
                                 <th>{`Delete`}</th>
                             </tr>
                         </thead>
-                        <tbody >
-                            {OtherOperations && OtherOperations.map((ops, index) => {
-                                return (
-                                    <tr>
-                                        <td>
-                                            <button onClick={() => this.openOtherOperationModal(index)}>{ops && ops.ProcessName != null ? ops.ProcessName : 'Add'}</button>
-                                        </td>
-                                        <td>{ops ? ops.OperationCode : '0'}</td>
-                                        <td>{ops ? ops.Rate : '0'}</td>
-                                        <td>{ops ? ops.UnitOfMeasurementName : '0'}</td>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                name="quantity"
-                                                onChange={this.quantityHandler}
-                                                value={this.state.quantity}
-                                                id="quantity"
-                                                placeholder=""
-                                            />
-                                        </td>
-                                        <td>
-                                            <Input
-                                                type="text"
-                                                name="netcost"
-                                                onChange={this.netcostHandler}
-                                                value={this.state.netcost}
-                                                id="netcost"
-                                                placeholder=""
-                                            />
-                                        </td>
-                                        <td>
-                                            <button onClick={this.deleteRows} className={'btn btn-danger'}>Delete</button>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
+                        <tbody>
+                            <FieldArray
+                                name="LinkedProcesses"
+                                // openMHRModal={this.openMHRModal}
+                                // renderTypeOfListing={this.renderTypeOfListing}
+                                // processSelected={this.state.processSelected}
+                                // processSelectList={processSelectList}
+                                processHandler={this.processHandler}
+                                // handlerCycleTime={this.handlerCycleTime}
+                                // handlerEfficiency={this.handlerEfficiency}
+                                // handlerQuantity={this.handlerQuantity}
+                                // handlerCavity={this.handlerCavity}
+                                component={renderMembers}
+                            />
                         </tbody>
                     </Table>
                 </Col>
@@ -202,4 +350,8 @@ function mapStateToProps({ costWorking }) {
 
 export default connect(mapStateToProps, {
     addCostingOtherOperation
-})(OtherOperationGrid);
+})(reduxForm({
+    form: 'OtherOperationGridForm',
+    enableReinitialize: true,
+})(OtherOperationGrid));
+
