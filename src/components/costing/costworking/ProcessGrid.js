@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, FieldArray, reduxForm } from "redux-form";
+import { Field, FieldArray, reduxForm, formValueSelector } from "redux-form";
 import { getProcessesSelectList, saveProcessCosting } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
@@ -8,11 +8,11 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { renderText, renderSelectField, InputHiddenField, searchableSelect, RFReactSelect } from "../../layout/FormInputs";
 import AddMHRCosting from './AddMHRCosting';
-import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
+const selector = formValueSelector('ProcessGridForm');
 
 
-const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processSelected, processHandler,
+const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandler,
     handlerCycleTime, handlerEfficiency, handlerQuantity, handlerCavity, meta: { error, submitFailed } }) => {
 
     return (
@@ -26,21 +26,8 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processSelec
             </div>
             {fields.map((cost, index) => {
                 return (
-                    // <li key={index}>
                     <tr key={index}>
                         <td>
-                            {/* <Field
-                                name={`${cost}.ProcessId`}
-                                type="text"
-                                label={''}
-                                component={searchableSelect}
-                                options={renderTypeOfListing('processList')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                //validate={[required, maxLength50]}
-                                //required={true}
-                                handleChangeDescription={processHandler}
-                                valueDescription={processSelected}
-                            /> */}
                             <Field
                                 label={''}
                                 name={`${cost}.ProcessId`}
@@ -57,7 +44,7 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processSelec
                             />
                         </td>
                         <td>
-                            <button onClick={() => openMHRModal(index)}>{'Add'}</button>
+                            <button type="button" onClick={() => openMHRModal(index)}>{'Add'}</button>
                         </td>
                         <td>
                             <Field
@@ -175,7 +162,6 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processSelec
                         </td>
                     </tr>)
             }
-                // </li>
             )}
         </>
     )
@@ -188,7 +174,6 @@ class ProcessGrid extends Component {
             isOpen: false,
             rowsCount: [1],
             isOpenMHRModal: false,
-            processSelected: [],
             GridselectedIndex: '',
             totalCost: []
         }
@@ -200,32 +185,6 @@ class ProcessGrid extends Component {
      */
     componentDidMount() {
         this.props.getProcessesSelectList(() => { })
-    }
-
-
-    /**
-     * @method addRows
-     * @description  used to add Rows 
-     */
-    addRows = (fields) => {
-        fields.push({})
-    }
-
-    /**
-     * @method deleteRows
-     * @description  used to delete Row
-     */
-    deleteRows = (index) => {
-        // const { rowsCount } = this.state;
-        // const newTodos = rowsCount.filter((todo, i) => {
-        //     if (index === i) {
-        //         return false;
-        //     }
-        //     return true;
-        // })
-        // this.setState({
-        //     rowsCount: newTodos
-        // })
     }
 
     /**
@@ -256,44 +215,25 @@ class ProcessGrid extends Component {
     renderTypeOfListing = (label) => {
         const { processSelectList } = this.props;
         const temp = [];
-        //const tempSupplier = [];
         if (label == 'processList') {
             processSelectList && processSelectList.map(item =>
                 temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
-
     }
 
     /**
     * @method processHandler
     * @description Used to handle process
     */
-    // processHandler = (newValue, actionMeta) => {
-    //     this.setState({ processSelected: newValue });
-    // };
     processHandler = (value, index, type) => {
         console.log(">>>>", value, index, type)
-        //this.setState({ processSelected: newValue });
     };
 
     setRowData = item => {
         console.log("item >>>", item, this.state.GridselectedIndex)
         const { GridselectedIndex } = this.state;
-        const updateData = {
-            // MachineHourRateId: item.MachineHourRateId,
-            // ProcessId: "",
-            // Rate: item.BasicMachineRate,
-            // Quantity: 0,
-            // NetCost: 0,
-            // IsActive: true,
-            // CreatedDate: "",
-            // UMO: "KG",
-            // CycleTime: 10,
-            // Efficiency: 20,
-            // Cavity: 30
-        }
         this.setState({
             UOM: item.UnitOfMeasurementName,
             MHR: item.BasicMachineRate
@@ -346,7 +286,6 @@ class ProcessGrid extends Component {
         }
 
         this.setState({ totalCost: netCost })
-
         this.props.change(`LinkedProcesses[${index}]['NetCost']`, netCost);
     }
 
@@ -355,7 +294,6 @@ class ProcessGrid extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log("values grid process", values)
         const { totalCost } = this.state;
         const { costingId, PartId } = this.props;
 
@@ -374,7 +312,12 @@ class ProcessGrid extends Component {
 
         console.log("form data", formData)
         this.props.saveProcessCosting(formData, res => {
-            this.props.onCancelProcessGrid()
+            if (res.data.Result) {
+                toastr.success(MESSAGES.SAVE_PROCESS_COSTING_SUCCESS);
+                this.props.onCancelProcessGrid()
+            } else {
+                toastr.error(res.data.Message);
+            }
         })
     }
 
@@ -429,7 +372,6 @@ class ProcessGrid extends Component {
                                     name="LinkedProcesses"
                                     openMHRModal={this.openMHRModal}
                                     renderTypeOfListing={this.renderTypeOfListing}
-                                    processSelected={this.state.processSelected}
                                     processSelectList={processSelectList}
                                     processHandler={this.processHandler}
                                     handlerCycleTime={this.handlerCycleTime}
@@ -471,31 +413,52 @@ class ProcessGrid extends Component {
 * @param {*} state
 */
 function mapStateToProps({ costWorking }) {
-    const { addMHRForProcessGrid, processSelectList } = costWorking;
-    let initialValues = {
-        CostingId: "",
-        TotalProcessCost: 0,
-        AssyTotalProcessCost: 0,
-        GrandTotal: 0,
-        IsActive: true,
-        CreatedDate: "",
-        CreatedBy: "",
-        DisplayCreatedDate: "",
-        LinkedProcesses: [{
-            MachineHourRateId: "",
-            ProcessId: "",
-            Rate: 0,
-            Quantity: 0,
-            NetCost: 0,
+    const { addMHRForProcessGrid, processSelectList, costingGridProcessData } = costWorking;
+    let initialValues = {};
+    if (costingGridProcessData && costingGridProcessData.LinkedProcesses) {
+        initialValues = {
+            CostingProcessDetailId: costingGridProcessData.CostingProcessDetailId,
+            MachineHourRateDetailId: costingGridProcessData.MachineHourRateDetailId,
+            ProcessId: costingGridProcessData.ProcessId,
+            MachineHourRates: costingGridProcessData.MachineHourRates,
+            CostingId: costingGridProcessData.CostingId,
+            PartId: costingGridProcessData.PartId,
+            TotalProcessCost: costingGridProcessData.TotalProcessCost,
+            AssyTotalProcessCost: costingGridProcessData.AssyTotalProcessCost,
+            GrandTotal: costingGridProcessData.GrandTotal,
+            IsActive: costingGridProcessData.IsActive,
+            CreatedDate: "",
+            CreatedBy: "",
+            DisplayCreatedDate: "",
+            LinkedProcesses: costingGridProcessData.LinkedProcesses
+        }
+    } else {
+        initialValues = {
+            CostingId: "",
+            TotalProcessCost: 0,
+            AssyTotalProcessCost: 0,
+            GrandTotal: 0,
             IsActive: true,
             CreatedDate: "",
-            UMO: "",
-            CycleTime: 0,
-            Efficiency: 0,
-            Cavity: 0
-        }]
+            CreatedBy: "",
+            DisplayCreatedDate: "",
+            LinkedProcesses: [{
+                MachineHourRateId: "",
+                ProcessId: "",
+                Rate: 0,
+                Quantity: 0,
+                NetCost: 0,
+                IsActive: true,
+                CreatedDate: "",
+                UMO: "",
+                CycleTime: 0,
+                Efficiency: 0,
+                Cavity: 0
+            }]
+        }
     }
-    return { addMHRForProcessGrid, processSelectList, initialValues }
+
+    return { addMHRForProcessGrid, processSelectList, initialValues, costingGridProcessData }
 }
 
 export default connect(mapStateToProps,

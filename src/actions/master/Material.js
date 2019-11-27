@@ -249,7 +249,7 @@ export function createRMDetailAPI(data, callback) {
  */
 export function getMaterialDetailAPI() {
     return (dispatch) => {
-        const API1 = axios.get(API.getMaterialType, headers);
+        const API1 = axios.get(API.getMaterialTypeDataList, headers);
         const API2 = axios.get(API.getMaterial, headers);
         Promise.all([API1, API2])
             .then((response) => {

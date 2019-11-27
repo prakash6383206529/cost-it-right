@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewCosting, getCostingBySupplier, getCostingDetailsById } from '../../../actions/costing/CostWorking';
+import { createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -41,6 +41,7 @@ class CostWorking extends Component {
      */
     componentDidMount() {
         const { activeCostingListData } = this.props;
+        this.props.getMaterialTypeSelectList()
         if (activeCostingListData && activeCostingListData.PartDetail) {
             this.setState({
                 PartNumber: activeCostingListData.PartDetail.PartNumber
@@ -89,17 +90,6 @@ class CostWorking extends Component {
 
     /**haldle the cost working details collapes */
     collapsHandler = (costingId) => {
-        // this.setState({
-        //     isCollapes: !this.state.isCollapes,
-        //     isEditFlag: true
-        // }, () => {
-        //     if (this.state.isEditFlag) {
-        //         this.props.getCostingDetailsById(costingId, true, res => { })
-        //     } else {
-        //         this.props.getCostingDetailsById('', false, res => { })
-        //     }
-        // })
-
         this.props.getCostingDetailsById(costingId, true, res => {
             this.setState({
                 isCollapes: true,
@@ -121,7 +111,6 @@ class CostWorking extends Component {
         /** getting part id from active costing list */
         //if (activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0) {
         const sheetmetalCostingData = {
-            //PartId: activeCostingListData.ActiveCostingDetatils[0].PartId,
             PartId: partId,
             PlantId: plantId,
             SupplierId: supplierId,
@@ -133,15 +122,6 @@ class CostWorking extends Component {
                 const newCostingId = res.data.Identity;
                 toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
                 /** fetching records of supplier costing details */
-                // this.props.getCostingBySupplier(supplierId, (res) => {
-                //     this.setState({
-                //         isCollapes: true,
-                //         isNewCostingFlag: true,
-                //         isEditFlag: false,
-                //         costingId: newCostingId
-                //     })
-                //     //this.toggleModel();
-                // });
                 this.props.getCostingDetailsById(newCostingId, true, res => {
                     this.setState({
                         isCollapes: true,
@@ -201,6 +181,20 @@ class CostWorking extends Component {
         }, () => {
             this.props.getCostingDetailsById(costingId, true, res => { })
         })
+    }
+
+    materialDropDown = (data, index) => {
+        const { MaterialSelectList } = this.props;
+        return (
+            <select>
+                {MaterialSelectList && MaterialSelectList.map((item, i) => {
+                    let selected = (item.Value == data.MaterialTypeId) ? 'selected' : null;
+                    return (
+                        <option value={item.Value} selected >{item.Text}</option>
+                    )
+                })}
+            </select>
+        )
     }
 
     /**
@@ -302,7 +296,7 @@ class CostWorking extends Component {
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartDescription}</td>
-                                                    <td>{''}</td>
+                                                    <td>{this.materialDropDown(data, index)}</td>
                                                     <td>{data.Quantity}</td>
                                                     {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
                                                     <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
@@ -318,12 +312,12 @@ class CostWorking extends Component {
                                                     <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
 
                                                     <td><button onClick={() => this.toggleProcessGrid(index)}>Add</button></td>
-                                                    <td>{data && data.ProcessDetails.length > 0 ? '0' : '0'}</td>
-                                                    <td>{data && data.ProcessDetails.length > 0 ? '0' : '0'}</td>
+                                                    <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].TotalProcessCost : '0'}</td>
+                                                    <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : '0'}</td>
 
-                                                    <td><button onClick={this.toggleOtherOperation}>Add</button></td>
-                                                    <td>{data && data.OtherOperationDetails.length > 0 ? '0' : '0'}</td>
-                                                    <td>{data && data.OtherOperationDetails.length > 0 ? '0' : '0'}</td>
+                                                    <td><button onClick={this.toggleOtherOperation}>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].OperationName : 'Add'}</button></td>
+                                                    <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].SurfaceTreatmentCost : '0'}</td>
+                                                    <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : '0'}</td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? '0' : '0'}</td>
                                                 </tr>
                                             )
@@ -339,7 +333,7 @@ class CostWorking extends Component {
                                 onCancelOperationGrid={this.toggleOtherOperation}
                                 supplierId={supplierId}
                                 costingId={costingId}
-                                partId={partId}
+                                PartId={partId}
                                 PartNumber={PartNumber}
                                 partName={PartNumber}
                             />}
@@ -390,7 +384,6 @@ class CostWorking extends Component {
                     //isBOPEditFlag={isBOPEditFlag}
                     />
                 )}
-
             </div >
         );
     }
@@ -402,16 +395,17 @@ class CostWorking extends Component {
 * @param {*} state
 */
 function mapStateToProps({ costWorking }) {
-    const { activeCostingListData, getCostingDetailData, costingGridRMData } = costWorking;
+    const { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList } = costWorking;
 
-    return { activeCostingListData, getCostingDetailData, costingGridRMData }
+    return { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList }
 }
 
-export default connect(
-    mapStateToProps, {
-    createNewCosting,
-    getCostingBySupplier,
-    getCostingDetailsById
-}
+export default connect(mapStateToProps,
+    {
+        createNewCosting,
+        getCostingBySupplier,
+        getCostingDetailsById,
+        getMaterialTypeSelectList
+    }
 )(CostWorking);
 

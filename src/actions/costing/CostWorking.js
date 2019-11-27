@@ -22,6 +22,10 @@ import {
     ADD_MHR_FOR_PROCESS_GRID_DATA,
     GET_PROCESSES_LIST_SUCCESS,
     SAVE_PROCESS_COSTING_SUCCESS,
+    GET_OTHER_OPERATION_SELECT_LIST_SUCCESS,
+    SAVE_OTHER_OPERATION_COSTING_SUCCESS,
+    ADD_PROCESS_COSTING_SUCCESS,
+    GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -518,6 +522,116 @@ export function saveProcessCosting(data, callback) {
                     toastr.error(response.data.Message);
                 }
             }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+
+
+/**
+ * @method addCostingProcesses
+ * @description add process to costing
+ */
+export function addCostingProcesses(costingId, callback) {
+    return (dispatch) => {
+        // dispatch({
+        //     type:  API_REQUEST,
+        // });
+        const request = axios.get(`${API.addCostingProcesses}/${costingId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: ADD_PROCESS_COSTING_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getOtherOpsSelectList
+ * @description Get Processes select list in process grid
+ */
+export function getOtherOpsSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getOtherOpsSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OTHER_OPERATION_SELECT_LIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method saveOtherOpsCosting
+ * @description save Other operation Costing
+ */
+export function saveOtherOpsCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.saveOtherOpsCosting, data, headers);
+        request.then((response) => {
+            console.log("response success >>>>>", response)
+            if (response.data.Result) {
+                dispatch({
+                    type: SAVE_OTHER_OPERATION_COSTING_SUCCESS,
+                });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchMasterDataAPI
+ * @description fetch UOM and material type list
+ */
+export function getMaterialTypeSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getMaterialTypeSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE

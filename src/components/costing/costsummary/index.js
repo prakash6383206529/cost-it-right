@@ -202,7 +202,6 @@ class CostSummary extends Component {
             this.props.change("PartDescription", existingSupplierDetail.PartDescription)
 
             const existSuppliers = existingSupplierDetail && existingSupplierDetail.ExistingSupplierDetails;
-            //console.log('%c 🍤 existSuppliers: 11', 'font-size:20px;background-color: #ED9EC7;color:#fff;', existSuppliers);
 
             let supplierArray = {};
             let supplier2Array = {};
@@ -218,7 +217,7 @@ class CostSummary extends Component {
             this.props.change("SupplierCode3", "");
 
             existSuppliers.map((Value, index) => {
-                //console.log('%c 🍍 Value: 22', 'font-size:20px;background-color: #F5CE50;color:#fff;', Value);
+                console.log(index)
                 const supplierObj = Suppliers.find(item => item.Value === Value.SupplierId);
                 if (index == 0) {
                     this.props.change("POPrice", Value.PurchaseOrderPrice);
@@ -2534,11 +2533,11 @@ class CostSummary extends Component {
                                 <input type="text" disabled value={this.state.landedFactorCostSupplier3} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" />
                             </div>
                         </Col>
-                        <hr />
+                        {/* <hr /> */}
                         {/* ----------Landed Factor(%) end ----------------- */}
 
                         {/* ------------------Attachment start---------------- */}
-                        <Col md="1" className={'divider'}>
+                        {/* <Col md="1" className={'divider'}>
                             Attachment
                         </Col>
                         <Col md="2" className={'divider'}>
@@ -2560,7 +2559,7 @@ class CostSummary extends Component {
                             <div className={'full-width'}>
                                 <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
                             </div>
-                        </Col>
+                        </Col> */}
                         {/* ----------Attachment end ----------------- */}
 
                     </Row>

@@ -52,7 +52,7 @@ export const API = {
   //Api's for material
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
   createMaterial: `${BASE_URL}/masters-raw-material/add-costing-raw-material-details`,
-  getMaterialType: `${BASE_URL}/masters-material/get-material-type`,
+  getMaterialTypeDataList: `${BASE_URL}/masters-material/get-material-type`,
   getMaterial: `${BASE_URL}/masters-raw-material/get-costing-raw-material-details`,
 
   //Api for Unit of measurement master
@@ -199,10 +199,12 @@ export const API = {
   getOtherOperationList: `${BASE_URL}/costing-sheet-metal/get-other-operation-by-supplier`,
   addCostingOtherOperation: `${BASE_URL}/costing-sheet-metal/add-costing-other-operations`,
   getMHRCostingList: `${BASE_URL}/costing-sheet-metal/get-machine-hour-rate-by-supplier`,
+  addCostingProcesses: `${BASE_URL}/costing-sheet-metal/add-costing-process`,
   getProcessesSelectList: `${BASE_URL}/configuration/select-list-get-process`,
   saveProcessCosting: `${BASE_URL}/costing-sheet-metal/save-costing-process`,
-
-
+  getOtherOpsSelectList: `${BASE_URL}/configuration/select-list-get-operation`,
+  saveOtherOpsCosting: `${BASE_URL}/costing-sheet-metal/save-costing-other-operations`,
+  getMaterialTypeSelectList: `${BASE_URL}/configuration/select-list-get-material-type`,
   //cost summary 
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
 }
@@ -398,3 +400,7 @@ export const GET_MHR_LIST_SUCCESS = 'GET_MHR_LIST_SUCCESS';
 export const ADD_MHR_FOR_PROCESS_GRID_DATA = 'ADD_MHR_FOR_PROCESS_GRID_DATA';
 export const GET_PROCESSES_LIST_SUCCESS = 'GET_PROCESSES_LIST_SUCCESS';
 export const SAVE_PROCESS_COSTING_SUCCESS = 'SAVE_PROCESS_COSTING_SUCCESS';
+export const GET_OTHER_OPERATION_SELECT_LIST_SUCCESS = 'GET_OTHER_OPERATION_SELECT_LIST_SUCCESS';
+export const SAVE_OTHER_OPERATION_COSTING_SUCCESS = 'SAVE_OTHER_OPERATION_COSTING_SUCCESS';
+export const ADD_PROCESS_COSTING_SUCCESS = 'ADD_PROCESS_COSTING_SUCCESS';
+export const GET_MATERIAL_DATA_SELECTLIST_SUCCESS = 'GET_MATERIAL_DATA_SELECTLIST_SUCCESS';

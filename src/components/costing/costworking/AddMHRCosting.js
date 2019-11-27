@@ -36,28 +36,9 @@ class AddMHRCosting extends Component {
     }
 
     addMHRHandler = (item) => {
-        //this.props.addMHRitemToProcess(item)
         const { costingId, supplierId } = this.props;
         this.props.setRowData(item)
-        // const requestData = {
-        //     CostingId: costingId,
-        //     BoughtOutPartId: item.BoughtOutPartId,
-        //     GrandTotal: item.BasicRate * item.Quantity,
-        //     BoughtOutParRate: item.BasicRate,
-        //     AssyBoughtOutParRate: item.BasicRate,
-        //     CreatedBy: ""
-        // }
-
-        //this.props.addMHRForProcess(item, res => {
-        //this.props.getCostingDetailsById(costingId, true, res => {
-        // this.setState({
-        //     isCollapes: true,
-        //     isEditFlag: true,
-        //     isNewCostingFlag: false
-        // })
         this.toggleModel()
-        //})
-        //})
     }
 
 

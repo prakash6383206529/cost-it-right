@@ -38,9 +38,8 @@ class AddOtherOperationCosting extends Component {
     otherOperationHandler = (item) => {
         const { costingId, selectedIndex } = this.props;
 
-        this.props.addCostingUnitOtherOperationData(item, selectedIndex, res => {
-            this.toggleModel()
-        })
+        this.props.setOtherOperationRowData(item)
+        this.toggleModel()
     }
 
 

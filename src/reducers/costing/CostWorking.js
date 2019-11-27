@@ -19,6 +19,10 @@ import {
     ADD_MHR_FOR_PROCESS_GRID_DATA,
     GET_PROCESSES_LIST_SUCCESS,
     SAVE_PROCESS_COSTING_SUCCESS,
+    GET_OTHER_OPERATION_SELECT_LIST_SUCCESS,
+    SAVE_OTHER_OPERATION_COSTING_SUCCESS,
+    ADD_PROCESS_COSTING_SUCCESS,
+    GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -26,26 +30,6 @@ const initialState = {
     addMHRForProcessGrid: []
 };
 
-const otherOpsObj = {
-    "OtherOperationId": "",
-    "Rate": null,
-    "OtherOperationName": null,
-    "OperationCode": null,
-    "Description": null,
-    "TechnologyId": null,
-    "SupplierId": null,
-    "OperationId": null,
-    "UnitOfMeasurementId": null,
-    "PlantId": null,
-    "PlantName": null,
-    "TechnologyName": null,
-    "SupplierName": null,
-    "ProcessName": null,
-    "UnitOfMeasurementName": null,
-    "CreatedDate": null,
-    "CreatedBy": null,
-    "IsActive": false
-}
 
 export default function CostWorkingReducer(state = initialState, action) {
     switch (action.type) {
@@ -129,16 +113,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 costingGridBOPData: action.payload
             };
         case ADD_OTHER_OPERATION_COSTING_SUCCESS:
-            let costingData = action.payload;
-            costingData.OtherOperations = [otherOpsObj]
             return {
                 ...state,
                 loading: false,
                 error: true,
-                costingGridOtherOperationData: costingData
+                costingGridOtherOperationData: action.payload
             };
         case ADD_UNIT_OTHER_OPERATION_COSTING_DATA:
-            console.log("reducer", state.costingGridOtherOperationData, action.payload)
             return {
                 ...state,
                 loading: false,
@@ -192,6 +173,33 @@ export default function CostWorkingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
+            };
+        case ADD_PROCESS_COSTING_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingGridProcessData: action.payload
+            };
+        case GET_OTHER_OPERATION_SELECT_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                otherOpsSelectList: action.payload
+            };
+        case SAVE_OTHER_OPERATION_COSTING_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            };
+        case GET_MATERIAL_DATA_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                MaterialSelectList: action.payload
             };
         default:
             return state;

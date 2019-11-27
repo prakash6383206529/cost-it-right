@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, FieldArray, reduxForm } from "redux-form";
-import { addCostingOtherOperation } from '../../../actions/costing/CostWorking';
+import { Field, FieldArray, reduxForm, formValueSelector } from "redux-form";
+import { addCostingOtherOperation, getOtherOpsSelectList, saveOtherOpsCosting } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { renderText, renderSelectField, InputHiddenField, searchableSelect, RFReactSelect } from "../../layout/FormInputs";
 import AddOtherOperationCosting from './AddOtherOperationCosting';
-import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
+const selector = formValueSelector('OtherOperationGridForm');
 
-
-
-const renderMembers = ({ fields, processHandler, meta: { error, submitFailed } }) => {
+const renderMembers = ({ fields, processHandler, openOtherOperationModal, renderTypeOfListing,
+    handlerQuantity, meta: { error, submitFailed } }) => {
 
     return (
 
@@ -29,11 +28,11 @@ const renderMembers = ({ fields, processHandler, meta: { error, submitFailed } }
                     // <li key={index}>
                     <tr key={index}>
                         <td>
-                            <Field
+                            {/* <Field
                                 label={''}
-                                name={`${cost}.ProcessId`}
+                                name={`${cost}.OtherOperationId`}
                                 component={RFReactSelect}
-                                options={[]}
+                                options={renderTypeOfListing('otherOperationList')}
                                 labelKey={'label'}
                                 valueKey={'value'}
                                 onChangeHsn={processHandler}
@@ -42,19 +41,17 @@ const renderMembers = ({ fields, processHandler, meta: { error, submitFailed } }
                                 selType={'ProcessId'}
                                 rowIndex={index}
                                 disabled={false}
-                            />
-                        </td>
-                        <td>
-                            <button>{'Add'}</button>
+                            /> */}
+                            <button type="button" onClick={() => openOtherOperationModal(index)}>{'Add'}</button>
                         </td>
                         <td>
                             <Field
                                 label={''}
-                                name={`${cost}.UMO`}
-                                type="text"
+                                name={`${cost}.OtherOperationId`}
+                                type="hidden"
                                 placeholder={''}
                                 //validate={[required]}
-                                component={renderText}
+                                component={InputHiddenField}
                                 //required={true}
                                 className=" withoutBorder"
                                 disabled={true}
@@ -72,44 +69,18 @@ const renderMembers = ({ fields, processHandler, meta: { error, submitFailed } }
                                 className=" withoutBorder"
                                 disabled={true}
                             />
+                        </td>
+                        <td>
                             <Field
                                 label={''}
-                                name={`${cost}.MachineHourRateId`}
-                                type="hidden"
+                                name={`${cost}.UnitOfMeasurementName`}
+                                type="text"
                                 placeholder={''}
                                 //validate={[required]}
-                                component={InputHiddenField}
+                                component={renderText}
                                 //required={true}
                                 className=" withoutBorder"
                                 disabled={true}
-                            />
-                        </td>
-                        <td>
-                            <Field
-                                label={''}
-                                name={`${cost}.CycleTime`}
-                                type="text"
-                                placeholder={''}
-                                //validate={[required]}
-                                component={renderText}
-                                //required={true}
-                                //onChange={(e) => handlerCycleTime(e, index)}
-                                className=" withoutBorder"
-                                disabled={false}
-                            />
-                        </td>
-                        <td>
-                            <Field
-                                label={''}
-                                name={`${cost}.Efficiency`}
-                                type="text"
-                                placeholder={''}
-                                //validate={[required]}
-                                component={renderText}
-                                //required={true}
-                                //onChange={(e) => handlerEfficiency(e, index)}
-                                className=" withoutBorder"
-                                disabled={false}
                             />
                         </td>
                         <td>
@@ -121,21 +92,7 @@ const renderMembers = ({ fields, processHandler, meta: { error, submitFailed } }
                                 //validate={[required]}
                                 component={renderText}
                                 //required={true}
-                                //onChange={(e) => handlerQuantity(e, index)}
-                                className=" withoutBorder"
-                                disabled={false}
-                            />
-                        </td>
-                        <td>
-                            <Field
-                                label={''}
-                                name={`${cost}.Cavity`}
-                                type="text"
-                                placeholder={''}
-                                //validate={[required]}
-                                component={renderText}
-                                //required={true}
-                                //onChange={(e) => handlerCavity(e, index)}
+                                onChange={(e) => handlerQuantity(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
                             />
@@ -188,37 +145,14 @@ class OtherOperationGrid extends Component {
      */
     componentDidMount() {
         const { costingId } = this.props;
-        this.props.addCostingOtherOperation(costingId, res => { });
-    }
+        this.props.getOtherOpsSelectList(() => { })
+        this.props.addCostingOtherOperation(costingId, res => {
+            // const { costingGridOtherOperationData } = this.props;
+            // const LinkedOperations = costingGridOtherOperationData.LinkedOperations;
+            // costingGridOtherOperationData && LinkedOperations.map((item, index) => {
 
-
-    /**
-     * @method addRows
-     * @description  used to add Rows 
-     */
-    addRows = () => {
-        // const { rowsCount } = this.state;
-        // rowsCount.push(rowsCount.length + 1)
-        // this.setState({
-        //     rowsCount: rowsCount,
-        // })
-    }
-
-    /**
-     * @method deleteRows
-     * @description  used to delete Row
-     */
-    deleteRows = (index) => {
-        // const { rowsCount } = this.state;
-        // const newTodos = rowsCount.filter((todo, i) => {
-        //     if (index === i) {
-        //         return false;
-        //     }
-        //     return true;
-        // })
-        // this.setState({
-        //     rowsCount: newTodos
-        // })
+            // })
+        });
     }
 
     /**
@@ -228,7 +162,7 @@ class OtherOperationGrid extends Component {
     openOtherOperationModal = (selectedIndex) => {
         this.setState({
             isOpenOtherOperationModal: !this.state.isOpenOtherOperationModal,
-            selectedIndex: selectedIndex
+            GridselectedIndex: selectedIndex
         })
     }
 
@@ -242,24 +176,60 @@ class OtherOperationGrid extends Component {
         });
     }
 
-    /**
-     * @method quantityHandler
-     * @description  used for quantity Handler
-     */
-    quantityHandler = (e) => {
+    setOtherOperationRowData = item => {
+        console.log("item >>>", item, this.state.GridselectedIndex)
+        const { GridselectedIndex } = this.state;
+
+        this.setState({
+            UOM: item.UnitOfMeasurementName,
+            Rate: 12
+        })
+        item.Rate = 12;
+
+        this.props.change(`LinkedOperations[${GridselectedIndex}]['OtherOperationId']`, item.OtherOperationId);
+        this.props.change(`LinkedOperations[${GridselectedIndex}]['UnitOfMeasurementName']`, item.UnitOfMeasurementName);
+        this.props.change(`LinkedOperations[${GridselectedIndex}]['Rate']`, item.Rate);
+    }
+
+    handlerQuantity = (e, index) => {
+        this.props.change(`LinkedOperations[${index}]['Quantity']`, e.target.value);
         this.setState({
             quantity: e.target.value,
-        });
+            index: index,
+        }, () => this.handlerCalculation())
+    }
+
+    handlerCalculation = () => {
+        const { quantity, index, Rate, totalCost } = this.state;
+        const { LinkedOperationsArray } = this.props;
+
+        let grandTotal = 0;
+        LinkedOperationsArray && LinkedOperationsArray.map((item, index) => {
+            grandTotal = grandTotal + (item.Rate * item.Quantity);
+            return grandTotal;
+        })
+
+        let netCost = Rate * quantity;
+
+        this.setState({ totalCost: grandTotal })
+
+        this.props.change(`LinkedOperations[${index}]['NetCost']`, netCost);
     }
 
     /**
-     * @method netcostHandler
-     * @description  used for net cost Handler
-     */
-    netcostHandler = (e) => {
-        this.setState({
-            netcost: e.target.value,
-        });
+    * @method selectUnitOfMeasurement
+    * @description Used show listing of unit of measurement
+    */
+    renderTypeOfListing = (label) => {
+        const { otherOpsSelectList } = this.props;
+        const temp = [];
+        //const tempSupplier = [];
+        if (label == 'otherOperationList') {
+            otherOpsSelectList && otherOpsSelectList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
     }
 
     /**
@@ -272,13 +242,47 @@ class OtherOperationGrid extends Component {
         //this.setState({ processSelected: newValue });
     };
 
+    /**
+    * @method onSubmit
+    * @description Used to Submit the form
+    */
+    onSubmit = (values) => {
+        console.log("values grid other ops", values)
+        const { totalCost } = this.state;
+        const { costingId, PartId } = this.props;
+
+        let formData = {
+            CostingId: costingId,
+            PartId: PartId,
+            SurfaceTreatmentCost: totalCost,
+            AssySurfaceTreatmentCost: totalCost,
+            GrandTotal: totalCost,
+            IsActive: true,
+            CreatedDate: "",
+            CreatedBy: "",
+            DisplayCreatedDate: "",
+            LinkedOperations: values.LinkedOperations
+        }
+
+        console.log("form data", formData)
+        this.props.saveOtherOpsCosting(formData, res => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.SAVE_OTHER_OPERATION_SUCCESS);
+                this.props.onCancelOperationGrid()
+            } else {
+                toastr.error(res.data.Message);
+            }
+        })
+    }
 
 
     render() {
 
-        const { rowsCount, isOpenOtherOperationModal, selectedIndex } = this.state;
-        const { supplierId, costingId, costingGridOtherOperationData } = this.props;
+        const { isOpenOtherOperationModal, selectedIndex } = this.state;
+        const { handleSubmit, supplierId, costingId, costingGridOtherOperationData,
+            PartId, PartNumber } = this.props;
         const OtherOperations = costingGridOtherOperationData && costingGridOtherOperationData.OtherOperations;
+
         return (
             <div className={'create-costing-grid process-costing-grid'}>
                 <Col>
@@ -291,37 +295,41 @@ class OtherOperationGrid extends Component {
                         <button className={'btn btn-primary mr10'}>Save Process Cost</button>{''}
                         <button onClick={() => this.props.onCancelOperationGrid()} className={'btn btn-primary mr10'}>Close</button>{''}
                         <label className={'mr10'}>Total Process Cost: </label>
-                        <input type="text" name="total-cost" className={''} />
+                        <input type="text" name="total-cost" value={this.state.totalCost} className={''} />
                     </Row>
                     <hr />
-                    <Table className="table table-striped" bordered>
-                        <thead>
-                            <tr>
-                                <th>{`Process Operation`}</th>
-                                <th>{`Process Code`}</th>
-                                <th>{`Rate`}</th>
-                                <th>{`UOM`}</th>
-                                <th>{`Quantity`}</th>
-                                <th>{`Net Cost`}</th>
-                                <th>{`Delete`}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <FieldArray
-                                name="LinkedProcesses"
-                                // openMHRModal={this.openMHRModal}
-                                // renderTypeOfListing={this.renderTypeOfListing}
-                                // processSelected={this.state.processSelected}
-                                // processSelectList={processSelectList}
-                                processHandler={this.processHandler}
-                                // handlerCycleTime={this.handlerCycleTime}
-                                // handlerEfficiency={this.handlerEfficiency}
-                                // handlerQuantity={this.handlerQuantity}
-                                // handlerCavity={this.handlerCavity}
-                                component={renderMembers}
-                            />
-                        </tbody>
-                    </Table>
+                    <form
+                        noValidate
+                        className="form"
+                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    >
+                        <Table className="table table-striped" bordered>
+                            <thead>
+                                <tr>
+                                    <th>{`Process Operation`}</th>
+                                    <th>{`Process Code`}</th>
+                                    <th>{`Rate`}</th>
+                                    <th>{`UOM`}</th>
+                                    <th>{`Quantity`}</th>
+                                    <th>{`Net Cost`}</th>
+                                    <th>{`Delete`}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <FieldArray
+                                    name="LinkedOperations"
+                                    openOtherOperationModal={this.openOtherOperationModal}
+                                    renderTypeOfListing={this.renderTypeOfListing}
+                                    processHandler={this.processHandler}
+                                    handlerQuantity={this.handlerQuantity}
+                                    component={renderMembers}
+                                />
+                            </tbody>
+                        </Table>
+                        <button type="submit" className="btn dark-pinkbtn" >
+                            {'Save Operation Cost'}
+                        </button>
+                    </form>
                 </Col>
                 {isOpenOtherOperationModal && (
                     <AddOtherOperationCosting
@@ -329,7 +337,10 @@ class OtherOperationGrid extends Component {
                         onCancel={this.onCancel}
                         supplierId={supplierId}
                         costingId={costingId}
+                        PartId={PartId}
+                        PartNumber={PartNumber}
                         selectedIndex={selectedIndex}
+                        setOtherOperationRowData={this.setOtherOperationRowData}
                     />
                 )}
             </div>
@@ -342,14 +353,58 @@ class OtherOperationGrid extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ costWorking }) {
-    const { costingGridOtherOperationData } = costWorking;
+function mapStateToProps(state) {
 
-    return { costingGridOtherOperationData }
+    const LinkedOperationsArray = selector(state, 'LinkedOperations')
+    const { costWorking } = state;
+    const { costingGridOtherOperationData, otherOpsSelectList } = costWorking;
+    let initialValues = {};
+    if (costingGridOtherOperationData && costingGridOtherOperationData.LinkedOperations) {
+        initialValues = {
+            CostingOtherOperationDetailId: costingGridOtherOperationData.CostingOtherOperationDetailId,
+            CostingId: costingGridOtherOperationData.CostingId,
+            PartId: costingGridOtherOperationData.PartId,
+            SurfaceTreatmentCost: costingGridOtherOperationData.SurfaceTreatmentCost,
+            AssySurfaceTreatmentCost: costingGridOtherOperationData.AssySurfaceTreatmentCost,
+            GrandTotal: costingGridOtherOperationData.GrandTotal,
+            IsActive: costingGridOtherOperationData.IsActive,
+            CreatedDate: "",
+            CreatedBy: "",
+            DisplayCreatedDate: "",
+            LinkedOperations: costingGridOtherOperationData.LinkedOperations
+        }
+    } else {
+        initialValues = {
+            CostingId: "",
+            PartId: "",
+            SurfaceTreatmentCost: 0,
+            AssySurfaceTreatmentCost: 0,
+            GrandTotal: 0,
+            IsActive: true,
+            CreatedDate: "",
+            CreatedBy: "",
+            DisplayCreatedDate: "",
+            LinkedOperations: [
+                {
+                    OtherOperationId: "",
+                    Rate: '',
+                    Quantity: '',
+                    NetCost: '',
+                    IsActive: true,
+                    CreatedDate: "",
+                    UnitOfMeasurementName: ''
+                }
+            ]
+        }
+    }
+
+    return { costingGridOtherOperationData, otherOpsSelectList, initialValues, LinkedOperationsArray }
 }
 
 export default connect(mapStateToProps, {
-    addCostingOtherOperation
+    addCostingOtherOperation,
+    getOtherOpsSelectList,
+    saveOtherOpsCosting
 })(reduxForm({
     form: 'OtherOperationGridForm',
     enableReinitialize: true,
