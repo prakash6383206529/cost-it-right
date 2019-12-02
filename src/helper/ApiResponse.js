@@ -1,32 +1,17 @@
 export function formatLoginResult(res) {
-    if (res.data.user) {
+    if (res.Data) {
         const userObj = {
-            id: res.data.user.id,
-            email: res.data.user.email,
-            accountType: res.data.user.accountType,
-            firstName: res.data.user.firstName,
-            lastName: res.data.user.lastName,
-            admin: res.data.user.admin,
-            isVerified: res.data.user.isVerified,
-            zip: res.data.user.zip,
-            city: res.data.user.city,
-            state: res.data.user.state,
-            birthdate: res.data.user.birthdate,
-            gender: res.data.user.gender,
-            mileRadius: res.data.user.mileRadius,
-            token: res.data.user.token,
-            profileImage: res.data.user.profileImage ? res.data.user.profileImage.uniqueFilename : '',
-            headshot: res.data.user.headshot ? res.data.user.headshot.uniqueFilename : '',
-            isBasicInfoCompleted: res.data.user.isBasicInfoCompleted,
-            productionId: res.data.user.companyDetails ? res.data.user.companyDetails._id : '',
-            unionStatus: res.data.user.unionStatus,
-            subscriptionId: res.data.user.subscriptionId ? res.data.user.subscriptionId : '',
-            planCode: res.data.user.planCode ? res.data.user.planCode : '',
-            planName: res.data.user.planName ? res.data.user.planName : '',
-            subscribedDate: res.data.user.subscribedDate ? res.data.user.subscribedDate : '',
-            expiryDate: res.data.user.expiryDate ? res.data.user.expiryDate : '',
-            planPrice: res.data.user.planPrice ? res.data.user.planPrice.amount : '',
-            userSubscriptionTblId: res.data.user.userSubscriptionTblId ? res.data.user.userSubscriptionTblId : ''
+            id: res.Data.LoggedInUserId,
+            Email: res.Data.Email,
+            UserName: res.Data.UserName,
+            AccessToken: res.Data.AccessToken,
+            Company: res.Data.Company,
+            CompanyId: res.Data.CompanyId,
+            Mobile: res.Data.Mobile,
+            Permissions: res.Data.Permissions,
+            Plants: res.Data.Plants,
+            Roles: res.Data.Roles,
+            Title: res.Data.Title,
         };
         console.log("userObj", userObj)
         return userObj;

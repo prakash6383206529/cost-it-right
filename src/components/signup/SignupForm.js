@@ -14,7 +14,8 @@ import {
   email,
   minLength7,
   maxLength70,
-  alphabetsOnlyForName
+  alphabetsOnlyForName,
+  number
 } from "../../helper/validation";
 import {
   renderPasswordInputField,
@@ -53,14 +54,7 @@ class Signup extends Component {
   * @method componentDidMount
   * @description used to called after mounting component
   */
-  componentDidMount() {
-    const isLoggedIn = reactLocalStorage.getObject('isLoggedIn');
-    if (isLoggedIn == true) {
-      this.setState({
-        isRedirect: true
-      })
-    }
-  }
+  componentDidMount() { }
 
   /**
    * @name Capitalize
@@ -68,52 +62,6 @@ class Signup extends Component {
    */
   Capitalize = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  /**
-   * @name onSubmit
-   * @param values
-   * @desc Submit the signup form values.
-   * @returns {{}}
-   */
-  onSubmit(values) {
-    values.username = values.email.toLowerCase();
-    values.accountType = "Performer";
-    values.registrationType = "mobile";
-    //this.state.isSubmitted = true;
-    this.setState({ isLoader: true, isSubmitted: true })
-    this.props.registerUserAPI(values, res => {
-      this.setState({ isSubmitted: false, isLoader: false })
-      const status = res.status;
-      if (res && res.status) {
-        if (status === 200) {
-          if (res.data.success === true) {
-            toastr.success(MESSAGES.REGISTRATION_SUCCESS);
-            reactLocalStorage.setObject("userData", values);
-            reactLocalStorage.setObject('verificationStatus', true);
-            setTimeout(() => {
-              window.location.assign("/verification");
-            }, 2000);
-          } else {
-            if (typeof res.data.errfor.username != "undefined") {
-              toastr.error(MESSAGES.EMAIL_ALREADY_EXIST);
-            } else if (res.data.errfor.email) {
-              toastr.error(MESSAGES.EMAIL_ALREADY_EXIST);
-            } else {
-              toastr.error(MESSAGES.SOME_ERROR);
-            }
-          }
-        } else {
-          if (status === 422) {
-            toastr.error(MESSAGES.SOME_ERROR);
-          } else {
-            toastr.error(MESSAGES.SOME_ERROR);
-          }
-        }
-      } else {
-        this.setState({ isLoader: false });
-      }
-    });
   }
 
   /**
@@ -186,20 +134,25 @@ class Signup extends Component {
   showHidePasswordHandler = () => {
     this.setState({ isShowHidePassword: !this.state.isShowHidePassword })
   }
+
+  /**
+   * @name onSubmit
+   * @param values
+   * @desc Submit the signup form values.
+   * @returns {{}}
+   */
+  onSubmit(values) {
+    console.log("signup values", values)
+    values.MiddleName = values.MiddleName
+    this.props.registerUserAPI(values, res => {
+      console.log('register res', res)
+    })
+  }
+
+
   render() {
     const { handleSubmit } = this.props;
-    const {
-      isLoader,
-      isSubmitted,
-      isRedirect
-    } = this.state;
-
-    if (isRedirect == true) {
-      return <Redirect
-        to={{
-          pathname: "/dashboard",
-        }} />
-    }
+    const { isLoader, isSubmitted } = this.state;
 
     return (
       <div>
@@ -213,13 +166,10 @@ class Signup extends Component {
             </div>
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
               <div className=" row form-group">
-                <div className="input-group col-md-6 input-withouticon" >
-                  {/* <div className="input-group-prepend ">
-                    <span className="input-group-text bg-white"><i className="fas fa-phone fa-rotate-90"></i></span>
-                </div> */}
+                <div className="input-group col-md-4 input-withouticon" >
                   <Field
                     label="First Name"
-                    name={"firstName"}
+                    name={"FirstName"}
                     type="text"
                     placeholder={''}
                     validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
@@ -228,10 +178,22 @@ class Signup extends Component {
                     maxLength={26}
                   />
                 </div>
-                <div className="input-group  col-md-6 input-withouticon">
+                <div className="input-group  col-md-4 input-withouticon">
+                  <Field
+                    label="Middle Name"
+                    name={"MiddleName"}
+                    type="text"
+                    placeholder={''}
+                    validate={[alphabetsOnlyForName]}
+                    component={renderText}
+                    required={false}
+                    maxLength={26}
+                  />
+                </div>
+                <div className="input-group  col-md-4 input-withouticon">
                   <Field
                     label="Last Name"
-                    name={"lastName"}
+                    name={"LastName"}
                     type="text"
                     placeholder={''}
                     validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
@@ -242,23 +204,48 @@ class Signup extends Component {
                 </div>
               </div>
               <div className="row form-group">
-                <div className="input-group col-md-12">
+                <div className="input-group col-md-4">
                   <Field
                     name="email"
                     label="Email Address"
                     component={renderEmailInputField}
                     isDisabled={false}
-                    placeholder={'email@domain.com/co.us'}
+                    placeholder={''}
                     validate={[required, email, minLength7, maxLength70]}
                     required={true}
                     maxLength={70}
+                  />
+                </div>
+                <div className="input-group col-md-4">
+                  <Field
+                    name="Mobile"
+                    label="Mobile"
+                    type="text"
+                    placeholder={''}
+                    component={renderText}
+                    isDisabled={false}
+                    validate={[required, number, minLength7]}
+                    required={true}
+                    maxLength={70}
+                  />
+                </div>
+                <div className="input-group col-md-4 input-withouticon" >
+                  <Field
+                    label="Role Name"
+                    name={"RoleName"}
+                    type="text"
+                    placeholder={''}
+                    validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                    component={renderText}
+                    required={true}
+                    maxLength={26}
                   />
                 </div>
               </div>
               <div className="row form-group">
                 <div className="input-group col-md-6">
                   <Field
-                    name="password"
+                    name="Password"
                     label="Password"
                     placeholder="Must have atleast 5 characters"
                     component={renderPasswordInputField}
@@ -286,14 +273,6 @@ class Signup extends Component {
                   />
                 </div>
               </div>
-              <div className="row form-group">
-                <div className="col-md-12 text-center">
-                  <p>
-                    By creating an account you are agree to our <a className="yellow-color" target="_blank" href="/terms-conditions" target='blank'>Terms & Conditions </a>
-                    and <a className="yellow-color" target="_blank" href="/privacy-policy">Privacy Policy.</a>
-                  </p>
-                </div>
-              </div>
 
               <div className="text-center ">
                 <input
@@ -304,17 +283,6 @@ class Signup extends Component {
                 />
               </div>
             </form>
-            {/* <div className="row">
-              <div className="col-md-12 text-center login-social">
-                <p className="m-3" >or login through social media</p>
-                <ul className="list-unstyled d-flex text-center m-b0">
-                  <li><a href=""><span className="fb-icon"><i className="fab fa-facebook-f"></i></span></a></li>
-                  <li><a href=""><span className="insta-icon"><i className="fab fa-instagram"></i></span></a></li>
-                  <li><a href=""><span className=" google-icon"><i className="fab fa-google"></i></span></a></li>
-                </ul>
-              </div>
-            </div> */}
-            
           </div>
         </div>
       </div>
@@ -335,7 +303,7 @@ function validate(values) {
   // if (vlidatePhoneNumber(values.phone)) {
   //   errors.phone = langs.validation_messages.phone_number_pattern;
   // }
-  if (values.passwordConfirm !== values.password) {
+  if (values.passwordConfirm !== values.Password) {
     errors.passwordConfirm =
       langs.validation_messages.password_confirm_password;
   }
@@ -372,9 +340,6 @@ export default reduxForm({
   onSubmitFail: errors => {
     focusOnError(errors);
   }
-})(
-  connect(
-    mapStateToProps,
-    { registerUserAPI }
-  )(Signup)
-);
+})(connect(mapStateToProps,
+  { registerUserAPI }
+)(Signup));

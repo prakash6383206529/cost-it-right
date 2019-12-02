@@ -6,7 +6,10 @@ import {
     GET_PLANT_COMBO_SUCCESS,
     GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
     CREATE_PART_WITH_SUPPLIER_SUCCESS,
-    GET_COSTING_BY_COSTINGID
+    GET_COSTING_BY_COSTINGID,
+    GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS,
+    SET_CED_ROW_DATA_TO_COST_SUMMARY,
+    SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -123,7 +126,7 @@ export function checkPartWithTechnology(data, callback) {
  * @method getCostingByCostingId
  * @description get costing by costingId
  */
-export function getCostingByCostingId(costingId, callback) {
+export function getCostingByCostingId(costingId, supplier, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getCostingByCostingId}/${costingId}`, headers);
@@ -132,6 +135,7 @@ export function getCostingByCostingId(costingId, callback) {
                 dispatch({
                     type: GET_COSTING_BY_COSTINGID,
                     payload: response.data.Data,
+                    supplier: supplier,
                 });
                 callback(response);
             } else {
@@ -142,5 +146,62 @@ export function getCostingByCostingId(costingId, callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+
+/**
+ * @method getCostSummaryOtherOperation
+ * @description get all other operation for cost summary 
+ */
+export function getCostSummaryOtherOperation(supplierId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCostSummaryOtherOperationList}/${supplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+        });
+    };
+}
+
+
+/**
+ * @method setRowDataCEDOtherOps
+ * @description set row data to ced for cost summary CED
+ */
+export function setRowDataCEDOtherOps(supplier, data, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_CED_ROW_DATA_TO_COST_SUMMARY,
+            payload: data,
+            supplierColumn: supplier,
+        });
+        callback();
+    };
+}
+
+/**
+ * @method setRowDataCEDOtherOps
+ * @description set row data to ced for cost summary CED
+ */
+export function setRowDataFreight(supplier, data, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY,
+            payload: data,
+            supplierColumn: supplier,
+        });
+        callback();
     };
 }

@@ -407,3 +407,11 @@ label.vbcwrapper {
 .mt40 {
   margin-top: 40px;
 }
+.costSummary-form .inputbox {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.costSummary-form .withoutBorder {
+  border: 1px solid #ced4da !important;
+}

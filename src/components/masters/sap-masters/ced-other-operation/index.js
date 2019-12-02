@@ -115,27 +115,27 @@ class CEDoperationMaster extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
-                        { this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>Supplier Code</th>
-                                    <th>Supplier Name</th>
-                                    <th>Process</th>
-                                    <th>Operation Rate</th>
-                                    <th>UOM</th>
-                                    <th>Trans. Rate</th>
-                                    <th>Trans. UOM</th>
-                                    <th>Overhead/Profit(%)</th>
-                                    <th>Initiator</th>
-                                    <th>Created On</th>
-                                </tr>
-                            </thead>}
+                            {this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>Supplier Code</th>
+                                        <th>Supplier Name</th>
+                                        <th>Process</th>
+                                        <th>Operation Rate</th>
+                                        <th>UOM</th>
+                                        <th>Trans. Rate</th>
+                                        <th>Trans. UOM</th>
+                                        <th>Overhead/Profit(%)</th>
+                                        <th>Initiator</th>
+                                        <th>Created On</th>
+                                    </tr>
+                                </thead>}
                             <tbody >
                                 {this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
                                     this.props.cedOtherOperationList.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td >{item.SupplierId}</td>
+                                                <td >{item.SupplierCode}</td>
                                                 <td>{item.SupplierName}</td>
                                                 <td>{item.OperationName}</td>
                                                 <td>{item.OperationRate}</td>
@@ -152,7 +152,7 @@ class CEDoperationMaster extends Component {
                                             </tr>
                                         )
                                     })}
-                                     {this.props.cedOtherOperationList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.cedOtherOperationList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

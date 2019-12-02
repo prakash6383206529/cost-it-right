@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Container, Col, CardTitle } from 'reactstrap';
 import { Loader } from '../../common/Loader';
-import { renderText, renderSelectField, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderSelectField, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, fetchCostingHeadsAPI, fetchModelTypeAPI } from '../../../actions/master/Comman';
 import {
     getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier,
@@ -12,6 +12,10 @@ import {
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
+import { required } from '../../../helper';
+import OtherOperationsModal from './OtherOperationsModal';
+import CEDotherOperations from './CEDotherOperations';
+import AddFreightModal from './AddFreightModal';
 
 
 class CostSummary extends Component {
@@ -41,7 +45,11 @@ class CostSummary extends Component {
             netRMCostSupplier1: '',
             netRMCostSupplier2: '',
             netRMCostSupplier3: '',
-            modelTypeZBC: ''
+            modelTypeZBC: '',
+            isShowOtherOpsModal: false,
+            isShowCEDotherOpsModal: false,
+            supplierColumn: '',
+            isShowFreightModal: false,
         }
     }
 
@@ -54,6 +62,20 @@ class CostSummary extends Component {
         this.props.getPlantCombo(res => { });
         this.props.fetchCostingHeadsAPI('--select--', () => { })
         this.props.fetchModelTypeAPI('--Model Type--', () => { })
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.costingData && nextProps.costingData.supplierOne && (nextProps.costingData.supplierOne != this.props.costingData.supplierOne)) {
+            this.props.change("supplier1Data", nextProps.costingData.supplierOne.CostingDetail)
+        }
+
+        if (nextProps.costingData && nextProps.costingData.supplierTwo && (nextProps.costingData.supplierTwo != this.props.costingData.supplierTwo)) {
+            this.props.change("supplierTwo", nextProps.costingData.supplierTwo.CostingDetail)
+        }
+
+        if (nextProps.costingData && nextProps.costingData.supplierThree && (nextProps.costingData.supplierThree != this.props.costingData.supplierThree)) {
+            this.props.change("supplier3Data", nextProps.costingData.supplierThree.CostingDetail)
+        }
     }
 
     /**
@@ -419,38 +441,54 @@ class CostSummary extends Component {
         })
     }
 
-    activeZBCSupplierHandler = (e) => {
+    activeZBCSupplierHandler = (e, supplier) => {
         this.setState({
             activeZBCSupplier: e.target.value
         })
     }
 
-    activeSupplierHandler1 = (e) => {
+    activeSupplierHandler1 = (e, supplier) => {
         this.setState({
             activeSupplier1: e.target.value
+        }, () => {
+            if (e.target.value != '' && e.target.value != 0) {
+                this.props.getCostingByCostingId(this.state.activeSupplier1, supplier, (res) => {
+                    if (res.data.Result) {
+                        const { costingData } = this.props;
+                        this.props.change("supplier1Data", costingData.supplierOne.CostingDetail)
+                    }
+                })
+            }
         })
     }
 
-    activeSupplierHandler2 = (e) => {
+    activeSupplierHandler2 = (e, supplier) => {
         this.setState({
             activeSupplier2: e.target.value
         }, () => {
-            this.props.getCostingByCostingId(this.state.activeSupplier2, (res) => {
-                if (res.data.Data) {
-                    const { supplier2CostingData } = this.props;
-                    console.log("ModelTypes", supplier2CostingData.ModelTypes)
-
-
-
-
-                }
-            })
+            if (e.target.value != '' && e.target.value != 0) {
+                this.props.getCostingByCostingId(this.state.activeSupplier2, supplier, (res) => {
+                    if (res.data.Result) {
+                        const { costingData } = this.props;
+                        this.props.change("supplier2Data", costingData.supplierTwo.CostingDetail)
+                    }
+                })
+            }
         })
     }
 
-    activeSupplierHandler3 = (e) => {
+    activeSupplierHandler3 = (e, supplier) => {
         this.setState({
             activeSupplier3: e.target.value
+        }, () => {
+            if (e.target.value != '' && e.target.value != 0) {
+                this.props.getCostingByCostingId(this.state.activeSupplier3, supplier, (res) => {
+                    if (res.data.Result) {
+                        const { costingData } = this.props;
+                        this.props.change("supplier3Data", costingData.supplierThree.CostingDetail)
+                    }
+                })
+            }
         })
     }
 
@@ -512,6 +550,71 @@ class CostSummary extends Component {
     }
 
     /**
+    * @method otherOperationCostToggle
+    * @description Used for add other Operation Cost heads
+    */
+    otherOperationCostToggle = (supplierIdForOtherOps, supplierColumn) => {
+        this.setState({
+            isShowOtherOpsModal: true,
+            supplierIdForOtherOps: supplierIdForOtherOps,
+            supplierColumn: supplierColumn,
+        })
+    }
+
+    /**
+     * @method onCancel
+     * @description  used to cancel other operation modal
+     */
+    onCancel = () => {
+        this.setState({
+            isShowOtherOpsModal: false,
+        });
+    }
+
+
+    /**
+     * @method otherOperationCostToggle
+     * @description Used for add other Operation Cost heads
+     */
+    CEDotherOperationToggle = (supplierColumn) => {
+        this.setState({
+            isShowCEDotherOpsModal: true,
+            supplierColumn: supplierColumn,
+        })
+    }
+
+    /**
+     * @method onCancelCEDotherOps
+     * @description  used to cancel CED other Operation model
+     */
+    onCancelCEDotherOps = () => {
+        this.setState({
+            isShowCEDotherOpsModal: false,
+        });
+    }
+
+    /**
+     * @method AddFreightToggle
+     * @description Used for toggle freight
+     */
+    AddFreightToggle = (supplierColumn) => {
+        this.setState({
+            isShowFreightModal: true,
+            supplierColumn: supplierColumn,
+        })
+    }
+
+    /**
+     * @method onCancelCEDotherOps
+     * @description  used to cancel CED other Operation model
+     */
+    onCancelFreight = () => {
+        this.setState({
+            isShowFreightModal: false,
+        });
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
@@ -524,14 +627,20 @@ class CostSummary extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, ZBCSupplier, supplier2CostingData } = this.props;
-        const { supplier, supplier2, supplier3 } = this.state;
+        const { handleSubmit, ZBCSupplier } = this.props;
+        const { supplier, supplier2, supplier3, isShowOtherOpsModal, supplierIdForOtherOps,
+            supplierColumn, isShowCEDotherOpsModal, isShowFreightModal } = this.state;
+
+        let supplier1Data = 'supplier1Data';
+        let supplier2Data = 'supplier2Data';
+        let supplier3Data = 'supplier3Data';
+
         return (
             <div>
                 {this.props.loading && <Loader />}
                 <form
                     noValidate
-                    className="form"
+                    className="form costSummary-form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 >
                     <Row>
@@ -650,7 +759,7 @@ class CostSummary extends Component {
                             </Col>
                             <Col md="2" className={'existing-supplier'}>
                                 {this.state.hideButtonAdd1 &&
-                                    <button onClick={this.addSupplier1} className={'btn btn-secondary'}>Add</button>
+                                    <button type="button" onClick={this.addSupplier1} className={'btn btn-secondary'}>Add</button>
                                 }
                             </Col>
 
@@ -700,7 +809,7 @@ class CostSummary extends Component {
                             </Col>
                             <Col md="2" className={'existing-supplier'}>
                                 {this.state.hideButtonAdd2 &&
-                                    <button onClick={this.addSupplier2} className={'btn btn-secondary'}>Add</button>
+                                    <button type="button" onClick={this.addSupplier2} className={'btn btn-secondary'}>Add</button>
                                 }
                             </Col>
 
@@ -750,7 +859,7 @@ class CostSummary extends Component {
                             </Col>
                             <Col md="2" className={'existing-supplier'}>
                                 {this.state.hideButtonAdd3 &&
-                                    <button onClick={this.addSupplier3} className={'btn btn-secondary'}>Add</button>
+                                    <button type="button" onClick={this.addSupplier3} className={'btn btn-secondary'}>Add</button>
                                 }
                             </Col>
                         </Col>
@@ -758,9 +867,9 @@ class CostSummary extends Component {
                     </Row>
                     <hr />
                     <Row>
-                        <Col md="1">ZBC V/s VBC</Col>
-                        <Col md="2">
-                            <div>ZBC</div>
+                        <Col md="12" className={'dark-divider'}>ZBC V/s VBC</Col>
+                        <Col md="3">
+                            {/* <div>ZBC</div> */}
                             {ZBCSupplier && <a href="javascript:void(0)" >{`${ZBCSupplier.SupplierName}`}</a>}
                             {ZBCSupplier && ZBCSupplier.ZBCCostings &&
                                 <Field
@@ -793,7 +902,7 @@ class CostSummary extends Component {
                                         // required={true}
                                         className=" withoutBorder custom-select"
                                         options={this.renderTypeOfListing('supplierDropdown1')}
-                                        onChange={this.activeSupplierHandler1}
+                                        onChange={(e) => this.activeSupplierHandler1(e, 'supplierOne')}
                                         optionValue={'Value'}
                                         optionLabel={'Text'}
                                         component={renderSelectField}
@@ -814,7 +923,7 @@ class CostSummary extends Component {
                                     // required={true}
                                     className=" withoutBorder custom-select"
                                     options={this.renderTypeOfListing('supplierDropdown2')}
-                                    onChange={this.activeSupplierHandler2}
+                                    onChange={(e) => this.activeSupplierHandler2(e, 'supplierTwo')}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -822,7 +931,7 @@ class CostSummary extends Component {
                             }
                         </Col>
                         <Col md="3">
-                            {!this.state.addSupplier3 && this.state.supplierTwoName == '' && <div>Supplier3</div>}
+                            {!this.state.addSupplier3 && this.state.supplierThreeName == '' && <div>Supplier3</div>}
                             {this.state.supplierThreeName != '' && <a href="javascript:void(0)" onClick={() => this.supplierCosting(supplier3.value)} >{`${this.state.supplierThreeName}`}</a>}
                             {this.state.addSupplier3 &&
                                 <Field
@@ -834,7 +943,7 @@ class CostSummary extends Component {
                                     // required={true}
                                     className=" withoutBorder custom-select"
                                     options={this.renderTypeOfListing('supplierDropdown3')}
-                                    onChange={this.activeSupplierHandler3}
+                                    onChange={(e) => this.activeSupplierHandler3(e, 'supplierThree')}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -848,10 +957,10 @@ class CostSummary extends Component {
                         <Col>A) Material Cost</Col>
                     </Row>
                     <Row>
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Net RM Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <input
                                 type="text"
                                 disabled
@@ -860,66 +969,151 @@ class CostSummary extends Component {
                                 title="NET NRM Cost" />
                         </Col>
                         <Col md="3">
-                            <input
+                            {/* <input
                                 type="text"
                                 disabled
                                 className={'mt20'}
                                 value={this.state.netRMCostSupplier1}
-                                title="NET NRM Cost" />
+                                title="NET NRM Cost" /> */}
+
+                            <Field
+                                label={``}
+                                name={`${supplier1Data}.NetRawMaterialCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="NET NRM Cost"
+                            />
                         </Col>
                         <Col md="3">
-                            <input
+                            {/* <input
                                 type="text"
                                 disabled
                                 className={'mt20'}
                                 value={this.state.netRMCostSupplier2}
-                                title="NET NRM Cost" />
+                                title="NET NRM Cost" /> */}
+
+                            <Field
+                                label={``}
+                                name={`${supplier2Data}.NetRawMaterialCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="NET NRM Cost"
+                            />
                         </Col>
                         <Col md="3">
-                            <input
+                            {/* <input
                                 type="text"
                                 disabled
                                 className={'mt20'}
                                 value={this.state.netRMCostSupplier3}
-                                title="NET NRM Cost" />
+                                title="NET NRM Cost" /> */}
+
+                            <Field
+                                label={``}
+                                name={`${supplier3Data}.NetRawMaterialCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="NET NRM Cost"
+                            />
                         </Col>
 
-                        <Col md="1" className={'mt20'}>
+                        <Col md="12" className={'dark-divider'}>
                             ECO No.
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <input
                                 type="text"
                                 className={'mt20'}
                                 value={this.state.ecoNoZBC}
                                 title="Enter ECO No" />
+
                         </Col>
                         <Col md="3">
-                            <input
+                            {/* <input
                                 type="text"
                                 className={'mt20'}
                                 value={this.state.ecoNoSupplier1}
-                                title="Enter ECO No" />
+                                title="Enter ECO No" /> */}
+
+                            <Field
+                                label={``}
+                                name={`${supplier1Data}.ECONumber`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Enter ECO No"
+                            />
                         </Col>
                         <Col md="3">
-                            <input
+                            {/* <input
                                 type="text"
                                 className={'mt20'}
                                 value={this.state.ecoNoSupplier2}
-                                title="Enter ECO No" />
+                                title="Enter ECO No" /> */}
+
+                            <Field
+                                label={``}
+                                name={`${supplier2Data}.ECONumber`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Enter ECO No"
+                            />
                         </Col>
                         <Col md="3">
-                            <input
+                            {/* <input
                                 type="text"
                                 className={'mt20'}
                                 value={this.state.ecoNoSupplier3}
-                                title="Enter ECO No" />
+                                title="Enter ECO No" /> */}
+
+                            <Field
+                                label={``}
+                                name={`${supplier3Data}.ECONumber`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Enter ECO No"
+                            />
                         </Col>
 
-                        <Col md="1" className={'mt20'}>
+                        <Col md="12" className={'dark-divider'}>
                             Rev No.
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <input
                                 type="text"
                                 className={'mt20'}
@@ -927,13 +1121,57 @@ class CostSummary extends Component {
                                 title="Enter Rev No" />
                         </Col>
                         <Col md="3">
-                            <input type="text" className={'mt20'} value={this.state.revNoSupplier1} title="Enter Rev No" />
+                            {/* <input 
+                            type="text" 
+                            className={'mt20'} 
+                            value={this.state.revNoSupplier1} 
+                            title="Enter Rev No" /> */}
+
+                            <Field
+                                label={``}
+                                name={`${supplier1Data}.RevsionNumber`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Enter Rev No"
+                            />
                         </Col>
                         <Col md="3">
-                            <input type="text" className={'mt20'} value={this.state.revNoSupplier2} title="Enter Rev No" />
+                            {/* <input type="text" className={'mt20'} value={this.state.revNoSupplier2} title="Enter Rev No" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier2Data}.RevsionNumber`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Enter Rev No"
+                            />
                         </Col>
                         <Col md="3">
-                            <input type="text" className={'mt20'} value={this.state.revNoSupplier3} title="Enter Rev No" />
+                            {/* <input type="text" className={'mt20'} value={this.state.revNoSupplier3} title="Enter Rev No" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier3Data}.RevsionNumber`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Enter Rev No"
+                            />
                         </Col>
                     </Row>
                     <hr />
@@ -944,20 +1182,59 @@ class CostSummary extends Component {
                         <Col>B) BOP/Job Cost</Col>
                     </Row>
                     <Row>
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Total BOP/Job Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <input type="text" disabled value={this.state.totalBOPCostZBC} className={'mt20'} title="Total BOP/Job Cost" />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.totalBOPCostSupplier1} className={'mt20'} title="Total BOP/Job Cost" />
+                            {/* <input type="text" disabled value={this.state.totalBOPCostSupplier1} className={'mt20'} title="Total BOP/Job Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier1Data}.NetBoughtOutParCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Total BOP/Job Cost"
+                            />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.totalBOPCostSupplier2} className={'mt20'} title="Total BOP/Job Cost" />
+                            {/* <input type="text" disabled value={this.state.totalBOPCostSupplier2} className={'mt20'} title="Total BOP/Job Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier2Data}.NetBoughtOutParCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Total BOP/Job Cost"
+                            />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.totalBOPCostSupplier3} className={'mt20'} title="Total BOP/Job Cost" />
+                            {/* <input type="text" disabled value={this.state.totalBOPCostSupplier3} className={'mt20'} title="Total BOP/Job Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier3Data}.NetBoughtOutParCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Total BOP/Job Cost"
+                            />
                         </Col>
                     </Row>
                     <hr />
@@ -969,76 +1246,232 @@ class CostSummary extends Component {
                         <Col>C) Conversion Cost</Col>
                     </Row>
                     <Row>
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Process Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <input type="text" disabled value={this.state.processCostZBC} className={'mt20'} title="Process Cost" />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.processCostSupplier1} className={'mt20 supplier-input'} title="Process Cost" />
+                            {/* <input type="text" disabled value={this.state.processCostSupplier1} className={'mt20 supplier-input'} title="Process Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier1Data}.NetProcessCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Process Cost"
+                            />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.processCostSupplier2} className={'mt20 supplier-input'} title="Process Cost" />
+                            {/* <input type="text" disabled value={this.state.processCostSupplier2} className={'mt20 supplier-input'} title="Process Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier2Data}.NetProcessCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Process Cost"
+                            />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.processCostSupplier3} className={'mt20 supplier-input'} title="Process Cost" />
+                            {/* <input type="text" disabled value={this.state.processCostSupplier3} className={'mt20 supplier-input'} title="Process Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier3Data}.NetProcessCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Process Cost"
+                            />
                         </Col>
 
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Other Operation Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <input type="text" disabled value={this.state.otherOpsCostZBC} className={'mt20 zbc-input'} title="Other Operation Cost" />
-                            <button className={'btn btn-primary'}>Show</button>
+                            <button type="button" className={'btn btn-primary'}>Show</button>
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.otherOpsCostSupplier1} className={'mt20'} title="Other Operation Cost" />
-                            <button className={'btn btn-primary'}>Show</button>
+                            {/* <input type="text" disabled value={this.state.otherOpsCostSupplier1} className={'mt20'} title="Other Operation Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier1Data}.NetOtherOperationCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Other Operation Cost"
+                            />
+                            <button type="button" className={'btn btn-primary'}>Show</button>
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.otherOpsCostSupplier2} className={'mt20'} title="Other Operation Cost" />
-                            <button className={'btn btn-primary'}>Show</button>
+                            {/* <input type="text" disabled value={this.state.otherOpsCostSupplier2} className={'mt20'} title="Other Operation Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier2Data}.NetOtherOperationCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Other Operation Cost"
+                            />
+                            <button type="button" className={'btn btn-primary'}>Show</button>
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.otherOpsCostSupplier3} className={'mt20'} title="Other Operation Cost" />
-                            <button className={'btn btn-primary'}>Show</button>
+                            {/* <input type="text" disabled value={this.state.otherOpsCostSupplier3} className={'mt20'} title="Other Operation Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier3Data}.NetOtherOperationCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Other Operation Cost"
+                            />
+                            <button type="button" onClick={() => this.otherOperationCostToggle(supplier3.value, "supplierThree")} className={'btn btn-primary'}>Show</button>
                         </Col>
 
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Surface Treatment
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <input type="text" value={this.state.surfaceTreatmentZBC} className={'mt20 zbc-input'} title="Surface Treatment" />
-                            <button className={'btn btn-primary'}>Show</button>
+                            <button type="button" className={'btn btn-primary'}>Show</button>
                         </Col>
                         <Col md="3">
-                            <input type="text" value={this.state.surfaceTreatmentSupplier1} className={'mt20'} title="Surface Treatment" />
-                            <button className={'btn btn-primary'}>Show</button>
+                            {/* <input type="text" value={this.state.surfaceTreatmentSupplier1} className={'mt20'} title="Surface Treatment" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier1Data}.SurfaceTreatmentCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Surface Treatment"
+                            />
+                            <button type="button" className={'btn btn-primary'}>Show</button>
                         </Col>
                         <Col md="3">
-                            <input type="text" value={this.state.surfaceTreatmentSupplier2} className={'mt20'} title="Surface Treatment" />
-                            <button className={'btn btn-primary'}>Show</button>
+                            {/* <input type="text" value={this.state.surfaceTreatmentSupplier2} className={'mt20'} title="Surface Treatment" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier2Data}.SurfaceTreatmentCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Surface Treatment"
+                            />
+                            <button type="button" className={'btn btn-primary'}>Show</button>
                         </Col>
                         <Col md="3">
-                            <input type="text" value={this.state.surfaceTreatmentSupplier3} className={'mt20'} title="Surface Treatment" />
-                            <button className={'btn btn-primary'}>Show</button>
+                            {/* <input type="text" value={this.state.surfaceTreatmentSupplier3} className={'mt20'} title="Surface Treatment" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier3Data}.SurfaceTreatmentCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={false}
+                                className="withoutBorder"
+                                title="Surface Treatment"
+                            />
+                            <button type="button" className={'btn btn-primary'}>Show</button>
                         </Col>
 
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Total Conversion Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <input type="text" disabled value={this.state.totalConvCostZBC} className={'mt20 zbc-input'} title="Total Conversion Cost" />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.totalConvCostSupplier1} className={'mt20 supplier-input'} title="Total Conversion Cost" />
+                            {/* <input type="text" disabled value={this.state.totalConvCostSupplier1} className={'mt20 supplier-input'} title="Total Conversion Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier1Data}.TotalConversionCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Total Conversion Cost"
+                            />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.totalConvCostSupplier2} className={'mt20 supplier-input'} title="Total Conversion Cost" />
+                            {/* <input type="text" disabled value={this.state.totalConvCostSupplier2} className={'mt20 supplier-input'} title="Total Conversion Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier2Data}.TotalConversionCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Total Conversion Cost"
+                            />
                         </Col>
                         <Col md="3">
-                            <input type="text" disabled value={this.state.totalConvCostSupplier3} className={'mt20 supplier-input'} title="Total Conversion Cost" />
+                            {/* <input type="text" disabled value={this.state.totalConvCostSupplier3} className={'mt20 supplier-input'} title="Total Conversion Cost" /> */}
+                            <Field
+                                label={``}
+                                name={`${supplier3Data}.TotalConversionCost`}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                value={0}
+                                //required={true}
+                                disabled={true}
+                                className="withoutBorder"
+                                title="Total Conversion Cost"
+                            />
                         </Col>
 
                     </Row>
@@ -1050,10 +1483,10 @@ class CostSummary extends Component {
                         <Col>D) Other Cost</Col>
                     </Row>
                     <Row>
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             {''}
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>Base</div>
                             <div className={'base-cost'}>Cost</div>
                         </Col>
@@ -1071,10 +1504,10 @@ class CostSummary extends Component {
                         </Col>
 
                         {/* ----------------ModelType-Overhead/Profit------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             ModelType-Overhead/Profit
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <Field
                                 label={``}
                                 name={"overhead-profit-zbc"}
@@ -1093,7 +1526,7 @@ class CostSummary extends Component {
                         <Col md="3">
                             <Field
                                 label={``}
-                                name={"overhead-profit-supplier1"}
+                                name={`${supplier1Data}.ModelTypeId`}
                                 type="text"
                                 placeholder={'Select Model Type'}
                                 //validate={[required]}
@@ -1109,7 +1542,7 @@ class CostSummary extends Component {
                         <Col md="3">
                             <Field
                                 label={``}
-                                name={"overhead-profit-supplier2"}
+                                name={`${supplier2Data}.ModelTypeId`}
                                 type="text"
                                 placeholder={'Select Model Type'}
                                 //validate={[required]}
@@ -1125,7 +1558,7 @@ class CostSummary extends Component {
                         <Col md="3">
                             <Field
                                 label={``}
-                                name={"overhead-profit-supplier3"}
+                                name={`${supplier3Data}.ModelTypeId`}
                                 type="text"
                                 placeholder={'Select Model Type'}
                                 //validate={[required]}
@@ -1141,10 +1574,10 @@ class CostSummary extends Component {
                         {/* ----------------ModelType-Overhead/Profit------------------- */}
 
                         {/* ----------------Overhead Percent start------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             {'Overhead % on'}
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <input type="text" disabled value={this.state.overheadPercentZBC} className={'mt20 overhead-percent-zbc'} title="OverHead Percent" />
                             </div>
@@ -1154,36 +1587,114 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.overheadPercentSupplier1} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" />
+                                {/* <input type="text" disabled value={this.state.overheadPercentSupplier1} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.OverheadPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    //required={true}
+                                    disabled={true}
+                                    className="withoutBorder"
+                                    title="OverHead Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.overheadCostSupplier1} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" />
+                                {/* <input type="text" disabled value={this.state.overheadCostSupplier1} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.OverheadCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    //required={true}
+                                    disabled={true}
+                                    className="withoutBorder"
+                                    title="OverHead Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.overheadPercentSupplier2} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" />
+                                {/* <input type="text" disabled value={this.state.overheadPercentSupplier2} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.OverheadPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    //required={true}
+                                    disabled={true}
+                                    className="withoutBorder"
+                                    title="OverHead Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.overheadCostSupplier2} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" />
+                                {/* <input type="text" disabled value={this.state.overheadCostSupplier2} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.OverheadCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    //required={true}
+                                    disabled={true}
+                                    className="withoutBorder"
+                                    title="OverHead Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.overheadPercentSupplier3} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" />
+                                {/* <input type="text" disabled value={this.state.overheadPercentSupplier3} className={'mt20 overhead-percent-supplier'} title="OverHead Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.OverheadPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    //required={true}
+                                    disabled={true}
+                                    className="withoutBorder"
+                                    title="OverHead Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.overheadCostSupplier3} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" />
+                                {/* <input type="text" disabled value={this.state.overheadCostSupplier3} className={'mt20 overhead-percent-supplier'} title="OverHead Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.OverheadCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    validate={[required]}
+                                    component={renderText}
+                                    value={0}
+                                    //required={true}
+                                    disabled={true}
+                                    className="withoutBorder"
+                                    title="OverHead Cost"
+                                />
                             </div>
                         </Col>
                         <hr />
                         {/* ----------------Overhead Percent ended------------------- */}
 
                         {/* ----------------Rejection (% on Matl + Conv.) start------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Rejection (% on Matl + Conv.)
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Rejection Type`}
@@ -1220,7 +1731,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Rejection Type`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier1Data}.RejectionTypeCostingHeadId`}
                                     type="text"
                                     placeholder={'---Select---'}
                                     //validate={[required]}
@@ -1234,7 +1745,7 @@ class CostSummary extends Component {
                                 />
                                 <Field
                                     label={`Rejection(%)`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier1Data}.RejectionPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1246,14 +1757,27 @@ class CostSummary extends Component {
                                 />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.rejectionCostSupplier1} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" />
+                                {/* <input type="text" disabled value={this.state.rejectionCostSupplier1} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.RejectionCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.rejectionCostSupplier1}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Rejection Type`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier2Data}.RejectionTypeCostingHeadId`}
                                     type="text"
                                     placeholder={'---Select---'}
                                     //validate={[required]}
@@ -1267,7 +1791,7 @@ class CostSummary extends Component {
                                 />
                                 <Field
                                     label={`Rejection(%)`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier2Data}.RejectionPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1279,14 +1803,27 @@ class CostSummary extends Component {
                                 />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.rejectionCostSupplier2} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" />
+                                {/* <input type="text" disabled value={this.state.rejectionCostSupplier2} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.RejectionCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.rejectionCostSupplier2}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Rejection Type`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier3Data}.RejectionTypeCostingHeadId`}
                                     type="text"
                                     placeholder={'---Select---'}
                                     //validate={[required]}
@@ -1300,7 +1837,7 @@ class CostSummary extends Component {
                                 />
                                 <Field
                                     label={`Rejection(%)`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier2Data}.RejectionPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1312,17 +1849,30 @@ class CostSummary extends Component {
                                 />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.rejectionCostSupplier3} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" />
+                                {/* <input type="text" disabled value={this.state.rejectionCostSupplier3} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" /> */}
+                                <Field
+                                    label={`Rejection(%)`}
+                                    name={`${supplier2Data}.RejectionCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.rejectionCostSupplier3}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100"
+                                />
                             </div>
                         </Col>
                         <hr />
                         {/* ----------------Rejection (% on Matl + Conv.) end------------------- */}
 
                         {/* ----------------RM inventorycost (% on No of days) start------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             RM inventorycost (% on No of days)
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Days`}
@@ -1348,7 +1898,7 @@ class CostSummary extends Component {
                                     className="withoutBorder"
                                     disabled={true}
                                 />
-                                <button>Ref ICC</button>
+                                <button type="button" >Ref ICC</button>
                             </div>
                             <div className={'base-cost'}>
                                 <input type="text" disabled value={this.state.rmInventoryCostZBC} className={'mt20 overhead-percent-supplier'} title="(((WIP Inventorycost / 100) * TotalBOP) + NetRM + Tcc) * WIP Inventory Days) / 365)" />
@@ -1358,7 +1908,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%) on RM+CC`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier1Data}.RMICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1368,12 +1918,12 @@ class CostSummary extends Component {
                                     className="withoutBorder rm-inventory"
                                     disabled={true}
                                 />
-                                <button>Ref ICC</button>
+                                <button type="button" >Ref ICC</button>
                             </div>
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Cost`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier1Data}.RMInventotyCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1389,7 +1939,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%)`}
-                                    name={"rmInventoryICCSupplier2"}
+                                    name={`${supplier2Data}.RMICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1399,12 +1949,12 @@ class CostSummary extends Component {
                                     className="withoutBorder rm-inventory"
                                     disabled={true}
                                 />
-                                <button>Refresh ICC</button>
+                                <button type="button" >Refresh ICC</button>
                             </div>
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Cost`}
-                                    name={"rmInventoryCostSupplier2"}
+                                    name={`${supplier2Data}.RMInventotyCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1420,7 +1970,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%)`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier3Data}.RMICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1430,12 +1980,12 @@ class CostSummary extends Component {
                                     className="withoutBorder rm-inventory"
                                     disabled={true}
                                 />
-                                <button>Refresh ICC</button>
+                                <button type="button" >Refresh ICC</button>
                             </div>
                             <div className={'base-cost'}>
                                 <Field
-                                    label={`ICC(%)`}
-                                    name={"rejection-zbc"}
+                                    label={`Cost`}
+                                    name={`${supplier3Data}.RMInventotyCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1452,10 +2002,10 @@ class CostSummary extends Component {
 
 
                         {/* ----------------WIP inventory cost start------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             WIP inventory cost (% on No of days)
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Days`}
@@ -1490,7 +2040,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%) on RM+CC`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier1Data}.WIPICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1504,7 +2054,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Cost`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier1Data}.WIPInventotyCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1520,7 +2070,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%)`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier2Data}.WIPICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1534,7 +2084,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Cost`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier2Data}.WIPInventotyCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1550,7 +2100,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%)`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier3Data}.WIPICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1564,7 +2114,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Cost`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier3Data}.WIPInventotyCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1580,10 +2130,10 @@ class CostSummary extends Component {
                         {/* ----------------WIP inventory cost end------------------- */}
 
                         {/* ----------------Payment terms Credit start------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Payment terms Credit (No of days)
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Days`}
@@ -1618,7 +2168,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%) on RM+CC`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier1Data}.PaymentTermsICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1632,7 +2182,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Cost`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier1Data}.PaymentTermsCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1649,7 +2199,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%)`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier2Data}.PaymentTermsICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1663,7 +2213,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Cost`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier2Data}.PaymentTermsCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1679,7 +2229,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`ICC(%)`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier3Data}.PaymentTermsICCPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1693,7 +2243,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={`Cost`}
-                                    name={"rejection-zbc"}
+                                    name={`${supplier3Data}.PaymentTermsCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -1709,10 +2259,10 @@ class CostSummary extends Component {
                         {/* ----------------Payment terms Credit end------------------- */}
 
                         {/* ----------------Profit start------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             {'Profit (% on'}
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <input type="text" disabled value={this.state.profitBaseZBC} className={'mt20 overhead-percent-zbc'} title="Profit Percent" />
                             </div>
@@ -1722,26 +2272,104 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.profitBaseSupplier1} className={'mt20 overhead-percent-supplier'} title="Profit Percent" />
+                                {/* <input type="text" disabled value={this.state.profitBaseSupplier1} className={'mt20 overhead-percent-supplier'} title="Profit Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.ProfitPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.profitBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Profit Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.profitCostSupplier1} className={'mt20 overhead-percent-supplier'} title="Profit Cost" />
+                                {/* <input type="text" disabled value={this.state.profitCostSupplier1} className={'mt20 overhead-percent-supplier'} title="Profit Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.ProfitCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.profitCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Profit Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.profitBaseSupplier2} className={'mt20 overhead-percent-supplier'} title="Profit Percent" />
+                                {/* <input type="text" disabled value={this.state.profitBaseSupplier2} className={'mt20 overhead-percent-supplier'} title="Profit Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.ProfitPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.profitBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Profit Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.profitCostSupplier2} className={'mt20 overhead-percent-supplier'} title="Profit Cost" />
+                                {/* <input type="text" disabled value={this.state.profitCostSupplier2} className={'mt20 overhead-percent-supplier'} title="Profit Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.ProfitCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.profitCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Profit Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.profitBaseSupplier3} className={'mt20 overhead-percent-supplier'} title="Profit Percent" />
+                                {/* <input type="text" disabled value={this.state.profitBaseSupplier3} className={'mt20 overhead-percent-supplier'} title="Profit Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.ProfitPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.profitBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Profit Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.profitCostSupplier3} className={'mt20 overhead-percent-supplier'} title="Profit Cost" />
+                                {/* <input type="text" disabled value={this.state.profitCostSupplier3} className={'mt20 overhead-percent-supplier'} title="Profit Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.ProfitCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.profitCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Profit Cost"
+                                />
                             </div>
                         </Col>
                         <hr />
@@ -1749,10 +2377,10 @@ class CostSummary extends Component {
 
 
                         {/* ----------------Freight start------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Freight
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={``}
@@ -1778,7 +2406,7 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 <Field
                                     label={``}
-                                    name={"freight-supplier1"}
+                                    name={`${supplier1Data}.FreightId`}
                                     type="text"
                                     placeholder={'---Select---'}
                                     //validate={[required]}
@@ -1790,17 +2418,43 @@ class CostSummary extends Component {
                                     optionLabel={'Text'}
                                     component={renderSelectField}
                                 />
-                                <input type="text" value={this.state.freightBaseSupplier1} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <input type="text" value={this.state.freightBaseSupplier1} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.FreightAmount`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.freightBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.freightCostSupplier1} className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" />
+                                {/* <input type="text" disabled value={this.state.freightCostSupplier1} className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.NetFreightCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.freightCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={``}
-                                    name={"freight-supplier2"}
+                                    name={`${supplier2Data}.FreightId`}
                                     type="text"
                                     placeholder={'---Select---'}
                                     //validate={[required]}
@@ -1812,17 +2466,43 @@ class CostSummary extends Component {
                                     optionLabel={'Text'}
                                     component={renderSelectField}
                                 />
-                                <input type="text" value={this.state.freightBaseSupplier2} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <input type="text" value={this.state.freightBaseSupplier2} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.FreightAmount`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.freightBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.freightCostSupplier2} className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" />
+                                {/* <input type="text" disabled value={this.state.freightCostSupplier2} className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.NetFreightCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.freightCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
                                 <Field
                                     label={``}
-                                    name={"freight-supplier3"}
+                                    name={`${supplier3Data}.FreightId`}
                                     type="text"
                                     placeholder={'---Select---'}
                                     //validate={[required]}
@@ -1834,23 +2514,49 @@ class CostSummary extends Component {
                                     optionLabel={'Text'}
                                     component={renderSelectField}
                                 />
-                                <input type="text" value={this.state.freightBaseSupplier3} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <input type="text" value={this.state.freightBaseSupplier3} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.FreightAmount`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.freightBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.freightCostSupplier3} className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" />
+                                {/* <input type="text" disabled value={this.state.freightCostSupplier3} className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.NetFreightCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.freightCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)"
+                                />
                             </div>
                         </Col>
                         <hr />
                         {/* ----------------Rejection (% on Matl + Conv.) end------------------- */}
 
                         {/* ----------------Additional Freight start------------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Additional Freight
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <input type="text" value={this.state.additionalFreightBaseZBC} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
-                                <button>Add Freight</button>
+                                <button type="button" >Add Freight</button>
                             </div>
                             <div className={'base-cost'}>
                                 {''}
@@ -1858,8 +2564,21 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.additionalFreightBaseSupplier1} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
-                                <button>Add Freight</button>
+                                {/* <input type="text" value={this.state.additionalFreightBaseSupplier1} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.NetAdditionalFreightCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.additionalFreightBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
+                                <button type="button" >Add Freight</button>
                             </div>
                             <div className={'base-cost'}>
                                 {''}
@@ -1867,8 +2586,21 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.additionalFreightBaseSupplier2} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
-                                <button>Add Freight</button>
+                                {/* <input type="text" value={this.state.additionalFreightBaseSupplier2} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.NetAdditionalFreightCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.additionalFreightBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
+                                <button type="button" >Add Freight</button>
                             </div>
                             <div className={'base-cost'}>
                                 {''}
@@ -1876,8 +2608,21 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.additionalFreightBaseSupplier3} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" />
-                                <button>Add Freight</button>
+                                {/* <input type="text" value={this.state.additionalFreightBaseSupplier3} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.NetAdditionalFreightCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.additionalFreightBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
+                                <button type="button" onClick={() => this.AddFreightToggle('supplierThree')}>Add Freight</button>
                             </div>
                             <div className={'base-cost'}>
                                 {''}
@@ -1885,7 +2630,6 @@ class CostSummary extends Component {
                         </Col>
                         <hr />
                         {/* ----------------Additional Freight end------------------- */}
-
                     </Row>
                     <hr />
                     {/* ------------------Other Cost end---------------- */}
@@ -1897,15 +2641,15 @@ class CostSummary extends Component {
                     </Row>
                     <Row>
                         {/* --------------CED Cost ----------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             CED Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <label>Operation</label>
                                 <input type="text" value={this.state.cedCostOperationBaseZBC} className={'mt10 overhead-percent-supplier'} title="" />
 
-                                <button title="Select CED Other Operation">CED Add</button>
+                                <button type="button" title="Select CED Other Operation">CED Add</button>
 
                                 <label>Rate</label>
                                 <input type="text" value={this.state.cedCostRateBaseZBC} className={'mt10 overhead-percent-supplier'} title="" />
@@ -1914,7 +2658,7 @@ class CostSummary extends Component {
                                 <label>Net Surface Area</label>
                                 <input type="text" disabled value={this.state.cedCostNetZBC} className={'mt10 overhead-percent-supplier'} title="" />
 
-                                <button title="Toggle Disabled">Toggle</button>
+                                <button type="button" title="Toggle Disabled">Toggle</button>
 
                                 <label>Cost</label>
                                 <input type="text" disabled value={this.state.cedCostCostZBC} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
@@ -1922,79 +2666,238 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>Operation</label>
-                                <input type="text" value={this.state.cedCostOperationBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <label>Operation</label>
+                                <input type="text" value={this.state.cedCostOperationBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={`Operation`}
+                                    name={`${supplier1Data}.CEDOperationName`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostOperationBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
 
-                                <button title="Select CED Other Operation">CED Add</button>
+                                <button type="button" title="Select CED Other Operation">CED Add</button>
 
-                                <label>Rate</label>
-                                <input type="text" value={this.state.cedCostRateBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="" />
+                                {/* <label>Rate</label>
+                                <input type="text" value={this.state.cedCostRateBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="" /> */}
+                                <Field
+                                    label={`Rate`}
+                                    name={`${supplier1Data}.CEDOperationRate`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostRateBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title=""
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <label>Net Surface Area</label>
-                                <input type="text" disabled value={this.state.cedCostNetSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <label>Net Surface Area</label>
+                                <input type="text" disabled value={this.state.cedCostNetSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={`Net Surface Area`}
+                                    name={`${supplier1Data}.NetSurfaceArea`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostNetSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title=""
+                                />
 
-                                <button title="Toggle Disabled">Toggle</button>
+                                <button type="button" title="Toggle Disabled">Toggle</button>
 
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.cedCostCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.cedCostCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier1Data}.NetSurfaceCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Sum(Qty*Net Surface area)*(Operation Rate)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>Operation</label>
-                                <input type="text" value={this.state.cedCostOperationBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <label>Operation</label>
+                                <input type="text" value={this.state.cedCostOperationBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={`Operation`}
+                                    name={`${supplier2Data}.CEDOperationName`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostOperationBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
 
-                                <button title="Select CED Other Operation">CED Add</button>
+                                <button type="button" title="Select CED Other Operation">CED Add</button>
 
-                                <label>Rate</label>
-                                <input type="text" value={this.state.cedCostRateBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="" />
+                                {/* <label>Rate</label>
+                                <input type="text" value={this.state.cedCostRateBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="" /> */}
+                                <Field
+                                    label={`Rate`}
+                                    name={`${supplier2Data}.CEDOperationRate`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostRateBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title=""
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <label>Net Surface Area</label>
-                                <input type="text" disabled value={this.state.cedCostNetSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <label>Net Surface Area</label>
+                                <input type="text" disabled value={this.state.cedCostNetSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={`Net Surface Area`}
+                                    name={`${supplier2Data}.NetSurfaceArea`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostNetSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title=""
+                                />
 
-                                <button title="Toggle Disabled">Toggle</button>
+                                <button type="button" title="Toggle Disabled">Toggle</button>
 
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.cedCostCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.cedCostCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier2Data}.NetSurfaceCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Sum(Qty*Net Surface area)*(Operation Rate)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>Operation</label>
-                                <input type="text" value={this.state.cedCostOperationBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <label>Operation</label>
+                                <input type="text" value={this.state.cedCostOperationBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={`Operation`}
+                                    name={`${supplier3Data}.CEDOperationName`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostOperationBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Freight Amount"
+                                />
 
-                                <button title="Select CED Other Operation">CED Add</button>
+                                <button
+                                    type="button"
+                                    onClick={() => this.CEDotherOperationToggle('supplierThree')}
+                                    title="Select CED Other Operation">CED Add</button>
 
-                                <label>Rate</label>
-                                <input type="text" value={this.state.cedCostRateBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="" />
+                                {/* <label>Rate</label>
+                                <input type="text" value={this.state.cedCostRateBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="" /> */}
+                                <Field
+                                    label={`Rate`}
+                                    name={`${supplier3Data}.CEDOperationRate`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostRateBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title=""
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <label>Net Surface Area</label>
-                                <input type="text" disabled value={this.state.cedCostNetSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" />
+                                {/* <label>Net Surface Area</label>
+                                <input type="text" disabled value={this.state.cedCostNetSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
+                                <Field
+                                    label={`Net Surface Area`}
+                                    name={`${supplier3Data}.NetSurfaceArea`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostNetSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title=""
+                                />
 
-                                <button title="Toggle Disabled">Toggle</button>
+                                <button type="button" title="Toggle Disabled">Toggle</button>
 
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.cedCostCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.cedCostCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier3Data}.NetSurfaceCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedCostCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Sum(Qty*Net Surface area)*(Operation Rate)"
+                                />
                             </div>
                         </Col>
                         <hr />
                         {/* ------------------CED Cost end---------------- */}
 
                         {/* ------------------Transportation Cost start---------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Transportation Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <label>Trans. Rate</label>
                                 <input type="text" disabled value={this.state.TransCostRateBaseZBC} className={'mt10 overhead-percent-supplier'} title="Transportation Rate" />
 
                                 <label>Net FinishWt</label>
                                 <input type="text" disabled value={this.state.TransCostFinishWtBaseZBC} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" />
-                                <button title="Toggle Disable">Toggle</button>
+                                <button type="button" title="Toggle Disable">Toggle</button>
                             </div>
                             <div className={'base-cost'}>
                                 <label>Cost</label>
@@ -2003,44 +2906,161 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>Trans. Rate</label>
-                                <input type="text" disabled value={this.state.TransCostRateBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Transportation Rate" />
+                                {/* <label>Trans. Rate</label>
+                                <input type="text" disabled value={this.state.TransCostRateBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Transportation Rate" /> */}
+                                <Field
+                                    label={`Trans. Rate`}
+                                    name={`${supplier1Data}.TransportationOperationRate`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostRateBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Transportation Rate"
+                                />
 
-                                <label>Net FinishWt</label>
-                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" />
-                                <button title="Toggle Disable">Toggle</button>
+                                {/* <label>Net FinishWt</label>
+                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" /> */}
+                                <Field
+                                    label={`Net FinishWt`}
+                                    name={`${supplier1Data}.TransportationOperationFinishWeight`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostFinishWtBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Net Finish Wt/Component"
+                                />
+                                <button type="button" title="Toggle Disable">Toggle</button>
                             </div>
                             <div className={'base-cost'}>
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.TransCostCostSupplier1} className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.TransCostCostSupplier1} className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier1Data}.TransportationOperationCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Sum(Qty*Finish Wt/Comp)*(Transportation Rate)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>Trans. Rate</label>
-                                <input type="text" disabled value={this.state.TransCostRateBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Transportation Rate" />
+                                {/* <label>Trans. Rate</label>
+                                <input type="text" disabled value={this.state.TransCostRateBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Transportation Rate" /> */}
+                                <Field
+                                    label={`Trans. Rate`}
+                                    name={`${supplier2Data}.TransportationOperationRate`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostRateBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Transportation Rate"
+                                />
 
-                                <label>Net FinishWt</label>
-                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" />
-                                <button title="Toggle Disable">Toggle</button>
+                                {/* <label>Net FinishWt</label>
+                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" /> */}
+                                <Field
+                                    label={`Net FinishWt`}
+                                    name={`${supplier2Data}.TransportationOperationFinishWeight`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostFinishWtBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Net Finish Wt/Component"
+                                />
+                                <button type="button" title="Toggle Disable">Toggle</button>
                             </div>
                             <div className={'base-cost'}>
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.TransCostCostSupplier2} className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.TransCostCostSupplier2} className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier2Data}.TransportationOperationCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Sum(Qty*Finish Wt/Comp)*(Transportation Rate)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>Trans. Rate</label>
-                                <input type="text" disabled value={this.state.TransCostRateBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Transportation Rate" />
+                                {/* <label>Trans. Rate</label>
+                                <input type="text" disabled value={this.state.TransCostRateBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Transportation Rate" /> */}
+                                <Field
+                                    label={`Trans. Rate`}
+                                    name={`${supplier3Data}.TransportationOperationRate`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostRateBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Transportation Rate"
+                                />
 
-                                <label>Net FinishWt</label>
-                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" />
-                                <button title="Toggle Disable">Toggle</button>
+                                {/* <label>Net FinishWt</label>
+                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" /> */}
+                                <Field
+                                    label={`Net FinishWt`}
+                                    name={`${supplier3Data}.TransportationOperationFinishWeight`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostFinishWtBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Net Finish Wt/Component"
+                                />
+                                <button type="button" title="Toggle Disable">Toggle</button>
                             </div>
                             <div className={'base-cost'}>
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.TransCostCostSupplier3} className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.TransCostCostSupplier3} className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier3Data}.TransportationOperationCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.TransCostCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Sum(Qty*Finish Wt/Comp)*(Transportation Rate)"
+                                />
                             </div>
                         </Col>
                         <hr />
@@ -2048,10 +3068,10 @@ class CostSummary extends Component {
 
 
                         {/* ------------------CED Overhead/Profit Cost start---------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             CED Overhead/Profit Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'base-cost'}>
                                 <label>OH/Profit (%)</label>
                                 <input type="text" disabled value={this.state.cedOHProfitBaseZBC} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
@@ -2063,32 +3083,110 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>OH/Profit (%)</label>
-                                <input type="text" disabled value={this.state.cedOHProfitBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                                {/* <label>OH/Profit (%)</label>
+                                <input type="text" disabled value={this.state.cedOHProfitBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" /> */}
+                                <Field
+                                    label={`OH/Profit (%)`}
+                                    name={`${supplier1Data}.OverheadProfitPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedOHProfitBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter CED Overhead/Profit (%)"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.cedOHCostSupplier1} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.cedOHCostSupplier1} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier1Data}.OverheadProfitCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedOHCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost)*(CED O/H - Profit %)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>OH/Profit (%)</label>
-                                <input type="text" disabled value={this.state.cedOHProfitBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                                {/* <label>OH/Profit (%)</label>
+                                <input type="text" disabled value={this.state.cedOHProfitBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" /> */}
+                                <Field
+                                    label={`OH/Profit (%)`}
+                                    name={`${supplier2Data}.OverheadProfitPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedOHProfitBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter CED Overhead/Profit (%)"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.cedOHCostSupplier2} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.cedOHCostSupplier2} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier2Data}.OverheadProfitCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedOHCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost)*(CED O/H - Profit %)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <label>OH/Profit (%)</label>
-                                <input type="text" disabled value={this.state.cedOHProfitBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                                {/* <label>OH/Profit (%)</label>
+                                <input type="text" disabled value={this.state.cedOHProfitBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" /> */}
+                                <Field
+                                    label={`OH/Profit (%)`}
+                                    name={`${supplier3Data}.OverheadProfitPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedOHProfitBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter CED Overhead/Profit (%)"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <label>Cost</label>
-                                <input type="text" disabled value={this.state.cedOHCostSupplier3} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                                {/* <label>Cost</label>
+                                <input type="text" disabled value={this.state.cedOHCostSupplier3} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" /> */}
+                                <Field
+                                    label={`Cost`}
+                                    name={`${supplier3Data}.OverheadProfitCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedOHCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost)*(CED O/H - Profit %)"
+                                />
                             </div>
                         </Col>
                         <hr />
@@ -2096,27 +3194,63 @@ class CostSummary extends Component {
 
 
                         {/* ------------------CED Remarks start---------------- */}
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Remarks
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'remarks'}>
                                 <textarea value={this.state.cedCostRemarksZBC} className={'mt10 overhead-percent-supplier'} />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.cedCostRemarksSupplier1} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.cedCostRemarksSupplier1} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier1Data}.CEDRemarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.cedCostRemarksSupplier1}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.cedCostRemarksSupplier2} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.cedCostRemarksSupplier2} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier2Data}.CEDRemarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.cedCostRemarksSupplier2}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.cedCostRemarksSupplier3} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.cedCostRemarksSupplier3} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier3Data}.CEDRemarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.cedCostRemarksSupplier3}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         {/* ----------CED Remarks end ----------------- */}
@@ -2124,130 +3258,322 @@ class CostSummary extends Component {
 
                     </Row>
                     <Row className={'dark-divider'} >
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             CED Total Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'full-width'}>
                                 <input type="text" disabled value={this.state.cedTotalZBC} className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.cedTotalSupplier1} className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " />
+                                {/* <input type="text" disabled value={this.state.cedTotalSupplier1} className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.CEDtotalCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedTotalSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.cedTotalSupplier2} className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " />
+                                {/* <input type="text" disabled value={this.state.cedTotalSupplier2} className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.CEDtotalCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedTotalSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.cedTotalSupplier3} className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " />
+                                {/* <input type="text" disabled value={this.state.cedTotalSupplier3} className={'mt10 overhead-percent-supplier'} title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost) " /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.CEDtotalCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.cedTotalSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost) + (Transportation Cost) + (CED O/H - Profit Cost)"
+                                />
                             </div>
                         </Col>
                     </Row>
 
                     <Row>
-                        <Col md="1">
+                        <Col md="12" className={'dark-divider'}>
                             Packaging Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'full-width'}>
                                 <input type="text" value={this.state.packagingCostZBC} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.packagingCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                                {/* <input type="text" value={this.state.packagingCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.PackagingCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.packagingCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Packaging Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.packagingCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                                {/* <input type="text" value={this.state.packagingCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.PackagingCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.packagingCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Packaging Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.packagingCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                                {/* <input type="text" value={this.state.packagingCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.PackagingCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.packagingCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Packaging Cost"
+                                />
                             </div>
                         </Col>
 
                         {/* ------------------CED Total Remarks start---------------- */}
-                        <Col md="1" className={'mt20'}>
+                        <Col md="12" className={'dark-divider'}>
                             Remarks
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'remarks'}>
                                 <textarea value={this.state.cedTotalRemarksZBC} className={'mt10 overhead-percent-supplier'} />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.cedTotalRemarksSupplier1} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.cedTotalRemarksSupplier1} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier1Data}.PackagingRemarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.cedTotalRemarksSupplier1}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.cedTotalRemarksSupplier2} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.cedTotalRemarksSupplier2} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier2Data}.PackagingRemarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.cedTotalRemarksSupplier2}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.cedTotalRemarksSupplier3} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.cedTotalRemarksSupplier3} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier3Data}.PackagingRemarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.cedTotalRemarksSupplier3}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         {/* ----------CED Total Remarks end ----------------- */}
 
                         {/* ------------------Other Cost start---------------- */}
-                        <Col md="1" className={'mt20'}>
+                        <Col md="12" className={'dark-divider'}>
                             Other cost if Any
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'full-width'}>
                                 <input type="text" value={this.state.otherCostZBC} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.otherCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                                {/* <input type="text" value={this.state.otherCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.OtherAnyCostAndCharges`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Packaging Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.otherCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                                {/* <input type="text" value={this.state.otherCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.OtherAnyCostAndCharges`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Packaging Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.otherCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" />
+                                {/* <input type="text" value={this.state.otherCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.OtherAnyCostAndCharges`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter Packaging Cost"
+                                />
                             </div>
                         </Col>
                         {/* ----------Other Cost end ----------------- */}
 
                         {/* ------------------Other Cost start---------------- */}
-                        <Col md="1" className={'mt20'}>
+                        <Col md="12" className={'dark-divider'}>
                             Total Other Costs
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'full-width'}>
                                 <input type="text" disabled value={this.state.totalOtherCostZBC} className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.totalOtherCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" />
+                                {/* <input type="text" disabled value={this.state.totalOtherCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.TotalOtherCosts`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.totalOtherCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.totalOtherCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" />
+                                {/* <input type="text" disabled value={this.state.totalOtherCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.TotalOtherCosts`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.totalOtherCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.totalOtherCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" />
+                                {/* <input type="text" disabled value={this.state.totalOtherCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.TotalOtherCosts`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.totalOtherCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Overhead% Cost + Rejection% Cost + RM Inventory Cost + WIP Inventory Cost + Payment Terms Credit cost + Profit% Cost + Freight Cost + Packaging Cost + Other Cost If Any"
+                                />
                             </div>
                         </Col>
                         {/* ----------Other Cost end ----------------- */}
@@ -2263,79 +3589,196 @@ class CostSummary extends Component {
                     </Row>
                     <Row>
                         {/* ------------------Other Cost start---------------- */}
-                        <Col md="1" className={'mt20'}>
+                        <Col md="12" className={'dark-divider'}>
                             Tool Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'full-width'}>
                                 <input type="text" disabled value={this.state.toolCostZBC} className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.toolCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" />
+                                {/* <input type="text" disabled value={this.state.toolCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.ToolCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Tool Maintenance Cost + Tool Amortization Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.toolCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" />
+                                {/* <input type="text" disabled value={this.state.toolCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.ToolCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Tool Maintenance Cost + Tool Amortization Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.toolCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" />
+                                {/* <input type="text" disabled value={this.state.toolCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Tool Maintenance Cost + Tool Amortization Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.ToolCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Tool Maintenance Cost + Tool Amortization Cost"
+                                />
                             </div>
                         </Col>
                         {/* ----------Other Cost end ----------------- */}
 
                         {/* ------------------Tool Maintenance Cost start---------------- */}
-                        <Col md="1" className={'mt20'}>
+                        <Col md="12" className={'dark-divider'}>
                             Tool Maintenance Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'full-width'}>
                                 <input type="text" value={this.state.toolMaintenanceZBC} className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.toolMaintenanceSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" />
+                                {/* <input type="text" value={this.state.toolMaintenanceSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.ToolMaintenanceCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolMaintenanceSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter Tool Maintenance Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.toolMaintenanceSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" />
+                                {/* <input type="text" value={this.state.toolMaintenanceSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.ToolMaintenanceCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolMaintenanceSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter Tool Maintenance Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.toolMaintenanceSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" />
+                                {/* <input type="text" value={this.state.toolMaintenanceSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Tool Maintenance Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.ToolMaintenanceCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolMaintenanceSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter Tool Maintenance Cost"
+                                />
                             </div>
                         </Col>
                         {/* ----------Tool Maintenance Cost end ----------------- */}
 
                         {/* ------------------Tool Amortization Cost start---------------- */}
-                        <Col md="1" className={'mt20'}>
+                        <Col md="12" className={'dark-divider'}>
                             Tool Amortization Cost
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                             <div className={'full-width'}>
                                 <input type="text" value={this.state.toolMaintenanceZBC} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.toolMaintenanceSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                                {/* <input type="text" value={this.state.toolMaintenanceSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.ToolAmortizationCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolMaintenanceSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter Tool Amortization Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.toolMaintenanceSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                                {/* <input type="text" value={this.state.toolMaintenanceSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.ToolAmortizationCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolMaintenanceSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter Tool Amortization Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.toolMaintenanceSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                                {/* <input type="text" value={this.state.toolMaintenanceSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.ToolAmortizationCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.toolMaintenanceSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Enter Tool Amortization Cost"
+                                />
                             </div>
                         </Col>
                         {/* ----------Tool Amortization Cost Cost end ----------------- */}
@@ -2351,17 +3794,56 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.totalCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight" />
+                                {/* <input type="text" value={this.state.totalCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.TotalCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.totalCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight"
+                                />
                             </div>
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.totalCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight" />
+                                {/* <input type="text" value={this.state.totalCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.TotalCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.totalCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight"
+                                />
                             </div>
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'full-width'}>
-                                <input type="text" value={this.state.totalCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                                {/* <input type="text" value={this.state.totalCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.TotalCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.totalCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Total Conversion Cost + Total Other Costs + Tool Maintenance Cost + Total BOP Cost+ Net RM Cost + CED Total Cost + Additional Freight"
+                                />
                             </div>
                         </Col>
                         {/* ----------Total Cost end ----------------- */}
@@ -2380,26 +3862,104 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.hundiBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                                {/* <input type="text" value={this.state.hundiBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.Discount`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.hundiBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter CED Overhead/Profit (%)"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.hundiCostSupplier1} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                                {/* <input type="text" disabled value={this.state.hundiCostSupplier1} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.DiscountCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.hundiCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost)*(CED O/H - Profit %)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.hundiBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                                {/* <input type="text" value={this.state.hundiBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.Discount`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.hundiBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter CED Overhead/Profit (%)"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.hundiCostSupplier2} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                                {/* <input type="text" disabled value={this.state.hundiCostSupplier2} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.DiscountCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.hundiCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost)*(CED O/H - Profit %)"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.hundiBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" />
+                                {/* <input type="text" value={this.state.hundiBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter CED Overhead/Profit (%)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.Discount`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.hundiBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Enter CED Overhead/Profit (%)"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.hundiCostSupplier3} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" />
+                                {/* <input type="text" disabled value={this.state.hundiCostSupplier3} className={'mt10 overhead-percent-supplier'} title="(CED Cost)*(CED O/H - Profit %)" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.DiscountCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.hundiCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(CED Cost)*(CED O/H - Profit %)"
+                                />
                             </div>
                         </Col>
                         <hr />
@@ -2419,26 +3979,104 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.otherBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Other Base" />
+                                {/* <input type="text" disabled value={this.state.otherBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Other Base" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.OtherBaseCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Other Base"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.otherCostSupplier1} className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" />
+                                {/* <input type="text" disabled value={this.state.otherCostSupplier1} className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.OtherBaseCostPercent`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(Total Cost * Other Base)/100"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.otherBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Other Base" />
+                                {/* <input type="text" disabled value={this.state.otherBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Other Base" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.OtherBaseCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Other Base"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.otherCostSupplier2} className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" />
+                                {/* <input type="text" disabled value={this.state.otherCostSupplier2} className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.OtherBaseCostPercent`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(Total Cost * Other Base)/100"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.otherBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Other Base" />
+                                {/* <input type="text" disabled value={this.state.otherBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Other Base" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.OtherBaseCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Other Base"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.otherCostSupplier3} className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" />
+                                {/* <input type="text" disabled value={this.state.otherCostSupplier3} className={'mt10 overhead-percent-supplier'} title="(Total Cost * Other Base)/100" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.OtherBaseCostPercent`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.otherCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="(Total Cost * Other Base)/100"
+                                />
                             </div>
                         </Col>
                         <hr />
@@ -2455,17 +4093,53 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.totalCostRemarksSupplier1} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.totalCostRemarksSupplier1} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier1Data}.Remarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.totalCostRemarksSupplier1}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.totalCostRemarksSupplier2} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.totalCostRemarksSupplier2} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier2Data}.Remarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.totalCostRemarksSupplier2}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className={'remarks'}>
-                                <textarea value={this.state.totalCostRemarksSupplier3} className={'mt10 overhead-percent-supplier'} />
+                                {/* <textarea value={this.state.totalCostRemarksSupplier3} className={'mt10 overhead-percent-supplier'} /> */}
+                                <Field
+                                    label={''}
+                                    name={`${supplier3Data}.Remarks`}
+                                    placeholder="Type your message here..."
+                                    //onChange={this.handleMessageChange}
+                                    value={this.state.totalCostRemarksSupplier3}
+                                    className="withoutBorder"
+                                    //validate={[required, maxLength5000]}
+                                    component={renderTextAreaField}
+                                    //required={true}
+                                    maxLength="5000"
+                                />
                             </div>
                         </Col>
                         {/* ----------Total cost Remarks end ----------------- */}
@@ -2482,17 +4156,56 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.netPOPriceSupplier1} className={'mt10 overhead-percent-supplier'} title="Total Cost - Hundi Cost" />
+                                {/* <input type="text" disabled value={this.state.netPOPriceSupplier1} className={'mt10 overhead-percent-supplier'} title="Total Cost - Hundi Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.NetPurchaseOrderPrice`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.netPOPriceSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Total Cost - Hundi Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.netPOPriceSupplier2} className={'mt10 overhead-percent-supplier'} title="Total Cost - Hundi Cost" />
+                                {/* <input type="text" disabled value={this.state.netPOPriceSupplier2} className={'mt10 overhead-percent-supplier'} title="Total Cost - Hundi Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.NetPurchaseOrderPrice`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.netPOPriceSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Total Cost - Hundi Cost"
+                                />
                             </div>
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'full-width'}>
-                                <input type="text" disabled value={this.state.netPOPriceSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" />
+                                {/* <input type="text" disabled value={this.state.netPOPriceSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Tool Amortization Cost" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.NetPurchaseOrderPrice`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.netPOPriceSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Total Cost - Hundi Cost"
+                                />
                             </div>
                         </Col>
                         {/* ----------Net PO Price end ----------------- */}
@@ -2511,56 +4224,109 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.landedFactorBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" />
+                                {/* <input type="text" value={this.state.landedFactorBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.LandedFactorPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.landedFactorBaseSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Landed Factor Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.landedFactorCostSupplier1} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" />
+                                {/* <input type="text" disabled value={this.state.landedFactorCostSupplier1} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier1Data}.LandedFactorCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.landedFactorCostSupplier1}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Landed Factor Percent"
+                                />
                             </div>
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.landedFactorBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" />
+                                {/* <input type="text" value={this.state.landedFactorBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.LandedFactorPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.landedFactorBaseSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Landed Factor Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.landedFactorCostSupplier2} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" />
+                                {/* <input type="text" disabled value={this.state.landedFactorCostSupplier2} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier2Data}.LandedFactorCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.landedFactorCostSupplier2}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Landed Factor Percent"
+                                />
                             </div>
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'base-cost'}>
-                                <input type="text" value={this.state.landedFactorBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" />
+                                {/* <input type="text" value={this.state.landedFactorBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.LandedFactorPercentage`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.landedFactorBaseSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={false}
+                                    title="Landed Factor Percent"
+                                />
                             </div>
                             <div className={'base-cost'}>
-                                <input type="text" disabled value={this.state.landedFactorCostSupplier3} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" />
+                                {/* <input type="text" disabled value={this.state.landedFactorCostSupplier3} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" /> */}
+                                <Field
+                                    label={``}
+                                    name={`${supplier3Data}.LandedFactorCost`}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.landedFactorCostSupplier3}
+                                    //required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                    title="Landed Factor Percent"
+                                />
                             </div>
                         </Col>
                         {/* <hr /> */}
                         {/* ----------Landed Factor(%) end ----------------- */}
 
-                        {/* ------------------Attachment start---------------- */}
-                        {/* <Col md="1" className={'divider'}>
-                            Attachment
-                        </Col>
-                        <Col md="2" className={'divider'}>
-                            <div className={'full-width'}>
-                                <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
-                            </div>
-                        </Col>
-                        <Col md="3" className={'divider'}>
-                            <div className={'full-width'}>
-                                <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
-                            </div>
-                        </Col>
-                        <Col md="3" className={'divider'}>
-                            <div className={'full-width'}>
-                                <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
-                            </div>
-                        </Col>
-                        <Col md="3" className={'divider'}>
-                            <div className={'full-width'}>
-                                <input type="file" className={'mt10 overhead-percent-supplier'} title="" />
-                            </div>
-                        </Col> */}
-                        {/* ----------Attachment end ----------------- */}
 
                     </Row>
                     <hr />
@@ -2568,7 +4334,7 @@ class CostSummary extends Component {
 
                     <Row>
                         <Col md="3" className={'divider'}>
-                            <div>ZBC</div>
+                            {/* <div>ZBC</div> */}
                             {ZBCSupplier && <a href="javascript:void(0)" >{`${ZBCSupplier.SupplierName}`}</a>}
                         </Col>
                         <Col md="3" className={'divider'}>
@@ -2613,6 +4379,22 @@ class CostSummary extends Component {
                     <hr />
 
                 </form>
+                <OtherOperationsModal
+                    isOpen={isShowOtherOpsModal}
+                    onCancel={this.onCancel}
+                    supplierIdForOtherOps={supplierIdForOtherOps}
+                    supplierColumn={supplierColumn}
+                />
+                <CEDotherOperations
+                    isOpen={isShowCEDotherOpsModal}
+                    onCancelCEDotherOps={this.onCancelCEDotherOps}
+                    supplierColumn={supplierColumn}
+                />
+                <AddFreightModal
+                    isOpen={isShowFreightModal}
+                    onCancelFreight={this.onCancelFreight}
+                    supplierColumn={supplierColumn}
+                />
             </div >
         );
     }
@@ -2625,9 +4407,18 @@ class CostSummary extends Component {
         */
 function mapStateToProps({ comman, costing }) {
     const { plantList, technologyList, modelTypes, costingHead } = comman;
+    // let initialValues = {
+    //     supplier2Data: {
+    //         netRMCost: 2
+    //     }
+    // }
+
+
+
     if (costing && costing.plantComboDetail) {
-        const { existingSupplierDetail, supplier2CostingData } = costing;
+        const { existingSupplierDetail, costingData } = costing;
         const { Plants, Parts, Suppliers, ZBCSupplier } = costing.plantComboDetail;
+
 
         return {
             technologyList,
@@ -2637,9 +4428,10 @@ function mapStateToProps({ comman, costing }) {
             Suppliers,
             ZBCSupplier,
             existingSupplierDetail,
-            supplier2CostingData,
+            costingData,
             modelTypes,
             costingHead,
+            //initialValues
         }
     }
 }

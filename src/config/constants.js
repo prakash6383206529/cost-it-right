@@ -205,10 +205,15 @@ export const API = {
   getOtherOpsSelectList: `${BASE_URL}/configuration/select-list-get-operation`,
   saveOtherOpsCosting: `${BASE_URL}/costing-sheet-metal/save-costing-other-operations`,
   getMaterialTypeSelectList: `${BASE_URL}/configuration/select-list-get-material-type`,
+
   //cost summary 
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
-}
+  getCostSummaryOtherOperationList: `${BASE_URL}/costing-sheet-metal/get-other-operation-by-supplier`,
 
+  // Login API
+  login: `${BASE_URL}/user/login`,
+  register: `${BASE_URL}/user/register`,
+}
 
 //Api constants
 export const API_REQUEST = 'API_REQUEST';
@@ -404,3 +409,12 @@ export const GET_OTHER_OPERATION_SELECT_LIST_SUCCESS = 'GET_OTHER_OPERATION_SELE
 export const SAVE_OTHER_OPERATION_COSTING_SUCCESS = 'SAVE_OTHER_OPERATION_COSTING_SUCCESS';
 export const ADD_PROCESS_COSTING_SUCCESS = 'ADD_PROCESS_COSTING_SUCCESS';
 export const GET_MATERIAL_DATA_SELECTLIST_SUCCESS = 'GET_MATERIAL_DATA_SELECTLIST_SUCCESS';
+export const GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS = 'GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS';
+export const SET_CED_ROW_DATA_TO_COST_SUMMARY = 'SET_CED_ROW_DATA_TO_COST_SUMMARY';
+export const SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY = 'SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY';
+
+// Login const
+export const AUTH_API_FAILURE = 'AUTH_API_FAILURE';
+export const AUTH_API_REQUEST = 'AUTH_API_REQUEST';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';

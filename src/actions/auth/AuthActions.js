@@ -1,22 +1,22 @@
-// import axios from 'axios';
-// import { apiErrors } from '../../helper/util';
-// import {
-//     API,
-//     AUTH_API_REQUEST,
-//     AUTH_API_FAILURE,
-//     LOGIN_SUCCESS,
-//     UPDATE_PASSWORD_SUCCESS,
-//     REGISTER_SUCCESS,
-//     FORGOT_PASSWORD_SUCCESS,
-//     VERIFY_OTP_SUCCESS,
-//     RESEND_OTP_SUCCESS,
-//     SOCIAL_MEDIA_LOGIN_SUCCESS,
-//     UPDATE_USER_ACCOUNT_DETAIL_SUCCESS,
-//     SOCIAL_USER_DATA,
-//     INTERNAL_ROUTE_ID,
-//     SEND_MESSAGE_SUCCESS
-// } from '../../config/constants';
-// import { formatLoginResult } from '../../helper/ApiResponse';
+import axios from 'axios';
+import { apiErrors } from '../../helper/util';
+import {
+    API,
+    AUTH_API_REQUEST,
+    AUTH_API_FAILURE,
+    LOGIN_SUCCESS,
+    UPDATE_PASSWORD_SUCCESS,
+    REGISTER_SUCCESS,
+    FORGOT_PASSWORD_SUCCESS,
+    VERIFY_OTP_SUCCESS,
+    RESEND_OTP_SUCCESS,
+    SOCIAL_MEDIA_LOGIN_SUCCESS,
+    UPDATE_USER_ACCOUNT_DETAIL_SUCCESS,
+    SOCIAL_USER_DATA,
+    INTERNAL_ROUTE_ID,
+    SEND_MESSAGE_SUCCESS
+} from '../../config/constants';
+import { formatLoginResult } from '../../helper/ApiResponse';
 
 
 // /**
@@ -24,47 +24,49 @@
 //  * @description get data from dummy api
 //  */
 
-// const headers = {
-//     'Access-Control-Allow-Origin': '*',
-// };
+const headers = {
+    'Content-Type': 'application/json',
+    //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
+};
 
-// export function loginUserAPI(requestData, callback) {
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.post(API.login, requestData, { headers })
-//             .then((response) => {
-//                 callback(response);
-//                 // console.log('loginUserAPI response =>>' + JSON.stringify(response));
-//                 dispatch(getLoginSuccess(response));
-//             })
-//             .catch((error) => {
-//                 dispatch(getFailure(error));
-//                 apiErrors(error);
-//                 callback(error);
-//             });
-//     };
-// }
+export function loginUserAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.login, requestData, { headers })
+            .then((response) => {
+                console.log("login res", response)
+                callback(response);
+                // console.log('loginUserAPI response =>>' + JSON.stringify(response));
+                dispatch(getLoginSuccess(response));
+            })
+            .catch((error) => {
+                dispatch(getFailure(error));
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
 
 // /**
 //  * @method getLoginSuccess
 //  * @description return object containing action type
 //  */
-// export function getLoginSuccess(data) {
-//     return {
-//         type: LOGIN_SUCCESS,
-//         payload: formatLoginResult(data),
-//     };
-// }
+export function getLoginSuccess(data) {
+    return {
+        type: LOGIN_SUCCESS,
+        payload: formatLoginResult(data),
+    };
+}
 
 // /**
 //  * @method getFailure
 //  * @description return object containing action type
 //  */
-// export function getFailure() {
-//     return {
-//         type: AUTH_API_FAILURE
-//     };
-// }
+export function getFailure() {
+    return {
+        type: AUTH_API_FAILURE
+    };
+}
 
 // /**
 //  * @method socialLoginAPI
@@ -154,42 +156,42 @@
 //  * @method registerUserAPI
 //  * @description Register user by email
 //  */
-// export function registerUserAPI(requestData, callback) {
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.post(API.register, requestData, { headers })
-//             .then((response) => {
-//                 callback(response);
-//                 dispatch(getRegisterSuccess(response));
-//             })
-//             .catch((error) => {
-//                 dispatch(getRegisterFailure(error));
-//                 apiErrors(error);
-//                 callback(error);
-//             });
-//     };
-// }
+export function registerUserAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.register, requestData, { headers })
+            .then((response) => {
+                callback(response);
+                dispatch(getRegisterSuccess(response));
+            })
+            .catch((error) => {
+                dispatch(getRegisterFailure(error));
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
 
 // /**
 //  * @method getRegisterSuccess
 //  * @description return object containing action type
 //  */
-// export function getRegisterSuccess(data) {
-//     return {
-//         type: REGISTER_SUCCESS,
-//         data,
-//     };
-// }
+export function getRegisterSuccess(data) {
+    return {
+        type: REGISTER_SUCCESS,
+        data,
+    };
+}
 
 // /**
 //  * @method getRegisterFailure
 //  * @description return object containing action type
 //  */
-// export function getRegisterFailure() {
-//     return {
-//         type: AUTH_API_FAILURE
-//     };
-// }
+export function getRegisterFailure() {
+    return {
+        type: AUTH_API_FAILURE
+    };
+}
 
 
 // /**

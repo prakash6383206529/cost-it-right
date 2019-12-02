@@ -440,3 +440,21 @@ ul.ml-auto.top-menu.logout.nav {
 .top-margin.container {
   overflow: scroll;
 }
+
+.float-left {
+  float: left !important;
+  width: 30%;
+}
+input#remember {
+  float: left;
+  margin-top: 12px !important;
+}
+label.btn.btn-link.align-middle.checkbox-label {
+  float: left;
+  width: 90%;
+  text-align: left;
+}
+.forgot-link a {
+  font-size: 1rem;
+  margin-top: 8px;
+}

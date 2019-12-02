@@ -5,10 +5,17 @@ import {
     GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
     CREATE_PART_WITH_SUPPLIER_SUCCESS,
     GET_COSTING_BY_COSTINGID,
+    GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS,
+    SET_CED_ROW_DATA_TO_COST_SUMMARY,
+    SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY
 } from '../../config/constants';
 
 const initialState = {
-
+    costingData: {
+        // supplierOne: {},
+        // supplierTwo: {},
+        // supplierThree: {},
+    }
 };
 
 export default function costingReducer(state = initialState, action) {
@@ -50,7 +57,56 @@ export default function costingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                supplier2CostingData: action.payload
+                costingData: { ...state.costingData, [action.supplier]: action.payload }
+            };
+        case GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                otherOperationList: action.payload
+            };
+        case SET_CED_ROW_DATA_TO_COST_SUMMARY:
+            let CEDRowData = action.payload;
+            let data = state.costingData[action.supplierColumn];
+            data = {
+                ...data,
+                CostingDetail: {
+                    ...data.CostingDetail,
+                    CEDOperationId: CEDRowData.CEDOperationId,
+                    CEDOperationName: CEDRowData.OperationName,
+                    CEDOperationRate: CEDRowData.OperationRate,
+                    TransportationOperationCost: null,
+                    TransportationOperationRate: CEDRowData.TrasnportationRate,
+                    CEDOtherOperationDetails: CEDRowData,
+                }
+            }
+
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingData: { ...state.costingData, [action.supplierColumn]: data }
+            };
+        case SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY:
+            let FreightRowData = action.payload;
+            let Olddata = state.costingData[action.supplierColumn];
+            console.log("Olddata 111>>>", FreightRowData, Olddata)
+            Olddata = {
+                ...Olddata,
+                CostingDetail: {
+                    ...Olddata.CostingDetail,
+                    AdditionalFreightId: FreightRowData.FreightId,
+                    NetAdditionalFreightCost: FreightRowData.NetAdditionalFreightCost,
+                }
+            }
+            console.log("Olddata 222>>>", Olddata)
+
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingData: { ...state.costingData, [action.supplierColumn]: Olddata }
             };
         default:
             return state;
