@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList } from '../../../actions/costing/CostWorking';
+import {
+    createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList,
+    setCostingDetailRowData
+} from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -32,6 +35,7 @@ class CostWorking extends Component {
             isShowProcessGrid: false,
             selectedIndex: '',
             PartNumber: '',
+            Quantity: '',
         }
     }
 
@@ -46,6 +50,13 @@ class CostWorking extends Component {
             this.setState({
                 PartNumber: activeCostingListData.PartDetail.PartNumber
             })
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.getCostingDetailData != this.props.getCostingDetailData) {
+            const { getCostingDetailData } = this.props;
+            this.setState({ Quantity: nextProps.getCostingDetailData.AssemblyPartDetail[0].Quantity })
         }
     }
 
@@ -197,6 +208,27 @@ class CostWorking extends Component {
         )
     }
 
+    QuantityHandler = (e, Quantity, index) => {
+        const { getCostingDetailData } = this.props;
+        console.log(e.target.value, Quantity, index)
+
+        this.setState({
+            Quantity: e.target.value
+        })
+        const data = getCostingDetailData && getCostingDetailData.AssemblyPartDetail.map((item, i) => {
+            if (index == i) {
+                return ({ ...item, Quantity: e.target.value })
+            }
+            return ({ item })
+        })
+
+        let DetailData = { ...getCostingDetailData, AssemblyPartDetail: data }
+
+        this.props.setCostingDetailRowData(DetailData, index);
+        console.log("Detail", data, DetailData)
+
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -290,14 +322,28 @@ class CostWorking extends Component {
                                     </thead>
                                     <tbody >
                                         {getCostingDetailData && getCostingDetailData.AssemblyPartDetail.map((data, index) => {
+                                            let NetRMCost = '';
+                                            let NetCC_Cost = '';
+                                            if (data && data.RawMaterialDetails.length > 0) {
+                                                const scrapRate = data.RawMaterialDetails[0].RawMaterialScrapRate;
+                                                const finishWt = data.WeightCalculationDetails[0].FinishWeight;
+                                                NetRMCost = (scrapRate * finishWt);
+                                            }
+
+                                            if (data && data.BoughtOutPartDetails.length > 0) {
+                                                const BOPcost = data.BoughtOutPartDetails[0].AssyBoughtOutParRate;
+                                                const ProcessCost = data.ProcessDetails[0].AssyTotalProcessCost;
+                                                const SurfaceTreatmentCost = data.OtherOperationDetails[0].AssySurfaceTreatmentCost
+                                                NetCC_Cost = (BOPcost + 2 + SurfaceTreatmentCost);
+                                            }
                                             return (
-                                                <tr >
+                                                <tr key={index} >
                                                     <td>{data.BOMLevel}</td>
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartDescription}</td>
                                                     <td>{this.materialDropDown(data, index)}</td>
-                                                    <td>{data.Quantity}</td>
+                                                    <td><input type="text" value={this.state.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
                                                     {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
                                                     <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
                                                     <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
@@ -306,7 +352,7 @@ class CostWorking extends Component {
                                                     <td><button onClick={() => this.openModel(index)}>Add</button></td>
                                                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].GrossWeight : '0'}</td>
                                                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : '0'}</td>
-                                                    <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].WeightSpecification : '0'}</td>
+                                                    <td>{data && data.WeightCalculationDetails.length > 0 ? NetRMCost : '0'}</td>
 
                                                     <td><button onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
                                                     <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
@@ -318,7 +364,7 @@ class CostWorking extends Component {
                                                     <td><button onClick={this.toggleOtherOperation}>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].OperationName : 'Add'}</button></td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].SurfaceTreatmentCost : '0'}</td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : '0'}</td>
-                                                    <td>{data && data.OtherOperationDetails.length > 0 ? '0' : '0'}</td>
+                                                    <td>{NetRMCost * NetCC_Cost * data.Quantity}</td>
                                                 </tr>
                                             )
                                         })}
@@ -405,7 +451,8 @@ export default connect(mapStateToProps,
         createNewCosting,
         getCostingBySupplier,
         getCostingDetailsById,
-        getMaterialTypeSelectList
+        getMaterialTypeSelectList,
+        setCostingDetailRowData
     }
 )(CostWorking);
 

@@ -26,6 +26,7 @@ import {
     SAVE_OTHER_OPERATION_COSTING_SUCCESS,
     ADD_PROCESS_COSTING_SUCCESS,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
+    SET_COSTING_DETAIL_ROW_DATA,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -637,6 +638,21 @@ export function getMaterialTypeSelectList() {
                 type: API_FAILURE
             });
             apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method fetchMasterDataAPI
+ * @description fetch UOM and material type list
+ */
+export function setCostingDetailRowData(data, selectedIndex) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_COSTING_DETAIL_ROW_DATA,
+            payload: data,
+            //selectedIndex: selectedIndex,
         });
     };
 }

@@ -23,6 +23,7 @@ import {
     SAVE_OTHER_OPERATION_COSTING_SUCCESS,
     ADD_PROCESS_COSTING_SUCCESS,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
+    SET_COSTING_DETAIL_ROW_DATA,
 } from '../../config/constants';
 
 const initialState = {
@@ -200,6 +201,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 MaterialSelectList: action.payload
+            };
+        case SET_COSTING_DETAIL_ROW_DATA:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                getCostingDetailData: action.payload
             };
         default:
             return state;

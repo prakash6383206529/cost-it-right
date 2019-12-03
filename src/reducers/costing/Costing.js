@@ -7,7 +7,8 @@ import {
     GET_COSTING_BY_COSTINGID,
     GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS,
     SET_CED_ROW_DATA_TO_COST_SUMMARY,
-    SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY
+    SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY,
+    SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
 } from '../../config/constants';
 
 const initialState = {
@@ -107,6 +108,30 @@ export default function costingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 costingData: { ...state.costingData, [action.supplierColumn]: Olddata }
+            };
+
+        case SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY:
+            let InterestRowData = action.payload;
+            let InventoryOlddata = state.costingData[action.supplierColumn];
+            console.log("Olddata 111>>>", InterestRowData, InventoryOlddata)
+            InventoryOlddata = {
+                ...InventoryOlddata,
+                CostingDetail: {
+                    ...InventoryOlddata.CostingDetail,
+                    RMICCPercentage: InterestRowData.RMInventoryPercent,
+                    //RMInventotyCost: InterestRowData.NetAdditionalFreightCost,
+                    WIPICCPercentage: InterestRowData.WIPInventoryPercent,
+                    //WIPInventotyCost: InterestRowData.NetAdditionalFreightCost,
+                    PaymentTermsICCPercentage: InterestRowData.PaymentTermPercent,
+                    //PaymentTermsCost: InterestRowData.NetAdditionalFreightCost,
+                }
+            }
+            console.log("InventoryOlddata 222>>>", InventoryOlddata)
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingData: { ...state.costingData, [action.supplierColumn]: InventoryOlddata }
             };
         default:
             return state;

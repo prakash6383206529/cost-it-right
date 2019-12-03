@@ -6,9 +6,10 @@ import { Loader } from '../../common/Loader';
 import { renderText, renderSelectField, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, fetchCostingHeadsAPI, fetchModelTypeAPI } from '../../../actions/master/Comman';
 import {
-    getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier,
-    checkPartWithTechnology, getCostingByCostingId
+    getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier, checkPartWithTechnology,
+    getCostingByCostingId, setInventoryRowData
 } from '../../../actions/costing/costing';
+import { getInterestRateAPI } from '../../../actions/master/InterestRateMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
@@ -62,20 +63,51 @@ class CostSummary extends Component {
         this.props.getPlantCombo(res => { });
         this.props.fetchCostingHeadsAPI('--select--', () => { })
         this.props.fetchModelTypeAPI('--Model Type--', () => { })
+        this.props.getInterestRateAPI(res => { });
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.costingData && nextProps.costingData.supplierOne && (nextProps.costingData.supplierOne != this.props.costingData.supplierOne)) {
             this.props.change("supplier1Data", nextProps.costingData.supplierOne.CostingDetail)
+            const Content = nextProps.costingData.supplierOne.CostingDetail;
+            let supplierOneCostingHeadsData = {
+                RM: Content.NetRawMaterialCost,
+                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.SurfaceTreatmentCost,
+                BOP: Content.NetBoughtOutParCost,
+                OtherOperation: Content.NetOtherOperationCost
+            }
+            this.fieldData(supplierOneCostingHeadsData, 'supplierOneCostingHeadsData')
         }
 
         if (nextProps.costingData && nextProps.costingData.supplierTwo && (nextProps.costingData.supplierTwo != this.props.costingData.supplierTwo)) {
             this.props.change("supplierTwo", nextProps.costingData.supplierTwo.CostingDetail)
+            const Content = nextProps.costingData.supplierTwo.CostingDetail;
+            let supplierTwoCostingHeadsData = {
+                RM: Content.NetRawMaterialCost,
+                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.SurfaceTreatmentCost,
+                BOP: Content.NetBoughtOutParCost,
+                OtherOperation: Content.NetOtherOperationCost
+            }
+            this.fieldData(supplierTwoCostingHeadsData, 'supplierTwoCostingHeadsData')
         }
 
         if (nextProps.costingData && nextProps.costingData.supplierThree && (nextProps.costingData.supplierThree != this.props.costingData.supplierThree)) {
             this.props.change("supplier3Data", nextProps.costingData.supplierThree.CostingDetail)
+            const Content = nextProps.costingData.supplierThree.CostingDetail;
+            let supplierThreeCostingHeadsData = {
+                RM: Content.NetRawMaterialCost,
+                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.SurfaceTreatmentCost,
+                BOP: Content.NetBoughtOutParCost,
+                OtherOperation: Content.NetOtherOperationCost
+            }
+            this.fieldData(supplierThreeCostingHeadsData, 'supplierThreeCostingHeadsData')
         }
+    }
+
+    fieldData = (HeadsData, headTitle) => {
+        this.setState({
+            [headTitle]: HeadsData
+        })
     }
 
     /**
@@ -612,6 +644,20 @@ class CostSummary extends Component {
         this.setState({
             isShowFreightModal: false,
         });
+    }
+
+    /**
+     * @method interestHandler
+     * @description  used for WIPinventory, RMinventory and Paymentterms 
+     * @params supplierId: to get detail of WIP, RM and Payment percent for perticular supplier.
+     * @params supplierColumn: to fill the detail in selected column.
+     */
+    interestHandler = (supplierId, supplierColumn) => {
+        const { interestRateList } = this.props;
+        const interestData = interestRateList.find((item) => {
+            return item.SupplierId == supplierId
+        })
+        this.props.setInventoryRowData(supplierColumn, interestData)
     }
 
     /**
@@ -1980,7 +2026,7 @@ class CostSummary extends Component {
                                     className="withoutBorder rm-inventory"
                                     disabled={true}
                                 />
-                                <button type="button" >Refresh ICC</button>
+                                <button type="button" onClick={() => this.interestHandler(supplier3.value, 'supplierThree')} >Refresh ICC</button>
                             </div>
                             <div className={'base-cost'}>
                                 <Field
@@ -4405,7 +4451,8 @@ class CostSummary extends Component {
 * @description return state to component as props
 * @param {*} state
         */
-function mapStateToProps({ comman, costing }) {
+function mapStateToProps({ comman, costing, interestRate }) {
+    const { interestRateList } = interestRate;
     const { plantList, technologyList, modelTypes, costingHead } = comman;
     // let initialValues = {
     //     supplier2Data: {
@@ -4413,12 +4460,9 @@ function mapStateToProps({ comman, costing }) {
     //     }
     // }
 
-
-
     if (costing && costing.plantComboDetail) {
         const { existingSupplierDetail, costingData } = costing;
         const { Plants, Parts, Suppliers, ZBCSupplier } = costing.plantComboDetail;
-
 
         return {
             technologyList,
@@ -4431,6 +4475,7 @@ function mapStateToProps({ comman, costing }) {
             costingData,
             modelTypes,
             costingHead,
+            interestRateList,
             //initialValues
         }
     }
@@ -4445,6 +4490,8 @@ export default connect(mapStateToProps, {
     createPartWithSupplier,
     checkPartWithTechnology,
     getCostingByCostingId,
+    getInterestRateAPI,
+    setInventoryRowData,
 })(reduxForm({
     form: 'CostSummary',
     enableReinitialize: true,

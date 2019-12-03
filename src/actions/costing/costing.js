@@ -10,6 +10,7 @@ import {
     GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS,
     SET_CED_ROW_DATA_TO_COST_SUMMARY,
     SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY,
+    SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -203,5 +204,19 @@ export function setRowDataFreight(supplier, data, callback) {
             supplierColumn: supplier,
         });
         callback();
+    };
+}
+
+/**
+ * @method setRowDataCEDOtherOps
+ * @description set row data to ced for cost summary CED
+ */
+export function setInventoryRowData(supplierColumn, data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
+            payload: data,
+            supplierColumn: supplierColumn,
+        });
     };
 }

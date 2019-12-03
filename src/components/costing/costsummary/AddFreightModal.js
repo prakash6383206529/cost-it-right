@@ -44,7 +44,6 @@ class AddFreightModal extends Component {
     setRowItem = (item) => {
         const { supplierColumn } = this.props;
         item.NetAdditionalFreightCost = item.Packaging * item.PerKilogram;
-        console.log("itemmmmm", item)
         this.props.setRowDataFreight(supplierColumn, item, () => {
             this.toggleModel()
         })
@@ -66,7 +65,6 @@ class AddFreightModal extends Component {
                             {freightDetail && freightDetail.length > 0 &&
                                 <thead>
                                     <tr>
-
                                         <th>{`Add`}</th>
                                         <th>{`${CONSTANT.FREIGHT} ${CONSTANT.TYPE}`}</th>
                                         <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>

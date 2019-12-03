@@ -41,7 +41,6 @@ class CEDotherOperations extends Component {
     */
     setRowItem = (item) => {
         const { supplierColumn } = this.props;
-        console.log("ced item", this.props.supplierColumn, item)
         this.props.setRowDataCEDOtherOps(supplierColumn, item, () => {
             this.toggleModel()
         })
