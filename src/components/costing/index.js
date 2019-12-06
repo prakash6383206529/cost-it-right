@@ -130,8 +130,9 @@ class Costing extends Component {
 
     UploadBOMHandler = () => {
         const { fileData } = this.state;
-        console.log("clicked")
-        this.props.uploadBOMxlsAPI(fileData, () => { });
+        this.props.uploadBOMxlsAPI(fileData, () => {
+            toastr.success('BOM has been uploaded successfully.')
+        });
     }
 
     /**
@@ -164,7 +165,7 @@ class Costing extends Component {
             <div>
                 <Row>
                     <Col>
-                        <button onClick={this.toggleUpload} className={'btn btn-primary pull-right'}>Show Upload Panel</button>
+                        <button onClick={this.toggleUpload} className={'btn btn-primary pull-right'}>{!isShowFileUpload ? 'Show Upload Panel' : 'Hide Upload Panel'}</button>
                     </Col>
                 </Row>
                 {isShowFileUpload && <Row>

@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
-import { renderText,renderSelectField, renderNumberInputField } from "../../../../layout/FormInputs";
-import { fetchMaterialComboAPI, fetchGradeDataAPI,fetchSpecificationDataAPI } from '../../../../../actions/master/Comman';
-import { createRMDetailAPI,getMaterialDetailAPI } from '../../../../../actions/master/Material';
+import { renderText, renderSelectField, renderNumberInputField } from "../../../../layout/FormInputs";
+import { fetchMaterialComboAPI, fetchGradeDataAPI, fetchSpecificationDataAPI } from '../../../../../actions/master/Comman';
+import { createRMDetailAPI, getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
@@ -24,10 +24,10 @@ class AddRMDetail extends Component {
     * @method componentDidMount
     * @description Called after rendering the component
     */
-    componentDidMount(){
-        this.props.fetchMaterialComboAPI(res => {});
+    componentDidMount() {
+        this.props.fetchMaterialComboAPI(res => { });
     }
-    
+
     /**
     * @method toggleModel
     * @description Used to cancel modal
@@ -51,7 +51,7 @@ class AddRMDetail extends Component {
     * @description  used to handle row material selection
     */
     handleRMChange = (e) => {
-        this.props.fetchGradeDataAPI(e.target.value, res => {});
+        this.props.fetchGradeDataAPI(e.target.value, res => { });
     }
 
     /**
@@ -67,13 +67,13 @@ class AddRMDetail extends Component {
     * @description  used to handle category type selection
     */
     handleCategoryType = (e) => {
-        this.props.fetchCategoryAPI(e.target.value, res => {})
+        this.props.fetchCategoryAPI(e.target.value, res => { })
     }
 
-     /**
-     * @method handlePartSelection
-     * @description called
-     */
+    /**
+    * @method handlePartSelection
+    * @description called
+    */
     handlePartSelection = e => {
         this.setState({
             selectedParts: e
@@ -122,7 +122,7 @@ class AddRMDetail extends Component {
         this.props.createRMDetailAPI(formData, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-                this.props.getMaterialDetailAPI(res => {});
+                this.props.getMaterialDetailAPI(res => { });
                 this.toggleModel();
             } else {
                 toastr.error(res.data.Message);
@@ -135,8 +135,8 @@ class AddRMDetail extends Component {
     * @description Used to show type of listing
     */
     renderTypeOfListing = (label) => {
-        const {uniOfMeasurementList, rowMaterialList,rmGradeList,rmSpecification,plantList, 
-            supplierList, cityList ,technologyList, categoryList} = this.props;
+        const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
+            supplierList, cityList, technologyList, categoryList } = this.props;
         const temp = [];
         if (label === 'material') {
             rowMaterialList && rowMaterialList.map(item =>
@@ -168,31 +168,31 @@ class AddRMDetail extends Component {
             );
             return temp;
         }
-        if(label === 'supplier'){
+        if (label === 'supplier') {
             supplierList && supplierList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'city'){
+        if (label === 'city') {
             cityList && cityList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'technology'){
+        if (label === 'technology') {
             technologyList && technologyList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        if(label === 'category'){
+        if (label === 'category') {
             categoryList && categoryList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
-        
+
     }
 
     /**
@@ -214,6 +214,70 @@ class AddRMDetail extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Raw Material `}
+                                                name={"RawMaterialId"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                // required={true}
+                                                className=" withoutBorder custom-select"
+                                                options={this.renderTypeOfListing('material')}
+                                                onChange={(Value) => this.handleRMChange(Value)}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Grade `}
+                                                name={"GradeId"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                // required={true}
+                                                className=" withoutBorder custom-select"
+                                                options={this.renderTypeOfListing('grade')}
+                                                onChange={(Value) => this.handleGradeChange(Value)}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Specification`}
+                                                name={"SpecificationId"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                // required={true}
+                                                className=" withoutBorder custom-select"
+                                                options={this.renderTypeOfListing('specification')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Category`}
+                                                name={"CategoryId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                options={this.renderTypeOfListing('category')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
                                         <Col md="6">
                                             <Field
                                                 label={`Basic Rate`}
@@ -281,7 +345,7 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
-                                               // required={true}
+                                                // required={true}
                                                 className=" withoutBorder custom-select"
                                                 options={this.renderTypeOfListing('technology')}
                                                 onChange={this.handleTypeofListing}
@@ -290,70 +354,8 @@ class AddRMDetail extends Component {
                                                 component={renderSelectField}
                                             />
                                         </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Raw Material `}
-                                                name={"RawMaterialId"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                               // required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('material')}
-                                                onChange={(Value) => this.handleRMChange(Value)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Grade `}
-                                                name={"GradeId"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                               // required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('grade')}
-                                                onChange={(Value) => this.handleGradeChange(Value)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Specification`}
-                                                name={"SpecificationId"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                               // required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('specification')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Category`}
-                                                name={"CategoryId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('category')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
+
+
                                         <Col md="6">
                                             <Field
                                                 label={`Source Supplier`}
@@ -474,10 +476,12 @@ class AddRMDetail extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
-    const {uniOfMeasurementList, rowMaterialList,rmGradeList,rmSpecification,plantList, 
-        supplierList, cityList ,technologyList, categoryList} = comman;
-    return { uniOfMeasurementList,rowMaterialList,rmGradeList,rmSpecification,
-        plantList, supplierList, cityList, technologyList, categoryList }
+    const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
+        supplierList, cityList, technologyList, categoryList } = comman;
+    return {
+        uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification,
+        plantList, supplierList, cityList, technologyList, categoryList
+    }
 }
 
 /**
@@ -486,8 +490,10 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createRMDetailAPI, fetchMaterialComboAPI,
-    fetchGradeDataAPI, fetchSpecificationDataAPI, getMaterialDetailAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createRMDetailAPI, fetchMaterialComboAPI,
+    fetchGradeDataAPI, fetchSpecificationDataAPI, getMaterialDetailAPI
+})(reduxForm({
     form: 'AddRMDetail',
     enableReinitialize: true,
 })(AddRMDetail));

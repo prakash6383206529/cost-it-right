@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, FieldArray, reduxForm, formValueSelector } from "redux-form";
-import { addCostingOtherOperation, getOtherOpsSelectList, saveOtherOpsCosting } from '../../../actions/costing/CostWorking';
+import { getOtherOpsSelectList, saveOtherOpsCosting } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -52,6 +52,17 @@ const renderMembers = ({ fields, processHandler, openOtherOperationModal, render
                                 placeholder={''}
                                 //validate={[required]}
                                 component={InputHiddenField}
+                                //required={true}
+                                className=" withoutBorder"
+                                disabled={true}
+                            />
+                            <Field
+                                label={''}
+                                name={`${cost}.OtherOperationName`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
                                 //required={true}
                                 className=" withoutBorder"
                                 disabled={true}
@@ -146,13 +157,25 @@ class OtherOperationGrid extends Component {
     componentDidMount() {
         const { costingId } = this.props;
         this.props.getOtherOpsSelectList(() => { })
-        this.props.addCostingOtherOperation(costingId, res => {
-            // const { costingGridOtherOperationData } = this.props;
-            // const LinkedOperations = costingGridOtherOperationData.LinkedOperations;
-            // costingGridOtherOperationData && LinkedOperations.map((item, index) => {
+    }
 
-            // })
-        });
+    /**
+     * @method componentWillReceiveProps
+     * @description  Used for changes in props
+     */
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.costingGridOtherOperationData != this.props.costingGridOtherOperationData) {
+            console.log("nextProps.costingGridOtherOperationData", nextProps.costingGridOtherOperationData)
+            const { LinkedOperations } = nextProps.costingGridOtherOperationData;
+
+            let grandTotal = 0;
+            LinkedOperations && LinkedOperations.map((item, index) => {
+                grandTotal = grandTotal + (item.Rate * item.Quantity);
+                return grandTotal;
+            })
+
+            this.setState({ totalCost: grandTotal })
+        }
     }
 
     /**
@@ -187,6 +210,7 @@ class OtherOperationGrid extends Component {
         item.Rate = 12;
 
         this.props.change(`LinkedOperations[${GridselectedIndex}]['OtherOperationId']`, item.OtherOperationId);
+        this.props.change(`LinkedOperations[${GridselectedIndex}]['OtherOperationName']`, item.OtherOperationName);
         this.props.change(`LinkedOperations[${GridselectedIndex}]['UnitOfMeasurementName']`, item.UnitOfMeasurementName);
         this.props.change(`LinkedOperations[${GridselectedIndex}]['Rate']`, item.Rate);
     }
@@ -402,7 +426,6 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-    addCostingOtherOperation,
     getOtherOpsSelectList,
     saveOtherOpsCosting
 })(reduxForm({

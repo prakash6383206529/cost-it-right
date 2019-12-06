@@ -362,7 +362,8 @@ body {
   background-color: #f8b2b2;
 }
 .zbc-input {
-  width: 90px;
+  width: 60%;
+  margin-right: 5px;
 }
 .supplier-input {
   width: 100%;
@@ -414,4 +415,14 @@ label.vbcwrapper {
 
 .costSummary-form .withoutBorder {
   border: 1px solid #ced4da !important;
+}
+
+.custom-ops .form-group.inputbox {
+  width: 73%;
+  float: left;
+  margin-right: 5px;
+}
+
+.custom-ops .custom-btn {
+  margin-top: 24px;
 }

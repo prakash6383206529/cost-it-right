@@ -93,7 +93,7 @@ class RowMaterialMaster extends Component {
                         <Button onClick={this.openSpecificationmodel}>{`${CONSTANT.ADD} ${CONSTANT.SPECIFICATION} `}</Button>
                     </Col>
                 </Row>
-                <hr />
+                {/* <hr /> */}
                 {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>

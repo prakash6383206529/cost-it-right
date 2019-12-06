@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { required, upper } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getOtherOperationData } from '../../../../actions/master/Comman';
 import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
@@ -238,6 +238,7 @@ class AddOtherOperation extends Component {
                                                 //required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
+                                                normalize={upper}
                                             />
                                         </Col>
                                     </Row>

@@ -117,6 +117,7 @@ export const vlidatePhoneNumber = value => {
 export const validateUrl = value =>
     (value && /^(http:|https:)\/\/(www\.)?[-a-zA-Z0-9@:%._~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_.~#?&//=]*)/.test(value) === false) ? 'Please enter valid url' : undefined;
 
+export const upper = value => value && value.toUpperCase();
 
 export const normalizePhone = value => {
     if (!value) {

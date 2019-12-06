@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-     Row, Col, Table
+    Row, Col, Table
 } from 'reactstrap';
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
@@ -20,10 +20,10 @@ class RMGradeDetail extends Component {
         }
     }
 
-     /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
+    /**
+   * @method componentDidMount
+   * @description Called after rendering the component
+   */
     componentDidMount() {
         this.props.getRowMaterialDataAPI(res => { });
     }
@@ -42,17 +42,17 @@ class RMGradeDetail extends Component {
                     </Col>
                 </Row> */}
                 <Col>
-                    <hr />
+                    {/* <hr /> */}
                     <Table className="table table-striped" bordered>
-                    { this.props.rowMaterialGradeDetail && this.props.rowMaterialGradeDetail.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
-                                <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
-                                <th>{`${CONSTANT.DATE}`}</th>
-                            </tr>
-                        </thead>}
+                        {this.props.rowMaterialGradeDetail && this.props.rowMaterialGradeDetail.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th>
+                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
+                                    <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
+                                    <th>{`${CONSTANT.DATE}`}</th>
+                                </tr>
+                            </thead>}
                         <tbody >
                             {this.props.rowMaterialGradeDetail && this.props.rowMaterialGradeDetail.length > 0 &&
                                 this.props.rowMaterialGradeDetail.map((item, index) => {
@@ -65,7 +65,7 @@ class RMGradeDetail extends Component {
                                         </tr>
                                     )
                                 })}
-                                 {this.props.rowMaterialGradeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.props.rowMaterialGradeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

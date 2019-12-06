@@ -33,7 +33,6 @@ export function getUnitOfMeasurementAPI(callback) {
         dispatch({ type: API_REQUEST });
         axios.get(API.getUOMAPI, { headers })
             .then((response) => {
-                console.log("ressss >>>>>", response)
                 //if (response.data.Result === true) {
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
@@ -44,7 +43,6 @@ export function getUnitOfMeasurementAPI(callback) {
                 //     toastr.error(MESSAGES.SOME_ERROR);
                 // }
             }).catch((error) => {
-                console.log('error', error.response ? error.response : error)
                 dispatch({
                     type: API_FAILURE
                 });
@@ -141,8 +139,6 @@ export function deleteUnitOfMeasurementAPI(index, Id, callback) {
  * @description update UOM
  */
 export function updateUnitOfMeasurementAPI(uomId, requestData, callback) {
-    console.log('requestData', requestData);
-
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.updateUOMAPI}`, requestData, headers)

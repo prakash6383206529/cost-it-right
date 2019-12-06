@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-     Row, Col, Table
+    Row, Col, Table
 } from 'reactstrap';
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
@@ -20,10 +20,10 @@ class RMSpecificationDetail extends Component {
         }
     }
 
-     /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
+    /**
+   * @method componentDidMount
+   * @description Called after rendering the component
+   */
     componentDidMount() {
         this.props.getRowMaterialDataAPI(res => { });
     }
@@ -42,17 +42,17 @@ class RMSpecificationDetail extends Component {
                     </Col>
                 </Row> */}
                 <Col>
-                    <hr />
+                    {/* <hr /> */}
                     <Table className="table table-striped" bordered>
-                    { this.props.rmSpecificationDetail && this.props.rmSpecificationDetail.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.SPECIFICATION}`}</th>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
-                                <th>{`${CONSTANT.DATE}`}</th>
-                            </tr>
-                        </thead>}
+                        {this.props.rmSpecificationDetail && this.props.rmSpecificationDetail.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th>
+                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.SPECIFICATION}`}</th>
+                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
+                                    <th>{`${CONSTANT.DATE}`}</th>
+                                </tr>
+                            </thead>}
                         <tbody >
                             {this.props.rmSpecificationDetail && this.props.rmSpecificationDetail.length > 0 &&
                                 this.props.rmSpecificationDetail.map((item, index) => {
@@ -65,7 +65,7 @@ class RMSpecificationDetail extends Component {
                                         </tr>
                                     )
                                 })}
-                                 {this.props.rmSpecificationDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.props.rmSpecificationDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

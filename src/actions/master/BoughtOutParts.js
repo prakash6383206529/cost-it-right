@@ -60,7 +60,6 @@ export function getAllBOPAPI(callback) {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getBOPAPI}`, headers);
         request.then((response) => {
-            console.log('%c 🍛 response: ', 'font-size:20px;background-color: #E41A6A;color:#fff;', response);
             if (response.data.Result) {
                 dispatch({
                     type: GET_BOP_SUCCESS,

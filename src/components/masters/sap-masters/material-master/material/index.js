@@ -68,14 +68,14 @@ class MaterialMaster extends Component {
                     <Col>
                         <h3>{`${CONSTANT.MATERIAL_MASTER} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h3>
                     </Col>
+                    {/* <Col>
+                        <Button onClick={this.openModel}>{`Add Raw Material Type`}</Button>
+                    </Col> */}
                     <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL_MASTER} ${CONSTANT.TYPE}`}</Button>
-                    </Col>
-                    <Col>
-                        <Button onClick={this.openRMModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL_MASTER} `}</Button>
+                        <Button onClick={this.openRMModel}>{`Add Raw Material Details`}</Button>
                     </Col>
                 </Row>
-                <hr />
+                {/* <hr /> */}
                 {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.MATERIAL_MASTER} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
@@ -83,15 +83,14 @@ class MaterialMaster extends Component {
                 </Row> */}
                 <div>
                     <Nav tabs className="subtabs">
+                        {/* <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                Raw Material Type
+                                </NavLink>
+                        </NavItem> */}
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                Material Details
-                                </NavLink>
-                        </NavItem>
-
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                Material Type Details
+                                Raw Material Details
                                 </NavLink>
                         </NavItem>
                     </Nav>
@@ -104,12 +103,12 @@ class MaterialMaster extends Component {
                         </TabPane>
                     </TabContent>
                 </div>
-                {isOpen && (
+                {/* {isOpen && (
                     <AddMaterialType
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                     />
-                )}
+                )} */}
                 {isRMOpen && (
                     <AddRMDetail
                         isOpen={isRMOpen}

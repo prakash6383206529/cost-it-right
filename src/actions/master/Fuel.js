@@ -66,7 +66,6 @@ export function createFuelDetailAPI(data, callback) {
         // });
         const request = axios.post(API.createFuelDetailAPI, data, headers);
         request.then((response) => {
-            console.log('response: ', response);
             if (response && response.data && response.data.Result) {
                 dispatch({
                     type: CREATE_FUEL_DETAIL_SUCCESS,

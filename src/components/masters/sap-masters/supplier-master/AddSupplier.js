@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody,Label,Input } from 'reactstrap';
-import { required, email, minLength7, maxLength70 } from "../../../../helper/validation";
-import { renderText, renderSelectField, renderEmailInputField, renderMultiSelectField} from "../../../layout/FormInputs";
-import { createSupplierAPI, updateSupplierAPI,getSupplierByIdAPI } from '../../../../actions/master/Supplier';
+import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
+import { required, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
+import { renderText, renderSelectField, renderEmailInputField, renderMultiSelectField } from "../../../layout/FormInputs";
+import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI } from '../../../../actions/master/Supplier';
 import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -26,20 +26,20 @@ class AddSupplier extends Component {
     * @description called before render the component
     */
     componentWillMount() {
-        this.props.fetchMasterDataAPI(res => {});
+        this.props.fetchMasterDataAPI(res => { });
     }
 
-     /**
-    * @method componentDidMount
-    * @description called after render the component
-    */
-    componentDidMount(){
-        const { supplierId,isEditFlag } = this.props;
-        if(isEditFlag){
-            this.setState({isEditFlag},()=>{  
-                this.props.getSupplierByIdAPI(supplierId,true, res => {
-                let plantArray = [];
-                const AssociatedPlants = res.data.Data.AssociatedPlants;
+    /**
+   * @method componentDidMount
+   * @description called after render the component
+   */
+    componentDidMount() {
+        const { supplierId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getSupplierByIdAPI(supplierId, true, res => {
+                    let plantArray = [];
+                    const AssociatedPlants = res.data.Data.AssociatedPlants;
                     AssociatedPlants.map((Value, index) => {
                         const plantObj = AssociatedPlants.find(item => item.PlantId === Value.PlantId);
                         return plantArray.push({ Text: plantObj.PlantName, Value: plantObj.PlantId });
@@ -48,10 +48,10 @@ class AddSupplier extends Component {
                         supplierType: res.data.Data.SupplierType,
                         selectedPlants: plantArray
                     });
-                });   
+                });
             });
-        }else{
-            this.props.getSupplierByIdAPI('',false, res => {})   
+        } else {
+            this.props.getSupplierByIdAPI('', false, res => { })
         }
     }
     /**
@@ -71,7 +71,7 @@ class AddSupplier extends Component {
             selectedPlants: e
         });
     };
-    
+
     /**
     * @method handleCityChange
     * @description  used to handle city selection
@@ -122,11 +122,11 @@ class AddSupplier extends Component {
     renderSelectPlantList = () => {
         const { plantList } = this.props;
         const temp = [];
-            plantList && plantList.map(item => {
-                if (item.Value != 0) {
-                    temp.push({ Text: item.Text, Value: item.Value })
-                }
+        plantList && plantList.map(item => {
+            if (item.Value != 0) {
+                temp.push({ Text: item.Text, Value: item.Value })
             }
+        }
         );
         return temp;
     }
@@ -144,7 +144,7 @@ class AddSupplier extends Component {
         /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
             const { supplierId } = this.props;
-           let formData = {
+            let formData = {
                 SupplierName: values.SupplierName,
                 SupplierCode: values.SupplierCode,
                 SupplierEmail: values.SupplierEmail,
@@ -164,7 +164,7 @@ class AddSupplier extends Component {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        }else{/** Add new detail for creating supplier master **/
+        } else {/** Add new detail for creating supplier master **/
             let formData = {
                 SupplierName: values.SupplierName,
                 SupplierCode: values.SupplierCode,
@@ -177,13 +177,13 @@ class AddSupplier extends Component {
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                     this.toggleModel()
+                    this.toggleModel()
                 } else {
                     toastr.error(res.data.Message);
                 }
             });
         }
-       
+
     }
 
     /**
@@ -214,7 +214,7 @@ class AddSupplier extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
-                                     <Row className={'supplierRadio'}>
+                                    {/* <Row className={'supplierRadio'}>
                                         <Col className='form-group'>
                                             <Label
                                                 className={'zbcwrapper'}
@@ -243,7 +243,7 @@ class AddSupplier extends Component {
                                             </Label>
                                         </Col>
                                     </Row>
-                                    <hr/>
+                                    <hr/> */}
                                     <Row>
                                         <Col md="6">
                                             <Field
@@ -266,6 +266,7 @@ class AddSupplier extends Component {
                                                 //validate={[required]}
                                                 component={renderText}
                                                 //required={true}
+                                                normalize={upper}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -362,7 +363,7 @@ function mapStateToProps({ comman, supplier }) {
     const { cityList, plantList } = comman;
     const { supplierData } = supplier;
     let initialValues = {};
-    if(supplierData && supplierData !== undefined){
+    if (supplierData && supplierData !== undefined) {
         initialValues = {
             SupplierName: supplierData.SupplierName,
             SupplierCode: supplierData.SupplierCode,
@@ -382,7 +383,7 @@ function mapStateToProps({ comman, supplier }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI,fetchMasterDataAPI
+    createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, fetchMasterDataAPI
 })(reduxForm({
     form: 'AddSupplier',
     enableReinitialize: true,

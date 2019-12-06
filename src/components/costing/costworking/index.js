@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList,
-    setCostingDetailRowData
+    setCostingDetailRowData, addCostingProcesses, addCostingOtherOperation
 } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
@@ -133,13 +133,14 @@ class CostWorking extends Component {
                 const newCostingId = res.data.Identity;
                 toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
                 /** fetching records of supplier costing details */
-                this.props.getCostingDetailsById(newCostingId, true, res => {
-                    this.setState({
-                        isCollapes: true,
-                        isEditFlag: true,
-                        isNewCostingFlag: false
-                    })
-                })
+                // this.props.getCostingDetailsById(newCostingId, true, res => {
+                //     this.setState({
+                //         isCollapes: true,
+                //         isEditFlag: true,
+                //         isNewCostingFlag: false
+                //     })
+                // })
+                this.props.getCostingBySupplier(supplierId, () => { })
             } else {
                 toastr.error(res.data.message);
             }
@@ -174,9 +175,13 @@ class CostWorking extends Component {
      * @method toggleOtherOperation
      * @description  used to toggle OtherOperation
      */
-    toggleOtherOperation = () => {
+    toggleOtherOperation = (selectedIndex) => {
+        const { costingId } = this.state;
         this.setState({
-            isShowOtherOperation: !this.state.isShowOtherOperation
+            isShowOtherOperation: !this.state.isShowOtherOperation,
+            selectedIndex: selectedIndex,
+        }, () => {
+            this.props.addCostingOtherOperation(costingId, res => { });
         })
     }
 
@@ -190,7 +195,7 @@ class CostWorking extends Component {
             isShowProcessGrid: !this.state.isShowProcessGrid,
             selectedIndex: selectedIndex,
         }, () => {
-            this.props.getCostingDetailsById(costingId, true, res => { })
+            this.props.addCostingProcesses(costingId, res => { })
         })
     }
 
@@ -199,9 +204,9 @@ class CostWorking extends Component {
         return (
             <select>
                 {MaterialSelectList && MaterialSelectList.map((item, i) => {
-                    let selected = (item.Value == data.MaterialTypeId) ? 'selected' : null;
+                    let selected = (item.Value == data.MaterialTypeId) ? true : false;
                     return (
-                        <option value={item.Value} selected >{item.Text}</option>
+                        <option value={item.Value} disabled selected={selected} >{item.Text}</option>
                     )
                 })}
             </select>
@@ -326,14 +331,14 @@ class CostWorking extends Component {
                                             let NetCC_Cost = '';
                                             if (data && data.RawMaterialDetails.length > 0) {
                                                 const scrapRate = data.RawMaterialDetails[0].RawMaterialScrapRate;
-                                                const finishWt = data.WeightCalculationDetails[0].FinishWeight;
+                                                const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : 0;
                                                 NetRMCost = (scrapRate * finishWt);
                                             }
 
                                             if (data && data.BoughtOutPartDetails.length > 0) {
                                                 const BOPcost = data.BoughtOutPartDetails[0].AssyBoughtOutParRate;
-                                                const ProcessCost = data.ProcessDetails[0].AssyTotalProcessCost;
-                                                const SurfaceTreatmentCost = data.OtherOperationDetails[0].AssySurfaceTreatmentCost
+                                                const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : 0;
+                                                const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : 0;
                                                 NetCC_Cost = (BOPcost + 2 + SurfaceTreatmentCost);
                                             }
                                             return (
@@ -361,7 +366,7 @@ class CostWorking extends Component {
                                                     <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].TotalProcessCost : '0'}</td>
                                                     <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : '0'}</td>
 
-                                                    <td><button onClick={this.toggleOtherOperation}>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].OperationName : 'Add'}</button></td>
+                                                    <td><button onClick={() => this.toggleOtherOperation(index)}>Add</button></td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].SurfaceTreatmentCost : '0'}</td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : '0'}</td>
                                                     <td>{NetRMCost * NetCC_Cost * data.Quantity}</td>
@@ -452,7 +457,9 @@ export default connect(mapStateToProps,
         getCostingBySupplier,
         getCostingDetailsById,
         getMaterialTypeSelectList,
-        setCostingDetailRowData
+        setCostingDetailRowData,
+        addCostingProcesses,
+        addCostingOtherOperation,
     }
 )(CostWorking);
 

@@ -32,16 +32,16 @@ export function createSupplierAPI(data, callback) {
         const request = axios.post(API.createSupplierAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                    dispatch({
-                        type: CREATE_SUPPLIER_SUCCESS,
-                        payload: response.data.Data
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_SUPPLIER_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_SUPPLIER_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -60,12 +60,11 @@ export function getSupplierDetailAPI() {
     return (dispatch) => {
         const request = axios.get(API.getSupplierAPI, headers);
         request.then((response) => {
-            console.log('response: ', response);
             dispatch({
                 type: GET_SUPPLIER_SUCCESS,
                 payload: response.data.DataList,
             });
-                
+
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE
@@ -79,27 +78,27 @@ export function getSupplierDetailAPI() {
  * @method getSupplierByIdAPI
  * @description get one labour based on id
  */
-export function getSupplierByIdAPI(supplierId,isEditFlag,callback) {
+export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if(isEditFlag){
+        if (isEditFlag) {
             axios.get(`${API.getSupplierAPI}/${supplierId}`, headers)
-            .then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_SUPPLIER_DATA_SUCCESS,
-                        payload: response.data.Data,
-                    });
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_SUPPLIER_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
-                    callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-        }else{
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
             dispatch({
                 type: GET_SUPPLIER_DATA_SUCCESS,
                 payload: {},
@@ -113,12 +112,12 @@ export function getSupplierByIdAPI(supplierId,isEditFlag,callback) {
  * @method deleteSupplierAPI
  * @description delete supplier
  */
-export function deleteSupplierAPI(Id ,callback) {
+export function deleteSupplierAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteSupplierAPI}/${Id}`, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
@@ -133,9 +132,9 @@ export function deleteSupplierAPI(Id ,callback) {
 export function updateSupplierAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateSupplierAPI}`,requestData, headers)
+        axios.put(`${API.updateSupplierAPI}`, requestData, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });

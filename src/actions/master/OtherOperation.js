@@ -124,7 +124,6 @@ export function getCEDOtherOperationsAPI(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getCEDOtherOperationsAPI, { headers })
             .then((response) => {
-                //console.log("response.data.Result ", response.data.Result)
                 //if (response.data.Result === true) {
                 dispatch({
                     type: GET_CED_OTHER_OPERATION_SUCCESS,
@@ -153,7 +152,6 @@ export function getOperationsMasterAPI(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getOperationsAPI, { headers })
             .then((response) => {
-                console.log("response.data.Result ", response.data.Result)
                 if (response.data.Result === true) {
                     dispatch({
                         type: GET_OPERATION_SUCCESS,
@@ -164,7 +162,6 @@ export function getOperationsMasterAPI(callback) {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
-                console.log('error', error.response ? error.response : error)
                 dispatch({
                     type: GET_CED_OTHER_OPERATION_FAILURE
                 });

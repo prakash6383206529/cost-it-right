@@ -156,7 +156,7 @@ class Main extends Component {
                 )}
               />
               <Route
-                path="/row-material-master"
+                path="/raw-material-master"
                 render={props => (
                   <RowMaterialMaster
                     {...props}

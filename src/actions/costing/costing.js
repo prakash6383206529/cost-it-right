@@ -57,15 +57,25 @@ export function getExistingSupplierDetailByPartId(partId, callback) {
         const request = axios.get(`${API.getExistingSupplierDetailByPartId}/${partId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                console.log("action iffffffffff", response.data.Result)
                 dispatch({
                     type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
                     payload: response.data.DynamicData,
                 });
                 callback(response);
             } else {
+                console.log("action elseeeeeeeeeeee", response.data.Result)
+                dispatch({
+                    type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
+                    payload: null,
+                });
                 toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
+            dispatch({
+                type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
+                payload: null,
+            });
             dispatch({ type: API_FAILURE });
             callback(error);
             apiErrors(error);
@@ -105,7 +115,6 @@ export function checkPartWithTechnology(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.checkPartWithTechnology, data, headers);
         request.then((response) => {
-            console.log("response >>", response)
             if (response.data.Result) {
                 callback(response);
             } else {

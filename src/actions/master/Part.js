@@ -137,7 +137,6 @@ export function deletePartsAPI(PartId, callback) {
  * @description update part details
  */
 export function updatePartsAPI(requestData, callback) {
-    console.log('requestData: ', requestData);
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         axios.put(`${API.updatePartAPI}`, requestData, headers)

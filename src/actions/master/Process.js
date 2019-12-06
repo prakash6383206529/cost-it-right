@@ -60,7 +60,6 @@ export function getProcessDataAPI() {
     return (dispatch) => {
         const request = axios.get(API.getProcessAPI, headers);
         request.then((response) => {
-            console.log('response: ', response);
             dispatch({
                 type: GET_PROCESS_LIST_SUCCESS,
                 payload: response.data.DataList,
@@ -132,7 +131,6 @@ export function getProcessUnitAPI(processId, isEditFlag, callback) {
  * @description update UOM
  */
 export function updateProcessAPI(processId, request, callback) {
-    //console.log('%c 🍮 request: ', 'font-size:20px;background-color: #FCA650;color:#fff;', request);
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.updateProcessAPI}`, request, headers)

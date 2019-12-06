@@ -116,7 +116,7 @@ class UOMMaster extends Component {
                                 <tr>
                                     <th>UOM Name</th>
                                     <th>UOM Title</th>
-                                    <th>UOM Description</th>
+                                    {/* <th>UOM Description</th> */}
                                     <th></th>
                                 </tr>
                             </thead>}
@@ -128,7 +128,7 @@ class UOMMaster extends Component {
                                         <tr key={index}>
                                             <td >{item.Name}</td>
                                             <td>{item.Title}</td>
-                                            <td>{item.Description}</td>
+                                            {/* <td>{item.Description}</td> */}
                                             <td>
                                                 <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
                                                 <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>

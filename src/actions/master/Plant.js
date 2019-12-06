@@ -44,7 +44,6 @@ export function createPlantAPI(data, callback) {
                 }
             }
         }).catch((error) => {
-            console.log('%c 🍛 error: ', 'font-size:20px;background-color: #2EAFB0;color:#fff;', error);
             dispatch({
                 type: API_FAILURE
             });
@@ -61,7 +60,6 @@ export function getPlantDataAPI() {
     return (dispatch) => {
         const request = axios.get(API.getPlantAPI, headers);
         request.then((response) => {
-            console.log('response: ', response);
             dispatch({
                 type: GET_PLANT_SUCCESS,
                 payload: response.data.DataList,

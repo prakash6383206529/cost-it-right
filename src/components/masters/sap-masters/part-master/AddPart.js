@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField, renderCheckboxInputField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField, renderCheckboxInputField, renderMultiSelectField } from "../../../layout/FormInputs";
 import { createPartAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '../../../../actions/master/Part';
 import { fetchPartComboAPI } from '../../../../actions/master/Comman';
+import { getAllBOMAPI } from '../../../../actions/master/BillOfMaterial';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -16,7 +17,8 @@ class AddPart extends Component {
         this.state = {
             typeOfListing: [],
             isEditFlag: false,
-            IsPartAssociatedWithBOM: false
+            IsPartAssociatedWithBOM: false,
+            selectedBOMs: [],
         }
     }
 
@@ -26,6 +28,7 @@ class AddPart extends Component {
     */
     componentWillMount() {
         this.props.fetchPartComboAPI(res => { });
+        this.props.getAllBOMAPI(res => { });
     }
 
     /**
@@ -63,6 +66,53 @@ class AddPart extends Component {
         this.setState({
             typeOfListing: e
         })
+    }
+
+    /**
+     * @method handleBOMSelection
+     * @description Used for BOM numbers selection
+     */
+    handleBOMSelection = e => {
+        this.setState({
+            selectedBOMs: e
+        });
+    };
+
+    /**
+    * @method renderTypeOfListing
+    * @description Used show select listings
+    */
+    renderTypeOfListing = (label) => {
+        const { uniOfMeasurementList, plantList, materialTypeList, BOMListing } = this.props;
+        const temp = [];
+        if (label === 'material') {
+            materialTypeList && materialTypeList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if (label === 'uom') {
+            uniOfMeasurementList && uniOfMeasurementList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if (label === 'plant') {
+            plantList && plantList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if (label === 'BOM') {
+            BOMListing && BOMListing.map(item =>
+                temp.push({ Text: item.BillNumber, Value: item.BillOfMaterialId })
+            );
+            return temp;
+        }
+    }
+
+    onPressAssociatedWithBOM = () => {
+        this.setState({ IsPartAssociatedWithBOM: !this.state.IsPartAssociatedWithBOM });
     }
 
     /**
@@ -111,37 +161,7 @@ class AddPart extends Component {
         }
     }
 
-    /**
-    * @method selectUnitOfMeasurement
-    * @description Used show listing of unit of measurement
-    */
-    renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, plantList, materialTypeList } = this.props;
-        const temp = [];
-        if (label === 'material') {
-            materialTypeList && materialTypeList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'uom') {
-            uniOfMeasurementList && uniOfMeasurementList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'plant') {
-            plantList && plantList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
-        }
 
-    }
-
-    onPressAssociatedWithBOM = () => {
-        this.setState({ IsPartAssociatedWithBOM: !this.state.IsPartAssociatedWithBOM });
-    }
 
     /**
     * @method render
@@ -162,7 +182,7 @@ class AddPart extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
-                                        <Col>
+                                        <Col md="4">
                                             <label
                                                 className="custom-checkbox"
                                                 onChange={this.onPressAssociatedWithBOM}
@@ -175,6 +195,21 @@ class AddPart extends Component {
                                                     onChange={this.onPressAssociatedWithBOM}
                                                 />
                                             </label>
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="BOM Numbers"
+                                                name="SelectedBOM"
+                                                placeholder="--Select BOM Number--"
+                                                selection={this.state.selectedBOMs}
+                                                options={this.renderTypeOfListing('BOM')}
+                                                selectionChanged={this.handleBOMSelection}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={false}
+                                                className="withoutBorder"
+                                            />
                                         </Col>
                                     </Row>
                                     <Row>
@@ -306,9 +341,9 @@ class AddPart extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part, comman }) {
+function mapStateToProps({ part, comman, billOfMaterial }) {
     const { uniOfMeasurementList, partData, materialTypeList } = part;
-    console.log('partData: ', partData);
+    const { BOMListing } = billOfMaterial;
     const { plantList } = comman
     let initialValues = {};
     if (partData && partData !== undefined) {
@@ -322,7 +357,7 @@ function mapStateToProps({ part, comman }) {
             PartDescription: partData.PartDescription,
         }
     }
-    return { uniOfMeasurementList, initialValues, materialTypeList, plantList, partData }
+    return { uniOfMeasurementList, initialValues, materialTypeList, plantList, partData, BOMListing }
 }
 
 /**
@@ -333,8 +368,11 @@ function mapStateToProps({ part, comman }) {
 */
 export default connect(mapStateToProps, {
     createPartAPI,
-    updatePartsAPI, getOnePartsAPI,
-    fetchPartComboAPI, getAllPartsAPI
+    updatePartsAPI,
+    getOnePartsAPI,
+    fetchPartComboAPI,
+    getAllPartsAPI,
+    getAllBOMAPI,
 })(reduxForm({
     form: 'AddPart',
     enableReinitialize: true,

@@ -42,6 +42,17 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 rowIndex={index}
                                 disabled={false}
                             />
+                            <Field
+                                label={''}
+                                name={`${cost}.CostingProcessDetailId`}
+                                type="hidden"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={InputHiddenField}
+                                //required={true}
+                                className=" withoutBorder"
+                                disabled={true}
+                            />
                         </td>
                         <td>
                             <button type="button" onClick={() => openMHRModal(index)}>{'Add'}</button>
@@ -49,7 +60,7 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                         <td>
                             <Field
                                 label={''}
-                                name={`${cost}.UMO`}
+                                name={`${cost}.UnitOfMeasurementName`}
                                 type="text"
                                 placeholder={''}
                                 //validate={[required]}
@@ -188,6 +199,30 @@ class ProcessGrid extends Component {
     }
 
     /**
+     * @method componentWillReceiveProps
+     * @description  Used for changes in props
+     */
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.costingGridProcessData != this.props.costingGridProcessData) {
+            console.log("nextProps.costingGridProcessData", nextProps.costingGridProcessData)
+            const { LinkedProcesses } = nextProps.costingGridProcessData;
+
+            let grandTotal = 0;
+            LinkedProcesses && LinkedProcesses.map((item, index) => {
+                if (item.UnitOfMeasurementName == "Hour") {
+                    grandTotal = grandTotal + (((item.Rate * item.CycleTime / 3600) * (100 / item.Efficiency)) / item.Cavity) * item.Quantity
+                } else {
+                    grandTotal = grandTotal + ((item.Rate * item.CycleTime) * (item.Efficiency / 100)) * item.Quantity
+                }
+                console.log("grandTotal ", grandTotal)
+                return grandTotal;
+            })
+
+            this.setState({ totalCost: grandTotal })
+        }
+    }
+
+    /**
      * @method openMHRModal
      * @description  used to open MHR Modal 
      */
@@ -238,7 +273,7 @@ class ProcessGrid extends Component {
             UOM: item.UnitOfMeasurementName,
             MHR: item.BasicMachineRate
         })
-        this.props.change(`LinkedProcesses[${GridselectedIndex}]['UMO']`, item.UnitOfMeasurementName);
+        this.props.change(`LinkedProcesses[${GridselectedIndex}]['UnitOfMeasurementName']`, item.UnitOfMeasurementName);
         this.props.change(`LinkedProcesses[${GridselectedIndex}]['Rate']`, item.BasicMachineRate);
         this.props.change(`LinkedProcesses[${GridselectedIndex}]['MachineHourRateId']`, item.MachineHourRateId);
     }
@@ -294,6 +329,7 @@ class ProcessGrid extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        console.log("values proces grid >>", values)
         const { totalCost } = this.state;
         const { costingId, PartId } = this.props;
 
@@ -450,7 +486,7 @@ function mapStateToProps({ costWorking }) {
                 NetCost: 0,
                 IsActive: true,
                 CreatedDate: "",
-                UMO: "",
+                UnitOfMeasurementName: "",
                 CycleTime: 0,
                 Efficiency: 0,
                 Cavity: 0

@@ -511,7 +511,6 @@ export function saveProcessCosting(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.saveProcessCosting, data, headers);
         request.then((response) => {
-            console.log("response success >>>>>", response)
             if (response.data.Result) {
                 dispatch({
                     type: SAVE_PROCESS_COSTING_SUCCESS,
@@ -600,7 +599,6 @@ export function saveOtherOpsCosting(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.saveOtherOpsCosting, data, headers);
         request.then((response) => {
-            console.log("response success >>>>>", response)
             if (response.data.Result) {
                 dispatch({
                     type: SAVE_OTHER_OPERATION_COSTING_SUCCESS,
@@ -656,3 +654,4 @@ export function setCostingDetailRowData(data, selectedIndex) {
         });
     };
 }
+

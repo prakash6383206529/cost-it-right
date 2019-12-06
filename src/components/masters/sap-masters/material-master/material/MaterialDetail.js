@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-     Row, Col, Table
+    Row, Col, Table
 } from 'reactstrap';
 import { getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
@@ -42,30 +42,30 @@ class MaterialDetail extends Component {
                     </Col>
                 </Row> */}
                 <Col>
-                    <hr />
+                    {/* <hr /> */}
                     <Table className="table table-striped" bordered>
-                    { this.props.rmDetail && this.props.rmDetail.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`${CONSTANT.TECHNOLOGY}`}</th>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.GRADE}`}</th>
-                                <th>{`${CONSTANT.SPECIFICATION}`}</th>
-                                <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
-                                <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
-                                <th>{` ${CONSTANT.UOM}`}</th>
-                                <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.BASIC} ${CONSTANT.RATE}`}</th>
-                                <th>{`${CONSTANT.QUANTITY}`}</th>
-                                <th>{`${CONSTANT.SCRAP} ${CONSTANT.RATE}`}</th>
-                                <th>{` ${CONSTANT.NLC}`}</th>
-                                <th>{`${CONSTANT.REMARK} `}</th>
-                                <th>{`${CONSTANT.DATE}`}</th>
-                            </tr>
-                        </thead>}
+                        {this.props.rmDetail && this.props.rmDetail.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>{`${CONSTANT.TECHNOLOGY}`}</th>
+                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.GRADE}`}</th>
+                                    <th>{`${CONSTANT.SPECIFICATION}`}</th>
+                                    <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
+                                    <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
+                                    <th>{` ${CONSTANT.UOM}`}</th>
+                                    <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.BASIC} ${CONSTANT.RATE}`}</th>
+                                    <th>{`${CONSTANT.QUANTITY}`}</th>
+                                    <th>{`${CONSTANT.SCRAP} ${CONSTANT.RATE}`}</th>
+                                    <th>{` ${CONSTANT.NLC}`}</th>
+                                    <th>{`${CONSTANT.REMARK} `}</th>
+                                    <th>{`${CONSTANT.DATE}`}</th>
+                                </tr>
+                            </thead>}
                         <tbody >
                             {this.props.rmDetail && this.props.rmDetail.length > 0 &&
                                 this.props.rmDetail.map((item, index) => {
@@ -91,7 +91,7 @@ class MaterialDetail extends Component {
                                         </tr>
                                     )
                                 })}
-                                {this.props.rmDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.props.rmDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

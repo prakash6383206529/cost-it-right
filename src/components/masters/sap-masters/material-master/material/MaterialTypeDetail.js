@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-     Row, Col, Table
+    Row, Col, Table
 } from 'reactstrap';
 import { getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
@@ -20,10 +20,10 @@ class MaterialTypeDetail extends Component {
         }
     }
 
-     /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
+    /**
+   * @method componentDidMount
+   * @description Called after rendering the component
+   */
     componentDidMount() {
         this.props.getMaterialDetailAPI(res => { });
     }
@@ -42,16 +42,16 @@ class MaterialTypeDetail extends Component {
                     </Col>
                 </Row> */}
                 <Col>
-                    <hr />
+                    {/* <hr /> */}
                     <Table className="table table-striped" bordered>
-                    { this.props.rmTypeDetail && this.props.rmTypeDetail.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
-                                <th>{`${CONSTANT.DESCRIPTION}`}</th>
-                                <th>{`${CONSTANT.DATE}`}</th>
-                            </tr>
-                        </thead>}
+                        {this.props.rmTypeDetail && this.props.rmTypeDetail.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
+                                    <th>{`${CONSTANT.DESCRIPTION}`}</th>
+                                    <th>{`${CONSTANT.DATE}`}</th>
+                                </tr>
+                            </thead>}
                         <tbody >
                             {this.props.rmTypeDetail && this.props.rmTypeDetail.length > 0 &&
                                 this.props.rmTypeDetail.map((item, index) => {
@@ -63,7 +63,7 @@ class MaterialTypeDetail extends Component {
                                         </tr>
                                     )
                                 })}
-                                {this.props.rmTypeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.props.rmTypeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

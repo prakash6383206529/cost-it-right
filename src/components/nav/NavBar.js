@@ -77,9 +77,8 @@ class SideBar extends Component {
         <Nav className="ml-auto top-menu logout">
           <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
             <DropdownToggle caret>
-              Priyanka
+              Harish
             </DropdownToggle>
-
             <DropdownMenu>
               <DropdownItem header>
                 <Link className="bell-notifcation-icon" to="/login">
@@ -105,12 +104,13 @@ class SideBar extends Component {
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters1</a>
                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href="/plant-master">Plant Master</a>
+                  <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
+                  <a className="dropdown-item" href="/raw-material-master">Raw Material Master</a>
+                  <a className="dropdown-item" href="/material-master">Raw Material Detail Master</a>
                   <a className="dropdown-item" href='/UOMMaster'>UOM Master</a>
                   <a className="dropdown-item" href="/PartMaster">Part Master</a>
                   <a className="dropdown-item" href='/category-master'>Category Master</a>
-                  <a className="dropdown-item" href="/row-material-master">Raw Material Master</a>
-                  <a className="dropdown-item" href="/plant-master">Plant Master</a>
-                  <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
                   <a className="dropdown-item" href="/bom-master">BOM Master</a>
                   <a className="dropdown-item" href="/bop-master">BOP Master</a>
                   <a className="dropdown-item" href="/other-operation">Other Operation</a>
@@ -143,7 +143,6 @@ class SideBar extends Component {
                   <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
                   <a className="dropdown-item" href="/mhr-master">MHR Master</a> */}
                   <a className="dropdown-item" href="/operation-master">Process Operation</a>
-                  <a className="dropdown-item" href="/material-master">Raw Material Detail Master</a>
                   <a className="dropdown-item" href="/freight-master">Freight Master</a>
                   <a className="dropdown-item" href="/labour-master">Labour Master</a>
                   <a className="dropdown-item" href="/overhead-profit-master">Overhead and Profit</a>

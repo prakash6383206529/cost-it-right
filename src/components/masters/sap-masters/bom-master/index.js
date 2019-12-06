@@ -171,7 +171,7 @@ class BOMMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ billOfMaterial }) {
-    const { BOMListing, loading } = billOfMaterial;;
+    const { BOMListing, loading } = billOfMaterial;
     return { BOMListing, loading }
 }
 

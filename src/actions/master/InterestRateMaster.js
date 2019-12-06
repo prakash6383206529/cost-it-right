@@ -31,7 +31,6 @@ export function getInterestRateAPI(callback) {
         dispatch({ type: API_REQUEST });
         axios.get(API.getInterestRateAPI, { headers })
             .then((response) => {
-                //console.log("response.data.Result ", response.data.Result)
                 if (response.data.Result === true) {
                     dispatch({
                         type: GET_INTEREST_RATE_SUCCESS,
@@ -42,7 +41,6 @@ export function getInterestRateAPI(callback) {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
-                //console.log('error', error.response ? error.response : error)
                 dispatch({
                     type: API_FAILURE
                 });
@@ -114,27 +112,27 @@ export function createInterestRateAPI(data, callback) {
  * @method getInterestRateByIdAPI
  * @description get one interest rate based on id
  */
-export function getInterestRateByIdAPI(SupplierInterestRateId,isEditFlag,callback) {
+export function getInterestRateByIdAPI(SupplierInterestRateId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if(isEditFlag){
+        if (isEditFlag) {
             axios.get(`${API.getInterestRateAPI}/${SupplierInterestRateId}`, headers)
-            .then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type:  GET_INTEREST_RATE_DATA_SUCCESS,
-                        payload: response.data.Data,
-                    });
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_INTEREST_RATE_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
-                    callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-        }else{
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
             dispatch({
                 type: GET_INTEREST_RATE_DATA_SUCCESS,
                 payload: {},
@@ -148,12 +146,12 @@ export function getInterestRateByIdAPI(SupplierInterestRateId,isEditFlag,callbac
  * @method deleteInterestRateAPI
  * @description delete Interest Rate
  */
-export function deleteInterestRateAPI(Id ,callback) {
+export function deleteInterestRateAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteInterestRateAPI}/${Id}`, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
@@ -168,9 +166,9 @@ export function deleteInterestRateAPI(Id ,callback) {
 export function updateInterestRateAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateInterestRateAPI}`,requestData, headers)
+        axios.put(`${API.updateInterestRateAPI}`, requestData, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });

@@ -235,7 +235,6 @@ class AddMHR extends Component {
                                                 VBC
                                             </Label>
                                         </Col>
-
                                     </Row>
                                     <Row>
                                         <Col md="6">
@@ -354,7 +353,7 @@ class AddMHR extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label="MachineTonnage"
+                                                label="Machine Tonnage"
                                                 name={"MachineTonnage"}
                                                 type="text"
                                                 placeholder={''}

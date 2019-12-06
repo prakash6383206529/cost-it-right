@@ -20,10 +20,10 @@ class RMDetail extends Component {
         }
     }
 
-     /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
+    /**
+   * @method componentDidMount
+   * @description Called after rendering the component
+   */
     componentDidMount() {
         this.props.getRowMaterialDataAPI(res => { });
     }
@@ -42,17 +42,17 @@ class RMDetail extends Component {
                     </Col>
                 </Row> */}
                 <Col>
-                    <hr />
+                    {/* <hr /> */}
                     <Table className="table table-striped" bordered>
-                    { this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`Raw Material Name`}</th>
-                                <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
-                                <th>{`${CONSTANT.DATE}`}</th>
-                            </tr>
-                        </thead>}
+                        {this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>{`Raw Material Name`}</th>
+                                    <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
+                                    <th>{`${CONSTANT.DATE}`}</th>
+                                </tr>
+                            </thead>}
                         <tbody >
                             {this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
                                 this.props.rowMaterialDetail.map((item, index) => {
@@ -65,7 +65,7 @@ class RMDetail extends Component {
                                         </tr>
                                     )
                                 })}
-                                {this.props.rowMaterialDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.props.rowMaterialDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

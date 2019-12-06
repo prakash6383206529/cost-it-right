@@ -32,7 +32,6 @@ export function createBOMAPI(data, callback) {
         // });
         const request = axios.post(API.createBOMAPI, data, headers);
         request.then((response) => {
-            console.log('res >>', response)
             if (response.data.Result) {
                 dispatch({
                     type: CREATE_BOP_SUCCESS,
@@ -88,7 +87,6 @@ export function uploadBOMxlsAPI(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.uploadBOMxlsAPI, data, headers);
         request.then((response) => {
-            console.log('res xls >>', response)
             if (response.data.Result) {
                 dispatch({
                     type: UPLOAD_BOM_XLS_SUCCESS,

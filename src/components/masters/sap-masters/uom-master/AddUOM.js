@@ -46,14 +46,14 @@ class AddUOM extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-         /** Update detail of the existing UOM  */
+        /** Update detail of the existing UOM  */
         if (this.props.isEditFlag) {
             const { uomId } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
                 Name: values.Name,
                 Title: values.Title,
-                Description: values.Description,
+                //Description: values.Description,
                 Id: uomId,
                 IsActive: true,
             }
@@ -67,7 +67,7 @@ class AddUOM extends Component {
                 }
             });
         } else {
-             /** Add detail for creating new UOM  */
+            /** Add detail for creating new UOM  */
             this.props.createUnitOfMeasurementAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.UOM_ADD_SUCCESS);
@@ -124,7 +124,7 @@ class AddUOM extends Component {
                                             />
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    {/* <Row>
                                         <Col md="12">
                                             <Field
                                                 label="Description"
@@ -137,7 +137,7 @@ class AddUOM extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                    </Row>
+                                    </Row> */}
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
@@ -172,7 +172,7 @@ function mapStateToProps({ unitOfMeasrement }) {
         initialValues = {
             Name: unitOfMeasurementData.Name,
             Title: unitOfMeasurementData.Title,
-            Description: unitOfMeasurementData.Description,
+            //Description: unitOfMeasurementData.Description,
             CreatedBy: unitOfMeasurementData.CreatedBy,
         }
     }

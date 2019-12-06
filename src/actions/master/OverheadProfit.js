@@ -31,7 +31,6 @@ export function getOverheadProfitAPI(callback) {
         dispatch({ type: API_REQUEST });
         axios.get(API.getOverheadProfitAPI, { headers })
             .then((response) => {
-                console.log("response.data.Result ", response.data.Result)
                 if (response.data.Result === true) {
                     dispatch({
                         type: GET_OVERHEAD_PROFIT_SUCCESS,
@@ -42,7 +41,6 @@ export function getOverheadProfitAPI(callback) {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
-                console.log('error', error.response ? error.response : error)
                 dispatch({
                     type: API_FAILURE
                 });
