@@ -27,6 +27,8 @@ import {
     ADD_PROCESS_COSTING_SUCCESS,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
     SET_COSTING_DETAIL_ROW_DATA,
+    UPDATE_COSTING_OTHER_OPERATION_SUCCESS,
+    SAVE_COSTING_AS_DRAFT_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -655,3 +657,48 @@ export function setCostingDetailRowData(data, selectedIndex) {
     };
 }
 
+/**
+ * @method updateBOPAPI
+ * @description update BOP
+ */
+export function updateCostingOtherOperation(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateCostingOtherOperation}`, requestData, headers)
+            .then((response) => {
+                dispatch({ type: UPDATE_COSTING_OTHER_OPERATION_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method saveCostingAsDraft
+ * @description save Costing as draft
+ */
+export function saveCostingAsDraft(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.saveCostingAsDraft, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: SAVE_COSTING_AS_DRAFT_SUCCESS,
+                });
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}

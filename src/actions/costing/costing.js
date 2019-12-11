@@ -229,3 +229,28 @@ export function setInventoryRowData(supplierColumn, data) {
         });
     };
 }
+
+/**
+ * @method getCostingOverHeadProByModelType
+ * @description get overhead type by model type
+ */
+export function getCostingOverHeadProByModelType(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.getCostingOverHeadProByModelType, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                // console.log("ressssss", response)
+                // dispatch({
+                //     type: SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
+                //     payload: response.data.Data,
+                // });
+                callback(response.data.Data);
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}

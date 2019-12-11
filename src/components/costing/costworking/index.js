@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList,
-    setCostingDetailRowData, addCostingProcesses, addCostingOtherOperation
+    setCostingDetailRowData, addCostingProcesses, addCostingOtherOperation, saveCostingAsDraft
 } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
@@ -35,7 +35,15 @@ class CostWorking extends Component {
             isShowProcessGrid: false,
             selectedIndex: '',
             PartNumber: '',
-            Quantity: '',
+            NetRMCost: 0,
+            NetCC_Cost: 0,
+            NetGrandTotal: 0,
+            Quantity: 0,
+            NetProcessCost: 0,
+            NetOtherOperationCost: 0,
+            NetSurfaceCost: 0,
+            NetBoughtOutPartCost: 0,
+            isEditCEDFlag: false,
         }
     }
 
@@ -53,10 +61,76 @@ class CostWorking extends Component {
         }
     }
 
+    /**
+     * @method componentWillReceiveProps
+     * @description  called after props changes
+     */
     componentWillReceiveProps(nextProps) {
         if (nextProps.getCostingDetailData != this.props.getCostingDetailData) {
-            const { getCostingDetailData } = this.props;
-            this.setState({ Quantity: nextProps.getCostingDetailData.AssemblyPartDetail[0].Quantity })
+            //const { getCostingDetailData } = this.props;
+
+            let NetRMCost = 0;
+            let NetCC_Cost = 0;
+            let NetQuantity = 0;
+            let NetProcessCost = 0;
+            let NetOtherOperationCost = 0;
+            let NetSurfaceCost = 0;
+            let NetBoughtOutPartCost = 0;
+            let NetGrossWeight = 0;
+
+            const tempData = nextProps.getCostingDetailData && nextProps.getCostingDetailData.AssemblyPartDetail.map((data, index) => {
+
+                if (data && data.RawMaterialDetails.length > 0) {
+                    const scrapRate = data.RawMaterialDetails[index].RawMaterialScrapRate;
+                    const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[index].FinishWeight : 0;
+                    NetRMCost = NetRMCost + (scrapRate * finishWt);
+                }
+
+                if (data && data.WeightCalculationDetails.length > 0) {
+                    const grossWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[index].GrossWeight : 0;
+                    NetGrossWeight = NetGrossWeight + grossWt;
+                }
+
+                if (data && data.BoughtOutPartDetails.length > 0) {
+                    const BOPcost = data.BoughtOutPartDetails[index].AssyBoughtOutParRate;
+                    const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[index].AssyTotalProcessCost : 0;
+                    const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[index].AssySurfaceTreatmentCost : 0;
+                    const OtherOperationCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[index].GrandTotal : 0;
+
+                    NetCC_Cost = NetCC_Cost + (BOPcost + ProcessCost + SurfaceTreatmentCost);
+                    NetProcessCost = NetProcessCost + ProcessCost;
+                    NetOtherOperationCost = NetOtherOperationCost + OtherOperationCost;
+                    NetSurfaceCost = NetSurfaceCost + SurfaceTreatmentCost;
+                    NetBoughtOutPartCost = NetBoughtOutPartCost + BOPcost;
+                }
+
+                NetRMCost = NetRMCost * data.Quantity;
+                NetCC_Cost = NetCC_Cost * data.Quantity;
+                NetQuantity = NetQuantity + data.Quantity;
+
+                return {
+                    NetRMCost: NetRMCost,
+                    NetCC_Cost: NetCC_Cost,
+                    NetQuantity: NetQuantity,
+                    NetProcessCost: NetProcessCost,
+                    NetOtherOperationCost: NetOtherOperationCost,
+                    NetSurfaceCost: NetSurfaceCost,
+                    NetBoughtOutPartCost: NetBoughtOutPartCost,
+                    NetGrossWeight: NetGrossWeight,
+                }
+            })
+
+            this.setState({
+                NetRMCost: tempData[0].NetRMCost,
+                NetCC_Cost: tempData[0].NetCC_Cost,
+                NetGrandTotal: tempData[0].NetRMCost + tempData[0].NetCC_Cost,
+                Quantity: tempData[0].NetQuantity,
+                NetProcessCost: tempData[0].NetProcessCost,
+                NetOtherOperationCost: tempData[0].NetOtherOperationCost,
+                NetSurfaceCost: tempData[0].NetSurfaceCost,
+                NetBoughtOutPartCost: tempData[0].NetBoughtOutPartCost,
+                NetGrossWeight: tempData[0].NetGrossWeight,
+            })
         }
     }
 
@@ -109,7 +183,6 @@ class CostWorking extends Component {
                 costingId: costingId
             })
         })
-
     }
 
     /**
@@ -120,7 +193,6 @@ class CostWorking extends Component {
         const { supplierId, plantId, partId } = this.props;
         const { activeCostingListData } = this.props;
         /** getting part id from active costing list */
-        //if (activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0) {
         const sheetmetalCostingData = {
             PartId: partId,
             PlantId: plantId,
@@ -133,19 +205,11 @@ class CostWorking extends Component {
                 const newCostingId = res.data.Identity;
                 toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
                 /** fetching records of supplier costing details */
-                // this.props.getCostingDetailsById(newCostingId, true, res => {
-                //     this.setState({
-                //         isCollapes: true,
-                //         isEditFlag: true,
-                //         isNewCostingFlag: false
-                //     })
-                // })
                 this.props.getCostingBySupplier(supplierId, () => { })
             } else {
                 toastr.error(res.data.message);
             }
         });
-        //}
     }
 
     /**
@@ -156,7 +220,6 @@ class CostWorking extends Component {
         this.setState({
             isOpenRMmodel: !this.state.isOpenRMmodel,
             selectedIndex: selectedIndex,
-            //isRMEditFlag: this.props.getCostingDetailData.RawMaterialDetails.length > 0 ? true : false,
         })
     }
 
@@ -175,11 +238,12 @@ class CostWorking extends Component {
      * @method toggleOtherOperation
      * @description  used to toggle OtherOperation
      */
-    toggleOtherOperation = (selectedIndex) => {
+    toggleOtherOperation = (selectedIndex, isEditCEDFlag) => {
         const { costingId } = this.state;
         this.setState({
             isShowOtherOperation: !this.state.isShowOtherOperation,
             selectedIndex: selectedIndex,
+            isEditCEDFlag: isEditCEDFlag,
         }, () => {
             this.props.addCostingOtherOperation(costingId, res => { });
         })
@@ -231,7 +295,40 @@ class CostWorking extends Component {
 
         this.props.setCostingDetailRowData(DetailData, index);
         console.log("Detail", data, DetailData)
+    }
 
+    /**
+    * @method saveCosting
+    * @description Used for save costing as draft
+    */
+    saveCosting = () => {
+        const { costingId, NetRMCost, NetCC_Cost, NetGrandTotal, Quantity, NetProcessCost, NetOtherOperationCost, NetSurfaceCost,
+            NetBoughtOutPartCost, NetGrossWeight } = this.state;
+        const { getCostingDetailData } = this.props;
+
+        let formData = {
+            CostingId: costingId,
+            CostingStatusId: getCostingDetailData.CostingDetail.CostingStatusId,
+            CostingStatusName: "Draft",
+            NetPurchaseOrderPrice: NetGrandTotal,
+            ShareOfBusiness: 15,
+            Quantity: Quantity,
+            NetRawMaterialCost: NetRMCost,
+            TotalConversionCost: NetCC_Cost,
+            NetProcessCost: NetProcessCost,
+            NetOtherOperationCost: NetOtherOperationCost,
+            NetSurfaceCost: NetSurfaceCost,
+            NetBoughtOutParCost: NetBoughtOutPartCost,
+            NetGrossWeight: NetGrossWeight,
+        }
+        this.props.saveCostingAsDraft(formData, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY);
+                this.props.toggle('1');
+            } else {
+                toastr.error(res.data.Message);
+            }
+        })
     }
 
     /**
@@ -339,8 +436,10 @@ class CostWorking extends Component {
                                                 const BOPcost = data.BoughtOutPartDetails[0].AssyBoughtOutParRate;
                                                 const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : 0;
                                                 const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : 0;
-                                                NetCC_Cost = (BOPcost + 2 + SurfaceTreatmentCost);
+                                                NetCC_Cost = (BOPcost + ProcessCost + SurfaceTreatmentCost);
                                             }
+
+                                            const cedFlag = data && data.OtherOperationDetails.length > 0 ? true : false;
                                             return (
                                                 <tr key={index} >
                                                     <td>{data.BOMLevel}</td>
@@ -366,15 +465,18 @@ class CostWorking extends Component {
                                                     <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].TotalProcessCost : '0'}</td>
                                                     <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : '0'}</td>
 
-                                                    <td><button onClick={() => this.toggleOtherOperation(index)}>Add</button></td>
+                                                    <td><button onClick={() => this.toggleOtherOperation(index, cedFlag)}>{cedFlag ? 'Update' : 'Add'}</button></td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].SurfaceTreatmentCost : '0'}</td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : '0'}</td>
-                                                    <td>{NetRMCost * NetCC_Cost * data.Quantity}</td>
+                                                    <td>{(NetRMCost + NetCC_Cost) * data.Quantity}</td>
                                                 </tr>
                                             )
                                         })}
                                     </tbody>
                                 </Table>
+                                <div>
+                                    <button type="button" className={'pull-center'} onClick={this.saveCosting}>Save</button>
+                                </div>
                             </div>}
 
                         {/* Open below table when process costing add */}
@@ -383,6 +485,7 @@ class CostWorking extends Component {
                             <OtherOperationGrid
                                 onCancelOperationGrid={this.toggleOtherOperation}
                                 supplierId={supplierId}
+                                isEditCEDFlag={this.state.isEditCEDFlag}
                                 costingId={costingId}
                                 PartId={partId}
                                 PartNumber={PartNumber}
@@ -460,6 +563,7 @@ export default connect(mapStateToProps,
         setCostingDetailRowData,
         addCostingProcesses,
         addCostingOtherOperation,
+        saveCostingAsDraft,
     }
 )(CostWorking);
 

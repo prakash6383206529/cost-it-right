@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input, Table } from 'reactstrap';
-import { getCEDOtherOperationsAPI } from '../../../actions/master/OtherOperation';
+import { getCEDOtherOperationBySupplierID } from '../../../actions/master/OtherOperation';
 import { setRowDataCEDOtherOps } from '../../../actions/costing/costing';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -24,7 +24,9 @@ class CEDotherOperations extends Component {
      * @description  called before rendering the component
      */
     componentDidMount() {
-        this.props.getCEDOtherOperationsAPI(res => { });
+        console.log("dfsdfsdfsdfsdf");
+        const { supplierIdForCEDOtherOps } = this.props;
+        this.props.getCEDOtherOperationBySupplierID(supplierIdForCEDOtherOps, () => { });
     }
 
     /**
@@ -57,7 +59,7 @@ class CEDotherOperations extends Component {
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{'CED Other Opration Details'}</ModalHeader>
                     <ModalBody>
                         <Table className="table table-striped" bordered>
-                            {this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
+                            {this.props.cedOtherOperationListBySupplier && this.props.cedOtherOperationListBySupplier.length > 0 &&
                                 <thead>
                                     <tr>
                                         <th>{''}</th>
@@ -74,8 +76,8 @@ class CEDotherOperations extends Component {
                                     </tr>
                                 </thead>}
                             <tbody >
-                                {this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
-                                    this.props.cedOtherOperationList.map((item, index) => {
+                                {this.props.cedOtherOperationListBySupplier && this.props.cedOtherOperationListBySupplier.length > 0 &&
+                                    this.props.cedOtherOperationListBySupplier.map((item, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td><button type="button" onClick={() => this.setRowItem(item)}>Add</button></td>
@@ -92,7 +94,7 @@ class CEDotherOperations extends Component {
                                             </tr>
                                         )
                                     })}
-                                {this.props.cedOtherOperationList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.cedOtherOperationListBySupplier === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </ModalBody>
@@ -108,12 +110,12 @@ class CEDotherOperations extends Component {
 * @param {*} state
 */
 function mapStateToProps({ otherOperation }) {
-    const { cedOtherOperationList, loading } = otherOperation;
-    return { cedOtherOperationList, loading }
+    const { cedOtherOperationListBySupplier, loading } = otherOperation;
+    return { cedOtherOperationListBySupplier, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getCEDOtherOperationsAPI, setRowDataCEDOtherOps }
+    mapStateToProps, { getCEDOtherOperationBySupplierID, setRowDataCEDOtherOps }
 )(CEDotherOperations);
 

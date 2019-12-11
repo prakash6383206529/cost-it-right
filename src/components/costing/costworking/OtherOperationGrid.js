@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, FieldArray, reduxForm, formValueSelector } from "redux-form";
-import { getOtherOpsSelectList, saveOtherOpsCosting } from '../../../actions/costing/CostWorking';
+import { getOtherOpsSelectList, saveOtherOpsCosting, updateCostingOtherOperation } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -273,30 +273,56 @@ class OtherOperationGrid extends Component {
     onSubmit = (values) => {
         console.log("values grid other ops", values)
         const { totalCost } = this.state;
-        const { costingId, PartId } = this.props;
-
-        let formData = {
-            CostingId: costingId,
-            PartId: PartId,
-            SurfaceTreatmentCost: totalCost,
-            AssySurfaceTreatmentCost: totalCost,
-            GrandTotal: totalCost,
-            IsActive: true,
-            CreatedDate: "",
-            CreatedBy: "",
-            DisplayCreatedDate: "",
-            LinkedOperations: values.LinkedOperations
-        }
-
-        console.log("form data", formData)
-        this.props.saveOtherOpsCosting(formData, res => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.SAVE_OTHER_OPERATION_SUCCESS);
-                this.props.onCancelOperationGrid()
-            } else {
-                toastr.error(res.data.Message);
+        const { costingId, PartId, isEditCEDFlag, initialValues } = this.props;
+        let formData = {}
+        if (isEditCEDFlag) {
+            formData = {
+                CostingOtherOperationDetailId: initialValues.CostingOtherOperationDetailId,
+                OtherOperations: initialValues.OtherOperations,
+                CostingId: initialValues.CostingId,
+                PartId: initialValues.PartId,
+                SurfaceTreatmentCost: totalCost,
+                AssySurfaceTreatmentCost: totalCost,
+                GrandTotal: totalCost,
+                IsActive: true,
+                CreatedDate: initialValues.CreatedDate,
+                CreatedBy: initialValues.CreatedBy,
+                DisplayCreatedDate: initialValues.DisplayCreatedDate,
+                LinkedOperations: values.LinkedOperations
             }
-        })
+            console.log("form data edit", formData)
+            this.props.updateCostingOtherOperation(formData, res => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_COSTING_OTHER_OPERATION_SUCCESS);
+                    this.props.onCancelOperationGrid()
+                } else {
+                    toastr.error(res.data.Message);
+                }
+            })
+        } else {
+            formData = {
+                CostingId: costingId,
+                PartId: PartId,
+                SurfaceTreatmentCost: totalCost,
+                AssySurfaceTreatmentCost: totalCost,
+                GrandTotal: totalCost,
+                IsActive: true,
+                CreatedDate: "",
+                CreatedBy: "",
+                DisplayCreatedDate: "",
+                LinkedOperations: values.LinkedOperations
+            }
+
+            console.log("form data", formData)
+            this.props.saveOtherOpsCosting(formData, res => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.SAVE_OTHER_OPERATION_SUCCESS);
+                    this.props.onCancelOperationGrid()
+                } else {
+                    toastr.error(res.data.Message);
+                }
+            })
+        }
     }
 
 
@@ -316,7 +342,7 @@ class OtherOperationGrid extends Component {
                     <hr />
                     <Row>
                         <button onClick={this.addRows} className={'btn btn-primary mr10 ml10'}>Add New Row</button>{''}
-                        <button className={'btn btn-primary mr10'}>Save Process Cost</button>{''}
+                        {/* <button className={'btn btn-primary mr10'}>Save Process Cost</button>{''} */}
                         <button onClick={() => this.props.onCancelOperationGrid()} className={'btn btn-primary mr10'}>Close</button>{''}
                         <label className={'mr10'}>Total Process Cost: </label>
                         <input type="text" name="total-cost" value={this.state.totalCost} className={''} />
@@ -386,6 +412,7 @@ function mapStateToProps(state) {
     if (costingGridOtherOperationData && costingGridOtherOperationData.LinkedOperations) {
         initialValues = {
             CostingOtherOperationDetailId: costingGridOtherOperationData.CostingOtherOperationDetailId,
+            OtherOperations: costingGridOtherOperationData.OtherOperations,
             CostingId: costingGridOtherOperationData.CostingId,
             PartId: costingGridOtherOperationData.PartId,
             SurfaceTreatmentCost: costingGridOtherOperationData.SurfaceTreatmentCost,
@@ -427,7 +454,8 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
     getOtherOpsSelectList,
-    saveOtherOpsCosting
+    saveOtherOpsCosting,
+    updateCostingOtherOperation,
 })(reduxForm({
     form: 'OtherOperationGridForm',
     enableReinitialize: true,

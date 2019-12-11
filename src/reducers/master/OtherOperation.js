@@ -8,7 +8,8 @@ import {
     CREATE_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_FAILURE,
-    GET_OPERATION_SUCCESS
+    GET_OPERATION_SUCCESS,
+    GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -75,7 +76,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 loading: false,
                 error: true
             };
-
+        case GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                cedOtherOperationListBySupplier: action.payload
+            };
         default:
             return state;
     }

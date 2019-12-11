@@ -255,6 +255,7 @@ class Costing extends Component {
                             <CostWorking
                                 supplierId={supplierId}
                                 plantId={plantId}
+                                toggle={this.toggle}
                                 partId={partId} />
                         </TabPane>
                     </TabContent>

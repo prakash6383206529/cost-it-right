@@ -17,6 +17,9 @@ class AddRMDetail extends Component {
             typeOfListing: [],
             isEditFlag: false,
             selectedParts: [],
+            basicRate: 0,
+            Quantity: 0,
+            NetLandedCost: 10,
         }
     }
 
@@ -195,6 +198,20 @@ class AddRMDetail extends Component {
 
     }
 
+    basicRateHandler = (e) => {
+        this.setState({ basicRate: e.target.value }, () => this.netLandedCalculation())
+    }
+
+    QuantityHandler = (e) => {
+        this.setState({ Quantity: e.target.value }, () => this.netLandedCalculation())
+    }
+
+    netLandedCalculation = () => {
+        const { basicRate, Quantity } = this.state;
+        const netLandedCost = basicRate * Quantity;
+        this.props.change('NetLandedCost', netLandedCost)
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -286,6 +303,7 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 component={renderNumberInputField}
+                                                onChange={this.basicRateHandler}
                                                 required={true}
                                                 className="withoutBorder"
                                             />
@@ -298,6 +316,7 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 component={renderNumberInputField}
+                                                onChange={this.QuantityHandler}
                                                 required={true}
                                                 className=" withoutBorder"
                                             />
@@ -321,8 +340,9 @@ class AddRMDetail extends Component {
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                component={renderNumberInputField}
+                                                component={renderText}
                                                 required={true}
+                                                disabled={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>

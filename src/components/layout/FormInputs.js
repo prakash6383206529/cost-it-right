@@ -378,8 +378,8 @@ export function renderTextInputField(field) {
 */
 export function renderSelectField(field) {
   const { disabled, meta: { touched, error, active } } = field;
-  const inputbox = `inputbox ${active ? "active" : ""}`;
-  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const inputbox = ` ${active ? "active" : ""}`;
+  const className = `form-group inputbox ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `form-control ${
     field.className ? field.className : ""
     }`;

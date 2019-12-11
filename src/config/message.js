@@ -56,6 +56,9 @@ export const MESSAGES = {
   BOM_DELETE_SUCCESS: 'BOM has been deleted.',
   WEIGHT_ADD_SUCCESS: 'Weight specification added successfully',
   SAVE_OTHER_OPERATION_SUCCESS: 'Other Operation saved successfully.',
-  SAVE_PROCESS_COSTING_SUCCESS: 'Process costing saved successfully.'
+  SAVE_PROCESS_COSTING_SUCCESS: 'Process costing saved successfully.',
+  UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated.',
+  COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.'
+
 };
 

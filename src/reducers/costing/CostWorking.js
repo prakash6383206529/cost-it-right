@@ -24,6 +24,8 @@ import {
     ADD_PROCESS_COSTING_SUCCESS,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
     SET_COSTING_DETAIL_ROW_DATA,
+    UPDATE_COSTING_OTHER_OPERATION_SUCCESS,
+    SAVE_COSTING_AS_DRAFT_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -127,14 +129,6 @@ export default function CostWorkingReducer(state = initialState, action) {
                 error: true,
                 costingGridOtherOperationData: action.payload
             };
-        // return {
-        //     ...state,
-        //     loading: false,
-        //     error: true,
-        //     costingGridOtherOperationData: {
-        //         OtherOperations: action.payload
-        //     }
-        //   };
         case GET_COSTING_DATA_SUCCESS:
             return {
                 ...state,
@@ -208,6 +202,18 @@ export default function CostWorkingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 getCostingDetailData: action.payload
+            };
+        case UPDATE_COSTING_OTHER_OPERATION_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            };
+        case SAVE_COSTING_AS_DRAFT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
             };
         default:
             return state;

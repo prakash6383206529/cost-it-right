@@ -10,7 +10,8 @@ import {
     CREATE_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_FAILURE,
-    GET_OPERATION_SUCCESS
+    GET_OPERATION_SUCCESS,
+    GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -198,6 +199,32 @@ export function createOperationsAPI(data, callback) {
                 type: CREATE_OTHER_OPERATION_FAILURE
             });
             apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getCostSummaryOtherOperation
+ * @description get all other operation for cost summary 
+ */
+export function getCEDOtherOperationBySupplierID(supplierId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCEDOtherOperationBySupplierID}/${supplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
         });
     };
 }

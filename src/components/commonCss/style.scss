@@ -426,3 +426,19 @@ label.vbcwrapper {
 .custom-ops .custom-btn {
   margin-top: 24px;
 }
+
+.create-costing-grid th {
+  font-size: 12px;
+  padding: 5px !important;
+  vertical-align: middle;
+}
+
+.create-costing-grid td {
+  font-size: 12px;
+  padding: 4px;
+}
+
+.create-costing-grid td select,
+.create-costing-grid td input {
+  width: 50px;
+}

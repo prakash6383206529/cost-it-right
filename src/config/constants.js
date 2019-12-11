@@ -104,7 +104,7 @@ export const API = {
 
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
-  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-materials`,
+  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-all-bill-of-materials`,
   uploadBOMxlsAPI: `${BASE_URL}/masters-part-bill-of-material/upload-bill-of-material`,
   deleteBOMAPI: `${BASE_URL}/masters-part-bill-of-material/delete-bill-of-material`,
 
@@ -128,8 +128,6 @@ export const API = {
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
 
-
-
   //API's for other operations
   getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-other-operation`,
   getOtherOperationsFormDataAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
@@ -139,6 +137,7 @@ export const API = {
   getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
   createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
   getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
+  getCEDOtherOperationBySupplierID: `${BASE_URL}/costing-sheet-metal/get-ced-other-operation-by-supplier`,
 
   //API's for MHR combo data
   getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
@@ -162,7 +161,7 @@ export const API = {
   deleteLabourAPI: `${BASE_URL}/masters-labour/delete`,
 
   //Api's for overhead profit
-  getOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/get`,
+  getOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/get-all`,
   getOverheadProfitComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
   createOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/create`,
 
@@ -171,7 +170,7 @@ export const API = {
   getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
 
   //Api's for interest rate master
-  getInterestRateAPI: `${BASE_URL}/supplier/get-supplier-interest-rate`,
+  getInterestRateAPI: `${BASE_URL}/supplier/get-all-supplier-interest-rate`,
   updateInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
   deleteInterestRateAPI: `${BASE_URL}/supplier/delete-supplier-interest-rate`,
   createInterestRateAPI: `${BASE_URL}/supplier/create-supplier-interest-rate`,
@@ -205,6 +204,9 @@ export const API = {
   getOtherOpsSelectList: `${BASE_URL}/configuration/select-list-get-operation`,
   saveOtherOpsCosting: `${BASE_URL}/costing-sheet-metal/save-costing-other-operations`,
   getMaterialTypeSelectList: `${BASE_URL}/configuration/select-list-get-material-type`,
+  updateCostingOtherOperation: `${BASE_URL}/costing-sheet-metal/update-costing-other-operation`,
+  saveCostingAsDraft: `${BASE_URL}/costing-sheet-metal/save-costing-details-as-draft`,
+  getCostingOverHeadProByModelType: `${BASE_URL}/costing-sheet-metal/get-costing-overhead-profit-by-model-type`,
 
   //cost summary 
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -337,6 +339,7 @@ export const GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS = 'GET_CED_OTHER_OPERATI
 export const GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE = 'GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE';
 export const GET_CED_OTHER_OPERATION_SUCCESS = 'GET_CED_OTHER_OPERATION_SUCCESS';
 export const GET_CED_OTHER_OPERATION_FAILURE = 'GET_CED_OTHER_OPERATION_FAILURE';
+export const GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS = 'GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS';
 
 //for MHR master
 export const GET_MHR_COMBO_DATA_SUCCESS = 'GET_MHR_COMBO_DATA_SUCCESS';
@@ -414,6 +417,8 @@ export const SET_CED_ROW_DATA_TO_COST_SUMMARY = 'SET_CED_ROW_DATA_TO_COST_SUMMAR
 export const SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY = 'SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY';
 export const SET_COSTING_DETAIL_ROW_DATA = 'SET_COSTING_DETAIL_ROW_DATA';
 export const SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY = 'SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY';
+export const UPDATE_COSTING_OTHER_OPERATION_SUCCESS = 'UPDATE_COSTING_OTHER_OPERATION_SUCCESS';
+export const SAVE_COSTING_AS_DRAFT_SUCCESS = 'SAVE_COSTING_AS_DRAFT_SUCCESS';
 
 // Login const
 export const AUTH_API_FAILURE = 'AUTH_API_FAILURE';

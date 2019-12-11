@@ -22,22 +22,22 @@ class AddSupplierInterestRate extends Component {
     * @description called before rendering the component
     */
     componentWillMount() {
-        this.props.fetchCostingHeadsAPI('--Select-Inventory-Cost',() => {});
-        this.props.fetchBOPComboAPI(() => {});
+        this.props.fetchCostingHeadsAPI('--Select-Inventory-Cost', () => { });
+        this.props.fetchBOPComboAPI(() => { });
     }
 
-     /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
+    /**
+   * @method componentDidMount
+   * @description Called after rendering the component
+   */
     componentDidMount() {
-        const { isEditFlag,interestRateId  } = this.props;
-        if(isEditFlag){
-            this.setState({isEditFlag},()=>{  
-            this.props.getInterestRateByIdAPI(interestRateId,true, res => {})   
+        const { isEditFlag, interestRateId } = this.props;
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getInterestRateByIdAPI(interestRateId, true, res => { })
             })
-        }else{
-            this.props.getInterestRateByIdAPI('',false, res => {})   
+        } else {
+            this.props.getInterestRateByIdAPI('', false, res => { })
         }
     }
 
@@ -84,7 +84,7 @@ class AddSupplierInterestRate extends Component {
             this.props.createInterestRateAPI(values, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
-                     this.toggleModel()
+                    this.toggleModel()
                 } else {
                     toastr.error(res.data.message);
                 }
@@ -141,6 +141,24 @@ class AddSupplierInterestRate extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
+                                    <Row>
+                                        <Col>
+                                            <Field
+                                                label={`Supplier`}
+                                                name={"SupplierId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                options={this.renderTypeOfListing('supplier')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                    </Row>
                                     <Row>
                                         <Col md="6">
                                             <Field
@@ -200,63 +218,6 @@ class AddSupplierInterestRate extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="RM Inventory (%)"
-                                                name={"RMInventoryPercent"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col>
-                                            <Field
-                                                label="WIP Inventory (%) "
-                                                name={"WIPInventoryPercent"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md='12'>
-                                            <Field
-                                                label="Payment Term(%) "
-                                                name={"PaymentTermPercent"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Supplier`}
-                                                name={"SupplierId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('supplier')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
                                                 label={`RM Inventory Costing`}
                                                 name={"RMInventoryCostingHeadsId"}
                                                 type="text"
@@ -271,6 +232,20 @@ class AddSupplierInterestRate extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="RM Inventory (%)"
+                                                name={"RMInventoryPercent"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+
                                     </Row>
                                     <Row>
                                         <Col md="6">
@@ -291,6 +266,21 @@ class AddSupplierInterestRate extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
+                                                label="WIP Inventory (%) "
+                                                name={"WIPInventoryPercent"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
                                                 label={`Payment Term Costing`}
                                                 name={"PaymentTermCostingHeadsId"}
                                                 type="text"
@@ -303,6 +293,19 @@ class AddSupplierInterestRate extends Component {
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md='6'>
+                                            <Field
+                                                label="Payment Term(%) "
+                                                name={"PaymentTermPercent"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
                                             />
                                         </Col>
                                     </Row>
@@ -333,7 +336,7 @@ class AddSupplierInterestRate extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, interestRate }) {
-    const { costingHead , supplierList} = comman;
+    const { costingHead, supplierList } = comman;
     const { interestRateDetail } = interestRate;
     let initialValues = {};
     if (interestRateDetail && interestRateDetail !== undefined) {
@@ -362,7 +365,7 @@ function mapStateToProps({ comman, interestRate }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    fetchCostingHeadsAPI,fetchBOPComboAPI,
+    fetchCostingHeadsAPI, fetchBOPComboAPI,
     createInterestRateAPI, updateInterestRateAPI, getInterestRateByIdAPI
 })(reduxForm({
     form: 'AddSupplierInterestRate',

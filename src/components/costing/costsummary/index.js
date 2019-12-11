@@ -7,7 +7,7 @@ import { renderText, renderSelectField, searchableSelect, renderTextAreaField } 
 import { fetchMaterialComboAPI, fetchCostingHeadsAPI, fetchModelTypeAPI } from '../../../actions/master/Comman';
 import {
     getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier, checkPartWithTechnology,
-    getCostingByCostingId, setInventoryRowData
+    getCostingByCostingId, setInventoryRowData, getCostingOverHeadProByModelType
 } from '../../../actions/costing/costing';
 import { getInterestRateAPI } from '../../../actions/master/InterestRateMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -51,6 +51,8 @@ class CostSummary extends Component {
             isShowCEDotherOpsModal: false,
             supplierColumn: '',
             isShowFreightModal: false,
+            supplierIdForCEDOtherOps: '',
+            TotalConversionCost: 33,
         }
     }
 
@@ -70,11 +72,15 @@ class CostSummary extends Component {
         if (nextProps.costingData && nextProps.costingData.supplierOne && (nextProps.costingData.supplierOne != this.props.costingData.supplierOne)) {
             this.props.change("supplier1Data", nextProps.costingData.supplierOne.CostingDetail)
             const Content = nextProps.costingData.supplierOne.CostingDetail;
+            //const CostingHeads = nextProps.costingData.supplierOne.CostingHeads;
+
+            const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+
             let supplierOneCostingHeadsData = {
                 RM: Content.NetRawMaterialCost,
-                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.SurfaceTreatmentCost,
+                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost,
                 BOP: Content.NetBoughtOutParCost,
-                OtherOperation: Content.NetOtherOperationCost
+                OtherOperation: Content.NetOtherOperationCost,
             }
             this.fieldData(supplierOneCostingHeadsData, 'supplierOneCostingHeadsData')
         }
@@ -84,7 +90,7 @@ class CostSummary extends Component {
             const Content = nextProps.costingData.supplierTwo.CostingDetail;
             let supplierTwoCostingHeadsData = {
                 RM: Content.NetRawMaterialCost,
-                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.SurfaceTreatmentCost,
+                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost,
                 BOP: Content.NetBoughtOutParCost,
                 OtherOperation: Content.NetOtherOperationCost
             }
@@ -92,14 +98,31 @@ class CostSummary extends Component {
         }
 
         if (nextProps.costingData && nextProps.costingData.supplierThree && (nextProps.costingData.supplierThree != this.props.costingData.supplierThree)) {
-            this.props.change("supplier3Data", nextProps.costingData.supplierThree.CostingDetail)
+            //this.props.change("supplier3Data", nextProps.costingData.supplierThree.CostingDetail)
             const Content = nextProps.costingData.supplierThree.CostingDetail;
+            const CostingHeads = nextProps.costingData.supplierThree.CostingHeads;
+
+            const RMCostingHeadObj = CostingHeads.find(item => item.Value == Content.RMCostingHeadsId)
+            const WIPCostingHeadObj = CostingHeads.find(item => item.Value == Content.WIPCostingHeadsId)
+            const PaymentTermCostingHeadObj = CostingHeads.find(item => item.Value == Content.PaymentTermsCostingHeadsId)
+
+            const RMICCCostValue = this.RMICCCostCalculation(RMCostingHeadObj, Content)
+            const WIPICCCostValue = this.RMICCCostCalculation(WIPCostingHeadObj, Content)
+            const PaymentTermICCCostValue = this.RMICCCostCalculation(PaymentTermCostingHeadObj, Content)
+
             let supplierThreeCostingHeadsData = {
                 RM: Content.NetRawMaterialCost,
-                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.SurfaceTreatmentCost,
+                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost,
                 BOP: Content.NetBoughtOutParCost,
-                OtherOperation: Content.NetOtherOperationCost
+                OtherOperation: Content.NetOtherOperationCost,
             }
+
+            Content.TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+            Content.RMInventotyCost = RMICCCostValue;
+            Content.WIPInventotyCost = WIPICCCostValue;
+            Content.PaymentTermsCost = PaymentTermICCCostValue;
+
+            this.props.change('supplier3Data', Content)
             this.fieldData(supplierThreeCostingHeadsData, 'supplierThreeCostingHeadsData')
         }
     }
@@ -108,6 +131,20 @@ class CostSummary extends Component {
         this.setState({
             [headTitle]: HeadsData
         })
+    }
+
+    RMICCCostCalculation = (RMCostingHeadObj, Content) => {
+        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+        let rmInventoryICCCost = '';
+        if (RMCostingHeadObj.Text == "RM") {
+            rmInventoryICCCost = (Content.NetRawMaterialCost * Content.RMICCPercentage) / 100
+        } else if (RMCostingHeadObj.Text == "RM + CC") {
+            rmInventoryICCCost = ((Content.NetRawMaterialCost + TotalConversionCost) * Content.RMICCPercentage) / 100
+        } else {
+            rmInventoryICCCost = (Content.NetRawMaterialCost * Content.RMICCPercentage) / 100
+        }
+
+        return rmInventoryICCCost;
     }
 
     /**
@@ -258,12 +295,6 @@ class CostSummary extends Component {
 
             const existSuppliers = existingSupplierDetail && existingSupplierDetail.ExistingSupplierDetails;
 
-            let supplierArray = {};
-            let supplier2Array = {};
-            let supplier3Array = {};
-            let supplierDropdown1Array = [];
-            let supplierDropdown2Array = [];
-            let supplierDropdown3Array = [];
             this.props.change("POPrice", "");
             this.props.change("POPrice2", "");
             this.props.change("POPrice3", "");
@@ -287,39 +318,8 @@ class CostSummary extends Component {
 
                 tempArray.push(tempObj);
                 tempObj = {};
-
-                // if (index == 0) {
-                //     this.props.change("POPrice", Value.PurchaseOrderPrice);
-                //     supplierDropdown1Array = Value.ActiveCostingSelectList;
-                //     this.setState({
-                //         supplierOneName: supplierObj.Text.substring(0, supplierObj.Text.indexOf('(')),
-                //     })
-                //     //return supplierArray.push({ label: supplierObj.Text, value: supplierObj.Value });
-                //     return supplierArray = { label: supplierObj.Text, value: supplierObj.Value };
-                // }
-
-                // if (index == 1) {
-                //     this.props.change("POPrice2", Value.PurchaseOrderPrice)
-                //     supplierDropdown2Array = Value.ActiveCostingSelectList;
-                //     this.setState({
-                //         supplierTwoName: supplierObj.Text.substring(0, supplierObj.Text.indexOf('(')),
-                //     })
-                //     //return supplier2Array.push({ label: supplierObj.Text, value: supplierObj.Value });
-                //     return supplier2Array = { label: supplierObj.Text, value: supplierObj.Value };
-                // }
-
-                // if (index == 2) {
-                //     this.props.change("POPrice3", Value.PurchaseOrderPrice)
-                //     supplierDropdown3Array = Value.ActiveCostingSelectList;
-                //     this.setState({
-                //         supplierThreeName: supplierObj.Text.substring(0, supplierObj.Text.indexOf('(')),
-                //     })
-                //     //return supplier3Array.push({ label: supplierObj.Text, value: supplierObj.Value });
-                //     return supplier3Array = { label: supplierObj.Text, value: supplierObj.Value };
-                // }
             });
 
-            console.log("tempArray ", tempArray)
             this.setState({
                 supplier: tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.supplier : [],
                 supplier2: tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.supplier : [],
@@ -343,7 +343,6 @@ class CostSummary extends Component {
                 this.setSupplierCode()
             });
         } else {
-            console.log("elsssssssssssssssssssss")
             this.setState({
                 supplier: [],
                 supplier2: [],
@@ -361,6 +360,9 @@ class CostSummary extends Component {
                 supplierTwoName: '',
                 supplierThreeName: '',
             });
+            this.props.change("SupplierCode", '')
+            this.props.change("SupplierCode2", '')
+            this.props.change("SupplierCode3", '')
         }
     }
 
@@ -446,12 +448,13 @@ class CostSummary extends Component {
 
             this.props.createPartWithSupplier(requestData, res => {
                 const phrase = supplier.label;
-                const myRegexp = /'.'(.*)/;
-                const match = myRegexp.exec(phrase);
-                var result = match[1].slice(1, -1);
+                // const myRegexp = /'.'(.*)/;
+                // const match = myRegexp.exec(phrase);
+                // var result = match && match[1].slice(1, -1);
+                var result = phrase.substr(0, phrase.indexOf('('));
                 this.setState({
                     supplierOneName: result,
-                    addSupplier1: true
+                    //addSupplier1: true
                 })
 
             })
@@ -468,12 +471,13 @@ class CostSummary extends Component {
 
             this.props.createPartWithSupplier(requestData, res => {
                 const phrase = supplier2.label;
-                const myRegexp = /'.'(.*)/;
-                const match = myRegexp.exec(phrase);
-                var result = match[1].slice(1, -1);
+                // const myRegexp = /'('*)/;
+                // const match = myRegexp.exec(phrase);
+                // var result = match && match[1].slice(1, -1);
+                var result = phrase.substr(0, phrase.indexOf('('));
                 this.setState({
                     supplierTwoName: result,
-                    addSupplier2: true
+                    //addSupplier2: true
                 })
             })
         }
@@ -489,12 +493,13 @@ class CostSummary extends Component {
 
             this.props.createPartWithSupplier(requestData, res => {
                 const phrase = supplier3.label;
-                const myRegexp = /'.'(.*)/;
-                const match = myRegexp.exec(phrase);
-                var result = match[1].slice(1, -1);
+                // const myRegexp = /'.'(.*)/;
+                // const match = myRegexp.exec(phrase);
+                // var result = match && match[1].slice(1, -1);
+                var result = phrase.substr(0, phrase.indexOf('('));
                 this.setState({
                     supplierThreeName: result,
-                    addSupplier3: true
+                    //addSupplier3: true
                 })
             })
         }
@@ -547,6 +552,8 @@ class CostSummary extends Component {
                         this.props.change("supplier3Data", costingData.supplierThree.CostingDetail)
                     }
                 })
+            } else {
+                this.props.change("supplier3Data", {})
             }
         })
     }
@@ -579,8 +586,39 @@ class CostSummary extends Component {
     }
 
     modelTypeHandlerSupplier3 = (e) => {
+        const { supplier3 } = this.state;
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
         this.setState({
             modelTypeSupplier3: e.target.value
+        }, () => {
+            if (e.target.value != '') {
+                let formData = {
+                    ModelTypeId: e.target.value,
+                    SupplierId: supplier3.value
+                }
+                this.props.getCostingOverHeadProByModelType(formData, (Data) => {
+                    let overHeadCalculation = 0;
+                    if (Data.OverheadProfitTypeCostingHead == "RM") {
+                        overHeadCalculation = Content.NetRawMaterialCost;
+                    } else if (Data.OverheadProfitTypeCostingHead == "RM + CC") {
+                        overHeadCalculation = Content.NetRawMaterialCost + TotalConversionCost
+                    } else {
+                        overHeadCalculation = Content.NetRawMaterialCost
+                    }
+
+                    Content.ModelTypeId = e.target.value;
+                    Content.OverheadPercentage = Data.OverheadProfitPercentage;
+                    Content.OverheadCost = (overHeadCalculation * Data.OverheadProfitPercentage) / 100;
+                    this.props.change('supplier3Data', Content)
+                })
+            } else {
+                Content.ModelTypeId = 0;
+                Content.OverheadPercentage = 0;
+                Content.OverheadCost = 0;
+                this.props.change('supplier3Data', Content)
+            }
         })
     }
 
@@ -602,10 +640,48 @@ class CostSummary extends Component {
         })
     }
 
+    RejectionTypeCalculation = (RMCostingHeadObj, Content) => {
+        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+        let RejectionType = '';
+        if (RMCostingHeadObj.Text == "RM") {
+            RejectionType = Content.NetRawMaterialCost;
+        } else if (RMCostingHeadObj.Text == "RM + CC") {
+            RejectionType = Content.NetRawMaterialCost + TotalConversionCost
+        } else {
+            RejectionType = Content.NetRawMaterialCost
+        }
+        return RejectionType;
+    }
+
     rejectionHandlerSupplier3 = (e) => {
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+        const CostingHeads = costingData.supplierThree.CostingHeads;
+        const RejectionCostingHeadObj = CostingHeads.find(item => item.Value == e.target.value)
+
+        const RejectionTypeValue = this.RejectionTypeCalculation(RejectionCostingHeadObj, Content)
         this.setState({
-            rejectionTypeSupplier3: e.target.value
-        })
+            rejectionTypeValue3: RejectionTypeValue,
+            RejectionTypeCostingHead3ID: e.target.value,
+        }, () => { this.rejectionCostCalculation() })
+    }
+
+    rejectionPercentHandlerSupplier3 = (e) => {
+        this.setState({
+            rejectionBasePercentSupplier3: e.target.value
+        }, () => { this.rejectionCostCalculation() })
+    }
+
+    rejectionCostCalculation = () => {
+        const { rejectionTypeValue3, rejectionBasePercentSupplier3, RejectionTypeCostingHead3ID } = this.state;
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+
+        Content.RejectionTypeCostingHeadId = RejectionTypeCostingHead3ID;
+        Content.RejectionPercentage = rejectionBasePercentSupplier3;
+        Content.RejectionCost = (rejectionTypeValue3 * rejectionBasePercentSupplier3) / 100
+
+        this.props.change('supplier3Data', Content)
     }
 
     /**
@@ -632,12 +708,13 @@ class CostSummary extends Component {
 
 
     /**
-     * @method otherOperationCostToggle
-     * @description Used for add other Operation Cost heads
+     * @method CEDotherOperationToggle
+     * @description Used for add CED other Operation Cost heads
      */
-    CEDotherOperationToggle = (supplierColumn) => {
+    CEDotherOperationToggle = (supplierIdForCEDOtherOps, supplierColumn) => {
         this.setState({
             isShowCEDotherOpsModal: true,
+            supplierIdForCEDOtherOps: supplierIdForCEDOtherOps,
             supplierColumn: supplierColumn,
         })
     }
@@ -704,7 +781,17 @@ class CostSummary extends Component {
     render() {
         const { handleSubmit, ZBCSupplier } = this.props;
         const { supplier, supplier2, supplier3, isShowOtherOpsModal, supplierIdForOtherOps,
-            supplierColumn, isShowCEDotherOpsModal, isShowFreightModal } = this.state;
+            supplierColumn, isShowCEDotherOpsModal, isShowFreightModal, supplierIdForCEDOtherOps,
+            supplierOneCostingHeadsData, supplierTwoCostingHeadsData, supplierThreeCostingHeadsData } = this.state;
+
+        let supplierId = "";
+        if (supplierColumn == "supplierOne") {
+            supplierId = supplier.value;
+        } else if (supplierColumn == "supplierTwo") {
+            supplierId = supplier2.value;
+        } else if (supplierColumn == "supplierThree") {
+            supplierId = supplier3.value;
+        }
 
         let supplier1Data = 'supplier1Data';
         let supplier2Data = 'supplier2Data';
@@ -1103,13 +1190,6 @@ class CostSummary extends Component {
                                 title="NET NRM Cost" />
                         </Col>
                         <Col md="3">
-                            {/* <input
-                                type="text"
-                                disabled
-                                className={'mt20'}
-                                value={this.state.netRMCostSupplier1}
-                                title="NET NRM Cost" /> */}
-
                             <Field
                                 label={``}
                                 name={`${supplier1Data}.NetRawMaterialCost`}
@@ -1125,13 +1205,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input
-                                type="text"
-                                disabled
-                                className={'mt20'}
-                                value={this.state.netRMCostSupplier2}
-                                title="NET NRM Cost" /> */}
-
                             <Field
                                 label={``}
                                 name={`${supplier2Data}.NetRawMaterialCost`}
@@ -1147,13 +1220,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input
-                                type="text"
-                                disabled
-                                className={'mt20'}
-                                value={this.state.netRMCostSupplier3}
-                                title="NET NRM Cost" /> */}
-
                             <Field
                                 label={``}
                                 name={`${supplier3Data}.NetRawMaterialCost`}
@@ -1182,12 +1248,6 @@ class CostSummary extends Component {
 
                         </Col>
                         <Col md="3">
-                            {/* <input
-                                type="text"
-                                className={'mt20'}
-                                value={this.state.ecoNoSupplier1}
-                                title="Enter ECO No" /> */}
-
                             <Field
                                 label={``}
                                 name={`${supplier1Data}.ECONumber`}
@@ -1203,12 +1263,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input
-                                type="text"
-                                className={'mt20'}
-                                value={this.state.ecoNoSupplier2}
-                                title="Enter ECO No" /> */}
-
                             <Field
                                 label={``}
                                 name={`${supplier2Data}.ECONumber`}
@@ -1224,12 +1278,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input
-                                type="text"
-                                className={'mt20'}
-                                value={this.state.ecoNoSupplier3}
-                                title="Enter ECO No" /> */}
-
                             <Field
                                 label={``}
                                 name={`${supplier3Data}.ECONumber`}
@@ -1257,12 +1305,6 @@ class CostSummary extends Component {
                                 title="Enter Rev No" />
                         </Col>
                         <Col md="3">
-                            {/* <input 
-                            type="text" 
-                            className={'mt20'} 
-                            value={this.state.revNoSupplier1} 
-                            title="Enter Rev No" /> */}
-
                             <Field
                                 label={``}
                                 name={`${supplier1Data}.RevsionNumber`}
@@ -1278,7 +1320,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input type="text" className={'mt20'} value={this.state.revNoSupplier2} title="Enter Rev No" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier2Data}.RevsionNumber`}
@@ -1294,7 +1335,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input type="text" className={'mt20'} value={this.state.revNoSupplier3} title="Enter Rev No" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier3Data}.RevsionNumber`}
@@ -1325,7 +1365,6 @@ class CostSummary extends Component {
                             <input type="text" disabled value={this.state.totalBOPCostZBC} className={'form-control'} title="Total BOP/Job Cost" />
                         </Col>
                         <Col md="3">
-                            {/* <input type="text" disabled value={this.state.totalBOPCostSupplier1} className={'mt20'} title="Total BOP/Job Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier1Data}.NetBoughtOutParCost`}
@@ -1341,7 +1380,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input type="text" disabled value={this.state.totalBOPCostSupplier2} className={'mt20'} title="Total BOP/Job Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier2Data}.NetBoughtOutParCost`}
@@ -1357,7 +1395,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input type="text" disabled value={this.state.totalBOPCostSupplier3} className={'mt20'} title="Total BOP/Job Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier3Data}.NetBoughtOutParCost`}
@@ -1389,7 +1426,6 @@ class CostSummary extends Component {
                             <input type="text" disabled value={this.state.processCostZBC} className={'form-control'} title="Process Cost" />
                         </Col>
                         <Col md="3">
-                            {/* <input type="text" disabled value={this.state.processCostSupplier1} className={'mt20 supplier-input'} title="Process Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier1Data}.NetProcessCost`}
@@ -1405,7 +1441,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input type="text" disabled value={this.state.processCostSupplier2} className={'mt20 supplier-input'} title="Process Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier2Data}.NetProcessCost`}
@@ -1421,7 +1456,6 @@ class CostSummary extends Component {
                             />
                         </Col>
                         <Col md="3">
-                            {/* <input type="text" disabled value={this.state.processCostSupplier3} className={'mt20 supplier-input'} title="Process Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier3Data}.NetProcessCost`}
@@ -1446,7 +1480,6 @@ class CostSummary extends Component {
                             <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
                         </Col>
                         <Col md="3" className="custom-ops">
-                            {/* <input type="text" disabled value={this.state.otherOpsCostSupplier1} className={'mt20'} title="Other Operation Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier1Data}.NetOtherOperationCost`}
@@ -1463,7 +1496,6 @@ class CostSummary extends Component {
                             <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
                         </Col>
                         <Col md="3" className="custom-ops">
-                            {/* <input type="text" disabled value={this.state.otherOpsCostSupplier2} className={'mt20'} title="Other Operation Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier2Data}.NetOtherOperationCost`}
@@ -1480,7 +1512,6 @@ class CostSummary extends Component {
                             <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
                         </Col>
                         <Col md="3" className="custom-ops">
-                            {/* <input type="text" disabled value={this.state.otherOpsCostSupplier3} className={'mt20'} title="Other Operation Cost" /> */}
                             <Field
                                 label={``}
                                 name={`${supplier3Data}.NetOtherOperationCost`}
@@ -1503,13 +1534,12 @@ class CostSummary extends Component {
                         <Col md="3">
                             <label></label>
                             <input type="text" value={this.state.surfaceTreatmentZBC} className={'form-control zbc-input'} title="Surface Treatment" />
-                            <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
+                            {/* <button type="button" className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
                         <Col md="3" className="custom-ops">
-                            {/* <input type="text" value={this.state.surfaceTreatmentSupplier1} className={'mt20'} title="Surface Treatment" /> */}
                             <Field
                                 label={``}
-                                name={`${supplier1Data}.SurfaceTreatmentCost`}
+                                name={`${supplier1Data}.NetSurfaceCost`}
                                 type="text"
                                 placeholder={''}
                                 validate={[required]}
@@ -1520,13 +1550,12 @@ class CostSummary extends Component {
                                 className="withoutBorder custom-ops-field"
                                 title="Surface Treatment"
                             />
-                            <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
+                            {/* <button type="button" className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
                         <Col md="3" className="custom-ops">
-                            {/* <input type="text" value={this.state.surfaceTreatmentSupplier2} className={'mt20'} title="Surface Treatment" /> */}
                             <Field
                                 label={``}
-                                name={`${supplier2Data}.SurfaceTreatmentCost`}
+                                name={`${supplier2Data}.NetSurfaceCost`}
                                 type="text"
                                 placeholder={''}
                                 validate={[required]}
@@ -1537,13 +1566,12 @@ class CostSummary extends Component {
                                 className="withoutBorder custom-ops-field"
                                 title="Surface Treatment"
                             />
-                            <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
+                            {/* <button type="button" className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
                         <Col md="3" className="custom-ops">
-                            {/* <input type="text" value={this.state.surfaceTreatmentSupplier3} className={'mt20'} title="Surface Treatment" /> */}
                             <Field
                                 label={``}
-                                name={`${supplier3Data}.SurfaceTreatmentCost`}
+                                name={`${supplier3Data}.NetSurfaceCost`}
                                 type="text"
                                 placeholder={''}
                                 validate={[required]}
@@ -1554,7 +1582,7 @@ class CostSummary extends Component {
                                 className="withoutBorder custom-ops-field"
                                 title="Surface Treatment"
                             />
-                            <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
+                            {/* <button type="button" className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
 
                         <Col md="12" className={'dark-divider'}>
@@ -1823,7 +1851,7 @@ class CostSummary extends Component {
                                     //required={true}
                                     disabled={true}
                                     className="withoutBorder"
-                                    title="OverHead Cost"
+                                    title="(sum of costing head * overhead percent) * 100"
                                 />
                             </div>
                         </Col>
@@ -1893,7 +1921,7 @@ class CostSummary extends Component {
                                     value={this.state.rejectionBasePercentSupplier1}
                                     required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                //disabled={true}
                                 />
                             </div>
                             <div className={'base-cost'}>
@@ -1939,7 +1967,7 @@ class CostSummary extends Component {
                                     value={this.state.rejectionBasePercentSupplier2}
                                     required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                //disabled={true}
                                 />
                             </div>
                             <div className={'base-cost'}>
@@ -1967,7 +1995,7 @@ class CostSummary extends Component {
                                     type="text"
                                     placeholder={'---Select---'}
                                     //validate={[required]}
-                                    // required={true}
+                                    //required={true}
                                     className=" withoutBorder custom-select"
                                     options={this.renderTypeOfListing('Rejection')}
                                     onChange={this.rejectionHandlerSupplier3}
@@ -1977,22 +2005,23 @@ class CostSummary extends Component {
                                 />
                                 <Field
                                     label={`Rejection(%)`}
-                                    name={`${supplier2Data}.RejectionPercentage`}
+                                    name={`${supplier3Data}.RejectionPercentage`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
+                                    onChange={this.rejectionPercentHandlerSupplier3}
                                     value={this.state.rejectionBasePercentSupplier3}
                                     required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                //disabled={true}
                                 />
                             </div>
                             <div className={'base-cost'}>
                                 {/* <input type="text" disabled value={this.state.rejectionCostSupplier3} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" /> */}
                                 <Field
                                     label={`Rejection(%)`}
-                                    name={`${supplier2Data}.RejectionCost`}
+                                    name={`${supplier3Data}.RejectionCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -2134,6 +2163,7 @@ class CostSummary extends Component {
                                     required={true}
                                     className="withoutBorder"
                                     disabled={true}
+                                    title={'(Sum of Heads) * ICC(%) / 100'}
                                 />
                             </div>
                         </Col>
@@ -2968,7 +2998,7 @@ class CostSummary extends Component {
 
                                 <button
                                     type="button"
-                                    onClick={() => this.CEDotherOperationToggle('supplierThree')}
+                                    onClick={() => this.CEDotherOperationToggle(supplier3.value, 'supplierThree')}
                                     title="Select CED Other Operation">CED Add</button>
 
                                 {/* <label>Rate</label>
@@ -4509,43 +4539,44 @@ class CostSummary extends Component {
                         <Col md="3" >
                             <button className={'btn btn-primary mr5'}>Save</button>
                             <button className={'btn btn-primary'}>Send For Approval</button>
-                            <button className={'btn btn-warning'}>Copy Costing</button>
+                            {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
                             <button className={'btn btn-primary mr5'}>Save</button>
                             <button className={'btn btn-primary'}>Send For Approval</button>
-                            <button className={'btn btn-warning'}>Copy Costing</button>
+                            {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
                             <button className={'btn btn-primary mr5'}>Save</button>
                             <button className={'btn btn-primary'}>Send For Approval</button>
-                            <button className={'btn btn-warning'}>Copy Costing</button>
+                            {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
                             <button className={'btn btn-primary mr5'}>Save</button>
                             <button className={'btn btn-primary'}>Send For Approval</button>
-                            <button className={'btn btn-warning'}>Copy Costing</button>
+                            {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                     </Row>
                     <hr />
 
                 </form>
-                <OtherOperationsModal
+                {isShowOtherOpsModal && <OtherOperationsModal
                     isOpen={isShowOtherOpsModal}
                     onCancel={this.onCancel}
                     supplierIdForOtherOps={supplierIdForOtherOps}
                     supplierColumn={supplierColumn}
-                />
-                <CEDotherOperations
+                />}
+                {isShowCEDotherOpsModal && <CEDotherOperations
                     isOpen={isShowCEDotherOpsModal}
                     onCancelCEDotherOps={this.onCancelCEDotherOps}
+                    supplierIdForCEDOtherOps={supplierIdForCEDOtherOps}
                     supplierColumn={supplierColumn}
-                />
-                <AddFreightModal
+                />}
+                {isShowFreightModal && <AddFreightModal
                     isOpen={isShowFreightModal}
                     onCancelFreight={this.onCancelFreight}
                     supplierColumn={supplierColumn}
-                />
+                />}
             </div >
         );
     }
@@ -4597,6 +4628,7 @@ export default connect(mapStateToProps, {
     getCostingByCostingId,
     getInterestRateAPI,
     setInventoryRowData,
+    getCostingOverHeadProByModelType,
 })(reduxForm({
     form: 'CostSummary',
     enableReinitialize: true,
