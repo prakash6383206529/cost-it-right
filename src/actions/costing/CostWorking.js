@@ -141,10 +141,10 @@ export function updateWeightCalculationCosting(requestData, callback) {
  * @method getAllBOMAPI
  * @description get all bill of material list
  */
-export function getCostingBySupplier(supplierId, callback) {
+export function getCostingBySupplier(reqData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCostingBySupplier}/${supplierId}`, headers);
+        const request = axios.get(`${API.getCostingBySupplier}?supplierId=${reqData.supplierId}&partId=${reqData.partId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

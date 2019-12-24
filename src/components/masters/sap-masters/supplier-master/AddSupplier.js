@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
-import { required, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
+import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
 import { renderText, renderSelectField, renderEmailInputField, renderMultiSelectField } from "../../../layout/FormInputs";
-import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI } from '../../../../actions/master/Supplier';
+import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType } from '../../../../actions/master/Supplier';
 import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -14,7 +14,7 @@ class AddSupplier extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            supplierType: 'ZBC',
+            supplierType: '',
             cityListing: [],
             selectedPlants: [],
             plantsArray: []
@@ -27,6 +27,7 @@ class AddSupplier extends Component {
     */
     componentWillMount() {
         this.props.fetchMasterDataAPI(res => { });
+        this.props.getRadioButtonSupplierType(() => { })
     }
 
     /**
@@ -82,7 +83,13 @@ class AddSupplier extends Component {
         });
     }
 
-    supplierType = (e) => {
+    // supplierType = (e) => {
+    //     this.setState({
+    //         supplierType: e.target.value
+    //     });
+    // }
+
+    handleSupplierType = (e) => {
         this.setState({
             supplierType: e.target.value
         });
@@ -93,7 +100,7 @@ class AddSupplier extends Component {
     * @description Used show listing of unit of measurement
     */
     selectType = (label) => {
-        const { countryList, stateList, cityList } = this.props;
+        const { countryList, stateList, cityList, radioSupplierTypeList } = this.props;
         const temp = [];
         if (label === 'country') {
             countryList && countryList.map(item =>
@@ -111,6 +118,14 @@ class AddSupplier extends Component {
             cityList && cityList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
+            return temp;
+        }
+        if (label === 'supplierType') {
+            radioSupplierTypeList && radioSupplierTypeList.map((item, i) => {
+                if (i > 0) {
+                    temp.push({ Text: item.Text, Value: item.Value })
+                }
+            });
             return temp;
         }
     }
@@ -136,7 +151,11 @@ class AddSupplier extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedPlants } = this.state;
+        const { selectedPlants, supplierType } = this.state;
+        const { radioSupplierTypeList } = this.props;
+
+        const tempObj = radioSupplierTypeList.find(item => item.Value == supplierType)
+
         let plantArray = [];
         selectedPlants.map((item, i) => {
             return plantArray.push({ PlantId: item.Value, PlantName: item.Text });
@@ -150,10 +169,16 @@ class AddSupplier extends Component {
                 SupplierEmail: values.SupplierEmail,
                 Description: values.Description,
                 CityId: values.CityId,
-                SupplierType: this.state.supplierType,
+                SupplierType: tempObj.Text,
+                SupplierTypeId: tempObj.Value,
                 SelectedPlants: plantArray,
                 SupplierId: supplierId,
                 IsActive: true,
+                AddressLine1: values.AddressLine1,
+                AddressLine2: values.AddressLine2,
+                ZipCode: values.ZipCode,
+                PhoneNumber: values.PhoneNumber,
+                Extension: values.Extension,
             }
             this.setState({ isSubmitted: true });
             this.props.updateSupplierAPI(formData, (res) => {
@@ -171,8 +196,16 @@ class AddSupplier extends Component {
                 SupplierEmail: values.SupplierEmail,
                 Description: values.Description,
                 CityId: values.CityId,
-                SupplierType: this.state.supplierType,
-                SelectedPlants: plantArray
+                SupplierType: tempObj.Text,
+                SupplierTypeId: tempObj.Value,
+                SelectedPlants: plantArray,
+                IsActive: true,
+                UserId: "00000000-0000-0000-0000-000000000000",
+                AddressLine1: values.AddressLine1,
+                AddressLine2: values.AddressLine2,
+                ZipCode: values.ZipCode,
+                PhoneNumber: values.PhoneNumber,
+                Extension: values.Extension,
             }
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
@@ -190,11 +223,11 @@ class AddSupplier extends Component {
     * @method supplierTypeHandler
     * @description Used to handle selection of supplier type
     */
-    supplierTypeHandler = (value) => {
-        this.setState({
-            supplierType: value
-        })
-    }
+    // supplierTypeHandler = (value) => {
+    //     this.setState({
+    //         supplierType: value
+    //     })
+    // }
 
     /**
     * @method render
@@ -214,8 +247,25 @@ class AddSupplier extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
-                                    {/* <Row className={'supplierRadio'}>
-                                        <Col className='form-group'>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Supplier Type`}
+                                                name={"SupplierTypeId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                //selection={this.state.cityListing}
+                                                required={true}
+                                                options={this.selectType('supplierType')}
+                                                onChange={(e) => this.handleSupplierType(e)}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        {/* <Col className='form-group'>
                                             <Label
                                                 className={'zbcwrapper'}
                                                 onChange={() => this.supplierTypeHandler('ZBC')}
@@ -241,9 +291,9 @@ class AddSupplier extends Component {
                                                     value="VBC" />{' '}
                                                 VBC
                                             </Label>
-                                        </Col>
+                                        </Col> */}
                                     </Row>
-                                    <hr/> */}
+                                    {/* <hr/> */}
                                     <Row>
                                         <Col md="6">
                                             <Field
@@ -332,7 +382,77 @@ class AddSupplier extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label="Address 1"
+                                                name={"AddressLine1"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                maxLength={26}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Address 2"
+                                                name={"AddressLine2"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                maxLength={26}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
                                     </Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label="ZipCode"
+                                                name={"ZipCode"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required, number]}
+                                                component={renderText}
+                                                required={true}
+                                                maxLength={26}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Phone Number"
+                                                name={"PhoneNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required, number]}
+                                                component={renderText}
+                                                required={true}
+                                                maxLength={26}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label="Extension"
+                                                name={"Extension"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                maxLength={26}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                    </Row>
+
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
@@ -361,7 +481,7 @@ class AddSupplier extends Component {
 */
 function mapStateToProps({ comman, supplier }) {
     const { cityList, plantList } = comman;
-    const { supplierData } = supplier;
+    const { supplierData, radioSupplierTypeList } = supplier;
     let initialValues = {};
     if (supplierData && supplierData !== undefined) {
         initialValues = {
@@ -371,9 +491,15 @@ function mapStateToProps({ comman, supplier }) {
             Description: supplierData.Description,
             CityId: supplierData.CityId,
             SupplierType: supplierData.SupplierType,
+            SupplierTypeId: supplierData.SupplierTypeId,
+            AddressLine1: supplierData.AddressLine1,
+            AddressLine2: supplierData.AddressLine2,
+            ZipCode: supplierData.ZipCode,
+            PhoneNumber: supplierData.PhoneNumber,
+            Extension: supplierData.Extension,
         }
     }
-    return { cityList, plantList, initialValues }
+    return { cityList, plantList, initialValues, radioSupplierTypeList }
 }
 
 /**
@@ -383,7 +509,11 @@ function mapStateToProps({ comman, supplier }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, fetchMasterDataAPI
+    createSupplierAPI,
+    updateSupplierAPI,
+    getSupplierByIdAPI,
+    fetchMasterDataAPI,
+    getRadioButtonSupplierType,
 })(reduxForm({
     form: 'AddSupplier',
     enableReinitialize: true,

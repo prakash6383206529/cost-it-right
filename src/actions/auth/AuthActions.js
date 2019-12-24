@@ -4,6 +4,9 @@ import {
     API,
     AUTH_API_REQUEST,
     AUTH_API_FAILURE,
+    API_REQUEST,
+    API_FAILURE,
+    API_SUCCESS,
     LOGIN_SUCCESS,
     UPDATE_PASSWORD_SUCCESS,
     REGISTER_SUCCESS,
@@ -14,9 +17,16 @@ import {
     UPDATE_USER_ACCOUNT_DETAIL_SUCCESS,
     SOCIAL_USER_DATA,
     INTERNAL_ROUTE_ID,
-    SEND_MESSAGE_SUCCESS
+    SEND_MESSAGE_SUCCESS,
+    GET_ROLE_SUCCESS,
+    GET_DEPARTMENT_SUCCESS,
+    GET_TECHNOLOGY_DATA_LIST_SUCCESS,
+    GET_LEVEL_USER_SUCCESS,
+    GET_USER_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
+import { toastr } from "react-redux-toastr";
+import { MESSAGES } from "../../config/message";
 
 
 // /**
@@ -161,13 +171,14 @@ export function registerUserAPI(requestData, callback) {
         dispatch({ type: AUTH_API_REQUEST });
         axios.post(API.register, requestData, { headers })
             .then((response) => {
+                console.log("response", response)
                 callback(response);
                 dispatch(getRegisterSuccess(response));
             })
             .catch((error) => {
+                console.log("error", error)
                 dispatch(getRegisterFailure(error));
                 apiErrors(error);
-                callback(error);
             });
     };
 }
@@ -183,15 +194,222 @@ export function getRegisterSuccess(data) {
     };
 }
 
-// /**
-//  * @method getRegisterFailure
-//  * @description return object containing action type
-//  */
+/**
+* @method getRegisterFailure
+* @description return object containing action type
+*/
 export function getRegisterFailure() {
     return {
         type: AUTH_API_FAILURE
     };
 }
+
+/**
+ * @method getAllUserAPI
+ * @description get all user's select list
+ */
+export function getAllUserAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllUserAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_USER_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method addRoleAPI
+ * @description add Role API 
+ */
+export function addRoleAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addRoleAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getAllRoleAPI
+ * @description get all role's
+ */
+export function getAllRoleAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllRoleAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ROLE_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method addRoleAPI
+ * @description add Role API 
+ */
+export function addDepartmentAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addDepartmentAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getAllRoleAPI
+ * @description get all role's
+ */
+export function getAllDepartmentAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllDepartmentAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_DEPARTMENT_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAllUserLevelAPI
+ * @description get all role's
+ */
+export function getAllUserLevelAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllUserLevelAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_LEVEL_USER_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method addRoleAPI
+ * @description add Role API 
+ */
+export function addUserLevelAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addUserLevelAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method assignUserLevelAPI
+ * @description assign level of users
+ */
+export function assignUserLevelAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.assignUserLevelAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method fetchPlantDataAPI
+ * @description Used to fetch plant list
+ */
+export function getAllTechnologyAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getTechnology}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TECHNOLOGY_DATA_LIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
 
 
 // /**

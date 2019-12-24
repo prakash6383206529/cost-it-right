@@ -21,6 +21,7 @@ class CostWorking extends Component {
         super(props);
         this.state = {
             activeTab: '1',
+            isLoader: false,
             isOpen: false,
             isOpenRMmodel: false,
             isCollapes: false,
@@ -175,12 +176,14 @@ class CostWorking extends Component {
 
     /**haldle the cost working details collapes */
     collapsHandler = (costingId) => {
+        this.setState({ isLoader: true })
         this.props.getCostingDetailsById(costingId, true, res => {
             this.setState({
                 isCollapes: true,
                 isEditFlag: true,
                 isNewCostingFlag: false,
-                costingId: costingId
+                costingId: costingId,
+                isLoader: false,
             })
         })
     }
@@ -204,8 +207,12 @@ class CostWorking extends Component {
             if (res.data.Result) {
                 const newCostingId = res.data.Identity;
                 toastr.success(MESSAGES.NEW_COSTING_CREATE_SUCCESS);
+                const Data = {
+                    supplierId: supplierId,
+                    partId: partId,
+                }
                 /** fetching records of supplier costing details */
-                this.props.getCostingBySupplier(supplierId, () => { })
+                this.props.getCostingBySupplier(Data, () => { })
             } else {
                 toastr.error(res.data.message);
             }
@@ -246,6 +253,15 @@ class CostWorking extends Component {
             isEditCEDFlag: isEditCEDFlag,
         }, () => {
             this.props.addCostingOtherOperation(costingId, res => { });
+            this.props.getCostingDetailsById(costingId, true, res => {
+                this.setState({
+                    isCollapes: true,
+                    isEditFlag: true,
+                    isNewCostingFlag: false,
+                    costingId: costingId,
+                    isLoader: false,
+                })
+            })
         })
     }
 
@@ -260,6 +276,15 @@ class CostWorking extends Component {
             selectedIndex: selectedIndex,
         }, () => {
             this.props.addCostingProcesses(costingId, res => { })
+            this.props.getCostingDetailsById(costingId, true, res => {
+                this.setState({
+                    isCollapes: true,
+                    isEditFlag: true,
+                    isNewCostingFlag: false,
+                    costingId: costingId,
+                    isLoader: false,
+                })
+            })
         })
     }
 
@@ -364,7 +389,7 @@ class CostWorking extends Component {
                                 <tr>
                                     <th>{`Assy Part No.`}</th>
                                     <th>{`Technology`}</th>
-                                    <th>{`Supplier Name`}</th>
+                                    <th>{`Plant Name`}</th>
                                     <th>{`TimeStamp`}</th>
                                     <th>{`Status`}</th>
                                 </tr>
@@ -447,13 +472,13 @@ class CostWorking extends Component {
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartDescription}</td>
                                                     <td>{this.materialDropDown(data, index)}</td>
-                                                    <td><input type="text" value={this.state.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
+                                                    <td><input type="text" disabled value={this.state.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
                                                     {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
                                                     <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
                                                     <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
                                                     <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
 
-                                                    <td><button onClick={() => this.openModel(index)}>Add</button></td>
+                                                    <td><button onClick={() => this.openModel(index)}>{data && data.WeightCalculationDetails.length > 0 ? 'Update' : 'Add'}</button></td>
                                                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].GrossWeight : '0'}</td>
                                                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : '0'}</td>
                                                     <td>{data && data.WeightCalculationDetails.length > 0 ? NetRMCost : '0'}</td>
@@ -549,9 +574,9 @@ class CostWorking extends Component {
 * @param {*} state
 */
 function mapStateToProps({ costWorking }) {
-    const { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList } = costWorking;
+    const { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList, loading } = costWorking;
 
-    return { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList }
+    return { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList, loading }
 }
 
 export default connect(mapStateToProps,

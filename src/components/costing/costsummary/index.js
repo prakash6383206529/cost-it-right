@@ -7,7 +7,8 @@ import { renderText, renderSelectField, searchableSelect, renderTextAreaField } 
 import { fetchMaterialComboAPI, fetchCostingHeadsAPI, fetchModelTypeAPI } from '../../../actions/master/Comman';
 import {
     getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier, checkPartWithTechnology,
-    getCostingByCostingId, setInventoryRowData, getCostingOverHeadProByModelType
+    getCostingByCostingId, setInventoryRowData, getCostingOverHeadProByModelType, saveCosting, fetchFreightHeadsAPI,
+    getCostingFreight
 } from '../../../actions/costing/costing';
 import { getInterestRateAPI } from '../../../actions/master/InterestRateMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -66,6 +67,7 @@ class CostSummary extends Component {
         this.props.fetchCostingHeadsAPI('--select--', () => { })
         this.props.fetchModelTypeAPI('--Model Type--', () => { })
         this.props.getInterestRateAPI(res => { });
+        this.props.fetchFreightHeadsAPI(() => { })
     }
 
     componentWillReceiveProps(nextProps) {
@@ -121,6 +123,21 @@ class CostSummary extends Component {
             Content.RMInventotyCost = RMICCCostValue;
             Content.WIPInventotyCost = WIPICCCostValue;
             Content.PaymentTermsCost = PaymentTermICCCostValue;
+            Content.NetSurfaceArea = 4.8; // CED net surface area
+            Content.NetSurfaceAreaCost = Content.Quantity * Content.CEDOperationRate * Content.NetSurfaceArea; // CED cost 
+            Content.OverheadProfitCost = (Content.OverheadProfitPercentage * Content.NetSurfaceAreaCost) / 100    //  (CED cost * overheat % ) / 100 
+            Content.CEDtotalCost = Content.NetSurfaceAreaCost + Content.OverheadProfitCost + Content.TransportationOperationCost;
+
+            // TotalOtherCosts
+            Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
+                + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
+                + Content.ProfitCost + Content.NetFreightCost;
+
+            Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
+            Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+                + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
+            Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
+            Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
 
             this.props.change('supplier3Data', Content)
             this.fieldData(supplierThreeCostingHeadsData, 'supplierThreeCostingHeadsData')
@@ -136,14 +153,13 @@ class CostSummary extends Component {
     RMICCCostCalculation = (RMCostingHeadObj, Content) => {
         const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
         let rmInventoryICCCost = '';
-        if (RMCostingHeadObj.Text == "RM") {
+        if (RMCostingHeadObj && RMCostingHeadObj.Text == "RM") {
             rmInventoryICCCost = (Content.NetRawMaterialCost * Content.RMICCPercentage) / 100
-        } else if (RMCostingHeadObj.Text == "RM + CC") {
+        } else if (RMCostingHeadObj && RMCostingHeadObj.Text == "RM + CC") {
             rmInventoryICCCost = ((Content.NetRawMaterialCost + TotalConversionCost) * Content.RMICCPercentage) / 100
         } else {
             rmInventoryICCCost = (Content.NetRawMaterialCost * Content.RMICCPercentage) / 100
         }
-
         return rmInventoryICCCost;
     }
 
@@ -166,7 +182,7 @@ class CostSummary extends Component {
     renderTypeOfListing = (label) => {
         const { supplierDropdown1Array, supplierDropdown2Array, supplierDropdown3Array } = this.state;
         const { technologyList, plantList, Parts, Suppliers, ZBCSupplier, supplier2CostingDat, costingHead,
-            modelTypes } = this.props;
+            modelTypes, FreightHeadsList } = this.props;
         const temp = [];
 
         if (label === 'technology') {
@@ -252,6 +268,13 @@ class CostSummary extends Component {
             );
             return temp;
         }
+
+        if (label === 'freightHeads') {
+            FreightHeadsList && FreightHeadsList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
     }
 
     /**
@@ -261,6 +284,75 @@ class CostSummary extends Component {
     plantHandler = (newValue, actionMeta) => {
         this.setState({ plant: newValue });
     };
+
+    /**
+    * @method freightHeadsHandler
+    * @description Used to handle freight heads
+    */
+    freightHeadsHandler = (e, Number) => {
+        const { plant, supplier3 } = this.state;
+        const { FreightHeadsList, costingData } = this.props;
+
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierThree.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+
+        if (e.target.value && e.target.value != '') {
+            const tempObj = FreightHeadsList.find(item => item.Value == e.target.value)
+            this.setState({ freightHead: e.target.value }, () => {
+                const freightData = {
+                    FreightHeadId: tempObj.Value,
+                    FreightHead: tempObj.Text,
+                    SourceSupplierId: supplier3.value,
+                    SourceSupplierPlantId: plant.value,
+                }
+                this.props.getCostingFreight(freightData, res => {
+
+                    Content.FreightId = e.target.value;
+                    this.props.change(supplierColumn, Content)
+                })
+            });
+        }
+    };
+
+    freightAmountHandler = (e, Number) => {
+        const { costingData, FreightData } = this.props;
+        const FreightAmount = e.target.value;
+
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierThree.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        Content.FreightAmount = FreightAmount;
+        FreightData.NetFreightCost = 1;
+        //if(FreightData.FreightType == 'Rs/Kg' || FreightData.FreightType == 'perCubic feet' ){
+        Content.NetFreightCost = (FreightAmount * FreightData.NetFreightCost);
+        // }else{
+        //     Content.NetFreightCost = (FreightData.NetFreightCost / FreightAmount );
+        // }
+        this.props.change(supplierColumn, Content)
+    }
 
     /**
     * @method partHandler
@@ -290,7 +382,6 @@ class CostSummary extends Component {
     existingSupplierDetail = () => {
         const { existingSupplierDetail, Suppliers } = this.props;
         if (existingSupplierDetail) {
-            console.log("ifffffffffffffffffffffffffffffffff")
             this.props.change("PartDescription", existingSupplierDetail.PartDescription)
 
             const existSuppliers = existingSupplierDetail && existingSupplierDetail.ExistingSupplierDetails;
@@ -438,71 +529,79 @@ class CostSummary extends Component {
         });
     };
 
-    addSupplier1 = () => {
-        const { supplier, addSupplier1, partNo } = this.state;
-        if (supplier && supplier.value) {
-            const requestData = {
-                PartId: partNo,
-                SupplierId: supplier.value
-            }
+    // addSupplier1 = () => {
+    //     const { supplier, addSupplier1, partNo } = this.state;
+    //     if (supplier && supplier.value) {
+    //         const requestData = {
+    //             PartId: partNo,
+    //             SupplierId: supplier.value
+    //         }
 
-            this.props.createPartWithSupplier(requestData, res => {
-                const phrase = supplier.label;
-                // const myRegexp = /'.'(.*)/;
-                // const match = myRegexp.exec(phrase);
-                // var result = match && match[1].slice(1, -1);
-                var result = phrase.substr(0, phrase.indexOf('('));
-                this.setState({
-                    supplierOneName: result,
-                    //addSupplier1: true
-                })
+    //         this.props.createPartWithSupplier(requestData, res => {
+    //             const phrase = supplier.label;
+    //             var result = phrase.substr(0, phrase.indexOf('('));
+    //             this.setState({
+    //                 supplierOneName: result,
+    //             })
 
-            })
+    //         })
+    //     }
+    // }
+
+    // addSupplier2 = () => {
+    //     const { supplier2, partNo } = this.state;
+    //     if (supplier2 && supplier2.value) {
+    //         const requestData = {
+    //             PartId: partNo,
+    //             SupplierId: supplier2.value
+    //         }
+
+    //         this.props.createPartWithSupplier(requestData, res => {
+    //             const phrase = supplier2.label;
+    //             var result = phrase.substr(0, phrase.indexOf('('));
+    //             this.setState({
+    //                 supplierTwoName: result,
+    //             })
+    //         })
+    //     }
+    // }
+
+
+    // Using common function for addsupplier function its 1, 2 and 3
+    addSupplier = (Number) => {
+        const { supplier, supplier2, supplier3, partNo } = this.state;
+
+        let SupplierId = '';
+        let SupplierLabel = '';
+        let SupplierName = '';
+        if (Number == 1) {
+            SupplierId = supplier && supplier.value ? supplier.value : '';
+            SupplierLabel = supplier && supplier.label ? supplier.label : '';
+            SupplierName = 'supplierOneName';
+        } else if (Number == 2) {
+            SupplierId = supplier2 && supplier2.value ? supplier2.value : '';
+            SupplierLabel = supplier2 && supplier2.label ? supplier2.label : '';
+            SupplierName = 'supplierTwoName';
+        } else if (Number == 3) {
+            SupplierId = supplier3 && supplier3.value ? supplier3.value : '';
+            SupplierLabel = supplier3 && supplier3.label ? supplier3.label : '';
+            SupplierName = 'supplierThreeName';
         }
-    }
 
-    addSupplier2 = () => {
-        const { supplier2, partNo } = this.state;
-        if (supplier2 && supplier2.value) {
-            const requestData = {
-                PartId: partNo,
-                SupplierId: supplier2.value
-            }
-
-            this.props.createPartWithSupplier(requestData, res => {
-                const phrase = supplier2.label;
-                // const myRegexp = /'('*)/;
-                // const match = myRegexp.exec(phrase);
-                // var result = match && match[1].slice(1, -1);
-                var result = phrase.substr(0, phrase.indexOf('('));
-                this.setState({
-                    supplierTwoName: result,
-                    //addSupplier2: true
-                })
-            })
+        //if (supplier3 && supplier3.value) {
+        const requestData = {
+            PartId: partNo,
+            SupplierId: SupplierId
         }
-    }
 
-    addSupplier3 = () => {
-        const { supplier3, addSupplier1, partNo } = this.state;
-        if (supplier3 && supplier3.value) {
-            const requestData = {
-                PartId: partNo,
-                SupplierId: supplier3.value
-            }
-
-            this.props.createPartWithSupplier(requestData, res => {
-                const phrase = supplier3.label;
-                // const myRegexp = /'.'(.*)/;
-                // const match = myRegexp.exec(phrase);
-                // var result = match && match[1].slice(1, -1);
-                var result = phrase.substr(0, phrase.indexOf('('));
-                this.setState({
-                    supplierThreeName: result,
-                    //addSupplier3: true
-                })
+        this.props.createPartWithSupplier(requestData, res => {
+            const phrase = SupplierLabel;
+            var result = phrase.substr(0, phrase.indexOf('('));
+            this.setState({
+                [SupplierName]: result,
             })
-        }
+        })
+        //}
     }
 
     activeZBCSupplierHandler = (e, supplier) => {
@@ -511,49 +610,71 @@ class CostSummary extends Component {
         })
     }
 
-    activeSupplierHandler1 = (e, supplier) => {
-        this.setState({
-            activeSupplier1: e.target.value
-        }, () => {
-            if (e.target.value != '' && e.target.value != 0) {
-                this.props.getCostingByCostingId(this.state.activeSupplier1, supplier, (res) => {
-                    if (res.data.Result) {
-                        const { costingData } = this.props;
-                        this.props.change("supplier1Data", costingData.supplierOne.CostingDetail)
-                    }
-                })
-            }
-        })
-    }
+    // activeSupplierHandler1 = (e, supplier) => {
+    //     this.setState({
+    //         activeSupplier1: e.target.value
+    //     }, () => {
+    //         if (e.target.value != '' && e.target.value != 0) {
+    //             this.props.getCostingByCostingId(this.state.activeSupplier1, supplier, (res) => {
+    //                 if (res.data.Result) {
+    //                     const { costingData } = this.props;
+    //                     this.props.change("supplier1Data", costingData.supplierOne.CostingDetail)
+    //                 }
+    //             })
+    //         }
+    //     })
+    // }
 
-    activeSupplierHandler2 = (e, supplier) => {
-        this.setState({
-            activeSupplier2: e.target.value
-        }, () => {
-            if (e.target.value != '' && e.target.value != 0) {
-                this.props.getCostingByCostingId(this.state.activeSupplier2, supplier, (res) => {
-                    if (res.data.Result) {
-                        const { costingData } = this.props;
-                        this.props.change("supplier2Data", costingData.supplierTwo.CostingDetail)
-                    }
-                })
-            }
-        })
-    }
+    // activeSupplierHandler2 = (e, supplier) => {
+    //     this.setState({
+    //         activeSupplier2: e.target.value
+    //     }, () => {
+    //         if (e.target.value != '' && e.target.value != 0) {
+    //             this.props.getCostingByCostingId(this.state.activeSupplier2, supplier, (res) => {
+    //                 if (res.data.Result) {
+    //                     const { costingData } = this.props;
+    //                     this.props.change("supplier2Data", costingData.supplierTwo.CostingDetail)
+    //                 }
+    //             })
+    //         }
+    //     })
+    // }
 
-    activeSupplierHandler3 = (e, supplier) => {
+    activeSupplierHandler = (e, activeSupplier, supplier) => {
+
+        let responseData = '';
+        let supplierColumn = '';
+        if (supplier == 'supplierOne') {
+            supplierColumn = 'supplier1Data';
+        } else if (supplier == 'supplierTwo') {
+            supplierColumn = 'supplier2Data';
+        } else if (supplier == 'supplierThree') {
+            supplierColumn = 'supplier3Data';
+        }
+
         this.setState({
-            activeSupplier3: e.target.value
+            [activeSupplier]: e.target.value
         }, () => {
             if (e.target.value != '' && e.target.value != 0) {
-                this.props.getCostingByCostingId(this.state.activeSupplier3, supplier, (res) => {
-                    if (res.data.Result) {
+                this.props.getCostingByCostingId(e.target.value, supplier, (res) => {
+                    console.log('res >>>>>>>>>>', res)
+                    if (res && res.data && res.data.Result) {
                         const { costingData } = this.props;
-                        this.props.change("supplier3Data", costingData.supplierThree.CostingDetail)
+
+                        if (supplier == 'supplierOne') {
+                            responseData = costingData && costingData.supplierOne ? costingData.supplierThree.CostingDetail : {};
+                        } else if (supplier == 'supplierTwo') {
+                            responseData = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+                        } else if (supplier == 'supplierThree') {
+                            responseData = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+                        }
+                        this.props.change(supplierColumn, responseData)
+                        //this.props.change("supplier3Data", costingData.supplierThree.CostingDetail)
                     }
                 })
             } else {
-                this.props.change("supplier3Data", {})
+                this.props.change(supplierColumn, {})
+                //this.props.change("supplier3Data", {})
             }
         })
     }
@@ -608,9 +729,24 @@ class CostSummary extends Component {
                         overHeadCalculation = Content.NetRawMaterialCost
                     }
 
+                    let profitCostCalculation = 0;
+                    if (Data.ProfitTypeCostingHead == "RM") {
+                        profitCostCalculation = Content.NetRawMaterialCost;
+                    } else if (Data.ProfitTypeCostingHead == "RM + CC") {
+                        profitCostCalculation = Content.NetRawMaterialCost + TotalConversionCost
+                    } else {
+                        profitCostCalculation = Content.NetRawMaterialCost
+                    }
+
                     Content.ModelTypeId = e.target.value;
                     Content.OverheadPercentage = Data.OverheadProfitPercentage;
                     Content.OverheadCost = (overHeadCalculation * Data.OverheadProfitPercentage) / 100;
+                    Content.ProfitCost = (profitCostCalculation * Data.ProfitPercentage) / 100;
+
+                    // TotalOtherCosts
+                    Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
+                        + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
+                        + Content.ProfitCost + Content.NetFreightCost;
                     this.props.change('supplier3Data', Content)
                 })
             } else {
@@ -766,6 +902,223 @@ class CostSummary extends Component {
         }
     }
 
+    transportationCostFinishWtHandler3 = (e) => {
+        const { costingData } = this.props;
+        const Quantity = costingData.supplierThree.Quantity;
+        const Content = costingData.supplierThree.CostingDetail;
+
+        const TransportationOperationCost = Quantity * e.target.value * Content.TransportationOperationRate;
+        Content.TransportationOperationCost = TransportationOperationCost;
+        Content.CEDtotalCost = Content.NetSurfaceAreaCost + Content.OverheadProfitCost + Content.TransportationOperationCost;
+
+        Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
+        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
+        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;;
+        this.props.change('supplier3Data', Content)
+    }
+
+    /**
+    * @method packageCostingHandler
+    * @description If package cost then included in total cost
+    */
+    packageCostingHandler = (e) => {
+        const packagingCost = e.target.value;
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+
+        // TotalOtherCosts
+        Content.PackagingCost = packagingCost * 1;
+        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
+            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
+            + Content.ProfitCost + Content.NetFreightCost + Content.PackagingCost + Content.OtherAnyCostAndCharges;
+
+        this.props.change('supplier3Data', Content)
+    }
+
+    /**
+    * @method anyOtherCostHandler
+    * @description If package cost then included in total cost
+    */
+    anyOtherCostHandler = (e) => {
+        const anyOtherCost = e.target.value;
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+
+        // TotalOtherCosts
+        Content.OtherAnyCostAndCharges = anyOtherCost * 1;
+        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
+            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
+            + Content.ProfitCost + Content.NetFreightCost + Content.PackagingCost + Content.OtherAnyCostAndCharges;
+
+        this.props.change('supplier3Data', Content)
+    }
+
+    /**
+    * @method toolMaintenanceHandler
+    * @description Tool maintenance cost
+    */
+    toolMaintenanceHandler = (e) => {
+        const toolMaintenanceCost = e.target.value;
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+
+        // TotalOtherCosts
+        Content.ToolMaintenanceCost = toolMaintenanceCost * 1;
+        Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
+        Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
+        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
+        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
+        this.props.change('supplier3Data', Content)
+    }
+
+    /**
+    * @method toolAmortizationHandler
+    * @description Tool amortization cost
+    */
+    toolAmortizationHandler = (e) => {
+        const toolAmortizationCost = e.target.value;
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+
+        Content.ToolAmortizationCost = toolAmortizationCost * 1;
+        Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
+
+        this.props.change('supplier3Data', Content)
+    }
+
+    discountHandler = (e) => {
+        const discount = e.target.value;
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+
+        Content.Discount = discount * 1;
+        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
+        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
+
+        this.props.change('supplier3Data', Content)
+    }
+
+    landedFactorHandler = (e) => {
+        const LandedFactorPercentage = e.target.value;
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+
+        Content.LandedFactorPercentage = LandedFactorPercentage * 1;
+        Content.LandedFactorCost = Content.NetPurchaseOrderPrice * Content.LandedFactorPercentage;
+
+        this.props.change('supplier3Data', Content)
+    }
+
+    shareOfBusinessHandler = (e, Number, Content) => {
+        Content.ShareOfBusiness = e.target.value * 1;
+        this.setSupplierData(Number, Content)
+    }
+
+    CEDRemarksHandler = (e, Number, Content) => {
+        Content.CEDRemarks = e.target.value;
+        this.setSupplierData(Number, Content)
+    }
+
+    packagingRemarksHandler = (e, Number, Content) => {
+        Content.PackagingRemarks = e.target.value;
+        this.setSupplierData(Number, Content)
+    }
+
+    remarksHandler = (e, Number, Content) => {
+        Content.Remarks = e.target.value;
+        this.setSupplierData(Number, Content)
+    }
+
+    setSupplierData = (Number, Content) => {
+        if (Number == 1) {
+            this.props.change('supplier1Data', Content)
+        } else if (Number == 2) {
+            this.props.change('supplier2Data', Content)
+        } else if (Number == 3) {
+            this.props.change('supplier3Data', Content)
+        }
+    }
+
+    saveCosting3Handler = () => {
+        const { costingData } = this.props;
+        const Content = costingData.supplierThree.CostingDetail;
+        const CostingId = costingData.supplierThree.CostingId;
+
+        let formData3 = {
+            CostingId: CostingId,
+            ECONumber: Content.ECONumber,
+            RevsionNumber: Content.RevsionNumber,
+            NetBoughtOutParCost: Content.NetBoughtOutParCost,
+            NetRawMaterialCost: Content.NetRawMaterialCost,
+            NetProcessCost: Content.NetProcessCost,
+            NetOtherOperationCost: Content.NetOtherOperationCost,
+            SurfaceTreatmentCost: Content.SurfaceTreatmentCost,
+            TotalConversionCost: Content.TotalConversionCost,
+            ModelTypeId: Content.ModelTypeId,
+            OverheadPercentage: Content.OverheadPercentage,
+            RejectionTypeCostingHeadId: Content.RejectionTypeCostingHeadId,
+            RejectionPercentage: Content.RejectionPercentage,
+            RejectionCost: Content.RejectionCost,
+            RMInventotyDays: Content.RMInventotyDays,
+            RMInventotyCost: Content.RMInventotyCost,
+            ICCPercentage: Content.ICCPercentage,
+            RMICCPercentage: Content.RMICCPercentage,
+            RMCostingHeadsId: Content.RMCostingHeadsId,
+            WIPInventotyDays: Content.WIPInventotyDays,
+            WIPInventotyCost: Content.WIPInventotyCost,
+            WIPICCPercentage: Content.WIPICCPercentage,
+            WIPCostingHeadsId: Content.WIPCostingHeadsId,
+            PaymentTermsDays: Content.PaymentTermsDays,
+            PaymentTermsCost: Content.PaymentTermsCost,
+            PaymentTermsICCPercentage: Content.PaymentTermsICCPercentage,
+            PaymentTermsCostingHeadsId: Content.PaymentTermsCostingHeadsId,
+            ProfitPercentage: Content.ProfitPercentage,
+            ProfitTypeCostingHeadsId: Content.ProfitTypeCostingHeadsId,
+            FreightId: Content.FreightId,
+            NetFreightCost: Content.NetFreightCost,
+            AdditionalFreightId: Content.AdditionalFreightId,
+            NetAdditionalFreightCost: Content.NetAdditionalFreightCost,
+            CEDOperationId: Content.CEDOperationId,
+            CEDOperationName: Content.CEDOperationName,
+            CEDOperationRate: Content.CEDOperationRate,
+            NetSurfaceArea: Content.NetSurfaceArea,
+            NetSurfaceCost: Content.NetSurfaceAreaCost,
+            TransportationOperationRate: Content.TransportationOperationRate,
+            TransportationOperationFinishWeight: Content.TransportationOperationFinishWeight,
+            TransportationOperationCost: Content.TransportationOperationCost,
+            OverheadProfitPercentage: Content.OverheadProfitPercentage,
+            OverheadProfitTypeCostingHeadsId: Content.OverheadProfitTypeCostingHeadsId,
+            OverheadProfitCost: Content.OverheadProfitCost,
+            CEDRemarks: Content.CEDRemarks,
+            PackagingCost: Content.PackagingCost,
+            PackagingRemarks: Content.PackagingRemarks,
+            OtherAnyCostAndCharges: Content.OtherAnyCostAndCharges,
+            TotalOtherCosts: Content.TotalOtherCosts,
+            ToolCost: Content.ToolCost,
+            ToolMaintenanceCost: Content.ToolMaintenanceCost,
+            ToolAmortizationCost: Content.ToolAmortizationCost,
+            Discount: Content.Discount,
+            OtherBaseCost: Content.OtherBaseCost,
+            Remarks: Content.Remarks,
+            LandedFactorPercentage: Content.LandedFactorPercentage,
+            LandedFactorCost: Content.LandedFactorCost,
+            CostingStatusId: Content.CostingStatusId,
+            CostingStatusName: Content.CostingStatusName,
+            NetPurchaseOrderPrice: Content.NetPurchaseOrderPrice,
+            ShareOfBusiness: Content.ShareOfBusiness,
+            Quantity: Content.Quantity,
+            NetGrossWeight: Content.NetGrossWeight,
+        }
+
+        this.props.saveCosting(formData3, (res) => {
+            toastr.success('Costing has been saved successfully.')
+        })
+
+
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -779,7 +1132,7 @@ class CostSummary extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, ZBCSupplier } = this.props;
+        const { handleSubmit, ZBCSupplier, costingData } = this.props;
         const { supplier, supplier2, supplier3, isShowOtherOpsModal, supplierIdForOtherOps,
             supplierColumn, isShowCEDotherOpsModal, isShowFreightModal, supplierIdForCEDOtherOps,
             supplierOneCostingHeadsData, supplierTwoCostingHeadsData, supplierThreeCostingHeadsData } = this.state;
@@ -805,229 +1158,229 @@ class CostSummary extends Component {
                     className="form costSummary-form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 >
+                    <Row><Col md="3"><h5>{`Item Detail`}</h5></Col></Row>
                     <Row>
                         {/* -------------start left section------------------- */}
-                        <Col md="4">
-                            <h5>{`Item Detail`}</h5>
-                            <Col md="12">
-                                <Field
-                                    label={`Technology Id`}
-                                    name={"TechnologyId"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    // required={true}
-                                    className=" withoutBorder custom-select"
-                                    options={this.renderTypeOfListing('technology')}
-                                    onChange={this.handleTypeofListing}
-                                    optionValue={'Value'}
-                                    optionLabel={'Text'}
-                                    component={renderSelectField}
-                                    disabled={true}
-                                />
-                            </Col>
-                            <Col>
-                                <Field
-                                    id="PlantId"
-                                    name="PlantId"
-                                    type="text"
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    label="Plant"
-                                    component={searchableSelect}
-                                    //validate={[required, maxLength50]}
-                                    options={this.renderTypeOfListing('plant')}
-                                    //options={options}
-                                    required={true}
-                                    handleChangeDescription={this.plantHandler}
-                                    valueDescription={this.state.plant}
-                                />
-                            </Col>
-                            <Col>
-                                <Field
-                                    label={`Part No.`}
-                                    name={"part"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    // required={true}
-                                    className=" withoutBorder custom-select"
-                                    options={this.renderTypeOfListing('part')}
-                                    onChange={this.partHandler}
-                                    optionValue={'Value'}
-                                    optionLabel={'Text'}
-                                    component={renderSelectField}
-                                />
-                            </Col>
-                            <Col>
-                                <Field
-                                    label={`Part Desc`}
-                                    name={"PartDescription"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    component={renderText}
-                                    value={0}
-                                    required={true}
-                                    className="withoutBorder"
-                                    disabled={true}
-                                />
-                            </Col>
+                        {/* <Col md="12"> */}
+                        <Col md="3">
+                            <Field
+                                label={`Technology Id`}
+                                name={"TechnologyId"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                // required={true}
+                                className=" withoutBorder custom-select"
+                                options={this.renderTypeOfListing('technology')}
+                                onChange={this.handleTypeofListing}
+                                optionValue={'Value'}
+                                optionLabel={'Text'}
+                                component={renderSelectField}
+                                disabled={true}
+                            />
                         </Col>
-                        {/* -----------------end left section-------------------- */}
+                        <Col md="3">
+                            <Field
+                                id="PlantId"
+                                name="PlantId"
+                                type="text"
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                label="Plant"
+                                component={searchableSelect}
+                                //validate={[required, maxLength50]}
+                                options={this.renderTypeOfListing('plant')}
+                                //options={options}
+                                required={true}
+                                handleChangeDescription={this.plantHandler}
+                                valueDescription={this.state.plant}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <Field
+                                label={`Part No.`}
+                                name={"part"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                // required={true}
+                                className=" withoutBorder custom-select"
+                                options={this.renderTypeOfListing('part')}
+                                onChange={this.partHandler}
+                                optionValue={'Value'}
+                                optionLabel={'Text'}
+                                component={renderSelectField}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <Field
+                                label={`Part Desc`}
+                                name={"PartDescription"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                value={0}
+                                required={true}
+                                className="withoutBorder"
+                                disabled={true}
+                            />
+                        </Col>
+                        {/* </Col> */}
+                    </Row>
+                    {/* -----------------end left section-------------------- */}
+                    {/* <hr /> */}
+                    <Row><Col md="3"><h5>{`Existing Supplier Details`}</h5></Col></Row>
+                    <Row>
                         {/* -----------------start right section-------------------- */}
-                        <Col md="8">
-                            <h5>{`Existing Supplier Details`}</h5>
-                            <Col md="4" className={'existing-supplier'}>
-                                <Field
-                                    id="SupplierName"
-                                    name="SupplierName"
-                                    type="text"
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    label="Supplier Name"
-                                    component={searchableSelect}
-                                    //validate={[required, maxLength50]}
-                                    options={this.renderTypeOfListing('supplier')}
-                                    //options={options}
-                                    required={true}
-                                    handleChangeDescription={this.supplierHandler}
-                                    valueDescription={this.state.supplier}
-                                />
-                            </Col>
-                            <Col md="3" className={'existing-supplier'}>
-                                <Field
-                                    label={`Supplier Code`}
-                                    name={"SupplierCode"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    component={renderText}
-                                    required={true}
-                                    className=""
-                                    disabled={true}
-                                />
-                            </Col>
-                            <Col md="3" className={'existing-supplier'}>
-                                <Field
-                                    label={`PO Price`}
-                                    name={"POPrice"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    component={renderText}
-                                    value={0}
-                                    required={true}
-                                    className="withoutBorder"
-                                />
-                            </Col>
-                            <Col md="2" className={'existing-supplier'}>
-                                {this.state.hideButtonAdd1 &&
-                                    <button type="button" onClick={this.addSupplier1} className={'btn btn-secondary'}>Add</button>
-                                }
-                            </Col>
+                        {/* <Col md="12"> */}
 
-
-                            <hr />
-                            <Col md="4" className={'existing-supplier'}>
-                                <Field
-                                    id="SupplierName2"
-                                    name="SupplierName2"
-                                    type="text"
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    label="Supplier2 Name"
-                                    component={searchableSelect}
-                                    //validate={[required, maxLength50]}
-                                    options={this.renderTypeOfListing('supplier2')}
-                                    //options={options}
-                                    required={true}
-                                    handleChangeDescription={this.supplier2Handler}
-                                    valueDescription={this.state.supplier2}
-                                />
-                            </Col>
-                            <Col md="3" className={'existing-supplier'}>
-                                <Field
-                                    label={`Supplier2 Code`}
-                                    name={"SupplierCode2"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    component={renderText}
-                                    required={true}
-                                    className=""
-                                    disabled={true}
-                                />
-                            </Col>
-                            <Col md="3" className={'existing-supplier'}>
-                                <Field
-                                    label={`PO Price`}
-                                    name={"POPrice2"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    component={renderText}
-                                    value={0}
-                                    required={true}
-                                    className="withoutBorder"
-                                />
-                            </Col>
-                            <Col md="2" className={'existing-supplier'}>
-                                {this.state.hideButtonAdd2 &&
-                                    <button type="button" onClick={this.addSupplier2} className={'btn btn-secondary'}>Add</button>
-                                }
-                            </Col>
-
-
-                            <hr />
-                            <Col md="4" className={'existing-supplier'}>
-                                <Field
-                                    id="SupplierName3"
-                                    name="SupplierName3"
-                                    type="text"
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    label="Supplier 3 Name"
-                                    component={searchableSelect}
-                                    //validate={[required, maxLength50]}
-                                    options={this.renderTypeOfListing('supplier3')}
-                                    //options={options}
-                                    required={true}
-                                    handleChangeDescription={this.supplier3Handler}
-                                    valueDescription={this.state.supplier3}
-                                />
-                            </Col>
-                            <Col md="3" className={'existing-supplier'}>
-                                <Field
-                                    label={`Supplier 3 Code`}
-                                    name={"SupplierCode3"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    component={renderText}
-                                    required={true}
-                                    className=""
-                                    disabled={true}
-                                />
-                            </Col>
-                            <Col md="3" className={'existing-supplier'}>
-                                <Field
-                                    label={`PO Price`}
-                                    name={"POPrice3"}
-                                    type="text"
-                                    placeholder={''}
-                                    //validate={[required]}
-                                    component={renderText}
-                                    value={0}
-                                    required={true}
-                                    className="withoutBorder"
-                                />
-                            </Col>
-                            <Col md="2" className={'existing-supplier'}>
-                                {this.state.hideButtonAdd3 &&
-                                    <button type="button" onClick={this.addSupplier3} className={'btn btn-secondary'}>Add</button>
-                                }
-                            </Col>
+                        <Col md="4" className={'existing-supplier'}>
+                            <Field
+                                id="SupplierName"
+                                name="SupplierName"
+                                type="text"
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                label="Supplier Name"
+                                component={searchableSelect}
+                                //validate={[required, maxLength50]}
+                                options={this.renderTypeOfListing('supplier')}
+                                //options={options}
+                                required={true}
+                                handleChangeDescription={this.supplierHandler}
+                                valueDescription={this.state.supplier}
+                            />
                         </Col>
+                        <Col md="3" className={'existing-supplier'}>
+                            <Field
+                                label={`Supplier Code`}
+                                name={"SupplierCode"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                disabled={true}
+                            />
+                        </Col>
+                        <Col md="3" className={'existing-supplier'}>
+                            <Field
+                                label={`PO Price`}
+                                name={"POPrice"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                value={0}
+                                required={true}
+                                className="withoutBorder"
+                            />
+                        </Col>
+                        <Col md="2" className={'existing-supplier'}>
+                            {this.state.hideButtonAdd1 &&
+                                <button type="button" onClick={() => this.addSupplier(1)} className={'btn btn-secondary add-btn'}>Add</button>
+                            }
+                        </Col>
+                        {/* <hr /> */}
+                        <Col md="4" className={'existing-supplier'}>
+                            <Field
+                                id="SupplierName2"
+                                name="SupplierName2"
+                                type="text"
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                label="Supplier2 Name"
+                                component={searchableSelect}
+                                //validate={[required, maxLength50]}
+                                options={this.renderTypeOfListing('supplier2')}
+                                //options={options}
+                                required={true}
+                                handleChangeDescription={this.supplier2Handler}
+                                valueDescription={this.state.supplier2}
+                            />
+                        </Col>
+                        <Col md="3" className={'existing-supplier'}>
+                            <Field
+                                label={`Supplier2 Code`}
+                                name={"SupplierCode2"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                disabled={true}
+                            />
+                        </Col>
+                        <Col md="3" className={'existing-supplier'}>
+                            <Field
+                                label={`PO Price`}
+                                name={"POPrice2"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                value={0}
+                                required={true}
+                                className="withoutBorder"
+                            />
+                        </Col>
+                        <Col md="2" className={'existing-supplier'}>
+                            {this.state.hideButtonAdd2 &&
+                                <button type="button" onClick={() => this.addSupplier(2)} className={'btn btn-secondary add-btn'}>Add</button>
+                            }
+                        </Col>
+                        {/* <hr /> */}
+                        <Col md="4" className={'existing-supplier'}>
+                            <Field
+                                id="SupplierName3"
+                                name="SupplierName3"
+                                type="text"
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                label="Supplier 3 Name"
+                                component={searchableSelect}
+                                //validate={[required, maxLength50]}
+                                options={this.renderTypeOfListing('supplier3')}
+                                //options={options}
+                                required={true}
+                                handleChangeDescription={this.supplier3Handler}
+                                valueDescription={this.state.supplier3}
+                            />
+                        </Col>
+                        <Col md="3" className={'existing-supplier'}>
+                            <Field
+                                label={`Supplier 3 Code`}
+                                name={"SupplierCode3"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                disabled={true}
+                            />
+                        </Col>
+                        <Col md="3" className={'existing-supplier'}>
+                            <Field
+                                label={`PO Price`}
+                                name={"POPrice3"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                value={0}
+                                required={true}
+                                className="withoutBorder"
+                            />
+                        </Col>
+                        <Col md="2" className={'existing-supplier'}>
+                            {this.state.hideButtonAdd3 &&
+                                <button type="button" onClick={() => this.addSupplier(3)} className={'btn btn-secondary add-btn'}>Add</button>
+                            }
+                        </Col>
+                        {/* </Col> */}
                         {/* -----------------end right section-------------------- */}
                     </Row>
-                    <hr />
+                    {/* <hr /> */}
                     <Row>
                         <Col md="12" className={'dark-divider'}>ZBC V/s VBC</Col>
                         <Col md="3">
@@ -1064,7 +1417,7 @@ class CostSummary extends Component {
                                         // required={true}
                                         className=" withoutBorder custom-select"
                                         options={this.renderTypeOfListing('supplierDropdown1')}
-                                        onChange={(e) => this.activeSupplierHandler1(e, 'supplierOne')}
+                                        onChange={(e) => this.activeSupplierHandler(e, 'activeSupplier1', 'supplierOne')}
                                         optionValue={'Value'}
                                         optionLabel={'Text'}
                                         component={renderSelectField}
@@ -1085,7 +1438,7 @@ class CostSummary extends Component {
                                     // required={true}
                                     className=" withoutBorder custom-select"
                                     options={this.renderTypeOfListing('supplierDropdown2')}
-                                    onChange={(e) => this.activeSupplierHandler2(e, 'supplierTwo')}
+                                    onChange={(e) => this.activeSupplierHandler(e, 'activeSupplier2', 'supplierTwo')}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -1105,7 +1458,7 @@ class CostSummary extends Component {
                                     // required={true}
                                     className=" withoutBorder custom-select"
                                     options={this.renderTypeOfListing('supplierDropdown3')}
-                                    onChange={(e) => this.activeSupplierHandler3(e, 'supplierThree')}
+                                    onChange={(e) => this.activeSupplierHandler(e, 'activeSupplier3', 'supplierThree')}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -1165,6 +1518,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.shareOfBusinessHandler(e, 3, costingData.supplierThree.CostingDetail)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="SOB"
@@ -1937,7 +2291,7 @@ class CostSummary extends Component {
                                     required={true}
                                     className="withoutBorder"
                                     disabled={true}
-                                    title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100"
+                                    title="((sum of heads) * Rejection %) / 100"
                                 />
                             </div>
                         </Col>
@@ -1983,7 +2337,7 @@ class CostSummary extends Component {
                                     required={true}
                                     className="withoutBorder"
                                     disabled={true}
-                                    title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100"
+                                    title="((sum of heads) * Rejection %) / 100"
                                 />
                             </div>
                         </Col>
@@ -2020,17 +2374,17 @@ class CostSummary extends Component {
                             <div className={'base-cost'}>
                                 {/* <input type="text" disabled value={this.state.rejectionCostSupplier3} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" /> */}
                                 <Field
-                                    label={`Rejection(%)`}
+                                    label={``}
                                     name={`${supplier3Data}.RejectionCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.rejectionCostSupplier3}
+                                    value={0}
                                     required={true}
                                     className="withoutBorder"
                                     disabled={true}
-                                    title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100"
+                                    title="((sum of heads) * Rejection %) / 100"
                                 />
                             </div>
                         </Col>
@@ -2680,8 +3034,8 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     // required={true}
                                     className=" withoutBorder custom-select"
-                                    options={this.renderTypeOfListing('part')}
-                                    onChange={this.partHandler}
+                                    options={this.renderTypeOfListing('freightHeads')}
+                                    onChange={(e) => this.freightHeadsHandler(e, 3)}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -2695,6 +3049,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={this.state.freightBaseSupplier3}
+                                    onChange={(e) => this.freightAmountHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -2705,12 +3060,12 @@ class CostSummary extends Component {
                                 {/* <input type="text" disabled value={this.state.freightCostSupplier3} className={'mt20 overhead-percent-supplier'} title="If Freight is perKG or perCubic than (Base Freight input * Freight) Otherwise (Freight / Base Freight input)" /> */}
                                 <Field
                                     label={``}
-                                    name={`${supplier2Data}.NetFreightCost`}
+                                    name={`${supplier3Data}.NetFreightCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.freightCostSupplier3}
+                                    //value={this.state.freightCostSupplier3}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={true}
@@ -2866,7 +3221,7 @@ class CostSummary extends Component {
                                     value={this.state.cedCostRateBaseSupplier1}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={true}
                                     title=""
                                 />
                             </div>
@@ -2893,7 +3248,7 @@ class CostSummary extends Component {
                                 <input type="text" disabled value={this.state.cedCostCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
                                 <Field
                                     label={`Cost`}
-                                    name={`${supplier1Data}.NetSurfaceCost`}
+                                    name={`${supplier1Data}.NetSurfaceAreaCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -2938,7 +3293,7 @@ class CostSummary extends Component {
                                     value={this.state.cedCostRateBaseSupplier2}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={true}
                                     title=""
                                 />
                             </div>
@@ -2965,7 +3320,7 @@ class CostSummary extends Component {
                                 <input type="text" disabled value={this.state.cedCostCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
                                 <Field
                                     label={`Cost`}
-                                    name={`${supplier2Data}.NetSurfaceCost`}
+                                    name={`${supplier2Data}.NetSurfaceAreaCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -3013,7 +3368,7 @@ class CostSummary extends Component {
                                     value={this.state.cedCostRateBaseSupplier3}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={true}
                                     title=""
                                 />
                             </div>
@@ -3040,7 +3395,7 @@ class CostSummary extends Component {
                                 <input type="text" disabled value={this.state.cedCostCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
                                 <Field
                                     label={`Cost`}
-                                    name={`${supplier3Data}.NetSurfaceCost`}
+                                    name={`${supplier3Data}.NetSurfaceAreaCost`}
                                     type="text"
                                     placeholder={''}
                                     //validate={[required]}
@@ -3065,8 +3420,8 @@ class CostSummary extends Component {
                                 <input type="text" disabled value={this.state.TransCostRateBaseZBC} className={'form-control overhead-percent-supplier'} title="Transportation Rate" />
 
                                 <label>Net FinishWt</label>
-                                <input type="text" disabled value={this.state.TransCostFinishWtBaseZBC} className={'form-control overhead-percent-supplier'} title="Net Finish Wt/Component" />
-                                <button type="button" title="Toggle Disable">+</button>
+                                <input type="text" value={this.state.TransCostFinishWtBaseZBC} className={'form-control overhead-percent-supplier'} title="Net Finish Wt/Component" />
+                                {/* <button type="button" title="Toggle Disable">+</button> */}
                             </div>
                             <div className={'base-cost'}>
                                 <label>Cost</label>
@@ -3091,8 +3446,6 @@ class CostSummary extends Component {
                                     title="Transportation Rate"
                                 />
 
-                                {/* <label>Net FinishWt</label>
-                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" /> */}
                                 <Field
                                     label={`Net FinishWt`}
                                     name={`${supplier1Data}.TransportationOperationFinishWeight`}
@@ -3103,10 +3456,10 @@ class CostSummary extends Component {
                                     value={this.state.TransCostFinishWtBaseSupplier1}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Net Finish Wt/Component"
                                 />
-                                <button type="button" title="Toggle Disable">+</button>
+                                {/* <button type="button" title="Toggle Disable">+</button> */}
                             </div>
                             <div className={'base-cost'}>
                                 {/* <label>Cost</label>
@@ -3144,8 +3497,6 @@ class CostSummary extends Component {
                                     title="Transportation Rate"
                                 />
 
-                                {/* <label>Net FinishWt</label>
-                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" /> */}
                                 <Field
                                     label={`Net FinishWt`}
                                     name={`${supplier2Data}.TransportationOperationFinishWeight`}
@@ -3156,14 +3507,12 @@ class CostSummary extends Component {
                                     value={this.state.TransCostFinishWtBaseSupplier2}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Net Finish Wt/Component"
                                 />
-                                <button type="button" title="Toggle Disable">+</button>
+                                {/* <button type="button" title="Toggle Disable">+</button> */}
                             </div>
                             <div className={'base-cost'}>
-                                {/* <label>Cost</label>
-                                <input type="text" disabled value={this.state.TransCostCostSupplier2} className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" /> */}
                                 <Field
                                     label={`Cost`}
                                     name={`${supplier2Data}.TransportationOperationCost`}
@@ -3181,8 +3530,6 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'base-cost'}>
-                                {/* <label>Trans. Rate</label>
-                                <input type="text" disabled value={this.state.TransCostRateBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Transportation Rate" /> */}
                                 <Field
                                     label={`Trans. Rate`}
                                     name={`${supplier3Data}.TransportationOperationRate`}
@@ -3197,8 +3544,6 @@ class CostSummary extends Component {
                                     title="Transportation Rate"
                                 />
 
-                                {/* <label>Net FinishWt</label>
-                                <input type="text" disabled value={this.state.TransCostFinishWtBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Net Finish Wt/Component" /> */}
                                 <Field
                                     label={`Net FinishWt`}
                                     name={`${supplier3Data}.TransportationOperationFinishWeight`}
@@ -3207,16 +3552,15 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={this.state.TransCostFinishWtBaseSupplier3}
+                                    onChange={this.transportationCostFinishWtHandler3}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Net Finish Wt/Component"
                                 />
-                                <button type="button" title="Toggle Disable">+</button>
+                                {/* <button type="button" title="Toggle Disable">+</button> */}
                             </div>
                             <div className={'base-cost'}>
-                                {/* <label>Cost</label>
-                                <input type="text" disabled value={this.state.TransCostCostSupplier3} className={'mt10 overhead-percent-supplier'} title=" Sum(Qty*Finish Wt/Comp)*(Transportation Rate)" /> */}
                                 <Field
                                     label={`Cost`}
                                     name={`${supplier3Data}.TransportationOperationCost`}
@@ -3414,6 +3758,7 @@ class CostSummary extends Component {
                                     value={this.state.cedCostRemarksSupplier3}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.CEDRemarksHandler(e, 3, costingData.supplierThree.CostingDetail)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -3502,7 +3847,7 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                {/* <input type="text" value={this.state.packagingCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+
                                 <Field
                                     label={``}
                                     name={`${supplier1Data}.PackagingCost`}
@@ -3520,7 +3865,7 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                {/* <input type="text" value={this.state.packagingCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+
                                 <Field
                                     label={``}
                                     name={`${supplier2Data}.PackagingCost`}
@@ -3538,7 +3883,7 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <div className={'full-width'}>
-                                {/* <input type="text" value={this.state.packagingCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Enter Packaging Cost" /> */}
+
                                 <Field
                                     label={``}
                                     name={`${supplier3Data}.PackagingCost`}
@@ -3547,6 +3892,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={this.state.packagingCostSupplier3}
+                                    onChange={this.packageCostingHandler}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -3609,6 +3955,7 @@ class CostSummary extends Component {
                                     value={this.state.cedTotalRemarksSupplier3}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.packagingRemarksHandler(e, 3, costingData.supplierThree.CostingDetail)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -3674,6 +4021,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={this.state.otherCostSupplier3}
+                                    onChange={this.anyOtherCostHandler}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -3847,7 +4195,7 @@ class CostSummary extends Component {
                                     value={this.state.toolMaintenanceSupplier1}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Enter Tool Maintenance Cost"
                                 />
                             </div>
@@ -3865,7 +4213,7 @@ class CostSummary extends Component {
                                     value={this.state.toolMaintenanceSupplier2}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Enter Tool Maintenance Cost"
                                 />
                             </div>
@@ -3880,10 +4228,11 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.toolMaintenanceSupplier3}
+                                    value={0}
+                                    onChange={this.toolMaintenanceHandler}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Enter Tool Maintenance Cost"
                                 />
                             </div>
@@ -3913,7 +4262,7 @@ class CostSummary extends Component {
                                     value={this.state.toolMaintenanceSupplier1}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Enter Tool Amortization Cost"
                                 />
                             </div>
@@ -3931,7 +4280,7 @@ class CostSummary extends Component {
                                     value={this.state.toolMaintenanceSupplier2}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Enter Tool Amortization Cost"
                                 />
                             </div>
@@ -3946,10 +4295,11 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.toolMaintenanceSupplier3}
+                                    value={0}
+                                    onChange={this.toolAmortizationHandler}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={true}
+                                    //disabled={true}
                                     title="Enter Tool Amortization Cost"
                                 />
                             </div>
@@ -4114,7 +4464,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.hundiBaseSupplier3}
+                                    value={0}
+                                    onChange={this.discountHandler}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4130,7 +4481,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.hundiCostSupplier3}
+                                    value={0}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={true}
@@ -4314,6 +4665,7 @@ class CostSummary extends Component {
                                     value={this.state.totalCostRemarksSupplier3}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.remarksHandler(e, 3, costingData.supplierThree.CostingDetail)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -4455,7 +4807,6 @@ class CostSummary extends Component {
                                 />
                             </div>
                             <div className={'base-cost'}>
-                                {/* <input type="text" disabled value={this.state.landedFactorCostSupplier2} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" /> */}
                                 <Field
                                     label={``}
                                     name={`${supplier2Data}.LandedFactorCost`}
@@ -4473,7 +4824,6 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3" className={'dark-divider'}>
                             <div className={'base-cost'}>
-                                {/* <input type="text" value={this.state.landedFactorBaseSupplier3} className={'mt10 overhead-percent-supplier'} title="Landed Factor Percent" /> */}
                                 <Field
                                     label={``}
                                     name={`${supplier3Data}.LandedFactorPercentage`}
@@ -4481,7 +4831,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.landedFactorBaseSupplier3}
+                                    value={0}
+                                    onChange={this.landedFactorHandler}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4489,7 +4840,6 @@ class CostSummary extends Component {
                                 />
                             </div>
                             <div className={'base-cost'}>
-                                {/* <input type="text" disabled value={this.state.landedFactorCostSupplier3} className={'mt10 overhead-percent-supplier not-allowed'} title="Landed Factor Percent" /> */}
                                 <Field
                                     label={``}
                                     name={`${supplier3Data}.LandedFactorCost`}
@@ -4497,7 +4847,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.landedFactorCostSupplier3}
+                                    value={0}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={true}
@@ -4552,7 +4902,7 @@ class CostSummary extends Component {
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
-                            <button className={'btn btn-primary mr5'}>Save</button>
+                            <button type={'button'} onClick={this.saveCosting3Handler} className={'btn btn-primary mr5'}>Save</button>
                             <button className={'btn btn-primary'}>Send For Approval</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
@@ -4597,7 +4947,7 @@ function mapStateToProps({ comman, costing, interestRate }) {
     // }
 
     if (costing && costing.plantComboDetail) {
-        const { existingSupplierDetail, costingData } = costing;
+        const { existingSupplierDetail, costingData, FreightHeadsList, FreightData } = costing;
         const { Plants, Parts, Suppliers, ZBCSupplier } = costing.plantComboDetail;
 
         return {
@@ -4612,6 +4962,8 @@ function mapStateToProps({ comman, costing, interestRate }) {
             modelTypes,
             costingHead,
             interestRateList,
+            FreightHeadsList,
+            FreightData,
             //initialValues
         }
     }
@@ -4629,6 +4981,9 @@ export default connect(mapStateToProps, {
     getInterestRateAPI,
     setInventoryRowData,
     getCostingOverHeadProByModelType,
+    saveCosting,
+    fetchFreightHeadsAPI,
+    getCostingFreight,
 })(reduxForm({
     form: 'CostSummary',
     enableReinitialize: true,

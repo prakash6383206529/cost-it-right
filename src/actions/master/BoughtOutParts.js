@@ -58,7 +58,7 @@ export function createBOPAPI(data, callback) {
 export function getAllBOPAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPAPI}`, headers);
+        const request = axios.get(`${API.getAllBOPAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

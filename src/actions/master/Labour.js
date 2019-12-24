@@ -29,16 +29,16 @@ export function createLabourAPI(data, callback) {
         const request = axios.post(API.createLabourAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                    dispatch({
-                        type: CREATE_LABOUR_SUCCESS,
-                        payload: response.data.Data
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_LABOUR_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_LABOUR_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -55,13 +55,13 @@ export function createLabourAPI(data, callback) {
  */
 export function getLabourDetailAPI() {
     return (dispatch) => {
-        const request = axios.get(API.getLabourAPI, headers);
+        const request = axios.get(API.getAllLabourAPI, headers);
         request.then((response) => {
             dispatch({
                 type: GET_LABOUR_SUCCESS,
                 payload: response.data.DataList,
             });
-                
+
         }).catch((error) => {
             dispatch({
                 type: GET_LABOUR_FAILURE
@@ -75,27 +75,27 @@ export function getLabourDetailAPI() {
  * @method getLabourByIdAPI
  * @description get one labour based on id
  */
-export function getLabourByIdAPI(labourId,isEditFlag,callback) {
+export function getLabourByIdAPI(labourId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if(isEditFlag){
+        if (isEditFlag) {
             axios.get(`${API.getLabourAPI}/${labourId}`, headers)
-            .then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_LABOUR_DATA_SUCCESS,
-                        payload: response.data.Data[0],
-                    });
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_LABOUR_DATA_SUCCESS,
+                            payload: response.data.Data[0],
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
-                    callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-        }else{
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
             dispatch({
                 type: GET_LABOUR_DATA_SUCCESS,
                 payload: {},
@@ -109,12 +109,12 @@ export function getLabourByIdAPI(labourId,isEditFlag,callback) {
  * @method deleteLabourAPI
  * @description delete labour
  */
-export function deleteLabourAPI(Id ,callback) {
+export function deleteLabourAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteLabourAPI}/${Id}`, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
@@ -129,9 +129,9 @@ export function deleteLabourAPI(Id ,callback) {
 export function updateLabourAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateLabourAPI}`,requestData, headers)
+        axios.put(`${API.updateLabourAPI}`, requestData, headers)
             .then((response) => {
-                    callback(response);
+                callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });

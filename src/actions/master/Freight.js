@@ -7,7 +7,9 @@ import {
     CREATE_FREIGHT_FAILURE,
     GET_FREIGHT_SUCCESS,
     GET_FREIGHT_FAILURE,
-    GET_FREIGHT_DATA_SUCCESS
+    GET_FREIGHT_DATA_SUCCESS,
+    GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
+    GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -55,7 +57,7 @@ export function createFreightAPI(data, callback) {
  */
 export function getFreightDetailAPI() {
     return (dispatch) => {
-        const request = axios.get(API.getFreightAPI, headers);
+        const request = axios.get(API.getAllFreightAPI, headers);
         request.then((response) => {
             dispatch({
                 type: GET_FREIGHT_SUCCESS,
@@ -78,30 +80,22 @@ export function getFreightDetailAPI() {
 export function getFreightByIdAPI(freightId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (isEditFlag) {
-            axios.get(`${API.getFreightAPI}/${freightId}`, headers)
-                .then((response) => {
-                    if (response.data.Result) {
-                        dispatch({
-                            type: GET_FREIGHT_DATA_SUCCESS,
-                            payload: response.data.Data,
-                        });
-                        callback(response);
-                    } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
-                    }
+        axios.get(`${API.getFreightAPI}/${freightId}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_FREIGHT_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
                     callback(response);
-                }).catch((error) => {
-                    apiErrors(error);
-                    dispatch({ type: API_FAILURE });
-                });
-        } else {
-            dispatch({
-                type: GET_FREIGHT_DATA_SUCCESS,
-                payload: {},
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
             });
-            callback({});
-        }
     };
 }
 
@@ -130,6 +124,121 @@ export function updateFreightAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.updateFrightAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/** **************Below API/Action for additional freight's ***************** */
+
+/**
+ * @method createAdditionalFreightAPI
+ * @description create additional freight master
+ */
+export function createAdditionalFreightAPI(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createAdditionalFreightAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                // dispatch({
+                //     type: CREATE_ADDITIONAL_FREIGHT_SUCCESS,
+                //     payload: response.data.Data
+                // });
+                callback(response);
+            } else {
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getAdditionalFreightDetailAPI
+ * @description get Additional freight list
+ */
+export function getAllAdditionalFreightAPI(callback) {
+    return (dispatch) => {
+        const request = axios.get(API.getAllAdditionalFreightAPI, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
+                payload: response.data.DataList,
+            });
+            callback(response);
+        }).catch((error) => {
+            dispatch({
+                type: GET_FREIGHT_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getFreightByIdAPI
+ * @description get one freight based on id
+ */
+export function getAdditionalFreightByIdAPI(Id, isEditFlag, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getAdditionalFreightByIdAPI}/${Id}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method deleteAdditionalFreightAPI
+ * @description delete Additional Freight
+ */
+export function deleteAdditionalFreightAPI(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteAdditionalFreightAPI}/${Id}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateAdditionalFreightByIdAPI
+ * @description update Additonal Freight
+ */
+export function updateAdditionalFreightByIdAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateAdditionalFreightByIdAPI}`, requestData, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {

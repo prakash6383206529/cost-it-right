@@ -125,7 +125,7 @@ class BOMMaster extends Component {
                                     <th>{`BOM Level`}</th>
                                     <th>{`Eco Number`}</th>
                                     <th>{`Revision Number`}</th>
-                                    <th>{`Action`}</th>
+                                    {/* <th>{`Action`}</th> */}
                                 </tr>
                             </thead>}
                         <tbody >
@@ -143,10 +143,10 @@ class BOMMaster extends Component {
                                             <td>{item.BOMLevel}</td>
                                             <td>{item.EcoNumber}</td>
                                             <td>{item.RevisionNumber}</td>
-                                            <td>
+                                            {/* <td>
                                                 <Button className="btn btn-secondary" onClick={() => this.editItem(index, item.BillOfMaterialId)}><i className="fas fa-pencil-alt"></i></Button>
                                                 <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.BillOfMaterialId)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     )
                                 })}

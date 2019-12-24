@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField} from "../../../layout/FormInputs";
+import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createFuelDetailAPI, getFuelDetailAPI, getFuelDetailUnitAPI } from '../../../../actions/master/Fuel';
 import { fetchFuelComboAPI, fetchMasterDataAPI } from '../../../../actions/master/Comman'
 import { toastr } from 'react-redux-toastr';

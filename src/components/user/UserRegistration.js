@@ -5,35 +5,25 @@ import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3,
-  minLength5,
-  maxLength25,
-  maxLength11,
-  maxLength12,
-  required,
-  email,
-  minLength7,
-  maxLength70,
-  alphabetsOnlyForName,
-  number
+  minLength3, minLength5, maxLength25, maxLength11, maxLength12, required, email,
+  minLength7, maxLength70, alphabetsOnlyForName, number
 } from "../../helper/validation";
 import {
-  renderPasswordInputField,
-  focusOnError,
-  renderEmailInputField,
-  renderText
+  renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
+  searchableSelect
 } from "../layout/FormInputs";
-import "./SignupForm.scss";
-import { registerUserAPI } from "../../actions/auth/AuthActions";
+import "./UserRegistration.scss";
+import { registerUserAPI, getAllRoleAPI, getAllDepartmentAPI } from "../../actions/auth/AuthActions";
+import { fetchSupplierCityDataAPI } from "../../actions/master/Comman";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 
-class Signup extends Component {
+class UserRegistration extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      token: this.props.match.params.token,
+      token: '',
       maxLength: maxLength11,
       countryCode: false,
       lowerCaseCheck: false,
@@ -46,7 +36,10 @@ class Signup extends Component {
       isShowHide: false,
       isShowHidePassword: false,
       isRedirect: false,
-      isSignup: false
+      isSignup: false,
+      department: [],
+      role: [],
+      city: [],
     };
   }
 
@@ -54,7 +47,11 @@ class Signup extends Component {
   * @method componentDidMount
   * @description used to called after mounting component
   */
-  componentDidMount() { }
+  componentDidMount() {
+    this.props.getAllRoleAPI(() => { })
+    this.props.getAllDepartmentAPI(() => { })
+    this.props.fetchSupplierCityDataAPI(() => { })
+  }
 
   /**
    * @name Capitalize
@@ -136,6 +133,60 @@ class Signup extends Component {
   }
 
   /**
+    * @method selectType
+    * @description Used show listing of unit of measurement
+    */
+  searchableSelectType = (label) => {
+    const { roleList, departmentList, cityList } = this.props;
+    const temp = [];
+
+    if (label === 'role') {
+      roleList && roleList.map(item =>
+        temp.push({ label: item.RoleName, value: item.RoleId })
+      );
+      return temp;
+    }
+
+    if (label === 'department') {
+      departmentList && departmentList.map(item =>
+        temp.push({ label: item.DepartmentName, value: item.DepartmentId })
+      );
+      return temp;
+    }
+
+    if (label === 'city') {
+      cityList && cityList.map(item =>
+        temp.push({ label: item.Text, value: item.Value })
+      );
+      return temp;
+    }
+  }
+
+  /**
+    * @method departmentHandler
+    * @description Used to handle 
+    */
+  departmentHandler = (newValue, actionMeta) => {
+    this.setState({ department: newValue });
+  };
+
+  /**
+    * @method roleHandler
+    * @description Used to handle 
+    */
+  roleHandler = (newValue, actionMeta) => {
+    this.setState({ role: newValue });
+  };
+
+  /**
+    * @method cityHandler
+    * @description Used to handle city
+    */
+  cityHandler = (newValue, actionMeta) => {
+    this.setState({ city: newValue });
+  };
+
+  /**
    * @name onSubmit
    * @param values
    * @desc Submit the signup form values.
@@ -143,25 +194,52 @@ class Signup extends Component {
    */
   onSubmit(values) {
     console.log("signup values", values)
-    values.MiddleName = values.MiddleName
-    this.props.registerUserAPI(values, res => {
-      console.log('register res', res)
+    const { department, role, city } = this.state;
+
+    this.setState({ isSubmitted: true })
+
+    let userData = {
+      UserName: values.email,
+      Password: values.Password,
+      RoleId: role.value,
+      DepartmentId: department.value,
+      Email: values.email,
+      Mobile: values.Mobile,
+      FirstName: values.FirstName,
+      MiddleName: values.MiddleName,
+      LastName: values.LastName,
+      RoleName: role.label,
+      AddressLine1: values.AddressLine1,
+      AddressLine2: values.AddressLine2,
+      ZipCode: values.ZipCode,
+      PhoneNumber: values.PhoneNumber,
+      Extension: values.Extension,
+      CityId: city.value,
+    }
+    this.props.registerUserAPI(userData, res => {
+      if (res.data.Result) {
+        toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
+      }
+      this.setState({
+        isLoader: false,
+        isSubmitted: false
+      })
     })
   }
 
 
   render() {
-    const { handleSubmit } = this.props;
+    const { handleSubmit, pristine, submitting, reset } = this.props;
     const { isLoader, isSubmitted } = this.state;
 
     return (
       <div>
         {isLoader && <Loader />}
         <div className="login-container  signup-form">
-          <div className="card-body shadow-lg login-form">
+          <div className="shadow-lg login-form">
             <div className="form-heading">
               <h2>
-                Sign Up
+                User Registration
              </h2>
             </div>
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -204,7 +282,7 @@ class Signup extends Component {
                 </div>
               </div>
               <div className="row form-group">
-                <div className="input-group col-md-4">
+                <div className="input-group col-md-6">
                   <Field
                     name="email"
                     label="Email Address"
@@ -216,7 +294,7 @@ class Signup extends Component {
                     maxLength={70}
                   />
                 </div>
-                <div className="input-group col-md-4">
+                <div className="input-group col-md-6">
                   <Field
                     name="Mobile"
                     label="Mobile"
@@ -229,19 +307,53 @@ class Signup extends Component {
                     maxLength={70}
                   />
                 </div>
-                <div className="input-group col-md-4 input-withouticon" >
+              </div>
+
+              <div className="row form-group">
+                <div className="col-md-4">
                   <Field
-                    label="Role Name"
-                    name={"RoleName"}
+                    name="DepartmentId"
                     type="text"
-                    placeholder={''}
-                    validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
-                    component={renderText}
-                    required={true}
-                    maxLength={26}
+                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                    label="Department"
+                    component={searchableSelect}
+                    //validate={[required, maxLength50]}
+                    options={this.searchableSelectType('department')}
+                    //required={true}
+                    handleChangeDescription={this.departmentHandler}
+                    valueDescription={this.state.department}
+                  />
+                </div>
+                <div className="col-md-4">
+                  <Field
+                    name="RoleId"
+                    type="text"
+                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                    label="Role"
+                    component={searchableSelect}
+                    //validate={[required, maxLength50]}
+                    options={this.searchableSelectType('role')}
+                    //required={true}
+                    handleChangeDescription={this.roleHandler}
+                    valueDescription={this.state.role}
+                  />
+                </div>
+                <div className="col-md-4">
+                  <Field
+                    name="CityId"
+                    type="text"
+                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                    label="City"
+                    component={searchableSelect}
+                    //validate={[required, maxLength50]}
+                    options={this.searchableSelectType('city')}
+                    //required={true}
+                    handleChangeDescription={this.cityHandler}
+                    valueDescription={this.state.city}
                   />
                 </div>
               </div>
+
               <div className="row form-group">
                 <div className="input-group col-md-6">
                   <Field
@@ -272,14 +384,81 @@ class Signup extends Component {
                     isEyeIcon={true}
                   />
                 </div>
+                <div className="input-group  col-md-6 input-withouticon">
+                  <Field
+                    label="Address 1"
+                    name={"AddressLine1"}
+                    type="text"
+                    placeholder={''}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    maxLength={26}
+                  />
+                </div>
+                <div className="input-group  col-md-6 input-withouticon">
+                  <Field
+                    label="Address 2"
+                    name={"AddressLine2"}
+                    type="text"
+                    placeholder={''}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    maxLength={26}
+                  />
+                </div>
+                <div className="input-group  col-md-4 input-withouticon">
+                  <Field
+                    label="ZipCode"
+                    name={"ZipCode"}
+                    type="text"
+                    placeholder={''}
+                    validate={[required, number]}
+                    component={renderText}
+                    required={true}
+                    maxLength={26}
+                  />
+                </div>
+                <div className="input-group  col-md-4 input-withouticon">
+                  <Field
+                    label="Phone Number"
+                    name={"PhoneNumber"}
+                    type="text"
+                    placeholder={''}
+                    validate={[required, number]}
+                    component={renderText}
+                    required={true}
+                    maxLength={26}
+                  />
+                </div>
+                <div className="input-group  col-md-4 input-withouticon">
+                  <Field
+                    label="Extension"
+                    name={"Extension"}
+                    type="text"
+                    placeholder={''}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    maxLength={26}
+                  />
+                </div>
               </div>
 
               <div className="text-center ">
                 <input
                   disabled={isSubmitted ? true : false}
                   type="submit"
-                  value="SIGN UP"
-                  className="btn  login-btn w-50 dark-pinkbtn"
+                  value="User Registration"
+                  className="btn  login-btn w-10 dark-pinkbtn"
+                />
+                <input
+                  disabled={pristine || submitting}
+                  onClick={reset}
+                  type="submit"
+                  value="Reset"
+                  className="btn  login-btn w-10 dark-pinkbtn"
                 />
               </div>
             </form>
@@ -322,10 +501,11 @@ function validate(values) {
 * @description return state to component as props
 * @param {*} state
 */
-const mapStateToProps = state => {
-  let returnObj = {};
+const mapStateToProps = ({ auth, comman }) => {
+  const { roleList, departmentList } = auth;
+  const { cityList } = comman;
 
-  return returnObj;
+  return { roleList, departmentList, cityList };
 };
 
 /**
@@ -341,5 +521,10 @@ export default reduxForm({
     focusOnError(errors);
   }
 })(connect(mapStateToProps,
-  { registerUserAPI }
-)(Signup));
+  {
+    registerUserAPI,
+    getAllRoleAPI,
+    getAllDepartmentAPI,
+    fetchSupplierCityDataAPI,
+  }
+)(UserRegistration));

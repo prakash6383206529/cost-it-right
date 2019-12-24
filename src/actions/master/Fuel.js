@@ -95,7 +95,7 @@ export function createFuelDetailAPI(data, callback) {
  */
 export function getFuelDetailAPI() {
     return (dispatch) => {
-        const request = axios.get(API.getFuelDetailAPI, headers);
+        const request = axios.get(API.getAllFuelDetailAPI, headers);
         request.then((response) => {
             dispatch({
                 type: GET_FUEL_SUCCESS,
@@ -116,7 +116,7 @@ export function getFuelDetailAPI() {
  */
 export function getFuelAPI() {
     return (dispatch) => {
-        const request = axios.get(API.getFuelAPI, headers);
+        const request = axios.get(API.getAllFuelAPI, headers);
         request.then((response) => {
             dispatch({
                 type: GET_FUEL_DETAIL_SUCCESS,

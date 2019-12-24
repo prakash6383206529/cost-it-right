@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField } from "../../../layout/FormInputs";
+import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { createCategoryAPI, fetchCategoryMasterDataAPI } from '../../../../actions/master/Category';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -14,6 +14,7 @@ class AddCategory extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
+            categoryTypeId: [],
             isEditFlag: false
         }
     }
@@ -44,11 +45,37 @@ class AddCategory extends Component {
     }
 
     /**
+    * @method sourceSupplierHandler
+    * @description Used to handle 
+    */
+    categoryTypeIdHandler = (newValue, actionMeta) => {
+        this.setState({ categoryTypeId: newValue });
+    };
+
+    /**
+    * @method selectType
+    * @description Used to show listing of category type listing
+    */
+    selectType = () => {
+        const { categoryList } = this.props;
+        const temp = [];
+
+        categoryList && categoryList !== undefined && categoryList.map(item =>
+            temp.push({ label: item.Text, value: item.Value })
+        );
+        return temp;
+    }
+
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { categoryTypeId } = this.state;
         /** Add new detail of the Category  */
+        values.CategoryType = categoryTypeId.label;
+        values.CategoryTypeId = categoryTypeId.value;
         this.props.createCategoryAPI(values, (response) => {
             if (response && response.data) {
                 if (response && response.data && response.data.Result) {
@@ -61,18 +88,7 @@ class AddCategory extends Component {
         });
     }
 
-    /**
-    * @method selectType
-    * @description Used to show listing of category type listing
-    */
-   selectType = () => {
-        const { categoryList } = this.props;
-        const temp = [];
-        categoryList && categoryList !== undefined && categoryList.map(item =>
-            temp.push({ Text: item.Text, Value: item.Value })
-        );
-        return temp;
-    }
+
 
 
     /**
@@ -107,7 +123,7 @@ class AddCategory extends Component {
                                             />
                                         </Col>
                                         <Col md="6">
-                                            <Field
+                                            {/* <Field
                                                 label="Category Type"
                                                 name={"CategoryType"}
                                                 type="text"
@@ -120,6 +136,18 @@ class AddCategory extends Component {
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
+                                            /> */}
+                                            <Field
+                                                name="CategoryTypeId"
+                                                type="text"
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                label="Category Type"
+                                                component={searchableSelect}
+                                                //validate={[required, maxLength50]}
+                                                options={this.selectType()}
+                                                //required={true}
+                                                handleChangeDescription={this.categoryTypeIdHandler}
+                                                valueDescription={this.state.categoryTypeId}
                                             />
                                         </Col>
                                         <Col md="12">

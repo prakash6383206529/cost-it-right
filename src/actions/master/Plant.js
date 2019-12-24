@@ -58,7 +58,7 @@ export function createPlantAPI(data, callback) {
  */
 export function getPlantDataAPI() {
     return (dispatch) => {
-        const request = axios.get(API.getPlantAPI, headers);
+        const request = axios.get(API.getAllPlantAPI, headers);
         request.then((response) => {
             dispatch({
                 type: GET_PLANT_SUCCESS,

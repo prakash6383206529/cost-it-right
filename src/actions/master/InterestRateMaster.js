@@ -29,7 +29,7 @@ const headers = {
 export function getInterestRateAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(API.getInterestRateAPI, { headers })
+        axios.get(API.getAllInterestRateAPI, { headers })
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({

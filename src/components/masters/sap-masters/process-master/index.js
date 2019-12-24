@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Container, Row, Col, Button, Table
-} from 'reactstrap';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddProcess from './AddProcess';
 import { getProcessDataAPI, deleteProcessAPI } from '../../../../actions/master/Process';
 import { CONSTANT } from '../../../../helper/AllConastant'

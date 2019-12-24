@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Button, Table } from 'reactstrap';
+    Container, Row, Col, Button, Table
+} from 'reactstrap';
 import { getFreightDetailAPI, deleteFreightAPI } from '../../../../actions/master/Freight';
 import { Loader } from '../../../common/Loader';
 import Addfreight from './AddFreight';
@@ -20,7 +21,7 @@ class PackagingDetail extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
-            freightType: 1,
+            FreightType: 1, // FreightType 1 = 'Freight and 2 = 'Packaging'
 
         }
     }
@@ -30,7 +31,7 @@ class PackagingDetail extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        this.props.getFreightDetailAPI(res => {});
+        this.props.getFreightDetailAPI(res => { });
     }
 
     /**
@@ -49,23 +50,24 @@ class PackagingDetail extends Component {
         this.setState({ isOpen: false })
     }
 
-     /**
-    * @method editDetails
-    * @description confirm delete bop
-    */
+    /**
+   * @method editDetails
+   * @description confirm delete bop
+   */
     editDetails = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
             freightId: Id,
+            FreightType: 1,
         })
     }
 
     /**
-    * @method delete 
-    * @description confirm delete bop
+    * @method deleteItem 
+    * @description confirm delete freight
     */
-    deleteBOP = (Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
@@ -97,78 +99,86 @@ class PackagingDetail extends Component {
     render() {
         const { isOpen, isEditFlag, freightId } = this.state;
         return (
-            <Container className="top-margin">
-            {/* {this.props.loading && <Loader/>} */}
-                <Row>
+            <Container>
+                {/* {this.props.loading && <Loader/>} */}
+                {/* <Row>
                     <Col>
                         <h5>{`${CONSTANT.FREIGHT} ${CONSTANT.DETAILS}`}</h5>
                     </Col>
-                </Row>
-                <Col>
-                <Table className="table table-striped" bordered>
-                { this.props.freightDetail && this.props.freightDetail.length > 0 &&
-                    <thead>
-                        <tr>
-                            <th>{`${CONSTANT.FREIGHT} ${CONSTANT.TYPE}`}</th>
-                            <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                            <th>{`${CONSTANT.SOURCE} ${CONSTANT.CITY} ${CONSTANT.NAME}`}</th>
-                            <th>{`${CONSTANT.DESTINATION} ${CONSTANT.CITY} ${CONSTANT.NAME}`}</th>
-                            <th>{`${CONSTANT.FREIGHT} To From`}</th>
-                            <th>{`Part Truck Load Rate PerKilogram`}</th>
-                            <th>{`Part Truck Load Rate CubicFeet`}</th>
-                            <th>{`FullTruck Load Rate OneTon`}</th>
-                            <th>{`Full Truck Load Rate TwoTon`}</th>
-                            <th>{`Full Truck Load Rate FiveTon`}</th>
-                            <th>{`Full Truck Load Rate NineTon`}</th>
-                            <th>{`Full Truck Load Rate ElevenTon`}</th>
-                            <th>{`Full Truck Load Rate SixteenTon`}</th>
-                            <th>{`Full Truck Load Rate Twenty FiveTon`}</th>
-                            <th>{`Full Truck Load Rate Thirty OneTon`}</th>
-                            <th>{`Full Truck Load Rate Trailer`}</th>
-                            <th>{`${CONSTANT.DATE}`}</th>
-                            <th>{'Status '}</th>
-                        </tr>
-                    </thead>}
-                    <tbody > 
-                        {this.props.freightDetail && this.props.freightDetail.length > 0 && 
-                            this.props.freightDetail.map((item, index) => {
-                                return (
-                                    <tr key={index}>
-                                        {item.FreightType === 1 &&<td>{item.FreightType}</td>}
-                                        {item.FreightType === 1 &&<td>{item.PlantName}</td>} 
-                                        {item.FreightType === 1 &&<td >{item.SourceCityName}</td>}
-                                        {item.FreightType === 1 &&<td>{item.DestinationCityName}</td>}
-                                        {item.FreightType === 1 &&<td>{item.FreightToFrom}</td>}
-                                        {item.FreightType === 1 &&<td>{item.PartTruckLoadRatePerKilogram}</td>}
-                                        {item.FreightType === 1 &&<td>{item.PartTruckLoadRateCubicFeet}</td>} 
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateOneTon}</td>}
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateTwoTon}</td> }
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateFiveTon}</td>}
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateNineTon}</td>}
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateElevenTon}</td>}
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateSixteenTon}</td>}
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateTwentyFiveTon}</td>}
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateThirtyOneTon}</td>}
-                                        {item.FreightType === 1 &&<td>{item.FullTruckLoadRateTrailer}</td>}
-                                        {item.FreightType === 1 &&<td>{convertISOToUtcDate(item.CreatedDate)}</td> }
-                                        {item.FreightType === 1 &&<td>{item.IsActive ? 'Active' : 'InActive'}</td>}
-                                        {item.FreightType === 1 &&<td>
-                                            <Button className="btn btn-secondary" onClick={() => this.editDetails(item.FreightId)}><i className="fas fa-pencil-alt"></i></Button>
-                                            <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.FreightId)}><i className="far fa-trash-alt"></i></Button>
-                                         </td> } 
+                </Row> */}
+                <Row>
+                    <Col>
+                        <Table className="table table-striped" bordered>
+                            {this.props.freightDetail && this.props.freightDetail.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>{`Source Supplier`}</th>
+                                        <th>{`Destination Supplier`}</th>
+                                        <th>{`Source Supplier Plant`}</th>
+                                        <th>{`Destination Supplier Plant`}</th>
+                                        <th>{`Source Supplier City`}</th>
+                                        <th>{`Destination Supplier City`}</th>
+                                        <th>{`Per Kg`}</th>
+                                        <th>{`Per Cubic Feet`}</th>
+                                        <th>{`1 Ton Ace`}</th>
+                                        <th>{`2 Ton`}</th>
+                                        <th>{`5 Ton`}</th>
+                                        <th>{`9 Ton`}</th>
+                                        <th>{`11 Ton`}</th>
+                                        <th>{`16 Ton`}</th>
+                                        <th>{`25 Ton`}</th>
+                                        <th>{`31 Ton`}</th>
+                                        <th>{`Trailer`}</th>
+                                        <th>{`Expenses`}</th>
+                                        <th>{`TollTax`}</th>
+                                        <th>{`Concession`}</th>
+                                        <th>{`Action`}</th>
                                     </tr>
-                                )
-                            })}
-                            {this.props.freightDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                    </tbody>  
-                </Table> 
-                </Col>
+                                </thead>}
+                            <tbody >
+                                {this.props.freightDetail && this.props.freightDetail.length > 0 &&
+                                    this.props.freightDetail.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{item.SourceSupplierName}</td>
+                                                <td>{item.DestinationSupplierName}</td>
+                                                <td>{item.SourceSupplierPlantName}</td>
+                                                <td>{item.DestinationSupplierPlantName}</td>
+                                                <td>{item.SourceSupplierCityName}</td>
+                                                <td>{item.DestinationSupplierCityName}</td>
+                                                <td>{item.PartTruckLoadRatePerKilogram}</td>
+                                                <td>{item.PartTruckLoadRateCubicFeet}</td>
+                                                <td>{item.FullTruckLoadRateOneTon}</td>
+                                                <td>{item.FullTruckLoadRateTwoTon}</td>
+                                                <td>{item.FullTruckLoadRateFiveTon}</td>
+                                                <td>{item.FullTruckLoadRateNineTon}</td>
+                                                <td>{item.FullTruckLoadRateElevenTon}</td>
+                                                <td>{item.FullTruckLoadRateSixteenTon}</td>
+                                                <td>{item.FullTruckLoadRateTwentyFiveTon}</td>
+                                                <td>{item.FullTruckLoadRateThirtyOneTon}</td>
+                                                <td>{item.FullTruckLoadRateTrailer}</td>
+                                                <td>{item.Expenses == null ? 0 : item.Expenses}</td>
+                                                <td>{item.TollTax == null ? 0 : item.TollTax}</td>
+                                                <td>{item.Concession == null ? 0 : item.Concession}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editDetails(item.FreightId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(item.FreightId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.freightDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <Addfreight
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
                         freightId={freightId}
+                        FreightType={this.state.FreightType}
                     />
                 )}
             </Container >
@@ -182,12 +192,12 @@ class PackagingDetail extends Component {
 * @param {*} state
 */
 function mapStateToProps({ freight }) {
-    const { freightDetail ,loading } = freight;
+    const { freightDetail, loading } = freight;
     return { freightDetail, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getFreightDetailAPI,deleteFreightAPI }
+    mapStateToProps, { getFreightDetailAPI, deleteFreightAPI }
 )(PackagingDetail);
 

@@ -9,6 +9,8 @@ import {
     SET_CED_ROW_DATA_TO_COST_SUMMARY,
     SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY,
     SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
+    GET_FREIGHT_HEAD_SUCCESS,
+    GET_FREIGHT_AMOUNT_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -132,6 +134,20 @@ export default function costingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 costingData: { ...state.costingData, [action.supplierColumn]: InventoryOlddata }
+            };
+        case GET_FREIGHT_HEAD_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                FreightHeadsList: action.payload
+            };
+        case GET_FREIGHT_AMOUNT_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                FreightData: action.payload
             };
         default:
             return state;

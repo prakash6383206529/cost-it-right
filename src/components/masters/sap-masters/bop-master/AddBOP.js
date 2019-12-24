@@ -40,9 +40,9 @@ class AddBOP extends Component {
         if (isEditFlag) {
             this.props.getBOPByIdAPI(bopId, true, res => {
                 const responseData = res && res.data && res.data.Data ? res.data.Data : '';
-                this.props.fetchCategoryAPI(responseData.CategoryTypeId, res1 => {
-                    this.getCategoryIdEdit(res1);
-                })
+                //this.props.fetchCategoryAPI(responseData.CategoryTypeId, res1 => {
+                //this.getCategoryIdEdit(res1);
+                //})
             })
         } else {
             this.props.getBOPByIdAPI('', false, res => { })
@@ -386,7 +386,7 @@ class AddBOP extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        <Col md="6">
+                                        <Col md="12">
                                             <Field
                                                 label={`${CONSTANT.SPECIFICATION}`}
                                                 name={"Specification"}

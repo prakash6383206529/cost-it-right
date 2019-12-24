@@ -14,6 +14,7 @@ class AddWeightCosting extends Component {
         super(props);
         this.state = {
             weightType: '',
+            layoutingId: '',
             typeOfListing: [],
             thickness: '',
             width: '',
@@ -56,6 +57,109 @@ class AddWeightCosting extends Component {
     }
 
     /**
+    * @method componentWillReceiveProps
+    * @description called when props changed
+    */
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.weightCostingInfo != this.props.weightCostingInfo) {
+            const layoutData = nextProps.weightCostingInfo;
+
+            const layoutType = this.checkLayoutType(layoutData)
+            // Bracket Part calculation
+            const WT = ((layoutData.Thickness * layoutData.Width * layoutData.Length * 7.85) / 1000000);
+            const disabledNetSurface = (layoutData.FinishWeight * 1000000 * layoutData.SurfaceArea) / (layoutData.Thickness * 7.85 * 25.4 * 25.4)
+            const grossWt = WT / layoutData.NoOfPartsAndBlank;
+            const netSurfaceArea = disabledNetSurface - layoutData.OverlapArea;
+
+
+            // Pipe layout surface area for one side and two side
+            const OD = layoutData.OD;
+            const ID = layoutData.ID;
+            const oneSideInputValue = ((2 * 3.14 * (OD / 2) * layoutData.LengthOfPipe) + (2 * (3.14 * (OD / 2) * (OD / 2)) - (3.14 * (ID / 2) * (ID / 2))))
+            const twoSideInputValue = ((2 * 3.14 * (ID / 2) * layoutData.LengthOfPipe) + (2 * 3.14 * (OD / 2) * layoutData.LengthOfPipe) + (2 * (3.14 * (OD / 2) * (OD / 2)) - (3.14 * (ID / 2) * (ID / 2))))
+            const wtInKgPipe = ((OD - layoutData.Thickness) * layoutData.Thickness * layoutData.Length * 0.2465) / 1000
+            const numberOfPipe1 = layoutData.Length / layoutData.LengthOfPipe
+            const pipeGrossWeight = wtInKgPipe / numberOfPipe1
+
+            //L_Sec, Plate, C_Sec, Z sec layout calculation
+            const weightOther = '';
+
+            if (layoutData.LayoutingName == 'L Sec') {
+                weightOther = (((layoutData.FlangeWidthOne + layoutData.WebWidth) - (2 * layoutData.Thickness) * layoutData.Thickness * layoutData.Length) * (7.85 / 1000000))
+            } else if (layoutData.LayoutingName == 'Plate') {
+                weightOther = (layoutData.FlangeWidthOne * layoutData.WebWidth * layoutData.Thickness) * 7.85 / 1000000
+            } else if (layoutData.LayoutingName == 'C Sec') {
+                weightOther = ((layoutData.FlangeWidthOne + layoutData.WebWidth + layoutData.FlangeWidthTwo) - (2 * 2 * layoutData.Thickness)) * layoutData.Thickness * layoutData.Length * (7.85 / 1000000)
+            } else if (layoutData.LayoutingName == 'Z Sec') {
+                weightOther = ((layoutData.FlangeWidthOne + layoutData.WebWidth + layoutData.FlangeWidthTwo) - (1.5 * 2 * layoutData.Thickness)) * layoutData.Thickness * layoutData.Length * (7.85 / 1000000)
+            }
+
+            //Tube layout calculation 
+            const Formula1 = (layoutData.Width - (4 * layoutData.Thickness)) + (layoutData.WebWidth - (4 * layoutData.Thickness)) + (1.5 * 3.14 * layoutData.Thickness);
+            const Formula2 = (Formula1 * 2 * layoutData.Thickness) / 100;
+            const formula3 = Formula2 * .785;
+            const WeightPerPc = formula3 * (layoutData.Length / 1000);
+
+            this.setState({
+                grossWeight: grossWt,
+                total: WT,
+                NFS: netSurfaceArea.toFixed(6),
+                disabledSurfaceArea: disabledNetSurface,
+                grossWeightPipe: pipeGrossWeight,
+                oneSideInput: typeof oneSideInputValue == 'NaN' ? 0 : oneSideInputValue,
+                twoSideInput: typeof twoSideInputValue == 'NaN' ? 0 : twoSideInputValue,
+                pipeWeight: wtInKgPipe,
+                numberOfPipe: numberOfPipe1,
+                weightOther: weightOther,
+                grossWeightOther: weightOther,
+                weightType: layoutType,
+            });
+
+            // For Bracket layout calculation
+            this.props.change("GrossWeight", grossWt.toFixed(3))
+            this.props.change("disabledSurfaceArea", disabledNetSurface)
+            this.props.change("NetSurfaceArea", netSurfaceArea.toFixed(6))
+            this.props.change("WeightUnitKg", WT)
+
+            // For pipe layout
+            this.props.change("GrossWeightPipe", pipeGrossWeight.toFixed(3))
+            this.props.change("oneSide", oneSideInputValue.toFixed(3))
+            this.props.change("twoSide", twoSideInputValue.toFixed(3))
+            this.props.change("PipeWeight", wtInKgPipe.toFixed(3))
+            this.props.change("NumberOfPipe", numberOfPipe1)
+
+            //L_Sec, Plate, C_Sec, Z sec, and tube layout calculation
+            this.props.change("GrossWeightOther", weightOther)
+            this.props.change("WeightOther", weightOther)
+
+            //Tube layout calculation
+            this.props.change("WeightPerPc", WeightPerPc)
+        }
+    }
+
+    /**
+    * @method checkLayoutType
+    * @description Used to check Layout Type
+    */
+    checkLayoutType = (layoutData) => {
+        if (layoutData.LayoutingName == 'L Sec') {
+            return 'L_Sec';
+        } else if (layoutData.LayoutingName == 'Plate') {
+            return 'Plate';
+        } else if (layoutData.LayoutingName == 'C Sec') {
+            return 'C_Sec';
+        } else if (layoutData.LayoutingName == 'Z Sec') {
+            return 'Z_Sec';
+        } else if (layoutData.LayoutingName == 'Bracket Part') {
+            return 'BRACKET_PART';
+        } else if (layoutData.LayoutingName == 'Pipe') {
+            return 'PIPE';
+        } else if (layoutData.LayoutingName == 'Tube') {
+            return 'Tube';
+        }
+    }
+
+    /**
     * @method toggleModel
     * @description Used to cancel modal
     */
@@ -67,10 +171,13 @@ class AddWeightCosting extends Component {
     * @method weightTypeHandler
     * @description handle selection of freight type
     */
-    weightTypeHandler = (value) => {
+    weightTypeHandler = (value, layoutText) => {
+        const { weightLayoutType } = this.props;
+        const layout = weightLayoutType.find(item => item.Text == layoutText)
         this.props.reset();
         this.setState({
-            weightType: value
+            weightType: value,
+            layoutingId: layout.Value
         });
         // const toastrConfirmOptions = {
         //     onOk: () => {
@@ -333,7 +440,7 @@ class AddWeightCosting extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { weightType, grossWeight, grossWeightPipe, grossWeightOther, noOfPartsBlank, disabledSurfaceArea,
+        const { weightType, layoutingId, grossWeight, grossWeightPipe, grossWeightOther, noOfPartsBlank, disabledSurfaceArea,
             pipeWeight, numberOfPipe, weightOther } = this.state;
         console.log('value', values);
 
@@ -349,7 +456,7 @@ class AddWeightCosting extends Component {
 
         let weightCalculationData = {
             CostingId: values.costingId,
-            LayoutingId: weightType,
+            LayoutingId: layoutingId,
             RawMaterialId: values.RawMaterialId,
             PartId: values.PartId,
             GrossWeight: ActualGrossWight,
@@ -516,7 +623,7 @@ class AddWeightCosting extends Component {
                                         <Col className='form-group'>
                                             <Label
                                                 className={'zbcwrapper'}
-                                                onChange={() => this.weightTypeHandler('BRACKET_PART')}
+                                                onChange={() => this.weightTypeHandler('BRACKET_PART', 'Bracket Part')}
                                                 check>
                                                 <Input
                                                     type="radio"
@@ -529,7 +636,7 @@ class AddWeightCosting extends Component {
                                             {' '}
                                             <Label
                                                 className={'vbcwrapper'}
-                                                onChange={() => this.weightTypeHandler('PIPE')}
+                                                onChange={() => this.weightTypeHandler('PIPE', 'Pipe')}
                                                 check>
                                                 <Input
                                                     type="radio"
@@ -542,7 +649,7 @@ class AddWeightCosting extends Component {
                                             {' '}
                                             <Label
                                                 className={'vbcwrapper'}
-                                                onChange={() => this.weightTypeHandler('L_Sec')}
+                                                onChange={() => this.weightTypeHandler('L_Sec', 'L Sec')}
                                                 check>
                                                 <Input
                                                     type="radio"
@@ -555,7 +662,7 @@ class AddWeightCosting extends Component {
                                             {' '}
                                             <Label
                                                 className={'vbcwrapper'}
-                                                onChange={() => this.weightTypeHandler('Plate')}
+                                                onChange={() => this.weightTypeHandler('Plate', 'Plate')}
                                                 check>
                                                 <Input
                                                     type="radio"
@@ -568,7 +675,7 @@ class AddWeightCosting extends Component {
                                             {' '}
                                             <Label
                                                 className={'vbcwrapper'}
-                                                onChange={() => this.weightTypeHandler('C_Sec')}
+                                                onChange={() => this.weightTypeHandler('C_Sec', 'C Sec')}
                                                 check>
                                                 <Input
                                                     type="radio"
@@ -581,7 +688,7 @@ class AddWeightCosting extends Component {
                                             {' '}
                                             <Label
                                                 className={'vbcwrapper'}
-                                                onChange={() => this.weightTypeHandler('Z_Sec')}
+                                                onChange={() => this.weightTypeHandler('Z_Sec', 'Z Sec')}
                                                 check>
                                                 <Input
                                                     type="radio"
@@ -594,7 +701,7 @@ class AddWeightCosting extends Component {
                                             {' '}
                                             <Label
                                                 className={'vbcwrapper'}
-                                                onChange={() => this.weightTypeHandler('Tube')}
+                                                onChange={() => this.weightTypeHandler('Tube', 'Tube')}
                                                 check>
                                                 <Input
                                                     type="radio"
@@ -1287,6 +1394,30 @@ function mapStateToProps(state) {
             RawMaterialName: weightCostingInfo.RawMaterialName,
             PartId: weightCostingInfo.PartId,
             PartNumber: weightCostingInfo.PartNumber,
+            FinishWeight: weightCostingInfo.FinishWeight,
+            //WeightSpecification: "",
+            NoOfPartsAndBlank: weightCostingInfo.NoOfPartsAndBlank,
+            SurfaceArea: weightCostingInfo.SurfaceArea,
+            CalculateSurfaceArea: weightCostingInfo.CalculateSurfaceArea,
+            SurfaceAreaSide: weightCostingInfo.SurfaceAreaSide,
+            OverlapArea: weightCostingInfo.OverlapArea,
+            //NetSurfaceArea: NetSurfaceArea,
+            CalculateNetSurfaceArea: weightCostingInfo.CalculateNetSurfaceArea,
+            Thickness: weightCostingInfo.Thickness,
+            Width: weightCostingInfo.Width,
+            Length: weightCostingInfo.Length,
+            OD: weightCostingInfo.OD,
+            ID: weightCostingInfo.ID,
+            LengthOfPipe: weightCostingInfo.LengthOfPipe,
+            //NumberOfPipe: NumberOfPipe,
+            TotalWeight: weightCostingInfo.TotalWeight,
+            SizeName: weightCostingInfo.SizeName,
+            FlangeWidthOne: weightCostingInfo.FlangeWidthOne,
+            FlangeWidthTwo: weightCostingInfo.FlangeWidthTwo,
+            WebWidth: weightCostingInfo.WebWidth,
+            Depth: weightCostingInfo.Depth,
+            //WeightPerPice: WeightPerPice,
+            //WeightUnitKg: WeightUnitKg,
         }
     }
 

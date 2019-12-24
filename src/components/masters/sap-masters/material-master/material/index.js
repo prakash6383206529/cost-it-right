@@ -68,11 +68,13 @@ class MaterialMaster extends Component {
                     <Col>
                         <h3>{`${CONSTANT.MATERIAL_MASTER} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h3>
                     </Col>
-                    {/* <Col>
-                        <Button onClick={this.openModel}>{`Add Raw Material Type`}</Button>
-                    </Col> */}
-                    <Col>
-                        <Button onClick={this.openRMModel}>{`Add Raw Material Details`}</Button>
+                    <Col md="2">
+                        {/* Removed 'Raw' from title on 23/12/2019 MOM */}
+                        <Button onClick={this.openModel}>{`Add Material Type`}</Button>
+                    </Col>
+                    <Col md="3">
+                        {/* Removed 'Raw' from title on 23/12/2019 MOM */}
+                        <Button onClick={this.openRMModel}>{`Add Material Details`}</Button>
                     </Col>
                 </Row>
                 {/* <hr /> */}
@@ -83,11 +85,11 @@ class MaterialMaster extends Component {
                 </Row> */}
                 <div>
                     <Nav tabs className="subtabs">
-                        {/* <NavItem>
+                        <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                Raw Material Type
+                                Material Type
                                 </NavLink>
-                        </NavItem> */}
+                        </NavItem>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                 Raw Material Details
@@ -103,12 +105,12 @@ class MaterialMaster extends Component {
                         </TabPane>
                     </TabContent>
                 </div>
-                {/* {isOpen && (
+                {isOpen && (
                     <AddMaterialType
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                     />
-                )} */}
+                )}
                 {isRMOpen && (
                     <AddRMDetail
                         isOpen={isRMOpen}

@@ -2,6 +2,9 @@
 import {
     AUTH_API_REQUEST,
     AUTH_API_FAILURE,
+    API_REQUEST,
+    API_FAILURE,
+    API_SUCCESS,
     LOGIN_SUCCESS,
     UPDATE_PASSWORD_SUCCESS,
     REGISTER_SUCCESS,
@@ -15,7 +18,12 @@ import {
     SOCIAL_USER_DATA,
     FETCH_USER_DATA,
     INTERNAL_ROUTE_ID,
-    SEND_MESSAGE_SUCCESS
+    SEND_MESSAGE_SUCCESS,
+    GET_ROLE_SUCCESS,
+    GET_DEPARTMENT_SUCCESS,
+    GET_LEVEL_USER_SUCCESS,
+    GET_TECHNOLOGY_DATA_LIST_SUCCESS,
+    GET_USER_SUCCESS,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -63,6 +71,23 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true
             };
+        case API_REQUEST:
+            return {
+                ...state,
+                loading: true
+            };
+        case API_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
+        case API_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true
+            };
         case LOGIN_SUCCESS:
             return {
                 ...state,
@@ -95,6 +120,41 @@ export default function authReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true
+            };
+        case GET_ROLE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                roleList: action.payload
+            };
+        case GET_DEPARTMENT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                departmentList: action.payload
+            };
+        case GET_TECHNOLOGY_DATA_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                technologyList: action.payload
+            };
+        case GET_LEVEL_USER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                levelList: action.payload
+            };
+        case GET_USER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                userList: action.payload
             };
         // 		case FORGOT_PASSWORD_SUCCESS:
         // 			return {

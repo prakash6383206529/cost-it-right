@@ -58,7 +58,7 @@ export function createProcessAPI(data, callback) {
  */
 export function getProcessDataAPI() {
     return (dispatch) => {
-        const request = axios.get(API.getProcessAPI, headers);
+        const request = axios.get(API.getAllProcessAPI, headers);
         request.then((response) => {
             dispatch({
                 type: GET_PROCESS_LIST_SUCCESS,

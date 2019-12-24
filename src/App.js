@@ -51,21 +51,21 @@ class App extends Component {
 
   render() {
     return (
-      <BrowserRouter>
+      <BrowserRouter basename={'http://10.10.1.8/CIRLite/'}>
         <div>
-            <Route path="/" render={
-              (props) => <Main {...props}
-                // isLoggedIn={this.state.isLoggedIn}
-                // logUserIn={this.logUserIn}
-                // logUserOut={this.logUserOut}
-                // isBasicProfileAndProduction= {this.isBasicProfileAndProduction}
-              />
-            } />
+          <Route path="/" render={
+            (props) => <Main {...props}
+            // isLoggedIn={this.state.isLoggedIn}
+            // logUserIn={this.logUserIn}
+            // logUserOut={this.logUserOut}
+            // isBasicProfileAndProduction= {this.isBasicProfileAndProduction}
+            />
+          } />
         </div>
-     </BrowserRouter>
+      </BrowserRouter>
     );
   }
 }
 
-export default connect(null, { })(App);
+export default connect(null, {})(App);
 

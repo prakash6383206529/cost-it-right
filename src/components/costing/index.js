@@ -60,8 +60,13 @@ class Costing extends Component {
             supplierId: reqData.supplierId,
             plantId: reqData.plantId,
             partId: reqData.partId,
-        }, () =>
-            this.props.getCostingBySupplier(this.state.supplierId, (res) => { console.log('res', res) })
+        }, () => {
+            const Data = {
+                supplierId: this.state.supplierId,
+                partId: this.state.partId,
+            }
+            this.props.getCostingBySupplier(Data, (res) => { console.log('res', res) })
+        }
         );
 
     }

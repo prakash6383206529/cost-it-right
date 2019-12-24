@@ -11,15 +11,38 @@ import AddMHRCosting from './AddMHRCosting';
 import { MESSAGES } from '../../../config/message';
 const selector = formValueSelector('ProcessGridForm');
 
+const processGridRowData = {
+    CostingId: "",
+    TotalProcessCost: 0,
+    AssyTotalProcessCost: 0,
+    GrandTotal: 0,
+    IsActive: true,
+    CreatedDate: "",
+    CreatedBy: "",
+    DisplayCreatedDate: "",
+    LinkedProcesses: [{
+        MachineHourRateId: "",
+        ProcessId: "",
+        Rate: 0,
+        Quantity: 0,
+        NetCost: 0,
+        IsActive: true,
+        CreatedDate: "",
+        UnitOfMeasurementName: "",
+        CycleTime: 0,
+        Efficiency: 0,
+        Cavity: 0
+    }]
+}
 
-const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandler,
+const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandler, rowDataHandler,
     handlerCycleTime, handlerEfficiency, handlerQuantity, handlerCavity, meta: { error, submitFailed } }) => {
 
     return (
 
         <>
             <div>
-                <button type="button" onClick={() => fields.push({})}>
+                <button type="button" onClick={() => fields.push(processGridRowData.LinkedProcesses[0])}>
                     Add New Row
                 </button>
                 {/* {submitFailed && error && <span>{error}</span>} */}
@@ -103,7 +126,7 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 //validate={[required]}
                                 component={renderText}
                                 //required={true}
-                                onChange={(e) => handlerCycleTime(e, index)}
+                                onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
                             />
@@ -117,7 +140,7 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 //validate={[required]}
                                 component={renderText}
                                 //required={true}
-                                onChange={(e) => handlerEfficiency(e, index)}
+                                onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
                             />
@@ -131,7 +154,7 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 //validate={[required]}
                                 component={renderText}
                                 //required={true}
-                                onChange={(e) => handlerQuantity(e, index)}
+                                onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
                             />
@@ -145,7 +168,7 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 //validate={[required]}
                                 component={renderText}
                                 //required={true}
-                                onChange={(e) => handlerCavity(e, index)}
+                                onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
                             />
@@ -183,10 +206,9 @@ class ProcessGrid extends Component {
         super(props);
         this.state = {
             isOpen: false,
-            rowsCount: [1],
             isOpenMHRModal: false,
             GridselectedIndex: '',
-            totalCost: []
+            totalCost: 0
         }
     }
 
@@ -204,21 +226,7 @@ class ProcessGrid extends Component {
      */
     componentWillReceiveProps(nextProps) {
         if (nextProps.costingGridProcessData != this.props.costingGridProcessData) {
-            console.log("nextProps.costingGridProcessData", nextProps.costingGridProcessData)
             const { LinkedProcesses } = nextProps.costingGridProcessData;
-
-            let grandTotal = 0;
-            LinkedProcesses && LinkedProcesses.map((item, index) => {
-                if (item.UnitOfMeasurementName == "Hour") {
-                    grandTotal = grandTotal + (((item.Rate * item.CycleTime / 3600) * (100 / item.Efficiency)) / item.Cavity) * item.Quantity
-                } else {
-                    grandTotal = grandTotal + ((item.Rate * item.CycleTime) * (item.Efficiency / 100)) * item.Quantity
-                }
-                console.log("grandTotal ", grandTotal)
-                return grandTotal;
-            })
-
-            this.setState({ totalCost: grandTotal })
         }
     }
 
@@ -267,61 +275,50 @@ class ProcessGrid extends Component {
     };
 
     setRowData = item => {
-        console.log("item >>>", item, this.state.GridselectedIndex)
         const { GridselectedIndex } = this.state;
-        this.setState({
-            UOM: item.UnitOfMeasurementName,
-            MHR: item.BasicMachineRate
-        })
+
         this.props.change(`LinkedProcesses[${GridselectedIndex}]['UnitOfMeasurementName']`, item.UnitOfMeasurementName);
         this.props.change(`LinkedProcesses[${GridselectedIndex}]['Rate']`, item.BasicMachineRate);
         this.props.change(`LinkedProcesses[${GridselectedIndex}]['MachineHourRateId']`, item.MachineHourRateId);
     }
 
-    handlerCycleTime = (e, index) => {
-        this.props.change(`LinkedProcesses[${index}]['CycleTime']`, e.target.value);
+    rowDataHandler = (e, index) => {
         this.setState({
-            cycleTime: e.target.value,
+            //cycleTime: e.target.value,
             index: index,
         }, () => this.handlerCalculation())
     }
 
-    handlerEfficiency = (e, index) => {
-        this.props.change(`LinkedProcesses[${index}]['Efficiency']`, e.target.value);
-        this.setState({
-            efficiency: e.target.value,
-            index: index,
-        }, () => this.handlerCalculation())
-    }
+    calculateGrandTotal = () => {
+        const { lineItemData } = this.props;
+        let grandTotal = 0;
 
-    handlerQuantity = (e, index) => {
-        this.props.change(`LinkedProcesses[${index}]['Quantity']`, e.target.value);
-        this.setState({
-            quantity: e.target.value,
-            index: index,
-        }, () => this.handlerCalculation())
-    }
-
-    handlerCavity = (e, index) => {
-        this.props.change(`LinkedProcesses[${index}]['Cavity']`, e.target.value);
-        this.setState({
-            cavity: e.target.value,
-            index: index,
-        }, () => this.handlerCalculation())
+        lineItemData && lineItemData.map((item, index) => {
+            grandTotal = grandTotal + item.NetCost
+        })
+        return grandTotal;
     }
 
     handlerCalculation = () => {
-        const { cycleTime, efficiency, quantity, cavity, index, UOM, MHR, totalCost } = this.state;
-
+        const { lineItemData } = this.props;
+        const { totalCost, index } = this.state;
         let netCost = 0;
-        if (UOM == "Hour") {
-            netCost = (((MHR * cycleTime / 3600) * (100 / efficiency)) / cavity) * quantity
+        let grandTotal = 0
+
+        const Rate = lineItemData && lineItemData[index] ? lineItemData[index].Rate : 0;
+        const CycleTime = lineItemData && lineItemData[index] ? lineItemData[index].CycleTime : 0;
+        const Efficiency = lineItemData && lineItemData[index] ? lineItemData[index].Efficiency : 0;
+        const Cavity = lineItemData && lineItemData[index] ? lineItemData[index].Cavity : 0;
+        const Quantity = lineItemData && lineItemData[index] ? lineItemData[index].Quantity : 0;
+
+        if (lineItemData[index].UnitOfMeasurementName == "Kilogram") {
+            netCost = ((Rate * CycleTime) * (Efficiency / 100)) * Quantity;
         } else {
-            netCost = ((MHR * cycleTime) * (efficiency / 100)) * quantity
+            netCost = (((Rate * CycleTime / 3600) * (100 / Efficiency)) / Cavity) * Quantity;
         }
 
-        this.setState({ totalCost: netCost })
         this.props.change(`LinkedProcesses[${index}]['NetCost']`, netCost);
+
     }
 
     /**
@@ -329,11 +326,11 @@ class ProcessGrid extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log("values proces grid >>", values)
-        const { totalCost } = this.state;
         const { costingId, PartId } = this.props;
+        const totalCost = this.calculateGrandTotal()
 
         let formData = {
+            CostingProcessDetailId: values.CostingProcessDetailId,
             CostingId: costingId,
             PartId: PartId,
             TotalProcessCost: totalCost,
@@ -346,7 +343,6 @@ class ProcessGrid extends Component {
             LinkedProcesses: values.LinkedProcesses
         }
 
-        console.log("form data", formData)
         this.props.saveProcessCosting(formData, res => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.SAVE_PROCESS_COSTING_SUCCESS);
@@ -359,9 +355,9 @@ class ProcessGrid extends Component {
 
     render() {
 
-        const { rowsCount, isOpenMHRModal, GridselectedIndex } = this.state;
+        const { isOpenMHRModal, GridselectedIndex } = this.state;
         const { handleSubmit, supplierId, costingId, processSelectList, PartId, PartNumber,
-            selectedIndex } = this.props;
+            selectedIndex, initialValues } = this.props;
 
         return (
             <div className={'create-costing-grid process-costing-grid'}>
@@ -376,10 +372,10 @@ class ProcessGrid extends Component {
                     <Row>
                         <Col>
                             {/* <button onClick={this.addRows} className={'btn btn-primary mr10 ml10'}>Add New Row</button>{''} */}
-                            <button className={'btn btn-primary mr10'}>Save Process Cost</button>{''}
+                            {/* <button className={'btn btn-primary mr10'}>Save Process Cost</button>{''} */}
                             <button onClick={() => this.props.onCancelProcessGrid()} className={'btn btn-primary mr10'}>Close</button>{''}
                             <label className={'mr10'}>Total Process Cost: </label>
-                            <input type="text" name="total-cost" value={this.state.totalCost} className={''} />
+                            <input type="text" name="total-cost" value={this.calculateGrandTotal()} className={''} />
                         </Col>
                     </Row>
                     <hr />
@@ -410,10 +406,7 @@ class ProcessGrid extends Component {
                                     renderTypeOfListing={this.renderTypeOfListing}
                                     processSelectList={processSelectList}
                                     processHandler={this.processHandler}
-                                    handlerCycleTime={this.handlerCycleTime}
-                                    handlerEfficiency={this.handlerEfficiency}
-                                    handlerQuantity={this.handlerQuantity}
-                                    handlerCavity={this.handlerCavity}
+                                    rowDataHandler={this.rowDataHandler}
                                     component={renderMembers}
                                 />
                             </tbody>
@@ -448,7 +441,9 @@ class ProcessGrid extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ costWorking }) {
+function mapStateToProps(state) {
+    const { costWorking } = state;
+    let lineItemData = selector(state, 'LinkedProcesses');
     const { addMHRForProcessGrid, processSelectList, costingGridProcessData } = costWorking;
     let initialValues = {};
     if (costingGridProcessData && costingGridProcessData.LinkedProcesses) {
@@ -469,32 +464,10 @@ function mapStateToProps({ costWorking }) {
             LinkedProcesses: costingGridProcessData.LinkedProcesses
         }
     } else {
-        initialValues = {
-            CostingId: "",
-            TotalProcessCost: 0,
-            AssyTotalProcessCost: 0,
-            GrandTotal: 0,
-            IsActive: true,
-            CreatedDate: "",
-            CreatedBy: "",
-            DisplayCreatedDate: "",
-            LinkedProcesses: [{
-                MachineHourRateId: "",
-                ProcessId: "",
-                Rate: 0,
-                Quantity: 0,
-                NetCost: 0,
-                IsActive: true,
-                CreatedDate: "",
-                UnitOfMeasurementName: "",
-                CycleTime: 0,
-                Efficiency: 0,
-                Cavity: 0
-            }]
-        }
+        initialValues = processGridRowData
     }
 
-    return { addMHRForProcessGrid, processSelectList, initialValues, costingGridProcessData }
+    return { addMHRForProcessGrid, processSelectList, initialValues, costingGridProcessData, lineItemData }
 }
 
 export default connect(mapStateToProps,

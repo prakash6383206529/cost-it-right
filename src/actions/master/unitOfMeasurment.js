@@ -31,7 +31,7 @@ const headers = {
 export function getUnitOfMeasurementAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(API.getUOMAPI, { headers })
+        axios.get(API.getAllUOMAPI, { headers })
             .then((response) => {
                 //if (response.data.Result === true) {
                 dispatch({

@@ -77,8 +77,6 @@ class AddBOM extends Component {
         }
         );
         return temp;
-
-
     }
 
     renderAssyPartList = () => {

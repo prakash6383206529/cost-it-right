@@ -4,11 +4,14 @@ import {
     CREATE_FREIGHT_FAILURE,
     GET_FREIGHT_SUCCESS,
     GET_FREIGHT_FAILURE,
-    GET_FREIGHT_DATA_SUCCESS
+    GET_FREIGHT_DATA_SUCCESS,
+    GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
+    GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
-   
+    freightData: {},
+    PackagingData: {},
 };
 
 export default function freightReducer(state = initialState, action) {
@@ -46,8 +49,21 @@ export default function freightReducer(state = initialState, action) {
         case GET_FREIGHT_DATA_SUCCESS:
             return {
                 ...state,
-                loading: false, 
+                loading: false,
                 freightData: action.payload
+            };
+        case GET_ALL_ADDITIONAL_FREIGHT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                packagingDataRows: action.payload
+            };
+        case GET_ADDITIONAL_FREIGHT_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                PackagingData: action.payload
             };
         default:
             return state;

@@ -196,7 +196,7 @@ class AddPart extends Component {
                                                 />
                                             </label>
                                         </Col>
-                                        <Col md="4">
+                                        {/* <Col md="4">
                                             <Field
                                                 label="BOM Numbers"
                                                 name="SelectedBOM"
@@ -210,7 +210,7 @@ class AddPart extends Component {
                                                 mendatory={false}
                                                 className="withoutBorder"
                                             />
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                     <Row>
                                         <Col md="6">

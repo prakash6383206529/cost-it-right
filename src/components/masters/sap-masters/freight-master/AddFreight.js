@@ -3,8 +3,11 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderSelectField, renderNumberInputField, renderText } from "../../../layout/FormInputs";
-import { createFreightAPI, getFreightDetailAPI, updateFreightAPI, getFreightByIdAPI } from '../../../../actions/master/Freight';
+import { renderSelectField, renderNumberInputField, renderText, searchableSelect } from "../../../layout/FormInputs";
+import {
+    createFreightAPI, createAdditionalFreightAPI, getFreightDetailAPI, getAdditionalFreightByIdAPI,
+    updateFreightAPI, getFreightByIdAPI, updateAdditionalFreightByIdAPI
+} from '../../../../actions/master/Freight';
 import { fetchFreightComboAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -15,6 +18,14 @@ class AddFreight extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
+            sourceSupplier: [],
+            sourcePlant: [],
+            sourceCity: [],
+            destinationSupplier: [],
+            destinationPlant: [],
+            destinationCity: [],
+            loadUnloadHead: [],
+            packagingHead: [],
             freightType: 'Freight',
             packagingType: ''
         }
@@ -33,18 +44,59 @@ class AddFreight extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { freightId, isEditFlag } = this.props;
+        const { freightId, isEditFlag, FreightType } = this.props;
         if (isEditFlag) {
-            /** Get unit detail of the freight  */
-            this.setState({ isEditFlag }, () => {
-                this.props.getFreightByIdAPI(freightId, true, res => { 
-                    // this.setState({
-                    //     freightType: res.data.Data.FreightType
-                    // });
+            if (FreightType == 1) {
+                console.log("iffffffffffff")
+                /** Get unit detail of the Freight  */
+                this.setState({ freightType: 'Freight' }, () => {
+                    this.props.getFreightByIdAPI(freightId, true, res => {
+                        if (res && res.data && res.data.Data) {
+                            const { freightData } = this.props;
+                            if (freightData && freightData !== undefined) {
+                                let response = res.data.Data;
+                                this.setSearchableFields(response)
+                            }
+                        }
+                    })
                 })
+            } else {
+                console.log("elsssssssssssssss")
+                /** Get unit detail of the Additional Freight  */
+                this.setState({ freightType: 'Packaging' }, () => {
+                    this.props.getAdditionalFreightByIdAPI(freightId, true, res => {
+                        if (res && res.data && res.data.Data) {
+                            const { freightData } = this.props;
+                            if (freightData && freightData !== undefined) {
+                                let response = res.data.Data;
+                                this.setSearchableFields(response)
+                            }
+                        }
+                    })
+                })
+            }
+        }
+    }
+
+    setSearchableFields = (response) => {
+        const { plantList, cityList, supplierList, costingHead } = this.props;
+
+        if (plantList && cityList && supplierList && costingHead) {
+            let tempObj1 = supplierList.find(item => item.Value == response.SourceSupplierId)
+            let tempObj2 = plantList.find(item => item.Value == response.SourceSupplierPlantId)
+            let tempObj3 = cityList.find(item => item.Value == response.SourceSupplierCityId)
+            let tempObj4 = supplierList.find(item => item.Value == response.DestinationSupplierId)
+            let tempObj5 = plantList.find(item => item.Value == response.DestinationSupplierPlantId)
+            let tempObj6 = cityList.find(item => item.Value == response.DestinationSupplierCityId)
+
+            this.setState({
+                sourceSupplier: tempObj1 ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+                sourcePlant: tempObj2 ? { label: tempObj2.Text, value: tempObj2.Value } : [],
+                sourceCity: tempObj3 ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+                destinationSupplier: tempObj4 ? { label: tempObj4.Text, value: tempObj4.Value } : [],
+                destinationPlant: tempObj5 ? { label: tempObj5.Text, value: tempObj5.Value } : [],
+                destinationCity: tempObj6 ? { label: tempObj6.Text, value: tempObj6.Value } : [],
             })
-        } else {
-            this.props.getFreightByIdAPI('', false, res => { })
         }
     }
 
@@ -52,8 +104,8 @@ class AddFreight extends Component {
     * @method toggleModel
     * @description Used to cancel modal
     */
-    toggleModel = () => {
-        this.props.onCancel();
+    toggleModel = (tabId = 1) => {
+        this.props.onCancel(tabId);
     }
 
     /**
@@ -87,7 +139,7 @@ class AddFreight extends Component {
         }
         if (label === 'supplier') {
             supplierList && supplierList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
@@ -99,20 +151,75 @@ class AddFreight extends Component {
         }
     }
 
+
+    /**
+    * @method selectType
+    * @description Used show listing of unit of measurement
+    */
+    searchableSelectType = (label) => {
+        const { plantList, cityList, supplierList, costingHead } = this.props;
+        const temp = [];
+        if (label === 'plant') {
+            plantList && plantList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'city') {
+            cityList && cityList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'supplier') {
+            supplierList && supplierList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'costingHeads') {
+            costingHead && costingHead.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { sourceSupplier, sourcePlant, sourceCity, destinationSupplier,
+            destinationPlant, destinationCity, loadUnloadHead, packagingHead } = this.state;
+
         /** Update detail of the existing Freight  */
         if (this.props.isEditFlag) {
+
             const { freightId } = this.props;
             let formData = {};
             if (this.state.freightType === 'Freight') {
                 formData = {
+                    IsOtherSource: false,
                     FreightId: freightId,
-                    SourceCityId: values.SourceCityId,
-                    DestinationCityId: values.DestinationCityId,
+                    SourceSupplierName: sourceSupplier.label,
+                    SourceSupplierCode: "",
+                    SourceSupplierPlantName: sourcePlant.label,
+                    SourceSupplierCityName: sourceCity.label,
+                    DestinationSupplierName: destinationSupplier.label,
+                    DestinationSupplierCode: "",
+                    DestinationSupplierPlantName: destinationPlant.label,
+                    DestinationSupplierCityName: destinationCity.label,
+                    SourceSupplierId: sourceSupplier.value,
+                    SourceSupplierPlantId: sourcePlant.value,
+                    SourceSupplierCityId: sourceCity.value,
+                    DestinationSupplierId: destinationSupplier.value,
+                    DestinationSupplierPlantId: destinationPlant.value,
+                    DestinationSupplierCityId: destinationCity.value,
                     PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
                     PartTruckLoadRateCubicFeet: values.PartTruckLoadRateCubicFeet,
                     FullTruckLoadRateOneTon: values.FullTruckLoadRateOneTon,
@@ -124,12 +231,24 @@ class AddFreight extends Component {
                     FullTruckLoadRateTwentyFiveTon: values.FullTruckLoadRateTwentyFiveTon,
                     FullTruckLoadRateThirtyOneTon: values.FullTruckLoadRateThirtyOneTon,
                     FullTruckLoadRateTrailer: values.FullTruckLoadRateTrailer,
-                    PlantId: values.PlantId,
-                    IsActive: true
+                    Expenses: values.Expenses,
+                    TollTax: values.TollTax,
+                    Concession: values.Concession,
+                    IsActive: true,
                 }
+
+                this.props.updateFreightAPI(formData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.UPDATE_FREIGHT_SUCESS);
+                        this.toggleModel(2);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
+                });
             }
             if (this.state.freightType === 'Packaging') {
                 formData = {
+                    IsOtherSource: true,
                     FreightType: 2,
                     SourceCityId: '',
                     DestinationCityId: '',
@@ -155,25 +274,31 @@ class AddFreight extends Component {
                     LodingUnloading: values.LodingUnloading,
                     IsActive: true
                 }
+
+                this.props.updateAdditionalFreightByIdAPI(formData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.UPDATE_FREIGHT_SUCESS);
+                        this.toggleModel(2);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
+                });
             }
-            console.log('formData: ', formData);
-            this.props.updateFreightAPI(formData, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_FREIGHT_SUCESS);
-                    this.props.getFreightDetailAPI(res => { });
-                    this.toggleModel();
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
-            });
+
         } else {
-            let formData = {};
+
             if (this.state.freightType === 'Freight') {
                 console.log('this.state.freightType: ', this.state.freightType);
-                formData = {
-                    FreightType: 1,
-                    SourceCityId: values.SourceCityId,
-                    DestinationCityId: values.DestinationCityId,
+                let freighformData = {
+                    IsOtherSource: false,
+                    FreightTypeId: 1,
+                    SourceSupplierId: sourceSupplier.value,
+                    SourceSupplierPlantId: sourcePlant.value,
+                    SourceSupplierCityId: sourceCity.value,
+                    DestinationSupplierId: destinationSupplier.value,
+                    DestinationSupplierPlantId: destinationPlant.value,
+                    DestinationSupplierCityId: destinationCity.value,
+
                     PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
                     PartTruckLoadRateCubicFeet: values.PartTruckLoadRateCubicFeet,
                     FullTruckLoadRateOneTon: values.FullTruckLoadRateOneTon,
@@ -185,53 +310,55 @@ class AddFreight extends Component {
                     FullTruckLoadRateTwentyFiveTon: values.FullTruckLoadRateTwentyFiveTon,
                     FullTruckLoadRateThirtyOneTon: values.FullTruckLoadRateThirtyOneTon,
                     FullTruckLoadRateTrailer: values.FullTruckLoadRateTrailer,
-                    PlantId: values.PlantId,
-                    SupplierId: '',
-                    PerTrip: '',
-                    PackagingCostingHeadsId: '',
-                    Packaging: '',
-                    PerKilogram: '',
-                    LodingUnloadingCostingHeadsId: '',
-                    LodingUnloading: '',
                 }
+
+                console.log('values: ', freighformData);
+                this.props.createFreightAPI(freighformData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.FREIGHT_ADDED_SUCCESS);
+                        this.props.getFreightDetailAPI(res => { });
+                        this.toggleModel(1);
+                    } else {
+                        toastr.error(res.data.Message);
+                    }
+                });
             }
+
             if (this.state.freightType === 'Packaging') {
                 console.log('this.state.freightType: ', this.state.freightType);
-                formData = {
-                    FreightType: 2,
-                    SourceCityId: '',
-                    DestinationCityId: '',
-                    PartTruckLoadRatePerKilogram: '',
-                    PartTruckLoadRateCubicFeet: '',
-                    FullTruckLoadRateOneTon: '',
-                    FullTruckLoadRateTwoTon: '',
-                    FullTruckLoadRateFiveTon: '',
-                    FullTruckLoadRateNineTon: '',
-                    FullTruckLoadRateElevenTon: '',
-                    FullTruckLoadRateSixteenTon: '',
-                    FullTruckLoadRateTwentyFiveTon: '',
-                    FullTruckLoadRateThirtyOneTon: '',
-                    FullTruckLoadRateTrailer: '',
-                    PlantId: values.PlantId,
-                    SupplierId: values.SupplierId,
-                    PerTrip: values.PerTrip,
-                    PackagingCostingHeadsId: values.PackagingCostingHeadsId,
-                    Packaging: values.Packaging,
-                    PerKilogram: values.PerKilogram,
-                    LodingUnloadingCostingHeadsId: values.LodingUnloadingCostingHeadsId,
-                    LodingUnloading: values.LodingUnloading,
+                let packagingformData = {
+                    IsOtherSource: false,
+                    FreightTypeId: 2,
+                    SourceSupplierId: sourceSupplier.value,
+                    SourceSupplierPlantId: sourcePlant.value,
+                    DestinationSupplierPlantId: destinationPlant.value,
+                    PackagingCostingHeadsId: packagingHead.value,
+                    LodingUnloadingCostingHeadsId: loadUnloadHead.value,
+                    Trip: values.Trip,
+                    PerTripRate: values.PerTripRate,
+                    NetPackagingCost: values.NetPackagingCost,
+                    TotalKilogram: values.TotalKilogram,
+                    PerKilogramRate: values.PerKilogramRate,
+                    NetLodingUnloadingCost: values.NetLodingUnloadingCost,
+                    FreightDiscount: values.FreightDiscount,
+                    IsActive: true,
+                    IsModified: true,
+                    CreatedDate: "",
+                    CreatedBy: ""
                 }
+
+                console.log('values: ', packagingformData);
+                this.props.createAdditionalFreightAPI(packagingformData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.ADDITIONAL_FREIGHT_ADD_SUCCESS);
+                        this.props.getFreightDetailAPI(res => { });
+                        this.toggleModel(2);
+                    } else {
+                        toastr.error(res.data.Message);
+                    }
+                });
             }
-            console.log('values: ', formData);
-            this.props.createFreightAPI(formData, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.FREIGHT_ADDED_SUCCESS);
-                    this.props.getFreightDetailAPI(res => { });
-                    this.toggleModel();
-                } else {
-                    toastr.error(res.data.Message);
-                }
-            });
+
         }
 
     }
@@ -247,11 +374,75 @@ class AddFreight extends Component {
     }
 
     /**
+    * @method sourceSupplierHandler
+    * @description Used to handle 
+    */
+    sourceSupplierHandler = (newValue, actionMeta) => {
+        this.setState({ sourceSupplier: newValue });
+    };
+
+    /**
+     * @method sourcePlantHandler
+     * @description Used to handle 
+     */
+    sourcePlantHandler = (newValue, actionMeta) => {
+        this.setState({ sourcePlant: newValue });
+    };
+
+    /**
+     * @method sourceCityHandler
+     * @description Used to handle 
+     */
+    sourceCityHandler = (newValue, actionMeta) => {
+        this.setState({ sourceCity: newValue });
+    };
+
+    /**
+    * @method destinationSupplierHandler
+    * @description Used to handle 
+    */
+    destinationSupplierHandler = (newValue, actionMeta) => {
+        this.setState({ destinationSupplier: newValue });
+    };
+
+    /**
+    * @method destinationPlantHandler
+    * @description Used to handle 
+    */
+    destinationPlantHandler = (newValue, actionMeta) => {
+        this.setState({ destinationPlant: newValue });
+    };
+
+    /**
+    * @method destinationCityHandler
+    * @description Used to handle 
+    */
+    destinationCityHandler = (newValue, actionMeta) => {
+        this.setState({ destinationCity: newValue });
+    };
+
+    /**
+    * @method loadUnloadHandler
+    * @description Used to handle 
+    */
+    loadUnloadHandler = (newValue, actionMeta) => {
+        this.setState({ loadUnloadHead: newValue });
+    };
+
+    /**
+    * @method packagingHeadsHandler
+    * @description Used to handle 
+    */
+    packagingHeadsHandler = (newValue, actionMeta) => {
+        this.setState({ packagingHead: newValue });
+    };
+
+    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, FreightType, reset } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -266,49 +457,132 @@ class AddFreight extends Component {
                                 >
                                     <Row className={'supplierRadio'}>
                                         <Col className='form-group'>
-                                            <Label
-                                                className={'zbcwrapper'}
-                                                onChange={() => this.freightTypeHandler('Freight')}
-                                                check>
-                                                <Input
-                                                    type="radio"
-                                                    className={'Freight'}
-                                                    checked={this.state.freightType == 'Freight' ? true : false}
-                                                    name="FreightType"
-                                                    value="Freight" />{' '}
-                                                Freight
-                                            </Label>
+                                            {(!isEditFlag || (isEditFlag && FreightType == 1)) &&
+                                                <Label
+                                                    className={'zbcwrapper'}
+                                                    onChange={() => this.freightTypeHandler('Freight')}
+                                                    check>
+                                                    <Input
+                                                        type="radio"
+                                                        className={'Freight'}
+                                                        checked={this.state.freightType == 'Freight' ? true : false}
+                                                        name="FreightType"
+                                                        value="Freight" />{' '}
+                                                    Freight
+                                            </Label>}
                                             {' '}
-                                            <Label
-                                                className={'vbcwrapper'}
-                                                onChange={() => this.freightTypeHandler('Packaging')}
-                                                check>
-                                                <Input
-                                                    type="radio"
-                                                    className={'Packaging'}
-                                                    checked={this.state.freightType == 'Packaging' ? true : false}
-                                                    name="FreightType"
-                                                    value="Packaging" />{' '}
-                                                Packaging
-                                            </Label>
+                                            {(!isEditFlag || (isEditFlag && FreightType == 2)) &&
+                                                <Label
+                                                    className={'vbcwrapper'}
+                                                    onChange={() => this.freightTypeHandler('Packaging')}
+                                                    check>
+                                                    <Input
+                                                        type="radio"
+                                                        className={'Packaging'}
+                                                        checked={this.state.freightType == 'Packaging' ? true : false}
+                                                        name="FreightType"
+                                                        value="Packaging" />{' '}
+                                                    Packaging
+                                            </Label>}
                                         </Col>
                                     </Row>
                                     <hr />
                                     {this.state.freightType === 'Freight' &&
                                         <Row>
-                                            {/* <Col md="6">
+                                            <Col md="4">
                                                 <Field
-                                                    label={`Freight To From`}
-                                                    name={"FreightToFrom"}
+                                                    name="SourceSupplierId"
                                                     type="text"
-                                                    placeholder={''}
-                                                    component={renderText}
-                                                    className=" withoutBorder"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Source Supplier Name"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('supplier')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.sourceSupplierHandler}
+                                                    valueDescription={this.state.sourceSupplier}
                                                 />
-                                            </Col> */}
+                                            </Col>
+                                            <Col md="4">
+                                                <Field
+                                                    name="SourceSupplierPlantId"
+                                                    type="text"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Source Supplier Plant"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('plant')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.sourcePlantHandler}
+                                                    valueDescription={this.state.sourcePlant}
+                                                />
+                                            </Col>
+                                            <Col md="4">
+                                                <Field
+                                                    name="SourceSupplierCityId"
+                                                    type="text"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Source Supplier City"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('city')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.sourceCityHandler}
+                                                    valueDescription={this.state.sourceCity}
+                                                />
+                                            </Col>
+                                            <Col md="4">
+                                                <Field
+                                                    name="DestinationSupplierId"
+                                                    type="text"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Destination Supplier"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('supplier')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.destinationSupplierHandler}
+                                                    valueDescription={this.state.destinationSupplier}
+                                                />
+                                            </Col>
+                                            <Col md="4">
+                                                <Field
+                                                    name="DestinationSupplierPlantId"
+                                                    type="text"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Destination Supplier Plant"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('plant')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.destinationPlantHandler}
+                                                    valueDescription={this.state.destinationPlant}
+                                                />
+                                            </Col>
+                                            <Col md="4">
+                                                <Field
+                                                    name="DestinationSupplierCityId"
+                                                    type="text"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Destination Supplier City"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('city')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.destinationCityHandler}
+                                                    valueDescription={this.state.destinationCity}
+                                                />
+                                            </Col>
+                                        </Row>}
+                                    {this.state.freightType === 'Freight' &&
+                                        <Row>
+                                            <Col md="12">
+                                                <b>PTL(Part Truck Load)</b>
+                                                <hr />
+                                            </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate/KG`}
+                                                    label={`Rs/kg`}
                                                     name={"PartTruckLoadRatePerKilogram"}
                                                     type="text"
                                                     placeholder={''}
@@ -318,7 +592,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate in feet`}
+                                                    label={`Rs/Cubic feet`}
                                                     name={"PartTruckLoadRateCubicFeet"}
                                                     type="text"
                                                     placeholder={''}
@@ -326,9 +600,13 @@ class AddFreight extends Component {
                                                     className=" withoutBorder"
                                                 />
                                             </Col>
+                                            <Col md="12">
+                                                <b>FTL(Full Truck Load)</b>
+                                                <hr />
+                                            </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate 1 tone`}
+                                                    label={`1 tone Ace`}
                                                     name={"FullTruckLoadRateOneTon"}
                                                     type="text"
                                                     placeholder={''}
@@ -338,7 +616,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate 2 tone`}
+                                                    label={`2 Ton`}
                                                     name={"FullTruckLoadRateTwoTon"}
                                                     type="text"
                                                     placeholder={''}
@@ -348,7 +626,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate 5 tone`}
+                                                    label={`5 Ton`}
                                                     name={"FullTruckLoadRateFiveTon"}
                                                     type="text"
                                                     placeholder={''}
@@ -358,7 +636,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate 9 tone`}
+                                                    label={`9 Ton`}
                                                     name={"FullTruckLoadRateNineTon"}
                                                     type="text"
                                                     placeholder={''}
@@ -368,7 +646,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate 11 tone`}
+                                                    label={`11 Ton`}
                                                     name={"FullTruckLoadRateElevenTon"}
                                                     type="text"
                                                     placeholder={''}
@@ -378,7 +656,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate 16 tone`}
+                                                    label={`16 Ton`}
                                                     name={"FullTruckLoadRateSixteenTon"}
                                                     type="text"
                                                     placeholder={''}
@@ -388,7 +666,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate 25 tone`}
+                                                    label={`25 Ton`}
                                                     name={"FullTruckLoadRateTwentyFiveTon"}
                                                     type="text"
                                                     placeholder={''}
@@ -398,7 +676,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate 31 tone`}
+                                                    label={`31 Ton`}
                                                     name={"FullTruckLoadRateThirtyOneTon"}
                                                     type="text"
                                                     placeholder={''}
@@ -406,9 +684,9 @@ class AddFreight extends Component {
                                                     className=" withoutBorder"
                                                 />
                                             </Col>
-                                            <Col md="12">
+                                            <Col md="6">
                                                 <Field
-                                                    label={`${CONSTANT.PART} Truck Load Rate Trailer`}
+                                                    label={`Trailer`}
                                                     name={"FullTruckLoadRateTrailer"}
                                                     type="text"
                                                     placeholder={''}
@@ -416,91 +694,80 @@ class AddFreight extends Component {
                                                     className=" withoutBorder"
                                                 />
                                             </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Expenses`}
+                                                    name={"Expenses"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    component={renderNumberInputField}
+                                                    className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`TollTax`}
+                                                    name={"TollTax"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    component={renderNumberInputField}
+                                                    className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Concession`}
+                                                    name={"Concession"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    component={renderNumberInputField}
+                                                    className=" withoutBorder"
+                                                />
+                                            </Col>
                                         </Row>}
-                                    {this.state.freightType === 'Freight' &&
-                                        <Row>
-                                            <Col md="6">
-                                                <Field
-                                                    label={`${CONSTANT.SOURCE} ${CONSTANT.CITY}`}
-                                                    name={"SourceCityId"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    required={true}
-                                                    options={this.selectType('city')}
-                                                    onChange={this.handleTypeSelection}
-                                                    optionValue={'Value'}
-                                                    optionLabel={'Text'}
-                                                    component={renderSelectField}
-                                                    className=" withoutBorder custom-select"
-                                                />
-                                            </Col>
-                                            <Col md="6">
-                                                <Field
-                                                    label={`${CONSTANT.DESTINATION} ${CONSTANT.CITY}`}
-                                                    name={"DestinationCityId"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    required={true}
-                                                    options={this.selectType('city')}
-                                                    onChange={this.handleTypeSelection}
-                                                    optionValue={'Value'}
-                                                    optionLabel={'Text'}
-                                                    component={renderSelectField}
-                                                    className=" withoutBorder custom-select"
-                                                />
-                                            </Col>
-                                            <Col md="12">
-                                                <Field
-                                                    label={`${CONSTANT.PLANT}`}
-                                                    name={"PlantId"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    required={true}
-                                                    options={this.selectType('plant')}
-                                                    onChange={this.handleTypeSelection}
-                                                    optionValue={'Value'}
-                                                    optionLabel={'Text'}
-                                                    component={renderSelectField}
-                                                    className=" withoutBorder custom-select"
-                                                />
-                                            </Col>
 
-                                        </Row>}
                                     {this.state.freightType === 'Packaging' &&
                                         <Row>
-                                            <Col md="6">
+                                            <Col md="4">
                                                 <Field
-                                                    label={`${CONSTANT.PLANT}`}
-                                                    name={"PlantId"}
+                                                    name="SourceSupplierId"
                                                     type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    required={true}
-                                                    options={this.selectType('plant')}
-                                                    onChange={this.handleTypeSelection}
-                                                    optionValue={'Value'}
-                                                    optionLabel={'Text'}
-                                                    component={renderSelectField}
-                                                    className=" withoutBorder custom-select"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Source Supplier Name"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('supplier')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.sourceSupplierHandler}
+                                                    valueDescription={this.state.sourceSupplier}
                                                 />
                                             </Col>
-                                            <Col md="6">
+                                            <Col md="4">
                                                 <Field
-                                                    label={`Supplier`}
-                                                    name={"SupplierId"}
+                                                    name="SourceSupplierPlantId"
                                                     type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    required={true}
-                                                    options={this.selectType('supplier')}
-                                                    onChange={this.handleTypeofListing}
-                                                    optionValue={'Value'}
-                                                    optionLabel={'Text'}
-                                                    component={renderSelectField}
-                                                    className=" withoutBorder custom-select"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Source Supplier Plant"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('plant')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.sourcePlantHandler}
+                                                    valueDescription={this.state.sourcePlant}
+                                                />
+                                            </Col>
+                                            <Col md="4">
+                                                <Field
+                                                    name="DestinationSupplierPlantId"
+                                                    type="text"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Destination Supplier Plant"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('plant')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.destinationPlantHandler}
+                                                    valueDescription={this.state.destinationPlant}
                                                 />
                                             </Col>
                                         </Row>}
@@ -509,52 +776,21 @@ class AddFreight extends Component {
                                             <Col md="6">
                                                 <Field
                                                     label={`Packaging Costing HeadsId`}
-                                                    name={"PackagingCostingHeadsId"}
+                                                    name="PackagingCostingHeadsId"
                                                     type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    required={true}
-                                                    options={this.selectType('costingHeads')}
-                                                    onChange={this.handleTypeofListing}
-                                                    optionValue={'Value'}
-                                                    optionLabel={'Text'}
-                                                    component={renderSelectField}
-                                                    className=" withoutBorder custom-select"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('costingHeads')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.packagingHeadsHandler}
+                                                    valueDescription={this.state.packagingHead}
                                                 />
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`Packaging`}
-                                                    name={"Packaging"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    component={renderNumberInputField}
-                                                    className=" withoutBorder"
-                                                />
-                                            </Col>
-                                        </Row>}
-                                    {this.state.freightType === 'Packaging' &&
-                                        <Row>
-                                            <Col md="6">
-                                                <Field
-                                                    label={`Loding Unloading Costing HeadsId`}
-                                                    name={"LodingUnloadingCostingHeadsId"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    required={true}
-                                                    options={this.selectType('costingHeads')}
-                                                    onChange={this.handleTypeofListing}
-                                                    optionValue={'Value'}
-                                                    optionLabel={'Text'}
-                                                    component={renderSelectField}
-                                                    className=" withoutBorder custom-select"
-                                                />
-                                            </Col>
-                                            <Col md="6">
-                                                <Field
-                                                    label={`PerKilogram`}
-                                                    name={"PerKilogram"}
+                                                    label={`Net Packaging Cost`}
+                                                    name={"NetPackagingCost"}
                                                     type="text"
                                                     placeholder={''}
                                                     component={renderNumberInputField}
@@ -566,8 +802,36 @@ class AddFreight extends Component {
                                         <Row>
                                             <Col md="6">
                                                 <Field
-                                                    label={`LodingUnloading`}
-                                                    name={"LodingUnloading"}
+                                                    label={`Loading Unloading Costing HeadsId`}
+                                                    name="LodingUnloadingCostingHeadsId"
+                                                    type="text"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('costingHeads')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.loadUnloadHandler}
+                                                    valueDescription={this.state.loadUnloadHead}
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Net Loding Unloading Cost`}
+                                                    name={"NetLodingUnloadingCost"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    component={renderNumberInputField}
+                                                    className=" withoutBorder"
+                                                />
+
+                                            </Col>
+                                        </Row>}
+                                    {this.state.freightType === 'Packaging' &&
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Trip`}
+                                                    name={"Trip"}
                                                     type="text"
                                                     placeholder={''}
                                                     component={renderNumberInputField}
@@ -576,8 +840,41 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`PerTrip`}
-                                                    name={"PerTrip"}
+                                                    label={`Per Trip Rate`}
+                                                    name={"PerTripRate"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    component={renderNumberInputField}
+                                                    className=" withoutBorder"
+                                                />
+                                            </Col>
+                                        </Row>}
+                                    {this.state.freightType === 'Packaging' &&
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Total Kilogram`}
+                                                    name={"TotalKilogram"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    component={renderNumberInputField}
+                                                    className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Per Kilogram Rate`}
+                                                    name={"PerKilogramRate"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    component={renderNumberInputField}
+                                                    className=" withoutBorder"
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Freight Discount`}
+                                                    name={"FreightDiscount"}
                                                     type="text"
                                                     placeholder={''}
                                                     component={renderNumberInputField}
@@ -611,37 +908,55 @@ class AddFreight extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, freight }) {
+function mapStateToProps(state, ownProps) {
+    const { comman, freight } = state;
     const { cityList, plantList, supplierList, costingHead } = comman;
-    const { freightData } = freight;
+    const { freightData, PackagingData } = freight;
     let initialValues = {};
-    if (freightData && freightData !== undefined) {
+    if (ownProps.FreightType == 1) {
+        console.log('111111')
         initialValues = {
-            PartTruckLoadRatePerKilogram: freightData.PartTruckLoadRatePerKilogram,
-            PartTruckLoadRateCubicFeet: freightData.PartTruckLoadRateCubicFeet,
-            FullTruckLoadRateOneTon: freightData.FullTruckLoadRateOneTon,
-            FullTruckLoadRateTwoTon: freightData.FullTruckLoadRateTwoTon,
-            FullTruckLoadRateFiveTon: freightData.FullTruckLoadRateFiveTon,
-            FullTruckLoadRateNineTon: freightData.FullTruckLoadRateNineTon,
-            FullTruckLoadRateElevenTon: freightData.FullTruckLoadRateElevenTon,
-            FullTruckLoadRateSixteenTon: freightData.FullTruckLoadRateSixteenTon,
-            FullTruckLoadRateTwentyFiveTon: freightData.FullTruckLoadRateTwentyFiveTon,
-            FullTruckLoadRateThirtyOneTon: freightData.FullTruckLoadRateThirtyOneTon,
-            SourceCityId: freightData.SourceCityId,
-            DestinationCityId: freightData.DestinationCityId,
-            PlantId: freightData.PlantId,
-            FullTruckLoadRateTrailer: freightData.FullTruckLoadRateTrailer,
-            FreightToFrom: freightData.FreightToFrom,
-            SupplierId: freightData.SupplierId,
-            PerTrip: freightData.PerTrip,
-            PackagingCostingHeadsId: freightData.PackagingCostingHeadsId,
-            Packaging: freightData.Packaging,
-            PerKilogram: freightData.PerKilogram,
-            LodingUnloadingCostingHeadsId: freightData.LodingUnloadingCostingHeadsId,
-            LodingUnloading: freightData.LodingUnloading,
+            SourceSupplierId: freightData.SourceSupplierId,
+            SourceSupplierPlantId: freightData.SourceSupplierPlantId,
+            SourceSupplierCityId: freightData.SourceSupplierCityId,
+            DestinationSupplierId: freightData.DestinationSupplierId,
+            DestinationSupplierPlantId: freightData.DestinationSupplierPlantId,
+            DestinationSupplierCityId: freightData.DestinationSupplierCityId,
+            PartTruckLoadRatePerKilogram: freightData.PartTruckLoadRatePerKilogram ? freightData.PartTruckLoadRatePerKilogram : 0,
+            PartTruckLoadRateCubicFeet: freightData.PartTruckLoadRateCubicFeet ? freightData.PartTruckLoadRateCubicFeet : 0,
+            FullTruckLoadRateOneTon: freightData.FullTruckLoadRateOneTon ? freightData.FullTruckLoadRateOneTon : 0,
+            FullTruckLoadRateTwoTon: freightData.FullTruckLoadRateTwoTon ? freightData.FullTruckLoadRateTwoTon : 0,
+            FullTruckLoadRateFiveTon: freightData.FullTruckLoadRateFiveTon ? freightData.FullTruckLoadRateFiveTon : 0,
+            FullTruckLoadRateNineTon: freightData.FullTruckLoadRateNineTon ? freightData.FullTruckLoadRateNineTon : 0,
+            FullTruckLoadRateElevenTon: freightData.FullTruckLoadRateElevenTon ? freightData.FullTruckLoadRateElevenTon : 0,
+            FullTruckLoadRateSixteenTon: freightData.FullTruckLoadRateSixteenTon ? freightData.FullTruckLoadRateSixteenTon : 0,
+            FullTruckLoadRateTwentyFiveTon: freightData.FullTruckLoadRateTwentyFiveTon ? freightData.FullTruckLoadRateTwentyFiveTon : 0,
+            FullTruckLoadRateThirtyOneTon: freightData.FullTruckLoadRateThirtyOneTon ? freightData.FullTruckLoadRateThirtyOneTon : 0,
+            FullTruckLoadRateTrailer: freightData.FullTruckLoadRateTrailer ? freightData.FullTruckLoadRateTrailer : 0,
+            Expenses: freightData.Expenses ? freightData.Expenses : 0,
+            TollTax: freightData.TollTax ? freightData.TollTax : 0,
+            Concession: freightData.Concession ? freightData.Concession : 0,
         }
     }
-    return { cityList, plantList, supplierList, costingHead, initialValues }
+
+    if (ownProps.FreightType == 2) {
+        console.log('22222')
+        initialValues = {
+            SourceSupplierId: PackagingData.SourceSupplierId,
+            SourceSupplierPlantId: PackagingData.SourceSupplierPlantId,
+            DestinationSupplierPlantId: PackagingData.DestinationSupplierPlantId,
+            PackagingCostingHeadsId: PackagingData.PackagingCostingHeadsId,
+            NetPackagingCost: PackagingData.NetPackagingCost,
+            LodingUnloadingCostingHeadsId: PackagingData.LodingUnloadingCostingHeadsId,
+            NetLodingUnloadingCost: PackagingData.NetLodingUnloadingCost,
+            Trip: PackagingData.Trip,
+            PerTripRate: PackagingData.PerTripRate,
+            TotalKilogram: PackagingData.TotalKilogram,
+            PerKilogramRate: PackagingData.PerKilogramRate,
+            FreightDiscount: PackagingData.FreightDiscount,
+        }
+    }
+    return { cityList, plantList, supplierList, costingHead, initialValues, freightData, PackagingData }
 }
 
 /**
@@ -651,8 +966,14 @@ function mapStateToProps({ comman, freight }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createFreightAPI, updateFreightAPI, getFreightByIdAPI,
-    fetchFreightComboAPI, getFreightDetailAPI
+    createFreightAPI,
+    createAdditionalFreightAPI,
+    updateFreightAPI,
+    getFreightByIdAPI,
+    fetchFreightComboAPI,
+    getFreightDetailAPI,
+    getAdditionalFreightByIdAPI,
+    updateAdditionalFreightByIdAPI,
 })(reduxForm({
     form: 'AddFreight',
     enableReinitialize: true,

@@ -87,7 +87,7 @@ class CEDotherOperations extends Component {
                                                 <td>{item.OperationRate}</td>
                                                 <td>{item.UnitOfMeasurementName}</td>
                                                 <td>{item.TrasnportationRate}</td>
-                                                <td>{item.TrasnportationUMOName}</td>
+                                                <td>{item.TrasnportationUOMName}</td>
                                                 <td>{item.OverheadProfit}</td>
                                                 {/* <td>{item.CreatedBy}</td>
                                                 <td>{''}</td> */}

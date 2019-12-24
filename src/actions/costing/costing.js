@@ -11,6 +11,8 @@ import {
     SET_CED_ROW_DATA_TO_COST_SUMMARY,
     SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY,
     SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
+    GET_FREIGHT_HEAD_SUCCESS,
+    GET_FREIGHT_AMOUNT_DATA_SUCCESS
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -141,6 +143,7 @@ export function getCostingByCostingId(costingId, supplier, callback) {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getCostingByCostingId}/${costingId}`, headers);
         request.then((response) => {
+            console.log('res >>>>>>>>>>', response)
             if (response.data.Result) {
                 dispatch({
                     type: GET_COSTING_BY_COSTINGID,
@@ -153,7 +156,7 @@ export function getCostingByCostingId(costingId, supplier, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            callback(error);
+            //callback(error);
             apiErrors(error);
         });
     };
@@ -250,6 +253,81 @@ export function getCostingOverHeadProByModelType(data, callback) {
             dispatch({
                 type: API_FAILURE
             });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method saveCosting
+ * @description save Costing
+ */
+export function saveCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.saveCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                console.log("ressssss", response)
+                // dispatch({
+                //     type: SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
+                //     payload: response.data.Data,
+                // });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchCostingHeadsAPI
+ * @description Used to fetch costing heads
+ */
+export function fetchFreightHeadsAPI(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.fetchFreightHeadsAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_FREIGHT_HEAD_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getCostingFreight
+ * @description Used to fetch costing heads
+ */
+export function getCostingFreight(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.post(`${API.getCostingFreight}`, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_FREIGHT_AMOUNT_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };

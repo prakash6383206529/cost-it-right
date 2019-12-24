@@ -7,7 +7,7 @@ import ReduxToastr from 'react-redux-toastr';
 import Footer from "../components/footer/Footer";
 import Login from './login/Login';
 import NotFoundPage from './common/NotFoundPage';
-import Signup from './signup/SignupForm';
+import User from './user';
 import Homepage from './homepage/Homepage';
 import Dashboard from './dashboard';
 import { Loader } from '../../src/components/common/Loader';
@@ -32,6 +32,7 @@ import LabourMaster from './masters/sap-masters/labour-master';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import DepreciationMaster from './masters/sap-masters/depreciation-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
+import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
 
 import Costing from './costing';
 
@@ -111,18 +112,17 @@ class Main extends Component {
               } />
 
               <Route
-                path="/signup"
+                path="/user"
                 render={props => (
-                  <Signup
+                  <User
                     {...props}
-                    isLoggedIn={this.props.isLoggedIn}
-                    logUserIn={this.props.logUserIn}
-                    logUserOut={this.props.logUserOut}
-                    isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
+                  // isLoggedIn={this.props.isLoggedIn}
+                  // logUserIn={this.props.logUserIn}
+                  // logUserOut={this.props.logUserOut}
+                  // isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
                   />
                 )}
               />
-              {props => <Signup {...props} />}
               <Route
                 path="/dashboard"
                 render={props => (
@@ -295,6 +295,14 @@ class Main extends Component {
                 path="/costing"
                 render={props => (
                   <Costing
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/part-bom-register"
+                render={props => (
+                  <PartBOMRegister
                     {...props}
                   />
                 )}

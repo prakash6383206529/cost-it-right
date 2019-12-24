@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Row, Col, Table
-} from 'reactstrap';
+import { Row, Col, Table } from 'reactstrap';
 import { getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import {
-    convertISOToUtcDate,
-} from '../../../../../helper';
+import { convertISOToUtcDate } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 
 class MaterialTypeDetail extends Component {

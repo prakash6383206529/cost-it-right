@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Container, Row, Col, Button, Table } from 'reactstrap';
-import { getFreightDetailAPI, deleteFreightAPI } from '../../../../actions/master/Freight';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { getAllAdditionalFreightAPI, deleteAdditionalFreightAPI } from '../../../../actions/master/Freight';
 import { Loader } from '../../../common/Loader';
 import Addfreight from './AddFreight';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import {
-    convertISOToUtcDate,
-} from '../../../../helper';
+import { convertISOToUtcDate } from '../../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import NoContentFound from '../../../common/NoContentFound';
-
 
 class PackagingDetail extends Component {
     constructor(props) {
@@ -29,7 +25,7 @@ class PackagingDetail extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        this.props.getFreightDetailAPI(res => {});
+        this.props.getAllAdditionalFreightAPI(res => { });
     }
 
     /**
@@ -48,30 +44,31 @@ class PackagingDetail extends Component {
         this.setState({ isOpen: false })
     }
 
-     /**
-    * @method editDetails
-    * @description confirm delete bop
-    */
+    /**
+   * @method editDetails
+   * @description confirm delete bop
+   */
     editDetails = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
             freightId: Id,
+            FreightType: 2,
         })
     }
 
     /**
-    * @method delete 
-    * @description confirm delete bop
+    * @method deleteItem 
+    * @description Delete additional freight
     */
-    deleteBOP = (Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} freight ?`, toastrConfirmOptions);
+        return toastr.confirm(`Are you sure you want to delete Additional Freight?`, toastrConfirmOptions);
     }
 
     /**
@@ -79,10 +76,10 @@ class PackagingDetail extends Component {
     * @description confirm delete bought out part
     */
     confirmDelete = (Id) => {
-        this.props.deleteFreightAPI(Id, (res) => {
+        this.props.deleteAdditionalFreightAPI(Id, (res) => {
             if (res.data.Result) {
-                toastr.success(MESSAGES.DELETE_FREIGHT_SUCCESS);
-                this.props.getFreightDetailAPI(res => { });
+                toastr.success(MESSAGES.DELETE_ADDITIONAL_FREIGHT_SUCCESS);
+                this.props.getAllAdditionalFreightAPI(() => { })
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
@@ -94,69 +91,77 @@ class PackagingDetail extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, freightId} = this.state;
-        const { freightDetail } = this.props;
+        const { isOpen, isEditFlag, freightId } = this.state;
+        const { packagingDataRows } = this.props;
         return (
-            <Container className="top-margin">
-            {/* {this.props.loading && <Loader/>} */}
-                <Row>
+            <Container>
+                {/* {this.props.loading && <Loader/>} */}
+                {/* <Row>
                     <Col>
                         <h5>{`Packaging ${CONSTANT.DETAILS}`}</h5>
                     </Col>
-                </Row>
-                <Col>
-                <Table className="table table-striped" bordered>
-                { freightDetail && freightDetail.length > 0 && 
-                    <thead>
-                        <tr>
-                            <th>{`${CONSTANT.FREIGHT} ${CONSTANT.TYPE}`}</th>
-                            <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                            <th>{`Supplier Name`}</th>
-                            <th>{`Per Trip Cost`}</th>
-                            <th>{`Packaging Costing Head `}</th>
-                            <th>{`Packaging cost`}</th>
-                            <th>{`Per Kilogram`}</th>
-                            <th>{`Loding Unloading Costing Heads`}</th>
-                            <th>{`LodingUnloading`}</th>
-                            <th>{`${CONSTANT.DATE}`}</th>
-                            <th>{'Status '}</th>
-                        </tr>
-                    </thead>}
-                    <tbody > 
-                        {freightDetail && freightDetail.length > 0 && 
-                            freightDetail.map((item, index) => {
-                                return (
-                                    <tr key={index}>
-                                        {item.FreightType === 2 &&<td>{item.FreightType}</td>}
-                                        {item.FreightType === 2 &&<td>{item.PlantName}</td>} 
-                                        {item.FreightType === 2 &&<td>{item.SupplierName}</td>}
-                                        {item.FreightType === 2 &&<td>{item.PerTrip}</td>}
-                                        {item.FreightType === 2 &&<td>{item.PackagingCostingHeadsName}</td>}
-                                        {item.FreightType === 2 &&<td>{item.Packaging}</td>}
-                                        {item.FreightType === 2 &&<td>{item.PerKilogram}</td>}
-                                        {item.FreightType === 2 &&<td>{item.LodingUnloadingCostingHeadsName}</td>}
-                                        {item.FreightType === 2 &&<td>{item.LodingUnloading}</td>}
-                                        {item.FreightType === 2 &&<td>{convertISOToUtcDate(item.CreatedDate)}</td>} 
-                                         {item.FreightType === 2 &&<td>{item.IsActive ? 'Active' : 'InActive'}</td>}
-                                         {item.FreightType === 2 &&<td>
-                                            <Button className="btn btn-secondary" onClick={() => this.editDetails(item.FreightId)}><i className="fas fa-pencil-alt"></i></Button>
-                                            <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.FreightId)}><i className="far fa-trash-alt"></i></Button>
-                                         </td> } 
+                </Row> */}
+                <Row>
+                    <Col>
+                        <Table className="table table-striped" bordered>
+                            {packagingDataRows && packagingDataRows.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>{`Source Supplier`}</th>
+                                        <th>{`Source Plant`}</th>
+                                        <th>{`Destination Plant`}</th>
+                                        <th>{`Packaging Costing Head`}</th>
+                                        <th>{`Packaging cost`}</th>
+                                        <th>{`Loading Unloading Costing Heads`}</th>
+                                        <th>{`Loading Unloading Cost`}</th>
+                                        <th>{`Trip`}</th>
+                                        <th>{`Per Trip Cost`}</th>
+                                        <th>{`Total Kilogram`}</th>
+                                        <th>{`Per Kilogram Rate`}</th>
+                                        <th>{`Freight Discount`}</th>
+                                        <th>{`Action`}</th>
                                     </tr>
-                                )
-                            })}
-                            {this.props.freightDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                    </tbody>  
-                </Table> 
-                </Col>
-                {isOpen && (
-                    <Addfreight
-                        isOpen={isOpen}
-                        onCancel={this.onCancel}
-                        isEditFlag={isEditFlag}
-                        freightId={freightId}
-                    />
-                )}
+                                </thead>}
+                            <tbody >
+                                {packagingDataRows && packagingDataRows.length > 0 &&
+                                    packagingDataRows.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{item.SourceSupplierName}</td>
+                                                <td>{item.SourceSupplierPlantName}</td>
+                                                <td>{item.DestinationSupplierPlantName}</td>
+                                                <td>{item.PackagingCostingHeadsName}</td>
+                                                <td>{item.NetPackagingCost}</td>
+                                                <td>{item.LodingUnloadingCostingHeadsName}</td>
+                                                <td>{item.NetLodingUnloadingCost}</td>
+                                                <td>{item.Trip}</td>
+                                                <td>{item.PerTripRate}</td>
+                                                <td>{item.TotalKilogram}</td>
+                                                <td>{item.PerKilogramRate}</td>
+                                                <td>{item.FreightDiscount}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editDetails(item.AdditionalFreightId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(item.AdditionalFreightId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.packagingDataRows === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
+                {
+                    isOpen && (
+                        <Addfreight
+                            isOpen={isOpen}
+                            onCancel={this.onCancel}
+                            isEditFlag={isEditFlag}
+                            freightId={freightId}
+                            FreightType={this.state.FreightType}
+                        />
+                    )
+                }
             </Container >
         );
     }
@@ -168,12 +173,15 @@ class PackagingDetail extends Component {
 * @param {*} state
 */
 function mapStateToProps({ freight }) {
-    const { freightDetail ,loading } = freight;
-    return { freightDetail, loading }
+    const { packagingDataRows, loading } = freight;
+    return { packagingDataRows, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getFreightDetailAPI,deleteFreightAPI }
+    mapStateToProps, {
+    getAllAdditionalFreightAPI,
+    deleteAdditionalFreightAPI
+}
 )(PackagingDetail);
 

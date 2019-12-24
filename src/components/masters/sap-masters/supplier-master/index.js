@@ -92,7 +92,7 @@ class SupplierMaster extends Component {
     */
     associatedPlantsHandler = (data) => {
         let plants = []
-        data.map((el, i) => {
+        data && data.map((el, i) => {
             return plants.push(el.PlantName)
         })
         return plants.join()

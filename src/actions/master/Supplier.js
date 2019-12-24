@@ -7,7 +7,8 @@ import {
     CREATE_SUPPLIER_FAILURE,
     GET_SUPPLIER_SUCCESS,
     GET_SUPPLIER_FAILURE,
-    GET_SUPPLIER_DATA_SUCCESS
+    GET_SUPPLIER_DATA_SUCCESS,
+    GET_RADIO_SUPPLIER_TYPE_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -58,7 +59,7 @@ export function createSupplierAPI(data, callback) {
  */
 export function getSupplierDetailAPI() {
     return (dispatch) => {
-        const request = axios.get(API.getSupplierAPI, headers);
+        const request = axios.get(API.getAllSupplierAPI, headers);
         request.then((response) => {
             dispatch({
                 type: GET_SUPPLIER_SUCCESS,
@@ -139,5 +140,27 @@ export function updateSupplierAPI(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method getRadioButtonSupplierType
+ * @description get radio button supplier type
+ */
+export function getRadioButtonSupplierType() {
+    return (dispatch) => {
+        const request = axios.get(API.getRadioButtonSupplierType, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_RADIO_SUPPLIER_TYPE_SUCCESS,
+                payload: response.data.SelectList,
+            });
+
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
     };
 }

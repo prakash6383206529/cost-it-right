@@ -58,7 +58,14 @@ export const MESSAGES = {
   SAVE_OTHER_OPERATION_SUCCESS: 'Other Operation saved successfully.',
   SAVE_PROCESS_COSTING_SUCCESS: 'Process costing saved successfully.',
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated.',
-  COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.'
+  COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
+  ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully.',
+  ADD_DEPARTMENT_SUCCESSFULLY: 'Department has been added successfully.',
+  ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
+  ADD_LEVEL_SUCCESSFULLY: 'User level has been added successfully.',
+  ADD_LEVEL_USER_SUCCESSFULLY: 'Level of users has been added successfully.',
+  ADDITIONAL_FREIGHT_ADD_SUCCESS: 'Packaging has been added successfully.',
+  DELETE_ADDITIONAL_FREIGHT_SUCCESS: 'Additional Freight has been deleted successfully.'
 
 };
 

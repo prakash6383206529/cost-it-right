@@ -60,7 +60,7 @@ export function createBOMAPI(data, callback) {
 export function getAllBOMAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOMAPI}`, headers);
+        const request = axios.get(`${API.getAllBOMAPI}`, headers);
         request.then((response) => {
             //if (response.data.Result) {
             dispatch({

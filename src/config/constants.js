@@ -3,7 +3,7 @@
  */
 
 //hosting url for api of cost-it-right
-//const BASE_URL = 'http://183.182.84.29/cost-it-right-lite/api/v1';
+//const BASE_URL = 'http://10.10.1.100:8081/CIRLite';
 const BASE_URL = 'http://10.10.1.100:8090/api/v1';
 
 /** Export API */
@@ -52,19 +52,20 @@ export const API = {
   //Api's for material
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
   createMaterial: `${BASE_URL}/masters-raw-material/add-costing-raw-material-details`,
-  getMaterialTypeDataList: `${BASE_URL}/masters-material/get-material-type`,
-  getMaterial: `${BASE_URL}/masters-raw-material/get-costing-raw-material-details`,
+  getMaterialTypeDataList: `${BASE_URL}/masters-material/get-all-material-type`,
+  getMaterial: `${BASE_URL}/masters-raw-material/get-all-costing-raw-material-details`,
 
   //Api for Unit of measurement master
   createUOMAPI: `${BASE_URL}/masters-unit-of-measurement/create`,
   getUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
+  getAllUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get-all`,
   getAllMasterUOMAPI: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
   updateUOMAPI: `${BASE_URL}/masters-unit-of-measurement/update`,
   deleteUOMAPI: `${BASE_URL}/masters-unit-of-measurement/delete`,
 
   //Api for the part master
   partCreateAPI: `${BASE_URL}/masters-part/create`,
-  getAllPartsAPI: `${BASE_URL}/masters-part/get`,
+  getAllPartsAPI: `${BASE_URL}/masters-part/get-all`,
   getOnePartAPI: `${BASE_URL}/masters-part/get`,
   filterPartAPI: `${BASE_URL}/masters-part/get`,
   deletePartAPI: `${BASE_URL}/masters-part/delete`,
@@ -73,8 +74,8 @@ export const API = {
   //Api for category master
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/masters-category/create`,
-  getCategoryTypeAPI: `${BASE_URL}/masters-category/get-category-type`,
-  getCategoryAPI: `${BASE_URL}/masters-category/get-category`,
+  getCategoryTypeAPI: `${BASE_URL}/masters-category/get-all-category-type`,
+  getCategoryAPI: `${BASE_URL}/masters-category/get-all-category`,
   fetchCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
 
   //Api for row material master
@@ -84,39 +85,45 @@ export const API = {
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
 
-  getRMMaterialAPI: `${BASE_URL}/masters-raw-material/get-raw-materials`,
-  getRMGradeAPI: `${BASE_URL}/masters-raw-material/get-raw-material-grades`,
-  getRMSpecificationAPI: `${BASE_URL}/masters-raw-material/get-raw-material-specifications`,
+  getRMMaterialAPI: `${BASE_URL}/masters-raw-material/get-all-raw-materials`,
+  getRMGradeAPI: `${BASE_URL}/masters-raw-material/get-all-raw-material-grades`,
+  getRMSpecificationAPI: `${BASE_URL}/masters-raw-material/get-all-raw-material-specifications`,
   getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
 
   //Api for plant master
   //createPlantAPI: `${BASE_URL}/plant/create`,
   createPlantAPI: `${BASE_URL}/masters-plant/create`,
   getPlantAPI: `${BASE_URL}/masters-plant/get`,
+  getAllPlantAPI: `${BASE_URL}/masters-plant/get-all`,
   updatePlantAPI: `${BASE_URL}/masters-plant/update`,
   deletePlantAPI: `${BASE_URL}/masters-plant/delete`,
 
   //Api for supplier master
   createSupplierAPI: `${BASE_URL}/supplier/create`,
   getSupplierAPI: `${BASE_URL}/supplier/get`,
+  getAllSupplierAPI: `${BASE_URL}/supplier/get-all`,
   updateSupplierAPI: `${BASE_URL}/supplier/update`,
   deleteSupplierAPI: `${BASE_URL}/supplier/delete`,
+  getRadioButtonSupplierType: `${BASE_URL}/configuration/radio-button-list-get-supplier-type`,
 
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
-  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-all-bill-of-materials`,
+  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-materials`,
+  getAllBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-all-bill-of-materials`,
   uploadBOMxlsAPI: `${BASE_URL}/masters-part-bill-of-material/upload-bill-of-material`,
   deleteBOMAPI: `${BASE_URL}/masters-part-bill-of-material/delete-bill-of-material`,
 
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
   getBOPAPI: `${BASE_URL}/masters-bought-out-part/get`,
+  getAllBOPAPI: `${BASE_URL}/masters-bought-out-part/get-all`,
   updateBOPAPI: `${BASE_URL}/masters-bought-out-part/update`,
   deleteBOPAPI: `${BASE_URL}/masters-bought-out-part/delete`,
 
   //Api's for process master
   createProcessAPI: `${BASE_URL}/masters-process/create`,
   getProcessAPI: `${BASE_URL}/masters-process/get`,
+  getAllProcessAPI: `${BASE_URL}/masters-process/get-all`,
   updateProcessAPI: `${BASE_URL}/masters-process/update`,
   deleteProcessAPI: `${BASE_URL}/masters-process/delete`,
 
@@ -124,39 +131,50 @@ export const API = {
   createFuelAPI: `${BASE_URL}/masters-fuel/create-fuel`,
   createFuelDetailAPI: `${BASE_URL}/masters-fuel/create-fuel-details`,
   getFuelAPI: `${BASE_URL}/masters-fuel/get-fuel`,
+  getAllFuelAPI: `${BASE_URL}/masters-fuel/get-all-fuel`,
   getFuelDetailAPI: `${BASE_URL}/masters-fuel/get-fuel-details`,
+  getAllFuelDetailAPI: `${BASE_URL}/masters-fuel/get-all-fuel-details`,
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
 
   //API's for other operations
-  getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-other-operation`,
+  getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-other-operation`,
   getOtherOperationsFormDataAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
   createOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-other-operation`,
 
   //API's for CED other operations
   getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
   createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
-  getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
+  getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-ced-other-operation`,
   getCEDOtherOperationBySupplierID: `${BASE_URL}/costing-sheet-metal/get-ced-other-operation-by-supplier`,
 
   //API's for MHR combo data
   getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
   createMHRMasterAPI: `${BASE_URL}/masters-machine-hour-rate/create`,
-  getMHRList: `${BASE_URL}/masters-machine-hour-rate/get`,
+  getMHRList: `${BASE_URL}/masters-machine-hour-rate/get-all`,
 
   //API's for MHR combo data
-  getOperationsAPI: `${BASE_URL}/masters-other-operation/get-operation`,
+  getOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-operation`,
   createOperationAPI: `${BASE_URL}/masters-other-operation/create-operation`,
 
   //Api's for fright master
   createFreightAPI: `${BASE_URL}/masters-freight/create`,
   getFreightAPI: `${BASE_URL}/masters-freight/get`,
+  getAllFreightAPI: `${BASE_URL}/masters-freight/get-all`,
   updateFrightAPI: `${BASE_URL}/masters-freight/update`,
   deleteFrightAPI: `${BASE_URL}/masters-freight/delete`,
+
+  //API's for Additional freight master
+  createAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/create`,
+  getAllAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/get-all`,
+  deleteAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/delete`,
+  getAdditionalFreightByIdAPI: `${BASE_URL}/masters-additional-freight/get`,
+  updateAdditionalFreightByIdAPI: `${BASE_URL}/masters-additional-freight/update`,
 
   //Api's for labour master
   createLabourAPI: `${BASE_URL}/masters-labour/create`,
   getLabourAPI: `${BASE_URL}/masters-labour/get`,
+  getAllLabourAPI: `${BASE_URL}/masters-labour/get-all`,
   updateLabourAPI: `${BASE_URL}/masters-labour/update`,
   deleteLabourAPI: `${BASE_URL}/masters-labour/delete`,
 
@@ -167,10 +185,11 @@ export const API = {
 
   //Api's for depreciation master
   createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation`,
-  getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciations`,
+  getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-all-depreciations`,
 
   //Api's for interest rate master
-  getInterestRateAPI: `${BASE_URL}/supplier/get-all-supplier-interest-rate`,
+  getInterestRateAPI: `${BASE_URL}/supplier/get-supplier-interest-rate`,
+  getAllInterestRateAPI: `${BASE_URL}/supplier/get-all-supplier-interest-rate`,
   updateInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
   deleteInterestRateAPI: `${BASE_URL}/supplier/delete-supplier-interest-rate`,
   createInterestRateAPI: `${BASE_URL}/supplier/create-supplier-interest-rate`,
@@ -207,19 +226,48 @@ export const API = {
   updateCostingOtherOperation: `${BASE_URL}/costing-sheet-metal/update-costing-other-operation`,
   saveCostingAsDraft: `${BASE_URL}/costing-sheet-metal/save-costing-details-as-draft`,
   getCostingOverHeadProByModelType: `${BASE_URL}/costing-sheet-metal/get-costing-overhead-profit-by-model-type`,
+  saveCosting: `${BASE_URL}/costing-sheet-metal/save-costing`,
 
   //cost summary 
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
   getCostSummaryOtherOperationList: `${BASE_URL}/costing-sheet-metal/get-other-operation-by-supplier`,
+  fetchFreightHeadsAPI: `${BASE_URL}/configuration/get-freight-heads`,
+  getCostingFreight: `${BASE_URL}/costing-sheet-metal/get-costing-freight`,
 
   // Login API
   login: `${BASE_URL}/user/login`,
   register: `${BASE_URL}/user/register`,
+
+  //User's API
+  getAllUserAPI: `${BASE_URL}/configuration/select-list-get-user`,
+
+  //Role's API
+  addRoleAPI: `${BASE_URL}/user-role/create`,
+  getAllRoleAPI: `${BASE_URL}/user-role/get-all`,
+  getRoleAPI: `${BASE_URL}/user-role/get`,
+  updateRoleAPI: `${BASE_URL}/user-role/update`,
+  deleteRoleAPI: `${BASE_URL}/user-role/delete`,
+
+  //Department's API
+  addDepartmentAPI: `${BASE_URL}/user-department/create`,
+  getAllDepartmentAPI: `${BASE_URL}/user-department/get-all`,
+  getDepartmentAPI: `${BASE_URL}/user-department/get`,
+  updateDepartmentAPI: `${BASE_URL}/user-department/update`,
+  deleteDepartmentAPI: `${BASE_URL}/user-department/delete`,
+
+  //Level's API
+  assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
+  addUserLevelAPI: `${BASE_URL}/user-level/create`,
+  getAllUserLevelAPI: `${BASE_URL}/user-level/get-all`,
+  getUserLevelAPI: `${BASE_URL}/user-level/get`,
+  updateUserLevelAPI: `${BASE_URL}/user-level/update`,
+  deleteUserLevelAPI: `${BASE_URL}/user-level/delete`,
 }
 
 //Api constants
 export const API_REQUEST = 'API_REQUEST';
 export const API_FAILURE = 'API_FAILURE';
+export const API_SUCCESS = 'API_SUCCESS';
 
 // Masters api constant
 export const FETCH_MATER_DATA_REQUEST = 'FETCH_MATER_DATA_REQUEST';
@@ -289,6 +337,7 @@ export const CREATE_SUPPLIER_SUCCESS = 'CREATE_SUPPLIER_SUCCESS';
 export const CREATE_SUPPLIER_FAILURE = 'CREATE_SUPPLIER_FAILURE';
 export const GET_SUPPLIER_FAILURE = 'GET_SUPPLIER_FAILURE';
 export const GET_SUPPLIER_DATA_SUCCESS = 'GET_SUPPLIER_DATA_SUCCESS';
+export const GET_RADIO_SUPPLIER_TYPE_SUCCESS = 'GET_RADIO_SUPPLIER_TYPE_SUCCESS';
 
 //for BOM master
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
@@ -361,6 +410,10 @@ export const GET_FREIGHT_SUCCESS = 'GET_FREIGHT_SUCCESS';
 export const GET_FREIGHT_DATA_SUCCESS = 'GET_FREIGHT_DATA_SUCCESS';
 export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
 
+//For Additional Freight Master
+export const GET_ALL_ADDITIONAL_FREIGHT_SUCCESS = 'GET_ALL_ADDITIONAL_FREIGHT_SUCCESS';
+export const GET_ADDITIONAL_FREIGHT_DATA_SUCCESS = 'GET_ADDITIONAL_FREIGHT_DATA_SUCCESS';
+
 //for labour master
 export const CREATE_LABOUR_SUCCESS = 'CREATE_LABOUR_SUCCESS';
 export const CREATE_LABOUR_FAILURE = 'CREATE_LABOUR_FAILURE';
@@ -387,6 +440,9 @@ export const GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS = 'GET_SUPPLIER_DETAIL_BY_PAR
 export const CREATE_PART_WITH_SUPPLIER_SUCCESS = 'CREATE_PART_WITH_SUPPLIER_SUCCESS';
 export const CREATE_SHEETMETAL_COSTING_SUCCESS = 'CREATE_SHEETMETAL_COSTING_SUCCESS';
 export const GET_COSTING_DATA_SUCCESS = 'GET_COSTING_DATA_SUCCESS';
+export const GET_FREIGHT_HEAD_SUCCESS = 'GET_FREIGHT_HEAD_SUCCESS';
+export const GET_FREIGHT_AMOUNT_DATA_SUCCESS = 'GET_FREIGHT_AMOUNT_DATA_SUCCESS';
+
 
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
@@ -425,3 +481,17 @@ export const AUTH_API_FAILURE = 'AUTH_API_FAILURE';
 export const AUTH_API_REQUEST = 'AUTH_API_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
+
+//User 
+export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
+
+//Role
+export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS';
+
+//level users
+export const GET_LEVEL_USER_SUCCESS = 'GET_LEVEL_USER_SUCCESS';
+
+//Department
+export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS';
+export const GET_TECHNOLOGY_DATA_LIST_SUCCESS = 'GET_TECHNOLOGY_DATA_LIST_SUCCESS';
+
