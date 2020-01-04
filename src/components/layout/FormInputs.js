@@ -420,12 +420,11 @@ export function renderSelectField(field) {
 @desc: Render number input
 */
 export function renderNumberInputField(field) {
-  console.log('field: ', field.Value);
   const { input, disabled, meta: { touched, error }, ...others } = field;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const disabledLabel = disabled ? true : false;
   return (
-    <div className="form-group">
+    <div className="form-group inputbox ">
       <label>
         {field.label}
         {field.required && field.required === true ? (
@@ -434,7 +433,7 @@ export function renderNumberInputField(field) {
             ""
           )}
       </label>
-      <div className="inputbox input-group">
+      <div className="input-group">
         <input
           {...others}
           type="number"
@@ -464,8 +463,6 @@ export function renderTextAreaField(field) {
     input,
     meta: { touched, error }
   } = field;
-  // console.log('error: ', error);
-  //console.log('touched: ', field.input.value ==='');
   const placeholder = field.placeholder ? field.placeholder : "";
   return (
     <div className="form-group">
@@ -531,7 +528,7 @@ export const focusOnError = errors => {
 
 export function renderText(field) {
   const { input, meta: { touched, error }, ...others } = field;
-  const className = `form-group inputbox ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   return (
     <div className={className}>
@@ -570,7 +567,6 @@ export function InputHiddenField(field) {
 
 export function renderDatePicker(field) {
   const { input, placeholder, defaultValue, meta: { touched, error } } = field;
-  //console.log("input.value", field)
   return (
     <div className={'react-picker-box'}>
       <label>{field.label}{(field.required && field.required == true) ? <span className="asterisk-required">*</span> : ''} </label>
@@ -598,7 +594,6 @@ export function renderDatePicker(field) {
 
 export function renderDatePickerOneDayAgo(field) {
   const { input, placeholder, defaultValue, meta: { touched, error } } = field;
-  //console.log("input.value", field)
   const d = new Date();
   return (
     <div>
@@ -623,7 +618,6 @@ export function renderDatePickerOneDayAgo(field) {
 
 export const searchableSelect = ({ input, label, required, handleChangeDescription, valueDescription, options, meta: { touched, error, dirty, visited }, multi, className }) => {
   const { name, value, onBlur, onChange, onFocus } = input;
-  //console.log('value: >>', options);
   return (
     <div>
       {label && <label>{label}{(required == true) ? <span className="asterisk-required">*</span> : ''}</label>}

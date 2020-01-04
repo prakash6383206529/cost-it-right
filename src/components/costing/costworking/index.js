@@ -62,6 +62,90 @@ class CostWorking extends Component {
         }
     }
 
+    calculateTopData = () => {
+        const { getCostingDetailData: { AssemblyPartDetail, ChildPartDetail } } = this.props;
+
+        let returnObj = {
+            RM_RatePerKG_Total: 0,
+            RM_ScrapRatePerKG_Total: 0,
+            Gross_Weight_Total: 0,
+            Finish_Weight_Total: 0,
+            Total_Net_RM: 0,
+            BOP_Total: 0,
+            Process_Cost_Total: 0,
+            Process_Assy_Cost_Total: 0,
+            Surface_Cost_Total: 0,
+            Surface_Assy_Cost_Total: 0,
+            RM_CC_Total: 0
+        };
+
+        if (AssemblyPartDetail) {
+
+            const RawMaterial_total = AssemblyPartDetail.RawMaterialDetails && AssemblyPartDetail.RawMaterialDetails.length > 0 ? AssemblyPartDetail.RawMaterialDetails[0].RawMaterialScrapRate : 0;
+            const Weight_total = AssemblyPartDetail.WeightCalculationDetails && AssemblyPartDetail.WeightCalculationDetails.length > 0 ? AssemblyPartDetail.WeightCalculationDetails[0].FinishWeight : 0;
+
+            const BOP_total = AssemblyPartDetail.BoughtOutPartDetails && AssemblyPartDetail.BoughtOutPartDetails.length > 0 ? AssemblyPartDetail.BoughtOutPartDetails[0].GrandTotal : 0;
+            const Process_total = AssemblyPartDetail.ProcessDetails && AssemblyPartDetail.ProcessDetails.length > 0 ? AssemblyPartDetail.ProcessDetails[0].TotalProcessCost : 0;
+            const SurfaceTreatment_total = AssemblyPartDetail.OtherOperationDetails && AssemblyPartDetail.OtherOperationDetails.length > 0 ? AssemblyPartDetail.OtherOperationDetails[0].SurfaceTreatmentCost : 0;
+
+            const ProcessAssyCost_total = (AssemblyPartDetail.ProcessDetails && AssemblyPartDetail.ProcessDetails.length > 0) ? AssemblyPartDetail.ProcessDetails[0].AssyTotalProcessCost : 0;
+            const OtherOperation_total = (AssemblyPartDetail.OtherOperationDetails && AssemblyPartDetail.OtherOperationDetails.length > 0) ? AssemblyPartDetail.OtherOperationDetails[0].GrandTotal : 0;
+            const SurfaceTreatmentAssyCost_total = (AssemblyPartDetail.OtherOperationDetails && AssemblyPartDetail.OtherOperationDetails.length > 0) ? AssemblyPartDetail.OtherOperationDetails[0].AssySurfaceTreatmentCost : 0;
+
+            const netRM = RawMaterial_total * Weight_total;
+            const netCC = BOP_total + Process_total + SurfaceTreatment_total;
+
+            returnObj.RM_RatePerKG_Total = (AssemblyPartDetail.RawMaterialDetails && AssemblyPartDetail.RawMaterialDetails.length > 0) ? AssemblyPartDetail.RawMaterialDetails[0].RawMaterialRate : 0;
+            returnObj.RM_ScrapRatePerKG_Total = (AssemblyPartDetail.RawMaterialDetails && AssemblyPartDetail.RawMaterialDetails.length > 0) ? AssemblyPartDetail.RawMaterialDetails[0].RawMaterialScrapRate : 0;
+            returnObj.Gross_Weight_Total = (AssemblyPartDetail.WeightCalculationDetails && AssemblyPartDetail.WeightCalculationDetails.length > 0) ? AssemblyPartDetail.WeightCalculationDetails[0].GrossWeight : 0;
+            returnObj.Finish_Weight_Total = (AssemblyPartDetail.WeightCalculationDetails && AssemblyPartDetail.WeightCalculationDetails.length > 0) ? AssemblyPartDetail.WeightCalculationDetails[0].FinishWeight : 0;
+
+            returnObj.Total_Net_RM = netRM;
+
+            returnObj.BOP_Total = BOP_total;
+            returnObj.Process_Cost_Total = Process_total;
+            returnObj.Process_Assy_Cost_Total = ProcessAssyCost_total;
+            returnObj.Surface_Cost_Total = SurfaceTreatment_total;
+            returnObj.Other_Operation_Cost_Total = OtherOperation_total;
+            returnObj.Surface_Assy_Cost_Total = SurfaceTreatmentAssyCost_total;
+
+            returnObj.RM_CC_Total = (netRM + netCC) * AssemblyPartDetail.Quantity;
+        }
+
+        if (ChildPartDetail && ChildPartDetail.length > 0) {
+            ChildPartDetail.map(data => {
+
+                const RawMaterialRatePerKg = data && data.CostingDetail && data.CostingDetail.RawMaterialRatePerKg != null ? data.CostingDetail.RawMaterialRatePerKg : 0;
+                const RawMaterialScrapRatePerKg = data && data.CostingDetail && data.CostingDetail.RawMaterialScrapRatePerKg != null ? data.CostingDetail.RawMaterialScrapRatePerKg : 0;
+                const NetGrossWeight = data && data.CostingDetail && data.CostingDetail.NetGrossWeight != null ? data.CostingDetail.NetGrossWeight : 0;
+                const NetFinishWeight = data && data.CostingDetail && data.CostingDetail.NetFinishWeight != null ? data.CostingDetail.NetFinishWeight : 0;
+                const Total_Net_RM = (data && data.CostingDetail && data.CostingDetail.RawMaterialScrapRatePerKg != null ? data.CostingDetail.RawMaterialScrapRatePerKg : 0) * (data && data.CostingDetail && data.CostingDetail.NetFinishWeight != null ? data.CostingDetail.NetFinishWeight : 0)
+                const NetBoughtOutParCost = data && data.CostingDetail && data.CostingDetail.NetBoughtOutParCost != null ? data.CostingDetail.NetBoughtOutParCost : 0;
+                const NetProcessCost = data && data.CostingDetail && data.CostingDetail.NetProcessCost != null ? data.CostingDetail.NetProcessCost : 0;
+                const NetAssyProcessCost = data && data.CostingDetail && data.CostingDetail.NetAssyProcessCost != null ? data.CostingDetail.NetAssyProcessCost : 0;
+                const NetSurfaceCost = data && data.CostingDetail && data.CostingDetail.NetSurfaceCost != null ? data.CostingDetail.NetSurfaceCost : 0;
+                const NetAssySurfaceCost = data && data.CostingDetail && data.CostingDetail.NetAssySurfaceCost != null ? data.CostingDetail.NetAssySurfaceCost : 0;
+
+                returnObj.RM_RatePerKG_Total += RawMaterialRatePerKg
+                returnObj.RM_ScrapRatePerKG_Total += RawMaterialScrapRatePerKg;
+                returnObj.Gross_Weight_Total += NetGrossWeight;
+                returnObj.Finish_Weight_Total += NetFinishWeight;
+
+                returnObj.Total_Net_RM += Total_Net_RM;
+
+                returnObj.BOP_Total += NetBoughtOutParCost;
+                returnObj.Process_Cost_Total += NetProcessCost;
+                returnObj.Process_Assy_Cost_Total += NetAssyProcessCost;
+                returnObj.Surface_Cost_Total += NetSurfaceCost
+                returnObj.Surface_Assy_Cost_Total += NetAssySurfaceCost;
+
+                returnObj.RM_CC_Total += (((RawMaterialScrapRatePerKg * NetFinishWeight) + (NetBoughtOutParCost + NetProcessCost + NetSurfaceCost))) * AssemblyPartDetail.Quantity;
+
+            })
+        }
+        return returnObj;
+    }
+
     /**
      * @method componentWillReceiveProps
      * @description  called after props changes
@@ -79,58 +163,133 @@ class CostWorking extends Component {
             let NetBoughtOutPartCost = 0;
             let NetGrossWeight = 0;
 
-            const tempData = nextProps.getCostingDetailData && nextProps.getCostingDetailData.AssemblyPartDetail.map((data, index) => {
+            let RM_RateTotal = 0;
 
-                if (data && data.RawMaterialDetails.length > 0) {
-                    const scrapRate = data.RawMaterialDetails[index].RawMaterialScrapRate;
-                    const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[index].FinishWeight : 0;
-                    NetRMCost = NetRMCost + (scrapRate * finishWt);
-                }
+            //const tempData = nextProps.getCostingDetailData && nextProps.getCostingDetailData.AssemblyPartDetail.map((data, index) => {
 
-                if (data && data.WeightCalculationDetails.length > 0) {
-                    const grossWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[index].GrossWeight : 0;
-                    NetGrossWeight = NetGrossWeight + grossWt;
-                }
+            // if (data && data.RawMaterialDetails.length > 0) {
+            //     const scrapRate = data.RawMaterialDetails[index].RawMaterialScrapRate;
+            //     const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[index].FinishWeight : 0;
+            //     NetRMCost = NetRMCost + (scrapRate * finishWt);
+            // }
 
-                if (data && data.BoughtOutPartDetails.length > 0) {
-                    const BOPcost = data.BoughtOutPartDetails[index].AssyBoughtOutParRate;
-                    const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[index].AssyTotalProcessCost : 0;
-                    const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[index].AssySurfaceTreatmentCost : 0;
-                    const OtherOperationCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[index].GrandTotal : 0;
+            // if (data && data.WeightCalculationDetails.length > 0) {
+            //     const grossWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[index].GrossWeight : 0;
+            //     NetGrossWeight = NetGrossWeight + grossWt;
+            // }
 
-                    NetCC_Cost = NetCC_Cost + (BOPcost + ProcessCost + SurfaceTreatmentCost);
-                    NetProcessCost = NetProcessCost + ProcessCost;
-                    NetOtherOperationCost = NetOtherOperationCost + OtherOperationCost;
-                    NetSurfaceCost = NetSurfaceCost + SurfaceTreatmentCost;
-                    NetBoughtOutPartCost = NetBoughtOutPartCost + BOPcost;
-                }
+            // if (data && data.BoughtOutPartDetails.length > 0) {
+            //     const BOPcost = data.BoughtOutPartDetails[index].AssyBoughtOutParRate;
+            //     const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[index].AssyTotalProcessCost : 0;
+            //     const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[index].AssySurfaceTreatmentCost : 0;
+            //     const OtherOperationCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[index].GrandTotal : 0;
 
-                NetRMCost = NetRMCost * data.Quantity;
-                NetCC_Cost = NetCC_Cost * data.Quantity;
-                NetQuantity = NetQuantity + data.Quantity;
+            //     NetCC_Cost = NetCC_Cost + (BOPcost + ProcessCost + SurfaceTreatmentCost);
+            //     NetProcessCost = NetProcessCost + ProcessCost;
+            //     NetOtherOperationCost = NetOtherOperationCost + OtherOperationCost;
+            //     NetSurfaceCost = NetSurfaceCost + SurfaceTreatmentCost;
+            //     NetBoughtOutPartCost = NetBoughtOutPartCost + BOPcost;
+            // }
 
-                return {
-                    NetRMCost: NetRMCost,
-                    NetCC_Cost: NetCC_Cost,
-                    NetQuantity: NetQuantity,
-                    NetProcessCost: NetProcessCost,
-                    NetOtherOperationCost: NetOtherOperationCost,
-                    NetSurfaceCost: NetSurfaceCost,
-                    NetBoughtOutPartCost: NetBoughtOutPartCost,
-                    NetGrossWeight: NetGrossWeight,
-                }
-            })
+            // NetRMCost = NetRMCost * data.Quantity;
+            // NetCC_Cost = NetCC_Cost * data.Quantity;
+            // NetQuantity = NetQuantity + data.Quantity;
+
+            // return {
+            //     NetRMCost: NetRMCost,
+            //     NetCC_Cost: NetCC_Cost,
+            //     NetQuantity: NetQuantity,
+            //     NetProcessCost: NetProcessCost,
+            //     NetOtherOperationCost: NetOtherOperationCost,
+            //     NetSurfaceCost: NetSurfaceCost,
+            //     NetBoughtOutPartCost: NetBoughtOutPartCost,
+            //     NetGrossWeight: NetGrossWeight,
+            // }
+            //})
+
+            // this.setState({
+            //     NetRMCost: tempData[0].NetRMCost,
+            //     NetCC_Cost: tempData[0].NetCC_Cost,
+            //     NetGrandTotal: tempData[0].NetRMCost + tempData[0].NetCC_Cost,
+            //     Quantity: tempData[0].NetQuantity,
+            //     NetProcessCost: tempData[0].NetProcessCost,
+            //     NetOtherOperationCost: tempData[0].NetOtherOperationCost,
+            //     NetSurfaceCost: tempData[0].NetSurfaceCost,
+            //     NetBoughtOutPartCost: tempData[0].NetBoughtOutPartCost,
+            //     NetGrossWeight: tempData[0].NetGrossWeight,
+            // })
+
+            {/*  ----------------below updated code---------------------------------- **/ }
+            let index = 0;
+
+
+            //const tempData = nextProps.getCostingDetailData && nextProps.getCostingDetailData.AssemblyPartDetail.map((data, index) => {
+            let data = nextProps.getCostingDetailData.AssemblyPartDetail;
+            if (data && data.RawMaterialDetails.length > 0) {
+                const scrapRate = data.RawMaterialDetails[index].RawMaterialScrapRate;
+                const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[index].FinishWeight : 0;
+                NetRMCost = NetRMCost + (scrapRate * finishWt);
+            }
+
+            if (data && data.WeightCalculationDetails.length > 0) {
+                const grossWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[index].GrossWeight : 0;
+                NetGrossWeight = NetGrossWeight + grossWt;
+            }
+
+            if (data && data.BoughtOutPartDetails.length > 0) {
+                const BOPcost = data.BoughtOutPartDetails[index].AssyBoughtOutParRate;
+                const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[index].AssyTotalProcessCost : 0;
+                const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[index].AssySurfaceTreatmentCost : 0;
+                const OtherOperationCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[index].GrandTotal : 0;
+
+                NetCC_Cost = NetCC_Cost + (BOPcost + ProcessCost + SurfaceTreatmentCost);
+                NetProcessCost = NetProcessCost + ProcessCost;
+                NetOtherOperationCost = NetOtherOperationCost + OtherOperationCost;
+                NetSurfaceCost = NetSurfaceCost + SurfaceTreatmentCost;
+                NetBoughtOutPartCost = NetBoughtOutPartCost + BOPcost;
+            }
+
+            NetRMCost = NetRMCost * data.Quantity;
+            NetCC_Cost = NetCC_Cost * data.Quantity;
+            NetQuantity = NetQuantity + data.Quantity;
+
+            // return {
+            //     NetRMCost: NetRMCost,
+            //     NetCC_Cost: NetCC_Cost,
+            //     NetQuantity: NetQuantity,
+            //     NetProcessCost: NetProcessCost,
+            //     NetOtherOperationCost: NetOtherOperationCost,
+            //     NetSurfaceCost: NetSurfaceCost,
+            //     NetBoughtOutPartCost: NetBoughtOutPartCost,
+            //     NetGrossWeight: NetGrossWeight,
+            // }
+
+            //})
 
             this.setState({
-                NetRMCost: tempData[0].NetRMCost,
-                NetCC_Cost: tempData[0].NetCC_Cost,
-                NetGrandTotal: tempData[0].NetRMCost + tempData[0].NetCC_Cost,
-                Quantity: tempData[0].NetQuantity,
-                NetProcessCost: tempData[0].NetProcessCost,
-                NetOtherOperationCost: tempData[0].NetOtherOperationCost,
-                NetSurfaceCost: tempData[0].NetSurfaceCost,
-                NetBoughtOutPartCost: tempData[0].NetBoughtOutPartCost,
-                NetGrossWeight: tempData[0].NetGrossWeight,
+                NetRMCost: NetRMCost,
+                NetCC_Cost: NetCC_Cost,
+                NetGrandTotal: NetRMCost + NetCC_Cost,
+                Quantity: NetQuantity,
+                NetProcessCost: NetProcessCost,
+                NetOtherOperationCost: NetOtherOperationCost,
+                NetSurfaceCost: NetSurfaceCost,
+                NetBoughtOutPartCost: NetBoughtOutPartCost,
+                NetGrossWeight: NetGrossWeight,
+                GrandRowTotal: {
+                    RM_RateTotal: RM_RateTotal
+                }
+
+
+                // NetRMCost: tempData[0].NetRMCost,
+                // NetCC_Cost: tempData[0].NetCC_Cost,
+                // NetGrandTotal: tempData[0].NetRMCost + tempData[0].NetCC_Cost,
+                // Quantity: tempData[0].NetQuantity,
+                // NetProcessCost: tempData[0].NetProcessCost,
+                // NetOtherOperationCost: tempData[0].NetOtherOperationCost,
+                // NetSurfaceCost: tempData[0].NetSurfaceCost,
+                // NetBoughtOutPartCost: tempData[0].NetBoughtOutPartCost,
+                // NetGrossWeight: tempData[0].NetGrossWeight,
             })
         }
     }
@@ -154,7 +313,7 @@ class CostWorking extends Component {
     openModel = (selectedIndex) => {
         this.setState({
             isOpen: true,
-            isEditFlag: false,
+            isEditFlag: true,
             selectedIndex: selectedIndex,
         })
     }
@@ -319,7 +478,92 @@ class CostWorking extends Component {
         let DetailData = { ...getCostingDetailData, AssemblyPartDetail: data }
 
         this.props.setCostingDetailRowData(DetailData, index);
-        console.log("Detail", data, DetailData)
+    }
+
+    assemblyPartDetail = () => {
+        const { getCostingDetailData } = this.props;
+        let data = (getCostingDetailData && getCostingDetailData.AssemblyPartDetail) ? getCostingDetailData.AssemblyPartDetail : {};
+        let index = 0;
+        let NetRMCost = '';
+        let NetCC_Cost = '';
+
+        if (data && data.RawMaterialDetails.length > 0) {
+            const scrapRate = data.RawMaterialDetails[0].RawMaterialScrapRate;
+            const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : 0;
+            NetRMCost = (scrapRate * finishWt);
+        }
+
+        //if (data && data.BoughtOutPartDetails.length > 0) {
+        const BOPcost = data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : 0;
+        const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : 0;
+        const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : 0;
+        NetCC_Cost = (BOPcost + ProcessCost + SurfaceTreatmentCost);
+        //}
+        const topRowData = this.calculateTopData();
+        const processFlag = data && data.ProcessDetails.length > 0 ? true : false;
+        const cedFlag = data && data.OtherOperationDetails.length > 0 ? true : false;
+        return (
+            <>
+                <tr key={index} >
+                    <td>{}</td>
+                    <td>{data.PartNumber}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+
+                    <td>{}</td>
+                    <td>{topRowData.RM_RatePerKG_Total}</td>
+                    <td>{topRowData.RM_ScrapRatePerKG_Total}</td>
+
+                    <td>{}</td>
+                    <td>{topRowData.Gross_Weight_Total}</td>
+                    <td>{topRowData.Finish_Weight_Total}</td>
+                    <td>{topRowData.Total_Net_RM}</td>
+
+                    <td>{}</td>
+                    <td>{topRowData.BOP_Total}</td>
+
+                    <td>{}</td>
+                    <td>{topRowData.Process_Cost_Total}</td>
+                    <td>{topRowData.Process_Assy_Cost_Total}</td>
+
+                    <td>{}</td>
+                    <td>{topRowData.Surface_Cost_Total}</td>
+                    <td>{topRowData.Surface_Assy_Cost_Total}</td>
+                    <td>{(topRowData.RM_CC_Total).toFixed(4)}</td>
+                </tr>
+                <tr key={index} >
+                    <td>{data.BOMLevel}</td>
+                    <td>{data.PartNumber}</td>
+                    <td>{data.PartNumber}</td>
+                    <td>{data.PartDescription}</td>
+                    <td>{this.materialDropDown(data, index)}</td>
+                    <td><input type="text" disabled value={data.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
+
+                    <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
+                    <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
+                    <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
+
+                    <td><button onClick={() => this.openModel(index)}>{data && data.WeightCalculationDetails.length > 0 ? 'Update' : 'Add'}</button></td>
+                    <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].GrossWeight : '0'}</td>
+                    <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : '0'}</td>
+                    <td>{data && data.WeightCalculationDetails.length > 0 ? NetRMCost : '0'}</td>
+
+                    <td><button onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails.length > 0 ? 'Update' : 'Add'}</button></td>
+                    <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
+
+                    <td><button onClick={() => this.toggleProcessGrid(index)}>{processFlag ? 'Update' : 'Add'}</button></td>
+                    <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].TotalProcessCost : '0'}</td>
+                    <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : '0'}</td>
+
+                    <td><button onClick={() => this.toggleOtherOperation(index, cedFlag)}>{cedFlag ? 'Update' : 'Add'}</button></td>
+                    <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].SurfaceTreatmentCost : '0'}</td>
+                    <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : '0'}</td>
+                    <td>{(NetRMCost + NetCC_Cost) * data.Quantity}</td>
+                </tr>
+            </>
+        )
     }
 
     /**
@@ -330,21 +574,23 @@ class CostWorking extends Component {
         const { costingId, NetRMCost, NetCC_Cost, NetGrandTotal, Quantity, NetProcessCost, NetOtherOperationCost, NetSurfaceCost,
             NetBoughtOutPartCost, NetGrossWeight } = this.state;
         const { getCostingDetailData } = this.props;
+        const topRowData = this.calculateTopData();
 
         let formData = {
             CostingId: costingId,
-            CostingStatusId: getCostingDetailData.CostingDetail.CostingStatusId,
+            //CostingStatusId: getCostingDetailData.CostingDetail.CostingStatusId,
+            CostingStatusId: getCostingDetailData.CostingId,
             CostingStatusName: "Draft",
-            NetPurchaseOrderPrice: NetGrandTotal,
-            ShareOfBusiness: 15,
-            Quantity: Quantity,
-            NetRawMaterialCost: NetRMCost,
-            TotalConversionCost: NetCC_Cost,
-            NetProcessCost: NetProcessCost,
-            NetOtherOperationCost: NetOtherOperationCost,
-            NetSurfaceCost: NetSurfaceCost,
-            NetBoughtOutParCost: NetBoughtOutPartCost,
-            NetGrossWeight: NetGrossWeight,
+            NetPurchaseOrderPrice: topRowData.RM_CC_Total,
+            ShareOfBusiness: getCostingDetailData.ShareOfBusiness,
+            Quantity: getCostingDetailData.Quantity,
+            NetRawMaterialCost: topRowData.Total_Net_RM,
+            TotalConversionCost: (topRowData.BOP_Total + topRowData.Process_Cost_Total + topRowData.Surface_Cost_Total),
+            NetProcessCost: topRowData.Process_Cost_Total,
+            NetOtherOperationCost: topRowData.Other_Operation_Cost_Total,
+            NetSurfaceCost: topRowData.Surface_Cost_Total,
+            NetBoughtOutParCost: topRowData.BOP_Total,
+            NetGrossWeight: topRowData.Gross_Weight_Total,
         }
         this.props.saveCostingAsDraft(formData, (res) => {
             if (res.data.Result) {
@@ -448,52 +694,140 @@ class CostWorking extends Component {
                                         </tr>
                                     </thead>
                                     <tbody >
-                                        {getCostingDetailData && getCostingDetailData.AssemblyPartDetail.map((data, index) => {
+
+
+
+                                        {
+                                            // getCostingDetailData && getCostingDetailData.AssemblyPartDetail.map((data, index) => {
+                                            //     let NetRMCost = '';
+                                            //     let NetCC_Cost = '';
+                                            //     if (data && data.RawMaterialDetails.length > 0) {
+                                            //         const scrapRate = data.RawMaterialDetails[0].RawMaterialScrapRate;
+                                            //         const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : 0;
+                                            //         NetRMCost = (scrapRate * finishWt);
+                                            //     }
+
+                                            //     if (data && data.BoughtOutPartDetails.length > 0) {
+                                            //         const BOPcost = data.BoughtOutPartDetails[0].AssyBoughtOutParRate;
+                                            //         const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : 0;
+                                            //         const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : 0;
+                                            //         NetCC_Cost = (BOPcost + ProcessCost + SurfaceTreatmentCost);
+                                            //     }
+
+                                            //     const cedFlag = data && data.OtherOperationDetails.length > 0 ? true : false;
+                                            //     return (
+                                            //         <tr key={index} >
+                                            //             <td>{data.BOMLevel}</td>
+                                            //             <td>{data.PartNumber}</td>
+                                            //             <td>{data.PartNumber}</td>
+                                            //             <td>{data.PartDescription}</td>
+                                            //             <td>{this.materialDropDown(data, index)}</td>
+                                            //             <td><input type="text" disabled value={this.state.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
+                                            //             {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
+                                            //             <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
+                                            //             <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
+                                            //             <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
+
+                                            //             <td><button onClick={() => this.openModel(index)}>{data && data.WeightCalculationDetails.length > 0 ? 'Update' : 'Add'}</button></td>
+                                            //             <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].GrossWeight : '0'}</td>
+                                            //             <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : '0'}</td>
+                                            //             <td>{data && data.WeightCalculationDetails.length > 0 ? NetRMCost : '0'}</td>
+
+                                            //             <td><button onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
+                                            //             <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
+
+                                            //             <td><button onClick={() => this.toggleProcessGrid(index)}>Add</button></td>
+                                            //             <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].TotalProcessCost : '0'}</td>
+                                            //             <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : '0'}</td>
+
+                                            //             <td><button onClick={() => this.toggleOtherOperation(index, cedFlag)}>{cedFlag ? 'Update' : 'Add'}</button></td>
+                                            //             <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].SurfaceTreatmentCost : '0'}</td>
+                                            //             <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : '0'}</td>
+                                            //             <td>{(NetRMCost + NetCC_Cost) * data.Quantity}</td>
+                                            //         </tr>
+                                            //     )
+                                            // })
+
+
+                                            this.assemblyPartDetail()
+
+                                        }
+
+                                        {/* Child Part Detail */}
+
+                                        {getCostingDetailData && getCostingDetailData.ChildPartDetail.map((data, index) => {
                                             let NetRMCost = '';
                                             let NetCC_Cost = '';
-                                            if (data && data.RawMaterialDetails.length > 0) {
-                                                const scrapRate = data.RawMaterialDetails[0].RawMaterialScrapRate;
-                                                const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : 0;
-                                                NetRMCost = (scrapRate * finishWt);
-                                            }
+                                            // if (data && data.RawMaterialDetails.length > 0) {
+                                            //     const scrapRate = data.RawMaterialDetails[0].RawMaterialScrapRate;
+                                            //     const finishWt = data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : 0;
+                                            //     NetRMCost = (scrapRate * finishWt);
+                                            // }
 
-                                            if (data && data.BoughtOutPartDetails.length > 0) {
-                                                const BOPcost = data.BoughtOutPartDetails[0].AssyBoughtOutParRate;
-                                                const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : 0;
-                                                const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : 0;
-                                                NetCC_Cost = (BOPcost + ProcessCost + SurfaceTreatmentCost);
-                                            }
+                                            // if (data && data.BoughtOutPartDetails.length > 0) {
+                                            //     const BOPcost = data.BoughtOutPartDetails[0].AssyBoughtOutParRate;
+                                            //     const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : 0;
+                                            //     const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : 0;
+                                            //     NetCC_Cost = (BOPcost + ProcessCost + SurfaceTreatmentCost);
+                                            // }
 
-                                            const cedFlag = data && data.OtherOperationDetails.length > 0 ? true : false;
+                                            // const cedFlag = data && data.OtherOperationDetails.length > 0 ? true : false;
+
+                                            const cedFlag = data && data.OtherOperationDetails ? true : false;
+                                            const paddingClass = `PaddingLeft-${data.BOMLevel}`
+                                            const CostingDetail = data.CostingDetail;
+
                                             return (
-                                                <tr key={index} >
+                                                <tr className={paddingClass} key={index} >
                                                     <td>{data.BOMLevel}</td>
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartDescription}</td>
                                                     <td>{this.materialDropDown(data, index)}</td>
-                                                    <td><input type="text" disabled value={this.state.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
-                                                    {/* <td><button onClick={this.openRMModel}>{costingGridRMData ? costingGridRMData.RawMaterialName : 'Add'}</button></td> */}
-                                                    <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
-                                                    <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
-                                                    <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
+                                                    {/* <td><input type="text" disabled value={this.state.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td> */}
+                                                    <td><input type="text" disabled value={data.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
 
-                                                    <td><button onClick={() => this.openModel(index)}>{data && data.WeightCalculationDetails.length > 0 ? 'Update' : 'Add'}</button></td>
+                                                    {/* <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
+                                                    <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
+                                                    <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td> */}
+
+                                                    <td><button disabled onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails ? data.RawMaterialDetails : 'Add'}</button></td>
+                                                    <td>{CostingDetail && CostingDetail.RawMaterialScrapRatePerKg ? CostingDetail.RawMaterialRatePerKg : '0'}</td>
+                                                    <td>{CostingDetail && CostingDetail.RawMaterialScrapRatePerKg ? CostingDetail.RawMaterialScrapRatePerKg : '0'}</td>
+
+                                                    {/* <td><button onClick={() => this.openModel(index)}>{data && data.WeightCalculationDetails.length > 0 ? 'Update' : 'Add'}</button></td>
                                                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].GrossWeight : '0'}</td>
                                                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : '0'}</td>
-                                                    <td>{data && data.WeightCalculationDetails.length > 0 ? NetRMCost : '0'}</td>
+                                                    <td>{data && data.WeightCalculationDetails.length > 0 ? NetRMCost : '0'}</td> */}
 
-                                                    <td><button onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
-                                                    <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
+                                                    <td><button disabled onClick={() => this.openModel(index)}>{data && data.WeightCalculationDetails ? 'Update' : 'Add'}</button></td>
+                                                    <td>{CostingDetail && CostingDetail.NetGrossWeight ? CostingDetail.NetGrossWeight : '0'}</td>
+                                                    <td>{CostingDetail && CostingDetail.NetFinishWeight ? CostingDetail.NetFinishWeight : '0'}</td>
+                                                    <td>{CostingDetail && CostingDetail.NetRawMaterialCost ? CostingDetail.NetRawMaterialCost : '0'}</td>
 
-                                                    <td><button onClick={() => this.toggleProcessGrid(index)}>Add</button></td>
+                                                    {/* <td><button onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].BoughtOutParRate : 'Add'}</button></td>
+                                                    <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td> */}
+
+                                                    <td><button disabled onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails ? data.BoughtOutPartDetails : 'Add'}</button></td>
+                                                    <td>{CostingDetail && CostingDetail.NetBoughtOutParCost ? CostingDetail.NetBoughtOutParCost : '0'}</td>
+
+                                                    {/* <td><button onClick={() => this.toggleProcessGrid(index)}>Add</button></td>
                                                     <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].TotalProcessCost : '0'}</td>
-                                                    <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : '0'}</td>
+                                                    <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : '0'}</td> */}
 
-                                                    <td><button onClick={() => this.toggleOtherOperation(index, cedFlag)}>{cedFlag ? 'Update' : 'Add'}</button></td>
+                                                    <td><button disabled onClick={() => this.toggleProcessGrid(index)}>Add</button></td>
+                                                    <td>{CostingDetail && CostingDetail.NetProcessCost ? CostingDetail.NetProcessCost : '0'}</td>
+                                                    <td>{CostingDetail && CostingDetail.NetAssyProcessCost ? CostingDetail.NetAssyProcessCost : '0'}</td>
+
+                                                    {/* <td><button onClick={() => this.toggleOtherOperation(index, cedFlag)}>{cedFlag ? 'Update' : 'Add'}</button></td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].SurfaceTreatmentCost : '0'}</td>
                                                     <td>{data && data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : '0'}</td>
-                                                    <td>{(NetRMCost + NetCC_Cost) * data.Quantity}</td>
+                                                    <td>{(NetRMCost + NetCC_Cost) * data.Quantity}</td> */}
+
+                                                    <td><button disabled onClick={() => this.toggleOtherOperation(index, cedFlag)}>{cedFlag ? 'Update' : 'Add'}</button></td>
+                                                    <td>{CostingDetail && CostingDetail.SurfaceTreatmentCost ? CostingDetail.SurfaceTreatmentCost : '0'}</td>
+                                                    <td>{CostingDetail && CostingDetail.NetAssySurfaceCost ? CostingDetail.NetAssySurfaceCost : '0'}</td>
+                                                    <td>{CostingDetail && CostingDetail.NetPurchaseOrderPrice ? CostingDetail.NetPurchaseOrderPrice : '0'}</td>
                                                 </tr>
                                             )
                                         })}
@@ -532,6 +866,7 @@ class CostWorking extends Component {
                 {isOpen && (
                     <AddWeightCosting
                         isOpen={isOpen}
+                        isEditFlag={isEditFlag}
                         onCancel={this.onCancel}
                         costingId={costingId}
                         partId={partId}

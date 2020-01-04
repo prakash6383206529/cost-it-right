@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Button, Table } from 'reactstrap';
+    Container, Row, Col, Button, Table
+} from 'reactstrap';
 import AddLabour from './AddLabour';
 import { getLabourDetailAPI, deleteLabourAPI } from '../../../../actions/master/Labour';
 import { Loader } from '../../../common/Loader';
@@ -22,12 +23,12 @@ class LabourMaster extends Component {
         }
     }
 
-     /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
+    /**
+   * @method componentDidMount
+   * @description Called after rendering the component
+   */
     componentDidMount() {
-        this.props.getLabourDetailAPI(res => {});
+        this.props.getLabourDetailAPI(res => { });
     }
 
     /**
@@ -46,10 +47,10 @@ class LabourMaster extends Component {
         this.setState({ isOpen: false })
     }
 
-      /**
-    * @method editDetails
-    * @description confirm delete bop
-    */
+    /**
+  * @method editDetails
+  * @description confirm delete bop
+  */
     editDetails = (Id) => {
         this.setState({
             isEditFlag: true,
@@ -69,7 +70,7 @@ class LabourMaster extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} this labour ?`, toastrConfirmOptions);
+        return toastr.confirm(`Are you sure you want to delete labour?`, toastrConfirmOptions);
     }
 
     /**
@@ -94,7 +95,7 @@ class LabourMaster extends Component {
         const { isOpen, isEditFlag, labourId } = this.state;
         return (
             <Container className="top-margin">
-            {/* {this.props.loading && <Loader/>} */}
+                {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.LABOUR} ${CONSTANT.MASTER}`}</h3>
@@ -110,38 +111,38 @@ class LabourMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                <Table className="table table-striped" bordered>
-                { this.props.labourDetail && this.props.labourDetail.length > 0 &&
-                    <thead>
-                        <tr>
-                        <th>{`${CONSTANT.TECHNOLOGY} ${CONSTANT.NAME}`}</th>
-                        <th>{`${CONSTANT.LABOUR} ${CONSTANT.TYPE} ${CONSTANT.NAME}`}</th>
-                        <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> 
-                        <th>{`${CONSTANT.LABOUR} ${CONSTANT.RATE}`}</th>
-                        <th>{`${CONSTANT.DATE}`}</th>
-                        <th></th>
-                        </tr>
-                    </thead>}
-                    <tbody > 
+                    <Table className="table table-striped" bordered>
                         {this.props.labourDetail && this.props.labourDetail.length > 0 &&
-                            this.props.labourDetail.map((item, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{item.TechnologyName}</td> 
-                                    <td >{item.LabourTypeName}</td>
-                                    <td>{item.PlantName}</td>
-                                    <td>{item.LabourRate}</td> 
-                                    <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                    <div>
-                                        <Button className="btn btn-secondary" onClick={() => this.editDetails(item.LabourId)}><i className="fas fa-pencil-alt"></i></Button>
-                                        <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.LabourId)}><i className="far fa-trash-alt"></i></Button>
-                                    </div> 
+                            <thead>
+                                <tr>
+                                    <th>{`${CONSTANT.TECHNOLOGY} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.LABOUR} ${CONSTANT.TYPE} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.LABOUR} ${CONSTANT.RATE}`}</th>
+                                    <th>{`${CONSTANT.DATE}`}</th>
+                                    <th></th>
                                 </tr>
-                            )
-                        })}
-                        {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                    </tbody>  
-                </Table> 
+                            </thead>}
+                        <tbody >
+                            {this.props.labourDetail && this.props.labourDetail.length > 0 &&
+                                this.props.labourDetail.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>{item.TechnologyName}</td>
+                                            <td >{item.LabourTypeName}</td>
+                                            <td>{item.PlantName}</td>
+                                            <td>{item.LabourRate}</td>
+                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                            <div>
+                                                <Button className="btn btn-secondary" onClick={() => this.editDetails(item.LabourId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.LabourId)}><i className="far fa-trash-alt"></i></Button>
+                                            </div>
+                                        </tr>
+                                    )
+                                })}
+                            {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                        </tbody>
+                    </Table>
                 </Col>
                 {isOpen && (
                     <AddLabour
@@ -162,12 +163,12 @@ class LabourMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ labour }) {
-    const { labourDetail ,loading } = labour;
+    const { labourDetail, loading } = labour;
     return { labourDetail, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getLabourDetailAPI,deleteLabourAPI }
+    mapStateToProps, { getLabourDetailAPI, deleteLabourAPI }
 )(LabourMaster);
 

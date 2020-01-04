@@ -56,12 +56,19 @@ export default function costingReducer(state = initialState, action) {
                 addedSupplier: action.payload
             };
         case GET_COSTING_BY_COSTINGID:
+            let data1 = state.costingData[action.supplier];
             return {
                 ...state,
                 loading: false,
                 error: true,
-                costingData: { ...state.costingData, [action.supplier]: action.payload }
+                costingData: { ...data1, [action.supplier]: { CostingDetail: action.payload } }
             };
+        // return {
+        //     ...state,
+        //     loading: false,
+        //     error: true,
+        //     costingData: { ...state.costingData, [action.supplier]: action.payload }
+        // };
         case GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS:
             return {
                 ...state,

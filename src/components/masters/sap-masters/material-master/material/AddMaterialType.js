@@ -3,18 +3,18 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
-import { renderText} from "../../../../layout/FormInputs";
-import { createMaterialTypeAPI,getMaterialDetailAPI } from '../../../../../actions/master/Material';
+import { renderText } from "../../../../layout/FormInputs";
+import { createMaterialTypeAPI, getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
-import { CONSTANT} from '../../../../../helper/AllConastant';
+import { CONSTANT } from '../../../../../helper/AllConastant';
 
 class AddMaterialType extends Component {
     constructor(props) {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag:false
+            isEditFlag: false
         }
     }
 
@@ -44,12 +44,12 @@ class AddMaterialType extends Component {
         this.props.createMaterialTypeAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-                this.props.getMaterialDetailAPI(res => {});
+                this.props.getMaterialDetailAPI(res => { });
                 this.toggleModel()
             } else {
                 toastr.error(res.data.Message);
             }
-        });   
+        });
     }
 
     /**
@@ -61,10 +61,10 @@ class AddMaterialType extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`Add Material Type`}</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Container>     
+                            <Container>
                                 <form
                                     noValidate
                                     className="form"

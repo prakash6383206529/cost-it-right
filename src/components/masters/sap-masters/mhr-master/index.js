@@ -114,23 +114,23 @@ class MHRMaster extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
-                        { this.props.mhrMasterList && this.props.mhrMasterList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>Technology</th>
-                                    <th>Supplier Code</th>
-                                    <th>Supplier Name</th>
-                                    <th>Machine No.</th>
-                                    <th>Description</th>
-                                    <th>Machine Capacity</th>
-                                    <th>Machine Rate</th>
-                                    <th>UOM</th>
-                                    <th>Initiator</th>
+                            {this.props.mhrMasterList && this.props.mhrMasterList.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>Technology</th>
+                                        <th>Supplier Code</th>
+                                        <th>Supplier Name</th>
+                                        <th>Machine No.</th>
+                                        <th>Description</th>
+                                        <th>Machine Capacity</th>
+                                        <th>Machine Rate</th>
+                                        <th>UOM</th>
+                                        {/* <th>Initiator</th>
                                     <th>Created On</th>
                                     <th>Modifier</th>
-                                    <th>Modified On</th>
-                                </tr>
-                            </thead>}
+                                    <th>Modified On</th> */}
+                                    </tr>
+                                </thead>}
                             <tbody >
                                 {this.props.mhrMasterList && this.props.mhrMasterList.length > 0 &&
                                     this.props.mhrMasterList.map((item, index) => {
@@ -144,10 +144,10 @@ class MHRMaster extends Component {
                                                 <td>{item.MachineTonnage}</td>
                                                 <td>{item.BasicMachineRate}</td>
                                                 <td>{item.UnitOfMeasurementName}</td>
+                                                {/* <td>{''}</td>
                                                 <td>{''}</td>
                                                 <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
+                                                <td>{''}</td> */}
                                                 {/* <td>
                                                     <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
@@ -155,7 +155,7 @@ class MHRMaster extends Component {
                                             </tr>
                                         )
                                     })}
-                                    {this.props.mhrMasterList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.mhrMasterList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

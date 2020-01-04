@@ -140,9 +140,9 @@ class AddOperation extends Component {
                                                 name={"OperationName"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
@@ -153,9 +153,9 @@ class AddOperation extends Component {
                                                 name={"OperationCode"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
@@ -168,9 +168,9 @@ class AddOperation extends Component {
                                                 name={"BasicOperationCost"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />

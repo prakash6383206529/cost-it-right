@@ -193,6 +193,7 @@ class AddBOM extends Component {
     checkIsPartIdSame = () => {
         const { assyPartNo, ChildPart } = this.state;
         if (assyPartNo && ChildPart) {
+            this.props.change("AssemblyPartNumberMark", assyPartNo.label)
             if (assyPartNo.value == ChildPart.value) {
                 this.props.change("BOMLevel", 0)
                 this.setState({ isBOMDisabled: true })
@@ -201,6 +202,7 @@ class AddBOM extends Component {
                 this.setState({ isBOMDisabled: false })
             }
         } else {
+            this.props.change("AssemblyPartNumberMark", assyPartNo.label)
             this.props.change("BOMLevel", '')
             this.setState({ isBOMDisabled: false })
         }
@@ -350,9 +352,9 @@ class AddBOM extends Component {
                                                 name={"AssemblyPartNumberMark"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -362,9 +364,9 @@ class AddBOM extends Component {
                                                 name={"BOMLevel"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={this.state.isBOMDisabled}
                                             />

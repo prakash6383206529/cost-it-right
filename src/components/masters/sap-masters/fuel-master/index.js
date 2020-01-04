@@ -75,10 +75,10 @@ class FuelMaster extends Component {
         })
     }
 
-     /**
-     * @method editFuelDetails
-     * @description  used to edit fuel details
-     */
+    /**
+    * @method editFuelDetails
+    * @description  used to edit fuel details
+    */
     editFuelDetails = (editFlag, isModelOpen, FuelId) => {
         this.setState({
             isEditFlag: editFlag,
@@ -87,10 +87,10 @@ class FuelMaster extends Component {
         })
     }
 
-     /**
-     * @method editFuelTypeDetails
-     * @description  used to edit fuel type details
-     */
+    /**
+    * @method editFuelTypeDetails
+    * @description  used to edit fuel type details
+    */
     editFuelTypeDetails = (editFlag, isModelOpen, FuelId) => {
         this.setState({
             isEditFlag: editFlag,
@@ -124,27 +124,29 @@ class FuelMaster extends Component {
                         <Nav tabs className="subtabs">
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                    Fuel Type
+                            </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                     Fuel Details
                             </NavLink>
                             </NavItem>
 
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Fuel Type Details
-                            </NavLink>
-                            </NavItem>
+
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
                             <TabPane tabId="1">
-                                <FuelDetail
-                                    editFuelDetails={this.editFuelDetails}
-                                    toggle={this.toggle} />
-                            </TabPane>
-                            <TabPane tabId="2">
                                 <FuelTypeDetail
                                     editFuelTypeDetails={this.editFuelTypeDetails}
                                     toggle={this.toggle} />
                             </TabPane>
+                            <TabPane tabId="2">
+                                <FuelDetail
+                                    editFuelDetails={this.editFuelDetails}
+                                    toggle={this.toggle} />
+                            </TabPane>
+
                         </TabContent>
                     </Col>
                 </Row>

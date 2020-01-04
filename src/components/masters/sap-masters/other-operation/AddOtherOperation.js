@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, upper } from "../../../../helper/validation";
-import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
-import { fetchMasterDataAPI, getOtherOperationData } from '../../../../actions/master/Comman';
+import { required, number, upper, decimalLength2 } from "../../../../helper/validation";
+import { renderText, renderSelectField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
+import { fetchMasterDataAPI, getOtherOperationData, getPlantBySupplier } from '../../../../actions/master/Comman';
 import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
@@ -16,6 +16,7 @@ class AddOtherOperation extends Component {
             processOperationValue: [],
             supplierValue: [],
             typeOfListing: [],
+            selectedPlants: [],
             technologyValue: '',
             uom: '',
             PlantId: '',
@@ -35,15 +36,7 @@ class AddOtherOperation extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { uomId, isEditFlag } = this.props;
-
-        // if (isEditFlag) {
-        //     this.setState({ isEditFlag }, () => {
-        //         this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
-        //     })
-        // } else {
-        //     this.props.getOneUnitOfMeasurementAPI('', false, res => { })
-        // }
+        const { isEditFlag } = this.props;
     }
 
     /**
@@ -59,7 +52,12 @@ class AddOtherOperation extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { processOperationValue, supplierValue, uom, technologyValue, PlantId } = this.state;
+        const { processOperationValue, supplierValue, selectedPlants, uom, technologyValue, PlantId } = this.state;
+
+        let plantArray = [];
+        selectedPlants.map((item, i) => {
+            return plantArray.push({ PlantId: item.Value, PlantName: item.Text });
+        });
 
         values.OtherOperationName = processOperationValue.label;
         //"OperationCode": "string",
@@ -69,6 +67,7 @@ class AddOtherOperation extends Component {
         values.OperationId = processOperationValue.value;
         values.UnitOfMeasurementId = uom;
         values.PlantId = PlantId;
+        values.SelectedPlants = plantArray;
 
         console.log('values: >>sss', values);
 
@@ -109,7 +108,14 @@ class AddOtherOperation extends Component {
     * @description Used to process operation handle
     */
     processOperationHandler = (newValue, actionMeta) => {
-        this.setState({ processOperationValue: newValue });
+        const { Operations } = this.props;
+        this.setState({ processOperationValue: newValue }, () => {
+            const { processOperationValue } = this.state;
+
+            const tempObj = Operations.find(item => item.Value == processOperationValue.value)
+            // this.props.change("SupplierCode", result)
+            //console.log("result", result)
+        });
     };
 
     /**
@@ -126,7 +132,10 @@ class AddOtherOperation extends Component {
     * @description Used to Supplier handle
     */
     handleChangeSupplier = (newValue, actionMeta) => {
-        this.setState({ supplierValue: newValue });
+        this.setState({ supplierValue: newValue, selectedPlants: [] }, () => {
+            const { supplierValue } = this.state;
+            this.props.getPlantBySupplier(supplierValue.value, () => { })
+        });
     };
 
     /**
@@ -154,7 +163,7 @@ class AddOtherOperation extends Component {
     * @description Used show listing
     */
     renderTypeOfListing = (label) => {
-        const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = this.props;
+        const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList } = this.props;
         const temp = [];
         if (label == 'technology') {
             Technologies && Technologies.map(item =>
@@ -180,15 +189,39 @@ class AddOtherOperation extends Component {
             );
             return temp;
         }
-        if (label == 'plant') {
-            Plants && Plants.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-
+        // if (label == 'plant') {
+        //     plantList && plantList.map(item =>
+        //         temp.push({ label: item.Text, value: item.Value })
+        //     );
+        //     return temp;
+        // }
 
     }
+
+    /**
+    * @method renderSelectPlantList
+    * @description Used to render listing of selected plants
+    */
+    renderSelectPlantList = () => {
+        const { filterPlantList } = this.props;
+        const temp = [];
+        filterPlantList && filterPlantList.map(item => {
+            if (item.Value != 0) {
+                temp.push({ Text: item.Text, Value: item.Value })
+            }
+        });
+        return temp;
+    }
+
+    /**
+       * @method handlePlantSelection
+       * @description called
+       */
+    handlePlantSelection = e => {
+        this.setState({
+            selectedPlants: e
+        });
+    };
 
     /**
     * @method render
@@ -210,7 +243,7 @@ class AddOtherOperation extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
-                                        <Col md="6">
+                                        <Col md="12">
                                             <Field
                                                 label={`Technology`}
                                                 name={"TechnologyId"}
@@ -227,20 +260,7 @@ class AddOtherOperation extends Component {
                                                 component={renderSelectField}
                                             />
                                         </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Process Code"
-                                                name={"OperationCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                                normalize={upper}
-                                            />
-                                        </Col>
+
                                     </Row>
                                     <Row>
                                         <Col md="6">
@@ -261,6 +281,22 @@ class AddOtherOperation extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
+                                                label="Operation Code"
+                                                name={"OperationCode"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                //required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                                normalize={upper}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
                                                 id="supplier"
                                                 name="supplier"
                                                 type="text"
@@ -275,10 +311,8 @@ class AddOtherOperation extends Component {
                                                 valueDescription={this.state.supplierValue}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="12">
-                                            <Field
+                                        <Col md="6">
+                                            {/* <Field
                                                 label={`Plant`}
                                                 name={"PlantId"}
                                                 type="text"
@@ -292,6 +326,20 @@ class AddOtherOperation extends Component {
                                                 optionLabel={'label'}
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
+                                            /> */}
+
+                                            <Field
+                                                label="Plants"
+                                                name="PlantId"
+                                                placeholder="--Select Plant--"
+                                                selection={this.state.selectedPlants}
+                                                options={this.renderSelectPlantList()}
+                                                selectionChanged={this.handlePlantSelection}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={false}
+                                                className="withoutBorder"
                                             />
                                         </Col>
                                     </Row>
@@ -319,7 +367,7 @@ class AddOtherOperation extends Component {
                                                 name={"Rate"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required, number, decimalLength2]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -351,6 +399,7 @@ class AddOtherOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
+    const { filterPlantList } = comman;
     if (comman && comman.otherOperationFormData) {
         const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = comman.otherOperationFormData;
         // console.log('technologyList: ', technologyList, technologyList);
@@ -361,7 +410,7 @@ function mapStateToProps({ comman }) {
         //         uniOfMeasurementList
         //     }
         // }
-        return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements };
+        return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList };
     }
 }
 
@@ -374,7 +423,8 @@ function mapStateToProps({ comman }) {
 export default connect(mapStateToProps, {
     fetchMasterDataAPI,
     getOtherOperationData,
-    createOtherOperationsAPI
+    createOtherOperationsAPI,
+    getPlantBySupplier,
 })(reduxForm({
     form: 'addOtherOperation',
     enableReinitialize: true,

@@ -31,16 +31,21 @@ export function getInterestRateAPI(callback) {
         dispatch({ type: API_REQUEST });
         axios.get(API.getAllInterestRateAPI, { headers })
             .then((response) => {
+                console.log("interest respo", response)
                 if (response.data.Result === true) {
                     dispatch({
                         type: GET_INTEREST_RATE_SUCCESS,
                         payload: response.data.DataList,
                     });
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
                 }
+                // else if (response.status == 204) {
+                //     toastr.error(response.statusText);
+                // } else {
+                //     toastr.error(MESSAGES.SOME_ERROR);
+                // }
             }).catch((error) => {
+                console.log("interest error", error)
                 dispatch({
                     type: API_FAILURE
                 });
@@ -66,8 +71,6 @@ export function getInterestRateComboData(callback) {
                     payload: response.data.DynamicData,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -124,8 +127,6 @@ export function getInterestRateByIdAPI(SupplierInterestRateId, isEditFlag, callb
                             payload: response.data.Data,
                         });
                         callback(response);
-                    } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
                     }
                     callback(response);
                 }).catch((error) => {

@@ -27,6 +27,7 @@ import {
     GET_LABOUR_TYPE_SUCCESS,
     GET_COSTING_HEAD_SUCCESS,
     GET_MODEL_TYPE_SUCCESS,
+    GET_PLANTS_BY_SUPPLIER,
 } from '../../config/constants';
 import {
     apiErrors
@@ -868,6 +869,32 @@ export function fetchModelTypeAPI(modelTypeHeading, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_MODEL_TYPE_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchCostingHeadsAPI
+ * @description Used to fetch costing heads
+ */
+export function getPlantBySupplier(supplierId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlantBySupplier}/${supplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PLANTS_BY_SUPPLIER,
                     payload: response.data.SelectList,
                 });
                 callback(response);

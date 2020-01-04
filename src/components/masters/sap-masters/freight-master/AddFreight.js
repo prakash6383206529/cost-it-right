@@ -8,7 +8,7 @@ import {
     createFreightAPI, createAdditionalFreightAPI, getFreightDetailAPI, getAdditionalFreightByIdAPI,
     updateFreightAPI, getFreightByIdAPI, updateAdditionalFreightByIdAPI
 } from '../../../../actions/master/Freight';
-import { fetchFreightComboAPI } from '../../../../actions/master/Comman';
+import { fetchFreightComboAPI, getPlantBySupplier } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -157,12 +157,23 @@ class AddFreight extends Component {
     * @description Used show listing of unit of measurement
     */
     searchableSelectType = (label) => {
-        const { plantList, cityList, supplierList, costingHead } = this.props;
+        const { plantList, filterPlantList, cityList, supplierList, costingHead } = this.props;
         const temp = [];
         if (label === 'plant') {
-            plantList && plantList.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
+            filterPlantList && filterPlantList.map(item => {
+                if (item.Value != 0) {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
+            });
+            return temp;
+        }
+
+        if (label === 'DestinationPlant') {
+            plantList && plantList.map(item => {
+                if (item.Value != 0) {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
+            });
             return temp;
         }
 
@@ -378,7 +389,12 @@ class AddFreight extends Component {
     * @description Used to handle 
     */
     sourceSupplierHandler = (newValue, actionMeta) => {
-        this.setState({ sourceSupplier: newValue });
+        this.setState({ sourceSupplier: newValue, sourcePlant: [] }, () => {
+            const { sourceSupplier } = this.state;
+            if (sourceSupplier && sourceSupplier.value != '') {
+                this.props.getPlantBySupplier(sourceSupplier.value, () => { })
+            }
+        });
     };
 
     /**
@@ -445,8 +461,8 @@ class AddFreight extends Component {
         const { handleSubmit, isEditFlag, FreightType, reset } = this.props;
         return (
             <Container className="top-margin">
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Freight' : 'Add Freight'}</ModalHeader>
+                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={() => this.toggleModel(1)} className={this.props.className}>
+                    <ModalHeader className="mdl-filter-text" toggle={() => this.toggleModel(1)}>{isEditFlag ? 'Update Freight' : 'Add Freight'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -505,20 +521,6 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="4">
                                                 <Field
-                                                    name="SourceSupplierPlantId"
-                                                    type="text"
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    label="Source Supplier Plant"
-                                                    component={searchableSelect}
-                                                    //validate={[required, maxLength50]}
-                                                    options={this.searchableSelectType('plant')}
-                                                    //required={true}
-                                                    handleChangeDescription={this.sourcePlantHandler}
-                                                    valueDescription={this.state.sourcePlant}
-                                                />
-                                            </Col>
-                                            <Col md="4">
-                                                <Field
                                                     name="SourceSupplierCityId"
                                                     type="text"
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -533,6 +535,20 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="4">
                                                 <Field
+                                                    name="SourceSupplierPlantId"
+                                                    type="text"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    label="Source Supplier Plant"
+                                                    component={searchableSelect}
+                                                    //validate={[required, maxLength50]}
+                                                    options={this.searchableSelectType('plant')}
+                                                    //required={true}
+                                                    handleChangeDescription={this.sourcePlantHandler}
+                                                    valueDescription={this.state.sourcePlant}
+                                                />
+                                            </Col>
+                                            {/* <Col md="4">
+                                                <Field
                                                     name="DestinationSupplierId"
                                                     type="text"
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -544,7 +560,7 @@ class AddFreight extends Component {
                                                     handleChangeDescription={this.destinationSupplierHandler}
                                                     valueDescription={this.state.destinationSupplier}
                                                 />
-                                            </Col>
+                                            </Col> */}
                                             <Col md="4">
                                                 <Field
                                                     name="DestinationSupplierPlantId"
@@ -553,7 +569,7 @@ class AddFreight extends Component {
                                                     label="Destination Supplier Plant"
                                                     component={searchableSelect}
                                                     //validate={[required, maxLength50]}
-                                                    options={this.searchableSelectType('plant')}
+                                                    options={this.searchableSelectType('DestinationPlant')}
                                                     //required={true}
                                                     handleChangeDescription={this.destinationPlantHandler}
                                                     valueDescription={this.state.destinationPlant}
@@ -706,7 +722,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`TollTax`}
+                                                    label={`Toll Tax`}
                                                     name={"TollTax"}
                                                     type="text"
                                                     placeholder={''}
@@ -795,6 +811,8 @@ class AddFreight extends Component {
                                                     placeholder={''}
                                                     component={renderNumberInputField}
                                                     className=" withoutBorder"
+                                                    validate={[required]}
+                                                    required={true}
                                                 />
                                             </Col>
                                         </Row>}
@@ -816,12 +834,14 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`Net Loding Unloading Cost`}
+                                                    label={`Net Loading Unloading Cost`}
                                                     name={"NetLodingUnloadingCost"}
                                                     type="text"
                                                     placeholder={''}
                                                     component={renderNumberInputField}
                                                     className=" withoutBorder"
+                                                    validate={[required]}
+                                                    required={true}
                                                 />
 
                                             </Col>
@@ -846,6 +866,8 @@ class AddFreight extends Component {
                                                     placeholder={''}
                                                     component={renderNumberInputField}
                                                     className=" withoutBorder"
+                                                    validate={[required]}
+                                                    required={true}
                                                 />
                                             </Col>
                                         </Row>}
@@ -869,6 +891,8 @@ class AddFreight extends Component {
                                                     placeholder={''}
                                                     component={renderNumberInputField}
                                                     className=" withoutBorder"
+                                                    validate={[required]}
+                                                    required={true}
                                                 />
                                             </Col>
                                             <Col md="6">
@@ -910,7 +934,7 @@ class AddFreight extends Component {
 */
 function mapStateToProps(state, ownProps) {
     const { comman, freight } = state;
-    const { cityList, plantList, supplierList, costingHead } = comman;
+    const { cityList, plantList, filterPlantList, supplierList, costingHead } = comman;
     const { freightData, PackagingData } = freight;
     let initialValues = {};
     if (ownProps.FreightType == 1) {
@@ -956,7 +980,7 @@ function mapStateToProps(state, ownProps) {
             FreightDiscount: PackagingData.FreightDiscount,
         }
     }
-    return { cityList, plantList, supplierList, costingHead, initialValues, freightData, PackagingData }
+    return { cityList, plantList, filterPlantList, supplierList, costingHead, initialValues, freightData, PackagingData }
 }
 
 /**
@@ -974,6 +998,7 @@ export default connect(mapStateToProps, {
     getFreightDetailAPI,
     getAdditionalFreightByIdAPI,
     updateAdditionalFreightByIdAPI,
+    getPlantBySupplier,
 })(reduxForm({
     form: 'AddFreight',
     enableReinitialize: true,

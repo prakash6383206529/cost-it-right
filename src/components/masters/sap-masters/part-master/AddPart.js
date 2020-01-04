@@ -120,7 +120,6 @@ class AddPart extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log('%c 🥪 values: ', 'font-size:20px;background-color: #ED9EC7;color:#fff;', values);
         /** Updating the existing part master detail **/
         if (this.props.isEditFlag) {
             const { partId } = this.props;
@@ -135,6 +134,7 @@ class AddPart extends Component {
                 PlantId: values.PlantId,
                 PartDescription: values.PartDescription,
                 PartId: partId,
+                IsAssembly: this.state.IsPartAssociatedWithBOM,
                 IsPartAssociatedWithBOM: this.state.IsPartAssociatedWithBOM,
             }
             this.props.updatePartsAPI(formData, (res) => {
@@ -149,6 +149,7 @@ class AddPart extends Component {
         } else { /** Adding new part master detail **/
             values.IndustrialIdentity = values.PartName;
             values.IsPartAssociatedWithBOM = this.state.IsPartAssociatedWithBOM;
+            values.IsAssembly = this.state.IsPartAssociatedWithBOM;
             this.props.createPartAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.PART_ADD_SUCCESS);
@@ -182,20 +183,21 @@ class AddPart extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
-                                        <Col md="4">
-                                            <label
-                                                className="custom-checkbox"
-                                                onChange={this.onPressAssociatedWithBOM}
-                                            >
-                                                Is Part Associated With BOM
-                                                <input type="checkbox" checked={this.state.IsPartAssociatedWithBOM} />
-                                                <span
-                                                    className=" before-box"
-                                                    checked={this.state.IsPartAssociatedWithBOM}
+                                        {isEditFlag == false &&
+                                            <Col md="4">
+                                                <label
+                                                    className="custom-checkbox"
                                                     onChange={this.onPressAssociatedWithBOM}
-                                                />
-                                            </label>
-                                        </Col>
+                                                >
+                                                    Is Part Associated With BOM
+                                                <input type="checkbox" checked={this.state.IsPartAssociatedWithBOM} />
+                                                    <span
+                                                        className=" before-box"
+                                                        checked={this.state.IsPartAssociatedWithBOM}
+                                                        onChange={this.onPressAssociatedWithBOM}
+                                                    />
+                                                </label>
+                                            </Col>}
                                         {/* <Col md="4">
                                             <Field
                                                 label="BOM Numbers"

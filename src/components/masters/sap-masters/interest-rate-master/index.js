@@ -70,7 +70,7 @@ class InterestRate extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} interest rate ?`, toastrConfirmOptions);
+        return toastr.confirm(`Are you sure you want to delete selected interest rate?`, toastrConfirmOptions);
     }
 
     /**
@@ -85,7 +85,7 @@ class InterestRate extends Component {
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
-         });
+        });
     }
 
     /**
@@ -115,24 +115,24 @@ class InterestRate extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
-                        { this.props.interestRateList && this.props.interestRateList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>Supplier Name</th>
-                                    <th>RM Inventory Costing HeadName</th>
-                                    <th>WIP Inventory Costing HeadName</th>
-                                    <th>Payment Term Costing HeadName</th>
-                                    <th>Annual RateOfInterest Percent</th>
-                                    <th>Repayment Period</th>
-                                    <th>Average Year Percent</th>
-                                    <th>ICC Percent</th>
-                                    {/* <th>CostOfCredit Percent</th> */}
-                                    <th>RM Inventory Percentage</th>
-                                    <th>WIP Inventory Percent</th>
-                                    <th>Payment Term Percent</th>
-                                    <th>Created On</th>
-                                </tr>
-                            </thead>}
+                            {this.props.interestRateList && this.props.interestRateList.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>Supplier Name</th>
+                                        <th>RM Inventory Costing HeadName</th>
+                                        <th>WIP Inventory Costing HeadName</th>
+                                        <th>Payment Term Costing HeadName</th>
+                                        <th>Annual RateOfInterest Percent</th>
+                                        <th>Repayment Period</th>
+                                        <th>Average Year Percent</th>
+                                        <th>ICC Percent</th>
+                                        {/* <th>CostOfCredit Percent</th> */}
+                                        <th>RM Inventory Percentage</th>
+                                        <th>WIP Inventory Percent</th>
+                                        <th>Payment Term Percent</th>
+                                        <th>Created On</th>
+                                    </tr>
+                                </thead>}
                             <tbody >
                                 {this.props.interestRateList && this.props.interestRateList.length > 0 &&
                                     this.props.interestRateList.map((item, index) => {
@@ -158,7 +158,7 @@ class InterestRate extends Component {
                                             </tr>
                                         )
                                     })}
-                                     {this.props.interestRateList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.interestRateList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

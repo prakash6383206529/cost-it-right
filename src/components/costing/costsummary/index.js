@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Container, Col, CardTitle } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { renderText, renderSelectField, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
@@ -14,10 +14,11 @@ import { getInterestRateAPI } from '../../../actions/master/InterestRateMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
-import { required } from '../../../helper';
+import { required, number } from '../../../helper';
 import OtherOperationsModal from './OtherOperationsModal';
 import CEDotherOperations from './CEDotherOperations';
 import AddFreightModal from './AddFreightModal';
+const selector = formValueSelector('CostSummary');
 
 
 class CostSummary extends Component {
@@ -72,75 +73,34 @@ class CostSummary extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.costingData && nextProps.costingData.supplierOne && (nextProps.costingData.supplierOne != this.props.costingData.supplierOne)) {
-            this.props.change("supplier1Data", nextProps.costingData.supplierOne.CostingDetail)
             const Content = nextProps.costingData.supplierOne.CostingDetail;
-            //const CostingHeads = nextProps.costingData.supplierOne.CostingHeads;
+            const CostingHeads = nextProps.costingData.supplierOne.CostingDetail.CostingHeads;
 
-            const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+            const returnContent = this.columnCalculation(Content, CostingHeads);
 
-            let supplierOneCostingHeadsData = {
-                RM: Content.NetRawMaterialCost,
-                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost,
-                BOP: Content.NetBoughtOutParCost,
-                OtherOperation: Content.NetOtherOperationCost,
-            }
-            this.fieldData(supplierOneCostingHeadsData, 'supplierOneCostingHeadsData')
+            this.props.change('supplier1Data', returnContent)
+            //this.fieldData(supplierOneCostingHeadsData, 'supplierOneCostingHeadsData')
         }
 
         if (nextProps.costingData && nextProps.costingData.supplierTwo && (nextProps.costingData.supplierTwo != this.props.costingData.supplierTwo)) {
-            this.props.change("supplierTwo", nextProps.costingData.supplierTwo.CostingDetail)
             const Content = nextProps.costingData.supplierTwo.CostingDetail;
-            let supplierTwoCostingHeadsData = {
-                RM: Content.NetRawMaterialCost,
-                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost,
-                BOP: Content.NetBoughtOutParCost,
-                OtherOperation: Content.NetOtherOperationCost
-            }
-            this.fieldData(supplierTwoCostingHeadsData, 'supplierTwoCostingHeadsData')
+            const CostingHeads = nextProps.costingData.supplierTwo.CostingDetail.CostingHeads;
+
+            const returnContent = this.columnCalculation(Content, CostingHeads);
+
+            this.props.change('supplier2Data', returnContent)
+            //this.fieldData(supplierTwoCostingHeadsData, 'supplierTwoCostingHeadsData')
         }
 
         if (nextProps.costingData && nextProps.costingData.supplierThree && (nextProps.costingData.supplierThree != this.props.costingData.supplierThree)) {
-            //this.props.change("supplier3Data", nextProps.costingData.supplierThree.CostingDetail)
+
             const Content = nextProps.costingData.supplierThree.CostingDetail;
-            const CostingHeads = nextProps.costingData.supplierThree.CostingHeads;
+            const CostingHeads = nextProps.costingData.supplierThree.CostingDetail.CostingHeads;
 
-            const RMCostingHeadObj = CostingHeads.find(item => item.Value == Content.RMCostingHeadsId)
-            const WIPCostingHeadObj = CostingHeads.find(item => item.Value == Content.WIPCostingHeadsId)
-            const PaymentTermCostingHeadObj = CostingHeads.find(item => item.Value == Content.PaymentTermsCostingHeadsId)
+            const returnContent = this.columnCalculation(Content, CostingHeads);
 
-            const RMICCCostValue = this.RMICCCostCalculation(RMCostingHeadObj, Content)
-            const WIPICCCostValue = this.RMICCCostCalculation(WIPCostingHeadObj, Content)
-            const PaymentTermICCCostValue = this.RMICCCostCalculation(PaymentTermCostingHeadObj, Content)
-
-            let supplierThreeCostingHeadsData = {
-                RM: Content.NetRawMaterialCost,
-                CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost,
-                BOP: Content.NetBoughtOutParCost,
-                OtherOperation: Content.NetOtherOperationCost,
-            }
-
-            Content.TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
-            Content.RMInventotyCost = RMICCCostValue;
-            Content.WIPInventotyCost = WIPICCCostValue;
-            Content.PaymentTermsCost = PaymentTermICCCostValue;
-            Content.NetSurfaceArea = 4.8; // CED net surface area
-            Content.NetSurfaceAreaCost = Content.Quantity * Content.CEDOperationRate * Content.NetSurfaceArea; // CED cost 
-            Content.OverheadProfitCost = (Content.OverheadProfitPercentage * Content.NetSurfaceAreaCost) / 100    //  (CED cost * overheat % ) / 100 
-            Content.CEDtotalCost = Content.NetSurfaceAreaCost + Content.OverheadProfitCost + Content.TransportationOperationCost;
-
-            // TotalOtherCosts
-            Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
-                + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
-                + Content.ProfitCost + Content.NetFreightCost;
-
-            Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
-            Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
-                + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
-            Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
-            Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
-
-            this.props.change('supplier3Data', Content)
-            this.fieldData(supplierThreeCostingHeadsData, 'supplierThreeCostingHeadsData')
+            this.props.change('supplier3Data', returnContent)
+            //this.fieldData(supplierThreeCostingHeadsData, 'supplierThreeCostingHeadsData')
         }
     }
 
@@ -148,6 +108,47 @@ class CostSummary extends Component {
         this.setState({
             [headTitle]: HeadsData
         })
+    }
+
+    columnCalculation = (Content, CostingHeads) => {
+        const RMCostingHeadObj = CostingHeads.find(item => item.Value == Content.RMCostingHeadsId)
+        const WIPCostingHeadObj = CostingHeads.find(item => item.Value == Content.WIPCostingHeadsId)
+        const PaymentTermCostingHeadObj = CostingHeads.find(item => item.Value == Content.PaymentTermsCostingHeadsId)
+
+        const RMICCCostValue = this.RMICCCostCalculation(RMCostingHeadObj, Content)
+        const WIPICCCostValue = this.RMICCCostCalculation(WIPCostingHeadObj, Content)
+        const PaymentTermICCCostValue = this.RMICCCostCalculation(PaymentTermCostingHeadObj, Content)
+
+        let supplierThreeCostingHeadsData = {
+            RM: Content.NetRawMaterialCost,
+            CC: Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost,
+            BOP: Content.NetBoughtOutParCost,
+            OtherOperation: Content.NetOtherOperationCost,
+        }
+
+        Content.TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+        Content.RMInventotyCost = RMICCCostValue;
+        Content.WIPInventotyCost = WIPICCCostValue;
+        Content.PaymentTermsCost = PaymentTermICCCostValue;
+        Content.NetSurfaceArea = 4.8; // CED net surface area
+        Content.NetSurfaceAreaCost = Content.Quantity * Content.CEDOperationRate * Content.NetSurfaceArea; // CED cost 
+        Content.OverheadProfitCost = (Content.OverheadProfitPercentage * Content.NetSurfaceAreaCost) / 100    //  (CED cost * overheat % ) / 100 
+        Content.CEDtotalCost = Content.NetSurfaceAreaCost + Content.OverheadProfitCost + Content.TransportationOperationCost;
+
+        // TotalOtherCosts
+        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
+            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
+            + Content.ProfitCost + Content.NetFreightCost;
+
+        Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
+
+        Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
+        Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
+
+        Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+
+        return Content;
     }
 
     RMICCCostCalculation = (RMCostingHeadObj, Content) => {
@@ -164,15 +165,919 @@ class CostSummary extends Component {
     }
 
     /**
-   * @method toggle
-   * @description toggling the tabs
-   */
-    toggle = (tab) => {
-        if (this.state.activeTab !== tab) {
+    * @method plantHandler
+    * @description Used to handle plant
+    */
+    plantHandler = (newValue, actionMeta) => {
+        this.setState({ plant: newValue });
+    };
+
+    /**
+    * @method partHandler
+    * @description Used to handle plant
+    */
+    partHandler = (e) => {
+        const { partNo, supplier, TechnologyId } = this.state;
+        const { technologyList } = this.props;
+        const selectedTechnology = TechnologyId != '' ? TechnologyId : technologyList[0].Value;
+
+        this.props.change("SupplierCode", "")
+        this.props.change("POPrice", "")
+        this.setState({
+            partNo: e.target.value,
+            supplier: [],
+        }, () => {
+            const checkPartData = {
+                PartId: this.state.partNo,
+                TechnologyId: selectedTechnology
+            }
+            this.props.checkPartWithTechnology(checkPartData, res => {
+                this.props.getExistingSupplierDetailByPartId(this.state.partNo, res => {
+                    // After get listing of exis suppliers
+                    this.existingSupplierDetail()
+                })
+            })
+        });
+    };
+
+    existingSupplierDetail = () => {
+        const { existingSupplierDetail, Suppliers } = this.props;
+        if (existingSupplierDetail) {
+            this.props.change("PartDescription", existingSupplierDetail.PartDescription)
+
+            const existSuppliers = existingSupplierDetail && existingSupplierDetail.ExistingSupplierDetails;
+
+            this.props.change("POPrice", "");
+            this.props.change("POPrice2", "");
+            this.props.change("POPrice3", "");
+            this.props.change("SupplierCode", "");
+            this.props.change("SupplierCode2", "");
+            this.props.change("SupplierCode3", "");
+
+            let tempArray = [];
+
+            existSuppliers.map((Value, index) => {
+                const supplierObj = Suppliers.find(item => item.Value === Value.SupplierId);
+
+                let tempObj = {
+                    [`Data${index}`]: {
+                        supplierDropdown: Value.ActiveCostingSelectList,
+                        supplierName: supplierObj.Text.substring(0, supplierObj.Text.indexOf('(')),
+                        supplier: { label: supplierObj.Text, value: supplierObj.Value },
+                        POPrice: Value.PurchaseOrderPrice,
+                        ShareOfBusiness: Value.ShareOfBusiness,
+                    }
+                }
+
+                tempArray.push(tempObj);
+                tempObj = {};
+            });
+
+            this.props.change("POPrice", tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.POPrice : 0);
+            this.props.change("POPrice2", tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.POPrice : 0);
+            this.props.change("POPrice3", tempArray.length > 2 && tempArray[2].Data2 ? tempArray[2].Data2.POPrice : 0);
+
+            this.props.change("ShareOfBusiness1", tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.ShareOfBusiness : 0);
+            this.props.change("ShareOfBusiness2", tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.ShareOfBusiness : 0);
+            this.props.change("ShareOfBusiness3", tempArray.length > 2 && tempArray[2].Data2 ? tempArray[2].Data2.ShareOfBusiness : 0);
+
             this.setState({
-                activeTab: tab
+                supplier: tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.supplier : [],
+                supplier2: tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.supplier : [],
+                supplier3: tempArray.length > 2 && tempArray[2].Data2 ? tempArray[2].Data2.supplier : [],
+                hideButtonAdd1: tempArray.length > 0 && tempArray[0].Data0.supplier.hasOwnProperty('label') ? false : true,
+                hideButtonAdd2: tempArray.length > 1 && tempArray[1].Data1.supplier.hasOwnProperty('label') ? false : true,
+                hideButtonAdd3: tempArray.length > 2 && tempArray[2].Data2.supplier.hasOwnProperty('label') ? false : true,
+                supplierDropdown1Array: tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.supplierDropdown : [],
+                supplierDropdown2Array: tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.supplierDropdown : [],
+                supplierDropdown3Array: tempArray.length > 2 && tempArray[2].Data2 ? tempArray[2].Data2.supplierDropdown : [],
+                addSupplier1: tempArray.length > 0 && tempArray[0].Data0.supplier.hasOwnProperty('label') ? true : false,
+                addSupplier2: tempArray.length > 1 && tempArray[1].Data1.supplier.hasOwnProperty('label') ? true : false,
+                addSupplier3: tempArray.length > 2 && tempArray[2].Data2.supplier.hasOwnProperty('label') ? true : false,
+                activeSupplier1: '',
+                activeSupplier2: '',
+                activeSupplier3: '',
+                supplierOneName: tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.supplierName : '',
+                supplierTwoName: tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.supplierName : '',
+                supplierThreeName: tempArray.length > 2 && tempArray[2].Data2 ? tempArray[2].Data2.supplierName : '',
+            }, () => {
+                this.setSupplierCode()
+            });
+        } else {
+            this.setState({
+                supplier: [],
+                supplier2: [],
+                supplier3: [],
+                hideButtonAdd1: true,
+                hideButtonAdd2: true,
+                hideButtonAdd3: true,
+                supplierDropdown1Array: [],
+                supplierDropdown2Array: [],
+                supplierDropdown3Array: [],
+                addSupplier1: false,
+                addSupplier2: false,
+                addSupplier3: false,
+                supplierOneName: '',
+                supplierTwoName: '',
+                supplierThreeName: '',
+            });
+            this.props.change("SupplierCode", '')
+            this.props.change("SupplierCode2", '')
+            this.props.change("SupplierCode3", '')
+        }
+    }
+
+    setSupplierCode = () => {
+        const { supplier, supplier2, supplier3 } = this.state;
+        if (supplier) {
+            const phrase = supplier.label;
+            const myRegexp = /-(.*)/;
+            const match = myRegexp.exec(phrase);
+            const result = match && match[1].slice(1, -1);
+            this.props.change("SupplierCode", result)
+        }
+
+        if (supplier2) {
+            const phrase = supplier2.label;
+            const myRegexp = /-(.*)/;
+            const match = myRegexp.exec(phrase);
+            const result = match && match[1].slice(1, -1);
+            this.props.change("SupplierCode2", result)
+        }
+
+        if (supplier3) {
+            const phrase = supplier3.label;
+            const myRegexp = /-(.*)/;
+            const match = myRegexp.exec(phrase);
+            const result = match && match[1].slice(1, -1);
+            this.props.change("SupplierCode3", result)
+        }
+    }
+
+    /**
+    * @method supplierHandler
+    * @description Used to handle plant
+    */
+    supplierHandler = (newValue, actionMeta) => {
+        if (newValue == null) {
+            this.setState({
+                supplier: newValue,
+                hideButtonAdd1: true,
+                supplierOneName: '',
+                addSupplier1: false,
+            })
+            this.props.change("SupplierCode", '')
+        } else {
+            this.setState({ supplier: newValue }, () => {
+                const { supplier } = this.state;
+                const phrase = supplier && supplier.label;
+                const myRegexp = /-(.*)/;
+                const match = myRegexp.exec(phrase);
+                var result = match && match[1].slice(1, -1);
+                this.props.change("SupplierCode", result)
             });
         }
+    };
+
+    /**
+    * @method supplierHandler
+    * @description Used to handle plant
+    */
+    supplier2Handler = (newValue, actionMeta) => {
+        if (newValue == null) {
+            this.setState({
+                supplier2: newValue,
+                hideButtonAdd2: true,
+                supplierTwoName: '',
+                addSupplier2: false,
+            })
+            this.props.change("SupplierCode2", '')
+        } else {
+            this.setState({ supplier2: newValue }, () => {
+                const { supplier2 } = this.state;
+                const phrase = supplier2 && supplier2.label;
+                const myRegexp = /-(.*)/;
+                const match = myRegexp.exec(phrase);
+                var result = match && match[1].slice(1, -1);
+                this.props.change("SupplierCode2", result)
+            });
+        }
+    };
+
+    /**
+    * @method supplier2Handler
+    * @description Used to handle plant
+    */
+    supplier3Handler = (newValue, actionMeta) => {
+        if (newValue == null) {
+            this.setState({
+                supplier3: newValue,
+                hideButtonAdd3: true,
+                supplierThreeName: '',
+                addSupplier3: false,
+            })
+            this.props.change("SupplierCode3", '')
+        } else {
+            this.setState({ supplier3: newValue }, () => {
+                const { supplier3 } = this.state;
+                const phrase = supplier3 && supplier3.label;
+                const myRegexp = /-(.*)/;
+                const match = myRegexp.exec(phrase);
+                var result = match && match[1].slice(1, -1);
+                this.props.change("SupplierCode3", result)
+            });
+        }
+    };
+
+    /**
+    * @method addSupplier
+    * @description Using common function for addsupplier function its 1, 2 and 3
+    */
+    addSupplier = (Number) => {
+        const { supplier, supplier2, supplier3, partNo, plant } = this.state;
+        const { sobObject } = this.props;
+
+        let SupplierId = '';
+        let SupplierLabel = '';
+        let SupplierName = '';
+        let ShareOfBusiness = 0;
+
+        if (sobObject.hasOwnProperty('ShareOfBusiness1') || sobObject.hasOwnProperty('ShareOfBusiness2') || sobObject.hasOwnProperty('ShareOfBusiness3')) {
+            const sob1 = sobObject && sobObject.ShareOfBusiness1 ? parseInt(sobObject.ShareOfBusiness1) : 0;
+            const sob2 = sobObject && sobObject.ShareOfBusiness2 ? parseInt(sobObject.ShareOfBusiness2) : 0;
+            const sob3 = sobObject && sobObject.ShareOfBusiness3 ? parseInt(sobObject.ShareOfBusiness3) : 0;
+            const sobTotal = sob1 + sob2 + sob3;
+            if (sobTotal > 100) {
+                toastr.warning(`Sould be less than 100%.`)
+                return false;
+            }
+            if (sobTotal == 0) {
+                toastr.warning(`Sould be greater than 0.`)
+                return false;
+            }
+        }
+
+        if (Number == 1) {
+            SupplierId = supplier && supplier.value ? supplier.value : '';
+            SupplierLabel = supplier && supplier.label ? supplier.label : '';
+            ShareOfBusiness = sobObject && sobObject.ShareOfBusiness1 ? sobObject.ShareOfBusiness1 : '';
+            SupplierName = 'supplierOneName';
+        } else if (Number == 2) {
+            SupplierId = supplier2 && supplier2.value ? supplier2.value : '';
+            SupplierLabel = supplier2 && supplier2.label ? supplier2.label : '';
+            ShareOfBusiness = sobObject && sobObject.ShareOfBusiness2 ? sobObject.ShareOfBusiness2 : '';
+            SupplierName = 'supplierTwoName';
+        } else if (Number == 3) {
+            SupplierId = supplier3 && supplier3.value ? supplier3.value : '';
+            SupplierLabel = supplier3 && supplier3.label ? supplier3.label : '';
+            ShareOfBusiness = sobObject && sobObject.ShareOfBusiness3 ? sobObject.ShareOfBusiness3 : '';
+            SupplierName = 'supplierThreeName';
+        }
+
+        //if (supplier3 && supplier3.value) {
+        const requestData = {
+            PartId: partNo,
+            SupplierId: SupplierId,
+            ShareOfBusiness: ShareOfBusiness,
+            PlantId: plant.value,
+        }
+
+        this.props.createPartWithSupplier(requestData, res => {
+            const phrase = SupplierLabel;
+            var result = phrase.substr(0, phrase.indexOf('('));
+            this.setState({
+                [SupplierName]: result,
+            })
+        })
+        //}
+    }
+
+    /**
+    * @method activeSupplierHandler
+    * @description Costing dropdown handler to set costing in column
+    */
+    activeSupplierHandler = (e, activeSupplier, supplier) => {
+
+        let responseData = '';
+        let supplierColumn = '';
+        if (supplier == 'supplierOne') {
+            supplierColumn = 'supplier1Data';
+        } else if (supplier == 'supplierTwo') {
+            supplierColumn = 'supplier2Data';
+        } else if (supplier == 'supplierThree') {
+            supplierColumn = 'supplier3Data';
+        }
+
+        this.setState({
+            [activeSupplier]: e.target.value
+        }, () => {
+            if (e.target.value != '' && e.target.value != 0) {
+                this.props.getCostingByCostingId(e.target.value, supplier, (res) => {
+                    if (res && res.data && res.data.Result) {
+                        const { costingData } = this.props;
+                        if (supplier == 'supplierOne') {
+                            responseData = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+                        } else if (supplier == 'supplierTwo') {
+                            responseData = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+                        } else if (supplier == 'supplierThree') {
+                            responseData = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+                        }
+                        this.props.change(supplierColumn, responseData)
+                    }
+                })
+            } else {
+                this.props.change(supplierColumn, {})
+            }
+        })
+    }
+
+    /**
+    * @method ecoNumberHandler
+    * @description ecoNumber Handler
+    */
+    ecoNumberHandler = (e, Number) => {
+        const { costingData } = this.props;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+        Content.ECONumber = e.target.value * 1;
+        this.props.change(supplierColumn, Content)
+    }
+
+    /**
+    * @method RevsionNumber
+    * @description RevsionNumber Handler
+    */
+    RevsionNumber = (e, Number) => {
+        const { costingData } = this.props;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+        Content.RevsionNumber = e.target.value * 1;
+        this.props.change(supplierColumn, Content)
+    }
+
+    /**
+    * @method modelTypeHandlerSupplier
+    * @description model Type Handler
+    */
+    modelTypeHandlerSupplier = (e, Number) => {
+        const { supplier, supplier2, supplier3 } = this.state;
+        const { costingData } = this.props;
+
+        let supplierColumn = '';
+        let Content = '';
+        let SupplierId = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            SupplierId = supplier.value;
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            SupplierId = supplier2.value;
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            SupplierId = supplier3.value;
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+        this.setState({
+            modelTypeSupplier3: e.target.value
+        }, () => {
+            if (e.target.value != '') {
+                let formData = {
+                    ModelTypeId: e.target.value,
+                    SupplierId: SupplierId,
+                }
+                this.props.getCostingOverHeadProByModelType(formData, (Data) => {
+                    let overHeadCalculation = 0;
+                    if (Data.OverheadProfitTypeCostingHead == "RM") {
+                        overHeadCalculation = Content.NetRawMaterialCost;
+                    } else if (Data.OverheadProfitTypeCostingHead == "RM + CC") {
+                        overHeadCalculation = Content.NetRawMaterialCost + TotalConversionCost
+                    } else {
+                        overHeadCalculation = Content.NetRawMaterialCost
+                    }
+
+                    let profitCostCalculation = 0;
+                    if (Data.ProfitTypeCostingHead == "RM") {
+                        profitCostCalculation = Content.NetRawMaterialCost;
+                    } else if (Data.ProfitTypeCostingHead == "RM + CC") {
+                        profitCostCalculation = Content.NetRawMaterialCost + TotalConversionCost
+                    } else {
+                        profitCostCalculation = Content.NetRawMaterialCost
+                    }
+
+                    Content.ModelTypeId = e.target.value;
+                    Content.OverheadPercentage = Data.OverheadProfitPercentage;
+                    Content.OverheadCost = (overHeadCalculation * Data.OverheadProfitPercentage) / 100;
+                    Content.ProfitCost = (profitCostCalculation * Data.ProfitPercentage) / 100;
+
+                    // TotalOtherCosts
+                    Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
+                        + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
+                        + Content.ProfitCost + Content.NetFreightCost;
+
+                    this.props.change(supplierColumn, Content)
+                })
+            } else {
+                Content.ModelTypeId = 0;
+                Content.OverheadPercentage = 0;
+                Content.OverheadCost = 0;
+                this.props.change(supplierColumn, Content)
+            }
+        })
+    }
+
+    /**
+    * @method rejectionHandlerSupplier
+    * @description Used to handle rejection
+    */
+    rejectionHandlerSupplier = (e, Number) => {
+        const { costingData } = this.props;
+
+        let supplierColumn = '';
+        let Content = '';
+        let SupplierId = '';
+
+        let rejectionTypeValue = '';
+        let RejectionTypeCostingHeadID = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+            rejectionTypeValue = 'rejectionTypeValue1';
+            RejectionTypeCostingHeadID = 'RejectionTypeCostingHead1ID';
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+            rejectionTypeValue = 'rejectionTypeValue2';
+            RejectionTypeCostingHeadID = 'RejectionTypeCostingHead2ID';
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+            rejectionTypeValue = 'rejectionTypeValue3';
+            RejectionTypeCostingHeadID = 'RejectionTypeCostingHead3ID';
+        }
+
+        const RejectionCostingHeadObj = Content.CostingHeads.find(item => item.Value == e.target.value)
+
+        const RejectionTypeCalculatedValue = this.RejectionHeadsCalculation(RejectionCostingHeadObj, Content)
+
+        this.setState({
+            [rejectionTypeValue]: RejectionTypeCalculatedValue,
+            [RejectionTypeCostingHeadID]: e.target.value,
+        }, () => { this.RejectionCostCalculation(Number) })
+    }
+
+    RejectionHeadsCalculation = (RMCostingHeadObj, Content) => {
+        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+        let RejectionType = '';
+        if (RMCostingHeadObj.Text == "RM") {
+            RejectionType = Content.NetRawMaterialCost;
+        } else if (RMCostingHeadObj.Text == "RM + CC") {
+            RejectionType = Content.NetRawMaterialCost + TotalConversionCost
+        } else {
+            RejectionType = Content.NetRawMaterialCost
+        }
+        return RejectionType;
+    }
+
+    RejectionCostCalculation = (Number) => {
+
+        const { rejectionTypeValue1, rejectionTypeValue2, rejectionTypeValue3, rejectionBasePercentSupplier1,
+            rejectionBasePercentSupplier2, rejectionBasePercentSupplier3, RejectionTypeCostingHead1ID,
+            RejectionTypeCostingHead2ID, RejectionTypeCostingHead3ID } = this.state;
+
+        const { costingData } = this.props;
+
+        let supplierColumn = '';
+        let Content = '';
+
+        let rejectionTypeValue = '';
+        let RejectionTypeCostingHeadID = '';
+        let rejectionBasePercentSupplier = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+            rejectionTypeValue = rejectionTypeValue1;
+            RejectionTypeCostingHeadID = RejectionTypeCostingHead1ID;
+            rejectionBasePercentSupplier = rejectionBasePercentSupplier1;
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+            rejectionTypeValue = rejectionTypeValue2;
+            RejectionTypeCostingHeadID = RejectionTypeCostingHead2ID;
+            rejectionBasePercentSupplier = rejectionBasePercentSupplier2;
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+            rejectionTypeValue = rejectionTypeValue3;
+            RejectionTypeCostingHeadID = RejectionTypeCostingHead3ID;
+            rejectionBasePercentSupplier = rejectionBasePercentSupplier3;
+        }
+
+        Content.RejectionTypeCostingHeadId = RejectionTypeCostingHeadID;
+        Content.RejectionPercentage = rejectionBasePercentSupplier;
+        Content.RejectionCost = (rejectionTypeValue * rejectionBasePercentSupplier) / 100
+
+        this.props.change(supplierColumn, Content)
+    }
+
+    rejectionPercentHandlerSupplier = (e, Number) => {
+        let rejectionBasePercentSupplier = '';
+        if (Number == 1) {
+            rejectionBasePercentSupplier = 'rejectionBasePercentSupplier1';
+        } else if (Number == 2) {
+            rejectionBasePercentSupplier = 'rejectionBasePercentSupplier2';
+        } else if (Number == 3) {
+            rejectionBasePercentSupplier = 'rejectionBasePercentSupplier3';
+        }
+
+        this.setState({
+            [rejectionBasePercentSupplier]: e.target.value
+        }, () => { this.RejectionCostCalculation(Number) })
+    }
+
+    /**
+    * @method freightHeadsHandler
+    * @description Used to handle freight heads
+    */
+    freightHeadsHandler = (e, Number) => {
+        const { plant, supplier, supplier2, supplier3 } = this.state;
+        const { FreightHeadsList, costingData } = this.props;
+
+        let supplierColumn = '';
+        let Content = '';
+        let supplierId = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            supplierId = supplier.value;
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            supplierId = supplier2.value;
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            supplierId = supplier3.value;
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        if (e.target.value && e.target.value != '') {
+            const tempObj = FreightHeadsList.find(item => item.Value == e.target.value)
+            this.setState({ freightHead: e.target.value }, () => {
+                const freightData = {
+                    FreightHeadId: tempObj.Value,
+                    FreightHead: tempObj.Text,
+                    SourceSupplierId: supplierId,
+                    SourceSupplierPlantId: plant.value,
+                }
+                this.props.getCostingFreight(freightData, res => {
+                    Content.FreightId = e.target.value;
+                    this.props.change(supplierColumn, Content)
+                })
+            });
+        }
+    };
+
+    /**
+    * @method freightAmountHandler
+    * @description Used for freight amount handling
+    */
+    freightAmountHandler = (e, Number) => {
+        const { costingData, FreightData } = this.props;
+        const FreightAmount = e.target.value;
+
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        Content.FreightAmount = FreightAmount;
+        FreightData.NetFreightCost = 1;
+        //if(FreightData.FreightType == 'Rs/Kg' || FreightData.FreightType == 'perCubic feet' ){
+        Content.NetFreightCost = (FreightAmount * FreightData.NetFreightCost);
+        // }else{
+        //     Content.NetFreightCost = (FreightData.NetFreightCost / FreightAmount );
+        // }
+        this.props.change(supplierColumn, Content)
+    }
+
+    /**
+    * @method transportationCostFinishWtHandler
+    * @description Used for transportation cost calculation
+    */
+    transportationCostFinishWtHandler = (e, Number) => {
+
+        if (e.target.value != null && e.target.value != '') {
+            const TransportationOperationFinishWeight = e.target.value;
+            const { costingData } = this.props;
+
+            let supplierColumn = '';
+            let Content = '';
+
+            if (Number == 1) {
+                supplierColumn = 'supplier1Data';
+                Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+            } else if (Number == 2) {
+                supplierColumn = 'supplier2Data';
+                Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+            } else if (Number == 3) {
+                supplierColumn = 'supplier3Data';
+                Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+            }
+
+            const TransportationOperationCost = Content.Quantity * TransportationOperationFinishWeight * Content.TransportationOperationRate;
+            Content.TransportationOperationFinishWeight = TransportationOperationFinishWeight;
+            Content.TransportationOperationCost = TransportationOperationCost;
+            Content.CEDtotalCost = Content.NetSurfaceAreaCost + Content.OverheadProfitCost + Content.TransportationOperationCost;
+
+            Content.TotalCost = (Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+                + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost).toFixed(2);
+            Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
+            Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+            this.props.change(supplierColumn, Content)
+        }
+
+    }
+
+    /**
+    * @method packageCostingHandler
+    * @description If package cost then included in total cost
+    */
+    packageCostingHandler = (e, Number) => {
+        const packagingCost = e.target.value;
+        const { costingData } = this.props;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        // TotalOtherCosts
+        Content.PackagingCost = packagingCost * 1;
+
+        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
+            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
+            + Content.ProfitCost + Content.NetFreightCost + Content.PackagingCost + Content.OtherAnyCostAndCharges;
+
+        Content.TotalCost = (Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost).toFixed(2);
+
+        Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
+
+        Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+
+        this.props.change(supplierColumn, Content)
+    }
+
+    /**
+    * @method anyOtherCostHandler
+    * @description If package cost then included in total cost
+    */
+    anyOtherCostHandler = (e, Number) => {
+        const { costingData } = this.props;
+
+        const anyOtherCost = e.target.value;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        // TotalOtherCosts
+        Content.OtherAnyCostAndCharges = anyOtherCost * 1;
+        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
+            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
+            + Content.ProfitCost + Content.NetFreightCost + Content.PackagingCost + Content.OtherAnyCostAndCharges;
+
+        this.props.change(supplierColumn, Content)
+    }
+
+    /**
+    * @method toolMaintenanceHandler
+    * @description Tool maintenance cost
+    */
+    toolMaintenanceHandler = (e, Number) => {
+        const { costingData } = this.props;
+
+        const toolMaintenanceCost = e.target.value;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        // TotalOtherCosts
+        Content.ToolMaintenanceCost = toolMaintenanceCost * 1;
+        Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
+        Content.TotalCost = (Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost).toFixed(2);
+        Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
+        Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+        this.props.change(supplierColumn, Content)
+    }
+
+    /**
+    * @method toolAmortizationHandler
+    * @description Tool amortization cost
+    */
+    toolAmortizationHandler = (e, Number) => {
+        const toolAmortizationCost = e.target.value;
+
+        const { costingData } = this.props;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        Content.ToolAmortizationCost = toolAmortizationCost * 1;
+        Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
+
+        this.props.change(supplierColumn, Content)
+    }
+
+
+
+    discountHandler = (e, Number) => {
+        const discount = e.target.value;
+
+        const { costingData } = this.props;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        Content.Discount = discount * 1;
+        Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
+        Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+
+        this.props.change(supplierColumn, Content)
+    }
+
+    landedFactorHandler = (e, Number) => {
+        const LandedFactorPercentage = e.target.value;
+
+        const { costingData } = this.props;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        Content.LandedFactorPercentage = LandedFactorPercentage * 1;
+        Content.LandedFactorCost = Content.NetPurchaseOrderPrice * Content.LandedFactorPercentage;
+
+        this.props.change(supplierColumn, Content)
+    }
+
+
+
+    CEDRemarksHandler = (e, Number) => {
+        const { costingData } = this.props;
+
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        Content.CEDRemarks = e.target.value;
+        this.props.change(supplierColumn, Content)
+        //this.setSupplierData(Number, Content)
+    }
+
+    packagingRemarksHandler = (e, Number) => {
+        const { costingData } = this.props;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+        Content.PackagingRemarks = e.target.value;
+        this.props.change(supplierColumn, Content)
+        //this.setSupplierData(Number, Content)
+    }
+
+    remarksHandler = (e, Number) => {
+        const { costingData } = this.props;
+        let supplierColumn = '';
+        let Content = '';
+
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+        Content.Remarks = e.target.value;
+        this.props.change(supplierColumn, Content)
+        //this.setSupplierData(Number, Content)
     }
 
     /**
@@ -277,405 +1182,11 @@ class CostSummary extends Component {
         }
     }
 
-    /**
-    * @method plantHandler
-    * @description Used to handle plant
-    */
-    plantHandler = (newValue, actionMeta) => {
-        this.setState({ plant: newValue });
-    };
 
-    /**
-    * @method freightHeadsHandler
-    * @description Used to handle freight heads
-    */
-    freightHeadsHandler = (e, Number) => {
-        const { plant, supplier3 } = this.state;
-        const { FreightHeadsList, costingData } = this.props;
-
-        let supplierColumn = '';
-        let Content = '';
-
-        if (Number == 1) {
-            supplierColumn = 'supplier1Data';
-            Content = costingData && costingData.supplierOne ? costingData.supplierThree.CostingDetail : {};
-        } else if (Number == 2) {
-            supplierColumn = 'supplier2Data';
-            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
-        } else if (Number == 3) {
-            supplierColumn = 'supplier3Data';
-            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
-        }
-
-
-        if (e.target.value && e.target.value != '') {
-            const tempObj = FreightHeadsList.find(item => item.Value == e.target.value)
-            this.setState({ freightHead: e.target.value }, () => {
-                const freightData = {
-                    FreightHeadId: tempObj.Value,
-                    FreightHead: tempObj.Text,
-                    SourceSupplierId: supplier3.value,
-                    SourceSupplierPlantId: plant.value,
-                }
-                this.props.getCostingFreight(freightData, res => {
-
-                    Content.FreightId = e.target.value;
-                    this.props.change(supplierColumn, Content)
-                })
-            });
-        }
-    };
-
-    freightAmountHandler = (e, Number) => {
-        const { costingData, FreightData } = this.props;
-        const FreightAmount = e.target.value;
-
-        let supplierColumn = '';
-        let Content = '';
-
-        if (Number == 1) {
-            supplierColumn = 'supplier1Data';
-            Content = costingData && costingData.supplierOne ? costingData.supplierThree.CostingDetail : {};
-        } else if (Number == 2) {
-            supplierColumn = 'supplier2Data';
-            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
-        } else if (Number == 3) {
-            supplierColumn = 'supplier3Data';
-            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
-        }
-
-        Content.FreightAmount = FreightAmount;
-        FreightData.NetFreightCost = 1;
-        //if(FreightData.FreightType == 'Rs/Kg' || FreightData.FreightType == 'perCubic feet' ){
-        Content.NetFreightCost = (FreightAmount * FreightData.NetFreightCost);
-        // }else{
-        //     Content.NetFreightCost = (FreightData.NetFreightCost / FreightAmount );
-        // }
-        this.props.change(supplierColumn, Content)
-    }
-
-    /**
-    * @method partHandler
-    * @description Used to handle plant
-    */
-    partHandler = (e) => {
-        const { partNo, supplier, TechnologyId } = this.state;
-        const { technologyList } = this.props;
-        const selectedTechnology = TechnologyId != '' ? TechnologyId : technologyList[0].Value;
-
-        this.props.change("SupplierCode", "")
-        this.props.change("POPrice", "")
-        this.setState({ partNo: e.target.value, supplier: [] }, () => {
-            const checkPartData = {
-                PartId: this.state.partNo,
-                TechnologyId: selectedTechnology
-            }
-            this.props.checkPartWithTechnology(checkPartData, res => {
-                this.props.getExistingSupplierDetailByPartId(this.state.partNo, res => {
-                    // After get listing of exis suppliers
-                    this.existingSupplierDetail()
-                })
-            })
-        });
-    };
-
-    existingSupplierDetail = () => {
-        const { existingSupplierDetail, Suppliers } = this.props;
-        if (existingSupplierDetail) {
-            this.props.change("PartDescription", existingSupplierDetail.PartDescription)
-
-            const existSuppliers = existingSupplierDetail && existingSupplierDetail.ExistingSupplierDetails;
-
-            this.props.change("POPrice", "");
-            this.props.change("POPrice2", "");
-            this.props.change("POPrice3", "");
-            this.props.change("SupplierCode", "");
-            this.props.change("SupplierCode2", "");
-            this.props.change("SupplierCode3", "");
-
-            let tempArray = [];
-
-            existSuppliers.map((Value, index) => {
-                const supplierObj = Suppliers.find(item => item.Value === Value.SupplierId);
-
-                let tempObj = {
-                    [`Data${index}`]: {
-                        supplierDropdown: Value.ActiveCostingSelectList,
-                        supplierName: supplierObj.Text.substring(0, supplierObj.Text.indexOf('(')),
-                        supplier: { label: supplierObj.Text, value: supplierObj.Value },
-                        POPrice: Value.PurchaseOrderPrice
-                    }
-                }
-
-                tempArray.push(tempObj);
-                tempObj = {};
-            });
-
-            this.setState({
-                supplier: tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.supplier : [],
-                supplier2: tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.supplier : [],
-                supplier3: tempArray.length > 2 && tempArray[2].Data2 ? tempArray[2].Data2.supplier : [],
-                hideButtonAdd1: tempArray.length > 0 && tempArray[0].Data0.supplier.hasOwnProperty('label') ? false : true,
-                hideButtonAdd2: tempArray.length > 1 && tempArray[1].Data1.supplier.hasOwnProperty('label') ? false : true,
-                hideButtonAdd3: tempArray.length > 2 && tempArray[2].Data2.supplier.hasOwnProperty('label') ? false : true,
-                supplierDropdown1Array: tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.supplierDropdown : [],
-                supplierDropdown2Array: tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.supplierDropdown : [],
-                supplierDropdown3Array: tempArray.length > 2 && tempArray[2].Data2 ? tempArray[2].Data2.supplierDropdown : [],
-                addSupplier1: tempArray.length > 0 && tempArray[0].Data0.supplier.hasOwnProperty('label') ? true : false,
-                addSupplier2: tempArray.length > 1 && tempArray[1].Data1.supplier.hasOwnProperty('label') ? true : false,
-                addSupplier3: tempArray.length > 2 && tempArray[2].Data2.supplier.hasOwnProperty('label') ? true : false,
-                activeSupplier1: '',
-                activeSupplier2: '',
-                activeSupplier3: '',
-                supplierOneName: tempArray.length > 0 && tempArray[0].Data0 ? tempArray[0].Data0.supplierName : '',
-                supplierTwoName: tempArray.length > 1 && tempArray[1].Data1 ? tempArray[1].Data1.supplierName : '',
-                supplierThreeName: tempArray.length > 2 && tempArray[2].Data2 ? tempArray[2].Data2.supplierName : '',
-            }, () => {
-                this.setSupplierCode()
-            });
-        } else {
-            this.setState({
-                supplier: [],
-                supplier2: [],
-                supplier3: [],
-                hideButtonAdd1: true,
-                hideButtonAdd2: true,
-                hideButtonAdd3: true,
-                supplierDropdown1Array: [],
-                supplierDropdown2Array: [],
-                supplierDropdown3Array: [],
-                addSupplier1: false,
-                addSupplier2: false,
-                addSupplier3: false,
-                supplierOneName: '',
-                supplierTwoName: '',
-                supplierThreeName: '',
-            });
-            this.props.change("SupplierCode", '')
-            this.props.change("SupplierCode2", '')
-            this.props.change("SupplierCode3", '')
-        }
-    }
-
-    setSupplierCode = () => {
-        const { supplier, supplier2, supplier3 } = this.state;
-        if (supplier) {
-            const phrase = supplier.label;
-            const myRegexp = /-(.*)/;
-            const match = myRegexp.exec(phrase);
-            const result = match && match[1].slice(1, -1);
-            this.props.change("SupplierCode", result)
-        }
-
-        if (supplier2) {
-            const phrase = supplier2.label;
-            const myRegexp = /-(.*)/;
-            const match = myRegexp.exec(phrase);
-            const result = match && match[1].slice(1, -1);
-            this.props.change("SupplierCode2", result)
-        }
-
-        if (supplier3) {
-            const phrase = supplier3.label;
-            const myRegexp = /-(.*)/;
-            const match = myRegexp.exec(phrase);
-            const result = match && match[1].slice(1, -1);
-            this.props.change("SupplierCode3", result)
-        }
-    }
-
-    /**
-    * @method supplierHandler
-    * @description Used to handle plant
-    */
-    supplierHandler = (newValue, actionMeta) => {
-        this.setState({ supplier: newValue }, () => {
-            const { supplier } = this.state;
-            const phrase = supplier && supplier.label;
-            const myRegexp = /-(.*)/;
-            const match = myRegexp.exec(phrase);
-            var result = match && match[1].slice(1, -1);
-            this.props.change("SupplierCode", result)
-        });
-    };
-
-    /**
-    * @method supplierHandler
-    * @description Used to handle plant
-    */
-    supplier2Handler = (newValue, actionMeta) => {
-        this.setState({ supplier2: newValue }, () => {
-            const { supplier2 } = this.state;
-            const phrase = supplier2 && supplier2.label;
-            const myRegexp = /-(.*)/;
-            const match = myRegexp.exec(phrase);
-            var result = match && match[1].slice(1, -1);
-            this.props.change("SupplierCode2", result)
-        });
-    };
-
-    /**
-    * @method supplier2Handler
-    * @description Used to handle plant
-    */
-    supplier3Handler = (newValue, actionMeta) => {
-        this.setState({ supplier3: newValue }, () => {
-            const { supplier3 } = this.state;
-            const phrase = supplier3 && supplier3.label;
-            const myRegexp = /-(.*)/;
-            const match = myRegexp.exec(phrase);
-            var result = match && match[1].slice(1, -1);
-            this.props.change("SupplierCode3", result)
-        });
-    };
-
-    // addSupplier1 = () => {
-    //     const { supplier, addSupplier1, partNo } = this.state;
-    //     if (supplier && supplier.value) {
-    //         const requestData = {
-    //             PartId: partNo,
-    //             SupplierId: supplier.value
-    //         }
-
-    //         this.props.createPartWithSupplier(requestData, res => {
-    //             const phrase = supplier.label;
-    //             var result = phrase.substr(0, phrase.indexOf('('));
-    //             this.setState({
-    //                 supplierOneName: result,
-    //             })
-
-    //         })
-    //     }
-    // }
-
-    // addSupplier2 = () => {
-    //     const { supplier2, partNo } = this.state;
-    //     if (supplier2 && supplier2.value) {
-    //         const requestData = {
-    //             PartId: partNo,
-    //             SupplierId: supplier2.value
-    //         }
-
-    //         this.props.createPartWithSupplier(requestData, res => {
-    //             const phrase = supplier2.label;
-    //             var result = phrase.substr(0, phrase.indexOf('('));
-    //             this.setState({
-    //                 supplierTwoName: result,
-    //             })
-    //         })
-    //     }
-    // }
-
-
-    // Using common function for addsupplier function its 1, 2 and 3
-    addSupplier = (Number) => {
-        const { supplier, supplier2, supplier3, partNo } = this.state;
-
-        let SupplierId = '';
-        let SupplierLabel = '';
-        let SupplierName = '';
-        if (Number == 1) {
-            SupplierId = supplier && supplier.value ? supplier.value : '';
-            SupplierLabel = supplier && supplier.label ? supplier.label : '';
-            SupplierName = 'supplierOneName';
-        } else if (Number == 2) {
-            SupplierId = supplier2 && supplier2.value ? supplier2.value : '';
-            SupplierLabel = supplier2 && supplier2.label ? supplier2.label : '';
-            SupplierName = 'supplierTwoName';
-        } else if (Number == 3) {
-            SupplierId = supplier3 && supplier3.value ? supplier3.value : '';
-            SupplierLabel = supplier3 && supplier3.label ? supplier3.label : '';
-            SupplierName = 'supplierThreeName';
-        }
-
-        //if (supplier3 && supplier3.value) {
-        const requestData = {
-            PartId: partNo,
-            SupplierId: SupplierId
-        }
-
-        this.props.createPartWithSupplier(requestData, res => {
-            const phrase = SupplierLabel;
-            var result = phrase.substr(0, phrase.indexOf('('));
-            this.setState({
-                [SupplierName]: result,
-            })
-        })
-        //}
-    }
 
     activeZBCSupplierHandler = (e, supplier) => {
         this.setState({
             activeZBCSupplier: e.target.value
-        })
-    }
-
-    // activeSupplierHandler1 = (e, supplier) => {
-    //     this.setState({
-    //         activeSupplier1: e.target.value
-    //     }, () => {
-    //         if (e.target.value != '' && e.target.value != 0) {
-    //             this.props.getCostingByCostingId(this.state.activeSupplier1, supplier, (res) => {
-    //                 if (res.data.Result) {
-    //                     const { costingData } = this.props;
-    //                     this.props.change("supplier1Data", costingData.supplierOne.CostingDetail)
-    //                 }
-    //             })
-    //         }
-    //     })
-    // }
-
-    // activeSupplierHandler2 = (e, supplier) => {
-    //     this.setState({
-    //         activeSupplier2: e.target.value
-    //     }, () => {
-    //         if (e.target.value != '' && e.target.value != 0) {
-    //             this.props.getCostingByCostingId(this.state.activeSupplier2, supplier, (res) => {
-    //                 if (res.data.Result) {
-    //                     const { costingData } = this.props;
-    //                     this.props.change("supplier2Data", costingData.supplierTwo.CostingDetail)
-    //                 }
-    //             })
-    //         }
-    //     })
-    // }
-
-    activeSupplierHandler = (e, activeSupplier, supplier) => {
-
-        let responseData = '';
-        let supplierColumn = '';
-        if (supplier == 'supplierOne') {
-            supplierColumn = 'supplier1Data';
-        } else if (supplier == 'supplierTwo') {
-            supplierColumn = 'supplier2Data';
-        } else if (supplier == 'supplierThree') {
-            supplierColumn = 'supplier3Data';
-        }
-
-        this.setState({
-            [activeSupplier]: e.target.value
-        }, () => {
-            if (e.target.value != '' && e.target.value != 0) {
-                this.props.getCostingByCostingId(e.target.value, supplier, (res) => {
-                    console.log('res >>>>>>>>>>', res)
-                    if (res && res.data && res.data.Result) {
-                        const { costingData } = this.props;
-
-                        if (supplier == 'supplierOne') {
-                            responseData = costingData && costingData.supplierOne ? costingData.supplierThree.CostingDetail : {};
-                        } else if (supplier == 'supplierTwo') {
-                            responseData = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
-                        } else if (supplier == 'supplierThree') {
-                            responseData = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
-                        }
-                        this.props.change(supplierColumn, responseData)
-                        //this.props.change("supplier3Data", costingData.supplierThree.CostingDetail)
-                    }
-                })
-            } else {
-                this.props.change(supplierColumn, {})
-                //this.props.change("supplier3Data", {})
-            }
         })
     }
 
@@ -694,130 +1205,10 @@ class CostSummary extends Component {
         })
     }
 
-    modelTypeHandlerSupplier1 = (e) => {
-        this.setState({
-            modelTypeSupplier1: e.target.value
-        })
-    }
-
-    modelTypeHandlerSupplier2 = (e) => {
-        this.setState({
-            modelTypeSupplier2: e.target.value
-        })
-    }
-
-    modelTypeHandlerSupplier3 = (e) => {
-        const { supplier3 } = this.state;
-        const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
-        this.setState({
-            modelTypeSupplier3: e.target.value
-        }, () => {
-            if (e.target.value != '') {
-                let formData = {
-                    ModelTypeId: e.target.value,
-                    SupplierId: supplier3.value
-                }
-                this.props.getCostingOverHeadProByModelType(formData, (Data) => {
-                    let overHeadCalculation = 0;
-                    if (Data.OverheadProfitTypeCostingHead == "RM") {
-                        overHeadCalculation = Content.NetRawMaterialCost;
-                    } else if (Data.OverheadProfitTypeCostingHead == "RM + CC") {
-                        overHeadCalculation = Content.NetRawMaterialCost + TotalConversionCost
-                    } else {
-                        overHeadCalculation = Content.NetRawMaterialCost
-                    }
-
-                    let profitCostCalculation = 0;
-                    if (Data.ProfitTypeCostingHead == "RM") {
-                        profitCostCalculation = Content.NetRawMaterialCost;
-                    } else if (Data.ProfitTypeCostingHead == "RM + CC") {
-                        profitCostCalculation = Content.NetRawMaterialCost + TotalConversionCost
-                    } else {
-                        profitCostCalculation = Content.NetRawMaterialCost
-                    }
-
-                    Content.ModelTypeId = e.target.value;
-                    Content.OverheadPercentage = Data.OverheadProfitPercentage;
-                    Content.OverheadCost = (overHeadCalculation * Data.OverheadProfitPercentage) / 100;
-                    Content.ProfitCost = (profitCostCalculation * Data.ProfitPercentage) / 100;
-
-                    // TotalOtherCosts
-                    Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
-                        + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
-                        + Content.ProfitCost + Content.NetFreightCost;
-                    this.props.change('supplier3Data', Content)
-                })
-            } else {
-                Content.ModelTypeId = 0;
-                Content.OverheadPercentage = 0;
-                Content.OverheadCost = 0;
-                this.props.change('supplier3Data', Content)
-            }
-        })
-    }
-
     rejectionHandlerZBC = (e) => {
         this.setState({
             rejectionTypeZBC: e.target.value
         })
-    }
-
-    rejectionHandlerSupplier1 = (e) => {
-        this.setState({
-            rejectionTypeSupplier1: e.target.value
-        })
-    }
-
-    rejectionHandlerSupplier2 = (e) => {
-        this.setState({
-            rejectionTypeSupplier2: e.target.value
-        })
-    }
-
-    RejectionTypeCalculation = (RMCostingHeadObj, Content) => {
-        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
-        let RejectionType = '';
-        if (RMCostingHeadObj.Text == "RM") {
-            RejectionType = Content.NetRawMaterialCost;
-        } else if (RMCostingHeadObj.Text == "RM + CC") {
-            RejectionType = Content.NetRawMaterialCost + TotalConversionCost
-        } else {
-            RejectionType = Content.NetRawMaterialCost
-        }
-        return RejectionType;
-    }
-
-    rejectionHandlerSupplier3 = (e) => {
-        const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-        const CostingHeads = costingData.supplierThree.CostingHeads;
-        const RejectionCostingHeadObj = CostingHeads.find(item => item.Value == e.target.value)
-
-        const RejectionTypeValue = this.RejectionTypeCalculation(RejectionCostingHeadObj, Content)
-        this.setState({
-            rejectionTypeValue3: RejectionTypeValue,
-            RejectionTypeCostingHead3ID: e.target.value,
-        }, () => { this.rejectionCostCalculation() })
-    }
-
-    rejectionPercentHandlerSupplier3 = (e) => {
-        this.setState({
-            rejectionBasePercentSupplier3: e.target.value
-        }, () => { this.rejectionCostCalculation() })
-    }
-
-    rejectionCostCalculation = () => {
-        const { rejectionTypeValue3, rejectionBasePercentSupplier3, RejectionTypeCostingHead3ID } = this.state;
-        const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-
-        Content.RejectionTypeCostingHeadId = RejectionTypeCostingHead3ID;
-        Content.RejectionPercentage = rejectionBasePercentSupplier3;
-        Content.RejectionCost = (rejectionTypeValue3 * rejectionBasePercentSupplier3) / 100
-
-        this.props.change('supplier3Data', Content)
     }
 
     /**
@@ -902,133 +1293,49 @@ class CostSummary extends Component {
         }
     }
 
-    transportationCostFinishWtHandler3 = (e) => {
+    AdditionalFreightCostHandler = (e, Number) => {
         const { costingData } = this.props;
-        const Quantity = costingData.supplierThree.Quantity;
-        const Content = costingData.supplierThree.CostingDetail;
+        let supplierColumn = '';
+        let Content = '';
 
-        const TransportationOperationCost = Quantity * e.target.value * Content.TransportationOperationRate;
-        Content.TransportationOperationCost = TransportationOperationCost;
-        Content.CEDtotalCost = Content.NetSurfaceAreaCost + Content.OverheadProfitCost + Content.TransportationOperationCost;
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
 
-        Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
-            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
-        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
-        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;;
-        this.props.change('supplier3Data', Content)
+        if (e.target.value != null && e.target.value != '') {
+            Content.NetAdditionalFreightCost = e.target.value;
+        } else {
+            Content.NetAdditionalFreightCost = e.target.value;
+        }
+
+        this.props.change(supplierColumn, Content)
     }
 
-    /**
-    * @method packageCostingHandler
-    * @description If package cost then included in total cost
-    */
-    packageCostingHandler = (e) => {
-        const packagingCost = e.target.value;
+    shareOfBusinessHandler = (e, Number) => {
         const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
+        let supplierColumn = '';
+        let Content = '';
 
-        // TotalOtherCosts
-        Content.PackagingCost = packagingCost * 1;
-        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
-            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
-            + Content.ProfitCost + Content.NetFreightCost + Content.PackagingCost + Content.OtherAnyCostAndCharges;
-
-        this.props.change('supplier3Data', Content)
-    }
-
-    /**
-    * @method anyOtherCostHandler
-    * @description If package cost then included in total cost
-    */
-    anyOtherCostHandler = (e) => {
-        const anyOtherCost = e.target.value;
-        const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-
-        // TotalOtherCosts
-        Content.OtherAnyCostAndCharges = anyOtherCost * 1;
-        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
-            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
-            + Content.ProfitCost + Content.NetFreightCost + Content.PackagingCost + Content.OtherAnyCostAndCharges;
-
-        this.props.change('supplier3Data', Content)
-    }
-
-    /**
-    * @method toolMaintenanceHandler
-    * @description Tool maintenance cost
-    */
-    toolMaintenanceHandler = (e) => {
-        const toolMaintenanceCost = e.target.value;
-        const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-
-        // TotalOtherCosts
-        Content.ToolMaintenanceCost = toolMaintenanceCost * 1;
-        Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
-        Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
-            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
-        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
-        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
-        this.props.change('supplier3Data', Content)
-    }
-
-    /**
-    * @method toolAmortizationHandler
-    * @description Tool amortization cost
-    */
-    toolAmortizationHandler = (e) => {
-        const toolAmortizationCost = e.target.value;
-        const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-
-        Content.ToolAmortizationCost = toolAmortizationCost * 1;
-        Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
-
-        this.props.change('supplier3Data', Content)
-    }
-
-    discountHandler = (e) => {
-        const discount = e.target.value;
-        const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-
-        Content.Discount = discount * 1;
-        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
-        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
-
-        this.props.change('supplier3Data', Content)
-    }
-
-    landedFactorHandler = (e) => {
-        const LandedFactorPercentage = e.target.value;
-        const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-
-        Content.LandedFactorPercentage = LandedFactorPercentage * 1;
-        Content.LandedFactorCost = Content.NetPurchaseOrderPrice * Content.LandedFactorPercentage;
-
-        this.props.change('supplier3Data', Content)
-    }
-
-    shareOfBusinessHandler = (e, Number, Content) => {
+        if (Number == 1) {
+            supplierColumn = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            supplierColumn = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            supplierColumn = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
         Content.ShareOfBusiness = e.target.value * 1;
-        this.setSupplierData(Number, Content)
-    }
-
-    CEDRemarksHandler = (e, Number, Content) => {
-        Content.CEDRemarks = e.target.value;
-        this.setSupplierData(Number, Content)
-    }
-
-    packagingRemarksHandler = (e, Number, Content) => {
-        Content.PackagingRemarks = e.target.value;
-        this.setSupplierData(Number, Content)
-    }
-
-    remarksHandler = (e, Number, Content) => {
-        Content.Remarks = e.target.value;
-        this.setSupplierData(Number, Content)
+        this.props.change(supplierColumn, Content)
+        //this.setSupplierData(Number, Content)
     }
 
     setSupplierData = (Number, Content) => {
@@ -1041,12 +1348,24 @@ class CostSummary extends Component {
         }
     }
 
-    saveCosting3Handler = () => {
+    saveCosting = (Number) => {
         const { costingData } = this.props;
-        const Content = costingData.supplierThree.CostingDetail;
-        const CostingId = costingData.supplierThree.CostingId;
 
-        let formData3 = {
+        let Content = '';
+        let CostingId = '';
+
+        if (Number == 1) {
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+            CostingId = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail.CostingId : '';
+        } else if (Number == 2) {
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+            CostingId = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail.CostingId : '';
+        } else if (Number == 3) {
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+            CostingId = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail.CostingId : '';
+        }
+
+        let formData = {
             CostingId: CostingId,
             ECONumber: Content.ECONumber,
             RevsionNumber: Content.RevsionNumber,
@@ -1112,11 +1431,9 @@ class CostSummary extends Component {
             NetGrossWeight: Content.NetGrossWeight,
         }
 
-        this.props.saveCosting(formData3, (res) => {
+        this.props.saveCosting(formData, (res) => {
             toastr.success('Costing has been saved successfully.')
         })
-
-
     }
 
     /**
@@ -1134,8 +1451,7 @@ class CostSummary extends Component {
     render() {
         const { handleSubmit, ZBCSupplier, costingData } = this.props;
         const { supplier, supplier2, supplier3, isShowOtherOpsModal, supplierIdForOtherOps,
-            supplierColumn, isShowCEDotherOpsModal, isShowFreightModal, supplierIdForCEDOtherOps,
-            supplierOneCostingHeadsData, supplierTwoCostingHeadsData, supplierThreeCostingHeadsData } = this.state;
+            supplierColumn, isShowCEDotherOpsModal, isShowFreightModal, supplierIdForCEDOtherOps } = this.state;
 
         let supplierId = "";
         if (supplierColumn == "supplierOne") {
@@ -1250,7 +1566,7 @@ class CostSummary extends Component {
                                 valueDescription={this.state.supplier}
                             />
                         </Col>
-                        <Col md="3" className={'existing-supplier'}>
+                        <Col md="2" className={'existing-supplier'}>
                             <Field
                                 label={`Supplier Code`}
                                 name={"SupplierCode"}
@@ -1263,7 +1579,7 @@ class CostSummary extends Component {
                                 disabled={true}
                             />
                         </Col>
-                        <Col md="3" className={'existing-supplier'}>
+                        <Col md="2" className={'existing-supplier'}>
                             <Field
                                 label={`PO Price`}
                                 name={"POPrice"}
@@ -1274,6 +1590,19 @@ class CostSummary extends Component {
                                 value={0}
                                 required={true}
                                 className="withoutBorder"
+                            />
+                        </Col>
+                        <Col md="2" className={'existing-supplier'}>
+                            <Field
+                                label={`SOB`}
+                                name={"ShareOfBusiness1"}
+                                type="text"
+                                placeholder={''}
+                                validate={[required, number]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                disabled={false}
                             />
                         </Col>
                         <Col md="2" className={'existing-supplier'}>
@@ -1298,7 +1627,7 @@ class CostSummary extends Component {
                                 valueDescription={this.state.supplier2}
                             />
                         </Col>
-                        <Col md="3" className={'existing-supplier'}>
+                        <Col md="2" className={'existing-supplier'}>
                             <Field
                                 label={`Supplier2 Code`}
                                 name={"SupplierCode2"}
@@ -1311,7 +1640,7 @@ class CostSummary extends Component {
                                 disabled={true}
                             />
                         </Col>
-                        <Col md="3" className={'existing-supplier'}>
+                        <Col md="2" className={'existing-supplier'}>
                             <Field
                                 label={`PO Price`}
                                 name={"POPrice2"}
@@ -1322,6 +1651,19 @@ class CostSummary extends Component {
                                 value={0}
                                 required={true}
                                 className="withoutBorder"
+                            />
+                        </Col>
+                        <Col md="2" className={'existing-supplier'}>
+                            <Field
+                                label={`SOB`}
+                                name={"ShareOfBusiness2"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                disabled={false}
                             />
                         </Col>
                         <Col md="2" className={'existing-supplier'}>
@@ -1346,7 +1688,7 @@ class CostSummary extends Component {
                                 valueDescription={this.state.supplier3}
                             />
                         </Col>
-                        <Col md="3" className={'existing-supplier'}>
+                        <Col md="2" className={'existing-supplier'}>
                             <Field
                                 label={`Supplier 3 Code`}
                                 name={"SupplierCode3"}
@@ -1359,7 +1701,7 @@ class CostSummary extends Component {
                                 disabled={true}
                             />
                         </Col>
-                        <Col md="3" className={'existing-supplier'}>
+                        <Col md="2" className={'existing-supplier'}>
                             <Field
                                 label={`PO Price`}
                                 name={"POPrice3"}
@@ -1370,6 +1712,19 @@ class CostSummary extends Component {
                                 value={0}
                                 required={true}
                                 className="withoutBorder"
+                            />
+                        </Col>
+                        <Col md="2" className={'existing-supplier'}>
+                            <Field
+                                label={`SOB`}
+                                name={"ShareOfBusiness3"}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                disabled={false}
                             />
                         </Col>
                         <Col md="2" className={'existing-supplier'}>
@@ -1466,7 +1821,7 @@ class CostSummary extends Component {
                             }</Col>
                     </Row>
 
-                    <Row>
+                    {/* <Row>
                         <Col md="12" className={'dark-divider'}>
                             SOB
                         </Col>
@@ -1488,6 +1843,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.shareOfBusinessHandler(e, 1)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="SOB"
@@ -1503,6 +1859,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.shareOfBusinessHandler(e, 2)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="SOB"
@@ -1518,13 +1875,13 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
-                                onChange={(e) => this.shareOfBusinessHandler(e, 3, costingData.supplierThree.CostingDetail)}
+                                onChange={(e) => this.shareOfBusinessHandler(e, 3)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="SOB"
                             />
                         </Col>
-                    </Row>
+                    </Row> */}
 
                     {/* ---------------Material Cost start------------------ */}
                     <Row className={'divider'} >
@@ -1611,6 +1968,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.ecoNumberHandler(e, 1)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="Enter ECO No"
@@ -1626,6 +1984,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.ecoNumberHandler(e, 2)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="Enter ECO No"
@@ -1641,6 +2000,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.ecoNumberHandler(e, 3)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="Enter ECO No"
@@ -1668,6 +2028,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.revisionNumberHandler(e, 1)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="Enter Rev No"
@@ -1683,6 +2044,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.revisionNumberHandler(e, 2)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="Enter Rev No"
@@ -1698,6 +2060,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
+                                onChange={(e) => this.revisionNumberHandler(e, 3)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="Enter Rev No"
@@ -1847,7 +2210,7 @@ class CostSummary extends Component {
                                 className="withoutBorder custom-ops-field"
                                 title="Other Operation Cost"
                             />
-                            <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
+                            <button type="button" onClick={() => this.otherOperationCostToggle(supplier.value, "supplierOne")} className={'btn btn-primary custom-btn'}>Show</button>
                         </Col>
                         <Col md="3" className="custom-ops">
                             <Field
@@ -1863,7 +2226,7 @@ class CostSummary extends Component {
                                 className="withoutBorder custom-ops-field"
                                 title="Other Operation Cost"
                             />
-                            <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
+                            <button type="button" onClick={() => this.otherOperationCostToggle(supplier2.value, "supplierTwo")} className={'btn btn-primary custom-btn'}>Show</button>
                         </Col>
                         <Col md="3" className="custom-ops">
                             <Field
@@ -2053,7 +2416,7 @@ class CostSummary extends Component {
                                 // required={true}
                                 className=" withoutBorder custom-select"
                                 options={this.renderTypeOfListing('modelType')}
-                                onChange={this.modelTypeHandlerSupplier1}
+                                onChange={(e) => this.modelTypeHandlerSupplier(e, 1)}
                                 optionValue={'Value'}
                                 optionLabel={'Text'}
                                 component={renderSelectField}
@@ -2069,7 +2432,7 @@ class CostSummary extends Component {
                                 // required={true}
                                 className=" withoutBorder custom-select"
                                 options={this.renderTypeOfListing('modelType')}
-                                onChange={this.modelTypeHandlerSupplier2}
+                                onChange={(e) => this.modelTypeHandlerSupplier(e, 2)}
                                 optionValue={'Value'}
                                 optionLabel={'Text'}
                                 component={renderSelectField}
@@ -2085,7 +2448,7 @@ class CostSummary extends Component {
                                 // required={true}
                                 className=" withoutBorder custom-select"
                                 options={this.renderTypeOfListing('modelType')}
-                                onChange={this.modelTypeHandlerSupplier3}
+                                onChange={(e) => this.modelTypeHandlerSupplier(e, 3)}
                                 optionValue={'Value'}
                                 optionLabel={'Text'}
                                 component={renderSelectField}
@@ -2260,7 +2623,7 @@ class CostSummary extends Component {
                                     // required={true}
                                     className=" withoutBorder custom-select"
                                     options={this.renderTypeOfListing('Rejection')}
-                                    onChange={this.rejectionHandlerSupplier1}
+                                    onChange={(e) => this.rejectionHandlerSupplier(e, 1)}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -2272,6 +2635,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
+                                    onChange={(e) => this.rejectionPercentHandlerSupplier(e, 1)}
                                     value={this.state.rejectionBasePercentSupplier1}
                                     required={true}
                                     className="withoutBorder"
@@ -2306,7 +2670,7 @@ class CostSummary extends Component {
                                     // required={true}
                                     className=" withoutBorder custom-select"
                                     options={this.renderTypeOfListing('Rejection')}
-                                    onChange={this.rejectionHandlerSupplier2}
+                                    onChange={(e) => this.rejectionHandlerSupplier(e, 2)}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -2318,6 +2682,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
+                                    onChange={(e) => this.rejectionPercentHandlerSupplier(e, 2)}
                                     value={this.state.rejectionBasePercentSupplier2}
                                     required={true}
                                     className="withoutBorder"
@@ -2352,7 +2717,7 @@ class CostSummary extends Component {
                                     //required={true}
                                     className=" withoutBorder custom-select"
                                     options={this.renderTypeOfListing('Rejection')}
-                                    onChange={this.rejectionHandlerSupplier3}
+                                    onChange={(e) => this.rejectionHandlerSupplier(e, 3)}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -2364,7 +2729,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    onChange={this.rejectionPercentHandlerSupplier3}
+                                    onChange={(e) => this.rejectionPercentHandlerSupplier(e, 3)}
                                     value={this.state.rejectionBasePercentSupplier3}
                                     required={true}
                                     className="withoutBorder"
@@ -2938,8 +3303,8 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     // required={true}
                                     className=" withoutBorder custom-select"
-                                    options={this.renderTypeOfListing('part')}
-                                    onChange={this.partHandler}
+                                    options={this.renderTypeOfListing('freightHeads')}
+                                    onChange={(e) => this.freightHeadsHandler(e, 1)}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -2952,6 +3317,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
+                                    onChange={(e) => this.freightAmountHandler(e, 1)}
                                     value={this.state.freightBaseSupplier1}
                                     //required={true}
                                     className="withoutBorder"
@@ -2986,8 +3352,8 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     // required={true}
                                     className=" withoutBorder custom-select"
-                                    options={this.renderTypeOfListing('part')}
-                                    onChange={this.partHandler}
+                                    options={this.renderTypeOfListing('freightHeads')}
+                                    onChange={(e) => this.freightHeadsHandler(e, 2)}
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
@@ -3000,6 +3366,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
+                                    onChange={(e) => this.freightAmountHandler(e, 2)}
                                     value={this.state.freightBaseSupplier2}
                                     //required={true}
                                     className="withoutBorder"
@@ -3099,7 +3466,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.additionalFreightBaseSupplier1}
+                                    value={0}
+                                    onChange={(e) => this.AdditionalFreightCostHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -3121,7 +3489,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.additionalFreightBaseSupplier2}
+                                    value={0}
+                                    onChange={(e) => this.AdditionalFreightCostHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -3143,7 +3512,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.additionalFreightBaseSupplier3}
+                                    value={0}
+                                    onChange={(e) => this.AdditionalFreightCostHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -3207,7 +3577,10 @@ class CostSummary extends Component {
                                     title="Enter Freight Amount"
                                 />
 
-                                <button type="button" title="Select CED Other Operation">CED Add</button>
+                                <button
+                                    type="button"
+                                    onClick={() => this.CEDotherOperationToggle(supplier.value, 'supplierOne')}
+                                    title="Select CED Other Operation">CED Add</button>
 
                                 {/* <label>Rate</label>
                                 <input type="text" value={this.state.cedCostRateBaseSupplier1} className={'mt10 overhead-percent-supplier'} title="" /> */}
@@ -3279,7 +3652,10 @@ class CostSummary extends Component {
                                     title="Enter Freight Amount"
                                 />
 
-                                <button type="button" title="Select CED Other Operation">CED Add</button>
+                                <button
+                                    type="button"
+                                    onClick={() => this.CEDotherOperationToggle(supplier2.value, 'supplierTwo')}
+                                    title="Select CED Other Operation">CED Add</button>
 
                                 {/* <label>Rate</label>
                                 <input type="text" value={this.state.cedCostRateBaseSupplier2} className={'mt10 overhead-percent-supplier'} title="" /> */}
@@ -3454,6 +3830,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={this.state.TransCostFinishWtBaseSupplier1}
+                                    onChange={(e) => this.transportationCostFinishWtHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -3505,6 +3882,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={this.state.TransCostFinishWtBaseSupplier2}
+                                    onChange={(e) => this.transportationCostFinishWtHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -3552,7 +3930,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={this.state.TransCostFinishWtBaseSupplier3}
-                                    onChange={this.transportationCostFinishWtHandler3}
+                                    onChange={(e) => this.transportationCostFinishWtHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -3721,9 +4099,10 @@ class CostSummary extends Component {
                                     name={`${supplier1Data}.CEDRemarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.cedCostRemarksSupplier1}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.CEDRemarksHandler(e, 1)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -3738,9 +4117,10 @@ class CostSummary extends Component {
                                     name={`${supplier2Data}.CEDRemarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.cedCostRemarksSupplier2}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.CEDRemarksHandler(e, 2)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -3755,10 +4135,10 @@ class CostSummary extends Component {
                                     name={`${supplier3Data}.CEDRemarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.cedCostRemarksSupplier3}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
-                                    onChange={(e) => this.CEDRemarksHandler(e, 3, costingData.supplierThree.CostingDetail)}
+                                    onChange={(e) => this.CEDRemarksHandler(e, 3)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -3855,7 +4235,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.packagingCostSupplier1}
+                                    value={0}
+                                    onChange={(e) => this.packageCostingHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -3873,7 +4254,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.packagingCostSupplier2}
+                                    value={0}
+                                    onChange={(e) => this.packageCostingHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -3891,8 +4273,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.packagingCostSupplier3}
-                                    onChange={this.packageCostingHandler}
+                                    value={0}
+                                    onChange={(e) => this.packageCostingHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -3918,9 +4300,10 @@ class CostSummary extends Component {
                                     name={`${supplier1Data}.PackagingRemarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.cedTotalRemarksSupplier1}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.packagingRemarksHandler(e, 1)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -3935,9 +4318,10 @@ class CostSummary extends Component {
                                     name={`${supplier2Data}.PackagingRemarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.cedTotalRemarksSupplier2}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.packagingRemarksHandler(e, 2)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -3952,10 +4336,10 @@ class CostSummary extends Component {
                                     name={`${supplier3Data}.PackagingRemarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.cedTotalRemarksSupplier3}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
-                                    onChange={(e) => this.packagingRemarksHandler(e, 3, costingData.supplierThree.CostingDetail)}
+                                    onChange={(e) => this.packagingRemarksHandler(e, 3)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -3984,7 +4368,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.otherCostSupplier1}
+                                    value={0}
+                                    onChange={(e) => this.anyOtherCostHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4002,7 +4387,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.otherCostSupplier2}
+                                    value={0}
+                                    onChange={(e) => this.anyOtherCostHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4020,8 +4406,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.otherCostSupplier3}
-                                    onChange={this.anyOtherCostHandler}
+                                    value={0}
+                                    onChange={(e) => this.anyOtherCostHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4192,7 +4578,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.toolMaintenanceSupplier1}
+                                    value={0}
+                                    onChange={(e) => this.toolMaintenanceHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -4210,7 +4597,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.toolMaintenanceSupplier2}
+                                    value={0}
+                                    onChange={(e) => this.toolMaintenanceHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -4229,7 +4617,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={0}
-                                    onChange={this.toolMaintenanceHandler}
+                                    onChange={(e) => this.toolMaintenanceHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -4259,7 +4647,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.toolMaintenanceSupplier1}
+                                    value={0}
+                                    onChange={(e) => this.toolAmortizationHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -4277,7 +4666,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.toolMaintenanceSupplier2}
+                                    value={0}
+                                    onChange={(e) => this.toolAmortizationHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -4296,7 +4686,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={0}
-                                    onChange={this.toolAmortizationHandler}
+                                    onChange={(e) => this.toolAmortizationHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     //disabled={true}
@@ -4396,7 +4786,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.hundiBaseSupplier1}
+                                    value={0}
+                                    onChange={(e) => this.discountHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4412,7 +4803,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.hundiCostSupplier1}
+                                    value={0}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={true}
@@ -4430,7 +4821,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.hundiBaseSupplier2}
+                                    value={0}
+                                    onChange={(e) => this.discountHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4446,7 +4838,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.hundiCostSupplier2}
+                                    value={0}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={true}
@@ -4465,7 +4857,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={0}
-                                    onChange={this.discountHandler}
+                                    onChange={(e) => this.discountHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4628,9 +5020,10 @@ class CostSummary extends Component {
                                     name={`${supplier1Data}.Remarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.totalCostRemarksSupplier1}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.remarksHandler(e, 1)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -4645,9 +5038,10 @@ class CostSummary extends Component {
                                     name={`${supplier2Data}.Remarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.totalCostRemarksSupplier2}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
+                                    onChange={(e) => this.remarksHandler(e, 2)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -4662,10 +5056,10 @@ class CostSummary extends Component {
                                     name={`${supplier3Data}.Remarks`}
                                     placeholder="Type your message here..."
                                     //onChange={this.handleMessageChange}
-                                    value={this.state.totalCostRemarksSupplier3}
+                                    value={0}
                                     className="withoutBorder"
                                     //validate={[required, maxLength5000]}
-                                    onChange={(e) => this.remarksHandler(e, 3, costingData.supplierThree.CostingDetail)}
+                                    onChange={(e) => this.remarksHandler(e, 3)}
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
@@ -4765,7 +5159,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.landedFactorBaseSupplier1}
+                                    value={0}
+                                    onChange={(e) => this.landedFactorHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4781,7 +5176,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.landedFactorCostSupplier1}
+                                    value={0}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={true}
@@ -4799,7 +5194,8 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.landedFactorBaseSupplier2}
+                                    value={0}
+                                    onChange={(e) => this.landedFactorHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4814,7 +5210,7 @@ class CostSummary extends Component {
                                     placeholder={''}
                                     //validate={[required]}
                                     component={renderText}
-                                    value={this.state.landedFactorCostSupplier2}
+                                    value={0}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={true}
@@ -4832,7 +5228,7 @@ class CostSummary extends Component {
                                     //validate={[required]}
                                     component={renderText}
                                     value={0}
-                                    onChange={this.landedFactorHandler}
+                                    onChange={(e) => this.landedFactorHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
                                     disabled={false}
@@ -4857,7 +5253,6 @@ class CostSummary extends Component {
                         </Col>
                         {/* <hr /> */}
                         {/* ----------Landed Factor(%) end ----------------- */}
-
 
                     </Row>
                     <hr />
@@ -4892,17 +5287,17 @@ class CostSummary extends Component {
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
-                            <button className={'btn btn-primary mr5'}>Save</button>
+                            <button type={'button'} onClick={() => this.saveCosting(1)} className={'btn btn-primary mr5'}>Save</button>
                             <button className={'btn btn-primary'}>Send For Approval</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
-                            <button className={'btn btn-primary mr5'}>Save</button>
+                            <button type={'button'} onClick={() => this.saveCosting(2)} className={'btn btn-primary mr5'}>Save</button>
                             <button className={'btn btn-primary'}>Send For Approval</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
-                            <button type={'button'} onClick={this.saveCosting3Handler} className={'btn btn-primary mr5'}>Save</button>
+                            <button type={'button'} onClick={() => this.saveCosting(3)} className={'btn btn-primary mr5'}>Save</button>
                             <button className={'btn btn-primary'}>Send For Approval</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
@@ -4936,18 +5331,15 @@ class CostSummary extends Component {
 * @method mapStateToProps
 * @description return state to component as props
 * @param {*} state
-        */
-function mapStateToProps({ comman, costing, interestRate }) {
+*/
+function mapStateToProps(state) {
+    const sobObject = selector(state, 'ShareOfBusiness1', 'ShareOfBusiness2', 'ShareOfBusiness3');
+    const { comman, costing, interestRate } = state;
     const { interestRateList } = interestRate;
     const { plantList, technologyList, modelTypes, costingHead } = comman;
-    // let initialValues = {
-    //     supplier2Data: {
-    //         netRMCost: 2
-    //     }
-    // }
 
     if (costing && costing.plantComboDetail) {
-        const { existingSupplierDetail, costingData, FreightHeadsList, FreightData } = costing;
+        const { loading, existingSupplierDetail, costingData, FreightHeadsList, FreightData } = costing;
         const { Plants, Parts, Suppliers, ZBCSupplier } = costing.plantComboDetail;
 
         return {
@@ -4964,6 +5356,8 @@ function mapStateToProps({ comman, costing, interestRate }) {
             interestRateList,
             FreightHeadsList,
             FreightData,
+            sobObject,
+            loading,
             //initialValues
         }
     }

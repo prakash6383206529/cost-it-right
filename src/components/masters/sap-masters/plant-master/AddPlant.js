@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { required, number, maxLength6, maxLength10 } from "../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI } from '../../../../actions/master/Comman';
@@ -14,9 +14,9 @@ class AddPlant extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            countryListing: [],
-            stateListing: [],
-            cityListing: [],
+            // countryListing: [],
+            // stateListing: [],
+            cityId: '',
             isActiveBox: true,
         }
     }
@@ -30,7 +30,13 @@ class AddPlant extends Component {
         this.props.fetchSupplierCityDataAPI(() => { })
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
-                this.props.getPlantUnitAPI(PlantId, true, res => { })
+                this.props.getPlantUnitAPI(PlantId, true, res => {
+                    const response = res.data.Data;
+                    this.setState({
+                        cityId: response.CityIdRef,
+                        isActiveBox: response.IsActive,
+                    })
+                })
             })
         } else {
             this.props.getPlantUnitAPI('', false, res => { })
@@ -67,9 +73,9 @@ class AddPlant extends Component {
     * @method handleCityChange
     * @description  used to handle city selection
     */
-    handleCityChange = (value) => {
+    handleCityChange = (e) => {
         this.setState({
-            cityListing: value
+            cityId: e.target.value
         });
     }
 
@@ -80,6 +86,7 @@ class AddPlant extends Component {
     selectType = (label) => {
         const { countryList, stateList, cityList } = this.props;
         const temp = [];
+
         if (label === 'country') {
             countryList && countryList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
@@ -106,24 +113,36 @@ class AddPlant extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        console.log("values", values)
+        const { cityId } = this.state;
+
         let formData = {
             PlantName: values.PlantName,
             PlantTitle: values.PlantTitle,
             UnitNumber: values.UnitNumber,
-            Address: values.Address,
-            CityId: values.CityId
+            CityId: cityId,
+            AddressLine1: values.AddressLine1,
+            AddressLine2: values.AddressLine2,
+            ZipCode: values.ZipCode,
+            PhoneNumber: values.PhoneNumber,
+            Extension: values.Extension,
+            CreatedByUserId: '',
         }
         if (this.props.isEditFlag) {
-            console.log('values', values);
             const { PlantId } = this.props;
             this.setState({ isSubmitted: true });
             let formData1 = {
                 PlantName: values.PlantName,
                 PlantTitle: values.PlantTitle,
                 UnitNumber: values.UnitNumber,
-                Address: values.Address,
-                CityId: values.CityId,
+                CityId: cityId,
                 PlantId: PlantId,
+                AddressLine1: values.AddressLine1,
+                AddressLine2: values.AddressLine2,
+                ZipCode: values.ZipCode,
+                PhoneNumber: values.PhoneNumber,
+                Extension: values.Extension,
+                CreatedByUserId: '',
                 IsActive: this.state.isActiveBox
             }
             this.props.updatePlantAPI(PlantId, formData1, (res) => {
@@ -215,14 +234,19 @@ class AddPlant extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.PLANT} ${CONSTANT.ADDRESS}`}
-                                                name={"Address"}
+                                                label={`${CONSTANT.CITY}`}
+                                                name={"CityId"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
+                                                validate={[required]}
+                                                //selection={this.state.cityListing}
+                                                required={true}
+                                                options={this.selectType('city')}
+                                                onChange={(e) => this.handleCityChange(e)}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                     </Row>
@@ -263,21 +287,71 @@ class AddPlant extends Component {
                                         </Col>
                                     </Row> */}
                                     <Row>
-                                        <Col md="12">
+                                        <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.CITY}`}
-                                                name={"CityId"}
+                                                label="Address 1"
+                                                name={"AddressLine1"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
-                                                //selection={this.state.cityListing}
+                                                component={renderText}
                                                 required={true}
-                                                options={this.selectType('city')}
-                                                onChange={(Value) => this.handleCityChange(Value)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
+                                                maxLength={26}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Address 2"
+                                                name={"AddressLine2"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                maxLength={26}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label="ZipCode"
+                                                name={"ZipCode"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required, number, maxLength6]}
+                                                component={renderText}
+                                                required={true}
+                                                //maxLength={6}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Phone Number"
+                                                name={"PhoneNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required, number, maxLength10]}
+                                                component={renderText}
+                                                required={true}
+                                                //maxLength={26}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Extension"
+                                                name={"Extension"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required, number, maxLength6]}
+                                                component={renderText}
+                                                required={true}
+                                                //maxLength={26}
+                                                className=" withoutBorder"
                                             />
                                         </Col>
                                     </Row>
@@ -330,10 +404,14 @@ function mapStateToProps({ comman, plant }) {
             PlantName: plantUnitDetail.PlantName,
             PlantTitle: plantUnitDetail.PlantTitle,
             UnitNumber: plantUnitDetail.UnitNumber,
-            Address: plantUnitDetail.Address,
+            CityId: plantUnitDetail.CityIdRef,
+            AddressLine1: plantUnitDetail.AddressLine1,
+            AddressLine2: plantUnitDetail.AddressLine2,
+            ZipCode: plantUnitDetail.ZipCode,
+            PhoneNumber: plantUnitDetail.PhoneNumber,
+            Extension: plantUnitDetail.Extension,
             //CountryId: plantUnitDetail.CreatedBy,
             //StateId: plantUnitDetail.CreatedBy,
-            CityId: plantUnitDetail.CityIdRef,
         }
     }
     return { countryList, stateList, cityList, initialValues, plantUnitDetail }

@@ -28,6 +28,7 @@ import {
     GET_LABOUR_TYPE_SUCCESS,
     GET_COSTING_HEAD_SUCCESS,
     GET_MODEL_TYPE_SUCCESS,
+    GET_PLANTS_BY_SUPPLIER,
 } from '../../config/constants';
 
 const initialState = {
@@ -237,6 +238,13 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 modelTypes: action.payload
+            };
+        case GET_PLANTS_BY_SUPPLIER:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterPlantList: action.payload
             };
         default:
             return state;

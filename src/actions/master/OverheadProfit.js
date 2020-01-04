@@ -37,8 +37,6 @@ export function getOverheadProfitAPI(callback) {
                         payload: response.data.DataList,
                     });
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
                 dispatch({

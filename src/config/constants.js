@@ -205,7 +205,7 @@ export const API = {
   //weight calculation costing
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
-  UpdateCostingWeightCalculation: `${BASE_URL}/api/v1/costing-sheet-metal/update-costing-weight-calculation`,
+  UpdateCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/update-costing-weight-calculation`,
 
   //cost working API's
   getCostingBySupplier: `${BASE_URL}/costing-sheet-metal/get-costings-by-supplier`,
@@ -262,6 +262,10 @@ export const API = {
   getUserLevelAPI: `${BASE_URL}/user-level/get`,
   updateUserLevelAPI: `${BASE_URL}/user-level/update`,
   deleteUserLevelAPI: `${BASE_URL}/user-level/delete`,
+
+  //Common API for Plant by supplier
+  getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-supplier`,
+
 }
 
 //Api constants
@@ -494,4 +498,7 @@ export const GET_LEVEL_USER_SUCCESS = 'GET_LEVEL_USER_SUCCESS';
 //Department
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS';
 export const GET_TECHNOLOGY_DATA_LIST_SUCCESS = 'GET_TECHNOLOGY_DATA_LIST_SUCCESS';
+
+//Common to get plants by supplier
+export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER';
 

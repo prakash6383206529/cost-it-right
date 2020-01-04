@@ -67,7 +67,7 @@ class UOMMaster extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`Are you sure you want to delete UOM?`, toastrConfirmOptions);
     }
 
     /**
@@ -96,7 +96,7 @@ class UOMMaster extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
-                        <h3>{`${CONSTANT.UOM} ${CONSTANT.MASTER}`}</h3>
+                        <h3>{`Unit of Measurement Master`}</h3>
                     </Col>
                     <Col>
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} UOM`}</Button>

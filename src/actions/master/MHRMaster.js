@@ -63,15 +63,13 @@ export function fetchMHRListAPI(callback) {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getMHRList}`, headers);
         request.then((response) => {
-            //if (response.data.Result) {
-            dispatch({
-                type: GET_MHR_DATA_SUCCESS,
-                payload: response.data.DataList,
-            });
-            callback(response);
-            // } else {
-            //     toastr.error(MESSAGES.SOME_ERROR);
-            // }
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MHR_DATA_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);
@@ -126,8 +124,6 @@ export function getDepreciationDataAPI(callback) {
                     payload: response.data.DataList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });

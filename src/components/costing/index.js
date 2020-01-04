@@ -8,6 +8,7 @@ import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
 import CostSummary from './costsummary';
 import CostWorking from './costworking';
+import DynamicCostSummary from './costsummary/DynamicIndex';
 import { getCostingBySupplier } from '../../actions/costing/CostWorking';
 import { fetchPlantDataAPI } from '../../actions/master/Comman';
 import { uploadBOMxlsAPI } from '../../actions/master/BillOfMaterial';
@@ -56,7 +57,7 @@ class Costing extends Component {
 
     supplierCosting = (reqData) => {
         this.setState({
-            activeTab: '2',
+            activeTab: '3',
             supplierId: reqData.supplierId,
             plantId: reqData.plantId,
             partId: reqData.partId,
@@ -238,12 +239,17 @@ class Costing extends Component {
                     <Nav tabs className="subtabs">
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                Dynamic Cost Summary
+                                </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                 Cost Summary
                                 </NavLink>
                         </NavItem>
 
                         <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                            <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                 Cost Working
                                 </NavLink>
                         </NavItem>
@@ -252,11 +258,18 @@ class Costing extends Component {
                         <TabPane tabId="1">
                             {this.fileUploadSection()}
                             <Col>
-                                <CostSummary
+                                <DynamicCostSummary
                                     supplierCosting={this.supplierCosting} />
                             </Col>
                         </TabPane>
                         <TabPane tabId="2">
+                            {this.fileUploadSection()}
+                            <Col>
+                                <CostSummary
+                                    supplierCosting={this.supplierCosting} />
+                            </Col>
+                        </TabPane>
+                        <TabPane tabId="3">
                             <CostWorking
                                 supplierId={supplierId}
                                 plantId={plantId}

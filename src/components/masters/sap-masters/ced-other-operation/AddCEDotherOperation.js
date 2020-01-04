@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
-import { fetchMasterDataAPI, getCEDOtherOperationComboData } from '../../../../actions/master/Comman';
+import { renderText, renderSelectField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
+import { fetchMasterDataAPI, getCEDOtherOperationComboData, getPlantBySupplier } from '../../../../actions/master/Comman';
 import { createCEDOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
@@ -15,6 +15,7 @@ class AddCEDotherOperation extends Component {
         this.state = {
             processOperationValue: [],
             supplierValue: [],
+            selectedPlants: [],
             typeOfListing: [],
             SupplierId: '',
             uom: '',
@@ -59,14 +60,21 @@ class AddCEDotherOperation extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { processOperationValue, SupplierId, uom, transportUOM, PlantId } = this.state;
+        const { processOperationValue, SupplierId, supplierValue, uom, transportUOM, PlantId, selectedPlants } = this.state;
+
+        let plantArray = [];
+        selectedPlants.map((item, i) => {
+            return plantArray.push({ PlantId: item.Value, PlantName: item.Text });
+        });
 
         values.OtherOperationName = processOperationValue.label;
-        values.SupplierId = SupplierId;
+        values.SupplierId = supplierValue.value;
         values.OperationId = processOperationValue.value;
         values.UnitOfMeasurementId = uom;
         values.TrasportUnitOfMeasurementId = transportUOM;
         values.PlantId = PlantId;
+        values.SelectedPlants = plantArray;
+
         /** Update detail of the existing CED Other Operation  */
         if (this.props.isEditFlag) {
             // console.log('values', values);
@@ -120,8 +128,19 @@ class AddCEDotherOperation extends Component {
     * @method handleChangeSupplier
     * @description Used to handle supplier change
     */
+    // handleChangeSupplier = (newValue, actionMeta) => {
+    //     this.setState({ supplierValue: newValue });
+    // };
+
+    /**
+    * @method handleChangeSupplier
+    * @description Used to Supplier handle
+    */
     handleChangeSupplier = (newValue, actionMeta) => {
-        this.setState({ supplierValue: newValue });
+        this.setState({ supplierValue: newValue, selectedPlants: [] }, () => {
+            const { supplierValue } = this.state;
+            this.props.getPlantBySupplier(supplierValue.value, () => { })
+        });
     };
 
     /**
@@ -148,10 +167,35 @@ class AddCEDotherOperation extends Component {
     * @method plantHandler
     * @description Used to handle plant id
     */
-    plantHandler = (e) => {
+    // plantHandler = (e) => {
+    //     this.setState({
+    //         PlantId: e.target.value
+    //     })
+    // }
+
+    /**
+       * @method handlePlantSelection
+       * @description called
+       */
+    handlePlantSelection = e => {
         this.setState({
-            PlantId: e.target.value
-        })
+            selectedPlants: e
+        });
+    };
+
+    /**
+    * @method renderSelectPlantList
+    * @description Used to render listing of selected plants
+    */
+    renderSelectPlantList = () => {
+        const { filterPlantList } = this.props;
+        const temp = [];
+        filterPlantList && filterPlantList.map(item => {
+            if (item.Value != 0) {
+                temp.push({ Text: item.Text, Value: item.Value })
+            }
+        });
+        return temp;
     }
 
 
@@ -160,7 +204,7 @@ class AddCEDotherOperation extends Component {
     * @description Used show listing of unit of measurement
     */
     renderTypeOfListing = (label) => {
-        const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = this.props;
+        const { Operations, Plants, filterPlantList, Suppliers, Technologies, UnitOfMeasurements } = this.props;
         const temp = [];
         //const tempSupplier = [];
         if (label == 'technology') {
@@ -193,12 +237,12 @@ class AddCEDotherOperation extends Component {
             );
             return temp;
         }
-        if (label == 'plant') {
-            Plants && Plants.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
+        // if (label == 'plant') {
+        //     plantList && plantList.map(item =>
+        //         temp.push({ label: item.Text, value: item.Value })
+        //     );
+        //     return temp;
+        // }
     }
 
     /**
@@ -223,21 +267,38 @@ class AddCEDotherOperation extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`Supplier`}
-                                                name={"SupplierId"}
+                                                id="supplier"
+                                                name="SupplierId"
                                                 type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                //required={true}
-                                                className=" withoutBorder custom-select"
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                label="Supplier"
+                                                component={searchableSelect}
+                                                //validate={[required, maxLength50]}
                                                 options={this.renderTypeOfListing('supplier')}
-                                                //options={technologyOptions}
-                                                onChange={this.supplierHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
+                                                //options={supplierOptions}
+                                                required={true}
+                                                handleChangeDescription={this.handleChangeSupplier}
+                                                valueDescription={this.state.supplierValue}
                                             />
                                         </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Plants"
+                                                name="PlantId"
+                                                placeholder="--Select Plant--"
+                                                selection={this.state.selectedPlants}
+                                                options={this.renderSelectPlantList()}
+                                                selectionChanged={this.handlePlantSelection}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={true}
+                                                className="withoutBorder"
+                                            />
+                                        </Col>
+
+                                    </Row>
+                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 id="processOperation"
@@ -255,38 +316,20 @@ class AddCEDotherOperation extends Component {
                                             />
                                         </Col>
 
-                                    </Row>
-                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 label="Operation Rate"
                                                 name={"OperationRate"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
                                         </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`UOM`}
-                                                name={"UnitOfMeasurementId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('uom')}
-                                                //options={uomOptions}
-                                                onChange={this.uomHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                            />
-                                        </Col>
+
                                     </Row>
                                     <Row>
                                         <Col md="6">
@@ -295,9 +338,9 @@ class AddCEDotherOperation extends Component {
                                                 name={"TrasnportationRate"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
@@ -321,23 +364,7 @@ class AddCEDotherOperation extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Plant`}
-                                                name={"PlantId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                maxLength={26}
-                                                options={this.renderTypeOfListing('plant')}
-                                                onChange={this.plantHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
+
                                         <Col md="6">
                                             <Field
                                                 label="Overhead/Profit(%)"
@@ -349,6 +376,23 @@ class AddCEDotherOperation extends Component {
                                                 required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`UOM`}
+                                                name={"UnitOfMeasurementId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                className=" withoutBorder custom-select"
+                                                options={this.renderTypeOfListing('uom')}
+                                                //options={uomOptions}
+                                                onChange={this.uomHandler}
+                                                optionValue={'value'}
+                                                optionLabel={'label'}
+                                                component={renderSelectField}
                                             />
                                         </Col>
                                     </Row>
@@ -376,6 +420,7 @@ class AddCEDotherOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman }) {
+    const { filterPlantList } = comman;
     if (comman && comman.cedOtherOperationComboData) {
         const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = comman.cedOtherOperationComboData;
         // console.log('technologyList: ', technologyList, technologyList);
@@ -386,7 +431,7 @@ function mapStateToProps({ comman }) {
         //         uniOfMeasurementList
         //     }
         // }
-        return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements };
+        return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList };
     }
 }
 
@@ -399,7 +444,8 @@ function mapStateToProps({ comman }) {
 export default connect(mapStateToProps, {
     fetchMasterDataAPI,
     getCEDOtherOperationComboData,
-    createCEDOtherOperationsAPI
+    createCEDOtherOperationsAPI,
+    getPlantBySupplier,
 })(reduxForm({
     form: 'addOtherOperation',
     enableReinitialize: true,

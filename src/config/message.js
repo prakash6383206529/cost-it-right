@@ -65,7 +65,9 @@ export const MESSAGES = {
   ADD_LEVEL_SUCCESSFULLY: 'User level has been added successfully.',
   ADD_LEVEL_USER_SUCCESSFULLY: 'Level of users has been added successfully.',
   ADDITIONAL_FREIGHT_ADD_SUCCESS: 'Packaging has been added successfully.',
-  DELETE_ADDITIONAL_FREIGHT_SUCCESS: 'Additional Freight has been deleted successfully.'
+  DELETE_ADDITIONAL_FREIGHT_SUCCESS: 'Additional Freight has been deleted successfully.',
+  WEIGHT_SPEC_UPDATE_SUCCESS: 'Weight specification updated successfully.',
+  WEIGHT_SPEC_ADDED_SUCCESS: 'Weight specification added successfully',
 
 };
 

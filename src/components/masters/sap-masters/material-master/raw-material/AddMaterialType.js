@@ -3,29 +3,19 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
-import { renderText, renderSelectField } from "../../../../layout/FormInputs";
-import { createMaterialAPI } from '../../../../../actions/master/Material';
-import { fetchPlantDataAPI } from '../../../../../actions/master/Comman';
+import { renderText } from "../../../../layout/FormInputs";
+import { createMaterialTypeAPI, getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
-import { CONSTANT } from '../../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../../helper/AllConastant';
 
-class AddMaterial extends Component {
+class AddMaterialType extends Component {
     constructor(props) {
         super(props);
         this.state = {
             typeOfListing: [],
-            isEditFlag: false,
-            PlantId: ''
+            isEditFlag: false
         }
-    }
-
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-        this.props.fetchPlantDataAPI(res => { });
     }
 
     /**
@@ -34,19 +24,6 @@ class AddMaterial extends Component {
     */
     toggleModel = () => {
         this.props.onCancel();
-    }
-
-    /**
-    * @method renderTypeOfListing
-    * @description Used show plant master list
-    */
-    renderTypeOfListing = () => {
-        const { plantList } = this.props;
-        const temp = [];
-        plantList && plantList.map(item =>
-            temp.push({ Text: item.Text, Value: item.Value })
-        );
-        return temp;
     }
 
     /**
@@ -64,25 +41,14 @@ class AddMaterial extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { PlantId } = this.state;
-        values.PlantId = PlantId;
-        this.props.createMaterialAPI(values, (res) => {
-            if (res.data.Result === true) {
+        this.props.createMaterialTypeAPI(values, (res) => {
+            if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-                this.toggleModel();
+                this.props.getMaterialDetailAPI(res => { });
+                this.toggleModel()
             } else {
                 toastr.error(res.data.Message);
             }
-        });
-    }
-
-    /**
-    * @method plantHandler
-    * @description Used to plant handle
-    */
-    plantHandler = (e) => {
-        this.setState({
-            PlantId: e.target.value
         });
     }
 
@@ -95,7 +61,7 @@ class AddMaterial extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`Add Material Type`}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -107,8 +73,8 @@ class AddMaterial extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`Raw Material Name`}
-                                                name={"RawMaterialName"}
+                                                label={`Material Type`}
+                                                name={"MaterialType"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -117,9 +83,25 @@ class AddMaterial extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
+                                        <Col md="5">
+                                            <Field
+                                                label={`Density`}
+                                                name={"CalculatedDensityValue"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            //customClassName=" withoutBorderBottom"
+                                            />
+                                        </Col>
+                                        <Col md="1">
+                                            <label>(kg/m3)</label>
+                                        </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.DESCRIPTION}`}
+                                                label={`Description`}
                                                 name={"Description"}
                                                 type="text"
                                                 placeholder={''}
@@ -127,22 +109,6 @@ class AddMaterial extends Component {
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="12">
-                                            <Field
-                                                label={`${CONSTANT.PLANT}`}
-                                                name={"PlantId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing()}
-                                                onChange={this.plantHandler}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
                                             />
                                         </Col>
                                     </Row>
@@ -168,9 +134,7 @@ class AddMaterial extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-    const { plantList } = comman;
-    return { plantList }
+function mapStateToProps({ material }) {
 }
 
 /**
@@ -179,7 +143,7 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createMaterialAPI, fetchPlantDataAPI })(reduxForm({
-    form: 'AddMaterial',
-    enableReinitialize: true,
-})(AddMaterial));
+export default connect(mapStateToProps, { createMaterialTypeAPI, getMaterialDetailAPI })(reduxForm({
+    form: 'AddMaterialType',
+    //enableReinitialize: true,
+})(AddMaterialType));

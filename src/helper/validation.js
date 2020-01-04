@@ -14,6 +14,7 @@ export const minLength10 = minLength(10);
 
 export const maxLength6 = maxLength(6);
 export const maxLength7 = maxLength(7);
+export const maxLength10 = maxLength(10);
 export const maxLength11 = maxLength(11);
 export const maxLength15 = maxLength(15);
 export const maxLength12 = maxLength(12);
@@ -81,7 +82,7 @@ export const selectRequired = value =>
         ? undefined : 'This field is required.');
 
 export const number = value =>
-    value && (isNaN(Number(value)) || Number(value) <= 0)
+    value && (isNaN(Number(value)) || Number(value) < 0)
         ? 'This field is invalid.' : undefined;
 
 export const alphabetsOnly = value =>
@@ -126,3 +127,15 @@ export const normalizePhone = value => {
 
     return value.replace(/[^\d]/g, '')
 }
+
+export const decimalNumber13 = value =>
+    value && !/^[0-9]\d{0,12}(\.\d{1,2})?%?$/i.test(value)
+        ? 'Invalid number'
+        : undefined;
+
+export const decimalLength = max => value =>
+    value && !/^[0-9]\d{0,12}(\.\d{1,2})?%?$/i.test(value)
+        ? `Only ${max} decimal allowed.`
+        : undefined;
+
+export const decimalLength2 = decimalLength(2);

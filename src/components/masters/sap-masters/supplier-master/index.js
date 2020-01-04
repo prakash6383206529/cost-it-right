@@ -68,7 +68,7 @@ class SupplierMaster extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} this supplier ?`, toastrConfirmOptions);
+        return toastr.confirm(`Are you sure you want to delete this supplier?`, toastrConfirmOptions);
     }
 
     /**

@@ -166,9 +166,9 @@ class AddSupplierInterestRate extends Component {
                                                 name={"AnnualRateOfInterestPercent"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />

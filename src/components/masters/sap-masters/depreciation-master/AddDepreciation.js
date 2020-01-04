@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { required, number } from "../../../../helper/validation";
 import { renderText, renderNumberInputField } from "../../../layout/FormInputs";
 import { createDepreciationMasterAPI, } from '../../../../actions/master/MHRMaster';
 import { toastr } from 'react-redux-toastr';
@@ -78,7 +78,7 @@ class AddDepreciation extends Component {
                                                 name={"Shift"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, number]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"

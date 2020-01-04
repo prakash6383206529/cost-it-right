@@ -157,6 +157,10 @@ export function getCostingBySupplier(reqData, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            // dispatch({
+            //     type: GET_COSTING_BY_SUPPLIER_SUCCESS,
+            //     payload: {},
+            // });
             callback(error);
             apiErrors(error);
         });
@@ -257,7 +261,7 @@ export function addCostingRawMaterial(data, selectedIndex, callback) {
  */
 export function getCostingDetailsById(costingId, isEditFlag, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
+        //dispatch({ type: API_REQUEST });
         if (isEditFlag) {
             axios.get(`${API.getCostingDetailsById}/${costingId}`, headers)
                 .then((response) => {

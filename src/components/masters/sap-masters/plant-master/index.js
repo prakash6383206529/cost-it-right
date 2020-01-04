@@ -22,8 +22,8 @@ class PlantMaster extends Component {
     }
 
     componentDidMount() {
-        this.props.getPlantDataAPI(res => { 
-            
+        this.props.getPlantDataAPI(res => {
+
         });
     }
     /**
@@ -67,7 +67,7 @@ class PlantMaster extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`Are you sure you want to delete plant?`, toastrConfirmOptions);
     }
 
     /**
@@ -93,7 +93,7 @@ class PlantMaster extends Component {
         const { isOpen, PlantId, isEditFlag } = this.state;
         return (
             <Container className="top-margin">
-                {/* {this.props.loading && <Loader/>} */}
+                {this.props.loading && <Loader />}
                 <Row>
                     <Col>
                         <h3>{`${CONSTANT.PLANT} ${CONSTANT.MASTER}`}</h3>
@@ -110,27 +110,30 @@ class PlantMaster extends Component {
                 </Row>
                 <Col>
                     <Table className="table table-striped" bordered>
-                    {this.props.plantDetail && this.props.plantDetail.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.PLANT} ${CONSTANT.TITLE}`}</th>
-                                <th>{`Unit ${CONSTANT.NUMBER}`}</th>
-                                <th>{`${CONSTANT.ADDRESS}`}</th>
-                                <th>{`${CONSTANT.CITY}`}</th>
-                                <th>{`Status`}</th>
-                                <th>{``}</th>
-                            </tr>
-                        </thead>}
+                        {this.props.plantDetail && this.props.plantDetail.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.PLANT} ${CONSTANT.TITLE}`}</th>
+                                    <th>{`Unit ${CONSTANT.NUMBER}`}</th>
+                                    <th>{`${CONSTANT.ADDRESS}`}</th>
+                                    <th>{`${CONSTANT.CITY}`}</th>
+                                    <th>{`Status`}</th>
+                                    <th>{``}</th>
+                                </tr>
+                            </thead>}
                         <tbody >
                             {this.props.plantDetail && this.props.plantDetail.length > 0 &&
                                 this.props.plantDetail.map((item, index) => {
+                                    const address1 = item.AddressLine1 != 'NA' ? `${item.AddressLine1}, ` : '';
+                                    const address2 = item.AddressLine2 != 'NA' ? `${item.AddressLine2}, ` : '';
+                                    const ZipCode = item.ZipCode != 0 ? item.ZipCode : '';
                                     return (
                                         <tr key={index}>
                                             <td >{item.PlantName}</td>
                                             <td>{item.PlantTitle}</td>
                                             <td>{item.UnitNumber}</td>
-                                            <td>{item.Address}</td>
+                                            <td>{`${address1} ${address2} ${ZipCode}`}</td>
                                             <td>{item.CityName}</td>
                                             <td>{item && item.IsActive ? 'Active' : 'Inactive'}</td>
                                             <td>
@@ -140,7 +143,7 @@ class PlantMaster extends Component {
                                         </tr>
                                     )
                                 })}
-                                {this.props.plantDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.props.plantDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

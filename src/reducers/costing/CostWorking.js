@@ -99,7 +99,8 @@ export default function CostWorkingReducer(state = initialState, action) {
             const data = state.getCostingDetailData;
 
             if (data) {
-                data.AssemblyPartDetail[action.selectedIndex].RawMaterialDetails[0] = action.payload;
+                //data.AssemblyPartDetail[action.selectedIndex].RawMaterialDetails[0] = action.payload;
+                data.AssemblyPartDetail.RawMaterialDetails[0] = action.payload;
             }
 
             return {
@@ -137,6 +138,12 @@ export default function CostWorkingReducer(state = initialState, action) {
                 getCostingDetailData: action.payload
             };
         case UPDATE_COSTING_RM_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            };
+        case UPDATE_WEIGHT_CALC_SUCCESS:
             return {
                 ...state,
                 loading: false,

@@ -15,7 +15,7 @@ class AddSupplier extends Component {
         super(props);
         this.state = {
             supplierType: '',
-            cityListing: [],
+            CityId: '',
             selectedPlants: [],
             plantsArray: []
         }
@@ -35,7 +35,8 @@ class AddSupplier extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        const { supplierId, isEditFlag } = this.props;
+        const { supplierId, isEditFlag, radioSupplierTypeList } = this.props;
+
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
                 this.props.getSupplierByIdAPI(supplierId, true, res => {
@@ -77,9 +78,9 @@ class AddSupplier extends Component {
     * @method handleCityChange
     * @description  used to handle city selection
     */
-    handleCityChange = (value) => {
+    handleCityChange = (e) => {
         this.setState({
-            cityListing: value
+            CityId: e.target.value
         });
     }
 
@@ -122,9 +123,9 @@ class AddSupplier extends Component {
         }
         if (label === 'supplierType') {
             radioSupplierTypeList && radioSupplierTypeList.map((item, i) => {
-                if (i > 0) {
-                    temp.push({ Text: item.Text, Value: item.Value })
-                }
+                // if (item.Value != 0) {
+                temp.push({ Text: item.Text, Value: item.Value })
+                //}
             });
             return temp;
         }
@@ -141,8 +142,7 @@ class AddSupplier extends Component {
             if (item.Value != 0) {
                 temp.push({ Text: item.Text, Value: item.Value })
             }
-        }
-        );
+        });
         return temp;
     }
 
@@ -151,7 +151,7 @@ class AddSupplier extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedPlants, supplierType } = this.state;
+        const { selectedPlants, supplierType, CityId } = this.state;
         const { radioSupplierTypeList } = this.props;
 
         const tempObj = radioSupplierTypeList.find(item => item.Value == supplierType)
@@ -168,7 +168,7 @@ class AddSupplier extends Component {
                 SupplierCode: values.SupplierCode,
                 SupplierEmail: values.SupplierEmail,
                 Description: values.Description,
-                CityId: values.CityId,
+                CityId: CityId,
                 SupplierType: tempObj.Text,
                 SupplierTypeId: tempObj.Value,
                 SelectedPlants: plantArray,
@@ -195,7 +195,7 @@ class AddSupplier extends Component {
                 SupplierCode: values.SupplierCode,
                 SupplierEmail: values.SupplierEmail,
                 Description: values.Description,
-                CityId: values.CityId,
+                CityId: CityId,
                 SupplierType: tempObj.Text,
                 SupplierTypeId: tempObj.Value,
                 SelectedPlants: plantArray,
@@ -358,7 +358,7 @@ class AddSupplier extends Component {
                                                 //selection={this.state.cityListing}
                                                 required={true}
                                                 options={this.selectType('city')}
-                                                onChange={(Value) => this.handleCityChange(Value)}
+                                                onChange={(e) => this.handleCityChange(e)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}

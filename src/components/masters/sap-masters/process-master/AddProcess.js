@@ -161,9 +161,9 @@ class AddProcess extends Component {
                                                 name={"ProcessCode"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
@@ -187,9 +187,9 @@ class AddProcess extends Component {
                                                 name={"BasicProcessRate"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderNumberInputField}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                             />
                                         </Col>
