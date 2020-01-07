@@ -139,3 +139,11 @@ export const decimalLength = max => value =>
         : undefined;
 
 export const decimalLength2 = decimalLength(2);
+
+
+export const getNameBetweenBraces = (name) => {
+    const firstIndex = name.indexOf('(');
+    const lastIndex = name.lastIndexOf(')');
+    const finalName = name.substring(firstIndex + 1, lastIndex);
+    return finalName;
+}

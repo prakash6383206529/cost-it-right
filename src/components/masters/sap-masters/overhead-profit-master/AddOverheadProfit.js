@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { required, number } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
-//import { fetchMasterDataAPI, getOtherOperationData } from '../../../../actions/master/Comman';
+import { getPlantBySupplier } from '../../../../actions/master/Comman';
 import { createOverheadProfitAPI, getOverheadProfitComboData } from '../../../../actions/master/OverheadProfit';
 //import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
@@ -119,7 +119,10 @@ class AddOverheadProfit extends Component {
     }
 
     handleChangeSupplier = (newValue, actionMeta) => {
-        this.setState({ supplierValue: newValue });
+        this.setState({ supplierValue: newValue }, () => {
+            const { supplierValue } = this.state;
+            this.props.getPlantBySupplier(supplierValue.value, () => { })
+        });
     };
 
     handleChangeOverheadType = (newValue, actionMeta) => {
@@ -153,7 +156,7 @@ class AddOverheadProfit extends Component {
     * @description Used show listing of unit of measurement
     */
     renderTypeOfListing = (label) => {
-        const { ModelTypes, ProfitTypes, OverheadTypes, Plants, Suppliers, Technologies, UnitOfMeasurements } = this.props;
+        const { ModelTypes, ProfitTypes, OverheadTypes, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList } = this.props;
         const temp = [];
         //const tempSupplier = [];
         if (label == 'technology') {
@@ -193,7 +196,7 @@ class AddOverheadProfit extends Component {
             return temp;
         }
         if (label == 'plant') {
-            Plants && Plants.map(item =>
+            filterPlantList && filterPlantList.map(item =>
                 temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
@@ -207,7 +210,7 @@ class AddOverheadProfit extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, reset } = this.props;
 
         return (
             <Container className="top-margin">
@@ -247,9 +250,8 @@ class AddOverheadProfit extends Component {
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 label="Supplier"
                                                 component={searchableSelect}
-                                                //validate={[required, maxLength50]}
+                                                validate={[required]}
                                                 options={this.renderTypeOfListing('supplier')}
-                                                //options={supplierOptions}
                                                 required={true}
                                                 handleChangeDescription={this.handleChangeSupplier}
                                                 valueDescription={this.state.supplierValue}
@@ -262,7 +264,7 @@ class AddOverheadProfit extends Component {
                                                 label="Supplier Code"
                                                 name={"SupplierCode"}
                                                 type="text"
-                                                placeholder={''}
+                                                placeholder={'Supplier Code'}
                                                 //validate={[required]}
                                                 component={renderText}
                                                 //required={true}
@@ -270,6 +272,25 @@ class AddOverheadProfit extends Component {
                                                 disabled={false}
                                             />
                                         </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Plant`}
+                                                name={"PlantId"}
+                                                type="text"
+                                                placeholder={'Enter Plant'}
+                                                validate={[required]}
+                                                required={true}
+                                                maxLength={26}
+                                                options={this.renderTypeOfListing('plant')}
+                                                onChange={this.plantHandler}
+                                                optionValue={'value'}
+                                                optionLabel={'label'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 id="OverheadTypeId"
@@ -286,21 +307,21 @@ class AddOverheadProfit extends Component {
                                                 valueDescription={this.state.overHeadValue}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 label="Overhead (%)"
                                                 name={"OverheadPercentage"}
                                                 type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
+                                                placeholder={'Enter Overhead (%)'}
+                                                validate={[number]}
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
                                         </Col>
+                                    </Row>
+                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 id="ProfitTypeId"
@@ -317,66 +338,48 @@ class AddOverheadProfit extends Component {
                                                 valueDescription={this.state.profitTypesValue}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 label="Profit (%)"
                                                 name={"ProfitPercentage"}
                                                 type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
+                                                placeholder={'Enter Profit (%)'}
+                                                validate={[number]}
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
                                         </Col>
+                                    </Row>
+                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 label="Overhead Machining(CC) (%)"
                                                 name={"OverheadMachiningCCPercentage"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[number]}
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
+                                        <Col md="6">
                                             <Field
                                                 label="Profit Machining(CC) (%) "
                                                 name={"ProfitMachiningCCPercentage"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[number]}
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
                                         </Col>
-                                        <Col>
-                                            <Field
-                                                label={`Plant`}
-                                                name={"PlantId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                maxLength={26}
-                                                options={this.renderTypeOfListing('plant')}
-                                                onChange={this.plantHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
+
                                     </Row>
                                     <Row>
                                         <Col>
@@ -404,6 +407,10 @@ class AddOverheadProfit extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {isEditFlag ? 'Update' : 'Save'}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>
@@ -421,7 +428,8 @@ class AddOverheadProfit extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ overheadProfit }) {
+function mapStateToProps({ overheadProfit, comman }) {
+    const { filterPlantList } = comman;
     if (overheadProfit && overheadProfit.overheadProfitComboData) {
         const { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements } = overheadProfit.overheadProfitComboData;
         // console.log('technologyList: ', technologyList, technologyList);
@@ -432,7 +440,7 @@ function mapStateToProps({ overheadProfit }) {
         //         uniOfMeasurementList
         //     }
         // }
-        return { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements };
+        return { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements, filterPlantList };
     }
 }
 
@@ -443,7 +451,7 @@ function mapStateToProps({ overheadProfit }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    //fetchMasterDataAPI,
+    getPlantBySupplier,
     getOverheadProfitComboData,
     createOverheadProfitAPI
 })(reduxForm({

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, number, upper, decimalLength2 } from "../../../../helper/validation";
+import { required, number, upper, decimalLength2, getNameBetweenBraces } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getOtherOperationData, getPlantBySupplier } from '../../../../actions/master/Comman';
 import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
@@ -28,7 +28,10 @@ class AddOtherOperation extends Component {
     * @description called before rendering the component
     */
     componentWillMount() {
-        this.props.getOtherOperationData(() => { });
+        this.props.getOtherOperationData(() => {
+            const { Technologies } = this.props;
+            this.setState({ technologyValue: Technologies[0].Value })
+        });
     }
 
     /**
@@ -62,7 +65,7 @@ class AddOtherOperation extends Component {
         values.OtherOperationName = processOperationValue.label;
         //"OperationCode": "string",
         //"Description": "string",
-        //values.TechnologyId = technologyValue;
+        values.TechnologyId = technologyValue;
         values.SupplierId = supplierValue.value;
         values.OperationId = processOperationValue.value;
         values.UnitOfMeasurementId = uom;
@@ -113,8 +116,8 @@ class AddOtherOperation extends Component {
             const { processOperationValue } = this.state;
 
             const tempObj = Operations.find(item => item.Value == processOperationValue.value)
-            // this.props.change("SupplierCode", result)
-            //console.log("result", result)
+            const operationCode = getNameBetweenBraces(tempObj.Text)
+            this.props.change("OperationCode", operationCode)
         });
     };
 

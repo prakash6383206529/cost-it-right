@@ -791,7 +791,7 @@ class AddFreight extends Component {
                                         <Row>
                                             <Col md="6">
                                                 <Field
-                                                    label={`Packaging Costing HeadsId`}
+                                                    label={`Packaging Head`}
                                                     name="PackagingCostingHeadsId"
                                                     type="text"
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -820,7 +820,7 @@ class AddFreight extends Component {
                                         <Row>
                                             <Col md="6">
                                                 <Field
-                                                    label={`Loading Unloading Costing HeadsId`}
+                                                    label={`Loading Unloading Head`}
                                                     name="LodingUnloadingCostingHeadsId"
                                                     type="text"
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}

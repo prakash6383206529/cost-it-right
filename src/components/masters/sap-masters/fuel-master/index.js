@@ -118,22 +118,20 @@ class FuelMaster extends Component {
                         <Button onClick={this.openFuelModel}>{`${CONSTANT.ADD} ${CONSTANT.FUEL} ${CONSTANT.DETAILS}`}</Button>
                     </Col>
                 </Row>
-                <hr />
+                {/* <hr /> */}
                 <Row>
                     <Col>
                         <Nav tabs className="subtabs">
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                     Fuel Type
-                            </NavLink>
+                                </NavLink>
                             </NavItem>
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                     Fuel Details
-                            </NavLink>
+                                </NavLink>
                             </NavItem>
-
-
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
                             <TabPane tabId="1">

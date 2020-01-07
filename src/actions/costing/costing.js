@@ -59,19 +59,17 @@ export function getExistingSupplierDetailByPartId(partId, callback) {
         const request = axios.get(`${API.getExistingSupplierDetailByPartId}/${partId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
-                console.log("action iffffffffff", response.data.Result)
                 dispatch({
                     type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
                     payload: response.data.DynamicData,
                 });
                 callback(response);
             } else {
-                console.log("action elseeeeeeeeeeee", response.data.Result)
                 dispatch({
                     type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
                     payload: null,
                 });
-                toastr.error(MESSAGES.SOME_ERROR);
+                toastr.warning(response.data.Message);
             }
         }).catch((error) => {
             dispatch({

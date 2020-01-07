@@ -75,18 +75,17 @@ class FuelTypeDetail extends Component {
                         <h5>{`${CONSTANT.FUEL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
                     </Col>
                 </Row> */}
-                <hr/>
                 <Col>
                     <Table className="table table-striped" bordered>
-                    { this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.DESCRIPTION}`}</th>
-                                <th>{`${CONSTANT.DATE}`}</th>
-                                <th>{``}</th>
-                            </tr>
-                        </thead>}
+                        {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
+                            <thead>
+                                <tr>
+                                    <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
+                                    <th>{`${CONSTANT.DESCRIPTION}`}</th>
+                                    <th>{`${CONSTANT.DATE}`}</th>
+                                    <th>{``}</th>
+                                </tr>
+                            </thead>}
                         <tbody >
                             {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
                                 this.props.fuelDetailList.map((item, index) => {
@@ -102,7 +101,7 @@ class FuelTypeDetail extends Component {
                                         </tr>
                                     )
                                 })}
-                                {this.props.fuelDetailList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.props.fuelDetailList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                         </tbody>
                     </Table>
                 </Col>

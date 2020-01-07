@@ -144,9 +144,12 @@ class CostSummary extends Component {
 
         Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
             + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
-        Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
 
-        Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+        const HundiDiscount = ((Content.TotalCost * Content.Discount) / 100);
+        Content.DiscountCost = HundiDiscount != NaN ? HundiDiscount : 0;
+
+        const NetPOPrice = Content.TotalCost - Content.DiscountCost;
+        Content.NetPurchaseOrderPrice = NetPOPrice != NaN ? NetPOPrice : 0;
 
         return Content;
     }
@@ -194,6 +197,9 @@ class CostSummary extends Component {
             this.props.checkPartWithTechnology(checkPartData, res => {
                 this.props.getExistingSupplierDetailByPartId(this.state.partNo, res => {
                     // After get listing of exis suppliers
+                    if (res && res.data && res.data.Message != '') {
+                        toastr.warning(res.data.Message);
+                    }
                     this.existingSupplierDetail()
                 })
             })
@@ -202,8 +208,8 @@ class CostSummary extends Component {
 
     existingSupplierDetail = () => {
         const { existingSupplierDetail, Suppliers } = this.props;
-        if (existingSupplierDetail) {
-            this.props.change("PartDescription", existingSupplierDetail.PartDescription)
+        this.props.change("PartDescription", existingSupplierDetail.PartDescription)
+        if (existingSupplierDetail && existingSupplierDetail.ExistingSupplierDetails) {
 
             const existSuppliers = existingSupplierDetail && existingSupplierDetail.ExistingSupplierDetails;
 
@@ -281,6 +287,14 @@ class CostSummary extends Component {
                 supplierTwoName: '',
                 supplierThreeName: '',
             });
+            this.props.change("POPrice", 0);
+            this.props.change("POPrice2", 0);
+            this.props.change("POPrice3", 0);
+
+            this.props.change("ShareOfBusiness1", 0);
+            this.props.change("ShareOfBusiness2", 0);
+            this.props.change("ShareOfBusiness3", 0);
+
             this.props.change("SupplierCode", '')
             this.props.change("SupplierCode2", '')
             this.props.change("SupplierCode3", '')
@@ -573,23 +587,28 @@ class CostSummary extends Component {
                     SupplierId: SupplierId,
                 }
                 this.props.getCostingOverHeadProByModelType(formData, (Data) => {
-                    let overHeadCalculation = 0;
-                    if (Data.OverheadProfitTypeCostingHead == "RM") {
-                        overHeadCalculation = Content.NetRawMaterialCost;
-                    } else if (Data.OverheadProfitTypeCostingHead == "RM + CC") {
-                        overHeadCalculation = Content.NetRawMaterialCost + TotalConversionCost
-                    } else {
-                        overHeadCalculation = Content.NetRawMaterialCost
-                    }
 
-                    let profitCostCalculation = 0;
-                    if (Data.ProfitTypeCostingHead == "RM") {
-                        profitCostCalculation = Content.NetRawMaterialCost;
-                    } else if (Data.ProfitTypeCostingHead == "RM + CC") {
-                        profitCostCalculation = Content.NetRawMaterialCost + TotalConversionCost
-                    } else {
-                        profitCostCalculation = Content.NetRawMaterialCost
-                    }
+                    // let overHeadCalculation = 0;
+                    // if (Data.OverheadProfitTypeCostingHead == "RM") {
+                    //     overHeadCalculation = Content.NetRawMaterialCost;
+                    // } else if (Data.OverheadProfitTypeCostingHead == "RM + CC") {
+                    //     overHeadCalculation = Content.NetRawMaterialCost + TotalConversionCost
+                    // } else {
+                    //     overHeadCalculation = Content.NetRawMaterialCost
+                    // }
+
+                    let overHeadCalculation = this.HeadsCalculation(Data.OverheadProfitTypeCostingHead, Content);
+
+                    // let profitCostCalculation = 0;
+                    // if (Data.ProfitTypeCostingHead == "RM") {
+                    //     profitCostCalculation = Content.NetRawMaterialCost;
+                    // } else if (Data.ProfitTypeCostingHead == "RM + CC") {
+                    //     profitCostCalculation = Content.NetRawMaterialCost + TotalConversionCost
+                    // } else {
+                    //     profitCostCalculation = Content.NetRawMaterialCost
+                    // }
+
+                    let profitCostCalculation = this.HeadsCalculation(Data.ProfitTypeCostingHead, Content);
 
                     Content.ModelTypeId = e.target.value;
                     Content.OverheadPercentage = Data.OverheadProfitPercentage;
@@ -610,6 +629,50 @@ class CostSummary extends Component {
                 this.props.change(supplierColumn, Content)
             }
         })
+    }
+
+    /**
+    * @method HeadsCalculation
+    * @description Used for handle heads calculation like RM, RM + CC and RM + CC + BOP like wise
+    */
+    HeadsCalculation = (HeadType, Content) => {
+        console.log("HeadType", HeadType, Content)
+        let total = 0;
+        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+
+        if (HeadType == "BOP + CC") {
+            total = Content.NetBoughtOutParCost + TotalConversionCost;
+        } else if (HeadType == "CC") {
+            total = TotalConversionCost;
+        } else if (HeadType == "CC + Net Machining") {
+            total = TotalConversionCost + 0;
+        } else if (HeadType == "Fixed") {
+            total = Content.NetRawMaterialCost;
+        } else if (HeadType == "Net Machining") {
+            total = Content.NetRawMaterialCost;
+        } else if (HeadType == "Other Operation") {
+            total = Content.NetOtherOperationCost;
+        } else if (HeadType == "RM") {
+            total = Content.NetRawMaterialCost;
+        } else if (HeadType == "RM + (CC/2)") {
+            total = Content.NetRawMaterialCost + (TotalConversionCost / 2);
+        } else if (HeadType == "RM + BOP") {
+            total = Content.NetRawMaterialCost + Content.NetBoughtOutParCost;
+        } else if (HeadType == "RM + Casting Process Cost") {
+            total = Content.NetRawMaterialCost + Content.NetProcessCost;
+        } else if (HeadType == "RM + CC") {
+            total = Content.NetRawMaterialCost + TotalConversionCost
+        } else if (HeadType == "RM + CC + BOP") {
+            total = Content.NetRawMaterialCost + TotalConversionCost + Content.NetBoughtOutParCost;
+        } else if (HeadType == "RM + CC + Net Machining") {
+            total = Content.NetRawMaterialCost + TotalConversionCost + 0;
+        } else if (HeadType == "RM + Net Machining") {
+            total = Content.NetRawMaterialCost + 0;
+        } else {
+            total = 0;
+        }
+
+        return total;
     }
 
     /**
@@ -645,7 +708,8 @@ class CostSummary extends Component {
 
         const RejectionCostingHeadObj = Content.CostingHeads.find(item => item.Value == e.target.value)
 
-        const RejectionTypeCalculatedValue = this.RejectionHeadsCalculation(RejectionCostingHeadObj, Content)
+        //const RejectionTypeCalculatedValue = this.RejectionHeadsCalculation(RejectionCostingHeadObj, Content)
+        const RejectionTypeCalculatedValue = this.HeadsCalculation(RejectionCostingHeadObj.Text, Content)
 
         this.setState({
             [rejectionTypeValue]: RejectionTypeCalculatedValue,
@@ -827,10 +891,10 @@ class CostSummary extends Component {
             Content.TransportationOperationCost = TransportationOperationCost;
             Content.CEDtotalCost = Content.NetSurfaceAreaCost + Content.OverheadProfitCost + Content.TransportationOperationCost;
 
-            Content.TotalCost = (Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
-                + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost).toFixed(2);
-            Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
-            Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+            Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+                + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
+            Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
+            Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost);
             this.props.change(supplierColumn, Content)
         }
 
@@ -864,12 +928,12 @@ class CostSummary extends Component {
             + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
             + Content.ProfitCost + Content.NetFreightCost + Content.PackagingCost + Content.OtherAnyCostAndCharges;
 
-        Content.TotalCost = (Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
-            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost).toFixed(2);
+        Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
 
-        Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
+        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
 
-        Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
 
         this.props.change(supplierColumn, Content)
     }
@@ -930,10 +994,10 @@ class CostSummary extends Component {
         // TotalOtherCosts
         Content.ToolMaintenanceCost = toolMaintenanceCost * 1;
         Content.ToolCost = Content.ToolMaintenanceCost + Content.ToolAmortizationCost;
-        Content.TotalCost = (Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
-            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost).toFixed(2);
-        Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
-        Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+        Content.TotalCost = Content.TotalConversionCost + Content.TotalOtherCosts + Content.ToolMaintenanceCost
+            + Content.NetBoughtOutParCost + Content.NetRawMaterialCost + Content.CEDtotalCost + Content.NetAdditionalFreightCost;
+        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
+        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
         this.props.change(supplierColumn, Content)
     }
 
@@ -986,8 +1050,8 @@ class CostSummary extends Component {
         }
 
         Content.Discount = discount * 1;
-        Content.DiscountCost = ((Content.TotalCost * Content.Discount) / 100).toFixed(2);
-        Content.NetPurchaseOrderPrice = (Content.TotalCost - Content.DiscountCost).toFixed(2);
+        Content.DiscountCost = (Content.TotalCost * Content.Discount) / 100;
+        Content.NetPurchaseOrderPrice = Content.TotalCost - Content.DiscountCost;
 
         this.props.change(supplierColumn, Content)
     }
@@ -2608,8 +2672,20 @@ class CostSummary extends Component {
                                 />
                             </div>
                             <div className={'base-cost'}>
-                                <label></label>
-                                <input type="text" disabled value={this.state.rejectionCostZBC} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" />
+                                {/* <label></label>
+                                <input type="text" disabled value={this.state.rejectionCostZBC} className={'mt20 overhead-percent-supplier'} title="((Conversion Cost (CC) + RM Cost(RM)) * RM Inventory (RMinvent)) / 100" /> */}
+                                <Field
+                                    label={``}
+                                    name={"RejectionZBCCost"}
+                                    type="text"
+                                    placeholder={''}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    value={this.state.rejectionCostZBC}
+                                    required={true}
+                                    className="withoutBorder"
+                                    disabled={true}
+                                />
                             </div>
                         </Col>
                         <Col md="3">

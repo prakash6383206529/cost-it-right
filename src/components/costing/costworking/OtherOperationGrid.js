@@ -341,7 +341,7 @@ class OtherOperationGrid extends Component {
                     </Row>
                     <hr />
                     <Row>
-                        <button onClick={this.addRows} className={'btn btn-primary mr10 ml10'}>Add New Row</button>{''}
+                        {/* <button onClick={this.addRows} className={'btn btn-primary mr10 ml10'}>Add New Row</button>{''} */}
                         {/* <button className={'btn btn-primary mr10'}>Save Process Cost</button>{''} */}
                         <button onClick={() => this.props.onCancelOperationGrid()} className={'btn btn-primary mr10'}>Close</button>{''}
                         <label className={'mr10'}>Total Process Cost: </label>

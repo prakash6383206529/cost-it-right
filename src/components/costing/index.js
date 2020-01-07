@@ -57,7 +57,7 @@ class Costing extends Component {
 
     supplierCosting = (reqData) => {
         this.setState({
-            activeTab: '3',
+            activeTab: '2',
             supplierId: reqData.supplierId,
             plantId: reqData.plantId,
             partId: reqData.partId,
@@ -67,9 +67,7 @@ class Costing extends Component {
                 partId: this.state.partId,
             }
             this.props.getCostingBySupplier(Data, (res) => { console.log('res', res) })
-        }
-        );
-
+        });
     }
 
     /**
@@ -237,39 +235,39 @@ class Costing extends Component {
                 <hr />
                 <Row>
                     <Nav tabs className="subtabs">
-                        <NavItem>
+                        {/* <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                 Dynamic Cost Summary
                                 </NavLink>
-                        </NavItem>
+                        </NavItem> */}
                         <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                 Cost Summary
                                 </NavLink>
                         </NavItem>
 
                         <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                 Cost Working
                                 </NavLink>
                         </NavItem>
                     </Nav>
                     <TabContent activeTab={this.state.activeTab}>
-                        <TabPane tabId="1">
+                        {/* <TabPane tabId="1">
                             {this.fileUploadSection()}
                             <Col>
                                 <DynamicCostSummary
                                     supplierCosting={this.supplierCosting} />
                             </Col>
-                        </TabPane>
-                        <TabPane tabId="2">
+                        </TabPane> */}
+                        <TabPane tabId="1">
                             {this.fileUploadSection()}
                             <Col>
                                 <CostSummary
                                     supplierCosting={this.supplierCosting} />
                             </Col>
                         </TabPane>
-                        <TabPane tabId="3">
+                        <TabPane tabId="2">
                             <CostWorking
                                 supplierId={supplierId}
                                 plantId={plantId}

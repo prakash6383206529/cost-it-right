@@ -67,7 +67,7 @@ class PlantMaster extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Are you sure you want to delete plant?`, toastrConfirmOptions);
+        return toastr.confirm(`Are you sure you want to delete this Plant?`, toastrConfirmOptions);
     }
 
     /**

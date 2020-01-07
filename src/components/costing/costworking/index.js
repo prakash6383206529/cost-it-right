@@ -310,10 +310,10 @@ class CostWorking extends Component {
      * @method openModel
      * @description  used to open filter form 
      */
-    openModel = (selectedIndex) => {
+    openModel = (selectedIndex, weightEditFlag) => {
         this.setState({
             isOpen: true,
-            isEditFlag: true,
+            isEditFlag: weightEditFlag,
             selectedIndex: selectedIndex,
         })
     }
@@ -500,6 +500,7 @@ class CostWorking extends Component {
         NetCC_Cost = (BOPcost + ProcessCost + SurfaceTreatmentCost);
         //}
         const topRowData = this.calculateTopData();
+        const weightEditFlag = data && data.WeightCalculationDetails.length > 0 ? true : false;
         const processFlag = data && data.ProcessDetails.length > 0 ? true : false;
         const cedFlag = data && data.OtherOperationDetails.length > 0 ? true : false;
         return (
@@ -545,7 +546,7 @@ class CostWorking extends Component {
                     <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialRate : '0'}</td>
                     <td>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialScrapRate : '0'}</td>
 
-                    <td><button onClick={() => this.openModel(index)}>{data && data.WeightCalculationDetails.length > 0 ? 'Update' : 'Add'}</button></td>
+                    <td><button onClick={() => this.openModel(index, weightEditFlag)}>{data && data.WeightCalculationDetails.length > 0 ? 'Update' : 'Add'}</button></td>
                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].GrossWeight : '0'}</td>
                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : '0'}</td>
                     <td>{data && data.WeightCalculationDetails.length > 0 ? NetRMCost : '0'}</td>

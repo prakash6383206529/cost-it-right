@@ -348,38 +348,8 @@ class AddSupplier extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.CITY}`}
-                                                name={"CityId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                //selection={this.state.cityListing}
-                                                required={true}
-                                                options={this.selectType('city')}
-                                                onChange={(e) => this.handleCityChange(e)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Plants"
-                                                name="SelectedPlants"
-                                                placeholder="--Select Plant--"
-                                                selection={this.state.selectedPlants}
-                                                options={this.renderSelectPlantList()}
-                                                selectionChanged={this.handlePlantSelection}
-                                                optionValue={option => option.Value}
-                                                optionLabel={option => option.Text}
-                                                component={renderMultiSelectField}
-                                                mendatory={false}
-                                                className="withoutBorder"
-                                            />
-                                        </Col>
+
+
                                     </Row>
                                     <Row>
                                         <Col md="6">
@@ -412,11 +382,11 @@ class AddSupplier extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="ZipCode"
-                                                name={"ZipCode"}
+                                                label="Extension"
+                                                name={"Extension"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required, number]}
+                                                validate={[required]}
                                                 component={renderText}
                                                 required={true}
                                                 maxLength={26}
@@ -440,15 +410,49 @@ class AddSupplier extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Extension"
-                                                name={"Extension"}
+                                                label="ZipCode"
+                                                name={"ZipCode"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, number]}
                                                 component={renderText}
                                                 required={true}
                                                 maxLength={26}
                                                 className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.CITY}`}
+                                                name={"CityId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                //selection={this.state.cityListing}
+                                                required={true}
+                                                options={this.selectType('city')}
+                                                onChange={(e) => this.handleCityChange(e)}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="12">
+                                            <Field
+                                                label="Plants"
+                                                name="SelectedPlants"
+                                                placeholder="--Select Plant--"
+                                                selection={this.state.selectedPlants}
+                                                options={this.renderSelectPlantList()}
+                                                selectionChanged={this.handlePlantSelection}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={false}
+                                                className="withoutBorder"
                                             />
                                         </Col>
                                     </Row>
