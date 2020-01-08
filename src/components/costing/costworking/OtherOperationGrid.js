@@ -11,6 +11,30 @@ import AddOtherOperationCosting from './AddOtherOperationCosting';
 import { MESSAGES } from '../../../config/message';
 const selector = formValueSelector('OtherOperationGridForm');
 
+const otherOperationGridRowData = {
+    CostingId: "",
+    SurfaceTreatmentCost: 0,
+    AssySurfaceTreatmentCost: 0,
+    GrandTotal: 0,
+    IsActive: true,
+    CreatedDate: "",
+    CreatedBy: "",
+    DisplayCreatedDate: "",
+    LinkedOperations: [{
+        OtherOperationId: "",
+        OperationId: "",
+        Rate: 0,
+        Quantity: 0,
+        NetCost: 0,
+        IsActive: true,
+        CreatedDate: "",
+        UnitOfMeasurementName: "",
+        OtherOperationName: "",
+        OperationName: "",
+        Total: 0
+    }]
+}
+
 const renderMembers = ({ fields, processHandler, openOtherOperationModal, renderTypeOfListing,
     handlerQuantity, meta: { error, submitFailed } }) => {
 
@@ -18,7 +42,7 @@ const renderMembers = ({ fields, processHandler, openOtherOperationModal, render
 
         <>
             <div>
-                <button type="button" onClick={() => fields.push({})}>
+                <button type="button" onClick={() => fields.push(otherOperationGridRowData.LinkedOperations[0])}>
                     Add New Row
                 </button>
                 {/* {submitFailed && error && <span>{error}</span>} */}
@@ -43,6 +67,19 @@ const renderMembers = ({ fields, processHandler, openOtherOperationModal, render
                                 disabled={false}
                             /> */}
                             <button type="button" onClick={() => openOtherOperationModal(index)}>{'Add'}</button>
+                        </td>
+                        <td>
+                            <Field
+                                label={''}
+                                name={`${cost}.OperationName`}
+                                type="text"
+                                placeholder={''}
+                                //validate={[required]}
+                                component={renderText}
+                                //required={true}
+                                className=" withoutBorder"
+                                disabled={true}
+                            />
                         </td>
                         <td>
                             <Field
@@ -165,9 +202,7 @@ class OtherOperationGrid extends Component {
      */
     componentWillReceiveProps(nextProps) {
         if (nextProps.costingGridOtherOperationData != this.props.costingGridOtherOperationData) {
-            console.log("nextProps.costingGridOtherOperationData", nextProps.costingGridOtherOperationData)
             const { LinkedOperations } = nextProps.costingGridOtherOperationData;
-
             let grandTotal = 0;
             LinkedOperations && LinkedOperations.map((item, index) => {
                 grandTotal = grandTotal + (item.Rate * item.Quantity);
@@ -200,44 +235,43 @@ class OtherOperationGrid extends Component {
     }
 
     setOtherOperationRowData = item => {
-        console.log("item >>>", item, this.state.GridselectedIndex)
         const { GridselectedIndex } = this.state;
 
-        this.setState({
-            UOM: item.UnitOfMeasurementName,
-            Rate: 12
-        })
-        item.Rate = 12;
-
         this.props.change(`LinkedOperations[${GridselectedIndex}]['OtherOperationId']`, item.OtherOperationId);
+        this.props.change(`LinkedOperations[${GridselectedIndex}]['OperationName']`, item.OperationName);
         this.props.change(`LinkedOperations[${GridselectedIndex}]['OtherOperationName']`, item.OtherOperationName);
-        this.props.change(`LinkedOperations[${GridselectedIndex}]['UnitOfMeasurementName']`, item.UnitOfMeasurementName);
         this.props.change(`LinkedOperations[${GridselectedIndex}]['Rate']`, item.Rate);
+        this.props.change(`LinkedOperations[${GridselectedIndex}]['UnitOfMeasurementName']`, item.UnitOfMeasurementName);
     }
 
     handlerQuantity = (e, index) => {
         this.props.change(`LinkedOperations[${index}]['Quantity']`, e.target.value);
         this.setState({
-            quantity: e.target.value,
             index: index,
         }, () => this.handlerCalculation())
     }
 
     handlerCalculation = () => {
-        const { quantity, index, Rate, totalCost } = this.state;
+        const { index } = this.state;
         const { LinkedOperationsArray } = this.props;
 
-        let grandTotal = 0;
-        LinkedOperationsArray && LinkedOperationsArray.map((item, index) => {
-            grandTotal = grandTotal + (item.Rate * item.Quantity);
-            return grandTotal;
-        })
+        const Rate = LinkedOperationsArray && LinkedOperationsArray[index] ? LinkedOperationsArray[index].Rate : 0;
+        const Quantity = LinkedOperationsArray && LinkedOperationsArray[index] ? LinkedOperationsArray[index].Quantity : 0;
 
-        let netCost = Rate * quantity;
-
-        this.setState({ totalCost: grandTotal })
+        let netCost = Rate * Quantity;
 
         this.props.change(`LinkedOperations[${index}]['NetCost']`, netCost);
+        this.props.change(`LinkedOperations[${index}]['Total']`, netCost);
+    }
+
+    calculateGrandTotal = () => {
+        const { LinkedOperationsArray } = this.props;
+        let grandTotal = 0;
+
+        LinkedOperationsArray && LinkedOperationsArray.map((item, index) => {
+            grandTotal = grandTotal + item.NetCost
+        })
+        return grandTotal;
     }
 
     /**
@@ -272,57 +306,57 @@ class OtherOperationGrid extends Component {
     */
     onSubmit = (values) => {
         console.log("values grid other ops", values)
-        const { totalCost } = this.state;
+        const totalCost = this.calculateGrandTotal()
         const { costingId, PartId, isEditCEDFlag, initialValues } = this.props;
         let formData = {}
-        if (isEditCEDFlag) {
-            formData = {
-                CostingOtherOperationDetailId: initialValues.CostingOtherOperationDetailId,
-                OtherOperations: initialValues.OtherOperations,
-                CostingId: initialValues.CostingId,
-                PartId: initialValues.PartId,
-                SurfaceTreatmentCost: totalCost,
-                AssySurfaceTreatmentCost: totalCost,
-                GrandTotal: totalCost,
-                IsActive: true,
-                CreatedDate: initialValues.CreatedDate,
-                CreatedBy: initialValues.CreatedBy,
-                DisplayCreatedDate: initialValues.DisplayCreatedDate,
-                LinkedOperations: values.LinkedOperations
-            }
-            console.log("form data edit", formData)
-            this.props.updateCostingOtherOperation(formData, res => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_COSTING_OTHER_OPERATION_SUCCESS);
-                    this.props.onCancelOperationGrid()
-                } else {
-                    toastr.error(res.data.Message);
-                }
-            })
-        } else {
-            formData = {
-                CostingId: costingId,
-                PartId: PartId,
-                SurfaceTreatmentCost: totalCost,
-                AssySurfaceTreatmentCost: totalCost,
-                GrandTotal: totalCost,
-                IsActive: true,
-                CreatedDate: "",
-                CreatedBy: "",
-                DisplayCreatedDate: "",
-                LinkedOperations: values.LinkedOperations
-            }
-
-            console.log("form data", formData)
-            this.props.saveOtherOpsCosting(formData, res => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.SAVE_OTHER_OPERATION_SUCCESS);
-                    this.props.onCancelOperationGrid()
-                } else {
-                    toastr.error(res.data.Message);
-                }
-            })
+        // if (isEditCEDFlag) {
+        //     formData = {
+        //         CostingOtherOperationDetailId: initialValues.CostingOtherOperationDetailId,
+        //         OtherOperations: initialValues.OtherOperations,
+        //         CostingId: initialValues.CostingId,
+        //         PartId: initialValues.PartId,
+        //         SurfaceTreatmentCost: totalCost,
+        //         AssySurfaceTreatmentCost: totalCost,
+        //         GrandTotal: totalCost,
+        //         IsActive: true,
+        //         CreatedDate: initialValues.CreatedDate,
+        //         CreatedBy: initialValues.CreatedBy,
+        //         DisplayCreatedDate: initialValues.DisplayCreatedDate,
+        //         LinkedOperations: values.LinkedOperations
+        //     }
+        //     console.log("form data edit", formData)
+        //     this.props.updateCostingOtherOperation(formData, res => {
+        //         if (res.data.Result) {
+        //             toastr.success(MESSAGES.UPDATE_COSTING_OTHER_OPERATION_SUCCESS);
+        //             this.props.onCancelOperationGrid()
+        //         } else {
+        //             toastr.error(res.data.Message);
+        //         }
+        //     })
+        // } else {
+        formData = {
+            CostingId: costingId,
+            PartId: PartId,
+            SurfaceTreatmentCost: totalCost,
+            AssySurfaceTreatmentCost: totalCost,
+            GrandTotal: totalCost,
+            IsActive: true,
+            CreatedDate: "",
+            CreatedBy: "",
+            DisplayCreatedDate: "",
+            LinkedOperations: values.LinkedOperations
         }
+
+        console.log("form data", formData)
+        this.props.saveOtherOpsCosting(formData, res => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.SAVE_OTHER_OPERATION_SUCCESS);
+                this.props.onCancelOperationGrid()
+            } else {
+                toastr.error(res.data.Message);
+            }
+        })
+        //}
     }
 
 
@@ -345,7 +379,7 @@ class OtherOperationGrid extends Component {
                         {/* <button className={'btn btn-primary mr10'}>Save Process Cost</button>{''} */}
                         <button onClick={() => this.props.onCancelOperationGrid()} className={'btn btn-primary mr10'}>Close</button>{''}
                         <label className={'mr10'}>Total Process Cost: </label>
-                        <input type="text" name="total-cost" value={this.state.totalCost} className={''} />
+                        <input type="text" name="total-cost" value={this.calculateGrandTotal()} className={''} />
                     </Row>
                     <hr />
                     <form
@@ -353,11 +387,12 @@ class OtherOperationGrid extends Component {
                         className="form"
                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     >
-                        <Table className="table table-striped" bordered>
+                        <Table className="grid table-striped" bordered>
                             <thead>
                                 <tr>
-                                    <th>{`Process Operation`}</th>
-                                    <th>{`Process Code`}</th>
+                                    <th>{``}</th>
+                                    <th>{`Operation Name`}</th>
+                                    <th>{`Operation Code`}</th>
                                     <th>{`Rate`}</th>
                                     <th>{`UOM`}</th>
                                     <th>{`Quantity`}</th>

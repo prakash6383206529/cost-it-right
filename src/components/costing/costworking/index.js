@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList,
-    setCostingDetailRowData, addCostingProcesses, addCostingOtherOperation, saveCostingAsDraft
+    setCostingDetailRowData, getCostingProcesses, getCostingOtherOperation, saveCostingAsDraft
 } from '../../../actions/costing/CostWorking';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
@@ -411,7 +411,7 @@ class CostWorking extends Component {
             selectedIndex: selectedIndex,
             isEditCEDFlag: isEditCEDFlag,
         }, () => {
-            this.props.addCostingOtherOperation(costingId, res => { });
+            this.props.getCostingOtherOperation(costingId, res => { });
             this.props.getCostingDetailsById(costingId, true, res => {
                 this.setState({
                     isCollapes: true,
@@ -434,7 +434,7 @@ class CostWorking extends Component {
             isShowProcessGrid: !this.state.isShowProcessGrid,
             selectedIndex: selectedIndex,
         }, () => {
-            this.props.addCostingProcesses(costingId, res => { })
+            this.props.getCostingProcesses(costingId, res => { })
             this.props.getCostingDetailsById(costingId, true, res => {
                 this.setState({
                     isCollapes: true,
@@ -922,8 +922,8 @@ export default connect(mapStateToProps,
         getCostingDetailsById,
         getMaterialTypeSelectList,
         setCostingDetailRowData,
-        addCostingProcesses,
-        addCostingOtherOperation,
+        getCostingProcesses,
+        getCostingOtherOperation,
         saveCostingAsDraft,
     }
 )(CostWorking);

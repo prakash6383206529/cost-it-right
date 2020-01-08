@@ -114,10 +114,13 @@ class AddOtherOperation extends Component {
         const { Operations } = this.props;
         this.setState({ processOperationValue: newValue }, () => {
             const { processOperationValue } = this.state;
-
-            const tempObj = Operations.find(item => item.Value == processOperationValue.value)
-            const operationCode = getNameBetweenBraces(tempObj.Text)
-            this.props.change("OperationCode", operationCode)
+            if (processOperationValue && processOperationValue.value != '') {
+                const tempObj = Operations.find(item => item.Value == processOperationValue.value)
+                const operationCode = getNameBetweenBraces(tempObj.Text)
+                this.props.change("OperationCode", operationCode.toUpperCase())
+            } else {
+                this.props.change("OperationCode", '')
+            }
         });
     };
 

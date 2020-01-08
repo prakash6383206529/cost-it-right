@@ -114,25 +114,27 @@ class OperationMaster extends Component {
                 <Col>
                     <div>
                         <Table className="table table-striped" bordered>
-                        { this.props.operationListData && this.props.operationListData.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>Operation Name</th>
-                                    <th>Plant Name</th>
-                                    <th>Description</th>
-                                    <th>Basic Operation Cost</th>
-                                    {/* <th>Initiator</th>
+                            {this.props.operationListData && this.props.operationListData.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>Operation Name</th>
+                                        <th>Operation Code</th>
+                                        <th>Plant Name</th>
+                                        <th>Description</th>
+                                        <th>Operation Cost</th>
+                                        {/* <th>Initiator</th>
                                     <th>Created On</th>
                                     <th>Modifier</th>
                                     <th>Modified On</th> */}
-                                </tr>
-                            </thead>}
+                                    </tr>
+                                </thead>}
                             <tbody >
                                 {this.props.operationListData && this.props.operationListData.length > 0 &&
                                     this.props.operationListData.map((item, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.OperationName}</td>
+                                                <td >{item.OperationCode}</td>
                                                 <td>{item.PlantName}</td>
                                                 <td>{item.Description}</td>
                                                 <td>{item.BasicOperationCost}</td>
@@ -147,7 +149,7 @@ class OperationMaster extends Component {
                                             </tr>
                                         )
                                     })}
-                                     {this.props.operationListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.operationListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </div>

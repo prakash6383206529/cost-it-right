@@ -396,15 +396,15 @@ export function getOtherOperationList(supplierId, callback) {
 }
 
 /**
- * @method addCostingOtherOperation
+ * @method getCostingOtherOperation
  * @description add other operation to costing
  */
-export function addCostingOtherOperation(costingId, callback) {
+export function getCostingOtherOperation(costingId, callback) {
     return (dispatch) => {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.get(`${API.addCostingOtherOperation}/${costingId}`, headers);
+        const request = axios.get(`${API.getCostingOtherOperation}/${costingId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -537,18 +537,16 @@ export function saveProcessCosting(data, callback) {
     };
 }
 
-
-
 /**
- * @method addCostingProcesses
+ * @method getCostingProcesses
  * @description add process to costing
  */
-export function addCostingProcesses(costingId, callback) {
+export function getCostingProcesses(costingId, callback) {
     return (dispatch) => {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.get(`${API.addCostingProcesses}/${costingId}`, headers);
+        const request = axios.get(`${API.getCostingProcesses}/${costingId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

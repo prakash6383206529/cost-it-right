@@ -282,3 +282,27 @@ export function rawMaterialForCosting(data) {
         });
     };
 }
+
+/**
+ * @method getAllRawMaterialList
+ * @description Used to raw material list
+ */
+export function getAllRawMaterialList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRMMaterialAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_RM_LIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

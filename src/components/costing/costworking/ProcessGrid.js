@@ -301,9 +301,8 @@ class ProcessGrid extends Component {
 
     handlerCalculation = () => {
         const { lineItemData } = this.props;
-        const { totalCost, index } = this.state;
+        const { index } = this.state;
         let netCost = 0;
-        let grandTotal = 0
 
         const Rate = lineItemData && lineItemData[index] ? lineItemData[index].Rate : 0;
         const CycleTime = lineItemData && lineItemData[index] ? lineItemData[index].CycleTime : 0;
@@ -311,7 +310,7 @@ class ProcessGrid extends Component {
         const Cavity = lineItemData && lineItemData[index] ? lineItemData[index].Cavity : 0;
         const Quantity = lineItemData && lineItemData[index] ? lineItemData[index].Quantity : 0;
 
-        if (lineItemData[index].UnitOfMeasurementName == "Kilogram") {
+        if (lineItemData[index].UnitOfMeasurementName == "Kilogram" || lineItemData[index].UnitOfMeasurementName == "KG") {
             netCost = ((Rate * CycleTime) * (Efficiency / 100)) * Quantity;
         } else {
             netCost = (((Rate * CycleTime / 3600) * (100 / Efficiency)) / Cavity) * Quantity;
