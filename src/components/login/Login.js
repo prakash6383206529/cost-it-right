@@ -13,7 +13,6 @@ import "./Login.scss";
 import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
-//import SocialLogin from '../social-login';
 import { formatLoginResult } from '../../helper/ApiResponse';
 
 class Login extends Component {
@@ -38,10 +37,14 @@ class Login extends Component {
   onSubmit(values) {
     console.log("value", values)
 
-    this.props.loginUserAPI(values, res => {
-
-      this.setState({ isLoader: false, isSubmitted: false });
-
+    this.props.loginUserAPI(values, (res) => {
+      if (res && res.data && res.data.Result) {
+        this.setState({ isLoader: false, isSubmitted: false });
+        toastr.success(MESSAGES.LOGIN_SUCCESS)
+        let userDetail = formatLoginResult(res.data);
+        reactLocalStorage.setObject("userDetail", userDetail);
+        this.props.history.push("/");
+      }
     });
   }
 

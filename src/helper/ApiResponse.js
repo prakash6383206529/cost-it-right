@@ -1,17 +1,20 @@
 export function formatLoginResult(res) {
     if (res.Data) {
         const userObj = {
-            id: res.Data.LoggedInUserId,
-            Email: res.Data.Email,
+            Token: res.Data.Token,
+            LoggedInUserId: res.Data.LoggedInUserId,
             UserName: res.Data.UserName,
-            AccessToken: res.Data.AccessToken,
-            Company: res.Data.Company,
+            Name: res.Data.Name,
+            RememberMe: res.Data.RememberMe,
             CompanyId: res.Data.CompanyId,
-            Mobile: res.Data.Mobile,
-            Permissions: res.Data.Permissions,
-            Plants: res.Data.Plants,
-            Roles: res.Data.Roles,
+            Company: res.Data.Company,
             Title: res.Data.Title,
+            Email: res.Data.Email,
+            Mobile: res.Data.Mobile,
+            NumberOfSupplier: res.Data.NumberOfSupplier,
+            Roles: res.Data.Roles,
+            Plants: res.Data.Plants,
+            Permissions: res.Data.Permissions,
         };
         console.log("userObj", userObj)
         return userObj;

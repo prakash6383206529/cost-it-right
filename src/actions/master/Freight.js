@@ -10,6 +10,7 @@ import {
     GET_FREIGHT_DATA_SUCCESS,
     GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
     GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
+    GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -245,5 +246,34 @@ export function updateAdditionalFreightByIdAPI(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method createFreightAPI
+ * @description create freight master
+ */
+export function getAdditionalFreightBySupplier(sourceSupplierId, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
+            } else {
+                dispatch({ type: CREATE_FREIGHT_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
     };
 }

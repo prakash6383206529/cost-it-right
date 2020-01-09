@@ -170,6 +170,7 @@ export const API = {
   deleteAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/delete`,
   getAdditionalFreightByIdAPI: `${BASE_URL}/masters-additional-freight/get`,
   updateAdditionalFreightByIdAPI: `${BASE_URL}/masters-additional-freight/update`,
+  getAdditionalFreightBySupplier: `${BASE_URL}/costing-sheet-metal/get-costing-addtional-freight`,
 
   //Api's for labour master
   createLabourAPI: `${BASE_URL}/masters-labour/create`,
@@ -419,6 +420,7 @@ export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
 //For Additional Freight Master
 export const GET_ALL_ADDITIONAL_FREIGHT_SUCCESS = 'GET_ALL_ADDITIONAL_FREIGHT_SUCCESS';
 export const GET_ADDITIONAL_FREIGHT_DATA_SUCCESS = 'GET_ADDITIONAL_FREIGHT_DATA_SUCCESS';
+export const GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS = 'GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS';
 
 //for labour master
 export const CREATE_LABOUR_SUCCESS = 'CREATE_LABOUR_SUCCESS';

@@ -7,6 +7,7 @@ import {
     GET_FREIGHT_DATA_SUCCESS,
     GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
     GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
+    GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -64,6 +65,12 @@ export default function freightReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 PackagingData: action.payload
+            };
+        case GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                additionalFreightData: action.payload
             };
         default:
             return state;

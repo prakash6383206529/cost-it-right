@@ -1320,26 +1320,7 @@ class CostSummary extends Component {
         });
     }
 
-    /**
-     * @method AddFreightToggle
-     * @description Used for toggle freight
-     */
-    AddFreightToggle = (supplierColumn) => {
-        this.setState({
-            isShowFreightModal: true,
-            supplierColumn: supplierColumn,
-        })
-    }
 
-    /**
-     * @method onCancelCEDotherOps
-     * @description  used to cancel CED other Operation model
-     */
-    onCancelFreight = () => {
-        this.setState({
-            isShowFreightModal: false,
-        });
-    }
 
     /**
      * @method interestHandler
@@ -1380,6 +1361,62 @@ class CostSummary extends Component {
         }
 
         this.props.change(supplierColumn, Content)
+    }
+
+    /**
+     * @method AddFreightToggle
+     * @description Used for toggle freight
+     */
+    AddFreightToggle = (Number) => {
+        const { supplier, supplier2, supplier3 } = this.state;
+        let supplierId = '';
+        let supplierColumn = '';
+
+        if (Number == 1) {
+            supplierId = supplier.value;
+        } else if (Number == 2) {
+            supplierId = supplier2.value;
+        } else if (Number == 3) {
+            supplierId = supplier3.value;
+        }
+
+        this.setState({
+            isShowFreightModal: true,
+            supplierColumn: Number,
+            supplierId: supplierId,
+        })
+    }
+
+    /**
+     * @method onCancelCEDotherOps
+     * @description  used to cancel CED other Operation model
+     */
+    onCancelFreight = (additionalTotal = 0) => {
+        this.setState({
+            isShowFreightModal: false,
+        }, () => this.setAdditionalFreight(additionalTotal));
+    }
+
+    setAdditionalFreight = (Total) => {
+        const { supplierColumn } = this.state;
+        const { costingData } = this.props;
+        let Column = '';
+        let Content = '';
+
+        if (supplierColumn == 1) {
+            Column = 'supplier1Data';
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (supplierColumn == 2) {
+            Column = 'supplier2Data';
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (supplierColumn == 3) {
+            Column = 'supplier3Data';
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        Content.NetAdditionalFreightCost = Total;
+        this.props.change(Column, Content)
+
     }
 
     shareOfBusinessHandler = (e, Number) => {
@@ -2257,10 +2294,10 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <label></label>
-                            <input type="text" disabled value={this.state.otherOpsCostZBC} className={'form-control zbc-input'} title="Other Operation Cost" />
-                            <button type="button" className={'btn btn-primary custom-btn'}>Show</button>
+                            <input type="text" disabled value={this.state.otherOpsCostZBC} className={'form-control zbc-inputt'} title="Other Operation Cost" />
+                            {/* <button type="button" className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
-                        <Col md="3" className="custom-ops">
+                        <Col md="3" className="custom-opss">
                             <Field
                                 label={``}
                                 name={`${supplier1Data}.NetOtherOperationCost`}
@@ -2271,12 +2308,13 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 disabled={true}
-                                className="withoutBorder custom-ops-field"
+                                //className="withoutBorder custom-ops-field"
+                                className="withoutBorder"
                                 title="Other Operation Cost"
                             />
-                            <button type="button" onClick={() => this.otherOperationCostToggle(supplier.value, "supplierOne")} className={'btn btn-primary custom-btn'}>Show</button>
+                            {/* <button type="button" onClick={() => this.otherOperationCostToggle(supplier.value, "supplierOne")} className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
-                        <Col md="3" className="custom-ops">
+                        <Col md="3" className="custom-opss">
                             <Field
                                 label={``}
                                 name={`${supplier2Data}.NetOtherOperationCost`}
@@ -2287,12 +2325,13 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 disabled={true}
-                                className="withoutBorder custom-ops-field"
+                                //className="withoutBorder custom-ops-field"
+                                className="withoutBorder"
                                 title="Other Operation Cost"
                             />
-                            <button type="button" onClick={() => this.otherOperationCostToggle(supplier2.value, "supplierTwo")} className={'btn btn-primary custom-btn'}>Show</button>
+                            {/* <button type="button" onClick={() => this.otherOperationCostToggle(supplier2.value, "supplierTwo")} className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
-                        <Col md="3" className="custom-ops">
+                        <Col md="3" className="custom-opss">
                             <Field
                                 label={``}
                                 name={`${supplier3Data}.NetOtherOperationCost`}
@@ -2303,10 +2342,11 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 disabled={true}
-                                className="withoutBorder custom-ops-field"
+                                //className="withoutBorder custom-ops-field"
+                                className="withoutBorder"
                                 title="Other Operation Cost"
                             />
-                            <button type="button" onClick={() => this.otherOperationCostToggle(supplier3.value, "supplierThree")} className={'btn btn-primary custom-btn'}>Show</button>
+                            {/* <button type="button" onClick={() => this.otherOperationCostToggle(supplier3.value, "supplierThree")} className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
 
                         <Col md="12" className={'dark-divider'}>
@@ -2314,10 +2354,10 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <label></label>
-                            <input type="text" value={this.state.surfaceTreatmentZBC} className={'form-control zbc-input'} title="Surface Treatment" />
+                            <input type="text" value={this.state.surfaceTreatmentZBC} className={'form-control zbc-inputt'} title="Surface Treatment" />
                             {/* <button type="button" className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
-                        <Col md="3" className="custom-ops">
+                        <Col md="3" className="custom-opss">
                             <Field
                                 label={``}
                                 name={`${supplier1Data}.NetSurfaceCost`}
@@ -2333,7 +2373,7 @@ class CostSummary extends Component {
                             />
                             {/* <button type="button" className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
-                        <Col md="3" className="custom-ops">
+                        <Col md="3" className="custom-opss">
                             <Field
                                 label={``}
                                 name={`${supplier2Data}.NetSurfaceCost`}
@@ -2349,7 +2389,7 @@ class CostSummary extends Component {
                             />
                             {/* <button type="button" className={'btn btn-primary custom-btn'}>Show</button> */}
                         </Col>
-                        <Col md="3" className="custom-ops">
+                        <Col md="3" className="custom-opss">
                             <Field
                                 label={``}
                                 name={`${supplier3Data}.NetSurfaceCost`}
@@ -2371,7 +2411,7 @@ class CostSummary extends Component {
                         </Col>
                         <Col md="3">
                             <label></label>
-                            <input type="text" disabled value={this.state.totalConvCostZBC} className={'form-control zbc-input'} title="Total Conversion Cost" />
+                            <input type="text" disabled value={this.state.totalConvCostZBC} className={'form-control zbc-inputt'} title="Total Conversion Cost" />
                         </Col>
                         <Col md="3">
                             {/* <input type="text" disabled value={this.state.totalConvCostSupplier1} className={'mt20 supplier-input'} title="Total Conversion Cost" /> */}
@@ -3549,7 +3589,7 @@ class CostSummary extends Component {
                                     disabled={false}
                                     title="Enter Freight Amount"
                                 />
-                                <button type="button" >Add Freight</button>
+                                <button type="button" onClick={() => this.AddFreightToggle(1)}>Add Freight</button>
                             </div>
                             <div className={'base-cost'}>
                                 {''}
@@ -5397,6 +5437,7 @@ class CostSummary extends Component {
                     isOpen={isShowFreightModal}
                     onCancelFreight={this.onCancelFreight}
                     supplierColumn={supplierColumn}
+                    supplierId={this.state.supplierId}
                 />}
             </div >
         );

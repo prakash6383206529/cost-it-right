@@ -51,7 +51,7 @@ class App extends Component {
 
   render() {
     return (
-      <BrowserRouter basename={'http://10.10.1.8/CIRLite/'}>
+      <BrowserRouter>
         <div>
           <Route path="/" render={
             (props) => <Main {...props}

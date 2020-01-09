@@ -44,10 +44,11 @@ export function loginUserAPI(requestData, callback) {
         dispatch({ type: AUTH_API_REQUEST });
         axios.post(API.login, requestData, { headers })
             .then((response) => {
-                console.log("login res", response)
-                callback(response);
-                // console.log('loginUserAPI response =>>' + JSON.stringify(response));
-                dispatch(getLoginSuccess(response));
+                if (response && response.data && response.data.Result) {
+                    console.log("login res", response)
+                    dispatch(getLoginSuccess(response));
+                    callback(response);
+                }
             })
             .catch((error) => {
                 dispatch(getFailure(error));
@@ -61,10 +62,10 @@ export function loginUserAPI(requestData, callback) {
 //  * @method getLoginSuccess
 //  * @description return object containing action type
 //  */
-export function getLoginSuccess(data) {
+export function getLoginSuccess(res) {
     return {
         type: LOGIN_SUCCESS,
-        payload: formatLoginResult(data),
+        payload: formatLoginResult(res.data),
     };
 }
 
