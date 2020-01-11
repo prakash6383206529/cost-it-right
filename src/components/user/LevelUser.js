@@ -134,7 +134,7 @@ class LevelUser extends Component {
                         </div>
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             <div className="row form-group">
-                                <div className="col-md-4">
+                                <div className="col-md-12">
                                     <Field
                                         name="TechnologyId"
                                         type="text"
@@ -148,7 +148,7 @@ class LevelUser extends Component {
                                         valueDescription={this.state.technology}
                                     />
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-md-12">
                                     <Field
                                         name="LevelId"
                                         type="text"
@@ -162,7 +162,7 @@ class LevelUser extends Component {
                                         valueDescription={this.state.level}
                                     />
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-md-12">
                                     <Field
                                         name="UserId"
                                         type="text"

@@ -6,6 +6,7 @@ import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField, renderMultiSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { fetchBOMComboAPI, fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { createBOMAPI } from '../../../../actions/master/BillOfMaterial';
+import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -33,6 +34,7 @@ class AddBOM extends Component {
     componentWillMount() {
         this.props.fetchBOMComboAPI(res => { });
         this.props.fetchPlantDataAPI(() => { })
+        this.props.getAllRawMaterialList(() => { });
     }
 
     /**
@@ -101,6 +103,7 @@ class AddBOM extends Component {
         });
         /** Add new detail of the BOM  */
         const formData = {
+            IsAddNewChildPart: false,
             MaterialTypeName: materialType.label,
             UnitOfMeasurementName: selectedUOM.label,
             AssemblyBOMId: assyPartNo.value,
@@ -111,7 +114,8 @@ class AddBOM extends Component {
             BOMLevel: values.BOMLevel,
             EcoNumber: values.EcoNumber,
             RevisionNumber: values.RevisionNumber,
-            MaterialTypeId: materialType.value,
+            MaterialTypeId: "",
+            RawMaterialId: materialType.value,
             UnitOfMeasurementId: selectedUOM.value,
             AssemblyBOMPartId: assyPartNo.value,
             AssemblyBOMPartNumber: assyPartNo.label,
@@ -152,11 +156,17 @@ class AddBOM extends Component {
     * @description Used show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, partList, materialTypeList, plantList } = this.props;
+        const { uniOfMeasurementList, partList, materialTypeList, rowMaterialDetail, plantList } = this.props;
         const temp = [];
+        // if (label === 'material') {
+        //     materialTypeList && materialTypeList.map(item =>
+        //         temp.push({ label: item.Text, value: item.Value })
+        //     );
+        //     return temp;
+        // }
         if (label === 'material') {
-            materialTypeList && materialTypeList.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
+            rowMaterialDetail && rowMaterialDetail.map(item =>
+                temp.push({ label: item.RawMaterialName, value: item.RawMaterialId })
             );
             return temp;
         }
@@ -397,14 +407,13 @@ class AddBOM extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label="Material Type"
+                                                label="Raw Material Type"
                                                 name="MaterialTypeId"
                                                 type="text"
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 component={searchableSelect}
                                                 //validate={[required, maxLength50]}
                                                 options={this.renderTypeOfListing('material')}
-                                                //options={options}
                                                 //required={true}
                                                 handleChangeDescription={this.materialTypeHandler}
                                                 valueDescription={this.state.materialType}
@@ -463,9 +472,10 @@ class AddBOM extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps({ comman, material }) {
+    const { rowMaterialDetail } = material;
     const { uniOfMeasurementList, partList, materialTypeList, plantList } = comman;
-    return { uniOfMeasurementList, materialTypeList, partList, plantList }
+    return { uniOfMeasurementList, materialTypeList, partList, plantList, rowMaterialDetail }
 }
 
 /**
@@ -477,7 +487,8 @@ function mapStateToProps({ comman }) {
 export default connect(mapStateToProps, {
     createBOMAPI,
     fetchBOMComboAPI,
-    fetchPlantDataAPI
+    fetchPlantDataAPI,
+    getAllRawMaterialList,
 })(reduxForm({
     form: 'AddBOM',
     enableReinitialize: true,

@@ -7,6 +7,7 @@ import { renderText, renderSelectField, renderCheckboxInputField, renderMultiSel
 import { createPartAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '../../../../actions/master/Part';
 import { fetchPartComboAPI } from '../../../../actions/master/Comman';
 import { getAllBOMAPI } from '../../../../actions/master/BillOfMaterial';
+import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -29,6 +30,7 @@ class AddPart extends Component {
     componentWillMount() {
         this.props.fetchPartComboAPI(res => { });
         this.props.getAllBOMAPI(res => { });
+        this.props.getAllRawMaterialList(() => { });
     }
 
     /**
@@ -83,11 +85,17 @@ class AddPart extends Component {
     * @description Used show select listings
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, plantList, materialTypeList, BOMListing } = this.props;
+        const { uniOfMeasurementList, plantList, materialTypeList, rowMaterialDetail, BOMListing } = this.props;
         const temp = [];
+        // if (label === 'material') {
+        //     materialTypeList && materialTypeList.map(item =>
+        //         temp.push({ Text: item.Text, Value: item.Value })
+        //     );
+        //     return temp;
+        // }
         if (label === 'material') {
-            materialTypeList && materialTypeList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+            rowMaterialDetail && rowMaterialDetail.map(item =>
+                temp.push({ Text: item.RawMaterialName, Value: item.RawMaterialId })
             );
             return temp;
         }
@@ -128,7 +136,7 @@ class AddPart extends Component {
                 PartNumber: values.PartNumber,
                 PartName: values.PartName,
                 IndustrialIdentity: values.PartName,
-                MaterialTypeId: values.MaterialTypeId,
+                RawMaterialId: values.RawMaterialId,
                 MaterialGroupCode: values.MaterialGroupCode,
                 UnitOfMeasurementId: values.UnitOfMeasurementId,
                 PlantId: values.PlantId,
@@ -217,7 +225,7 @@ class AddPart extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.PART} ${CONSTANT.NUMBER}`}
+                                                label={`Part Number`}
                                                 name={"PartNumber"}
                                                 type="text"
                                                 placeholder={''}
@@ -229,7 +237,7 @@ class AddPart extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.PART} ${CONSTANT.NAME}`}
+                                                label={`Part Name`}
                                                 name={"PartName"}
                                                 type="text"
                                                 placeholder={''}
@@ -243,8 +251,8 @@ class AddPart extends Component {
                                         <Row />
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
-                                                name={"MaterialTypeId"}
+                                                label={`Raw Material Type`}
+                                                name={"RawMaterialId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -259,7 +267,7 @@ class AddPart extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.UOM}`}
+                                                label={`Unit Of Measurement`}
                                                 name={"UnitOfMeasurementId"}
                                                 type="text"
                                                 placeholder={''}
@@ -276,7 +284,7 @@ class AddPart extends Component {
                                         </Col>
                                         <Col md="12">
                                             <Field
-                                                label={`${CONSTANT.PLANT}`}
+                                                label={`Plant`}
                                                 name={"PlantId"}
                                                 type="text"
                                                 placeholder={''}
@@ -343,7 +351,8 @@ class AddPart extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part, comman, billOfMaterial }) {
+function mapStateToProps({ part, comman, billOfMaterial, material }) {
+    const { rowMaterialDetail } = material;
     const { uniOfMeasurementList, partData, materialTypeList } = part;
     const { BOMListing } = billOfMaterial;
     const { plantList } = comman
@@ -352,14 +361,14 @@ function mapStateToProps({ part, comman, billOfMaterial }) {
         initialValues = {
             PartNumber: partData.PartNumber,
             PartName: partData.PartName,
-            MaterialTypeId: partData.MaterialTypeId,
+            RawMaterialId: partData.MaterialTypeId,
             MaterialGroupCode: partData.MaterialGroupCode,
             PlantId: partData.PlantId,
             UnitOfMeasurementId: partData.UnitOfMeasurementId,
             PartDescription: partData.PartDescription,
         }
     }
-    return { uniOfMeasurementList, initialValues, materialTypeList, plantList, partData, BOMListing }
+    return { uniOfMeasurementList, initialValues, materialTypeList, plantList, partData, BOMListing, rowMaterialDetail }
 }
 
 /**
@@ -375,6 +384,7 @@ export default connect(mapStateToProps, {
     fetchPartComboAPI,
     getAllPartsAPI,
     getAllBOMAPI,
+    getAllRawMaterialList,
 })(reduxForm({
     form: 'AddPart',
     enableReinitialize: true,

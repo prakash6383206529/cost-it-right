@@ -9,6 +9,7 @@ export const minLength2 = minLength(2);
 export const minLength3 = minLength(3);
 export const minLength4 = minLength(4);
 export const minLength5 = minLength(5);
+export const minLength6 = minLength(6);
 export const minLength7 = minLength(7);
 export const minLength10 = minLength(10);
 
@@ -147,3 +148,9 @@ export const getNameBetweenBraces = (name) => {
     const finalName = name.substring(firstIndex + 1, lastIndex);
     return finalName;
 }
+
+export const checkForNull = (ele) => {
+    const number = (ele == null || ele == NaN) ? 0 : ele;
+    return number
+}
+

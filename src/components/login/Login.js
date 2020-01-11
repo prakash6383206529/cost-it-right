@@ -25,9 +25,7 @@ class Login extends Component {
     };
   }
 
-  componentWillMount() {
-
-  }
+  componentWillMount() { }
 
   /**
    * Submit the login form
@@ -43,6 +41,7 @@ class Login extends Component {
         toastr.success(MESSAGES.LOGIN_SUCCESS)
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
+        this.props.logUserIn();
         this.props.history.push("/");
       }
     });

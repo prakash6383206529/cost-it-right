@@ -5,7 +5,7 @@ import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength5, maxLength25, maxLength11, maxLength12, required, email,
+  minLength3, minLength5, minLength6, maxLength25, maxLength11, maxLength12, required, email,
   minLength7, maxLength70, alphabetsOnlyForName, number
 } from "../../helper/validation";
 import {
@@ -195,7 +195,7 @@ class UserRegistration extends Component {
   onSubmit(values) {
     console.log("signup values", values)
     const { department, role, city } = this.state;
-
+    const userDetails = reactLocalStorage.getObject("userDetail")
     this.setState({ isSubmitted: true })
 
     let userData = {
@@ -203,6 +203,7 @@ class UserRegistration extends Component {
       Password: values.Password,
       RoleId: role.value,
       DepartmentId: department.value,
+      CompanyId: userDetails.CompanyId,
       Email: values.email,
       Mobile: values.Mobile,
       FirstName: values.FirstName,
@@ -359,10 +360,10 @@ class UserRegistration extends Component {
                   <Field
                     name="Password"
                     label="Password"
-                    placeholder="Must have atleast 5 characters"
+                    placeholder="Must have atleast 6 characters"
                     component={renderPasswordInputField}
                     onChange={this.passwordPatternHandler}
-                    validate={[required, minLength5, maxLength25]}
+                    validate={[required, minLength6, maxLength25]}
                     isShowHide={this.state.isShowHidePassword}
                     showHide={this.showHidePasswordHandler}
                     required={true}
@@ -376,7 +377,7 @@ class UserRegistration extends Component {
                     label="Confirm Password"
                     placeholder={''}
                     component={renderPasswordInputField}
-                    validate={[required, minLength5, maxLength25]}
+                    validate={[required, minLength6, maxLength25]}
                     required={true}
                     maxLength={26}
                     isShowHide={this.state.isShowHide}

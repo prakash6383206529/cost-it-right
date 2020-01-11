@@ -1,61 +1,49 @@
 import {
     API_REQUEST,
-    CREATE_BOM_SUCCESS,
-    CREATE_BOM_FAILURE,
-    GET_BOM_SUCCESS,
-    GET_BOM_FAILURE,
-    UPLOAD_BOM_XLS_SUCCESS,
-    GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
+    API_FAILURE,
+    GET_SEND_FOR_APPROVAL_SUCCESS,
+    GET_ALL_APPROVAL_DEPARTMENT,
+    GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
 } from '../../config/constants';
 
 const initialState = {
 
 };
 
-export default function BOMReducer(state = initialState, action) {
+
+export default function ApprovalReducer(state = initialState, action) {
     switch (action.type) {
         case API_REQUEST:
             return {
                 ...state,
                 loading: true
             };
-        case CREATE_BOM_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                error: true,
-            };
-        case CREATE_BOM_FAILURE:
+        case API_FAILURE:
             return {
                 ...state,
                 loading: false,
                 error: true
             };
-        case GET_BOM_SUCCESS:
+        case GET_SEND_FOR_APPROVAL_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                BOMListing: action.payload
+                approvalData: action.payload
             };
-        case GET_BOM_UNIT_DATA_BY_PART_SUCCESS:
+        case GET_ALL_APPROVAL_DEPARTMENT:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                unitBOMDetail: action.payload
+                approvalDepartmentList: action.payload
             };
-        case GET_BOM_FAILURE:
-            return {
-                ...state,
-                loading: false,
-                error: true
-            };
-        case UPLOAD_BOM_XLS_SUCCESS:
+        case GET_ALL_APPROVAL_USERS_BY_DEPARTMENT:
             return {
                 ...state,
                 loading: false,
                 error: true,
+                approvalUsersList: action.payload
             };
         default:
             return state;

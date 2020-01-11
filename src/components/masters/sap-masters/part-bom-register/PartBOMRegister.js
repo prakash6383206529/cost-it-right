@@ -9,7 +9,10 @@ import {
 } from "../../../layout/FormInputs";
 import { createPartAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '../../../../actions/master/Part';
 import { fetchBOMComboAPI, fetchPlantDataAPI, fetchPartComboAPI } from '../../../../actions/master/Comman';
-import { getAllBOMAPI, createBOMAPI } from '../../../../actions/master/BillOfMaterial';
+import {
+    getAllBOMAPI, createBOMAPI, checkCostingExistForPart, deleteExisCostingByPartID,
+    getBOMDetailAPI, createNewBOMAPI
+} from '../../../../actions/master/BillOfMaterial';
 import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -26,12 +29,16 @@ class PartBOMRegister extends Component {
             selectedParts: [],
             selectedChildParts: [],
             assyPartNo: [],
-            ChildPart: [],
+            ChildPart: {},
             isBOMDisabled: false,
             materialType: [],
+            newPartRMType: [],
             selectedUOM: [],
             plantID: '',
+            newPartPlantID: '',
             isPartShow: '',
+            IsChildPart: false,
+            isNewPartBtnShow: false,
         }
     }
 
@@ -120,6 +127,9 @@ class PartBOMRegister extends Component {
 
         if (label === 'ChildPart') {
             partList && partList.length > 0 && partList.map(item => {
+                if (assyPartNo && assyPartNo.value == item.Value) {
+                    return false;
+                }
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -135,13 +145,20 @@ class PartBOMRegister extends Component {
         const temp = [];
         if (label === 'material') {
             rowMaterialDetail && rowMaterialDetail.map(item =>
-                temp.push({ Text: item.RawMaterialName, Value: item.RawMaterialId })
+                temp.push({ label: item.RawMaterialName, value: item.RawMaterialId })
             );
             return temp;
         }
         if (label === 'uom') {
             uniOfMeasurementList && uniOfMeasurementList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'searchableUOM') {
+            uniOfMeasurementList && uniOfMeasurementList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
@@ -163,37 +180,86 @@ class PartBOMRegister extends Component {
         this.setState({ IsPartAssociatedWithBOM: !this.state.IsPartAssociatedWithBOM });
     }
 
+
+    onPressAddChildPart = () => {
+        const { assyPartNo } = this.state;
+        if (assyPartNo && assyPartNo.length == 0) {
+            toastr.warning('Please select assembly part.')
+            this.setState({ IsChildPart: false })
+        } else {
+            this.setState({
+                IsChildPart: !this.state.IsChildPart,
+                isNewPartBtnShow: !this.state.isNewPartBtnShow,
+                isPartShow: false,
+            }, () => {
+                this.checkCostingExistForPart(assyPartNo.value)
+                this.setState({ ChildPart: {} })
+            })
+        }
+    }
+
     /**
-    * @method renderTypeOfListing
-    * @description Used show type of listing
+    * @method checkCostingExistForPart
+    * @description Used to check costing exist for selected part.
     */
-    renderBOMTypeListing = (label) => {
-        const { uniOfMeasurementList, partList, materialTypeList, rowMaterialDetail, plantList } = this.props;
-        const temp = [];
-        if (label === 'material') {
-            rowMaterialDetail && rowMaterialDetail.map(item =>
-                temp.push({ label: item.RawMaterialName, value: item.RawMaterialId })
-            );
-            return temp;
-        }
-        if (label === 'uom') {
-            uniOfMeasurementList && uniOfMeasurementList.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'part') {
-            partList && partList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'plant') {
-            plantList && plantList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
-        }
+    checkCostingExistForPart = (PartId) => {
+        this.props.checkCostingExistForPart(PartId, (Message) => {
+            if (Message != '') {
+                //toastr.warning(Message)
+                this.deleteExistCosting(Message, PartId);
+            }
+        })
+    }
+
+    /**
+    * @method deleteExistCosting
+    * @description Use to delete exist costing
+    */
+    deleteExistCosting = (Message, PartId) => {
+        const { reset } = this.props;
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDeleteCosting(PartId)
+            },
+            onCancel: () => {
+                this.setState({ assyPartNo: [], IsChildPart: false, isPartShow: false, isNewPartBtnShow: false })
+                this.props.getBOMDetailAPI(false, '', () => {
+                    this.setState({
+                        materialType: [],
+                        selectedUOM: [],
+                    })
+                })
+                //this.resetBOMForm()
+            }
+        };
+        return toastr.confirm(`${Message}`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDeleteCosting
+    * @description confirm delete costing for the part
+    */
+    confirmDeleteCosting = (PartId) => {
+        this.props.deleteExisCostingByPartID(PartId, (res) => {
+            if (res.data.Result) {
+                toastr.success("Costing has been deleted for selected part.");
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        });
+    }
+
+    resetBOMForm = () => {
+        this.props.change("BillNumber", '')
+        this.props.change("MaterialDescription", '')
+        this.props.change("Quantity", '')
+        this.props.change("AssemblyPartNumberMark", '')
+        this.props.change("BOMLevel", '')
+        this.props.change("EcoNumber", '')
+        this.props.change("RevisionNumber", '')
+        this.props.change("RawMaterialId", '')
+        this.props.change("UnitOfMeasurementId", '')
+        this.props.change("PlantId", '')
     }
 
     /**
@@ -203,10 +269,24 @@ class PartBOMRegister extends Component {
     assyPartNoHandler = (newValue, actionMeta) => {
         if (newValue != null) {
             this.setState({ assyPartNo: newValue }, () => {
+                const { assyPartNo, IsChildPart } = this.state;
                 this.checkIsPartIdSame()
+                if (IsChildPart == false) {
+                    this.props.getBOMDetailAPI(true, assyPartNo.value, (res) => {
+                        const { uniOfMeasurementList, rowMaterialDetail, unitBOMDetail } = this.props;
+
+                        const tempMaterialObj = rowMaterialDetail.find(item => item.RawMaterialId == unitBOMDetail.RawMaterialId)
+                        const tempUOMObj = uniOfMeasurementList.find(item => item.Value == unitBOMDetail.UnitOfMeasurementId)
+
+                        this.setState({
+                            materialType: { label: tempMaterialObj.RawMaterialName, value: tempMaterialObj.RawMaterialId },
+                            selectedUOM: { label: tempUOMObj.Text, value: tempUOMObj.Value },
+                        })
+                    })
+                }
             });
         } else {
-            this.setState({ assyPartNo: newValue }, () => {
+            this.setState({ assyPartNo: [], IsChildPart: false, isNewPartBtnShow: false }, () => {
                 this.checkIsPartIdSame()
             });
         }
@@ -236,6 +316,22 @@ class PartBOMRegister extends Component {
     */
     ChildPartHandler = (newValue, actionMeta) => {
         this.setState({ ChildPart: newValue }, () => {
+            const { ChildPart } = this.state;
+            if (ChildPart && ChildPart.value != '') {
+                this.props.change("NewChildPart_PartNumber", ChildPart.label)
+                this.props.change("NewChildPart_PartName", ChildPart.label)
+                this.setState({
+                    isNewPartBtnShow: false,
+                    isPartShow: true,
+                })
+            } else {
+                this.props.change("NewChildPart_PartNumber", "")
+                this.props.change("NewChildPart_PartName", "")
+                this.setState({
+                    isNewPartBtnShow: true,
+                    //isPartShow: false,
+                })
+            }
             this.checkIsPartIdSame()
         });
     };
@@ -250,11 +346,7 @@ class PartBOMRegister extends Component {
     //     });
     // };
 
-    onPressAddChildPart = () => {
-        this.setState({ IsChildPart: !this.state.IsChildPart }, () => {
-            this.setState({ ChildPart: [] })
-        })
-    }
+
 
     /**
     * @method materialTypeHandler
@@ -262,6 +354,14 @@ class PartBOMRegister extends Component {
     */
     materialTypeHandler = (newValue, actionMeta) => {
         this.setState({ materialType: newValue });
+    };
+
+    /**
+    * @method newPartRMTypeHandler
+    * @description Used to handle 
+    */
+    newPartRMTypeHandler = (newValue, actionMeta) => {
+        this.setState({ newPartRMType: newValue });
     };
 
     /**
@@ -276,41 +376,93 @@ class PartBOMRegister extends Component {
         this.setState({ plantID: e.target.value })
     }
 
+    newPartPlantHandler = (e) => {
+        this.setState({ newPartPlantID: e.target.value })
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-
-        const { selectedParts, materialType, selectedUOM, assyPartNo, ChildPart, plantID } = this.state;
+        console.log("values from BOM", values)
+        const { selectedParts, IsChildPart, materialType, newPartRMType, selectedUOM, assyPartNo, ChildPart, plantID, newPartPlantID } = this.state;
         let plantArray = [];
         selectedParts && selectedParts.map((item, i) => {
             return plantArray.push({ PartId: item.Value });
         });
         /** Add new detail of the BOM  */
-        const bomData = {
+        // const bomData = {
+        //     MaterialTypeName: materialType.label,
+        //     UnitOfMeasurementName: selectedUOM.label,
+        //     AssemblyBOMId: assyPartNo.value,
+        //     BillNumber: values.BillNumber,
+        //     MaterialDescription: values.MaterialDescription,
+        //     Quantity: values.Quantity,
+        //     AssemblyPartNumberMark: assyPartNo.label,
+        //     BOMLevel: values.BOMLevel,
+        //     EcoNumber: values.EcoNumber,
+        //     RevisionNumber: values.RevisionNumber,
+        //     MaterialTypeId: materialType.value,
+        //     UnitOfMeasurementId: selectedUOM.value,
+        //     AssemblyBOMPartId: assyPartNo.value,
+        //     AssemblyBOMPartNumber: assyPartNo.label,
+        //     PartId: assyPartNo.value,
+        //     PartNumber: assyPartNo.label,
+        //     PlantId: plantID,
+        //     CreatedBy: "",
+        //     SerialNumber: 0,
+        //     PartType: materialType.label,
+        //     IsActive: true
+        // }
+
+        let bomData = {
+            IsAddNewChildPart: IsChildPart,
             MaterialTypeName: materialType.label,
             UnitOfMeasurementName: selectedUOM.label,
+            NewChildPart: {
+                Quantity: values.NewChildPart_Quantity,
+                BOMLevel: values.BOMLevel,
+                EcoNumber: values.NewChildPart_EcoNumber,
+                RevisionNumber: values.NewChildPart_RevisionNumber,
+                IsActive: true,
+                CreatedBy: "",
+                PartId: "",
+                PartNumber: values.NewChildPart_PartNumber,
+                PartDescription: values.NewChildPart_PartDescription,
+                IndustrialIdentity: values.NewChildPart_PartName,
+                MaterialGroupCode: values.NewChildPart_MaterialGroupCode,
+                IsPartAssociatedWithBOM: true,
+                IsAssembly: true,
+                IsChildPart: true,
+                PlantId: values.NewChildPart_PlantId,
+                RawMaterialId: newPartRMType.value,
+                RawMaterialIdName: newPartRMType.label,
+                MaterialTypeId: "",
+                UnitOfMeasurementId: values.NewChildPart_UnitOfMeasurementId,
+            },
             AssemblyBOMId: assyPartNo.value,
             BillNumber: values.BillNumber,
-            MaterialDescription: values.MaterialDescription,
+            MaterialDescription: values.BillNumber,
             Quantity: values.Quantity,
             AssemblyPartNumberMark: assyPartNo.label,
             BOMLevel: values.BOMLevel,
             EcoNumber: values.EcoNumber,
             RevisionNumber: values.RevisionNumber,
-            MaterialTypeId: materialType.value,
+            MaterialTypeId: "",
+            RawMaterialId: materialType.value,
             UnitOfMeasurementId: selectedUOM.value,
             AssemblyBOMPartId: assyPartNo.value,
             AssemblyBOMPartNumber: assyPartNo.label,
             PartId: assyPartNo.value,
             PartNumber: assyPartNo.label,
-            PlantId: plantID,
+            PlantId: values.PlantId,
             CreatedBy: "",
             SerialNumber: 0,
             PartType: materialType.label,
             IsActive: true
         }
+        console.log("bomData from BOM 1111", bomData)
 
         if (assyPartNo.hasOwnProperty('value') && ChildPart.hasOwnProperty('value')) {
             if (assyPartNo.value == ChildPart.value) {
@@ -321,43 +473,15 @@ class PartBOMRegister extends Component {
                 bomData.PartNumber = ChildPart.label;
             }
         }
-
-        this.props.createBOMAPI(bomData, (res) => {
+        console.log("bomData from BOM 2222", bomData)
+        this.props.createNewBOMAPI(bomData, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.BOM_ADD_SUCCESS);
-                this.toggleModel();
             } else {
                 toastr.error(res.data.message);
             }
         });
 
-
-        /** Add new part  */
-        let partData = {
-            IsActive: true,
-            CreatedBy: "",
-            PartId: "",
-            PartNumber: values.PartNumber,
-            PartName: values.PartName,
-            PartDescription: values.PartDescription,
-            IndustrialIdentity: values.PartName,
-            MaterialGroupCode: values.MaterialGroupCode,
-            IsPartAssociatedWithBOM: this.state.IsPartAssociatedWithBOM,
-            IsAssembly: this.state.IsPartAssociatedWithBOM,
-            PlantId: plantID,
-            MaterialTypeId: materialType.value,
-            UnitOfMeasurementId: selectedUOM.value,
-        }
-
-        this.props.createPartAPI(partData, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_ADD_SUCCESS);
-                this.props.getAllPartsAPI(res => { })
-                this.toggleModel();
-            } else {
-                toastr.error(res.data.message);
-            }
-        });
     }
 
     /**
@@ -366,9 +490,11 @@ class PartBOMRegister extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, reset, partData } = this.props;
+        const { isNewPartBtnShow, ChildPart } = this.state;
+
         return (
 
-            <Container className="top-margin">
+            <Container className="top-margin BOM_form">
                 <form
                     noValidate
                     className="form"
@@ -390,12 +516,16 @@ class PartBOMRegister extends Component {
                                 />
                             </label>
                         </Col>
-                        <Col md="2" className={'pull-right'}>
+                        <Col md="8"></Col>
+                        {isNewPartBtnShow && <Col md="2" className={'pull-right'}>
                             <button
                                 type="button"
                                 className={'btn btn-primary btn-lg'}
-                                onClick={() => this.setState({ isPartShow: !this.state.isPartShow })}>Add Part</button>
-                        </Col>
+                                onClick={() => this.setState({
+                                    isPartShow: !this.state.isPartShow,
+                                    ChildPart: [],
+                                })}>Add New Part</button>
+                        </Col>}
                     </Row>
 
                     <Row>
@@ -425,6 +555,7 @@ class PartBOMRegister extends Component {
                                 //required={true}
                                 handleChangeDescription={this.ChildPartHandler}
                                 valueDescription={this.state.ChildPart}
+                                disabled={this.state.isPartShow ? true : false}
                             />
 
                             {/* <Field
@@ -529,13 +660,13 @@ class PartBOMRegister extends Component {
                         </Col>
                         <Col md="6">
                             <Field
-                                label="Raw Material Type"
+                                label="Assembly Raw Material Type"
                                 name="MaterialTypeId"
                                 type="text"
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 component={searchableSelect}
                                 //validate={[required, maxLength50]}
-                                options={this.renderBOMTypeListing('material')}
+                                options={this.renderTypeOfListing('material')}
                                 //required={true}
                                 handleChangeDescription={this.materialTypeHandler}
                                 valueDescription={this.state.materialType}
@@ -543,13 +674,13 @@ class PartBOMRegister extends Component {
                         </Col>
                         <Col md="6">
                             <Field
-                                label={'Unit Of Measurement'}
+                                label={'Assembly Unit Of Measurement'}
                                 name={'UnitOfMeasurementId'}
                                 type="text"
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 component={searchableSelect}
                                 //validate={[required]}
-                                options={this.renderBOMTypeListing('uom')}
+                                options={this.renderTypeOfListing('searchableUOM')}
                                 //required={true}
                                 handleChangeDescription={this.uomHandler}
                                 valueDescription={this.state.selectedUOM}
@@ -557,13 +688,13 @@ class PartBOMRegister extends Component {
                         </Col>
                         <Col md="6">
                             <Field
-                                label={`Plant`}
+                                label={`Assembly Plant`}
                                 name={"PlantId"}
                                 type="text"
                                 placeholder={''}
                                 validate={[required]}
                                 required={true}
-                                options={this.renderBOMTypeListing('plant')}
+                                options={this.renderTypeOfListing('plant')}
                                 onChange={this.plantHandler}
                                 optionValue={'Value'}
                                 optionLabel={'Text'}
@@ -582,9 +713,11 @@ class PartBOMRegister extends Component {
                             <Row>
                                 <Col>
                                     <h3><b>Add New Part</b></h3>
+                                    <hr />
                                 </Col>
                             </Row>
-                            <Row>
+
+                            {/* <Row>
                                 <Col md="4">
                                     <label
                                         className="custom-checkbox"
@@ -599,27 +732,13 @@ class PartBOMRegister extends Component {
                                         />
                                     </label>
                                 </Col>
-                                {/* <Col md="4">
-                                    <Field
-                                        label="BOM Numbers"
-                                        name="SelectedBOM"
-                                        placeholder="--Select BOM Number--"
-                                        selection={this.state.selectedBOMs}
-                                        options={this.renderTypeOfListing('BOM')}
-                                        selectionChanged={this.handleBOMSelection}
-                                        optionValue={option => option.Value}
-                                        optionLabel={option => option.Text}
-                                        component={renderMultiSelectField}
-                                        mendatory={false}
-                                        className="withoutBorder"
-                                    />
-                                </Col> */}
-                            </Row>
+                            </Row> */}
+
                             <Row>
                                 <Col md="6">
                                     <Field
                                         label={`Part Number`}
-                                        name={"PartNumber"}
+                                        name={"NewChildPart_PartNumber"}
                                         type="text"
                                         placeholder={''}
                                         validate={[required]}
@@ -631,7 +750,7 @@ class PartBOMRegister extends Component {
                                 <Col md="6">
                                     <Field
                                         label={`Part Name`}
-                                        name={"PartName"}
+                                        name={"NewChildPart_PartName"}
                                         type="text"
                                         placeholder={''}
                                         //validate={[required]}
@@ -641,6 +760,7 @@ class PartBOMRegister extends Component {
                                     />
                                 </Col>
                             </Row>
+
                             <Row>
                                 {/* <Col md="6">
                                     <Field
@@ -661,21 +781,21 @@ class PartBOMRegister extends Component {
                                 <Col md="6">
                                     <Field
                                         label="Raw Material Type"
-                                        name="MaterialTypeId"
+                                        name="NewChildPart_MaterialTypeId"
                                         type="text"
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         component={searchableSelect}
                                         //validate={[required, maxLength50]}
-                                        options={this.renderBOMTypeListing('material')}
+                                        options={this.renderTypeOfListing('material')}
                                         //required={true}
-                                        handleChangeDescription={this.materialTypeHandler}
-                                        valueDescription={this.state.materialType}
+                                        handleChangeDescription={this.newPartRMTypeHandler}
+                                        valueDescription={this.state.newPartRMType}
                                     />
                                 </Col>
                                 <Col md="6">
                                     <Field
                                         label={`UOM`}
-                                        name={"UnitOfMeasurementId"}
+                                        name={"NewChildPart_UnitOfMeasurementId"}
                                         type="text"
                                         placeholder={''}
                                         validate={[required]}
@@ -691,17 +811,55 @@ class PartBOMRegister extends Component {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md="12">
+                                <Col md="6">
+                                    <Field
+                                        label={`Quantity`}
+                                        name={"NewChildPart_Quantity"}
+                                        type="text"
+                                        placeholder={''}
+                                        validate={[required]}
+                                        component={renderText}
+                                        required={true}
+                                        className=" withoutBorder"
+                                    />
+                                </Col>
+                                <Col md="6">
+                                    <Field
+                                        label={`ECO ${CONSTANT.NUMBER}`}
+                                        name={"NewChildPart_EcoNumber"}
+                                        type="text"
+                                        placeholder={''}
+                                        //validate={[required]}
+                                        component={renderText}
+                                        //required={true}
+                                        className=" withoutBorder"
+                                    />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="6">
+                                    <Field
+                                        label={`Revision Number`}
+                                        name={"NewChildPart_RevisionNumber"}
+                                        type="text"
+                                        placeholder={''}
+                                        //validate={[required]}
+                                        component={renderText}
+                                        //required={true}
+                                        className=" withoutBorder"
+                                    />
+                                </Col>
+                                <Col md="6">
                                     <Field
                                         label={`Plant`}
-                                        name={"PlantId"}
+                                        name={"NewChildPart_PlantId"}
                                         type="text"
                                         placeholder={''}
                                         validate={[required]}
                                         required={true}
                                         maxLength={26}
                                         options={this.renderTypeOfListing('plant')}
-                                        onChange={this.plantHandler}
+                                        onChange={this.newPartPlantHandler}
                                         optionValue={'Value'}
                                         optionLabel={'Text'}
                                         component={renderSelectField}
@@ -713,7 +871,7 @@ class PartBOMRegister extends Component {
                                 <Col md="6">
                                     <Field
                                         label={`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}
-                                        name={"MaterialGroupCode"}
+                                        name={"NewChildPart_MaterialGroupCode"}
                                         type="text"
                                         placeholder={''}
                                         component={renderText}
@@ -723,7 +881,7 @@ class PartBOMRegister extends Component {
                                 <Col md="6">
                                     <Field
                                         label={`Part Description`}
-                                        name={"PartDescription"}
+                                        name={"NewChildPart_PartDescription"}
                                         type="text"
                                         placeholder={''}
                                         validate={[required]}
@@ -761,18 +919,21 @@ function mapStateToProps({ part, comman, billOfMaterial, material }) {
     const { rowMaterialDetail } = material;
     const { partList, plantList } = comman;
     const { uniOfMeasurementList, partData, materialTypeList } = part;
-    const { BOMListing } = billOfMaterial;
+    const { BOMListing, unitBOMDetail } = billOfMaterial;
 
     let initialValues = {};
-    if (partData && partData !== undefined) {
+    if (unitBOMDetail && unitBOMDetail !== undefined) {
         initialValues = {
-            PartNumber: partData.PartNumber,
-            PartName: partData.PartName,
-            MaterialTypeId: partData.MaterialTypeId,
-            MaterialGroupCode: partData.MaterialGroupCode,
-            PlantId: partData.PlantId,
-            UnitOfMeasurementId: partData.UnitOfMeasurementId,
-            PartDescription: partData.PartDescription,
+            BillNumber: unitBOMDetail.BillNumber,
+            MaterialDescription: unitBOMDetail.MaterialDescription,
+            Quantity: unitBOMDetail.Quantity,
+            AssemblyPartNumberMark: unitBOMDetail.AssemblyPartNumber,
+            BOMLevel: unitBOMDetail.BOMLevel,
+            EcoNumber: unitBOMDetail.EcoNumber,
+            RevisionNumber: unitBOMDetail.RevisionNumber,
+            RawMaterialId: unitBOMDetail.RawMaterialId,
+            UnitOfMeasurementId: unitBOMDetail.UnitOfMeasurementId,
+            PlantId: unitBOMDetail.PlantId,
         }
     }
     return {
@@ -785,6 +946,7 @@ function mapStateToProps({ part, comman, billOfMaterial, material }) {
         partList,
         plantList,
         rowMaterialDetail,
+        unitBOMDetail,
     }
 }
 
@@ -805,6 +967,10 @@ export default connect(mapStateToProps, {
     fetchBOMComboAPI,
     fetchPlantDataAPI,
     getAllRawMaterialList,
+    checkCostingExistForPart,
+    deleteExisCostingByPartID,
+    getBOMDetailAPI,
+    createNewBOMAPI,
 })(reduxForm({
     form: 'PartBOMRegister',
     enableReinitialize: true,

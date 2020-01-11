@@ -3,10 +3,11 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_BOP_SUCCESS,
-    CREATE_BOP_FAILURE,
+    CREATE_BOM_SUCCESS,
+    CREATE_BOM_FAILURE,
     GET_BOM_SUCCESS,
     UPLOAD_BOM_XLS_SUCCESS,
+    GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -34,12 +35,12 @@ export function createBOMAPI(data, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: CREATE_BOP_SUCCESS,
+                    type: CREATE_BOM_SUCCESS,
                     //payload: response.data.Data
                 });
                 callback(response);
             } else {
-                dispatch({ type: CREATE_BOP_FAILURE });
+                dispatch({ type: CREATE_BOM_FAILURE });
                 if (response.data.Message) {
                     toastr.error(response.data.Message);
                 }
@@ -50,6 +51,66 @@ export function createBOMAPI(data, callback) {
             });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method createNewBOMAPI
+ * @description create new bill of material for BOM and Part Combination
+ */
+export function createNewBOMAPI(data, callback) {
+    return (dispatch) => {
+        // dispatch({ type:  API_REQUEST });
+        const request = axios.post(API.createNewBOMAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: CREATE_BOM_SUCCESS,
+                    //payload: response.data.Data
+                });
+                callback(response);
+            } else {
+                dispatch({ type: CREATE_BOM_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getBOMDetailAPI
+ * @description get BOM detail
+ */
+export function getBOMDetailAPI(flag, PartId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (flag) {
+            const request = axios.get(`${API.getBOMByPartAPI}/${PartId}`, headers);
+            request.then((response) => {
+                dispatch({
+                    type: GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
     };
 }
 
@@ -94,7 +155,7 @@ export function uploadBOMxlsAPI(data, callback) {
                 });
                 callback(response);
             } else {
-                dispatch({ type: CREATE_BOP_FAILURE });
+                dispatch({ type: CREATE_BOM_FAILURE });
                 if (response.data.Message) {
                     toastr.error(response.data.Message);
                 }
@@ -125,5 +186,40 @@ export function deleteBOMAPI(BomId, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method checkCostingExistForPart
+ * @description Used for check part has costing or not
+ */
+export function checkCostingExistForPart(PartId, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.checkCostingExistForPart}/${PartId}`, headers);
+        request.then((response) => {
+            //callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            const response = error ? error.response : undefined;
+            console.log("response >>>", response)
+            callback(response.data.Message);
+            //apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method deleteExisCostingByPartID
+ * @description Used for check part has costing or not
+ */
+export function deleteExisCostingByPartID(PartId, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.deleteExisCostingByPartID}/${PartId}`, headers);
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

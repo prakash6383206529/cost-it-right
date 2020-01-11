@@ -224,6 +224,12 @@ class AddWeightCosting extends Component {
         });
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.fieldsObj != this.props.fieldsObj) {
+            this.handleCalculation()
+        }
+    }
+
     /**
     * @method handleCalculation
     * @description  handle all calculation
@@ -762,7 +768,7 @@ class AddWeightCosting extends Component {
                                                 placeholder={''}
                                                 //validate={[required]}
                                                 title={'FinishWt'}
-                                                onChange={this.handleCalculation}
+                                                //onChange={this.handleCalculation}
                                                 component={renderNumberInputField}
                                             //required={true}
                                             // className=" withoutBorder"
@@ -780,7 +786,7 @@ class AddWeightCosting extends Component {
                                                     label="No of Parts/Blank"
                                                     name={"NoOfPartsAndBlank"}
                                                     type="text"
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     value={0}
                                                     placeholder={''}
                                                     validate={[required]}
@@ -796,7 +802,7 @@ class AddWeightCosting extends Component {
                                                     label="SurfaceArea"
                                                     name={"SurfaceArea"}
                                                     type="text"
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     placeholder={''}
                                                     validate={[required]}
                                                     component={renderNumberInputField}
@@ -825,7 +831,7 @@ class AddWeightCosting extends Component {
                                                     label="OverlapArea"
                                                     name={"OverlapArea"}
                                                     type="text"
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     placeholder={''}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
@@ -868,7 +874,7 @@ class AddWeightCosting extends Component {
                                                     name={"Thickness"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
@@ -881,7 +887,7 @@ class AddWeightCosting extends Component {
                                                     name={"Width"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     validate={[required]}
                                                     component={renderNumberInputField}
                                                     required={true}
@@ -894,7 +900,7 @@ class AddWeightCosting extends Component {
                                                     name={"Length"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
@@ -1003,7 +1009,7 @@ class AddWeightCosting extends Component {
                                                     name={"Thickness"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
@@ -1018,7 +1024,7 @@ class AddWeightCosting extends Component {
                                                     placeholder={''}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
-                                                    onChange={this.handleCalculation}
+                                                //onChange={this.handleCalculation}
                                                 //required={true}
                                                 //className=" withoutBorder"
                                                 />
@@ -1031,7 +1037,7 @@ class AddWeightCosting extends Component {
                                                     placeholder={''}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
-                                                    onChange={this.handleCalculation}
+                                                //onChange={this.handleCalculation}
                                                 //required={true}
                                                 //className=" withoutBorder"
                                                 />
@@ -1042,7 +1048,7 @@ class AddWeightCosting extends Component {
                                                     name={"LengthSLPIPE"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
@@ -1073,7 +1079,7 @@ class AddWeightCosting extends Component {
                                                     placeholder={''}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
-                                                    onChange={this.handleCalculation}
+                                                //onChange={this.handleCalculation}
                                                 //required={true}
                                                 //className=" withoutBorder"
                                                 />
@@ -1087,7 +1093,7 @@ class AddWeightCosting extends Component {
                                                     //validate={[required]}
                                                     Value={0}
                                                     component={renderNumberInputField}
-                                                    //onChange={this.handleCalculation}
+                                                    ////onChange={this.handleCalculation}
                                                     disabled={true}
                                                     title="No of pipe=Length(SL)/Length of Pipe"
                                                 //required={true}
@@ -1131,7 +1137,7 @@ class AddWeightCosting extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     //validate={[required]}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     component={renderNumberInputField}
                                                 //required={true}
                                                 // className=" withoutBorder"
@@ -1144,7 +1150,7 @@ class AddWeightCosting extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     //validate={[required]}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     component={renderNumberInputField}
                                                 //required={true}
                                                 //className=" withoutBorder"
@@ -1158,7 +1164,7 @@ class AddWeightCosting extends Component {
                                                     readOnly
                                                     placeholder={''}
                                                     //validate={[required]}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     component={renderNumberInputField}
                                                     disabled={(weightType === 'L_Sec' || weightType === 'Plate') ? true : false}
                                                 //required={true}
@@ -1171,7 +1177,7 @@ class AddWeightCosting extends Component {
                                                     name={"Thickness"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
@@ -1184,7 +1190,7 @@ class AddWeightCosting extends Component {
                                                     name={"LengthOther"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
@@ -1235,7 +1241,7 @@ class AddWeightCosting extends Component {
                                                     name={"Width"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
@@ -1248,7 +1254,7 @@ class AddWeightCosting extends Component {
                                                     name={"Depth"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                     required={true}
@@ -1276,7 +1282,7 @@ class AddWeightCosting extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     //validate={[required]}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     component={renderNumberInputField}
                                                 //required={true}
                                                 //className=" withoutBorder"
@@ -1288,7 +1294,7 @@ class AddWeightCosting extends Component {
                                                     name={"Length"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}
@@ -1301,7 +1307,7 @@ class AddWeightCosting extends Component {
                                                     name={"Thickness"}
                                                     type="text"
                                                     placeholder={''}
-                                                    onChange={this.handleCalculation}
+                                                    //onChange={this.handleCalculation}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                 //required={true}

@@ -64,12 +64,31 @@ export const API = {
   deleteUOMAPI: `${BASE_URL}/masters-unit-of-measurement/delete`,
 
   //Api for the part master
-  partCreateAPI: `${BASE_URL}/masters-part/create`,
-  getAllPartsAPI: `${BASE_URL}/masters-part/get-all`,
-  getOnePartAPI: `${BASE_URL}/masters-part/get`,
-  filterPartAPI: `${BASE_URL}/masters-part/get`,
-  deletePartAPI: `${BASE_URL}/masters-part/delete`,
-  updatePartAPI: `${BASE_URL}/masters-part/update`,
+
+  // partCreateAPI: `${BASE_URL}/masters-part/create`,
+  // getAllPartsAPI: `${BASE_URL}/masters-part/get-all`,
+  // getOnePartAPI: `${BASE_URL}/masters-part/get`,
+  // filterPartAPI: `${BASE_URL}/masters-part/get`,
+  // deletePartAPI: `${BASE_URL}/masters-part/delete`,
+  // updatePartAPI: `${BASE_URL}/masters-part/update`,
+
+  partCreateAPI: `${BASE_URL}/masters-part-bill-of-material/create-part`,
+  getAllPartsAPI: `${BASE_URL}/masters-part-bill-of-material/get-all-part`,
+  getOnePartAPI: `${BASE_URL}/masters-part-bill-of-material/get-part`,
+  filterPartAPI: `${BASE_URL}/masters-part-bill-of-material/get-part`,
+  deletePartAPI: `${BASE_URL}/masters-part-bill-of-material/delete-part`,
+  updatePartAPI: `${BASE_URL}/masters-part-bill-of-material/update-part`,
+
+  //Api's for bill of materail
+  createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
+  createNewBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-new-bill-of-material`,
+  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-materials`,
+  getAllBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-all-bill-of-materials`,
+  uploadBOMxlsAPI: `${BASE_URL}/masters-part-bill-of-material/upload-bill-of-material`,
+  deleteBOMAPI: `${BASE_URL}/masters-part-bill-of-material/delete-bill-of-material`,
+  getBOMByPartAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-material-by-part`,
+  checkCostingExistForPart: `${BASE_URL}/masters-part-bill-of-material/check-exist-costing-by-part`,
+  deleteExisCostingByPartID: `${BASE_URL}/masters-part-bill-of-material/delete-exist-costing-by-part`,
 
   //Api for category master
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
@@ -105,13 +124,6 @@ export const API = {
   updateSupplierAPI: `${BASE_URL}/supplier/update`,
   deleteSupplierAPI: `${BASE_URL}/supplier/delete`,
   getRadioButtonSupplierType: `${BASE_URL}/configuration/radio-button-list-get-supplier-type`,
-
-  //Api's for bill of materail
-  createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
-  getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-materials`,
-  getAllBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-all-bill-of-materials`,
-  uploadBOMxlsAPI: `${BASE_URL}/masters-part-bill-of-material/upload-bill-of-material`,
-  deleteBOMAPI: `${BASE_URL}/masters-part-bill-of-material/delete-bill-of-material`,
 
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
@@ -269,6 +281,12 @@ export const API = {
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-supplier`,
 
+  //APPROVAL
+  getSendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
+  getAllApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-approval-department`,
+  getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
+  sendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
+
 }
 
 //Api constants
@@ -352,6 +370,7 @@ export const CREATE_BOM_FAILURE = 'CREATE_BOM_FAILURE';
 export const GET_BOM_SUCCESS = 'GET_BOM_SUCCESS';
 export const GET_BOM_FAILURE = 'GET_BOM_FAILURE';
 export const UPLOAD_BOM_XLS_SUCCESS = 'UPLOAD_BOM_XLS_SUCCESS';
+export const GET_BOM_UNIT_DATA_BY_PART_SUCCESS = 'GET_BOM_UNIT_DATA_BY_PART_SUCCESS';
 
 //for BOP master
 export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';
@@ -506,3 +525,7 @@ export const GET_TECHNOLOGY_DATA_LIST_SUCCESS = 'GET_TECHNOLOGY_DATA_LIST_SUCCES
 //Common to get plants by supplier
 export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER';
 
+//APPROVAL
+export const GET_SEND_FOR_APPROVAL_SUCCESS = 'GET_SEND_FOR_APPROVAL_SUCCESS';
+export const GET_ALL_APPROVAL_DEPARTMENT = 'GET_ALL_APPROVAL_DEPARTMENT';
+export const GET_ALL_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_APPROVAL_USERS_BY_DEPARTMENT';

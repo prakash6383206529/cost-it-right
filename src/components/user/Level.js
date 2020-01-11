@@ -70,7 +70,7 @@ class Level extends Component {
                                         name={"LevelName"}
                                         type="text"
                                         placeholder={''}
-                                        validate={[required, alphabetsOnlyForName]}
+                                        validate={[required]}
                                         component={renderText}
                                         required={true}
                                         maxLength={26}

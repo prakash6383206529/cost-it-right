@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList,
-    setCostingDetailRowData, getCostingProcesses, getCostingOtherOperation, saveCostingAsDraft
+    createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList, setCostingDetailRowData,
+    getCostingProcesses, getCostingOtherOperation, saveCostingAsDraft
 } from '../../../actions/costing/CostWorking';
+import { getAllRawMaterialList } from '../../../actions/master/Material';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -55,6 +56,7 @@ class CostWorking extends Component {
     componentDidMount() {
         const { activeCostingListData } = this.props;
         this.props.getMaterialTypeSelectList()
+        this.props.getAllRawMaterialList(() => { });
         if (activeCostingListData && activeCostingListData.PartDetail) {
             this.setState({
                 PartNumber: activeCostingListData.PartDetail.PartNumber
@@ -448,13 +450,13 @@ class CostWorking extends Component {
     }
 
     materialDropDown = (data, index) => {
-        const { MaterialSelectList } = this.props;
+        const { MaterialSelectList, rowMaterialDetail } = this.props;
         return (
             <select>
-                {MaterialSelectList && MaterialSelectList.map((item, i) => {
-                    let selected = (item.Value == data.MaterialTypeId) ? true : false;
+                {rowMaterialDetail && rowMaterialDetail.map((item, i) => {
+                    let selected = (item.RawMaterialId == data.MaterialTypeId) ? true : false;
                     return (
-                        <option value={item.Value} disabled selected={selected} >{item.Text}</option>
+                        <option value={item.RawMaterialId} disabled selected={selected} >{item.RawMaterialName}</option>
                     )
                 })}
             </select>
@@ -909,10 +911,11 @@ class CostWorking extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ costWorking }) {
+function mapStateToProps({ costWorking, material }) {
+    const { rowMaterialDetail } = material;
     const { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList, loading } = costWorking;
 
-    return { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList, loading }
+    return { activeCostingListData, getCostingDetailData, costingGridRMData, MaterialSelectList, loading, rowMaterialDetail }
 }
 
 export default connect(mapStateToProps,
@@ -925,6 +928,7 @@ export default connect(mapStateToProps,
         getCostingProcesses,
         getCostingOtherOperation,
         saveCostingAsDraft,
+        getAllRawMaterialList,
     }
 )(CostWorking);
 

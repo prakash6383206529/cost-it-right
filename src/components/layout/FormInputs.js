@@ -616,8 +616,9 @@ export function renderDatePickerOneDayAgo(field) {
   )
 }
 
-export const searchableSelect = ({ input, label, required, handleChangeDescription, valueDescription, options, meta: { touched, error, dirty, visited }, multi, className }) => {
+export const searchableSelect = ({ input, label, required, disabled, handleChangeDescription, valueDescription, options, meta: { touched, error, dirty, visited }, multi, className }) => {
   const { name, value, onBlur, onChange, onFocus } = input;
+  let isDisable = (disabled && disabled == true) ? true : false;
   return (
     <div>
       {label && <label>{label}{(required == true) ? <span className="asterisk-required">*</span> : ''}</label>}
@@ -627,6 +628,7 @@ export const searchableSelect = ({ input, label, required, handleChangeDescripti
         onChange={handleChangeDescription}
         //onCreateOption={handleCreate}
         value={valueDescription}
+        isDisabled={isDisable}
       />
       {/* <FormHelperText>{touched && error}</FormHelperText> */}
     </div>

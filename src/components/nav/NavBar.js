@@ -15,12 +15,7 @@ class SideBar extends Component {
       menu: false,
       dropdownOpen: false,
       isOpen: false,
-      extra: false,
       isRedirect: false,
-      url: '',
-      isRefreshed: '',
-      notificationCount: 0,
-      messageNotificationCount: 0
     };
   }
 

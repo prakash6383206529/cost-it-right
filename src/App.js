@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoggedIn: false
+      isUserLoggedIn: false
     };
   }
 
@@ -26,27 +26,21 @@ class App extends Component {
     // }
   }
 
-  // logUserIn = () => {
-  //   this.setState({ isLoggedIn: true });
-  //   reactLocalStorage.setObject("isLoggedIn", true);
-  // }
+  logUserIn = () => {
+    this.setState({ isUserLoggedIn: true });
+    reactLocalStorage.set("isUserLoggedIn", true);
+  }
 
   // logUserOut = () => {
   //   // console.log("Log out");
   //   const key = "rememberCredential";
   //   this.setState({ isLoggedIn: false });
   //   reactLocalStorage.setObject("isLoggedIn", false);
-  //   reactLocalStorage.setObject("basicProfileAndProd", false);
   //   reactLocalStorage.setObject("userResponse", {});
-  //   reactLocalStorage.setObject("internalRouteANDID", {});
   //   toastr.success(MESSAGES.LOGOUT_SUCCESS);
   //   setTimeout(() => {
   //     window.location.assign('/login');
   //   }, 1000)
-  // }
-
-  // isBasicProfileAndProduction = () => {
-  //   reactLocalStorage.setObject("basicProfileAndProd", true);
   // }
 
   render() {
@@ -55,10 +49,9 @@ class App extends Component {
         <div>
           <Route path="/" render={
             (props) => <Main {...props}
-            // isLoggedIn={this.state.isLoggedIn}
-            // logUserIn={this.logUserIn}
+              isUserLoggedIn={this.state.isUserLoggedIn}
+              logUserIn={this.logUserIn}
             // logUserOut={this.logUserOut}
-            // isBasicProfileAndProduction= {this.isBasicProfileAndProduction}
             />
           } />
         </div>

@@ -85,10 +85,9 @@ class Main extends Component {
                           render={props => (
                             <SideBar
                               {...props}
-                            // isLoggedIn={this.props.isLoggedIn}
-                            // logUserIn={this.props.logUserIn}
+                              isUserLoggedIn={this.props.isUserLoggedIn}
+                              logUserIn={this.props.logUserIn}
                             // logUserOut={this.props.logUserOut}
-                            // isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
                             />
                           )}
                         />
@@ -104,10 +103,9 @@ class Main extends Component {
               <Route path="/login" render={(props) =>
                 <Login
                   {...props}
-                // isLoggedIn={this.props.isLoggedIn}
-                // logUserIn={this.props.logUserIn}
+                  isUserLoggedIn={this.props.isUserLoggedIn}
+                  logUserIn={this.props.logUserIn}
                 // logUserOut={this.props.logUserOut}
-                // isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
                 />
               } />
 
@@ -116,10 +114,9 @@ class Main extends Component {
                 render={props => (
                   <User
                     {...props}
-                  // isLoggedIn={this.props.isLoggedIn}
+                  // isUserLoggedIn={this.props.isUserLoggedIn}
                   // logUserIn={this.props.logUserIn}
                   // logUserOut={this.props.logUserOut}
-                  // isBasicProfileAndProduction={this.props.isBasicProfileAndProduction}
                   />
                 )}
               />
