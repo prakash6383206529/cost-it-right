@@ -6,6 +6,8 @@ import {
   Collapse, Navbar, NavbarToggler, Nav, NavItem, NavLink, Dropdown, DropdownToggle,
   DropdownItem, DropdownMenu
 } from "reactstrap";
+import { isUserLoggedIn, userDetails } from '../../helper/auth';
+import { logoutUserAPI } from '../../actions';
 import "./NavBar.scss";
 
 class SideBar extends Component {
@@ -35,14 +37,20 @@ class SideBar extends Component {
   };
 
   logout = (e) => {
+    const { userData } = this.props;
     e.preventDefault();
+    let requestData = {
+      AccessToken: userData.Token,
+      UserId: userData.LoggedInUserId,
+    }
     const toastrConfirmOptions = {
       onOk: () => {
-        this.props.logUserOut();
+        this.props.logoutUserAPI(requestData, () => this.props.logUserOut())
+        //this.props.logUserOut();
       },
       onCancel: () => console.log('CANCEL: clicked')
     };
-    return toastr.confirm(`Are you sure do you want to logout ?`, toastrConfirmOptions);
+    return toastr.confirm(`Are you sure do you want to logout?`, toastrConfirmOptions);
   };
 
   /** @method user dropdown
@@ -62,29 +70,28 @@ class SideBar extends Component {
   }
 
   render() {
+    const { userData } = this.props;
+    const isLoggedIn = isUserLoggedIn();
+    //console.log("isLoggedIn >>>", isLoggedIn)
     return (
       <nav>
         <div className="flex-conatiner sign-social before-login">
           <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
         </div>
-        {/* )} */}
 
         <Nav className="ml-auto top-menu logout">
           <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
             <DropdownToggle caret>
-              Harish
+              {isLoggedIn ? userData.Name : 'Login'}
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem header>
+              {!isLoggedIn && <DropdownItem header>
                 <Link className="bell-notifcation-icon" to="/login">
                   Login
                 </Link>
-              </DropdownItem>
-              {/* <DropdownItem>
-                <Link className="bell-notifcation-icon" to="/signup">
-                  Register
-                </Link>
-              </DropdownItem> */}
+              </DropdownItem>}
+
+              {isLoggedIn && <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>}
             </DropdownMenu>
           </Dropdown>
           <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
@@ -147,15 +154,6 @@ class SideBar extends Component {
                   <a className="dropdown-item" href='/user'>User</a>
                 </div>
               </li>
-              {/* <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>About</DropdownToggle>
-                  <DropdownMenu right>
-                    <DropdownItem tag="a" href="/about-us"> About us</DropdownItem>
-                    <DropdownItem tag="a" href="/terms-conditions">Terms and Conditions</DropdownItem>
-                    <DropdownItem tag="a" href="/privacy-policy"> Privacy and Policy</DropdownItem>
-                    <DropdownItem tag="a" href="/contact-us"> Contact us</DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown> */}
             </Nav>
           </Collapse>
         </Navbar>
@@ -169,10 +167,9 @@ class SideBar extends Component {
  * @desc map state containing organisation details from the api to props
  * @return object{}
  */
-function mapStateToProps({ }) {
-  return {
-
-  }
+function mapStateToProps({ auth }) {
+  const { userData } = auth
+  return { userData }
 }
 
 /**
@@ -182,5 +179,5 @@ function mapStateToProps({ }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(
-  mapStateToProps, null
+  mapStateToProps, { logoutUserAPI }
 )(SideBar);

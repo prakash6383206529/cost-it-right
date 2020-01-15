@@ -109,8 +109,9 @@ class Approval extends Component {
             TechnologyId: approvalData.TechnologyId,
         }
 
-        this.props.sendForApproval(requestData, () => {
-
+        this.props.sendForApproval(requestData, (res) => {
+            toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
+            this.props.onCancelApproval();
         })
     }
 

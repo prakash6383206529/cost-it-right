@@ -6,9 +6,10 @@ import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { renderText, renderSelectField, InputHiddenField, searchableSelect, RFReactSelect } from "../../layout/FormInputs";
+import { renderText, renderSelectField, renderNumberInputField, InputHiddenField, searchableSelect, RFReactSelect } from "../../layout/FormInputs";
 import AddMHRCosting from './AddMHRCosting';
 import { MESSAGES } from '../../../config/message';
+import { required, checkForNull } from "../../../helper/validation";
 const selector = formValueSelector('ProcessGridForm');
 
 const processGridRowData = {
@@ -121,69 +122,74 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                             <Field
                                 label={''}
                                 name={`${cost}.CycleTime`}
-                                type="text"
+                                //type="text"
                                 placeholder={''}
                                 //validate={[required]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
+                                parse={value => Number(value)}
                             />
                         </td>
                         <td>
                             <Field
                                 label={''}
                                 name={`${cost}.Efficiency`}
-                                type="text"
+                                //type="text"
                                 placeholder={''}
                                 //validate={[required]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
+                                parse={value => Number(value)}
                             />
                         </td>
                         <td>
                             <Field
                                 label={''}
                                 name={`${cost}.Quantity`}
-                                type="text"
+                                //type="text"
                                 placeholder={''}
                                 //validate={[required]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
+                                parse={value => Number(value)}
                             />
                         </td>
                         <td>
                             <Field
                                 label={''}
                                 name={`${cost}.Cavity`}
-                                type="text"
+                                //type="text"
                                 placeholder={''}
                                 //validate={[required]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
+                                parse={value => Number(value)}
                             />
                         </td>
                         <td>
                             <Field
                                 label={''}
                                 name={`${cost}.NetCost`}
-                                type="text"
+                                //type="text"
                                 placeholder={''}
                                 //validate={[required]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 className=" withoutBorder"
                                 disabled={true}
+                                parse={value => Number(value)}
                             />
                         </td>
                         <td>
@@ -235,10 +241,16 @@ class ProcessGrid extends Component {
      * @description  used to open MHR Modal 
      */
     openMHRModal = (GridselectedIndex) => {
-        this.setState({
-            isOpenMHRModal: !this.state.isOpenMHRModal,
-            GridselectedIndex: GridselectedIndex,
-        })
+        const { lineItemData } = this.props;
+        const ProcessId = lineItemData[GridselectedIndex].ProcessId;
+        if (ProcessId != '') {
+            this.setState({
+                isOpenMHRModal: !this.state.isOpenMHRModal,
+                GridselectedIndex: GridselectedIndex,
+            })
+        } else {
+            toastr.warning('Please select process.')
+        }
     }
 
     /**
@@ -284,7 +296,6 @@ class ProcessGrid extends Component {
 
     rowDataHandler = (e, index) => {
         this.setState({
-            //cycleTime: e.target.value,
             index: index,
         }, () => this.handlerCalculation())
     }
@@ -294,29 +305,30 @@ class ProcessGrid extends Component {
         let grandTotal = 0;
 
         lineItemData && lineItemData.map((item, index) => {
-            grandTotal = grandTotal + item.NetCost
+            grandTotal = checkForNull(grandTotal) + checkForNull(item.NetCost)
         })
         return grandTotal;
     }
+
 
     handlerCalculation = () => {
         const { lineItemData } = this.props;
         const { index } = this.state;
         let netCost = 0;
 
-        const Rate = lineItemData && lineItemData[index] ? lineItemData[index].Rate : 0;
-        const CycleTime = lineItemData && lineItemData[index] ? lineItemData[index].CycleTime : 0;
-        const Efficiency = lineItemData && lineItemData[index] ? lineItemData[index].Efficiency : 0;
-        const Cavity = lineItemData && lineItemData[index] ? lineItemData[index].Cavity : 0;
-        const Quantity = lineItemData && lineItemData[index] ? lineItemData[index].Quantity : 0;
+        const Rate = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Rate) : 0;
+        const CycleTime = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].CycleTime) : 0;
+        const Efficiency = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Efficiency) : 0;
+        const Cavity = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Cavity) : 0;
+        const Quantity = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Quantity) : 0;
 
         if (lineItemData[index].UnitOfMeasurementName == "Kilogram" || lineItemData[index].UnitOfMeasurementName == "KG") {
-            netCost = ((Rate * CycleTime) * (Efficiency / 100)) * Quantity;
+            netCost = ((Rate * CycleTime * Efficiency / 100)) * Quantity;
         } else {
             netCost = (((Rate * CycleTime / 3600) * (100 / Efficiency)) / Cavity) * Quantity;
         }
 
-        this.props.change(`LinkedProcesses[${index}]['NetCost']`, netCost);
+        this.props.change(`LinkedProcesses[${index}]['NetCost']`, checkForNull(netCost));
 
     }
 

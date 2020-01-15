@@ -12,7 +12,8 @@ import {
     SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY,
     SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
     GET_FREIGHT_HEAD_SUCCESS,
-    GET_FREIGHT_AMOUNT_DATA_SUCCESS
+    GET_FREIGHT_AMOUNT_DATA_SUCCESS,
+    EMPTY_COSTING_DATA,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -240,18 +241,13 @@ export function getCostingOverHeadProByModelType(data, callback) {
         const request = axios.post(API.getCostingOverHeadProByModelType, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                // console.log("ressssss", response)
-                // dispatch({
-                //     type: SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
-                //     payload: response.data.Data,
-                // });
-                callback(response.data.Data);
+                callback(response);
             }
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
-            apiErrors(error);
+            console.log("error head", error)
+            dispatch({ type: API_FAILURE });
+            //apiErrors(error);
+            callback(error.response);
         });
     };
 }
@@ -312,21 +308,32 @@ export function fetchFreightHeadsAPI(callback) {
  */
 export function getCostingFreight(data, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
+        // dispatch({ type: API_REQUEST });
         const request = axios.post(`${API.getCostingFreight}`, data, headers);
         request.then((response) => {
+            console.log("response freight", response)
             if (response.data.Result) {
                 dispatch({
                     type: GET_FREIGHT_AMOUNT_DATA_SUCCESS,
                     payload: response.data.Data,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+            } else if (response.data == '') {
+                dispatch({ type: API_FAILURE });
+                toastr.warning('No content available for selected freight.');
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
+}
+
+export function emptyCostingData() {
+    return (dispatch) => {
+        dispatch({
+            type: EMPTY_COSTING_DATA,
+            payload: {}
+        });
+    }
 }

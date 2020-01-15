@@ -149,8 +149,19 @@ export const getNameBetweenBraces = (name) => {
     return finalName;
 }
 
+export const getSupplierCode = (name) => {
+    if (name != '') {
+        const firstIndex = name.indexOf('-(');
+        const lastIndex = name.lastIndexOf(')');
+        const supplierCode = name.substring(firstIndex + 2, lastIndex);
+        return supplierCode;
+    } else {
+        return '';
+    }
+}
+
 export const checkForNull = (ele) => {
-    const number = (ele == null || ele == NaN) ? 0 : ele;
+    const number = (ele == null || isNaN(Number(ele)) || ele == undefined || ele == Infinity) ? 0 : Number(ele);
     return number
 }
 

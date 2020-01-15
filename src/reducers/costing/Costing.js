@@ -11,6 +11,7 @@ import {
     SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
     GET_FREIGHT_HEAD_SUCCESS,
     GET_FREIGHT_AMOUNT_DATA_SUCCESS,
+    EMPTY_COSTING_DATA,
 } from '../../config/constants';
 
 const initialState = {
@@ -155,6 +156,13 @@ export default function costingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 FreightData: action.payload
+            };
+        case EMPTY_COSTING_DATA:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingData: action.payload
             };
         default:
             return state;

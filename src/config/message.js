@@ -68,6 +68,10 @@ export const MESSAGES = {
   DELETE_ADDITIONAL_FREIGHT_SUCCESS: 'Additional Freight has been deleted successfully.',
   WEIGHT_SPEC_UPDATE_SUCCESS: 'Weight specification updated successfully.',
   WEIGHT_SPEC_ADDED_SUCCESS: 'Weight specification added successfully',
-
+  SELECT_SUPPLIER_BEFORE_ADD_VALUE: 'Please add supplier before adding value.',
+  SOB_LESS_THAN_100: 'SOB Sould be less than 100%.',
+  SOB_GREATER_THAN_ZERO: 'SOB Sould be greater than 0.',
+  COSTING_SAVED_SUCCESSFULLY: 'Costing has been saved successfully.',
+  COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY: 'Costing has been sent for approval.',
 };
 

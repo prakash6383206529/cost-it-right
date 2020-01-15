@@ -11,6 +11,7 @@ import { addDepartmentAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
+import DepartmentsListing from './DepartmentsListing';
 
 class Department extends Component {
     constructor(props) {
@@ -107,6 +108,7 @@ class Department extends Component {
                         </form>
                     </div>
                 </div>
+                <DepartmentsListing />
             </div>
         );
     }

@@ -28,20 +28,18 @@ class App extends Component {
 
   logUserIn = () => {
     this.setState({ isUserLoggedIn: true });
-    reactLocalStorage.set("isUserLoggedIn", true);
+    reactLocalStorage.setObject("isUserLoggedIn", true);
   }
 
-  // logUserOut = () => {
-  //   // console.log("Log out");
-  //   const key = "rememberCredential";
-  //   this.setState({ isLoggedIn: false });
-  //   reactLocalStorage.setObject("isLoggedIn", false);
-  //   reactLocalStorage.setObject("userResponse", {});
-  //   toastr.success(MESSAGES.LOGOUT_SUCCESS);
-  //   setTimeout(() => {
-  //     window.location.assign('/login');
-  //   }, 1000)
-  // }
+  logUserOut = () => {
+    this.setState({ isUserLoggedIn: false });
+    reactLocalStorage.setObject("isUserLoggedIn", false);
+    reactLocalStorage.setObject("userDetail", {});
+    toastr.success(MESSAGES.LOGOUT_SUCCESS);
+    setTimeout(() => {
+      window.location.assign('/login');
+    }, 1000)
+  }
 
   render() {
     return (
@@ -51,7 +49,7 @@ class App extends Component {
             (props) => <Main {...props}
               isUserLoggedIn={this.state.isUserLoggedIn}
               logUserIn={this.logUserIn}
-            // logUserOut={this.logUserOut}
+              logUserOut={this.logUserOut}
             />
           } />
         </div>

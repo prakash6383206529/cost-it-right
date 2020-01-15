@@ -11,6 +11,7 @@ import { addRoleAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
+import RolesListing from './RolesListing';
 
 class Role extends Component {
     constructor(props) {
@@ -109,6 +110,7 @@ class Role extends Component {
                         </form>
                     </div>
                 </div>
+                <RolesListing />
             </div>
         );
     }
@@ -127,8 +129,8 @@ const mapStateToProps = ({ auth }) => {
 };
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
@@ -136,5 +138,4 @@ export default reduxForm({
     form: "Role",
 })(connect(mapStateToProps, {
     addRoleAPI,
-
 })(Role));

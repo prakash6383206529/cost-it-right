@@ -70,7 +70,7 @@ class AddBOPCosting extends Component {
 
         return (
             <Container>
-                <Modal size={'xl'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
+                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{'BOP Costing'}</ModalHeader>
                     <ModalBody>
                         <Row>
@@ -78,6 +78,7 @@ class AddBOPCosting extends Component {
                                 <Table className="table table-striped" bordered>
                                     <thead>
                                         <tr>
+                                            <th>{``}</th>
                                             <th>{`Supplier Part No.`}</th>
                                             <th>{`Category`}</th>
                                             <th>{`Specification`}</th>
@@ -93,9 +94,10 @@ class AddBOPCosting extends Component {
                                         {bopListData && bopListData.map((item, index) => {
                                             return (
                                                 <tr row={index} >
-                                                    <td><div onClick={() => this.bopHandler(item)}>{item && item.PartNumber ? item.PartNumber : 'N/A'}</div></td>
+                                                    <td><button type="button" onClick={() => this.bopHandler(item)}>{'Add'}</button></td>
+                                                    <td>{item && item.PartNumber ? item.PartNumber : 'N/A'}</td>
                                                     <td>{item.CategoryName}</td>
-                                                    <td>{item.Specification}</td>
+                                                    <td>{item && item.Specification ? item.Specification : 'N/A'}</td>
                                                     <td>{item.MaterialTypeName}</td>
                                                     <td>{item.SourceSupplierName}</td>
                                                     <td>{item.SourceSupplierLocation}</td>
@@ -106,8 +108,8 @@ class AddBOPCosting extends Component {
                                             )
                                         })
                                         }
+                                        {this.props.bopListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                     </tbody>
-                                    {this.props.bopListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                 </Table>
                             </div>
                         </Row>

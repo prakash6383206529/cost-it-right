@@ -108,10 +108,6 @@ export function sendForApproval(data, callback) {
         const request = axios.post(API.sendForApproval, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                // dispatch({
-                //     type: GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
-                //     payload: response.data.SelectList
-                // });
                 callback(response);
             } else {
                 dispatch({ type: API_FAILURE });

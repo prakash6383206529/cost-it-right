@@ -449,6 +449,10 @@ class CostWorking extends Component {
         })
     }
 
+    /**
+     * @method materialDropDown
+     * @description  Raw material dropdown in grid
+     */
     materialDropDown = (data, index) => {
         const { MaterialSelectList, rowMaterialDetail } = this.props;
         return (
@@ -463,6 +467,20 @@ class CostWorking extends Component {
         )
     }
 
+    /**
+     * @method RawMaterialLabel
+     * @description  Raw material label in grid
+     */
+    RawMaterialLabel = (data, index) => {
+        const { rowMaterialDetail } = this.props;
+        let RawMaterial = rowMaterialDetail && rowMaterialDetail.find(item => item.RawMaterialId == data.MaterialTypeId)
+        return RawMaterial ? RawMaterial.RawMaterialName : '';
+    }
+
+    /**
+     * @method QuantityHandler
+     * @description  used for Quantity Handle
+     */
     QuantityHandler = (e, Quantity, index) => {
         const { getCostingDetailData } = this.props;
         console.log(e.target.value, Quantity, index)
@@ -541,7 +559,7 @@ class CostWorking extends Component {
                     <td>{data.PartNumber}</td>
                     <td>{data.PartNumber}</td>
                     <td>{data.PartDescription}</td>
-                    <td>{this.materialDropDown(data, index)}</td>
+                    <td>{this.RawMaterialLabel(data, index)}</td>
                     <td><input type="text" disabled value={data.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
 
                     <td><button onClick={() => this.openRMModel(index)}>{data && data.RawMaterialDetails.length > 0 ? data.RawMaterialDetails[0].RawMaterialName : 'Add'}</button></td>
@@ -676,7 +694,7 @@ class CostWorking extends Component {
                                             <th>{`Assy Part No.`}</th>
                                             <th>{`Child Part No.`}</th>
                                             <th>{`Part Description`}</th>
-                                            <th>{`Material Type`}</th>
+                                            <th>{`Raw Material Type`}</th>
                                             <th>{`Qty/Assy`}</th>
                                             <th>{`RM Specification`}</th>
                                             <th>{`RM rate/Kg`}</th>
@@ -786,7 +804,7 @@ class CostWorking extends Component {
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartNumber}</td>
                                                     <td>{data.PartDescription}</td>
-                                                    <td>{this.materialDropDown(data, index)}</td>
+                                                    <td>{this.RawMaterialLabel(data, index)}</td>
                                                     {/* <td><input type="text" disabled value={this.state.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td> */}
                                                     <td><input type="text" disabled value={data.Quantity} onChange={(e) => this.QuantityHandler(e, data.Quantity, index)} /></td>
 

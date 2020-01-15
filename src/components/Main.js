@@ -87,7 +87,7 @@ class Main extends Component {
                               {...props}
                               isUserLoggedIn={this.props.isUserLoggedIn}
                               logUserIn={this.props.logUserIn}
-                            // logUserOut={this.props.logUserOut}
+                              logUserOut={this.props.logUserOut}
                             />
                           )}
                         />

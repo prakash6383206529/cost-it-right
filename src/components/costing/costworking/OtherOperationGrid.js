@@ -159,12 +159,12 @@ const renderMembers = ({ fields, processHandler, openOtherOperationModal, render
                             />
                         </td>
                         <td>
-                            <button
+                            {fields.length > 1 ? <button
                                 type="button"
                                 className={'btn btn-danger'}
                                 title="Delete"
                                 onClick={() => fields.remove(index)}
-                            >Delete</button>
+                            >Delete</button> : ''}
                         </td>
                     </tr>)
             }
@@ -238,7 +238,7 @@ class OtherOperationGrid extends Component {
         const { GridselectedIndex } = this.state;
 
         this.props.change(`LinkedOperations[${GridselectedIndex}]['OtherOperationId']`, item.OtherOperationId);
-        this.props.change(`LinkedOperations[${GridselectedIndex}]['OperationName']`, item.OperationName);
+        this.props.change(`LinkedOperations[${GridselectedIndex}]['OperationName']`, item.ProcessName);
         this.props.change(`LinkedOperations[${GridselectedIndex}]['OtherOperationName']`, item.OtherOperationName);
         this.props.change(`LinkedOperations[${GridselectedIndex}]['Rate']`, item.Rate);
         this.props.change(`LinkedOperations[${GridselectedIndex}]['UnitOfMeasurementName']`, item.UnitOfMeasurementName);

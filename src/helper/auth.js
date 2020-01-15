@@ -1,11 +1,16 @@
-import {reactLocalStorage} from 'reactjs-localstorage';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 
-export const isUserLoggedIn = () => {
-    const isLoggedIn = reactLocalStorage.getObject("isLoggedIn");
-    if(isLoggedIn == true){
+export function isUserLoggedIn() {
+    const isLoggedIn = reactLocalStorage.getObject("isUserLoggedIn");
+    if (isLoggedIn == true) {
         return true;
     } else {
         return false;
     }
+};
+
+export function userDetails() {
+    const userDetail = reactLocalStorage.getObject("userDetail");
+    return userDetail;
 };

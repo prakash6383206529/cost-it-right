@@ -266,14 +266,13 @@ export function getAdditionalFreightBySupplier(sourceSupplierId, callback) {
             } else {
                 dispatch({ type: CREATE_FREIGHT_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    toastr.warning(response.data.Message);
                 }
             }
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
-            apiErrors(error);
+            dispatch({ type: API_FAILURE });
+            //apiErrors(error);
+            callback(error);
         });
     };
 }

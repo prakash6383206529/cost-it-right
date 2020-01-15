@@ -11,6 +11,7 @@ import { addUserLevelAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
+import LevelsListing from './LevelsListing';
 
 class Level extends Component {
     constructor(props) {
@@ -121,6 +122,7 @@ class Level extends Component {
                         </form>
                     </div>
                 </div>
+                <LevelsListing />
             </div>
         );
     }

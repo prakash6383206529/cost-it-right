@@ -76,7 +76,7 @@ class AddMHRCosting extends Component {
                                         {getMHRCostingListData && getMHRCostingListData.map((item, index) => {
                                             return (
                                                 <tr row={index} >
-                                                    <td><div onClick={() => this.addMHRHandler(item)}>{'Add'}</div></td>
+                                                    <td><button type={'button'} onClick={() => this.addMHRHandler(item)}>{'Add'}</button></td>
                                                     <td>{item.TechnologyName}</td>
                                                     <td>{'N/A'}</td> { /** TODO Supplier code need to add */}
                                                     <td>{item.SupplierName}</td>

@@ -134,6 +134,7 @@ class AddRawMaterialCosting extends Component {
                                 <Table className="table table-striped" bordered>
                                     <thead>
                                         <tr>
+                                            <th>{``}</th>
                                             <th>{`RM`}</th>
                                             <th>{`UOM`}</th>
                                             <th>{`RM Grade`}</th>
@@ -154,7 +155,8 @@ class AddRawMaterialCosting extends Component {
                                             const { RawMaterialDetailsId } = item;
                                             return (
                                                 <tr index={index} >
-                                                    <td><div onClick={() => this.rawMaterialHandler(item)}>{item.RawMaterialName}</div></td>
+                                                    <td><button type="button" onClick={() => this.rawMaterialHandler(item)}>{'Add'}</button></td>
+                                                    <td>{item.RawMaterialName}</td>
                                                     <td>{item.UnitOfMeasurementName}</td>
                                                     <td>{item.GradeName}</td>
                                                     <td>{item.SpecificationName}</td>

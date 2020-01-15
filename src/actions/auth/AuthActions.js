@@ -29,10 +29,10 @@ import { toastr } from "react-redux-toastr";
 import { MESSAGES } from "../../config/message";
 
 
-// /**
-//  * @method loginUser
-//  * @description get data from dummy api
-//  */
+/**
+ * @method loginUser
+ * @description get data from dummy api
+ */
 
 const headers = {
     'Content-Type': 'application/json',
@@ -58,10 +58,10 @@ export function loginUserAPI(requestData, callback) {
     };
 }
 
-// /**
-//  * @method getLoginSuccess
-//  * @description return object containing action type
-//  */
+/**
+ * @method getLoginSuccess
+ * @description return object containing action type
+ */
 export function getLoginSuccess(res) {
     return {
         type: LOGIN_SUCCESS,
@@ -69,20 +69,40 @@ export function getLoginSuccess(res) {
     };
 }
 
-// /**
-//  * @method getFailure
-//  * @description return object containing action type
-//  */
+/**
+ * @method getFailure
+ * @description return object containing action type
+ */
 export function getFailure() {
     return {
         type: AUTH_API_FAILURE
     };
 }
 
-// /**
-//  * @method socialLoginAPI
-//  * @description get data from social Media
-//  */
+/**
+ * @method logoutUserAPI
+ * @description Used for logout, logged in user
+ */
+export function logoutUserAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.logout, requestData, { headers })
+            .then((response) => {
+                console.log("logout res", response)
+                if (response && response.status == 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method socialLoginAPI
+ * @description get data from social Media
+ */
 // export function socialLoginAPI(requestData, callback) {
 //     return (dispatch) => {
 //         dispatch({ type: AUTH_API_REQUEST });
@@ -163,10 +183,10 @@ export function getFailure() {
 //     };
 // }
 
-// /**
-//  * @method registerUserAPI
-//  * @description Register user by email
-//  */
+/**
+ * @method registerUserAPI
+ * @description Register user by email
+ */
 export function registerUserAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
@@ -184,10 +204,10 @@ export function registerUserAPI(requestData, callback) {
     };
 }
 
-// /**
-//  * @method getRegisterSuccess
-//  * @description return object containing action type
-//  */
+/**
+ * @method getRegisterSuccess
+ * @description return object containing action type
+ */
 export function getRegisterSuccess(data) {
     return {
         type: REGISTER_SUCCESS,
@@ -322,13 +342,13 @@ export function getAllDepartmentAPI(callback) {
 }
 
 /**
- * @method getAllUserLevelAPI
- * @description get all role's
+ * @method getAllLevelAPI
+ * @description get all level's
  */
-export function getAllUserLevelAPI(callback) {
+export function getAllLevelAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllUserLevelAPI}`, headers);
+        const request = axios.get(`${API.getAllLevelAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

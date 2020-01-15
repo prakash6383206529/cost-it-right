@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
-import { required } from "../../../helper/validation";
+import { required, checkForNull } from "../../../helper/validation";
 import { renderText, renderNumberInputField, renderSelectField, InputHiddenField } from "../../layout/FormInputs";
 import {
     createWeightCalculationCosting, getWeightCalculationCosting, getWeightCalculationLayoutType,
@@ -239,49 +239,63 @@ class AddWeightCosting extends Component {
 
         const { fieldsObj } = this.props;
 
+        const Thickness = checkForNull(fieldsObj.Thickness);
+        const Width = checkForNull(fieldsObj.Width);
+        const Length = checkForNull(fieldsObj.Length);
+        const FinishWeight = checkForNull(fieldsObj.FinishWeight);
+        const SurfaceArea = checkForNull(fieldsObj.SurfaceArea);
+        const NoOfPartsAndBlank = fieldsObj.NoOfPartsAndBlank == 0 ? this.props.change('NoOfPartsAndBlank', 1) : checkForNull(fieldsObj.NoOfPartsAndBlank);
+        const OverlapArea = checkForNull(fieldsObj.OverlapArea);
+        const OD = checkForNull(fieldsObj.OD);
+        const ID = checkForNull(fieldsObj.ID);
+        const LengthOfPipe = checkForNull(fieldsObj.LengthOfPipe);
+        const FlangeWidthOne = checkForNull(fieldsObj.FlangeWidthOne);
+        const WebWidth = checkForNull(fieldsObj.WebWidth);
+        const FlangeWidthTwo = checkForNull(fieldsObj.FlangeWidthTwo);
+
         // Bracket Part calculation
-        const WT = ((fieldsObj.Thickness * fieldsObj.Width * fieldsObj.Length * 7.85) / 1000000);
-        const disabledNetSurface = (fieldsObj.FinishWeight * 1000000 * fieldsObj.SurfaceArea) / (fieldsObj.Thickness * 7.85 * 25.4 * 25.4)
-        const grossWt = WT / fieldsObj.NoOfPartsAndBlank;
-        const netSurfaceArea = disabledNetSurface - fieldsObj.OverlapArea;
+        const WT = ((Thickness * Width * Length * 7.85) / 1000000);
+        const disabledNetSurface = (FinishWeight * 1000000 * SurfaceArea) / (Thickness * 7.85 * 25.4 * 25.4)
+        const grossWt = WT / NoOfPartsAndBlank;
+        const netSurfaceArea = disabledNetSurface - OverlapArea;
 
         // Pipe layout surface area for one side and two side
-        const oneSideInputValue = ((2 * 3.14 * (fieldsObj.OD / 2) * fieldsObj.LengthOfPipe) + (2 * (3.14 * (fieldsObj.OD / 2) * (fieldsObj.OD / 2)) - (3.14 * (fieldsObj.ID / 2) * (fieldsObj.ID / 2))))
-        const twoSideInputValue = ((2 * 3.14 * (fieldsObj.ID / 2) * fieldsObj.LengthOfPipe) + (2 * 3.14 * (fieldsObj.OD / 2) * fieldsObj.LengthOfPipe) + (2 * (3.14 * (fieldsObj.OD / 2) * (fieldsObj.OD / 2)) - (3.14 * (fieldsObj.ID / 2) * (fieldsObj.ID / 2))))
-        const wtInKgPipe = ((fieldsObj.OD - fieldsObj.Thickness) * fieldsObj.Thickness * fieldsObj.Length * 0.2465) / 1000
-        const numberOfPipe1 = fieldsObj.Length / fieldsObj.LengthOfPipe
+        const oneSideInputValue = ((2 * 3.14 * (OD / 2) * LengthOfPipe) + (2 * (3.14 * (OD / 2) * (OD / 2)) - (3.14 * (ID / 2) * (ID / 2))))
+        const twoSideInputValue = ((2 * 3.14 * (ID / 2) * LengthOfPipe) + (2 * 3.14 * (OD / 2) * LengthOfPipe) + (2 * (3.14 * (OD / 2) * (OD / 2)) - (3.14 * (ID / 2) * (ID / 2))))
+        const wtInKgPipe = ((OD - Thickness) * Thickness * Length * 0.2465) / 1000
+        const numberOfPipe1 = Length / LengthOfPipe
         const pipeGrossWeight = wtInKgPipe / numberOfPipe1
 
         //L_Sec, Plate, C_Sec, Z sec layout calculation
         let weightOther = '';
 
         if (weightType === 'L_Sec') {
-            weightOther = (((fieldsObj.FlangeWidthOne + fieldsObj.WebWidth) - (2 * fieldsObj.Thickness) * fieldsObj.Thickness * fieldsObj.Length) * (7.85 / 1000000))
+            weightOther = (((FlangeWidthOne + WebWidth) - (2 * Thickness) * Thickness * Length) * (7.85 / 1000000))
         } else if (weightType === 'Plate') {
-            weightOther = (fieldsObj.FlangeWidthOne * fieldsObj.WebWidth * fieldsObj.Thickness) * 7.85 / 1000000
+            weightOther = (FlangeWidthOne * WebWidth * Thickness) * 7.85 / 1000000
         } else if (weightType === 'C_Sec') {
-            weightOther = ((fieldsObj.FlangeWidthOne + fieldsObj.WebWidth + fieldsObj.FlangeWidthTwo) - (2 * 2 * fieldsObj.Thickness)) * fieldsObj.Thickness * fieldsObj.Length * (7.85 / 1000000)
+            weightOther = ((FlangeWidthOne + WebWidth + FlangeWidthTwo) - (2 * 2 * Thickness)) * Thickness * Length * (7.85 / 1000000)
         } else if (weightType === 'Z_Sec') {
-            weightOther = ((fieldsObj.FlangeWidthOne + fieldsObj.WebWidth + fieldsObj.FlangeWidthTwo) - (1.5 * 2 * fieldsObj.Thickness)) * fieldsObj.Thickness * fieldsObj.Length * (7.85 / 1000000)
+            weightOther = ((FlangeWidthOne + WebWidth + FlangeWidthTwo) - (1.5 * 2 * Thickness)) * Thickness * Length * (7.85 / 1000000)
         }
 
         //Tube layout calculation 
-        const Formula1 = (fieldsObj.Width - (4 * fieldsObj.Thickness)) + (fieldsObj.WebWidth - (4 * fieldsObj.Thickness)) + (1.5 * 3.14 * fieldsObj.Thickness);
-        const Formula2 = (Formula1 * 2 * fieldsObj.Thickness) / 100;
+        const Formula1 = (Width - (4 * Thickness)) + (WebWidth - (4 * Thickness)) + (1.5 * 3.14 * Thickness);
+        const Formula2 = (Formula1 * 2 * Thickness) / 100;
         const formula3 = Formula2 * .785;
-        const WeightPerPc = formula3 * (fieldsObj.Length / 1000);
+        const WeightPerPc = formula3 * (Length / 1000);
 
         // For Bracket layout calculation
-        this.props.change("GrossWeight", grossWt.toFixed(4))
-        this.props.change("disabledSurfaceArea", disabledNetSurface.toFixed(4))
-        this.props.change("NetSurfaceArea", netSurfaceArea.toFixed(4))
+        this.props.change("GrossWeight", grossWt)
+        this.props.change("disabledSurfaceArea", disabledNetSurface)
+        this.props.change("NetSurfaceArea", netSurfaceArea)
         this.props.change("WeightUnitKg", WT)
 
         // For pipe layout
-        this.props.change("GrossWeightPipe", pipeGrossWeight.toFixed(4))
-        this.props.change("oneSide", oneSideInputValue.toFixed(4))
-        this.props.change("twoSide", twoSideInputValue.toFixed(4))
-        this.props.change("PipeWeight", wtInKgPipe.toFixed(4))
+        this.props.change("GrossWeightPipe", pipeGrossWeight)
+        this.props.change("oneSide", oneSideInputValue)
+        this.props.change("twoSide", twoSideInputValue)
+        this.props.change("PipeWeight", wtInKgPipe)
         this.props.change("NumberOfPipe", numberOfPipe1)
 
         //L_Sec, Plate, C_Sec, Z sec, and tube layout calculation
@@ -290,8 +304,6 @@ class AddWeightCosting extends Component {
 
         //Tube layout calculation
         this.props.change("WeightPerPc", WeightPerPc)
-
-
 
         // **************************************************************
     }

@@ -251,6 +251,7 @@ export const API = {
 
   // Login API
   login: `${BASE_URL}/user/login`,
+  logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
 
   //User's API
@@ -273,7 +274,7 @@ export const API = {
   //Level's API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
   addUserLevelAPI: `${BASE_URL}/user-level/create`,
-  getAllUserLevelAPI: `${BASE_URL}/user-level/get-all`,
+  getAllLevelAPI: `${BASE_URL}/user-level/get-all`,
   getUserLevelAPI: `${BASE_URL}/user-level/get`,
   updateUserLevelAPI: `${BASE_URL}/user-level/update`,
   deleteUserLevelAPI: `${BASE_URL}/user-level/delete`,
@@ -469,7 +470,7 @@ export const CREATE_SHEETMETAL_COSTING_SUCCESS = 'CREATE_SHEETMETAL_COSTING_SUCC
 export const GET_COSTING_DATA_SUCCESS = 'GET_COSTING_DATA_SUCCESS';
 export const GET_FREIGHT_HEAD_SUCCESS = 'GET_FREIGHT_HEAD_SUCCESS';
 export const GET_FREIGHT_AMOUNT_DATA_SUCCESS = 'GET_FREIGHT_AMOUNT_DATA_SUCCESS';
-
+export const EMPTY_COSTING_DATA = 'EMPTY_COSTING_DATA';
 
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
@@ -529,3 +530,9 @@ export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER';
 export const GET_SEND_FOR_APPROVAL_SUCCESS = 'GET_SEND_FOR_APPROVAL_SUCCESS';
 export const GET_ALL_APPROVAL_DEPARTMENT = 'GET_ALL_APPROVAL_DEPARTMENT';
 export const GET_ALL_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_APPROVAL_USERS_BY_DEPARTMENT';
+
+//COSTING STATUS
+export const APPROVED = 'Approved';
+export const PENDING = 'Pending';
+export const DRAFT = 'Draft';
+export const REJECTED = 'Rejected';

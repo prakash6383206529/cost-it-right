@@ -8,7 +8,7 @@ import { required, alphabetsOnlyForName, number } from "../../helper/validation"
 import { searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
-    addUserLevelAPI, getAllTechnologyAPI, getAllUserLevelAPI, getAllUserAPI,
+    addUserLevelAPI, getAllTechnologyAPI, getAllLevelAPI, getAllUserAPI,
     assignUserLevelAPI
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
@@ -33,7 +33,7 @@ class LevelUser extends Component {
     */
     componentDidMount() {
         this.props.getAllTechnologyAPI(() => { })
-        this.props.getAllUserLevelAPI(() => { })
+        this.props.getAllLevelAPI(() => { })
         this.props.getAllUserAPI(() => { })
     }
 
@@ -225,7 +225,7 @@ export default reduxForm({
     {
         addUserLevelAPI,
         getAllTechnologyAPI,
-        getAllUserLevelAPI,
+        getAllLevelAPI,
         getAllUserAPI,
         assignUserLevelAPI,
     }
