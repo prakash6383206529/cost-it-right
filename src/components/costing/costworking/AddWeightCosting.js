@@ -71,81 +71,7 @@ class AddWeightCosting extends Component {
     * @description called when props changed
     */
     componentWillReceiveProps(nextProps) {
-        // if (nextProps.weightCostingInfo != this.props.weightCostingInfo) {
-        //     const layoutData = nextProps.weightCostingInfo;
 
-        //     //const layoutType = this.checkLayoutType(layoutData)
-        //     // Bracket Part calculation
-        //     const WT = ((layoutData.Thickness * layoutData.Width * layoutData.Length * 7.85) / 1000000);
-        //     const disabledNetSurface = (layoutData.FinishWeight * 1000000 * layoutData.SurfaceArea) / (layoutData.Thickness * 7.85 * 25.4 * 25.4)
-        //     const grossWt = WT / layoutData.NoOfPartsAndBlank;
-        //     const netSurfaceArea = disabledNetSurface - layoutData.OverlapArea;
-
-
-        //     // Pipe layout surface area for one side and two side
-        //     const OD = layoutData.OD;
-        //     const ID = layoutData.ID;
-        //     const oneSideInputValue = ((2 * 3.14 * (OD / 2) * layoutData.LengthOfPipe) + (2 * (3.14 * (OD / 2) * (OD / 2)) - (3.14 * (ID / 2) * (ID / 2))))
-        //     const twoSideInputValue = ((2 * 3.14 * (ID / 2) * layoutData.LengthOfPipe) + (2 * 3.14 * (OD / 2) * layoutData.LengthOfPipe) + (2 * (3.14 * (OD / 2) * (OD / 2)) - (3.14 * (ID / 2) * (ID / 2))))
-        //     const wtInKgPipe = ((OD - layoutData.Thickness) * layoutData.Thickness * layoutData.Length * 0.2465) / 1000
-        //     const numberOfPipe1 = layoutData.Length / layoutData.LengthOfPipe
-        //     const pipeGrossWeight = wtInKgPipe / numberOfPipe1
-
-        //     //L_Sec, Plate, C_Sec, Z sec layout calculation
-        //     let weightOther = '';
-
-        //     if (layoutData.LayoutingName == 'L Sec') {
-        //         weightOther = (((layoutData.FlangeWidthOne + layoutData.WebWidth) - (2 * layoutData.Thickness) * layoutData.Thickness * layoutData.Length) * (7.85 / 1000000))
-        //     } else if (layoutData.LayoutingName == 'Plate') {
-        //         weightOther = (layoutData.FlangeWidthOne * layoutData.WebWidth * layoutData.Thickness) * 7.85 / 1000000
-        //     } else if (layoutData.LayoutingName == 'C Sec') {
-        //         weightOther = ((layoutData.FlangeWidthOne + layoutData.WebWidth + layoutData.FlangeWidthTwo) - (2 * 2 * layoutData.Thickness)) * layoutData.Thickness * layoutData.Length * (7.85 / 1000000)
-        //     } else if (layoutData.LayoutingName == 'Z Sec') {
-        //         weightOther = ((layoutData.FlangeWidthOne + layoutData.WebWidth + layoutData.FlangeWidthTwo) - (1.5 * 2 * layoutData.Thickness)) * layoutData.Thickness * layoutData.Length * (7.85 / 1000000)
-        //     }
-
-        //     //Tube layout calculation 
-        //     const Formula1 = (layoutData.Width - (4 * layoutData.Thickness)) + (layoutData.WebWidth - (4 * layoutData.Thickness)) + (1.5 * 3.14 * layoutData.Thickness);
-        //     const Formula2 = (Formula1 * 2 * layoutData.Thickness) / 100;
-        //     const formula3 = Formula2 * .785;
-        //     const WeightPerPc = formula3 * (layoutData.Length / 1000);
-
-        //     this.setState({
-        //         grossWeight: grossWt,
-        //         total: WT,
-        //         NFS: netSurfaceArea.toFixed(6),
-        //         disabledSurfaceArea: disabledNetSurface,
-        //         grossWeightPipe: pipeGrossWeight,
-        //         oneSideInput: typeof oneSideInputValue == 'NaN' ? 0 : oneSideInputValue,
-        //         twoSideInput: typeof twoSideInputValue == 'NaN' ? 0 : twoSideInputValue,
-        //         pipeWeight: wtInKgPipe,
-        //         numberOfPipe: numberOfPipe1,
-        //         weightOther: weightOther,
-        //         grossWeightOther: weightOther,
-        //         //weightType: layoutType,
-        //     });
-
-        //     // For Bracket layout calculation
-        //     this.props.change("GrossWeight", grossWt.toFixed(3))
-        //     this.props.change("disabledSurfaceArea", disabledNetSurface)
-        //     this.props.change("NetSurfaceArea", netSurfaceArea.toFixed(6))
-        //     //this.props.change("NoOfPartsAndBlank", layoutData.NoOfPartsAndBlank)
-        //     this.props.change("WeightUnitKg", WT)
-
-        //     // For pipe layout
-        //     this.props.change("GrossWeightPipe", pipeGrossWeight.toFixed(3))
-        //     this.props.change("oneSide", oneSideInputValue.toFixed(3))
-        //     this.props.change("twoSide", twoSideInputValue.toFixed(3))
-        //     this.props.change("PipeWeight", wtInKgPipe.toFixed(3))
-        //     this.props.change("NumberOfPipe", numberOfPipe1)
-
-        //     //L_Sec, Plate, C_Sec, Z sec, and tube layout calculation
-        //     this.props.change("GrossWeightOther", weightOther)
-        //     this.props.change("WeightOther", weightOther)
-
-        //     //Tube layout calculation
-        //     this.props.change("WeightPerPc", WeightPerPc)
-        // }
     }
 
     /**
@@ -287,7 +213,7 @@ class AddWeightCosting extends Component {
 
         // For Bracket layout calculation
         this.props.change("GrossWeight", grossWt)
-        this.props.change("disabledSurfaceArea", disabledNetSurface)
+        this.props.change("disabledSurfaceArea", checkForNull(disabledNetSurface))
         this.props.change("NetSurfaceArea", netSurfaceArea)
         this.props.change("WeightUnitKg", WT)
 
@@ -308,12 +234,10 @@ class AddWeightCosting extends Component {
         // **************************************************************
     }
 
-
-    uomCalculation = () => {
-        const { miliMeter, miliMeterSqr, feet, inch } = this.state;
-    }
-
-    /** handle milimeter change event */
+    /**
+    * @method uomCalculatorMiliMeter
+    * @description handle milimeter change event
+    */
     uomCalculatorMiliMeter = (e) => {
         const value = e.target.value;
         this.setState({ miliMeter: value }, () => {
@@ -329,7 +253,10 @@ class AddWeightCosting extends Component {
         })
     }
 
-    /** handle milimeter change event */
+    /**
+    * @method uomCalculatorMiliMeterSqr
+    * @description handle milimeter change event
+    */
     uomCalculatorMiliMeterSqr = (e) => {
         const value = e.target.value;
         this.setState({ miliMeterSqr: value }, () => {
@@ -344,7 +271,10 @@ class AddWeightCosting extends Component {
         })
     }
 
-    /** handle feet change event */
+    /**
+    * @method uomCalculatorFeetMeter
+    * @description handle feet change event
+    */
     uomCalculatorFeetMeter = (e) => {
         const value = e.target.value;
         this.setState({ feet: value }, () => {
@@ -360,7 +290,10 @@ class AddWeightCosting extends Component {
         })
     }
 
-    /** handle inch change event */
+    /**
+    * @method uomCalculatorInchMeter
+    * @description handle inch change event
+    */
     uomCalculatorInchMeter = (e) => {
         const value = e.target.value;
         this.setState({ inch: value }, () => {
@@ -456,7 +389,7 @@ class AddWeightCosting extends Component {
     render() {
         const { handleSubmit, isEditFlag, reset, weightCostingInfo } = this.props;
         const { weightType, isPartBlankDisabled } = this.state;
-        //console.log('this.state', this.state);
+
         let weightTitle = '';
         if (weightType === 'L_Sec') {
             weightTitle = '(((flangeWidth1 + webWidth) - (2 * thickness) * thickness * length) * (7.85 / 1000000))'
@@ -859,7 +792,7 @@ class AddWeightCosting extends Component {
                                                     placeholder={''}
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
-                                                    title={'Net Surface Area=(Overlap Area - Suface Area)'}
+                                                    title={'Net Surface Area=(Suface Area - Overlap Area)'}
                                                     disabled={true}
                                                 //required={true}
                                                 //className=" withoutBorder"
@@ -937,7 +870,7 @@ class AddWeightCosting extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     validate={[required]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     required={true}
                                                     className=" withoutBorder"
                                                 //customClassName=" withoutBorderBottom"
@@ -1119,7 +1052,7 @@ class AddWeightCosting extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     validate={[required]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     required={true}
                                                     className=" withoutBorder"
                                                 //customClassName=" withoutBorderBottom"
@@ -1232,7 +1165,7 @@ class AddWeightCosting extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     validate={[required]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     required={true}
                                                     className=" withoutBorder"
                                                 //customClassName=" withoutBorderBottom"
@@ -1333,7 +1266,7 @@ class AddWeightCosting extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     validate={[required]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     required={true}
                                                     className=" withoutBorder"
                                                 //customClassName=" withoutBorderBottom"

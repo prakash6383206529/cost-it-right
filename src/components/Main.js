@@ -33,8 +33,11 @@ import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import DepreciationMaster from './masters/sap-masters/depreciation-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
 import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
+import MassUpload from './massUpload';
 
 import Costing from './costing';
+import { showUserData } from '../actions';
+import AuthMiddleware from '../AuthMiddleware';
 
 import { isUserLoggedIn } from '../helper/auth';
 import Contact from "./about/contact";
@@ -59,6 +62,15 @@ class Main extends Component {
       visibelPageNotFound: true
     });
   };
+
+  /**
+   * @method handleUserData
+   * @description Method used when refreshing browser then consistency of logged in user.
+   */
+  handleUserData = () => {
+    let userData = reactLocalStorage.getObject("userDetail");
+    this.props.showUserData(userData)
+  }
 
   render() {
     return (
@@ -99,7 +111,8 @@ class Main extends Component {
             </div>}
           <div className=" middleContainer">
             <Switch>
-              <Route exact path="/" component={Homepage} />
+              {/* <Route exact path="/" component={Homepage} /> */}
+              <Route exact path="/" component={AuthMiddleware(Dashboard)} />
               <Route path="/login" render={(props) =>
                 <Login
                   {...props}
@@ -305,6 +318,14 @@ class Main extends Component {
                 )}
               />
               <Route
+                path="/mass-upload"
+                render={props => (
+                  <MassUpload
+                    {...props}
+                  />
+                )}
+              />
+              <Route
                 render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}
               />
             </Switch>
@@ -322,6 +343,7 @@ class Main extends Component {
             transitionOut="fadeOut"
             progressBar
           />
+          {this.handleUserData()}
         </div>
       </Suspense>
     )
@@ -334,4 +356,4 @@ class Main extends Component {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(null, {})(Main);
+export default connect(null, { showUserData })(Main);

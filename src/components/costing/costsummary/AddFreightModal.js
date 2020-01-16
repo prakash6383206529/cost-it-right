@@ -149,7 +149,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             disabled={true}
                                                             className=""
@@ -165,7 +165,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             className=""
                                                         />
@@ -177,7 +177,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             disabled={true}
                                                             //required={true}
                                                             className=""
@@ -196,7 +196,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             disabled={true}
                                                             className=""
@@ -212,7 +212,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             className=""
                                                         />
@@ -224,7 +224,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             disabled={true}
                                                             className=""
@@ -243,7 +243,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             disabled={true}
                                                             className=""
@@ -259,7 +259,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             className=""
                                                         />
@@ -271,7 +271,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             disabled={true}
                                                             className=""
@@ -290,7 +290,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             disabled={true}
                                                             className=""
@@ -306,7 +306,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             className=""
                                                         />
@@ -318,7 +318,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             disabled={true}
                                                             className=""
@@ -337,7 +337,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             className=""
                                                         />
@@ -349,7 +349,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             disabled={true}
                                                             className=""
@@ -391,7 +391,7 @@ class AddFreightModal extends Component {
                                                             type="text"
                                                             placeholder={''}
                                                             //validate={[required]}
-                                                            component={renderText}
+                                                            component={renderNumberInputField}
                                                             //required={true}
                                                             className=""
                                                             disabled={true}

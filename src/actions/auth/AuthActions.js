@@ -541,12 +541,12 @@ export function getAllTechnologyAPI(callback) {
 //     };
 // }
 
-// export function showUserData(data) {
-//     return {
-//         type: LOGIN_SUCCESS,
-//         payload: (data),
-//     }
-// }
+export function showUserData(data) {
+    return {
+        type: LOGIN_SUCCESS,
+        payload: (data),
+    }
+}
 
 // /**
 //  * @method getEditExperienceType

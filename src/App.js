@@ -26,11 +26,19 @@ class App extends Component {
     // }
   }
 
+  /**
+   * @method logUserIn
+   * @description After user successfully login, flag used internally.
+   */
   logUserIn = () => {
     this.setState({ isUserLoggedIn: true });
     reactLocalStorage.setObject("isUserLoggedIn", true);
   }
 
+  /**
+   * @method logUserOut
+   * @description Used to logout logged in user.
+   */
   logUserOut = () => {
     this.setState({ isUserLoggedIn: false });
     reactLocalStorage.setObject("isUserLoggedIn", false);

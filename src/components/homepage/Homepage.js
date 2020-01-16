@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+
 class Homepage extends Component {
   constructor(props) {
     super(props);
@@ -11,14 +12,14 @@ class Homepage extends Component {
   * @description used to called after mounting component
   */
   componentDidMount() {
-    
+
   }
 
   render() {
-    
+
     return (
       <div>
-       Home page
+
       </div>
     );
   }

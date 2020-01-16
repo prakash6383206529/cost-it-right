@@ -25,7 +25,14 @@ class Login extends Component {
     };
   }
 
-  componentWillMount() { }
+  componentWillMount() {
+    const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
+    if (isLoggedIn == true) {
+      this.setState({
+        isRedirect: true
+      })
+    }
+  }
 
   /**
    * Submit the login form
@@ -42,14 +49,23 @@ class Login extends Component {
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();
-        this.props.history.push("/");
+        this.setState({
+          isRedirect: true
+        })
       }
     });
   }
 
   render() {
     const { handleSubmit } = this.props;
-    const { isLoader, isSubmitted } = this.state;
+    const { isLoader, isSubmitted, isRedirect } = this.state;
+
+    if (isRedirect == true) {
+      return <Redirect
+        to={{
+          pathname: "/",
+        }} />
+    }
 
     return (
       <div>

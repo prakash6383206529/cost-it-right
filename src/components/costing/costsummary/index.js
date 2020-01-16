@@ -29,7 +29,7 @@ class CostSummary extends Component {
         super(props);
         this.state = {
             activeTab: '1',
-            plant: [],
+            plant: null,
             supplier: [],
             supplier2: [],
             supplier3: [],
@@ -131,9 +131,9 @@ class CostSummary extends Component {
         const WIPCostingHeadObj = CostingHeads.find(item => item.Value == Content.WIPCostingHeadsId)
         const PaymentTermCostingHeadObj = CostingHeads.find(item => item.Value == Content.PaymentTermsCostingHeadsId)
 
-        const RMICCCostValue = this.InventoryCostCalculation(RMCostingHeadObj.Text, Content, 'RMICC')
-        const WIPICCCostValue = this.InventoryCostCalculation(WIPCostingHeadObj.Text, Content, 'WIPICC')
-        const PaymentTermICCCostValue = this.InventoryCostCalculation(PaymentTermCostingHeadObj.Text, Content, 'PaymentTermICC')
+        const RMICCCostValue = RMCostingHeadObj ? this.InventoryCostCalculation(RMCostingHeadObj.Text, Content, 'RMICC') : 0;
+        const WIPICCCostValue = WIPCostingHeadObj ? this.InventoryCostCalculation(WIPCostingHeadObj.Text, Content, 'WIPICC') : 0;
+        const PaymentTermICCCostValue = PaymentTermCostingHeadObj ? this.InventoryCostCalculation(PaymentTermCostingHeadObj.Text, Content, 'PaymentTermICC') : 0;
 
         Content.TotalConversionCost = checkForNull(Content.NetProcessCost) + checkForNull(Content.NetOtherOperationCost) + checkForNull(Content.NetSurfaceCost);
         Content.RMInventotyCost = checkForNull(RMICCCostValue);
@@ -230,17 +230,23 @@ class CostSummary extends Component {
     * @description Used to handle plant
     */
     plantHandler = (newValue, actionMeta) => {
-        this.setState({ plant: newValue });
+        this.setState({ plant: newValue }, () => this.props.change("part", '0'));
     };
 
     /**
     * @method partHandler
-    * @description Used to handle plant
+    * @description Used to handle part
     */
     partHandler = (e) => {
-        const { partNo, supplier, TechnologyId } = this.state;
+        const { partNo, plant, supplier, TechnologyId } = this.state;
         const { technologyList } = this.props;
         const selectedTechnology = TechnologyId != '' ? TechnologyId : technologyList[0].Value;
+
+        if (plant == null) {
+            this.props.change("part", '0')
+            toastr.warning(MESSAGES.SELECT_PLANT_FOR_COSTING);
+            return false;
+        }
 
         this.props.change("SupplierCode", "")
         this.props.change("POPrice", "")
@@ -751,7 +757,7 @@ class CostSummary extends Component {
             RejectionTypeCostingHeadID = 'RejectionTypeCostingHead3ID';
         }
 
-        const RejectionCostingHeadObj = Content.CostingHeads.find(item => item.Value == e.target.value)
+        const RejectionCostingHeadObj = Content.CostingHeads && Content.CostingHeads.find(item => item.Value == e.target.value)
 
         let RejectionTypeCalculatedValue = 0;
 
@@ -873,7 +879,19 @@ class CostSummary extends Component {
                 }
                 this.props.getCostingFreight(freightData, res => {
                     Content.FreightId = e.target.value;
-                    this.props.change(supplierColumn, Content)
+                    const { FreightData } = this.props;
+                    if (FreightData && FreightData != undefined) {
+                        Content.InputFreight = checkForNull(Content.InputFreight);
+                        FreightData.NetFreightCost = checkForNull(FreightData.FreightLoadRate);
+                        if (FreightData.FreightHeadName == 'Rs/Kg' || FreightData.FreightHeadName == 'perCubic feet') {
+                            Content.NetFreightCost = (checkForNull(Content.InputFreight) * checkForNull(FreightData.NetFreightCost));
+                        } else {
+                            Content.NetFreightCost = (checkForNull(FreightData.NetFreightCost) / checkForNull(Content.InputFreight));
+                        }
+
+                        Content.NetFreightCost = checkForNull(Content.NetFreightCost)
+                        this.props.change(supplierColumn, Content)
+                    }
                 })
             });
         }
@@ -910,7 +928,7 @@ class CostSummary extends Component {
 
         if (FreightData && FreightData != undefined) {
             Content.InputFreight = checkForNull(FreightAmount);
-            FreightData.NetFreightCost = 1;
+            FreightData.NetFreightCost = checkForNull(FreightData.FreightLoadRate);
             if (FreightData.FreightHeadName == 'Rs/Kg' || FreightData.FreightHeadName == 'perCubic feet') {
                 Content.NetFreightCost = (checkForNull(Content.InputFreight) * checkForNull(FreightData.NetFreightCost));
             } else {
@@ -1324,10 +1342,11 @@ class CostSummary extends Component {
     }
 
     supplierCosting = (supplierId) => {
+        const { plant, partNo } = this.state;
         const data = {
             supplierId: supplierId,
-            plantId: this.state.plant.value,
-            partId: this.state.partNo
+            plantId: plant.value,
+            partId: partNo
         }
         this.props.supplierCosting(data)
     }

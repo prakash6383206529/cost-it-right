@@ -451,7 +451,7 @@ class UserRegistration extends Component {
                 <input
                   disabled={isSubmitted ? true : false}
                   type="submit"
-                  value="User Registration"
+                  value="Save"
                   className="btn  login-btn w-10 dark-pinkbtn"
                 />
                 <input

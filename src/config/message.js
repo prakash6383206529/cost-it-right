@@ -2,6 +2,7 @@ export const MESSAGES = {
   INVALID_EMAIL_PASSWORD: 'Either email or password is invalid or your account is inactive.',
   SOME_ERROR: 'Opps! Something went wrong. Please try again later.',
   LOGIN_SUCCESS: 'You are successfully logged in.',
+  LOGOUT_SUCCESS: 'You are successfully logged out.',
   UPDATE_PASSWORD_SUCCESS: 'Your password has been successfully updated.',
   NOT_VERIFIED_USER: 'Your account is pending for verification. Please verify your account for login.',
   PART_ADD_SUCCESS: 'Part added successfully.',
@@ -73,5 +74,6 @@ export const MESSAGES = {
   SOB_GREATER_THAN_ZERO: 'SOB Sould be greater than 0.',
   COSTING_SAVED_SUCCESSFULLY: 'Costing has been saved successfully.',
   COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY: 'Costing has been sent for approval.',
+  SELECT_PLANT_FOR_COSTING: 'Plant should not be empty.',
 };
 
