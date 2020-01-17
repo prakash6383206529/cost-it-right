@@ -62,6 +62,7 @@ export const MESSAGES = {
   COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
   ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully.',
   UPDATE_ROLE_SUCCESSFULLY: 'Role has been updated successfully.',
+  DELETE_ROLE_SUCCESSFULLY: 'Role has been deleted successfully.',
   ADD_DEPARTMENT_SUCCESSFULLY: 'Department has been added successfully.',
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
   ADD_LEVEL_SUCCESSFULLY: 'User level has been added successfully.',

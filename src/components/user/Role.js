@@ -72,12 +72,14 @@ class Role extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
                 }
-                this.setState({ isLoader: false })
+                this.props.getAllRoleAPI(res => { })
+                reset();
+                this.setState({ isLoader: false, isEditFlag: false })
             })
         } else {
             // Add new role
             this.props.addRoleAPI(values, (res) => {
-                if (res.data.Result) {
+                if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.ADD_ROLE_SUCCESSFULLY)
                 }
                 this.props.getAllRoleAPI(res => { })

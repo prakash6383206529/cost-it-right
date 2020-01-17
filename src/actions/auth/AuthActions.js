@@ -324,6 +324,24 @@ export function getRoleDataAPI(RoleId, callback) {
 }
 
 /**
+ * @method deleteRoleAPI
+ * @description delete BOP
+ */
+export function deleteRoleAPI(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteRoleAPI}/${Id}`, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
  * @method updateRoleAPI
  * @description update Role details
  */

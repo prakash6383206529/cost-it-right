@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
-import { getAllRoleAPI } from '../../actions/auth/AuthActions';
+import { getAllRoleAPI, deleteRoleAPI } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
@@ -33,6 +33,33 @@ class RolesListing extends Component {
             RoleId: Id,
         }
         this.props.getRoleDetail(requestData)
+    }
+
+    /**
+    * @method deleteItem
+    * @description confirm delete part
+    */
+    deleteItem = (index, Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDeleteItem(Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.ROLE_DELETE_ALERT}`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete Role item
+    */
+    confirmDeleteItem = (RoleId) => {
+        this.props.deleteRoleAPI(RoleId, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_ROLE_SUCCESSFULLY);
+                this.props.getAllRoleAPI(res => { });
+            }
+        });
     }
 
     /**
@@ -69,6 +96,7 @@ class RolesListing extends Component {
                                             <td>{item.Description}</td>
                                             <td>
                                                 <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.RoleId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.RoleId)}><i className="far fa-trash-alt"></i></Button>
                                             </td>
                                         </tr>
                                     )
@@ -97,5 +125,6 @@ function mapStateToProps({ auth }) {
 export default connect(mapStateToProps,
     {
         getAllRoleAPI,
+        deleteRoleAPI,
     })(RolesListing);
 
