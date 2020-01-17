@@ -5,6 +5,8 @@ export const MESSAGES = {
   LOGOUT_SUCCESS: 'You are successfully logged out.',
   UPDATE_PASSWORD_SUCCESS: 'Your password has been successfully updated.',
   NOT_VERIFIED_USER: 'Your account is pending for verification. Please verify your account for login.',
+
+  //MASTERS
   PART_ADD_SUCCESS: 'Part added successfully.',
   PART_DELETE_SUCCESS: 'Part has been deleted.',
   UPDATE_PART_SUCESS: 'Part updated successfully',
@@ -60,14 +62,25 @@ export const MESSAGES = {
   SAVE_PROCESS_COSTING_SUCCESS: 'Process costing saved successfully.',
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated.',
   COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
+
+  //ROLE
   ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully.',
   UPDATE_ROLE_SUCCESSFULLY: 'Role has been updated successfully.',
   DELETE_ROLE_SUCCESSFULLY: 'Role has been deleted successfully.',
+  ROLE_DELETE_ALERT: 'Are you sure you want to delete Role?',
+
+  //DEPARTMENT
   ADD_DEPARTMENT_SUCCESSFULLY: 'Department has been added successfully.',
   UPDATE_DEPARTMENT_SUCCESSFULLY: 'Department has been updated successfully.',
+  DELETE_DEPARTMENT_SUCCESSFULLY: 'Department has been deleted successfully.',
+  DEPARTMENT_DELETE_ALERT: 'Are you sure you want to delete Department?',
+
+  //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
   ADD_LEVEL_SUCCESSFULLY: 'User level has been added successfully.',
   ADD_LEVEL_USER_SUCCESSFULLY: 'Level of users has been added successfully.',
+
+  //ADDITIONAL FREIGHT
   ADDITIONAL_FREIGHT_ADD_SUCCESS: 'Packaging has been added successfully.',
   DELETE_ADDITIONAL_FREIGHT_SUCCESS: 'Additional Freight has been deleted successfully.',
   WEIGHT_SPEC_UPDATE_SUCCESS: 'Weight specification updated successfully.',
@@ -78,6 +91,5 @@ export const MESSAGES = {
   COSTING_SAVED_SUCCESSFULLY: 'Costing has been saved successfully.',
   COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY: 'Costing has been sent for approval.',
   SELECT_PLANT_FOR_COSTING: 'Plant should not be empty.',
-  ROLE_DELETE_ALERT: 'Are you sure you want to delete Role?',
 };
 

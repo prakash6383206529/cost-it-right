@@ -326,7 +326,7 @@ export function getRoleDataAPI(RoleId, callback) {
 
 /**
  * @method deleteRoleAPI
- * @description delete BOP
+ * @description delete Role
  */
 export function deleteRoleAPI(Id, callback) {
     return (dispatch) => {
@@ -446,6 +446,24 @@ export function updateDepartmentAPI(requestData, callback) {
                 dispatch({ type: AUTH_API_FAILURE });
                 apiErrors(error);
                 callback(error);
+            });
+    };
+}
+
+/**
+ * @method deleteDepartmentAPI
+ * @description delete Department
+ */
+export function deleteDepartmentAPI(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteDepartmentAPI}/${Id}`, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
             });
     };
 }

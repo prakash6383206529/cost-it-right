@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
-import { getAllDepartmentAPI } from '../../actions/auth/AuthActions';
+import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
@@ -36,30 +36,28 @@ class DepartmentsListing extends Component {
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete Department
     */
-    deletePart = (index, Id) => {
+    deleteItem = (index, Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeletePart(index, Id)
+                this.confirmDeleteItem(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Are you sure you want to delete This part ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.DEPARTMENT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
-    * @method confirmDeletePart
-    * @description confirm delete part
+    * @method confirmDeleteItem
+    * @description confirm delete Department item
     */
-    confirmDeletePart = (index, PartId) => {
-        this.props.deletePartsAPI(PartId, (res) => {
+    confirmDeleteItem = (DepartmentId) => {
+        this.props.deleteDepartmentAPI(DepartmentId, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.props.getAllPartsAPI(res => { });
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                toastr.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
+                this.props.getAllDepartmentAPI(res => { });
             }
         });
     }
@@ -79,34 +77,36 @@ class DepartmentsListing extends Component {
                     </Col>
                 </Row>
                 <hr />
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.departmentList && this.props.departmentList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`Department`}</th>
-                                    <th>{`Description`}</th>
-                                    <th>{''}</th>
-                                </tr>
-                            </thead>}
-                        <tbody >
+                <Row>
+                    <Col>
+                        <Table className="table table-striped" bordered>
                             {this.props.departmentList && this.props.departmentList.length > 0 &&
-                                this.props.departmentList.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.DepartmentName}</td>
-                                            <td>{item.Description}</td>
-                                            <div>
-                                                <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.DepartmentId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.DepartmentId)}><i className="far fa-trash-alt"></i></Button>
-                                            </div>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.departmentList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                <thead>
+                                    <tr>
+                                        <th>{`Department`}</th>
+                                        <th>{`Description`}</th>
+                                        <th>{''}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.departmentList && this.props.departmentList.length > 0 &&
+                                    this.props.departmentList.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.DepartmentName}</td>
+                                                <td>{item.Description}</td>
+                                                <div>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.DepartmentId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.DepartmentId)}><i className="far fa-trash-alt"></i></Button>
+                                                </div>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.departmentList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
             </Container >
         );
     }
@@ -126,6 +126,8 @@ function mapStateToProps({ auth }) {
 
 export default connect(mapStateToProps,
     {
-        getAllDepartmentAPI
+        getAllDepartmentAPI,
+        deleteDepartmentAPI,
+
     })(DepartmentsListing);
 
