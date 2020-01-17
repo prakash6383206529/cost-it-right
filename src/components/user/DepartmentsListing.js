@@ -24,32 +24,15 @@ class DepartmentsListing extends Component {
     }
 
     /**
-     * @method openModel
-     * @description  used to open filter form 
-     */
-    openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
-    }
-
-    /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = () => {
-        this.setState({ isOpen: false })
-    }
-
-    /**
-    * @method editPartDetails
-    * @description confirm delete part
+    * @method editItemDetails
+    * @description confirm edit item
     */
-    editPartDetails = (index, Id) => {
-        console.log('Id: ', Id);
-        this.setState({
+    editItemDetails = (index, Id) => {
+        let requestData = {
             isEditFlag: true,
-            isOpen: true,
-            PartId: Id,
-        })
+            DepartmentId: Id,
+        }
+        this.props.getDepartmentDetail(requestData)
     }
 
     /**
@@ -114,7 +97,7 @@ class DepartmentsListing extends Component {
                                             <td >{item.DepartmentName}</td>
                                             <td>{item.Description}</td>
                                             <div>
-                                                <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.DepartmentId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.DepartmentId)}><i className="fas fa-pencil-alt"></i></Button>
                                                 <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.DepartmentId)}><i className="far fa-trash-alt"></i></Button>
                                             </div>
                                         </tr>

@@ -24,6 +24,7 @@ import {
     GET_LEVEL_USER_SUCCESS,
     GET_USER_SUCCESS,
     GET_UNIT_ROLE_DATA_SUCCESS,
+    GET_UNIT_DEPARTMENT_DATA_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -402,6 +403,50 @@ export function getAllDepartmentAPI(callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+
+/**
+ * @method getDepartmentAPI
+ * @description get department detail
+ */
+export function getDepartmentAPI(DepartmentId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getDepartmentAPI}/${DepartmentId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_UNIT_DEPARTMENT_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method updateDepartmentAPI
+ * @description update Department details
+ */
+export function updateDepartmentAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateDepartmentAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
     };
 }
 

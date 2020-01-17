@@ -77,34 +77,36 @@ class RolesListing extends Component {
                     </Col>
                 </Row>
                 <hr />
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.roleList && this.props.roleList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`Role`}</th>
-                                    <th>{`Sequence`}</th>
-                                    <th>{''}</th>
-                                </tr>
-                            </thead>}
-                        <tbody >
+                <Row>
+                    <Col>
+                        <Table className="table table-striped" bordered>
                             {this.props.roleList && this.props.roleList.length > 0 &&
-                                this.props.roleList.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.RoleName}</td>
-                                            <td>{item.Description}</td>
-                                            <td>
-                                                <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.RoleId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.RoleId)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.roleList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                <thead>
+                                    <tr>
+                                        <th>{`Role`}</th>
+                                        <th>{`Sequence`}</th>
+                                        <th>{''}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.roleList && this.props.roleList.length > 0 &&
+                                    this.props.roleList.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.RoleName}</td>
+                                                <td>{item.Description}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.RoleId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.RoleId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.roleList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
             </Container >
         );
     }

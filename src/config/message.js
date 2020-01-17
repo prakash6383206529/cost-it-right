@@ -64,6 +64,7 @@ export const MESSAGES = {
   UPDATE_ROLE_SUCCESSFULLY: 'Role has been updated successfully.',
   DELETE_ROLE_SUCCESSFULLY: 'Role has been deleted successfully.',
   ADD_DEPARTMENT_SUCCESSFULLY: 'Department has been added successfully.',
+  UPDATE_DEPARTMENT_SUCCESSFULLY: 'Department has been updated successfully.',
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
   ADD_LEVEL_SUCCESSFULLY: 'User level has been added successfully.',
   ADD_LEVEL_USER_SUCCESSFULLY: 'Level of users has been added successfully.',
