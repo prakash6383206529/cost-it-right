@@ -111,220 +111,68 @@ class Main extends Component {
             </div>}
           <div className=" middleContainer">
             <Switch>
+
               {/* <Route exact path="/" component={Homepage} /> */}
               <Route exact path="/" component={AuthMiddleware(Dashboard)} />
+
               <Route path="/login" render={(props) =>
                 <Login
                   {...props}
                   isUserLoggedIn={this.props.isUserLoggedIn}
                   logUserIn={this.props.logUserIn}
-                // logUserOut={this.props.logUserOut}
                 />
               } />
 
-              <Route
-                path="/user"
-                render={props => (
-                  <User
-                    {...props}
-                  // isUserLoggedIn={this.props.isUserLoggedIn}
-                  // logUserIn={this.props.logUserIn}
-                  // logUserOut={this.props.logUserOut}
-                  />
-                )}
-              />
-              <Route
-                path="/dashboard"
-                render={props => (
-                  <Dashboard
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/PartMaster"
-                render={props => (
-                  <PartMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/UOMMaster"
-                render={props => (
-                  <UOMMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/category-master"
-                render={props => (
-                  <CategoryMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/raw-material-master"
-                render={props => (
-                  <RowMaterialMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/plant-master"
-                render={props => (
-                  <PlantMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/supplier-master"
-                render={props => (
-                  <SupplierMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/bom-master"
-                render={props => (
-                  <BOMMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/bop-master"
-                render={props => (
-                  <BOPMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/process-master"
-                render={props => (
-                  <ProcessMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/other-operation"
-                render={props => (
-                  <OtherOperationMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/fuel-master"
-                render={props => (
-                  <FuelMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/ced-other-operation"
-                render={props => (
-                  <CEDoperationMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/mhr-master"
-                render={props => (
-                  <MHRMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/operation-master"
-                render={props => (
-                  <OperationMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/material-master"
-                render={props => (
-                  <MaterialMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/freight-master"
-                render={props => (
-                  <FreightMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/labour-master"
-                render={props => (
-                  <LabourMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/overhead-profit-master"
-                render={props => (
-                  <OverheadProfit
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/depreciation-master"
-                render={props => (
-                  <DepreciationMaster
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/interest-rate-master"
-                render={props => (
-                  <InterestRate
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/costing"
-                render={props => (
-                  <Costing
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/part-bom-register"
-                render={props => (
-                  <PartBOMRegister
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/mass-upload"
-                render={props => (
-                  <MassUpload
-                    {...props}
-                  />
-                )}
-              />
+              <Route path="/user" component={AuthMiddleware(User)} />
+
+              <Route path="/dashboard" component={AuthMiddleware(Dashboard)} />
+
+              <Route path="/PartMaster" component={AuthMiddleware(PartMaster)} />
+
+              <Route path="/UOMMaster" component={AuthMiddleware(UOMMaster)} />
+
+              <Route path="/category-master" component={AuthMiddleware(CategoryMaster)} />
+
+              <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster)} />
+
+              <Route path="/plant-master" component={AuthMiddleware(PlantMaster)} />
+
+              <Route path="/supplier-master" component={AuthMiddleware(SupplierMaster)} />
+
+              <Route path="/bom-master" component={AuthMiddleware(BOMMaster)} />
+
+              <Route path="/bop-master" component={AuthMiddleware(BOPMaster)} />
+
+              <Route path="/process-master" component={AuthMiddleware(ProcessMaster)} />
+
+              <Route path="/other-operation" component={AuthMiddleware(OtherOperationMaster)} />
+
+              <Route path="/fuel-master" component={AuthMiddleware(FuelMaster)} />
+
+              <Route path="/ced-other-operation" component={AuthMiddleware(CEDoperationMaster)} />
+
+              <Route path="/mhr-master" component={AuthMiddleware(MHRMaster)} />
+
+              <Route path="/operation-master" component={AuthMiddleware(OperationMaster)} />
+
+              <Route path="/material-master" component={AuthMiddleware(MaterialMaster)} />
+
+              <Route path="/freight-master" component={AuthMiddleware(FreightMaster)} />
+
+              <Route path="/labour-master" component={AuthMiddleware(LabourMaster)} />
+
+              <Route path="/overhead-profit-master" component={AuthMiddleware(OverheadProfit)} />
+
+              <Route path="/depreciation-master" component={AuthMiddleware(DepreciationMaster)} />
+
+              <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate)} />
+
+              <Route path="/costing" component={AuthMiddleware(Costing)} />
+
+              <Route path="/part-bom-register" component={AuthMiddleware(PartBOMRegister)} />
+
+              <Route path="/mass-upload" component={AuthMiddleware(MassUpload)} />
+
               <Route
                 render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}
               />
