@@ -24,6 +24,7 @@ import {
     GET_LEVEL_USER_SUCCESS,
     GET_TECHNOLOGY_DATA_LIST_SUCCESS,
     GET_USER_SUCCESS,
+    GET_UNIT_ROLE_DATA_SUCCESS,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -127,6 +128,13 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 roleList: action.payload
+            };
+        case GET_UNIT_ROLE_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                roleDetail: action.payload
             };
         case GET_DEPARTMENT_SUCCESS:
             return {

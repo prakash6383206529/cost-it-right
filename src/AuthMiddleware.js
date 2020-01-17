@@ -54,8 +54,8 @@ export default function (ComposedComponent) {
     }
 
     /**
-     * @method connect
-     * @description connect with redux
+    * @method connect
+    * @description connect with redux
     * @param {function} mapStateToProps
     * @param {function} mapDispatchToProps
     */

@@ -14,8 +14,8 @@ class RolesListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
             isEditFlag: false,
+            RoleId: '',
         }
     }
 
@@ -24,61 +24,15 @@ class RolesListing extends Component {
     }
 
     /**
-     * @method openModel
-     * @description  used to open filter form 
-     */
-    openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
-    }
-
-    /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = () => {
-        this.setState({ isOpen: false })
-    }
-
-    /**
     * @method editItemDetails
     * @description confirm edit item
     */
     editItemDetails = (index, Id) => {
-        console.log('Id: ', Id);
-        this.setState({
+        let requestData = {
             isEditFlag: true,
-            isOpen: true,
-            PartId: Id,
-        })
-    }
-
-    /**
-    * @method deleteItem
-    * @description confirm delete part
-    */
-    deleteItem = (index, Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(index, Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
-        };
-        return toastr.confirm(`Are you sure you want to delete This part ?`, toastrConfirmOptions);
-    }
-
-    /**
-    * @method confirmDeleteItem
-    * @description confirm delete item
-    */
-    confirmDeleteItem = (index, PartId) => {
-        this.props.deletePartsAPI(PartId, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.props.getAllPartsAPI(res => { });
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        });
+            RoleId: Id,
+        }
+        this.props.getRoleDetail(requestData)
     }
 
     /**
@@ -115,7 +69,6 @@ class RolesListing extends Component {
                                             <td>{item.Description}</td>
                                             <td>
                                                 <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.RoleId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.RoleId)}><i className="far fa-trash-alt"></i></Button>
                                             </td>
                                         </tr>
                                     )
@@ -143,6 +96,6 @@ function mapStateToProps({ auth }) {
 
 export default connect(mapStateToProps,
     {
-        getAllRoleAPI
+        getAllRoleAPI,
     })(RolesListing);
 

@@ -12,6 +12,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 export const apiErrors = (res) => {
     console.log('apiErrors=> ', res, res.response);
     const response = res ? res.response : undefined;
+
     if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
     } else if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
@@ -36,6 +37,7 @@ export const apiErrors = (res) => {
     } else {
         toastr.error('Something went wrong please try again.');
     }
+
 }
 
 /**
@@ -48,12 +50,8 @@ export function capitalizeFirstLetter(string) {
 }
 
 export function formatDate(date) {
-    const monthNames = [
-        'Jan', 'Feb', 'Mar',
-        'Apr', 'May', 'June', 'July',
-        'Aug', 'Sept', 'Oct',
-        'Nov', 'Dec'
-    ];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct',
+        'Nov', 'Dec'];
     const day = date.getDate();
     const monthIndex = date.getMonth();
     const year = date.getFullYear();
@@ -144,7 +142,11 @@ export function validateText(text) {
 }
 
 
-/* display each value */
+/**
+* @method displayValue
+* @descriptin Used to display value otherwise show N/A
+* 
+**/
 export const displayValue = (value) => {
     if (typeof value !== 'undefined' && typeof value !== 'object' && value.trim() !== '') {
         return value.trim();
@@ -154,13 +156,12 @@ export const displayValue = (value) => {
 };
 
 function onLogout() {
-    reactLocalStorage.setObject("isLoggedIn", false);
-    reactLocalStorage.setObject("basicProfileAndProd", false);
-    reactLocalStorage.setObject("userResponse", {});
+    reactLocalStorage.setObject("isUserLoggedIn", false);
+    reactLocalStorage.setObject("userDetail", {});
     toastr.success(MESSAGES.LOGOUT_SUCCESS);
     setTimeout(() => {
         window.location.assign('/login');
-    }, 1000)
+    }, 100)
 }
 
 export const convertObjectToArray = (valueArray) => {

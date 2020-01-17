@@ -61,6 +61,7 @@ export const MESSAGES = {
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated.',
   COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
   ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully.',
+  UPDATE_ROLE_SUCCESSFULLY: 'Role has been updated successfully.',
   ADD_DEPARTMENT_SUCCESSFULLY: 'Department has been added successfully.',
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
   ADD_LEVEL_SUCCESSFULLY: 'User level has been added successfully.',
@@ -75,5 +76,6 @@ export const MESSAGES = {
   COSTING_SAVED_SUCCESSFULLY: 'Costing has been saved successfully.',
   COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY: 'Costing has been sent for approval.',
   SELECT_PLANT_FOR_COSTING: 'Plant should not be empty.',
+  ROLE_DELETE_ALERT: 'Are you sure you want to delete Role?',
 };
 

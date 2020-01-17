@@ -24,7 +24,6 @@ export function formatLoginResult(res) {
 
 export function formatGetUserProfileResult(result) {
     const data = result;
-    //console.log('userFormatedData 1' + JSON.stringify(data));
     if (result.account && data.account.profile) {
         const email = data.user.email;
 

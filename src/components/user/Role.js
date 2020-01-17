@@ -7,7 +7,7 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addRoleAPI } from "../../actions/auth/AuthActions";
+import { addRoleAPI, getAllRoleAPI, getRoleDataAPI, updateRoleAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -19,6 +19,7 @@ class Role extends Component {
         this.state = {
             isLoader: false,
             isSubmitted: false,
+            isEditFlag: false,
         };
     }
 
@@ -31,20 +32,59 @@ class Role extends Component {
     }
 
     /**
+    * @method getRoleDetail
+    * @description used to get role detail
+    */
+    getRoleDetail = (data) => {
+        if (data && data.isEditFlag) {
+            this.props.getRoleDataAPI(data.RoleId, () => {
+                this.setState({
+                    isEditFlag: true,
+                })
+            })
+        }
+    }
+
+    /**
+    * @method cancel
+    * @description used to cancel role edit
+    */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({ isEditFlag: false })
+    }
+
+    /**
      * @name onSubmit
      * @param values
      * @desc Submit the signup form values.
      * @returns {{}}
      */
     onSubmit(values) {
-        console.log("Role values", values)
+        const { isEditFlag } = this.state;
+        const { reset } = this.props;
         this.setState({ isLoader: true })
-        this.props.addRoleAPI(values, (res) => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.ADD_ROLE_SUCCESSFULLY)
-            }
-            this.setState({ isLoader: false })
-        })
+
+        if (isEditFlag) {
+            // Update existing role
+            this.props.updateRoleAPI(values, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
+                }
+                this.setState({ isLoader: false })
+            })
+        } else {
+            // Add new role
+            this.props.addRoleAPI(values, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.ADD_ROLE_SUCCESSFULLY)
+                }
+                this.props.getAllRoleAPI(res => { })
+                reset();
+                this.setState({ isLoader: false })
+            })
+        }
 
     }
 
@@ -101,8 +141,8 @@ class Role extends Component {
                                 />
                                 <input
                                     disabled={pristine || submitting}
-                                    onClick={reset}
-                                    type="submit"
+                                    onClick={this.cancel}
+                                    type="button"
                                     value="Reset"
                                     className="btn  login-btn w-10 dark-pinkbtn"
                                 />
@@ -110,7 +150,9 @@ class Role extends Component {
                         </form>
                     </div>
                 </div>
-                <RolesListing />
+                <RolesListing
+                    getRoleDetail={this.getRoleDetail}
+                />
             </div>
         );
     }
@@ -123,9 +165,17 @@ class Role extends Component {
 * @param {*} state
 */
 const mapStateToProps = ({ auth }) => {
-    const { roleList } = auth;
+    const { roleList, roleDetail } = auth;
+    let initialValues = {};
 
-    return { roleList };
+    if (roleDetail && roleDetail != undefined) {
+        initialValues = {
+            RoleName: '',
+            Description: '',
+        }
+    }
+
+    return { roleList, initialValues };
 };
 
 /**
@@ -134,8 +184,12 @@ const mapStateToProps = ({ auth }) => {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default reduxForm({
-    form: "Role",
-})(connect(mapStateToProps, {
+export default connect(mapStateToProps, {
     addRoleAPI,
+    getAllRoleAPI,
+    getRoleDataAPI,
+    updateRoleAPI,
+})(reduxForm({
+    form: 'Role',
+    enableReinitialize: true,
 })(Role));

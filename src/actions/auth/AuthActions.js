@@ -23,6 +23,7 @@ import {
     GET_TECHNOLOGY_DATA_LIST_SUCCESS,
     GET_LEVEL_USER_SUCCESS,
     GET_USER_SUCCESS,
+    GET_UNIT_ROLE_DATA_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -260,7 +261,9 @@ export function addRoleAPI(requestData, callback) {
         dispatch({ type: AUTH_API_REQUEST });
         axios.post(API.addRoleAPI, requestData, { headers })
             .then((response) => {
-                callback(response);
+                if (response.data.Result) {
+                    callback(response);
+                }
             })
             .catch((error) => {
                 dispatch({ type: API_FAILURE });
@@ -296,9 +299,52 @@ export function getAllRoleAPI(callback) {
     };
 }
 
+
 /**
- * @method addRoleAPI
- * @description add Role API 
+ * @method getRoleDataAPI
+ * @description get role detail
+ */
+export function getRoleDataAPI(RoleId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRoleAPI}/${RoleId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_UNIT_ROLE_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method updateRoleAPI
+ * @description update Role details
+ */
+export function updateRoleAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateRoleAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method addDepartmentAPI
+ * @description add Department API 
  */
 export function addDepartmentAPI(requestData, callback) {
     return (dispatch) => {
@@ -368,8 +414,8 @@ export function getAllLevelAPI(callback) {
 }
 
 /**
- * @method addRoleAPI
- * @description add Role API 
+ * @method addUserLevelAPI
+ * @description add Users Level API 
  */
 export function addUserLevelAPI(requestData, callback) {
     return (dispatch) => {

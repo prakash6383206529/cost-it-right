@@ -16,14 +16,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // const key = "isLoggedIn";
-    // const loggedInDetail = reactLocalStorage.getObject("loggedInDetail");
-    // reactLocalStorage.setObject('verificationStatus', false);
-    // if (loggedInDetail.hasOwnProperty(key)) {
-    //   let value = reactLocalStorage.getObject("loggedInDetail");
-    //   value = value === true;
-    //   this.setState({ [key]: value });
-    // }
+
   }
 
   /**
@@ -46,7 +39,7 @@ class App extends Component {
     toastr.success(MESSAGES.LOGOUT_SUCCESS);
     setTimeout(() => {
       window.location.assign('/login');
-    }, 1000)
+    }, 100)
   }
 
   render() {
