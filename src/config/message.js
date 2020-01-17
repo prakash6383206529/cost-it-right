@@ -63,6 +63,9 @@ export const MESSAGES = {
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated.',
   COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
 
+  //USER
+  ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
+
   //ROLE
   ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully.',
   UPDATE_ROLE_SUCCESSFULLY: 'Role has been updated successfully.',
@@ -75,10 +78,11 @@ export const MESSAGES = {
   DELETE_DEPARTMENT_SUCCESSFULLY: 'Department has been deleted successfully.',
   DEPARTMENT_DELETE_ALERT: 'Are you sure you want to delete Department?',
 
-  //USER
-  ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
+  //LEVEL
   ADD_LEVEL_SUCCESSFULLY: 'User level has been added successfully.',
   UPDATE_LEVEL_SUCCESSFULLY: 'Level has been updated successfully.',
+  DELETE_LEVEL_SUCCESSFULLY: 'Level has been deleted successfully.',
+  LEVEL_DELETE_ALERT: 'Are you sure you want to delete Level?',
   ADD_LEVEL_USER_SUCCESSFULLY: 'Level of users has been added successfully.',
 
   //ADDITIONAL FREIGHT

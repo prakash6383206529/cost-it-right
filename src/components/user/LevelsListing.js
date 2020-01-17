@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
-import { getAllLevelAPI } from '../../actions/auth/AuthActions';
+import { getAllLevelAPI, deleteUserLevelAPI } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
@@ -35,30 +35,28 @@ class LevelsListing extends Component {
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete level
     */
-    deletePart = (index, Id) => {
+    deleteItem = (index, Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeletePart(index, Id)
+                this.confirmDeleteItem(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Are you sure you want to delete This part ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
-    * @method confirmDeletePart
-    * @description confirm delete part
+    * @method confirmDeleteItem
+    * @description confirm delete level item
     */
-    confirmDeletePart = (index, PartId) => {
-        this.props.deletePartsAPI(PartId, (res) => {
+    confirmDeleteItem = (LevelId) => {
+        this.props.deleteUserLevelAPI(LevelId, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.props.getAllPartsAPI(res => { });
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                toastr.success(MESSAGES.DELETE_LEVEL_SUCCESSFULLY);
+                this.props.getAllLevelAPI(res => { });
             }
         });
     }
@@ -100,7 +98,7 @@ class LevelsListing extends Component {
                                                 <td>{item.Sequence}</td>
                                                 <td>
                                                     <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.LevelId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.LevelId)}><i className="far fa-trash-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.LevelId)}><i className="far fa-trash-alt"></i></Button>
                                                 </td>
                                             </tr>
                                         )
@@ -129,6 +127,7 @@ function mapStateToProps({ auth }) {
 
 export default connect(mapStateToProps,
     {
-        getAllLevelAPI
+        getAllLevelAPI,
+        deleteUserLevelAPI,
     })(LevelsListing);
 

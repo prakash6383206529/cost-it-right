@@ -538,6 +538,43 @@ export function getUserLevelAPI(LevelId, callback) {
 }
 
 /**
+ * @method updateUserLevelAPI
+ * @description update Level details
+ */
+export function updateUserLevelAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateUserLevelAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method deleteUserLevelAPI
+ * @description delete Level
+ */
+export function deleteUserLevelAPI(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteUserLevelAPI}/${Id}`, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
  * @method assignUserLevelAPI
  * @description assign level of users
  */

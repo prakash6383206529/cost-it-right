@@ -7,7 +7,7 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addUserLevelAPI, getUserLevelAPI, getAllLevelAPI } from "../../actions/auth/AuthActions";
+import { addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -68,7 +68,7 @@ class Level extends Component {
 
         if (isEditFlag) {
             // Update existing level
-            this.props.updateRoleAPI(values, (res) => {
+            this.props.updateUserLevelAPI(values, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
                 }
@@ -202,6 +202,7 @@ export default connect(mapStateToProps, {
     addUserLevelAPI,
     getUserLevelAPI,
     getAllLevelAPI,
+    updateUserLevelAPI,
 })(reduxForm({
     form: 'Level',
     enableReinitialize: true,
