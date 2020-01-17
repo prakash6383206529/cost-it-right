@@ -14,7 +14,6 @@ class LevelsListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
             isEditFlag: false,
         }
     }
@@ -24,32 +23,15 @@ class LevelsListing extends Component {
     }
 
     /**
-     * @method openModel
-     * @description  used to open filter form 
+     * @method editItemDetails
+     * @description confirm edit item
      */
-    openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
-    }
-
-    /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = () => {
-        this.setState({ isOpen: false })
-    }
-
-    /**
-    * @method editPartDetails
-    * @description confirm delete part
-    */
-    editPartDetails = (index, Id) => {
-        console.log('Id: ', Id);
-        this.setState({
+    editItemDetails = (index, Id) => {
+        let requestData = {
             isEditFlag: true,
-            isOpen: true,
-            PartId: Id,
-        })
+            LevelId: Id,
+        }
+        this.props.getLevelDetail(requestData)
     }
 
     /**
@@ -116,10 +98,10 @@ class LevelsListing extends Component {
                                                 <td >{item.LevelName}</td>
                                                 <td>{item.Description}</td>
                                                 <td>{item.Sequence}</td>
-                                                <div>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.LevelId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.LevelId)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.LevelId)}><i className="far fa-trash-alt"></i></Button>
-                                                </div>
+                                                </td>
                                             </tr>
                                         )
                                     })}

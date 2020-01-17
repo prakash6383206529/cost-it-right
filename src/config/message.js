@@ -78,6 +78,7 @@ export const MESSAGES = {
   //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
   ADD_LEVEL_SUCCESSFULLY: 'User level has been added successfully.',
+  UPDATE_LEVEL_SUCCESSFULLY: 'Level has been updated successfully.',
   ADD_LEVEL_USER_SUCCESSFULLY: 'Level of users has been added successfully.',
 
   //ADDITIONAL FREIGHT

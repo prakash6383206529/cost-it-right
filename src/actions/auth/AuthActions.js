@@ -25,6 +25,7 @@ import {
     GET_USER_SUCCESS,
     GET_UNIT_ROLE_DATA_SUCCESS,
     GET_UNIT_DEPARTMENT_DATA_SUCCESS,
+    GET_UNIT_LEVEL_DATA_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -510,6 +511,29 @@ export function addUserLevelAPI(requestData, callback) {
                 apiErrors(error);
                 callback(error);
             });
+    };
+}
+
+/**
+ * @method getUserLevelAPI
+ * @description get department detail
+ */
+export function getUserLevelAPI(LevelId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserLevelAPI}/${LevelId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_UNIT_LEVEL_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }
 

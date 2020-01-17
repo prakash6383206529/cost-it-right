@@ -7,7 +7,7 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addUserLevelAPI } from "../../actions/auth/AuthActions";
+import { addUserLevelAPI, getUserLevelAPI, getAllLevelAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -19,6 +19,7 @@ class Level extends Component {
         this.state = {
             isLoader: false,
             isSubmitted: false,
+            isEditFlag: false,
         };
     }
 
@@ -31,20 +32,61 @@ class Level extends Component {
     }
 
     /**
+    * @method cancel
+    * @description used to cancel level edit
+    */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({ isEditFlag: false })
+    }
+
+    /**
+    * @method getLevelDetail
+    * @description used to get level detail
+    */
+    getLevelDetail = (data) => {
+        if (data && data.isEditFlag) {
+            this.props.getUserLevelAPI(data.LevelId, () => {
+                this.setState({
+                    isEditFlag: true,
+                })
+            })
+        }
+    }
+
+    /**
      * @name onSubmit
      * @param values
      * @desc Submit the signup form values.
      * @returns {{}}
      */
     onSubmit(values) {
-        console.log("level values", values)
+        const { isEditFlag } = this.state;
+        const { reset } = this.props;
         this.setState({ isLoader: true })
-        this.props.addUserLevelAPI(values, (res) => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
-            }
-            this.setState({ isLoader: false })
-        })
+
+        if (isEditFlag) {
+            // Update existing level
+            this.props.updateRoleAPI(values, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
+                }
+                this.props.getAllLevelAPI(res => { })
+                reset();
+                this.setState({ isLoader: false, isEditFlag: false })
+            })
+        } else {
+            // Add new level
+            this.props.addUserLevelAPI(values, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
+                }
+                this.props.getAllLevelAPI(res => { })
+                reset();
+                this.setState({ isLoader: false })
+            })
+        }
 
     }
 
@@ -113,7 +155,7 @@ class Level extends Component {
                                 />
                                 <input
                                     disabled={pristine || submitting}
-                                    onClick={reset}
+                                    onClick={this.cancel}
                                     type="submit"
                                     value="Reset"
                                     className="btn  login-btn w-10 dark-pinkbtn"
@@ -122,7 +164,8 @@ class Level extends Component {
                         </form>
                     </div>
                 </div>
-                <LevelsListing />
+                <LevelsListing
+                    getLevelDetail={this.getLevelDetail} />
             </div>
         );
     }
@@ -134,10 +177,19 @@ class Level extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-const mapStateToProps = state => {
-    let returnObj = {};
+const mapStateToProps = ({ auth }) => {
+    const { levelDetail } = auth;
+    let initialValues = {};
 
-    return returnObj;
+    if (levelDetail && levelDetail != undefined) {
+        initialValues = {
+            LevelName: levelDetail.LevelName,
+            Description: levelDetail.Description,
+            Sequence: levelDetail.Sequence,
+        }
+    }
+
+    return { levelDetail, initialValues };
 };
 
 /**
@@ -146,8 +198,11 @@ const mapStateToProps = state => {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default reduxForm({
-    form: "Level",
-})(connect(mapStateToProps,
-    { addUserLevelAPI }
-)(Level));
+export default connect(mapStateToProps, {
+    addUserLevelAPI,
+    getUserLevelAPI,
+    getAllLevelAPI,
+})(reduxForm({
+    form: 'Level',
+    enableReinitialize: true,
+})(Level));
