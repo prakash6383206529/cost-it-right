@@ -274,14 +274,17 @@ class PartBOMRegister extends Component {
                 if (IsChildPart == false) {
                     this.props.getBOMDetailAPI(true, assyPartNo.value, (res) => {
                         const { uniOfMeasurementList, rowMaterialDetail, unitBOMDetail } = this.props;
+                        if (unitBOMDetail && unitBOMDetail != undefined) {
 
-                        const tempMaterialObj = rowMaterialDetail.find(item => item.RawMaterialId == unitBOMDetail.RawMaterialId)
-                        const tempUOMObj = uniOfMeasurementList.find(item => item.Value == unitBOMDetail.UnitOfMeasurementId)
+                            const tempMaterialObj = rowMaterialDetail.find(item => item.RawMaterialId == unitBOMDetail.RawMaterialId)
+                            const tempUOMObj = uniOfMeasurementList.find(item => item.Value == unitBOMDetail.UnitOfMeasurementId)
 
-                        this.setState({
-                            materialType: { label: tempMaterialObj.RawMaterialName, value: tempMaterialObj.RawMaterialId },
-                            selectedUOM: { label: tempUOMObj.Text, value: tempUOMObj.Value },
-                        })
+                            this.setState({
+                                materialType: { label: tempMaterialObj.RawMaterialName, value: tempMaterialObj.RawMaterialId },
+                                selectedUOM: { label: tempUOMObj.Text, value: tempUOMObj.Value },
+                            })
+
+                        }
                     })
                 }
             });

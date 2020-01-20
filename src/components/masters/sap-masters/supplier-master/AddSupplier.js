@@ -47,7 +47,7 @@ class AddSupplier extends Component {
                         return plantArray.push({ Text: plantObj.PlantName, Value: plantObj.PlantId });
                     });
                     this.setState({
-                        supplierType: res.data.Data.SupplierType,
+                        supplierType: res.data.Data.SupplierTypeId,
                         selectedPlants: plantArray
                     });
                 });
@@ -503,7 +503,7 @@ function mapStateToProps({ comman, supplier }) {
             Extension: supplierData.Extension,
         }
     }
-    return { cityList, plantList, initialValues, radioSupplierTypeList }
+    return { cityList, plantList, initialValues, supplierData, radioSupplierTypeList }
 }
 
 /**

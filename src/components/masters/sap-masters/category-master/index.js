@@ -73,10 +73,10 @@ class CategoryMaster extends Component {
                         <h3>{`${CONSTANT.CATEGORY} ${CONSTANT.MASTER}`}</h3>
                     </Col>
                     <Col>
-                        <button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</button>
+                        <button onClick={this.openCategoryModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</button>
                     </Col>
                     <Col>
-                        <button onClick={this.openCategoryModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</button>
+                        <button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</button>
                     </Col>
                 </Row>
                 <hr />
@@ -84,22 +84,22 @@ class CategoryMaster extends Component {
                     <Nav tabs className="subtabs">
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                {`${CONSTANT.CATEGORY}`}
+                                {`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}
                             </NavLink>
                         </NavItem>
 
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                {`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}
+                                {`${CONSTANT.CATEGORY}`}
                             </NavLink>
                         </NavItem>
                     </Nav>
                     <TabContent activeTab={this.state.activeTab}>
                         <TabPane tabId="1">
-                            <CategoryDetail />
+                            <CategoryTypeDetail />
                         </TabPane>
                         <TabPane tabId="2">
-                            <CategoryTypeDetail />
+                            <CategoryDetail />
                         </TabPane>
                     </TabContent>
                 </div>
