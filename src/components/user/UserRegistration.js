@@ -40,6 +40,7 @@ class UserRegistration extends Component {
       department: [],
       role: [],
       city: [],
+      isEditFlag: false,
     };
   }
 
@@ -187,6 +188,21 @@ class UserRegistration extends Component {
   };
 
   /**
+    * @method cancel
+    * @description used to Reset form
+    */
+  cancel = () => {
+    const { reset } = this.props;
+    reset();
+    this.setState({
+      isEditFlag: false,
+      department: [],
+      role: [],
+      city: [],
+    })
+  }
+
+  /**
    * @name onSubmit
    * @param values
    * @desc Submit the signup form values.
@@ -318,9 +334,9 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="Department"
                     component={searchableSelect}
-                    //validate={[required, maxLength50]}
+                    validate={[required]}
                     options={this.searchableSelectType('department')}
-                    //required={true}
+                    required={true}
                     handleChangeDescription={this.departmentHandler}
                     valueDescription={this.state.department}
                   />
@@ -332,9 +348,9 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="Role"
                     component={searchableSelect}
-                    //validate={[required, maxLength50]}
+                    validate={[required]}
                     options={this.searchableSelectType('role')}
-                    //required={true}
+                    required={true}
                     handleChangeDescription={this.roleHandler}
                     valueDescription={this.state.role}
                   />
@@ -346,9 +362,9 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="City"
                     component={searchableSelect}
-                    //validate={[required, maxLength50]}
+                    validate={[required]}
                     options={this.searchableSelectType('city')}
-                    //required={true}
+                    required={true}
                     handleChangeDescription={this.cityHandler}
                     valueDescription={this.state.city}
                   />
@@ -456,7 +472,7 @@ class UserRegistration extends Component {
                 />
                 <input
                   disabled={pristine || submitting}
-                  onClick={reset}
+                  onClick={this.cancel}
                   type="submit"
                   value="Reset"
                   className="btn  login-btn w-10 dark-pinkbtn"
