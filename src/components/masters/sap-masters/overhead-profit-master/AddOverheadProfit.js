@@ -39,15 +39,7 @@ class AddOverheadProfit extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { uomId, isEditFlag } = this.props;
 
-        // if (isEditFlag) {
-        //     this.setState({ isEditFlag }, () => {
-        //         this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
-        //     })
-        // } else {
-        //     this.props.getOneUnitOfMeasurementAPI('', false, res => { })
-        // }
     }
 
     /**
