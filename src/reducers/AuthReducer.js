@@ -27,6 +27,10 @@ import {
     GET_UNIT_ROLE_DATA_SUCCESS,
     GET_UNIT_DEPARTMENT_DATA_SUCCESS,
     GET_UNIT_LEVEL_DATA_SUCCESS,
+    GET_ROLES_SELECTLIST_SUCCESS,
+    GET_MODULE_SELECTLIST_SUCCESS,
+    GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS,
+    GET_PAGES_SELECTLIST_SUCCESS,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -179,6 +183,34 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 userList: action.payload
+            };
+        case GET_ROLES_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                roleSelectList: action.payload
+            };
+        case GET_MODULE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                moduleSelectList: action.payload
+            };
+        case GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                pageSelectListByModule: action.payload
+            };
+        case GET_PAGES_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                pageSelectList: action.payload
             };
         // 		case FORGOT_PASSWORD_SUCCESS:
         // 			return {

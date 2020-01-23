@@ -26,6 +26,10 @@ import {
     GET_UNIT_ROLE_DATA_SUCCESS,
     GET_UNIT_DEPARTMENT_DATA_SUCCESS,
     GET_UNIT_LEVEL_DATA_SUCCESS,
+    GET_ROLES_SELECTLIST_SUCCESS,
+    GET_MODULE_SELECTLIST_SUCCESS,
+    GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS,
+    GET_PAGES_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -619,6 +623,170 @@ export function getAllTechnologyAPI(callback) {
     };
 }
 
+
+
+/**
+ * @method createPrivilegePage
+ * @description add Privilege Page API 
+ */
+export function createPrivilegePage(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.createPrivilegePage, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getModuleSelectList
+ * @description get Modules select list
+ */
+export function getModuleSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.moduleSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MODULE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method rolesSelectList
+ * @description get Roles select list
+ */
+export function rolesSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.rolesSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ROLES_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getPageSelectListByModule
+ * @description get page select list by module
+ */
+export function getPageSelectListByModule(moduleId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPageSelectListByModule}?moduleId=${moduleId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getPageSelectList
+ * @description get Page select list
+ */
+export function getPageSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPageSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PAGES_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method setPagePermissionRoleWise
+ * @description set page permission role wise API 
+ */
+export function setPagePermissionRoleWise(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.setPagePermissionRoleWise, requestData, { headers })
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method setPagePermissionUserWise
+ * @description set page permission user wise API 
+ */
+export function setPagePermissionUserWise(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.setPagePermissionUserWise, requestData, { headers })
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
 
 
 // /**

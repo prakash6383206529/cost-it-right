@@ -263,6 +263,7 @@ export const API = {
   getRoleAPI: `${BASE_URL}/user-role/get`,
   updateRoleAPI: `${BASE_URL}/user-role/update`,
   deleteRoleAPI: `${BASE_URL}/user-role/delete`,
+  rolesSelectList: `${BASE_URL}/configuration/select-list-get-roles`,
 
   //Department's API
   addDepartmentAPI: `${BASE_URL}/user-department/create`,
@@ -287,6 +288,15 @@ export const API = {
   getAllApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-approval-department`,
   getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
   sendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
+
+  //PRIVILEGE
+  createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
+  moduleSelectList: `${BASE_URL}/app-privilege-permission/get-module-select-list`,
+  getPageSelectListByModule: `${BASE_URL}/app-privilege-permission/get-page-select-list-by-module`,
+  getPageSelectList: `${BASE_URL}/app-privilege-permission/get-page-select-list`,
+  setPagePermissionRoleWise: `${BASE_URL}/app-privilege-permission/set-page-permission-role-wise`,
+  setPagePermissionUserWise: `${BASE_URL}/app-privilege-permission/set-page-permission-user-wise`,
+
 
 }
 
@@ -516,6 +526,7 @@ export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
 //Role
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS';
 export const GET_UNIT_ROLE_DATA_SUCCESS = 'GET_UNIT_ROLE_DATA_SUCCESS';
+export const GET_ROLES_SELECTLIST_SUCCESS = 'GET_ROLES_SELECTLIST_SUCCESS';
 
 //level users
 export const GET_LEVEL_USER_SUCCESS = 'GET_LEVEL_USER_SUCCESS';
@@ -533,6 +544,11 @@ export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER';
 export const GET_SEND_FOR_APPROVAL_SUCCESS = 'GET_SEND_FOR_APPROVAL_SUCCESS';
 export const GET_ALL_APPROVAL_DEPARTMENT = 'GET_ALL_APPROVAL_DEPARTMENT';
 export const GET_ALL_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_APPROVAL_USERS_BY_DEPARTMENT';
+
+//PRIVILEGE
+export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS';
+export const GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS = 'GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS';
+export const GET_PAGES_SELECTLIST_SUCCESS = 'GET_PAGES_SELECTLIST_SUCCESS';
 
 //COSTING STATUS
 export const APPROVED = 'Approved';

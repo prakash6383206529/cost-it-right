@@ -8,6 +8,7 @@ import Footer from "../components/footer/Footer";
 import Login from './login/Login';
 import NotFoundPage from './common/NotFoundPage';
 import User from './user';
+import Privilege from './privilege';
 import Homepage from './homepage/Homepage';
 import Dashboard from './dashboard';
 import { Loader } from '../../src/components/common/Loader';
@@ -124,6 +125,8 @@ class Main extends Component {
               } />
 
               <Route path="/user" component={AuthMiddleware(User)} />
+
+              <Route path="/privilege" component={AuthMiddleware(Privilege)} />
 
               <Route path="/dashboard" component={AuthMiddleware(Dashboard)} />
 

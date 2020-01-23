@@ -96,5 +96,11 @@ export const MESSAGES = {
   COSTING_SAVED_SUCCESSFULLY: 'Costing has been saved successfully.',
   COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY: 'Costing has been sent for approval.',
   SELECT_PLANT_FOR_COSTING: 'Plant should not be empty.',
+
+  //PRIVILEGE
+  ADD_PRIVILEGE_PAGE_SUCCESSFULLY: 'Privilege page added successfully.',
+  ADD_PRIVILEGE_PAGE_ROLEWISE_SUCCESSFULLY: 'Privilege page role wise added successfully.',
+  ADD_PRIVILEGE_PAGE_USERWISE_SUCCESSFULLY: 'Privilege page user wise added successfully.',
+
 };
 

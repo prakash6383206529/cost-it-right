@@ -220,15 +220,10 @@ export function renderPasswordInputField(field) {
 @desc: Render multi select input
 */
 export function renderMultiSelectField(field) {
-  const {
-    isTouched,
-    meta: { touched, error, active }
-  } = field;
+  const { isTouched, meta: { touched, error, active } } = field;
   const inputbox = `inputbox ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `basic-multi-select ${
-    field.className ? field.className : ""
-    }`;
+  const InputClassName = `basic-multi-select ${field.className ? field.className : ""}`;
   const optionValue = field.optionValue;
   const optionLabel = field.optionLabel;
   const placeholder = field.placeholder ? field.placeholder : "";
@@ -236,11 +231,7 @@ export function renderMultiSelectField(field) {
     <div className={className}>
       <label>
         {field.label}
-        {field.mendatory && field.mendatory === true ? (
-          <span className="asterisk-required">*</span>
-        ) : (
-            ""
-          )}
+        {field.mendatory && field.mendatory === true ? (<span className="asterisk-required">*</span>) : ("")}
       </label>
       <div className={inputbox} onClick={field.onTouched}>
         <Select
@@ -259,7 +250,7 @@ export function renderMultiSelectField(field) {
         />
       </div>
       <div className="text-help">
-        {isTouched &&
+        {touched &&
           field.mendatory &&
           field.selection &&
           field.selection.length === 0

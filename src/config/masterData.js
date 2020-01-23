@@ -172,3 +172,11 @@ export const RM = [
     { label: 'Rate', value: 'Rate', },
     { label: 'Date', value: 'Date', },
 ]
+
+export const EAccessType = [
+    { label: '--Select EAccess Type--', value: '', },
+    { label: 'ReadOnly', value: 0, },
+    { label: 'Self', value: 1, },
+    { label: 'Group', value: 2, },
+    { label: 'Everyone', value: 3, },
+]
