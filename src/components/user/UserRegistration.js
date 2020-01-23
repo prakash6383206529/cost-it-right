@@ -210,6 +210,7 @@ class UserRegistration extends Component {
    */
   onSubmit(values) {
     console.log("signup values", values)
+    const { reset } = this.props;
     const { department, role, city } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
     this.setState({ isSubmitted: true })
@@ -237,9 +238,13 @@ class UserRegistration extends Component {
       if (res.data.Result) {
         toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
       }
+      reset();
       this.setState({
         isLoader: false,
-        isSubmitted: false
+        isSubmitted: false,
+        department: [],
+        role: [],
+        city: [],
       })
     })
   }
@@ -334,9 +339,9 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="Department"
                     component={searchableSelect}
-                    validate={[required]}
+                    //validate={[required]}
                     options={this.searchableSelectType('department')}
-                    required={true}
+                    //required={true}
                     handleChangeDescription={this.departmentHandler}
                     valueDescription={this.state.department}
                   />
@@ -348,9 +353,9 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="Role"
                     component={searchableSelect}
-                    validate={[required]}
+                    //validate={[required]}
                     options={this.searchableSelectType('role')}
-                    required={true}
+                    //required={true}
                     handleChangeDescription={this.roleHandler}
                     valueDescription={this.state.role}
                   />
@@ -362,9 +367,9 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="City"
                     component={searchableSelect}
-                    validate={[required]}
+                    //validate={[required]}
                     options={this.searchableSelectType('city')}
-                    required={true}
+                    //required={true}
                     handleChangeDescription={this.cityHandler}
                     valueDescription={this.state.city}
                   />
@@ -464,12 +469,19 @@ class UserRegistration extends Component {
               </div>
 
               <div className="text-center ">
-                <input
+                {/* <input
                   disabled={isSubmitted ? true : false}
                   type="submit"
                   value="Save"
                   className="btn  login-btn w-10 dark-pinkbtn"
-                />
+                /> */}
+                <button
+                  type="submit"
+                  disabled={isSubmitted ? true : false}
+                  className="btn  login-btn w-10 dark-pinkbtn"
+                >
+                  Save
+                </button>
                 <input
                   disabled={pristine || submitting}
                   onClick={this.cancel}
@@ -531,17 +543,18 @@ const mapStateToProps = ({ auth, comman }) => {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default reduxForm({
+
+export default connect(mapStateToProps, {
+  registerUserAPI,
+  getAllRoleAPI,
+  getAllDepartmentAPI,
+  fetchSupplierCityDataAPI,
+})(reduxForm({
   validate,
-  form: "Signup",
+  form: 'Signup',
   onSubmitFail: errors => {
+    console.log('ddd', errors)
     focusOnError(errors);
-  }
-})(connect(mapStateToProps,
-  {
-    registerUserAPI,
-    getAllRoleAPI,
-    getAllDepartmentAPI,
-    fetchSupplierCityDataAPI,
-  }
-)(UserRegistration));
+  },
+  enableReinitialize: true,
+})(UserRegistration));
