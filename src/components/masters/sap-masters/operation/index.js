@@ -121,7 +121,7 @@ class OperationMaster extends Component {
                                         <th>Operation Code</th>
                                         <th>Plant Name</th>
                                         <th>Description</th>
-                                        <th>Operation Cost</th>
+                                        {/* <th>Operation Cost</th> */}
                                         {/* <th>Initiator</th>
                                     <th>Created On</th>
                                     <th>Modifier</th>
@@ -137,7 +137,7 @@ class OperationMaster extends Component {
                                                 <td >{item.OperationCode}</td>
                                                 <td>{item.PlantName}</td>
                                                 <td>{item.Description}</td>
-                                                <td>{item.BasicOperationCost}</td>
+                                                {/* <td>{item.BasicOperationCost}</td> */}
                                                 {/* <td>{''}</td>
                                                 <td>{''}</td>
                                                 <td>{''}</td>

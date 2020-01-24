@@ -11,6 +11,7 @@ import {
     GET_ALL_PARTS_SUCCESS,
     GET_ALL_PARTS_FAILURE,
     GET_PART_SUCCESS,
+    GET_UNIT_PART_DATA_SUCCESS,
     GET_MATERIAL_TYPE_SUCCESS
 } from '../../config/constants';
 import {
@@ -162,7 +163,7 @@ export function getOnePartsAPI(PartId, isEditFlag, callback) {
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
-                            type: GET_PART_SUCCESS,
+                            type: GET_UNIT_PART_DATA_SUCCESS,
                             payload: response.data.Data,
                         });
                         callback(response);
@@ -176,7 +177,7 @@ export function getOnePartsAPI(PartId, isEditFlag, callback) {
                 });
         } else {
             dispatch({
-                type: GET_PART_SUCCESS,
+                type: GET_UNIT_PART_DATA_SUCCESS,
                 payload: {},
             });
             callback({});

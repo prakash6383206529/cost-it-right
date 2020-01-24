@@ -183,6 +183,7 @@ class PartBOMRegister extends Component {
 
     onPressAddChildPart = () => {
         const { assyPartNo } = this.state;
+        this.emptyPartFields()
         if (assyPartNo && assyPartNo.length == 0) {
             toastr.warning('Please select assembly part.')
             this.setState({ IsChildPart: false })
@@ -321,11 +322,27 @@ class PartBOMRegister extends Component {
         this.setState({ ChildPart: newValue }, () => {
             const { ChildPart } = this.state;
             if (ChildPart && ChildPart.value != '') {
-                this.props.change("NewChildPart_PartNumber", ChildPart.label)
-                this.props.change("NewChildPart_PartName", ChildPart.label)
                 this.setState({
                     isNewPartBtnShow: false,
                     isPartShow: true,
+                })
+
+                this.props.getOnePartsAPI(ChildPart.value, true, res => {
+                    const { partData, uniOfMeasurementList, rowMaterialDetail, unitBOMDetail } = this.props;
+                    if (partData && partData != undefined) {
+                        this.props.change("NewChildPart_PartNumber", partData.PartNumber)
+                        this.props.change("NewChildPart_PartName", partData.PartNumber)
+                        this.props.change("NewChildPart_MaterialGroupCode", partData.MaterialGroupCode)
+                        this.props.change("NewChildPart_PartDescription", partData.PartDescription)
+                        this.props.change("NewChildPart_PlantId", partData.PlantId)
+                        this.props.change("NewChildPart_UnitOfMeasurementId", partData.UnitOfMeasurementId)
+
+                        const tempMaterialObj = rowMaterialDetail.find(item => item.RawMaterialId == partData.RawMaterialId)
+
+                        this.setState({
+                            newPartRMType: { label: tempMaterialObj.RawMaterialName, value: tempMaterialObj.RawMaterialId },
+                        })
+                    }
                 })
             } else {
                 this.props.change("NewChildPart_PartNumber", "")
@@ -338,6 +355,26 @@ class PartBOMRegister extends Component {
             this.checkIsPartIdSame()
         });
     };
+
+    /**
+   * @method emptyPartFields
+   * @description used for empty Part fields
+   */
+    emptyPartFields = () => {
+        this.props.change("NewChildPart_PartNumber", '')
+        this.props.change("NewChildPart_PartName", '')
+        this.props.change("NewChildPart_MaterialGroupCode", '')
+        this.props.change("NewChildPart_PartDescription", '')
+        this.props.change("NewChildPart_PlantId", '')
+        this.props.change("NewChildPart_UnitOfMeasurementId", '')
+        this.props.change("NewChildPart_Quantity", '')
+        this.props.change("NewChildPart_EcoNumber", '')
+        this.props.change("NewChildPart_RevisionNumber", '')
+
+        this.setState({
+            newPartRMType: [],
+        })
+    }
 
     /**
    * @method handlePlantSelection
@@ -389,7 +426,8 @@ class PartBOMRegister extends Component {
     */
     onSubmit = (values) => {
         console.log("values from BOM", values)
-        const { selectedParts, IsChildPart, materialType, newPartRMType, selectedUOM, assyPartNo, ChildPart, plantID, newPartPlantID } = this.state;
+        const { selectedParts, IsChildPart, materialType, newPartRMType, selectedUOM, assyPartNo, ChildPart, plantID, newPartPlantID,
+            isNewPartBtnShow } = this.state;
         let plantArray = [];
         selectedParts && selectedParts.map((item, i) => {
             return plantArray.push({ PartId: item.Value });
@@ -420,7 +458,7 @@ class PartBOMRegister extends Component {
         // }
 
         let bomData = {
-            IsAddNewChildPart: IsChildPart,
+            IsAddNewChildPart: isNewPartBtnShow,
             MaterialTypeName: materialType.label,
             UnitOfMeasurementName: selectedUOM.label,
             NewChildPart: {
@@ -715,7 +753,7 @@ class PartBOMRegister extends Component {
                         <>
                             <Row>
                                 <Col>
-                                    <h3><b>Add New Part</b></h3>
+                                    <h3><b>{this.state.IsChildPart ? 'Add Child Part' : 'Add New Part'}</b></h3>
                                     <hr />
                                 </Col>
                             </Row>

@@ -163,7 +163,7 @@ class AddOperation extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label="Operation Cost"
                                                 name={"BasicOperationCost"}
@@ -175,23 +175,8 @@ class AddOperation extends Component {
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
-                                        </Col>
+                                        </Col> */}
                                         <Col md="6">
-                                            <Field
-                                                label="Description"
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
                                             <Field
                                                 label={`Plant`}
                                                 name={"PlantId"}
@@ -208,8 +193,20 @@ class AddOperation extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Description"
+                                                name={"Description"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                //required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
                                     </Row>
-
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
