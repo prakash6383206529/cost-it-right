@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, number } from "../../../../helper/validation";
-import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
+import { required, number, getSupplierCode } from "../../../../helper/validation";
+import { renderText, renderSelectField, searchableSelect, focusOnError } from "../../../layout/FormInputs";
 import { getPlantBySupplier } from '../../../../actions/master/Comman';
 import { createOverheadProfitAPI, getOverheadProfitComboData } from '../../../../actions/master/OverheadProfit';
 //import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
@@ -112,10 +112,18 @@ class AddOverheadProfit extends Component {
     }
 
     handleChangeSupplier = (newValue, actionMeta) => {
-        this.setState({ supplierValue: newValue }, () => {
-            const { supplierValue } = this.state;
-            this.props.getPlantBySupplier(supplierValue.value, () => { })
-        });
+        if (newValue && newValue != '') {
+            this.setState({ supplierValue: newValue }, () => {
+                const { supplierValue } = this.state;
+                this.props.getPlantBySupplier(supplierValue.value, () => {
+                    const supplierCode = getSupplierCode(supplierValue.label);
+                    this.props.change('SupplierCode', supplierCode)
+                })
+            });
+        } else {
+            this.setState({ supplierValue: [] })
+            this.props.change('SupplierCode', '')
+        }
     };
 
     handleChangeOverheadType = (newValue, actionMeta) => {
@@ -257,12 +265,12 @@ class AddOverheadProfit extends Component {
                                                 label="Supplier Code"
                                                 name={"SupplierCode"}
                                                 type="text"
-                                                placeholder={'Supplier Code'}
+                                                placeholder={'Enter Supplier Code'}
                                                 //validate={[required]}
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
-                                                disabled={false}
+                                                disabled={true}
                                             />
                                         </Col>
                                         <Col md="6">
