@@ -526,11 +526,7 @@ export function renderText(field) {
       <label>
         {field.label}
         {field.value}
-        {field.required && field.required == true ? (
-          <span className="asterisk-required">*</span>
-        ) : (
-            ""
-          )}{" "}
+        {field.required && field.required == true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
       </label>
       <input
         maxLength={field.maxLength}

@@ -137,7 +137,7 @@ class Level extends Component {
                                         name={"Sequence"}
                                         type="text"
                                         placeholder={''}
-                                        validate={[]}
+                                        validate={[number]}
                                         component={renderText}
                                         required={false}
                                         maxLength={26}

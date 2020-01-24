@@ -5,7 +5,7 @@ import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
-import { searchableSelect } from "../layout/FormInputs";
+import { searchableSelect, focusOnError } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
     addUserLevelAPI, getAllTechnologyAPI, getAllLevelAPI, getAllUserAPI,
@@ -72,7 +72,11 @@ class LevelUser extends Component {
     * @description Used to handle 
     */
     technologyHandler = (newValue, actionMeta) => {
-        this.setState({ technology: newValue });
+        if (newValue && newValue != '') {
+            this.setState({ technology: newValue });
+        } else {
+            this.setState({ technology: [] });
+        }
     };
 
     /**
@@ -80,7 +84,11 @@ class LevelUser extends Component {
     * @description Used to handle 
     */
     levelHandler = (newValue, actionMeta) => {
-        this.setState({ level: newValue });
+        if (newValue && newValue != '') {
+            this.setState({ level: newValue });
+        } else {
+            this.setState({ level: [] });
+        }
     };
 
     /**
@@ -88,7 +96,11 @@ class LevelUser extends Component {
     * @description Used to handle 
     */
     userHandler = (newValue, actionMeta) => {
-        this.setState({ user: newValue });
+        if (newValue && newValue != '') {
+            this.setState({ user: newValue });
+        } else {
+            this.setState({ user: [] });
+        }
     };
 
     /**
@@ -100,6 +112,7 @@ class LevelUser extends Component {
     onSubmit(values) {
         const { technology, level, user } = this.state;
         console.log("level values", values)
+
         this.setState({ isLoader: true })
 
         let formData = {
@@ -219,14 +232,18 @@ const mapStateToProps = ({ auth }) => {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default reduxForm({
-    form: "LevelUser",
-})(connect(mapStateToProps,
-    {
-        addUserLevelAPI,
-        getAllTechnologyAPI,
-        getAllLevelAPI,
-        getAllUserAPI,
-        assignUserLevelAPI,
-    }
-)(LevelUser));
+
+export default connect(mapStateToProps, {
+    addUserLevelAPI,
+    getAllTechnologyAPI,
+    getAllLevelAPI,
+    getAllUserAPI,
+    assignUserLevelAPI,
+})(reduxForm({
+    form: 'LevelUser',
+    onSubmitFail: errors => {
+        console.log('ddd', errors)
+        focusOnError(errors);
+    },
+    enableReinitialize: true,
+})(LevelUser));
