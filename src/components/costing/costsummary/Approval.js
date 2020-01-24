@@ -102,7 +102,7 @@ class Approval extends Component {
             CostingId: costingId,
             CostingStatusId: "",
             IsFinalApproval: false,
-            IsApproved: false,
+            IsApproved: true,
             Remark: values.Remarks,
             LevelId: "",
             UserId: user.value,
