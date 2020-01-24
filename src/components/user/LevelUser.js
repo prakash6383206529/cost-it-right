@@ -113,6 +113,9 @@ class LevelUser extends Component {
         const { technology, level, user } = this.state;
         console.log("level values", values)
 
+        // if (technology.length == 0 || level.length == 0 || user.length == 0) {
+        //     return false;
+        // }
         this.setState({ isLoader: true })
 
         let formData = {
@@ -125,7 +128,12 @@ class LevelUser extends Component {
                 toastr.success(MESSAGES.ADD_LEVEL_USER_SUCCESSFULLY)
             }
             this.props.reset();
-            this.setState({ isLoader: false })
+            this.setState({
+                isLoader: false,
+                technology: [],
+                level: [],
+                user: [],
+            })
         })
 
     }
