@@ -251,9 +251,9 @@ class AddOverheadProfit extends Component {
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 label="Supplier"
                                                 component={searchableSelect}
-                                                validate={[required]}
+                                                //validate={[required]}
                                                 options={this.renderTypeOfListing('supplier')}
-                                                required={true}
+                                                //required={true}
                                                 handleChangeDescription={this.handleChangeSupplier}
                                                 valueDescription={this.state.supplierValue}
                                             />
@@ -457,5 +457,9 @@ export default connect(mapStateToProps, {
     createOverheadProfitAPI
 })(reduxForm({
     form: 'addOverheadProfit',
+    onSubmitFail: errors => {
+        console.log('ddd', errors)
+        focusOnError(errors);
+    },
     enableReinitialize: true,
 })(AddOverheadProfit));
