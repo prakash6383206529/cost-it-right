@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
-import { required, checkForNull } from "../../../helper/validation";
+import { required, checkForNull, trimDecimalPlace } from "../../../helper/validation";
 import { renderText, renderNumberInputField, renderSelectField, InputHiddenField } from "../../layout/FormInputs";
 import {
     createWeightCalculationCosting, getWeightCalculationCosting, getWeightCalculationLayoutType,
@@ -10,6 +10,7 @@ import {
 } from '../../../actions/costing/CostWorking';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
+import { FIVE_DECIMAL_WEIGHT } from '../../../config/constants';
 const selector = formValueSelector('AddWeightCostingForm');
 
 class AddWeightCosting extends Component {
@@ -169,7 +170,7 @@ class AddWeightCosting extends Component {
         const Width = checkForNull(fieldsObj.Width);
         const Length = checkForNull(fieldsObj.Length);
         const FinishWeight = checkForNull(fieldsObj.FinishWeight);
-        const SurfaceArea = checkForNull(fieldsObj.SurfaceArea);
+        const SurfaceArea = checkForNull(trimDecimalPlace(fieldsObj.SurfaceArea, FIVE_DECIMAL_WEIGHT));
         const NoOfPartsAndBlank = fieldsObj.NoOfPartsAndBlank == 0 ? this.props.change('NoOfPartsAndBlank', 1) : checkForNull(fieldsObj.NoOfPartsAndBlank);
         const OverlapArea = checkForNull(fieldsObj.OverlapArea);
         const OD = checkForNull(fieldsObj.OD);
@@ -181,9 +182,9 @@ class AddWeightCosting extends Component {
 
         // Bracket Part calculation
         const WT = ((Thickness * Width * Length * 7.85) / 1000000);
-        const disabledNetSurface = (FinishWeight * 1000000 * SurfaceArea) / (Thickness * 7.85 * 25.4 * 25.4)
-        const grossWt = WT / NoOfPartsAndBlank;
-        const netSurfaceArea = disabledNetSurface - OverlapArea;
+        const disabledNetSurface = checkForNull((FinishWeight * 1000000 * SurfaceArea) / (Thickness * 7.85 * 25.4 * 25.4))
+        const grossWt = trimDecimalPlace(WT / NoOfPartsAndBlank, FIVE_DECIMAL_WEIGHT);
+        const netSurfaceArea = trimDecimalPlace(disabledNetSurface - OverlapArea, FIVE_DECIMAL_WEIGHT);
 
         // Pipe layout surface area for one side and two side
         const oneSideInputValue = ((2 * 3.14 * (OD / 2) * LengthOfPipe) + (2 * (3.14 * (OD / 2) * (OD / 2)) - (3.14 * (ID / 2) * (ID / 2))))
@@ -213,9 +214,9 @@ class AddWeightCosting extends Component {
 
         // For Bracket layout calculation
         this.props.change("GrossWeight", grossWt)
-        this.props.change("disabledSurfaceArea", checkForNull(disabledNetSurface))
+        this.props.change("disabledSurfaceArea", trimDecimalPlace(disabledNetSurface, FIVE_DECIMAL_WEIGHT))
         this.props.change("NetSurfaceArea", netSurfaceArea)
-        this.props.change("WeightUnitKg", WT)
+        this.props.change("WeightUnitKg", trimDecimalPlace(WT, FIVE_DECIMAL_WEIGHT))
 
         // For pipe layout
         this.props.change("GrossWeightPipe", pipeGrossWeight)

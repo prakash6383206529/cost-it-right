@@ -9,7 +9,8 @@ import { toastr } from 'react-redux-toastr';
 import { renderText, renderSelectField, renderNumberInputField, InputHiddenField, searchableSelect, RFReactSelect } from "../../layout/FormInputs";
 import AddMHRCosting from './AddMHRCosting';
 import { MESSAGES } from '../../../config/message';
-import { required, checkForNull } from "../../../helper/validation";
+import { required, checkForNull, trimDecimalPlace } from "../../../helper/validation";
+import { TWO_DECIMAL_PRICE } from '../../../config/constants';
 const selector = formValueSelector('ProcessGridForm');
 
 const processGridRowData = {
@@ -307,7 +308,7 @@ class ProcessGrid extends Component {
         lineItemData && lineItemData.map((item, index) => {
             grandTotal = checkForNull(grandTotal) + checkForNull(item.NetCost)
         })
-        return grandTotal;
+        return trimDecimalPlace(grandTotal, TWO_DECIMAL_PRICE);
     }
 
 
@@ -328,7 +329,7 @@ class ProcessGrid extends Component {
             netCost = (((Rate * CycleTime / 3600) * (100 / Efficiency)) / Cavity) * Quantity;
         }
 
-        this.props.change(`LinkedProcesses[${index}]['NetCost']`, checkForNull(netCost));
+        this.props.change(`LinkedProcesses[${index}]['NetCost']`, checkForNull(trimDecimalPlace(netCost, TWO_DECIMAL_PRICE)));
 
     }
 

@@ -556,3 +556,10 @@ export const APPROVED = 'Approved';
 export const PENDING = 'Pending';
 export const DRAFT = 'Draft';
 export const REJECTED = 'Rejected';
+
+//DECIMAL VALUES FOR PRICE
+export const TWO_DECIMAL_PRICE = 2;
+export const FOUR_DECIMAL_PRICE = 4;
+
+//DECIMAL VALUES FOR WEIGHT
+export const FIVE_DECIMAL_WEIGHT = 5;

@@ -14,13 +14,13 @@ import { getInterestRateAPI } from '../../../actions/master/InterestRateMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
-import { required, number, alphaNumeric, checkForNull, getSupplierCode } from '../../../helper';
+import { required, number, alphaNumeric, checkForNull, getSupplierCode, trimDecimalPlace } from '../../../helper';
 import OtherOperationsModal from './OtherOperationsModal';
 import CEDotherOperations from './CEDotherOperations';
 import AddFreightModal from './AddFreightModal';
 import Approval from './Approval';
 import { MESSAGES } from '../../../config/message';
-import { DRAFT, REJECTED, APPROVED, PENDING } from '../../../config/constants';
+import { DRAFT, REJECTED, APPROVED, PENDING, TWO_DECIMAL_PRICE } from '../../../config/constants';
 const selector = formValueSelector('CostSummary');
 
 
@@ -170,6 +170,14 @@ class CostSummary extends Component {
         Content.NetPurchaseOrderPrice = NetPOPrice != NaN ? NetPOPrice : 0;
 
         return Content;
+    }
+
+    /**
+    * @method InventoryCostCalculation
+    * @description Used for Inventory Cost Calculation
+    */
+    checkForDecimalAndNull = () => {
+        
     }
 
     /**

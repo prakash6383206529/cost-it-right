@@ -9,6 +9,8 @@ import { toastr } from 'react-redux-toastr';
 import { renderText, renderSelectField, InputHiddenField, searchableSelect, RFReactSelect } from "../../layout/FormInputs";
 import AddOtherOperationCosting from './AddOtherOperationCosting';
 import { MESSAGES } from '../../../config/message';
+import { required, checkForNull, trimDecimalPlace } from "../../../helper/validation";
+import { TWO_DECIMAL_PRICE } from '../../../config/constants';
 const selector = formValueSelector('OtherOperationGridForm');
 
 const otherOperationGridRowData = {
@@ -258,9 +260,9 @@ class OtherOperationGrid extends Component {
         const Rate = LinkedOperationsArray && LinkedOperationsArray[index] ? LinkedOperationsArray[index].Rate : 0;
         const Quantity = LinkedOperationsArray && LinkedOperationsArray[index] ? LinkedOperationsArray[index].Quantity : 0;
 
-        let netCost = Rate * Quantity;
+        let netCost = checkForNull(Rate * Quantity);
 
-        this.props.change(`LinkedOperations[${index}]['NetCost']`, netCost);
+        this.props.change(`LinkedOperations[${index}]['NetCost']`, trimDecimalPlace(netCost, TWO_DECIMAL_PRICE));
         this.props.change(`LinkedOperations[${index}]['Total']`, netCost);
     }
 
@@ -271,7 +273,7 @@ class OtherOperationGrid extends Component {
         LinkedOperationsArray && LinkedOperationsArray.map((item, index) => {
             grandTotal = grandTotal + item.NetCost
         })
-        return grandTotal;
+        return trimDecimalPlace(grandTotal, TWO_DECIMAL_PRICE);
     }
 
     /**

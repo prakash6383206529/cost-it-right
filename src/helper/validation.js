@@ -164,6 +164,17 @@ export const checkForNull = (ele) => {
     return number
 }
 
+export const trimTwoDecimalPlace = (floatValue) => {
+    var decimalTextLength = 0;
+    if (undefined !== floatValue.toString().split('.')[1]) {
+        decimalTextLength = (floatValue.toString().split('.')[1]).length;
+    }
+    if (decimalTextLength > 2) {
+        floatValue = parseFloat(floatValue.toString().substring(0, (floatValue.toString().length - (((floatValue.toString().split('.')[1]).length) - 2))));
+    }
+    return floatValue;
+}
+
 export const trimFourDecimalPlace = (floatValue) => {
     var decimalTextLength = 0;
     if (undefined !== floatValue) {
@@ -177,13 +188,19 @@ export const trimFourDecimalPlace = (floatValue) => {
     return floatValue;
 }
 
-export const trimTwoDecimalPlace = (floatValue) => {
+export const trimDecimalPlace = (floatValue, Number) => {
     var decimalTextLength = 0;
-    if (undefined !== floatValue.toString().split('.')[1]) {
-        decimalTextLength = (floatValue.toString().split('.')[1]).length;
+    if (undefined !== floatValue) {
+        if (undefined !== floatValue.toString().split('.')[1]) {
+            decimalTextLength = (floatValue.toString().split('.')[1]).length;
+        }
     }
-    if (decimalTextLength > 2) {
-        floatValue = parseFloat(floatValue.toString().substring(0, (floatValue.toString().length - (((floatValue.toString().split('.')[1]).length) - 2))));
+    if (decimalTextLength > Number) {
+        floatValue = parseFloat(floatValue.toString().substring(0, (floatValue.toString().length - (((floatValue.toString().split('.')[1]).length) - Number))));
     }
     return floatValue;
+}
+
+export const checkForDecimalAndNull = (floatValue, Number) => {
+    return checkForNull(trimDecimalPlace(floatValue, Number))
 }
