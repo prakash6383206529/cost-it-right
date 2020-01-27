@@ -226,7 +226,7 @@ class Costing extends Component {
         const { isOpen, isEditFlag, supplierId, plantId, partId, isShowFileUpload } = this.state;
         return (
             <Container>
-                {this.props.loading && <Loader />}
+                {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
                         <h3 className={'mt20'}>{`${CONSTANT.COSTING} Summary`}</h3>

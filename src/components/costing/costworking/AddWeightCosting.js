@@ -493,7 +493,10 @@ class AddWeightCosting extends Component {
                                                 BRACKET PART
                                             </Label>
                                             {' '}
-                                            <Label
+
+                                            {/* Hide for now, We will add rest of the Calculations parts in Future. */}
+
+                                            {/* <Label
                                                 className={'vbcwrapper'}
                                                 onChange={() => this.weightTypeHandler('PIPE', 'Pipe')}
                                                 check>
@@ -569,7 +572,7 @@ class AddWeightCosting extends Component {
                                                     name="weightType"
                                                     value="Tube" />{' '}
                                                 Tube wt per mtr
-                                            </Label>
+                                            </Label> */}
                                         </Col>
                                     </Row>
                                     <hr />
@@ -639,12 +642,15 @@ class AddWeightCosting extends Component {
 
                                     <Row>
                                         {(weightType === 'BRACKET_PART') && <Col> <h3><b>BRACKET PART</b></h3> </Col>}
-                                        {(weightType === 'PIPE') && <Col> <h3><b>PIPE</b></h3> </Col>}
+
+                                        {/* Hide for now, We will add rest of the Calculations parts in Future. */}
+
+                                        {/* {(weightType === 'PIPE') && <Col> <h3><b>PIPE</b></h3> </Col>}
                                         {(weightType === 'L_Sec') && <Col> <h3><b>Tech - LSec</b></h3> </Col>}
                                         {(weightType === 'Plate') && <Col> <h3><b>Tech - Plate</b></h3> </Col>}
                                         {(weightType === 'C_Sec') && <Col> <h3><b>Tech - CSec</b></h3> </Col>}
                                         {(weightType === 'Z_Sec') && <Col> <h3><b>Tech - ZSec</b></h3> </Col>}
-                                        {(weightType === 'Tube') && <Col> <h3><b>Tech-Tube wt/mtr</b></h3> </Col>}
+                                        {(weightType === 'Tube') && <Col> <h3><b>Tech-Tube wt/mtr</b></h3> </Col>} */}
                                     </Row>
 
                                     <Row>

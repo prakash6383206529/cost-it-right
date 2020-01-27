@@ -19,7 +19,7 @@ const initialState = {
         // supplierOne: {},
         // supplierTwo: {},
         // supplierThree: {},
-    }
+    },
 };
 
 export default function costingReducer(state = initialState, action) {

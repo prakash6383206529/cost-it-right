@@ -1701,7 +1701,7 @@ class CostSummary extends Component {
 
         return (
             <div>
-                {this.props.loading && <Loader />}
+                {/* {this.props.loading && <Loader />} */}
                 <form
                     noValidate
                     className="form costSummary-form"
