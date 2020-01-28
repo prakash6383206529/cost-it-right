@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import { required, number, maxLength6, maxLength10 } from "../../../../helper/validation";
+import { userDetails } from "../../../../helper/auth";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI } from '../../../../actions/master/Comman';
@@ -18,6 +19,7 @@ class AddPlant extends Component {
             // stateListing: [],
             cityId: '',
             isActiveBox: true,
+            IsZBCPlant: false,
         }
     }
 
@@ -109,12 +111,21 @@ class AddPlant extends Component {
     }
 
     /**
+    * @method onPressZBCPlant
+    * @description Used for ZBC plant
+    */
+    onPressZBCPlant = () => {
+        this.setState({ IsZBCPlant: !this.state.IsZBCPlant });
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
         console.log("values", values)
-        const { cityId } = this.state;
+        const { cityId, IsZBCPlant } = this.state;
+        let userDetails = userDetails();
 
         let formData = {
             PlantName: values.PlantName,
@@ -127,6 +138,8 @@ class AddPlant extends Component {
             PhoneNumber: values.PhoneNumber,
             Extension: values.Extension,
             CreatedByUserId: '',
+            IsPlantForZBC: IsZBCPlant,
+            ZBCSupplierId: IsZBCPlant ? userDetails.ZBCSupplierInfo.SupplierId : '',
         }
         if (this.props.isEditFlag) {
             const { PlantId } = this.props;
@@ -143,7 +156,9 @@ class AddPlant extends Component {
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
                 CreatedByUserId: '',
-                IsActive: this.state.isActiveBox
+                IsActive: this.state.isActiveBox,
+                IsPlantForZBC: IsZBCPlant,
+                ZBCSupplierId: IsZBCPlant ? userDetails.ZBCSupplierInfo.SupplierId : '',
             }
             this.props.updatePlantAPI(PlantId, formData1, (res) => {
                 if (res.data.Result) {
@@ -193,6 +208,22 @@ class AddPlant extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
+                                    <Row>
+                                        <Col md="4">
+                                            <label
+                                                className="custom-checkbox"
+                                                onChange={this.onPressZBCPlant}
+                                            >
+                                                ZBC Plant
+                                                <input type="checkbox" checked={this.state.IsZBCPlant} />
+                                                <span
+                                                    className=" before-box"
+                                                    checked={this.state.IsZBCPlant}
+                                                    onChange={this.onPressZBCPlant}
+                                                />
+                                            </label>
+                                        </Col>
+                                    </Row>
                                     <Row>
                                         <Col md="6">
                                             <Field

@@ -12,6 +12,7 @@ export function formatLoginResult(res) {
             Email: res.Data.Email,
             Mobile: res.Data.Mobile,
             NumberOfSupplier: res.Data.NumberOfSupplier,
+            ZBCSupplierInfo: res.Data.ZBCSupplierInfo,
             Roles: res.Data.Roles,
             Plants: res.Data.Plants,
             Permissions: res.Data.Permissions,
