@@ -57,7 +57,7 @@ export default function costingReducer(state = initialState, action) {
                 addedSupplier: action.payload
             };
         case GET_COSTING_BY_COSTINGID:
-            let data1 = state.costingData[action.supplier];
+            let data1 = { ...state.costingData };
             return {
                 ...state,
                 loading: false,
@@ -84,7 +84,7 @@ export default function costingReducer(state = initialState, action) {
                 ...data,
                 CostingDetail: {
                     ...data.CostingDetail,
-                    CEDOperationId: CEDRowData.CEDOperationId,
+                    CEDOperationId: CEDRowData.CEDOtherOperationId,
                     CEDOperationName: CEDRowData.OperationName,
                     CEDOperationRate: CEDRowData.OperationRate,
                     TransportationOperationCost: null,
