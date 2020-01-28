@@ -58,7 +58,7 @@ class AddWeightCosting extends Component {
     componentWillMount() {
         this.props.getWeightCalculationLayoutType(res => { });
         this.props.getWeightCalculationCosting(this.props.costingId, (res) => {
-            if (res.data.Data) {
+            if (res && res.data && res.data.Data) {
                 const { weightCostingInfo } = this.props;
                 const layoutType = this.checkLayoutType(weightCostingInfo)
                 this.setState({ weightType: layoutType, layoutingId: weightCostingInfo.LayoutingId })
@@ -170,7 +170,7 @@ class AddWeightCosting extends Component {
         const Width = checkForNull(fieldsObj.Width);
         const Length = checkForNull(fieldsObj.Length);
         const FinishWeight = checkForNull(fieldsObj.FinishWeight);
-        const SurfaceArea = checkForNull(trimDecimalPlace(fieldsObj.SurfaceArea, FIVE_DECIMAL_WEIGHT));
+        const SurfaceArea = checkForNull(fieldsObj.SurfaceArea);
         const NoOfPartsAndBlank = fieldsObj.NoOfPartsAndBlank == 0 ? this.props.change('NoOfPartsAndBlank', 1) : checkForNull(fieldsObj.NoOfPartsAndBlank);
         const OverlapArea = checkForNull(fieldsObj.OverlapArea);
         const OD = checkForNull(fieldsObj.OD);
@@ -183,8 +183,8 @@ class AddWeightCosting extends Component {
         // Bracket Part calculation
         const WT = ((Thickness * Width * Length * 7.85) / 1000000);
         const disabledNetSurface = checkForNull((FinishWeight * 1000000 * SurfaceArea) / (Thickness * 7.85 * 25.4 * 25.4))
-        const grossWt = trimDecimalPlace(WT / NoOfPartsAndBlank, FIVE_DECIMAL_WEIGHT);
-        const netSurfaceArea = trimDecimalPlace(disabledNetSurface - OverlapArea, FIVE_DECIMAL_WEIGHT);
+        const grossWt = WT / NoOfPartsAndBlank;
+        const netSurfaceArea = disabledNetSurface - OverlapArea;
 
         // Pipe layout surface area for one side and two side
         const oneSideInputValue = ((2 * 3.14 * (OD / 2) * LengthOfPipe) + (2 * (3.14 * (OD / 2) * (OD / 2)) - (3.14 * (ID / 2) * (ID / 2))))
@@ -214,9 +214,9 @@ class AddWeightCosting extends Component {
 
         // For Bracket layout calculation
         this.props.change("GrossWeight", grossWt)
-        this.props.change("disabledSurfaceArea", trimDecimalPlace(disabledNetSurface, FIVE_DECIMAL_WEIGHT))
+        this.props.change("disabledSurfaceArea", disabledNetSurface)
         this.props.change("NetSurfaceArea", netSurfaceArea)
-        this.props.change("WeightUnitKg", trimDecimalPlace(WT, FIVE_DECIMAL_WEIGHT))
+        this.props.change("WeightUnitKg", WT)
 
         // For pipe layout
         this.props.change("GrossWeightPipe", pipeGrossWeight)

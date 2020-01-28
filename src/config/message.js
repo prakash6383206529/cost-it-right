@@ -62,6 +62,7 @@ export const MESSAGES = {
   SAVE_PROCESS_COSTING_SUCCESS: 'Process costing saved successfully.',
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated.',
   COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
+  SELECT_PART_FOR_ZBC_COSTING: 'Please select part for zbc costing.',
 
   //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',

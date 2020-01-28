@@ -177,7 +177,7 @@ class CostSummary extends Component {
     * @description Used for Inventory Cost Calculation
     */
     checkForDecimalAndNull = () => {
-        
+
     }
 
     /**
@@ -1349,6 +1349,10 @@ class CostSummary extends Component {
         })
     }
 
+    /**
+    * @method supplierCosting
+    * @description Used for VBC costing
+    */
     supplierCosting = (supplierId) => {
         const { plant, partNo } = this.state;
         const data = {
@@ -1357,6 +1361,24 @@ class CostSummary extends Component {
             partId: partNo
         }
         this.props.supplierCosting(data)
+    }
+
+    /**
+    * @method ZBCSupplierCosting
+    * @description Used for zbc costing
+    */
+    ZBCSupplierCosting = (supplierId) => {
+        const { plant, partNo } = this.state;
+        if (partNo != '') {
+            const data = {
+                supplierId: supplierId,
+                plantId: plant.value,
+                partId: partNo
+            }
+            this.props.supplierCosting(data)
+        } else {
+            toastr.warning(MESSAGES.SELECT_PART_FOR_ZBC_COSTING)
+        }
     }
 
     modelTypeHandlerZBC = (e) => {
@@ -1977,7 +1999,8 @@ class CostSummary extends Component {
                         <Col md="12" className={'dark-divider'}>ZBC V/s VBC</Col>
                         <Col md="3">
                             {/* <div>ZBC</div> */}
-                            {ZBCSupplier && <a href="javascript:void(0)" >{`${ZBCSupplier.SupplierName}`}</a>}
+                            {/* {ZBCSupplier && <a href="javascript:void(0)" >{`${ZBCSupplier.SupplierName}`}</a>} */}
+                            {ZBCSupplier && <a href="javascript:void(0)" onClick={() => this.ZBCSupplierCosting(ZBCSupplier.SupplierId)} >{`${ZBCSupplier.SupplierName}`}</a>}
                             {ZBCSupplier && ZBCSupplier.ZBCCostings &&
                                 <Field
                                     label={``}
@@ -2661,7 +2684,7 @@ class CostSummary extends Component {
                                     value={0}
                                     //required={true}
                                     disabled={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     title="OverHead Percent"
                                 />
                             </div>
@@ -2677,7 +2700,7 @@ class CostSummary extends Component {
                                     value={0}
                                     //required={true}
                                     disabled={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     title="OverHead Cost"
                                 />
                             </div>
@@ -2695,7 +2718,7 @@ class CostSummary extends Component {
                                     value={0}
                                     //required={true}
                                     disabled={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     title="OverHead Percent"
                                 />
                             </div>
@@ -2711,7 +2734,7 @@ class CostSummary extends Component {
                                     value={0}
                                     //required={true}
                                     disabled={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     title="OverHead Cost"
                                 />
                             </div>
@@ -2729,7 +2752,7 @@ class CostSummary extends Component {
                                     value={0}
                                     //required={true}
                                     disabled={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     title="OverHead Percent"
                                 />
                             </div>
@@ -2745,7 +2768,7 @@ class CostSummary extends Component {
                                     value={0}
                                     //required={true}
                                     disabled={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     title="(sum of costing head * overhead percent) * 100"
                                 />
                             </div>
@@ -3743,7 +3766,7 @@ class CostSummary extends Component {
                                 <label>Net Surface Area</label>
                                 <input type="text" disabled value={this.state.cedCostNetZBC} className={'form-control overhead-percent-supplier'} title="" />
 
-                                <button type="button" title="Toggle Disabled">+</button>
+                                {/* <button type="button" title="Toggle Disabled">+</button> */}
 
                                 <label>Cost</label>
                                 <input type="text" disabled value={this.state.cedCostCostZBC} className={'form-control overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" />
@@ -3762,7 +3785,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostOperationBaseSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Enter Freight Amount"
                                 />
@@ -3783,7 +3806,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostRateBaseSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title=""
                                 />
@@ -3800,12 +3823,12 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostNetSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title=""
                                 />
 
-                                <button type="button" title="Toggle Disabled">+</button>
+                                {/* <button type="button" title="Toggle Disabled">+</button> */}
 
                                 {/* <label>Cost</label>
                                 <input type="text" disabled value={this.state.cedCostCostSupplier1} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
@@ -3818,7 +3841,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostCostSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Sum(Qty*Net Surface area)*(Operation Rate)"
                                 />
@@ -3837,7 +3860,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostOperationBaseSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Enter Freight Amount"
                                 />
@@ -3858,7 +3881,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostRateBaseSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title=""
                                 />
@@ -3875,12 +3898,12 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostNetSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title=""
                                 />
 
-                                <button type="button" title="Toggle Disabled">+</button>
+                                {/* <button type="button" title="Toggle Disabled">+</button> */}
 
                                 {/* <label>Cost</label>
                                 <input type="text" disabled value={this.state.cedCostCostSupplier2} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
@@ -3893,7 +3916,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostCostSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Sum(Qty*Net Surface area)*(Operation Rate)"
                                 />
@@ -3912,7 +3935,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostOperationBaseSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Enter Freight Amount"
                                 />
@@ -3933,7 +3956,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostRateBaseSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title=""
                                 />
@@ -3950,12 +3973,12 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostNetSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title=""
                                 />
 
-                                <button type="button" title="Toggle Disabled">+</button>
+                                {/* <button type="button" title="Toggle Disabled">+</button> */}
 
                                 {/* <label>Cost</label>
                                 <input type="text" disabled value={this.state.cedCostCostSupplier3} className={'mt10 overhead-percent-supplier'} title="Sum(Qty*Net Surface area)*(Operation Rate)" /> */}
@@ -3968,7 +3991,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedCostCostSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Sum(Qty*Net Surface area)*(Operation Rate)"
                                 />
@@ -4007,7 +4030,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.TransCostRateBaseSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder  overhead-percent-supplier"
                                     disabled={true}
                                     title="Transportation Rate"
                                 />
@@ -4059,7 +4082,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.TransCostRateBaseSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Transportation Rate"
                                 />
@@ -4074,7 +4097,7 @@ class CostSummary extends Component {
                                     value={this.state.TransCostFinishWtBaseSupplier2}
                                     onChange={(e) => this.transportationCostFinishWtHandler(e, 2)}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     //disabled={true}
                                     title="Net Finish Wt/Component"
                                 />
@@ -4090,7 +4113,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.TransCostCostSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Sum(Qty*Finish Wt/Comp)*(Transportation Rate)"
                                 />
@@ -4107,7 +4130,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.TransCostRateBaseSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Transportation Rate"
                                 />
@@ -4122,7 +4145,7 @@ class CostSummary extends Component {
                                     value={this.state.TransCostFinishWtBaseSupplier3}
                                     onChange={(e) => this.transportationCostFinishWtHandler(e, 3)}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     //disabled={true}
                                     title="Net Finish Wt/Component"
                                 />
@@ -4138,7 +4161,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.TransCostCostSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Sum(Qty*Finish Wt/Comp)*(Transportation Rate)"
                                 />
@@ -4174,7 +4197,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedOHProfitBaseSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder  overhead-percent-supplier"
                                     disabled={true}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
@@ -4191,7 +4214,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedOHCostSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(CED Cost)*(CED O/H - Profit %)"
                                 />
@@ -4210,7 +4233,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedOHProfitBaseSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
@@ -4227,7 +4250,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedOHCostSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(CED Cost)*(CED O/H - Profit %)"
                                 />
@@ -4246,7 +4269,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedOHProfitBaseSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
@@ -4263,7 +4286,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.cedOHCostSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(CED Cost)*(CED O/H - Profit %)"
                                 />
@@ -4979,7 +5002,7 @@ class CostSummary extends Component {
                                     value={0}
                                     onChange={(e) => this.discountHandler(e, 1)}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
@@ -4995,7 +5018,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={0}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(CED Cost)*(CED O/H - Profit %)"
                                 />
@@ -5014,7 +5037,7 @@ class CostSummary extends Component {
                                     value={0}
                                     onChange={(e) => this.discountHandler(e, 2)}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
@@ -5030,7 +5053,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={0}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(CED Cost)*(CED O/H - Profit %)"
                                 />
@@ -5049,7 +5072,7 @@ class CostSummary extends Component {
                                     value={0}
                                     onChange={(e) => this.discountHandler(e, 3)}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
@@ -5065,7 +5088,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={0}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(CED Cost)*(CED O/H - Profit %)"
                                 />
@@ -5100,7 +5123,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.otherBaseSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Other Base"
                                 />
@@ -5116,7 +5139,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.otherCostSupplier1}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(Total Cost * Other Base)/100"
                                 />
@@ -5134,7 +5157,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.otherBaseSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Other Base"
                                 />
@@ -5150,7 +5173,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.otherCostSupplier2}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(Total Cost * Other Base)/100"
                                 />
@@ -5168,7 +5191,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.otherBaseSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Other Base"
                                 />
@@ -5184,7 +5207,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={this.state.otherCostSupplier3}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="(Total Cost * Other Base)/100"
                                 />
@@ -5352,7 +5375,7 @@ class CostSummary extends Component {
                                     value={0}
                                     onChange={(e) => this.landedFactorHandler(e, 1)}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Landed Factor Percent"
                                 />
@@ -5368,7 +5391,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={0}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Landed Factor Percent"
                                 />
@@ -5387,7 +5410,7 @@ class CostSummary extends Component {
                                     value={0}
                                     onChange={(e) => this.landedFactorHandler(e, 2)}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Landed Factor Percent"
                                 />
@@ -5402,7 +5425,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={0}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Landed Factor Percent"
                                 />
@@ -5420,7 +5443,7 @@ class CostSummary extends Component {
                                     value={0}
                                     onChange={(e) => this.landedFactorHandler(e, 3)}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={false}
                                     title="Landed Factor Percent"
                                 />
@@ -5435,7 +5458,7 @@ class CostSummary extends Component {
                                     component={renderText}
                                     value={0}
                                     //required={true}
-                                    className="withoutBorder"
+                                    className="withoutBorder overhead-percent-supplier"
                                     disabled={true}
                                     title="Landed Factor Percent"
                                 />

@@ -173,8 +173,8 @@ class AddRawMaterialCosting extends Component {
                                             )
                                         })
                                         }
+                                        {this.props.rmListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                     </tbody>
-                                    {this.props.rmListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                 </Table>
                             </div>
                         </Row>
