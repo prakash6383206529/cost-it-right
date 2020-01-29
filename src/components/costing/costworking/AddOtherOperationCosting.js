@@ -73,7 +73,7 @@ class AddOtherOperationCosting extends Component {
                                         {otherOperationListData && otherOperationListData.map((item, index) => {
                                             return (
                                                 <tr row={index} >
-                                                    <td><div onClick={() => this.otherOperationHandler(item)}>{'Add'}</div></td>
+                                                    <td><button type={'button'} onClick={() => this.otherOperationHandler(item)}>{'Add'}</button></td>
                                                     <td>{item.OperationCode}</td>
                                                     <td>{item.SupplierName}</td>
                                                     <td>{item.OtherOperationName}</td>

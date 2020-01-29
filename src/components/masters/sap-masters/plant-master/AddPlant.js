@@ -125,7 +125,7 @@ class AddPlant extends Component {
     onSubmit = (values) => {
         console.log("values", values)
         const { cityId, IsZBCPlant } = this.state;
-        let userDetails = userDetails();
+        let userDetail = userDetails();
 
         let formData = {
             PlantName: values.PlantName,
@@ -139,7 +139,7 @@ class AddPlant extends Component {
             Extension: values.Extension,
             CreatedByUserId: '',
             IsPlantForZBC: IsZBCPlant,
-            ZBCSupplierId: IsZBCPlant ? userDetails.ZBCSupplierInfo.SupplierId : '',
+            ZBCSupplierId: IsZBCPlant ? userDetail.ZBCSupplierInfo.SupplierId : '',
         }
         if (this.props.isEditFlag) {
             const { PlantId } = this.props;
@@ -158,7 +158,7 @@ class AddPlant extends Component {
                 CreatedByUserId: '',
                 IsActive: this.state.isActiveBox,
                 IsPlantForZBC: IsZBCPlant,
-                ZBCSupplierId: IsZBCPlant ? userDetails.ZBCSupplierInfo.SupplierId : '',
+                ZBCSupplierId: IsZBCPlant ? userDetail.ZBCSupplierInfo.SupplierId : '',
             }
             this.props.updatePlantAPI(PlantId, formData1, (res) => {
                 if (res.data.Result) {

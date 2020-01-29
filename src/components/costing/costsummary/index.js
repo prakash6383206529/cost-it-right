@@ -21,6 +21,7 @@ import AddFreightModal from './AddFreightModal';
 import Approval from './Approval';
 import { MESSAGES } from '../../../config/message';
 import { DRAFT, REJECTED, APPROVED, PENDING, TWO_DECIMAL_PRICE } from '../../../config/constants';
+import { userDetails } from "../../../helper/auth";
 const selector = formValueSelector('CostSummary');
 
 
@@ -66,6 +67,10 @@ class CostSummary extends Component {
             SupplierOneCostingStatus: false,
             SupplierTwoCostingStatus: false,
             SupplierThreeCostingStatus: false,
+            ZBCSupplierSaveButtonLabel: 'Send For Approval',
+            SupplierOneSaveButtonLabel: 'Send For Approval',
+            SupplierTwoSaveButtonLabel: 'Send For Approval',
+            SupplierThreeSaveButtonLabel: 'Send For Approval',
         }
     }
 
@@ -83,16 +88,18 @@ class CostSummary extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-
+        let btnLabel = '';
         if (nextProps.costingData && nextProps.costingData.zbcSupplier && (nextProps.costingData.zbcSupplier != this.props.costingData.zbcSupplier)) {
             const Content = nextProps.costingData.zbcSupplier.CostingDetail;
             const CostingHeads = nextProps.costingData.zbcSupplier.CostingDetail.CostingHeads;
             const returnContent = this.columnCalculation(Content, CostingHeads);
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
-                this.setState({ ZBCSupplierCostingStatus: true })
+                btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
+                this.setState({ ZBCSupplierCostingStatus: true, ZBCSupplierSaveButtonLabel: btnLabel })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
-                this.setState({ ZBCSupplierCostingStatus: false })
+                btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
+                this.setState({ ZBCSupplierCostingStatus: false, ZBCSupplierSaveButtonLabel: btnLabel })
             }
 
             this.props.change('ZBCsupplierData', returnContent)
@@ -104,9 +111,11 @@ class CostSummary extends Component {
             const returnContent = this.columnCalculation(Content, CostingHeads);
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
-                this.setState({ SupplierOneCostingStatus: true })
+                btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
+                this.setState({ SupplierOneCostingStatus: true, SupplierOneSaveButtonLabel: btnLabel })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
-                this.setState({ SupplierOneCostingStatus: false })
+                btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
+                this.setState({ SupplierOneCostingStatus: false, SupplierOneSaveButtonLabel: btnLabel })
             }
 
             this.props.change('supplier1Data', returnContent)
@@ -118,9 +127,11 @@ class CostSummary extends Component {
             const returnContent = this.columnCalculation(Content, CostingHeads);
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
-                this.setState({ SupplierTwoCostingStatus: true })
+                btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
+                this.setState({ SupplierTwoCostingStatus: true, SupplierTwoSaveButtonLabel: btnLabel })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
-                this.setState({ SupplierTwoCostingStatus: false })
+                btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
+                this.setState({ SupplierTwoCostingStatus: false, SupplierTwoSaveButtonLabel: btnLabel })
             }
 
             this.props.change('supplier2Data', returnContent)
@@ -132,9 +143,11 @@ class CostSummary extends Component {
             const returnContent = this.columnCalculation(Content, CostingHeads);
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
-                this.setState({ SupplierThreeCostingStatus: true })
+                btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
+                this.setState({ SupplierThreeCostingStatus: true, SupplierThreeSaveButtonLabel: btnLabel })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
-                this.setState({ SupplierThreeCostingStatus: false })
+                btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
+                this.setState({ SupplierThreeCostingStatus: false, SupplierThreeSaveButtonLabel: btnLabel })
             }
 
             this.props.change('supplier3Data', returnContent)
@@ -903,6 +916,9 @@ class CostSummary extends Component {
         const { plant, supplier, supplier2, supplier3 } = this.state;
         const { ZBCSupplier, FreightHeadsList, costingData } = this.props;
 
+        let userDetail = userDetails();
+        const ZBCPlant = userDetail && userDetail.Plants ? userDetail.Plants[0].PlantId : '';
+
         let supplierColumn = '';
         let Content = '';
         let supplierId = '';
@@ -932,7 +948,7 @@ class CostSummary extends Component {
                     FreightHeadId: tempObj.Value,
                     FreightHead: tempObj.Text,
                     SourceSupplierId: supplierId,
-                    SourceSupplierPlantId: plant.value,
+                    SourceSupplierPlantId: Number == 0 ? ZBCPlant : plant.value,
                 }
                 this.props.getCostingFreight(freightData, res => {
                     Content.FreightId = e.target.value;
@@ -1442,10 +1458,12 @@ class CostSummary extends Component {
     */
     ZBCSupplierCosting = (supplierId) => {
         const { plant, partNo } = this.state;
+        let userDetail = userDetails();
+        const Plant = userDetail && userDetail.Plants ? userDetail.Plants[0].PlantId : '';
         if (partNo != '') {
             const data = {
                 supplierId: supplierId,
-                plantId: plant.value,
+                plantId: Plant,  //ZBC plant used here, If use VBC then use 'plant.value'
                 partId: partNo
             }
             this.props.supplierCosting(data)
@@ -1738,6 +1756,7 @@ class CostSummary extends Component {
             TotalConversionCost: Content.TotalConversionCost,
             ModelTypeId: Content.ModelTypeId,
             OverheadPercentage: Content.OverheadPercentage,
+            OverheadCost: Content.OverheadCost,
             RejectionTypeCostingHeadId: Content.RejectionTypeCostingHeadId,
             RejectionPercentage: Content.RejectionPercentage,
             RejectionCost: Content.RejectionCost,
@@ -1755,9 +1774,11 @@ class CostSummary extends Component {
             PaymentTermsICCPercentage: Content.PaymentTermsICCPercentage,
             PaymentTermsCostingHeadsId: Content.PaymentTermsCostingHeadsId,
             ProfitPercentage: Content.ProfitPercentage,
+            ProfitCost: Content.ProfitCost,
             ProfitTypeCostingHeadsId: Content.ProfitTypeCostingHeadsId,
             FreightId: Content.FreightId,
             NetFreightCost: Content.NetFreightCost,
+            InputFreight: Content.InputFreight,
             AdditionalFreightId: Content.AdditionalFreightId,
             NetAdditionalFreightCost: Content.NetAdditionalFreightCost,
             CEDOperationId: Content.CEDOperationId,
@@ -2324,7 +2345,7 @@ class CostSummary extends Component {
                                 component={renderText}
                                 value={0}
                                 //required={true}
-                                onChange={(e) => this.RevsionNumber(e, 1)}
+                                onChange={(e) => this.RevsionNumber(e, 0)}
                                 disabled={false}
                                 className="withoutBorder"
                                 title="Enter Rev No"
@@ -5953,39 +5974,55 @@ class CostSummary extends Component {
 
                     <Row>
                         <Col md="3" >
-                            <button type={'button'} onClick={() => this.saveCosting(0)} className={'btn btn-primary mr5'}>Save</button>
+                            <button
+                                type={'button'}
+                                onClick={() => this.saveCosting(0)}
+                                disabled={ZBCSupplierCostingStatus ? true : false}
+                                className={'btn btn-primary mr5'}>Save</button>
                             <button
                                 type={'button'}
                                 disabled={ZBCSupplierCostingStatus ? true : false}
                                 onClick={() => this.sendApproval(0)}
-                                className={'btn btn-primary'}>Send For Approval</button>
+                                className={'btn btn-primary'}>{this.state.ZBCSupplierSaveButtonLabel}</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
-                            <button type={'button'} onClick={() => this.saveCosting(1)} className={'btn btn-primary mr5'}>Save</button>
+                            <button
+                                type={'button'}
+                                disabled={SupplierOneCostingStatus ? true : false}
+                                onClick={() => this.saveCosting(1)}
+                                className={'btn btn-primary mr5'}>Save</button>
                             <button
                                 type={'button'}
                                 disabled={SupplierOneCostingStatus ? true : false}
                                 onClick={() => this.sendApproval(1)}
-                                className={'btn btn-primary'}>Send For Approval</button>
+                                className={'btn btn-primary'}>{this.state.SupplierOneSaveButtonLabel}</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
-                            <button type={'button'} onClick={() => this.saveCosting(2)} className={'btn btn-primary mr5'}>Save</button>
+                            <button
+                                type={'button'}
+                                disabled={SupplierTwoCostingStatus ? true : false}
+                                onClick={() => this.saveCosting(2)}
+                                className={'btn btn-primary mr5'}>Save</button>
                             <button
                                 type={'button'}
                                 disabled={SupplierTwoCostingStatus ? true : false}
                                 onClick={() => this.sendApproval(2)}
-                                className={'btn btn-primary'}>Send For Approval</button>
+                                className={'btn btn-primary'}>{this.state.SupplierTwoSaveButtonLabel}</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                         <Col md="3" >
-                            <button type={'button'} onClick={() => this.saveCosting(3)} className={'btn btn-primary mr5'}>Save</button>
+                            <button
+                                type={'button'}
+                                disabled={SupplierTwoCostingStatus ? true : false}
+                                onClick={() => this.saveCosting(3)}
+                                className={'btn btn-primary mr5'}>Save</button>
                             <button
                                 type={'button'}
                                 disabled={SupplierTwoCostingStatus ? true : false}
                                 onClick={() => this.sendApproval(3)}
-                                className={'btn btn-primary'}>Send For Approval</button>
+                                className={'btn btn-primary'}>{this.state.SupplierThreeSaveButtonLabel}</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
                     </Row>

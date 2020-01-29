@@ -284,7 +284,7 @@ export const API = {
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-supplier`,
 
   //APPROVAL
-  getSendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
+  getSendForApproval: `${BASE_URL}/app-approval-system/send-for-approval-click`,
   getAllApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-approval-department`,
   getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
   sendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
@@ -553,7 +553,7 @@ export const GET_PAGES_SELECTLIST_SUCCESS = 'GET_PAGES_SELECTLIST_SUCCESS';
 
 //COSTING STATUS
 export const APPROVED = 'Approved';
-export const PENDING = 'Pending';
+export const PENDING = 'PendingForApproval';
 export const DRAFT = 'Draft';
 export const REJECTED = 'Rejected';
 

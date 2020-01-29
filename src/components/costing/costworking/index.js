@@ -616,6 +616,7 @@ class CostWorking extends Component {
         this.props.saveCostingAsDraft(formData, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY);
+                this.setState({ isCollapes: false })
                 this.props.toggle('1');
             } else {
                 toastr.error(res.data.Message);

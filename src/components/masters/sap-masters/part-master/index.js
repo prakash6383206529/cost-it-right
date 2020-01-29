@@ -114,7 +114,7 @@ class PartMaster extends Component {
                                     {/* <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
                                     <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
                                     <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th>
+                                    {/* <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th> */}
                                     <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
                                     <th>{`${CONSTANT.UOM}`}</th>
                                     <th>{`Is Assembly`}</th>
@@ -130,7 +130,7 @@ class PartMaster extends Component {
                                             {/* <td >{item.PlantName}</td> */}
                                             <td>{item.PartNumber}</td>
                                             <td>{item.PartNumber}</td>
-                                            <td>{item.MaterialTypeName}</td>
+                                            {/* <td>{item.MaterialTypeName}</td> */}
                                             <td>{item.MaterialGroupCode}</td>
                                             <td>{item.UnitOfMeasurementName}</td>
                                             <td>{item.IsAssembly ? 'true' : 'false'}</td>
