@@ -7,7 +7,7 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addRoleAPI, getAllRoleAPI, getRoleDataAPI, updateRoleAPI } from "../../actions/auth/AuthActions";
+import { addRoleAPI, getAllRoleAPI, getRoleDataAPI, updateRoleAPI, getModuleSelectList } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -20,6 +20,8 @@ class Role extends Component {
             isLoader: false,
             isSubmitted: false,
             isEditFlag: false,
+            permissions: [],
+            checkedAll: false,
         };
     }
 
@@ -28,7 +30,7 @@ class Role extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
-
+        this.props.getModuleSelectList(() => { })
     }
 
     /**
@@ -43,6 +45,98 @@ class Role extends Component {
                 })
             })
         }
+    }
+
+    /**
+    * @method moduleHandler
+    * @description used to select permission's
+    */
+    moduleHandler = (ID) => {
+        const { permissions } = this.state;
+        let newArray = [];
+        if (permissions.includes(ID)) {
+            const index = permissions.indexOf(ID);
+            if (index > -1) {
+                permissions.splice(index, 1);
+            }
+            newArray = [...new Set(permissions)]
+        } else {
+            permissions.push(ID)
+            newArray = [...new Set(permissions)]
+        }
+        this.setState({ permissions: newArray }, () => {
+            this.setState({ checkedAll: this.isCheckAll() })
+        })
+    }
+
+    /**
+    * @method selectAllHandler
+    * @description used to select permission's
+    */
+    selectAllHandler = () => {
+        const { permissions, checkedAll } = this.state;
+        const { moduleSelectList } = this.props;
+        let tempArray = [];
+        let tempObj = {}
+        if (checkedAll) {
+            this.setState({ permissions: tempArray, checkedAll: false }, () => { console.log('All', this.state.permissions) })
+        } else {
+            moduleSelectList && moduleSelectList.map((item, index) => {
+                if (item.Value == 0) return false;
+                return tempArray.push(item.Value)
+            })
+            this.setState({ permissions: tempArray, checkedAll: true }, () => { console.log('All', this.state.permissions) })
+        }
+
+    }
+
+    /**
+    * @method isSelected
+    * @description used to select permission's
+    */
+    isSelected = ID => {
+        const { permissions } = this.state;
+        return permissions.includes(ID);
+    }
+
+    /**
+    * @method isCheckAll
+    * @description used to select permission's
+    */
+    isCheckAll = () => {
+        const { permissions } = this.state;
+        const { moduleSelectList } = this.props;
+        if (moduleSelectList && moduleSelectList != undefined) {
+            return moduleSelectList.length - 1 == permissions.length ? true : false;
+        }
+    }
+
+    /**
+    * @method renderModule
+    * @description used to render module checkbox for roles permission
+    */
+    renderModule = () => {
+        const { moduleSelectList } = this.props;
+
+        return moduleSelectList && moduleSelectList.map((item, index) => {
+            if (item.Value == 0) return false;
+            return (
+                <div>
+                    <label
+                        className="custom-checkbox"
+                        onChange={() => this.moduleHandler(item.Value)}
+                    >
+                        {item.Text}
+                        <input type="checkbox" value={item.Value} checked={this.isSelected(item.Value)} />
+                        <span
+                            className=" before-box"
+                            checked={this.isSelected(item.Value)}
+                            onChange={() => this.moduleHandler(item.Value)}
+                        />
+                    </label>
+                </div>
+            )
+        })
     }
 
     /**
@@ -62,10 +156,10 @@ class Role extends Component {
      * @returns {{}}
      */
     onSubmit(values) {
-        const { isEditFlag } = this.state;
+        const { isEditFlag, permissions } = this.state;
         const { reset } = this.props;
         this.setState({ isLoader: true })
-
+        values.ModuleIds = permissions;
         if (isEditFlag) {
             // Update existing role
             this.props.updateRoleAPI(values, (res) => {
@@ -92,8 +186,8 @@ class Role extends Component {
 
 
     render() {
-        const { handleSubmit, pristine, reset, submitting } = this.props;
-        const { isLoader, isSubmitted } = this.state;
+        const { handleSubmit, pristine, reset, submitting, moduleSelectList } = this.props;
+        const { isLoader, isSubmitted, permissions } = this.state;
 
         return (
             <div>
@@ -107,7 +201,7 @@ class Role extends Component {
                         </div>
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             <div className=" row form-group">
-                                <div className="input-group col-md-6 input-withouticon" >
+                                <div className="input-group col-md-3 input-withouticon" >
                                     <Field
                                         label="Role Name"
                                         name={"RoleName"}
@@ -119,7 +213,7 @@ class Role extends Component {
                                         maxLength={26}
                                     />
                                 </div>
-                                <div className="input-group  col-md-6 input-withouticon">
+                                <div className="input-group  col-md-3 input-withouticon">
                                     <Field
                                         label="Description"
                                         name={"Description"}
@@ -130,6 +224,22 @@ class Role extends Component {
                                         required={false}
                                         maxLength={26}
                                     />
+                                </div>
+                                <div className="input-group  col-md-6 input-withouticon">
+                                    <label>Select Permission</label>
+                                    <label
+                                        className="custom-checkbox"
+                                        onChange={this.selectAllHandler}
+                                    >
+                                        {'Select All'}
+                                        <input type="checkbox" value={'All'} checked={this.isCheckAll()} />
+                                        <span
+                                            className=" before-box"
+                                            checked={this.isCheckAll()}
+                                            onChange={this.selectAllHandler}
+                                        />
+                                    </label>
+                                    {this.renderModule()}
                                 </div>
 
                             </div>
@@ -167,7 +277,7 @@ class Role extends Component {
 * @param {*} state
 */
 const mapStateToProps = ({ auth }) => {
-    const { roleList, roleDetail } = auth;
+    const { roleList, roleDetail, moduleSelectList } = auth;
     let initialValues = {};
 
     if (roleDetail && roleDetail != undefined) {
@@ -177,7 +287,7 @@ const mapStateToProps = ({ auth }) => {
         }
     }
 
-    return { roleList, initialValues };
+    return { roleList, initialValues, moduleSelectList };
 };
 
 /**
@@ -191,6 +301,7 @@ export default connect(mapStateToProps, {
     getAllRoleAPI,
     getRoleDataAPI,
     updateRoleAPI,
+    getModuleSelectList,
 })(reduxForm({
     form: 'Role',
     enableReinitialize: true,
