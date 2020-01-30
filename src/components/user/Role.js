@@ -22,6 +22,7 @@ class Role extends Component {
             isEditFlag: false,
             permissions: [],
             checkedAll: false,
+            RoleId: '',
         };
     }
 
@@ -39,10 +40,15 @@ class Role extends Component {
     */
     getRoleDetail = (data) => {
         if (data && data.isEditFlag) {
-            this.props.getRoleDataAPI(data.RoleId, () => {
-                this.setState({
-                    isEditFlag: true,
-                })
+            this.props.getRoleDataAPI(data.RoleId, (res) => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    this.setState({
+                        isEditFlag: true,
+                        RoleId: data.RoleId,
+                        permissions: Data.ModuleIds,
+                    })
+                }
             })
         }
     }
@@ -146,7 +152,7 @@ class Role extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.setState({ isEditFlag: false })
+        this.setState({ isEditFlag: false, permissions: [] })
     }
 
     /**
@@ -156,19 +162,32 @@ class Role extends Component {
      * @returns {{}}
      */
     onSubmit(values) {
-        const { isEditFlag, permissions } = this.state;
+        const { isEditFlag, permissions, RoleId } = this.state;
         const { reset } = this.props;
         this.setState({ isLoader: true })
+
         values.ModuleIds = permissions;
+
         if (isEditFlag) {
             // Update existing role
-            this.props.updateRoleAPI(values, (res) => {
+
+            let formData = {
+                RoleId: RoleId,
+                IsActive: true,
+                CreatedDate: '',
+                RoleName: values.RoleName,
+                Description: values.Description,
+                ModuleIds: permissions
+            }
+            this.props.updateRoleAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
                 }
-                this.props.getAllRoleAPI(res => { })
                 reset();
-                this.setState({ isLoader: false, isEditFlag: false })
+                this.props.change('RoleName', '');
+                this.props.change('Description', '');
+                this.props.getAllRoleAPI(res => { })
+                this.setState({ isLoader: false, isEditFlag: false, permissions: [] })
             })
         } else {
             // Add new role
@@ -176,9 +195,9 @@ class Role extends Component {
                 if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.ADD_ROLE_SUCCESSFULLY)
                 }
-                this.props.getAllRoleAPI(res => { })
                 reset();
-                this.setState({ isLoader: false })
+                this.props.getAllRoleAPI(res => { })
+                this.setState({ isLoader: false, permissions: [] })
             })
         }
 
@@ -187,7 +206,7 @@ class Role extends Component {
 
     render() {
         const { handleSubmit, pristine, reset, submitting, moduleSelectList } = this.props;
-        const { isLoader, isSubmitted, permissions } = this.state;
+        const { isLoader, isSubmitted, permissions, isEditFlag } = this.state;
 
         return (
             <div>
@@ -248,7 +267,7 @@ class Role extends Component {
                                 <input
                                     disabled={isSubmitted ? true : false}
                                     type="submit"
-                                    value="Save"
+                                    value={isEditFlag ? 'Update' : 'Save'}
                                     className="btn  login-btn w-10 dark-pinkbtn"
                                 />
                                 <input
@@ -282,8 +301,8 @@ const mapStateToProps = ({ auth }) => {
 
     if (roleDetail && roleDetail != undefined) {
         initialValues = {
-            RoleName: '',
-            Description: '',
+            RoleName: roleDetail.RoleName,
+            Description: roleDetail.Description,
         }
     }
 
