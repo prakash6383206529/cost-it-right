@@ -255,7 +255,7 @@ export const API = {
   register: `${BASE_URL}/user/register`,
 
   //User's API
-  getAllUserAPI: `${BASE_URL}/configuration/select-list-get-user`,
+  getUserSelectList: `${BASE_URL}/configuration/select-list-get-user`,
 
   //Role's API
   addRoleAPI: `${BASE_URL}/user-role/create`,
@@ -264,6 +264,7 @@ export const API = {
   updateRoleAPI: `${BASE_URL}/user-role/update`,
   deleteRoleAPI: `${BASE_URL}/user-role/delete`,
   rolesSelectList: `${BASE_URL}/configuration/select-list-get-roles`,
+  getRolePermissionByUser: `${BASE_URL}/user-role/get-role-permissions-by-user`,
 
   //Department's API
   addDepartmentAPI: `${BASE_URL}/user-department/create`,

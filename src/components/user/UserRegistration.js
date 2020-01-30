@@ -156,9 +156,10 @@ class UserRegistration extends Component {
     }
 
     if (label === 'city') {
-      cityList && cityList.map(item =>
+      cityList && cityList.map(item => {
+        if (item.Value == 0) return false;
         temp.push({ label: item.Text, value: item.Value })
-      );
+      });
       return temp;
     }
   }
@@ -339,6 +340,7 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="Department"
                     component={searchableSelect}
+                    placeholder={'Select department'}
                     //validate={[required]}
                     options={this.searchableSelectType('department')}
                     //required={true}
@@ -353,6 +355,7 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="Role"
                     component={searchableSelect}
+                    placeholder={'Select role'}
                     //validate={[required]}
                     options={this.searchableSelectType('role')}
                     //required={true}
@@ -367,6 +370,7 @@ class UserRegistration extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     label="City"
                     component={searchableSelect}
+                    placeholder={'Select city'}
                     //validate={[required]}
                     options={this.searchableSelectType('city')}
                     //required={true}

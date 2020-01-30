@@ -84,7 +84,7 @@ class RolesListing extends Component {
                                 <thead>
                                     <tr>
                                         <th>{`Role`}</th>
-                                        <th>{`Sequence`}</th>
+                                        <th>{`Description`}</th>
                                         <th>{''}</th>
                                     </tr>
                                 </thead>}

@@ -239,7 +239,7 @@ export function getRegisterFailure() {
 export function getAllUserAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllUserAPI}`, headers);
+        const request = axios.get(`${API.getUserSelectList}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -687,6 +687,26 @@ export function rolesSelectList(callback) {
                 callback(response);
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getRolePermissionByUser
+ * @description get Roles permission by user
+ */
+export function getRolePermissionByUser(UserId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRolePermissionByUser}/${UserId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
