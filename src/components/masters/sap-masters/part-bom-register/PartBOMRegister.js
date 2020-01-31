@@ -568,7 +568,6 @@ class PartBOMRegister extends Component {
                                 })}>Add New Part</button>
                         </Col>}
                     </Row>
-
                     <Row>
                         <Col md={this.state.IsChildPart ? "6" : "12"}>
                             <Field
