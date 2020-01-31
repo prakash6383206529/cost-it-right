@@ -177,17 +177,17 @@ class Role extends Component {
                 CreatedDate: '',
                 RoleName: values.RoleName,
                 Description: values.Description,
-                ModuleIds: permissions
+                ModuleIds: this.state.permissions,
             }
+            reset();
             this.props.updateRoleAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
                 }
-                reset();
-                this.props.change('RoleName', '');
-                this.props.change('Description', '');
-                this.props.getAllRoleAPI(res => { })
+                //this.props.change('RoleName', '');
+                //this.props.change('Description', '');
                 this.setState({ isLoader: false, isEditFlag: false, permissions: [] })
+                this.props.getAllRoleAPI(res => { })
             })
         } else {
             // Add new role

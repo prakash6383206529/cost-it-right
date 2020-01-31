@@ -51,6 +51,8 @@ const initialState = {
         Company: "",
         CompanyId: "",
         Mobile: "",
+        NumberOfSupplier: "",
+        ZBCSupplierInfo: {},
         Permissions: [],
         Plants: [],
         Roles: [],

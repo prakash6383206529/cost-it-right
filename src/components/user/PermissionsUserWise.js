@@ -22,7 +22,7 @@ class PermissionsUserWise extends Component {
             isOpen: false,
             user: [],
             role: [],
-            selectedModules: [{ Text: 'Dashboard', Value: 'ed1bdc01-4cdf-4f2c-9c30-c8177b724d96' }],
+            selectedModules: [],
             permissions: [],
             checkedAll: false,
         };
@@ -71,7 +71,7 @@ class PermissionsUserWise extends Component {
 
         return selectedModules && selectedModules.map((item, index) => {
             return (
-                <div>
+                <div key={index} className={'col-md-4 additional'}>
                     <label
                         className="custom-checkbox"
                     >
@@ -190,7 +190,12 @@ class PermissionsUserWise extends Component {
                 this.getRolePermission()
             });
         } else {
-            this.setState({ user: [] });
+            this.props.change('Role', '');
+            this.setState({
+                user: [],
+                permissions: [],
+                selectedModules: []
+            });
         }
     };
 
@@ -199,14 +204,18 @@ class PermissionsUserWise extends Component {
     * @description Used to handle response of getRolePermissionByUser, called when user change
     */
     getRolePermission = () => {
-        const { user } = this.state;
+        const { user, permissions } = this.state;
         this.props.getRolePermissionByUser(user.value, (res) => {
-            console.log('resssssss', res)
             if (res && res.data && res.data.Data) {
                 let Data = res.data.Data;
                 let ModulePermissions = Data.RoleInfo.ModulePermissions;
+
+                ModulePermissions && ModulePermissions.map((item, i) => {
+                    permissions.push(item.Value)
+                })
+
                 this.props.change('Role', Data.RoleInfo.RoleName);
-                this.setState({ selectedModules: ModulePermissions })
+                this.setState({ selectedModules: ModulePermissions, permissions })
             }
         })
     }
@@ -226,6 +235,11 @@ class PermissionsUserWise extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
+        this.setState({
+            user: [],
+            permissions: [],
+            selectedModules: []
+        });
     }
 
     /**
@@ -285,7 +299,7 @@ class PermissionsUserWise extends Component {
                         </div>
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             <div className=" row form-group">
-                                <div className="col-md-4 input-withouticon" >
+                                <div className="col-md-3 input-withouticon" >
                                     <Field
                                         label="User Id"
                                         name="UserId"
@@ -300,7 +314,7 @@ class PermissionsUserWise extends Component {
                                         valueDescription={this.state.user}
                                     />
                                 </div>
-                                <div className="col-md-4 input-withouticon " >
+                                <div className="col-md-3 input-withouticon " >
                                     <Field
                                         label="Role"
                                         name={"Role"}
@@ -314,7 +328,7 @@ class PermissionsUserWise extends Component {
                                         disabled={true}
                                     />
                                 </div>
-                                <div className="col-md-4 input-withouticon" >
+                                <div className="col-md-6 input-withouticon" >
                                     <label>Permission's</label>
                                     {this.renderSelectedModule()}
                                     {this.state.selectedModules.length == 0 ? <b>{"Permission's Not allowed yet"}</b> : ''}
