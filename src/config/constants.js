@@ -297,7 +297,7 @@ export const API = {
   getPageSelectList: `${BASE_URL}/app-privilege-permission/get-page-select-list`,
   setPagePermissionRoleWise: `${BASE_URL}/app-privilege-permission/set-page-permission-role-wise`,
   setPagePermissionUserWise: `${BASE_URL}/app-privilege-permission/set-page-permission-user-wise`,
-
+  setUserAdditionalPermission: `${BASE_URL}/user/set-user-additional-permissions`,
 
 }
 

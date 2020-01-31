@@ -102,6 +102,7 @@ export const MESSAGES = {
   ADD_PRIVILEGE_PAGE_SUCCESSFULLY: 'Privilege page added successfully.',
   ADD_PRIVILEGE_PAGE_ROLEWISE_SUCCESSFULLY: 'Privilege page role wise added successfully.',
   ADD_PRIVILEGE_PAGE_USERWISE_SUCCESSFULLY: 'Privilege page user wise added successfully.',
+  ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY: 'Additional permission has been added successfully.',
 
 };
 

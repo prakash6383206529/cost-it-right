@@ -808,6 +808,25 @@ export function setPagePermissionUserWise(requestData, callback) {
     };
 }
 
+/**
+ * @method setUserAdditionalPermission
+ * @description set user additional permission user wise API 
+ */
+export function setUserAdditionalPermission(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.setUserAdditionalPermission, requestData, { headers })
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
 
 // /**
 //  * @method verifyOtpAPI

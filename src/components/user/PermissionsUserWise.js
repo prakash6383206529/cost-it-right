@@ -4,7 +4,10 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText, searchableSelect, renderSelectField } from "../layout/FormInputs";
-import { getAllUserAPI, rolesSelectList, getModuleSelectList, getRolePermissionByUser } from "../../actions/auth/AuthActions";
+import {
+    getAllUserAPI, rolesSelectList, getModuleSelectList, getRolePermissionByUser,
+    setUserAdditionalPermission,
+} from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -22,6 +25,7 @@ class PermissionsUserWise extends Component {
             isOpen: false,
             user: [],
             role: [],
+            roleId: '',
             selectedModules: [],
             permissions: [],
             checkedAll: false,
@@ -215,7 +219,11 @@ class PermissionsUserWise extends Component {
                 })
 
                 this.props.change('Role', Data.RoleInfo.RoleName);
-                this.setState({ selectedModules: ModulePermissions, permissions })
+                this.setState({
+                    selectedModules: ModulePermissions,
+                    permissions,
+                    roleId: Data.RoleInfo.RoleId,
+                })
             }
         })
     }
@@ -250,36 +258,38 @@ class PermissionsUserWise extends Component {
      */
     onSubmit(values) {
         const { reset } = this.props;
-        //const { selectedPages } = this.state;
+        const { user, roleId, selectedModules, permissions } = this.state;
 
-        //this.setState({ isLoader: true })
+        this.setState({ isLoader: true })
 
-        // let tempArr = [];
+        //Permission that alloted while role creation.
+        let DefaultModuleIds = [];
+        selectedModules && selectedModules.map((item, index) => {
+            DefaultModuleIds.push(item.Value)
+        })
 
-        // selectedPages && selectedPages.map((page, index) => {
-        //     let tempObj = {
-        //         Id: '',
-        //         PrivilegePageId: page.Value,
-        //         UserId: values.UserId,
-        //         EAccessType: values.EAccessType,
-        //         IsActive: true,
-        //         IsDenied: true,
-        //         IsPermission: true,
-        //         CreatedDate: '',
-        //         CreatedBy: '',
-        //     }
-        //     tempArr.push(tempObj)
-        // })
-        // let formData = tempArr;
+        //Permission that has been removed from default permissions(Default modules)
+        let difference = DefaultModuleIds.filter(x => !permissions.includes(x));
+        let formData = {
+            UserId: user.value,
+            RoleId: roleId,
+            DefaultModuleIds: DefaultModuleIds,
+            AdditionalModuleIds: permissions,
+            RemovedModuleIds: difference
+        }
 
-        // this.props.setPagePermissionUserWise(formData, (res) => {
-        //     if (res && res.data && res.data.Result) {
-        //         toastr.success(MESSAGES.ADD_PRIVILEGE_PAGE_USERWISE_SUCCESSFULLY)
-        //     }
-        //     reset();
-        //     this.setState({ isLoader: false, selectedPages: [] })
-        // })
-
+        this.props.setUserAdditionalPermission(formData, (res) => {
+            if (res && res.data && res.data.Result) {
+                toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+            }
+            reset();
+            this.setState({
+                isLoader: false,
+                selectedModules: [],
+                permissions: [],
+                user: [],
+            })
+        })
     }
 
 
@@ -413,6 +423,7 @@ export default connect(mapStateToProps, {
     rolesSelectList,
     getModuleSelectList,
     getRolePermissionByUser,
+    setUserAdditionalPermission,
 })(reduxForm({
     form: 'PermissionsUserWise',
     enableReinitialize: true,

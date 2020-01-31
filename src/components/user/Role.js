@@ -184,8 +184,8 @@ class Role extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
                 }
-                //this.props.change('RoleName', '');
-                //this.props.change('Description', '');
+                this.props.change('RoleName', '');
+                this.props.change('Description', '');
                 this.setState({ isLoader: false, isEditFlag: false, permissions: [] })
                 this.props.getAllRoleAPI(res => { })
             })
