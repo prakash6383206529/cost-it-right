@@ -29,7 +29,7 @@ class PartBOMRegister extends Component {
             selectedParts: [],
             selectedChildParts: [],
             assyPartNo: [],
-            ChildPart: {},
+            ChildPart: [],
             isBOMDisabled: false,
             materialType: [],
             newPartRMType: [],
@@ -39,6 +39,9 @@ class PartBOMRegister extends Component {
             isPartShow: '',
             IsChildPart: false,
             isNewPartBtnShow: false,
+            selectedPlant: [],
+            selectedChildUOM: [],
+            selectedChildPlant: [],
         }
     }
 
@@ -127,6 +130,7 @@ class PartBOMRegister extends Component {
 
         if (label === 'ChildPart') {
             partList && partList.length > 0 && partList.map(item => {
+                if (item.Value == 0) return false;
                 if (assyPartNo && assyPartNo.value == item.Value) {
                     return false;
                 }
@@ -162,6 +166,14 @@ class PartBOMRegister extends Component {
             );
             return temp;
         }
+
+        if (label === 'searchablePlant') {
+            plantList && plantList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
         if (label === 'plant') {
             plantList && plantList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
@@ -184,19 +196,19 @@ class PartBOMRegister extends Component {
     onPressAddChildPart = () => {
         const { assyPartNo } = this.state;
         this.emptyPartFields()
-        if (assyPartNo && assyPartNo.length == 0) {
-            toastr.warning('Please select assembly part.')
-            this.setState({ IsChildPart: false })
-        } else {
-            this.setState({
-                IsChildPart: !this.state.IsChildPart,
-                isNewPartBtnShow: !this.state.isNewPartBtnShow,
-                isPartShow: false,
-            }, () => {
-                this.checkCostingExistForPart(assyPartNo.value)
-                this.setState({ ChildPart: {} })
-            })
-        }
+        // if (assyPartNo && assyPartNo.length == 0) {
+        //     toastr.warning('Please select assembly part.')
+        //     this.setState({ IsChildPart: false })
+        // } else {
+        this.setState({
+            IsChildPart: !this.state.IsChildPart,
+            isNewPartBtnShow: !this.state.isNewPartBtnShow,
+            isPartShow: !this.state.isPartShow,
+        }, () => {
+            //         this.checkCostingExistForPart(assyPartNo.value)
+            //         this.setState({ ChildPart: {} })
+        })
+        // }
     }
 
     /**
@@ -412,12 +424,28 @@ class PartBOMRegister extends Component {
         this.setState({ selectedUOM: newValue });
     };
 
-    plantHandler = (e) => {
-        this.setState({ plantID: e.target.value })
+    /**
+    * @method uomChildHandler
+    * @description Used to handle child UOM
+    */
+    uomChildHandler = (newValue, actionMeta) => {
+        this.setState({ selectedChildUOM: newValue });
+    };
+
+    /**
+    * @method plantHandler
+    * @description Used to Submit the form
+    */
+    plantHandler = (newValue, actionMeta) => {
+        this.setState({ selectedPlant: newValue })
     }
 
-    newPartPlantHandler = (e) => {
-        this.setState({ newPartPlantID: e.target.value })
+    /**
+    * @method childPlantHandler
+    * @description Used to Submit the form
+    */
+    childPlantHandler = (newValue, actionMeta) => {
+        this.setState({ selectedChildPlant: newValue })
     }
 
     /**
@@ -542,76 +570,21 @@ class PartBOMRegister extends Component {
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 >
 
-                    <Row>
-                        <Col md="2" className={'pull-right'}>
-                            <label
-                                className="custom-checkbox pull-right"
-                                onChange={this.onPressAddChildPart}
-                            >
-                                Add Child Part
-                                                <input type="checkbox" checked={this.state.IsChildPart} />
-                                <span
-                                    className=" before-box"
-                                    checked={this.state.IsChildPart}
-                                    onChange={this.onPressAddChildPart}
-                                />
-                            </label>
-                        </Col>
-                        <Col md="8"></Col>
-                        {isNewPartBtnShow && <Col md="2" className={'pull-right'}>
-                            <button
-                                type="button"
-                                className={'btn btn-primary btn-lg'}
-                                onClick={() => this.setState({
-                                    isPartShow: !this.state.isPartShow,
-                                    ChildPart: [],
-                                })}>Add New Part</button>
-                        </Col>}
-                    </Row>
-                    <Row>
-                        <Col md={this.state.IsChildPart ? "6" : "12"}>
-                            <Field
-                                name="AssyPartNo"
-                                type="text"
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                label="Assy Part No."
-                                component={searchableSelect}
-                                //validate={[required, maxLength50]}
-                                options={this.renderAssyPartList('AssyPart')}
-                                //required={true}
-                                handleChangeDescription={this.assyPartNoHandler}
-                                valueDescription={this.state.assyPartNo}
-                            />
-                        </Col>
-                        {this.state.IsChildPart && <Col md="6">
-                            <Field
-                                label={'Child Part'}
-                                name={'ChildPart'}
-                                type="text"
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                component={searchableSelect}
-                                //validate={[required, maxLength50]}
-                                options={this.renderAssyPartList('ChildPart')}
-                                //required={true}
-                                handleChangeDescription={this.ChildPartHandler}
-                                valueDescription={this.state.ChildPart}
-                                disabled={this.state.isPartShow ? true : false}
-                            />
 
-                            {/* <Field
-                                label={'Child Part'}
-                                name={'ChildPart'}
-                                placeholder="--Select Child Part--"
-                                selection={this.state.ChildPart}
-                                options={this.renderAssyPartList('ChildPart')}
-                                selectionChanged={this.ChildPartHandler}
-                                optionValue={option => option.Value}
-                                optionLabel={option => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={false}
+
+                    <Row>
+                        <Col md={"6"}>
+                            <Field
+                                label={`Assy Part No.`}
+                                name={"AssyPartNo"}
+                                type="text"
+                                placeholder={''}
+                                validate={[required]}
+                                component={renderText}
+                                required={true}
                                 className="withoutBorder"
-                            /> */}
-                        </Col>}
+                            />
+                        </Col>
                         <Col md="6">
                             <Field
                                 label={`BOM Number`}
@@ -663,7 +636,7 @@ class PartBOMRegister extends Component {
                         </Col>
                         <Col md="6">
                             <Field
-                                label={`BOM Level`}
+                                label={`Assembly BOM Level`}
                                 name={"BOMLevel"}
                                 type="text"
                                 placeholder={''}
@@ -728,57 +701,268 @@ class PartBOMRegister extends Component {
                         </Col>
                         <Col md="6">
                             <Field
-                                label={`Assembly Plant`}
-                                name={"PlantId"}
+                                label={'Assembly Plant'}
+                                name={'PlantId'}
                                 type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                required={true}
-                                options={this.renderTypeOfListing('plant')}
-                                onChange={this.plantHandler}
-                                optionValue={'Value'}
-                                optionLabel={'Text'}
-                                component={renderSelectField}
-                                className=" withoutBorder custom-select"
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                component={searchableSelect}
+                                //validate={[required]}
+                                options={this.renderTypeOfListing('searchablePlant')}
+                                //required={true}
+                                handleChangeDescription={this.plantHandler}
+                                valueDescription={this.state.selectedPlant}
                             />
                         </Col>
                     </Row>
 
 
-                    {/* Below code for Add New Part */}
 
 
-                    {this.state.isPartShow &&
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <Row className={'mt20'}>
+                        <Col md="2">
+                            <button
+                                type="button"
+                                onClick={() => this.setState({ isChildPart: !this.state.isChildPart, isNewPart: false })}
+                                className={'btn btn-primary'}>Add Child Part</button>
+                        </Col>
+                        <Col md="2">
+                            <button
+                                type="button"
+                                onClick={() => this.setState({ isNewPart: !this.state.isNewPart, isChildPart: false })}
+                                className={'btn btn-primary'}>Add New Part</button>
+                        </Col>
+                    </Row>
+
+
+                    {/* Below code for Add Child Part */}
+
+                    {this.state.isChildPart &&
                         <>
-                            <Row>
+                            <Row className={'mt20'}>
                                 <Col>
-                                    <h3><b>{this.state.IsChildPart ? 'Add Child Part' : 'Add New Part'}</b></h3>
+                                    <h3><b>{'Add Child Part'}</b></h3>
                                     <hr />
                                 </Col>
                             </Row>
 
-                            {/* <Row>
-                                <Col md="4">
-                                    <label
-                                        className="custom-checkbox"
-                                        onChange={this.onPressAssociatedWithBOM}
-                                    >
-                                        Is Part Associated With BOM
-                                                    <input type="checkbox" checked={this.state.IsPartAssociatedWithBOM} />
-                                        <span
-                                            className=" before-box"
-                                            checked={this.state.IsPartAssociatedWithBOM}
-                                            onChange={this.onPressAssociatedWithBOM}
-                                        />
-                                    </label>
+                            <Row className="child-part">
+                                <Col md="6">
+                                    <Field
+                                        label={'Child Part'}
+                                        name={'ChildPart'}
+                                        type="text"
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        component={searchableSelect}
+                                        placeholder={'Select Part'}
+                                        //validate={[required, maxLength50]}
+                                        options={this.renderAssyPartList('ChildPart')}
+                                        //required={true}
+                                        handleChangeDescription={this.ChildPartHandler}
+                                        valueDescription={this.state.ChildPart}
+                                        disabled={false}
+                                    />
                                 </Col>
-                            </Row> */}
 
+                                {/* <Col md="6">
+                                    <Field
+                                        label={`Part Number`}
+                                        name={"Child_PartNumber"}
+                                        type="text"
+                                        placeholder={''}
+                                        validate={[required]}
+                                        component={renderText}
+                                        required={true}
+                                        className=" withoutBorder"
+                                    />
+                                </Col> */}
+                                {/* <Col md="6">
+                                    <Field
+                                        label={`Part Name`}
+                                        name={"Child_PartName"}
+                                        type="text"
+                                        placeholder={''}
+                                        //validate={[required]}
+                                        component={renderText}
+                                        //required={true}
+                                        className=" withoutBorder"
+                                    />
+                                </Col> */}
+                                <Col md="6">
+                                    <Field
+                                        label="Raw Material Type"
+                                        name="Child_MaterialTypeId"
+                                        type="text"
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        component={searchableSelect}
+                                        //validate={[required, maxLength50]}
+                                        options={this.renderTypeOfListing('material')}
+                                        //required={true}
+                                        handleChangeDescription={this.newPartRMTypeHandler}
+                                        valueDescription={this.state.newPartRMType}
+                                    />
+                                </Col>
+
+                            </Row>
+                            <Row className={'mt20'}>
+
+                                <Col md="6">
+                                    <Field
+                                        label={'UOM'}
+                                        name={'Child_UnitOfMeasurementId'}
+                                        type="text"
+                                        component={searchableSelect}
+                                        options={this.renderTypeOfListing('searchableUOM')}
+                                        placeholder={'Select UOM'}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={[required]}
+                                        //required={true}
+                                        handleChangeDescription={this.uomChildHandler}
+                                        valueDescription={this.state.selectedChildUOM}
+                                    />
+                                </Col>
+                                <Col md="6">
+                                    <Field
+                                        label={'Plant'}
+                                        name={'Child_PlantId'}
+                                        type="text"
+                                        component={searchableSelect}
+                                        options={this.renderTypeOfListing('searchablePlant')}
+                                        placeholder={'Select Plant'}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={[required]}
+                                        //required={true}
+                                        handleChangeDescription={this.childPlantHandler}
+                                        valueDescription={this.state.selectedChildPlant}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row className={'mt20'}>
+                                <Col md="6">
+                                    <Field
+                                        label={`BOM Level`}
+                                        name={"Child_BOMLevel"}
+                                        type="text"
+                                        placeholder={''}
+                                        //validate={[required]}
+                                        component={renderText}
+                                        //required={true}
+                                        className=" withoutBorder"
+                                        disabled={this.state.isBOMDisabled}
+                                    />
+                                </Col>
+                                <Col md="6">
+                                    <Field
+                                        label={`Quantity`}
+                                        name={"Child_Quantity"}
+                                        type="text"
+                                        placeholder={''}
+                                        validate={[required]}
+                                        component={renderText}
+                                        required={true}
+                                        className=" withoutBorder"
+                                    />
+                                </Col>
+
+                            </Row>
                             <Row>
                                 <Col md="6">
                                     <Field
+                                        label={`ECO ${CONSTANT.NUMBER}`}
+                                        name={"Child_EcoNumber"}
+                                        type="text"
+                                        placeholder={''}
+                                        //validate={[required]}
+                                        component={renderText}
+                                        //required={true}
+                                        className=" withoutBorder"
+                                    />
+                                </Col>
+                                <Col md="6">
+                                    <Field
+                                        label={`Revision Number`}
+                                        name={"Child_RevisionNumber"}
+                                        type="text"
+                                        placeholder={''}
+                                        //validate={[required]}
+                                        component={renderText}
+                                        //required={true}
+                                        className=" withoutBorder"
+                                    />
+                                </Col>
+
+                            </Row>
+                            <Row>
+                                <Col md="6">
+                                    <Field
+                                        label={`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}
+                                        name={"Child_MaterialGroupCode"}
+                                        type="text"
+                                        placeholder={''}
+                                        component={renderText}
+                                        className=" withoutBorder "
+                                    />
+                                </Col>
+                                <Col md="6">
+                                    <Field
+                                        label={`Part Description`}
+                                        name={"Child_PartDescription"}
+                                        type="text"
+                                        placeholder={''}
+                                        validate={[required]}
+                                        component={renderText}
+                                        required={true}
+                                        className=" withoutBorder "
+                                    />
+                                </Col>
+                            </Row>
+                        </>}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {/* Below code for Add New Part */}
+
+                    {this.state.isNewPart &&
+                        <>
+                            <Row className={'mt20'}>
+                                <Col>
+                                    <h3><b>{'Add New Part'}</b></h3>
+                                    <hr />
+                                </Col>
+                            </Row>
+                            <Row className="child-part">
+                                <Col md="6">
+                                    <Field
                                         label={`Part Number`}
-                                        name={"NewChildPart_PartNumber"}
+                                        name={"NewPart_PartNumber"}
                                         type="text"
                                         placeholder={''}
                                         validate={[required]}
@@ -790,7 +974,7 @@ class PartBOMRegister extends Component {
                                 <Col md="6">
                                     <Field
                                         label={`Part Name`}
-                                        name={"NewChildPart_PartName"}
+                                        name={"NewPart_PartName"}
                                         type="text"
                                         placeholder={''}
                                         //validate={[required]}
@@ -800,61 +984,58 @@ class PartBOMRegister extends Component {
                                     />
                                 </Col>
                             </Row>
-
                             <Row>
                                 {/* <Col md="6">
                                     <Field
-                                        label={`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}
-                                        name={"MaterialTypeId"}
+                                        label={`BOM Level`}
+                                        name={"NewPart_BOMLevel"}
                                         type="text"
                                         placeholder={''}
-                                        validate={[required]}
-                                        required={true}
-                                        className=" withoutBorder custom-select"
-                                        options={this.renderTypeOfListing('material')}
-                                        onChange={this.handleTypeofListing}
-                                        optionValue={'Value'}
-                                        optionLabel={'Text'}
-                                        component={renderSelectField}
+                                        //validate={[required]}
+                                        component={renderText}
+                                        //required={true}
+                                        className=" withoutBorder"
+                                        disabled={this.state.isBOMDisabled}
                                     />
                                 </Col> */}
+
                                 <Col md="6">
                                     <Field
                                         label="Raw Material Type"
-                                        name="NewChildPart_MaterialTypeId"
+                                        name="NewPart_MaterialTypeId"
                                         type="text"
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
                                         component={searchableSelect}
-                                        //validate={[required, maxLength50]}
                                         options={this.renderTypeOfListing('material')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={[required, maxLength50]}
                                         //required={true}
                                         handleChangeDescription={this.newPartRMTypeHandler}
                                         valueDescription={this.state.newPartRMType}
                                     />
                                 </Col>
+
                                 <Col md="6">
                                     <Field
-                                        label={`UOM`}
-                                        name={"NewChildPart_UnitOfMeasurementId"}
+                                        label="UOM"
+                                        name="NewPart_UnitOfMeasurementId"
                                         type="text"
-                                        placeholder={''}
-                                        validate={[required]}
-                                        required={true}
-                                        maxLength={26}
-                                        options={this.renderTypeOfListing('uom')}
-                                        onChange={this.handleTypeofListing}
-                                        optionValue={'Value'}
-                                        optionLabel={'Text'}
-                                        component={renderSelectField}
-                                        className=" withoutBorder custom-select"
+                                        component={searchableSelect}
+                                        options={this.renderTypeOfListing('searchableUOM')}
+                                        placeholder={'Select UOM'}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={[required, maxLength50]}
+                                        //required={true}
+                                        handleChangeDescription={this.uomChildHandler}
+                                        valueDescription={this.state.selectedChildUOM}
                                     />
                                 </Col>
                             </Row>
+
                             <Row>
                                 <Col md="6">
                                     <Field
                                         label={`Quantity`}
-                                        name={"NewChildPart_Quantity"}
+                                        name={"NewPart_Quantity"}
                                         type="text"
                                         placeholder={''}
                                         validate={[required]}
@@ -863,10 +1044,11 @@ class PartBOMRegister extends Component {
                                         className=" withoutBorder"
                                     />
                                 </Col>
+
                                 <Col md="6">
                                     <Field
                                         label={`ECO ${CONSTANT.NUMBER}`}
-                                        name={"NewChildPart_EcoNumber"}
+                                        name={"NewPart_EcoNumber"}
                                         type="text"
                                         placeholder={''}
                                         //validate={[required]}
@@ -880,7 +1062,7 @@ class PartBOMRegister extends Component {
                                 <Col md="6">
                                     <Field
                                         label={`Revision Number`}
-                                        name={"NewChildPart_RevisionNumber"}
+                                        name={"NewPart_RevisionNumber"}
                                         type="text"
                                         placeholder={''}
                                         //validate={[required]}
@@ -889,21 +1071,20 @@ class PartBOMRegister extends Component {
                                         className=" withoutBorder"
                                     />
                                 </Col>
+
                                 <Col md="6">
                                     <Field
-                                        label={`Plant`}
-                                        name={"NewChildPart_PlantId"}
+                                        label={'Plant'}
+                                        name={'NewPart_PlantId'}
                                         type="text"
-                                        placeholder={''}
-                                        validate={[required]}
-                                        required={true}
-                                        maxLength={26}
-                                        options={this.renderTypeOfListing('plant')}
-                                        onChange={this.newPartPlantHandler}
-                                        optionValue={'Value'}
-                                        optionLabel={'Text'}
-                                        component={renderSelectField}
-                                        className=" withoutBorder custom-select"
+                                        component={searchableSelect}
+                                        options={this.renderTypeOfListing('searchablePlant')}
+                                        placeholder={'Select Plant'}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={[required]}
+                                        //required={true}
+                                        handleChangeDescription={this.childPlantHandler}
+                                        valueDescription={this.state.selectedChildPlant}
                                     />
                                 </Col>
                             </Row>
@@ -911,7 +1092,7 @@ class PartBOMRegister extends Component {
                                 <Col md="6">
                                     <Field
                                         label={`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}
-                                        name={"NewChildPart_MaterialGroupCode"}
+                                        name={"NewPart_MaterialGroupCode"}
                                         type="text"
                                         placeholder={''}
                                         component={renderText}
@@ -921,7 +1102,7 @@ class PartBOMRegister extends Component {
                                 <Col md="6">
                                     <Field
                                         label={`Part Description`}
-                                        name={"NewChildPart_PartDescription"}
+                                        name={"NewPart_PartDescription"}
                                         type="text"
                                         placeholder={''}
                                         validate={[required]}
