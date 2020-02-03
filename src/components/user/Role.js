@@ -7,7 +7,10 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addRoleAPI, getAllRoleAPI, getRoleDataAPI, updateRoleAPI, getModuleSelectList } from "../../actions/auth/AuthActions";
+import {
+    addRoleAPI, getAllRoleAPI, getRoleDataAPI, updateRoleAPI, setEmptyRoleDataAPI,
+    getModuleSelectList
+} from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -184,8 +187,9 @@ class Role extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
                 }
-                this.props.change('RoleName', '');
-                this.props.change('Description', '');
+                //this.props.change('RoleName', '');
+                //this.props.change('Description', '');
+                this.props.setEmptyRoleDataAPI('', () => { })
                 this.setState({ isLoader: false, isEditFlag: false, permissions: [] })
                 this.props.getAllRoleAPI(res => { })
             })
@@ -295,7 +299,8 @@ class Role extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-const mapStateToProps = ({ auth }) => {
+const mapStateToProps = (state, ownProps) => {
+    const { auth } = state;
     const { roleList, roleDetail, moduleSelectList } = auth;
     let initialValues = {};
 
@@ -319,6 +324,7 @@ export default connect(mapStateToProps, {
     addRoleAPI,
     getAllRoleAPI,
     getRoleDataAPI,
+    setEmptyRoleDataAPI,
     updateRoleAPI,
     getModuleSelectList,
 })(reduxForm({

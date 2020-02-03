@@ -330,6 +330,24 @@ export function getRoleDataAPI(RoleId, callback) {
 }
 
 /**
+ * @method setEmptyRoleDataAPI
+ * @description set empty role detail in reducer
+ */
+export function setEmptyRoleDataAPI(RoleId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (RoleId == '') {
+            dispatch({
+                type: GET_UNIT_ROLE_DATA_SUCCESS,
+                payload: '',
+            });
+            callback();
+        }
+    }
+};
+
+
+/**
  * @method deleteRoleAPI
  * @description delete Role
  */
