@@ -64,6 +64,10 @@ export const MESSAGES = {
   COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
   SELECT_PART_FOR_ZBC_COSTING: 'Please select part for zbc costing.',
 
+  //MACHINE MASTER
+  DELETE_MACHINE_SUCCESS: 'Machine has been deleted successfully.',
+  MACHINE_DELETE_ALERT: 'Are you sure you want to delete Machine?',
+
   //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
 

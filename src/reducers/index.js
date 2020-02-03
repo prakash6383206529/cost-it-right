@@ -22,6 +22,7 @@ import InterestRateReducer from './master/InterestRate';
 import costingReducer from './costing/Costing';
 import CostWorkingReducer from './costing/CostWorking';
 import ApprovalReducer from './costing/Approval';
+import MachineReducer from './master/MachineMaster';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -55,6 +56,7 @@ const allReducers = combineReducers({
    costing: costingReducer,
    costWorking: CostWorkingReducer,
    approval: ApprovalReducer,
+   machine: MachineReducer,
 });
 
 export default rootReducer;
