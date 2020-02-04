@@ -104,36 +104,46 @@ class MachineMaster extends Component {
                 <Row>
                     <Col>
                         <Table className="table table-striped" bordered>
-                            {/* {this.props.labourDetail && this.props.labourDetail.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`Machine No.`}</th>
-                                        <th>{`Technology`}</th>
-                                        <th>{`Supplier Code`}</th>
-                                        <th>{`Supplier Name`}</th>
-                                        <th>{`Description`}</th>
-                                        <th>{`Make`}</th>
-                                    </tr>
-                                </thead>}
+                            {/* {this.props.labourDetail && this.props.labourDetail.length > 0 && */}
+                            <thead>
+                                <tr>
+                                    <th>{`Class`}</th>
+                                    <th>{`Number`}</th>
+                                    <th>{`Power`}</th>
+                                    <th>{`Depreciation`}</th>
+                                    <th>{`Labour Type`}</th>
+                                    <th>{`Fuel Type`}</th>
+                                    <th>{`Shift`}</th>
+                                    <th>{`Cost`}</th>
+                                    <th>{`Mfd year`}</th>
+                                    <th>{`Maintenance Cost`}</th>
+                                    <th>{`PUC`}</th>
+                                    <th>{`Effective Date`}</th>
+                                </tr>
+                            </thead>
+                            {/* } */}
                             <tbody >
-                                {this.props.labourDetail && this.props.labourDetail.length > 0 &&
+                                {/* {this.props.labourDetail && this.props.labourDetail.length > 0 &&
                                     this.props.labourDetail.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td>{item.TechnologyName}</td>
-                                                <td >{item.LabourTypeName}</td>
-                                                <td>{item.PlantName}</td>
-                                                <td>{item.LabourRate}</td>
-                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                                <div>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editDetails(item.MachineId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(item.MachineId)}><i className="far fa-trash-alt"></i></Button>
-                                                </div>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody> */}
+                                        return ( */}
+                                <tr>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                    <td>{''}</td>
+                                </tr>
+                                {/* )
+                                    })} */}
+                                {/* {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />} */}
+                            </tbody>
                         </Table>
                     </Col>
                 </Row>
