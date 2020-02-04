@@ -12,8 +12,49 @@ import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { toastr } from "react-redux-toastr";
-import { Collapse, Button, CardBody, Card, CardTitle } from 'reactstrap';
+import { Container, Row, Col, Table, Collapse, Button, CardBody, Card, CardTitle } from 'reactstrap';
 import { EAccessType } from "../../config/masterData";
+import NoContentFound from '../common/NoContentFound';
+import { CONSTANT } from '../../helper/AllConastant';
+
+const tempActionData = [
+    {
+        ModuleName: 'Dashboard',
+        id: 1,
+        // Actions: [
+        //     Add: {
+        //         isAllowed: false,
+        //     },
+        //     Edit: {
+        //         isAllowed: true,
+        //     }
+        // ],
+    },
+    {
+        ModuleName: 'Master',
+        id: 1,
+        // Actions: [
+        //     Add: {
+        //         isAllowed: false,
+        //     },
+        //     Edit: {
+        //         isAllowed: true,
+        //     }
+        // ],
+    },
+    {
+        ModuleName: 'Technology',
+        id: 1,
+        // Actions: [
+        //     Add: {
+        //         isAllowed: false,
+        //     },
+        //     Edit: {
+        //         isAllowed: true,
+        //     }
+        // ],
+    },
+]
 
 class PermissionsUserWise extends Component {
     constructor(props) {
@@ -29,6 +70,7 @@ class PermissionsUserWise extends Component {
             selectedModules: [],
             permissions: [],
             checkedAll: false,
+            actionData: tempActionData,
         };
     }
 
@@ -190,7 +232,7 @@ class PermissionsUserWise extends Component {
     */
     handleUser = (newValue, actionMeta) => {
         if (newValue && newValue != null) {
-            this.setState({ user: newValue }, () => {
+            this.setState({ user: newValue, permissions: [] }, () => {
                 this.getRolePermission()
             });
         } else {
@@ -235,6 +277,48 @@ class PermissionsUserWise extends Component {
     addPermission = () => {
         this.setState({ isOpen: !this.state.isOpen })
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // //////////////////////////////////////////////////////////////////////////////
+    /**
+    * @method rowAllHandler
+    * @description used to add more permission for user
+    */
+    rowAllHandler = (index) => {
+        console.log('index', index)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
     * @method cancel
@@ -344,15 +428,17 @@ class PermissionsUserWise extends Component {
                                     {this.state.selectedModules.length == 0 ? <b>{"Permission's Not allowed yet"}</b> : ''}
                                 </div>
                             </div>
-                            <div className=" row form-group">
+
+                            {/* <div className=" row form-group">
                                 <div className="col-md-3 input-withouticon" >
                                     <button
                                         type="button"
                                         className={'btn btn-secondary'}
                                         onClick={this.addPermission}>Add More Permissions</button>
                                 </div>
-                            </div>
-                            <div className=" row form-group">
+                            </div> */}
+
+                            {/* <div className=" row form-group">
                                 <div className="col-md-12 input-withouticon" >
                                     <Collapse isOpen={isOpen}>
                                         <Card>
@@ -375,7 +461,39 @@ class PermissionsUserWise extends Component {
                                         </Card>
                                     </Collapse>
                                 </div>
-                            </div>
+                            </div> */}
+
+
+                            <Table className="table table-striped" size="sm" bordered dark striped >
+                                <thead>
+                                    <tr>
+                                        <th>{`Module Name`}</th>
+                                        <th>{`Select All`}</th>
+                                        <th>{`Add`}</th>
+                                        <th>{`Edit`}</th>
+                                        <th>{`Delete`}</th>
+                                        <th>{'View'}</th>
+                                        <th>{`Download`}</th>
+                                    </tr>
+                                </thead>
+                                <tbody >
+                                    {this.state.actionData && this.state.actionData.map((item, index) => {
+                                        const isEdit = item && item.Edit && item.Edit.isAllowed ? true : false;
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.ModuleName}</td>
+                                                <td >{<input type="checkbox" value={'All'} onClick={() => this.rowAllHandler(index)} />}</td>
+                                                <td >{<input type="checkbox" value={'All'} />}</td>
+                                                <td >{isEdit ? <input type="checkbox" value={'All'} checked={true} /> : '-'}</td>
+                                                <td >{'-'}</td>
+                                                <td >{'-'}</td>
+                                                <td >{'-'}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                    {this.state.actionData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                </tbody>
+                            </Table>
 
                             <div className="text-center ">
                                 <input

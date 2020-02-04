@@ -289,6 +289,7 @@ export const API = {
   getAllApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-approval-department`,
   getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
   sendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
+  getReasonSelectList: `${BASE_URL}/configuration/select-list-get-reasons`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -546,6 +547,7 @@ export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER';
 export const GET_SEND_FOR_APPROVAL_SUCCESS = 'GET_SEND_FOR_APPROVAL_SUCCESS';
 export const GET_ALL_APPROVAL_DEPARTMENT = 'GET_ALL_APPROVAL_DEPARTMENT';
 export const GET_ALL_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_APPROVAL_USERS_BY_DEPARTMENT';
+export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST';
 
 //PRIVILEGE
 export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS';

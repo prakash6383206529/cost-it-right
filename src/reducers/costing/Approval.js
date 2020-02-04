@@ -4,6 +4,7 @@ import {
     GET_SEND_FOR_APPROVAL_SUCCESS,
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
+    GET_ALL_REASON_SELECTLIST,
 } from '../../config/constants';
 
 const initialState = {
@@ -44,6 +45,13 @@ export default function ApprovalReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 approvalUsersList: action.payload
+            };
+        case GET_ALL_REASON_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                reasonsList: action.payload
             };
         default:
             return state;

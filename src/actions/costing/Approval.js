@@ -6,6 +6,7 @@ import {
     GET_SEND_FOR_APPROVAL_SUCCESS,
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
+    GET_ALL_REASON_SELECTLIST,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -117,6 +118,33 @@ export function sendForApproval(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getSendForApproval
+ * @description get SEND FOR APPROVAL DATA BY COSTING ID
+ */
+export function getReasonSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getReasonSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ALL_REASON_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
             apiErrors(error);
         });
     };

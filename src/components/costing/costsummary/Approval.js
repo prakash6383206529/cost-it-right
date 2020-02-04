@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input, Table } from 'reactstrap';
 import {
     getSendForApprovalByCostingId, getAllApprovalDepartment, getAllApprovalUserByDepartment,
-    sendForApproval
+    sendForApproval, getReasonSelectList,
 } from '../../../actions/costing/Approval';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -21,8 +21,9 @@ class Approval extends Component {
         super(props);
         this.state = {
             isOpen: false,
-            department: {},
-            user: {},
+            department: [],
+            user: [],
+            reason: [],
         }
     }
 
@@ -34,6 +35,7 @@ class Approval extends Component {
         const { costingId, supplierId } = this.props;
         this.props.getSendForApprovalByCostingId(costingId, () => { })
         this.props.getAllApprovalDepartment(() => { })
+        this.props.getReasonSelectList(() => { })
     }
 
     /**
@@ -49,20 +51,30 @@ class Approval extends Component {
     * @description Used renderList for searchable dropdown
     */
     renderList = (label) => {
-        const { approvalDepartmentList, approvalUsersList } = this.props;
+        const { approvalDepartmentList, approvalUsersList, reasonsList } = this.props;
         const temp = [];
 
         if (label === 'department') {
-            approvalDepartmentList && approvalDepartmentList.map(item =>
+            approvalDepartmentList && approvalDepartmentList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
 
         if (label === 'users') {
-            approvalUsersList && approvalUsersList.map(item =>
+            approvalUsersList && approvalUsersList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
+            return temp;
+        }
+
+        if (label === 'reason') {
+            reasonsList && reasonsList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
             return temp;
         }
     }
@@ -73,16 +85,20 @@ class Approval extends Component {
     */
     departmentHandler = (newValue, actionMeta) => {
         let userDetails = reactLocalStorage.getObject("userDetail");
-        this.setState({ department: newValue }, () => {
-            const { department } = this.state;
-            if (department && department.value != '') {
-                let requestData = {
-                    UserId: userDetails.LoggedInUserId,
-                    DepartmentId: department.value,
+        if (newValue && newValue != null) {
+            this.setState({ department: newValue, user: [] }, () => {
+                const { department } = this.state;
+                if (department && department.value != '') {
+                    let requestData = {
+                        UserId: userDetails.LoggedInUserId,
+                        DepartmentId: department.value,
+                    }
+                    this.props.getAllApprovalUserByDepartment(requestData, () => { })
                 }
-                this.props.getAllApprovalUserByDepartment(requestData, () => { })
-            }
-        });
+            });
+        } else {
+            this.setState({ department: [], user: [] })
+        }
     };
 
     /**
@@ -94,25 +110,62 @@ class Approval extends Component {
         });
     };
 
-    onSubmit = (values) => {
-        const { department, user } = this.state;
-        const { costingId, approvalData } = this.props;
+    /**
+    * @method reasonHandler
+    * @description Used to handle reason
+    */
+    reasonHandler = (newValue, actionMeta) => {
+        this.setState({ reason: newValue }, () => {
+        });
+    };
 
-        let requestData = {
-            CostingId: costingId,
-            CostingStatusId: "",
-            IsFinalApproval: false,
-            IsApproved: true,
-            Remark: values.Remarks,
-            LevelId: "",
-            UserId: user.value,
-            TechnologyId: approvalData.TechnologyId,
-        }
-
-        this.props.sendForApproval(requestData, (res) => {
-            toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
-            this.props.onCancelApproval();
+    /**
+    * @method cancel
+    * @description used to cancel form
+    */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            department: [],
+            user: [],
         })
+        this.props.onCancelApproval();
+    }
+
+    /**
+    * @method resetForm
+    * @description used to cancel reset
+    */
+    resetForm = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            department: [],
+            user: [],
+        })
+    }
+
+    onSubmit = (values) => {
+        console.log('Approval form')
+        // const { department, user, reason } = this.state;
+        // const { costingId, approvalData } = this.props;
+
+        // let requestData = {
+        //     CostingId: costingId,
+        //     CostingStatusId: "",
+        //     IsFinalApproval: false,
+        //     IsApproved: true,
+        //     Remark: values.Remarks,
+        //     LevelId: "",
+        //     UserId: user.value,
+        //     TechnologyId: approvalData.TechnologyId,
+        // }
+
+        // this.props.sendForApproval(requestData, (res) => {
+        //     toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
+        //     this.props.onCancelApproval();
+        // })
     }
 
     /**
@@ -122,82 +175,99 @@ class Approval extends Component {
     render() {
         const { handleSubmit, reset } = this.props;
         return (
-            <Container>
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{'Send For Approval'}</ModalHeader>
-                    <ModalBody>
-                        <Row>
 
-                            <Container>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit)}
-                                >
-                                    <Row>
-                                        <Col md={"6"}>
-                                            <Field
-                                                label={'Department'}
-                                                name={"Department"}
-                                                type="text"
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                component={searchableSelect}
-                                                //validate={[required, maxLength50]}
-                                                options={this.renderList('department')}
-                                                //required={true}
-                                                handleChangeDescription={this.departmentHandler}
-                                                valueDescription={this.state.department}
-                                            />
-                                        </Col>
-                                        <Col md={"6"}>
-                                            <Field
-                                                name={'user'}
-                                                type="text"
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                label={'User'}
-                                                component={searchableSelect}
-                                                //validate={[required, maxLength50]}
-                                                options={this.renderList('users')}
-                                                //required={true}
-                                                handleChangeDescription={this.userHandler}
-                                                valueDescription={this.state.user}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <Field
-                                                label={'Remarks'}
-                                                name={`Remarks`}
-                                                placeholder="Type your message here..."
-                                                //onChange={this.handleMessageChange}
-                                                value={0}
-                                                className="withoutBorder"
-                                                //validate={[required, maxLength5000]}
-                                                //onChange={}
-                                                component={renderTextAreaField}
-                                                //required={true}
-                                                maxLength="5000"
-                                            />
-                                        </Col>
-                                    </Row>
+            <>
+                <form
+                    noValidate
+                    className="form"
+                    onSubmit={handleSubmit(this.onSubmit)}
+                >
+                    <Row>
+                        <Col>
+                            <h2>Send For Approval</h2>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={"4"}>
+                            <Field
+                                label={'Department'}
+                                name={"Department"}
+                                type="text"
+                                component={searchableSelect}
+                                options={this.renderList('department')}
+                                placeholder={'Select Department'}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={[required, maxLength50]}
+                                //required={true}
+                                handleChangeDescription={this.departmentHandler}
+                                valueDescription={this.state.department}
+                            />
+                        </Col>
+                        <Col md={"4"}>
+                            <Field
+                                label={'User'}
+                                name={'user'}
+                                type="text"
+                                component={searchableSelect}
+                                options={this.renderList('users')}
+                                placeholder={'Select User'}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={[required, maxLength50]}
+                                //required={true}
+                                handleChangeDescription={this.userHandler}
+                                valueDescription={this.state.user}
+                            />
+                        </Col>
+                        <Col md={"4"}>
+                            <Field
+                                label={'Reason'}
+                                name={'reason'}
+                                type="text"
+                                component={searchableSelect}
+                                options={this.renderList('reason')}
+                                placeholder={'Select Reason'}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={[required, maxLength50]}
+                                //required={true}
+                                handleChangeDescription={this.reasonHandler}
+                                valueDescription={this.state.reason}
+                            />
+                        </Col>
+                    </Row>
+                    <Row className="mt20">
+                        <Col>
+                            <Field
+                                label={'Remarks'}
+                                name={`Remarks`}
+                                placeholder="Type your message here..."
+                                //onChange={this.handleMessageChange}
+                                value={0}
+                                className="withoutBorder"
+                                //validate={[required, maxLength5000]}
+                                //onChange={}
+                                component={renderTextAreaField}
+                                //required={true}
+                                maxLength="5000"
+                            />
+                        </Col>
+                    </Row>
 
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-center">
-                                            <button type="submit" className="btn dark-pinkbtn" >
-                                                {'Send For Approval'}
-                                            </button>
-                                            <button type={'button'} className="btn btn-secondary" onClick={reset} >
-                                                {'Reset'}
-                                            </button>
-                                        </div>
-                                    </Row>
-                                </form>
-                            </Container>
-                        </Row>
-                    </ModalBody>
-                </Modal>
-            </Container >
+                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                        <div className="col-sm-12 text-center">
+                            <button type="submit" className="btn mr20 btn-primary" >
+                                {'Send For Approval'}
+                            </button>
+                            <button type={'button'} className="btn mr20 btn-secondary" onClick={this.resetForm} >
+                                {'Reset'}
+                            </button>
+                            <button type={'button'} className="btn btn-secondary" onClick={this.cancel} >
+                                {'Cancel'}
+                            </button>
+                        </div>
+                    </Row>
+                </form>
+            </>
+
         );
     }
 }
@@ -209,10 +279,10 @@ class Approval extends Component {
 */
 function mapStateToProps(state) {
     const { approval } = state;
-    const { approvalData, approvalDepartmentList, approvalUsersList, loading } = approval;
+    const { approvalData, approvalDepartmentList, approvalUsersList, reasonsList, loading } = approval;
     let initialValues = {};
 
-    return { loading, initialValues, approvalData, approvalDepartmentList, approvalUsersList }
+    return { loading, initialValues, approvalData, approvalDepartmentList, approvalUsersList, reasonsList }
 }
 
 export default connect(mapStateToProps, {
@@ -220,6 +290,7 @@ export default connect(mapStateToProps, {
     getAllApprovalDepartment,
     getAllApprovalUserByDepartment,
     sendForApproval,
+    getReasonSelectList,
 })(reduxForm({
     form: 'Approval',
     enableReinitialize: true,
