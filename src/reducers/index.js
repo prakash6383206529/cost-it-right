@@ -23,6 +23,7 @@ import costingReducer from './costing/Costing';
 import CostWorkingReducer from './costing/CostWorking';
 import ApprovalReducer from './costing/Approval';
 import MachineReducer from './master/MachineMaster';
+import PowerReducer from './master/PowerMaster';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -57,6 +58,7 @@ const allReducers = combineReducers({
    costWorking: CostWorkingReducer,
    approval: ApprovalReducer,
    machine: MachineReducer,
+   power: PowerReducer,
 });
 
 export default rootReducer;

@@ -35,6 +35,7 @@ import DepreciationMaster from './masters/sap-masters/depreciation-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
 import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
 import MachineMaster from './masters/sap-masters/machine-master';
+import PowerMaster from './masters/sap-masters/power-master';
 import MassUpload from './massUpload';
 
 import Costing from './costing';
@@ -158,6 +159,8 @@ class Main extends Component {
               <Route path="/mhr-master" component={AuthMiddleware(MHRMaster)} />
 
               <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
+
+              <Route path="/power-master" component={AuthMiddleware(PowerMaster)} />
 
               <Route path="/operation-master" component={AuthMiddleware(OperationMaster)} />
 
