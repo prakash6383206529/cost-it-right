@@ -264,7 +264,6 @@ export const API = {
   updateRoleAPI: `${BASE_URL}/user-role/update`,
   deleteRoleAPI: `${BASE_URL}/user-role/delete`,
   rolesSelectList: `${BASE_URL}/configuration/select-list-get-roles`,
-  getRolePermissionByUser: `${BASE_URL}/user-role/get-role-permissions-by-user`,
 
   //Department's API
   addDepartmentAPI: `${BASE_URL}/user-department/create`,
@@ -298,7 +297,9 @@ export const API = {
   getPageSelectList: `${BASE_URL}/app-privilege-permission/get-page-select-list`,
   setPagePermissionRoleWise: `${BASE_URL}/app-privilege-permission/set-page-permission-role-wise`,
   setPagePermissionUserWise: `${BASE_URL}/app-privilege-permission/set-page-permission-user-wise`,
-  setUserAdditionalPermission: `${BASE_URL}/user/set-user-additional-permissions`,
+  setUserAdditionalPermission: `${BASE_URL}/app-privilege-permission/set-user-additional-permissions`,
+  getRolePermissionByUser: `${BASE_URL}/app-privilege-permission/get-role-permissions-by-user`,
+  getActionHeadsSelectList: `${BASE_URL}/app-privilege-permission/get-action-heads-list`,
 
 }
 
@@ -553,6 +554,7 @@ export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST';
 export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS';
 export const GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS = 'GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS';
 export const GET_PAGES_SELECTLIST_SUCCESS = 'GET_PAGES_SELECTLIST_SUCCESS';
+export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SUCCESS';
 
 //COSTING STATUS
 export const APPROVED = 'Approved';

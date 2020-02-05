@@ -6,7 +6,7 @@ import { required, alphabetsOnlyForName, number } from "../../helper/validation"
 import { renderText, searchableSelect, renderSelectField } from "../layout/FormInputs";
 import {
     getAllUserAPI, rolesSelectList, getModuleSelectList, getRolePermissionByUser,
-    setUserAdditionalPermission,
+    setUserAdditionalPermission, getActionHeadsSelectList,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -16,45 +16,6 @@ import { Container, Row, Col, Table, Collapse, Button, CardBody, Card, CardTitle
 import { EAccessType } from "../../config/masterData";
 import NoContentFound from '../common/NoContentFound';
 import { CONSTANT } from '../../helper/AllConastant';
-
-const tempActionData = [
-    {
-        ModuleName: 'Dashboard',
-        id: 1,
-        // Actions: [
-        //     Add: {
-        //         isAllowed: false,
-        //     },
-        //     Edit: {
-        //         isAllowed: true,
-        //     }
-        // ],
-    },
-    {
-        ModuleName: 'Master',
-        id: 1,
-        // Actions: [
-        //     Add: {
-        //         isAllowed: false,
-        //     },
-        //     Edit: {
-        //         isAllowed: true,
-        //     }
-        // ],
-    },
-    {
-        ModuleName: 'Technology',
-        id: 1,
-        // Actions: [
-        //     Add: {
-        //         isAllowed: false,
-        //     },
-        //     Edit: {
-        //         isAllowed: true,
-        //     }
-        // ],
-    },
-]
 
 class PermissionsUserWise extends Component {
     constructor(props) {
@@ -70,7 +31,11 @@ class PermissionsUserWise extends Component {
             selectedModules: [],
             permissions: [],
             checkedAll: false,
-            actionData: tempActionData,
+
+            actionData: {},
+            Modules: [],
+            DefaultModuleIds: [],
+            moduleCheckedAll: [],
         };
     }
 
@@ -82,6 +47,7 @@ class PermissionsUserWise extends Component {
         const { permissions, selectedModules } = this.state;
         this.props.getAllUserAPI(() => { })
         this.props.rolesSelectList(() => { })
+        this.props.getActionHeadsSelectList(() => { })
         this.props.getModuleSelectList(() => {
             selectedModules.map((item, index) => {
                 permissions.push(item.Value)
@@ -105,76 +71,74 @@ class PermissionsUserWise extends Component {
             });
             return temp;
         }
-
     }
 
     /**
     * @method renderSelectedModule
     * @description used to render selected module for roles permission
     */
-    renderSelectedModule = () => {
-        const { selectedModules } = this.state;
+    // renderSelectedModule = () => {
+    //     const { selectedModules } = this.state;
 
-        return selectedModules && selectedModules.map((item, index) => {
-            return (
-                <div key={index} className={'col-md-4 additional'}>
-                    <label
-                        className="custom-checkbox"
-                    >
-                        {item.Text}
-                        <input type="checkbox" disabled={true} value={item.Value} checked={true} />
-                        <span
-                            className=" before-box"
-                            checked={true}
-                        />
-                    </label>
-                </div>
-            )
-        })
-    }
+    //     return selectedModules && selectedModules.map((item, index) => {
+    //         return (
+    //             <div key={index} className={'col-md-4 additional'}>
+    //                 <label
+    //                     className="custom-checkbox"
+    //                 >
+    //                     {item.Text}
+    //                     <input type="checkbox" disabled={true} value={item.Value} checked={true} />
+    //                     <span
+    //                         className=" before-box"
+    //                         checked={true}
+    //                     />
+    //                 </label>
+    //             </div>
+    //         )
+    //     })
+    // }
 
     /**
     * @method moduleHandler
     * @description used to select permission's
     */
-    moduleHandler = (ID) => {
-        const { permissions } = this.state;
-        let newArray = [];
-        if (permissions.includes(ID)) {
-            const index = permissions.indexOf(ID);
-            if (index > -1) {
-                permissions.splice(index, 1);
-            }
-            newArray = [...new Set(permissions)]
-        } else {
-            permissions.push(ID)
-            newArray = [...new Set(permissions)]
-        }
-        this.setState({ permissions: newArray }, () => {
-            this.setState({ checkedAll: this.isCheckAll() })
-        })
-    }
+    // moduleHandler = (ID) => {
+    //     const { permissions } = this.state;
+    //     let newArray = [];
+    //     if (permissions.includes(ID)) {
+    //         const index = permissions.indexOf(ID);
+    //         if (index > -1) {
+    //             permissions.splice(index, 1);
+    //         }
+    //         newArray = [...new Set(permissions)]
+    //     } else {
+    //         permissions.push(ID)
+    //         newArray = [...new Set(permissions)]
+    //     }
+    //     this.setState({ permissions: newArray }, () => {
+    //         this.setState({ checkedAll: this.isCheckAll() })
+    //     })
+    // }
 
     /**
     * @method selectAllHandler
     * @description used to select permission's
     */
-    selectAllHandler = () => {
-        const { permissions, checkedAll } = this.state;
-        const { moduleSelectList } = this.props;
-        let tempArray = [];
-        let tempObj = {}
-        if (checkedAll) {
-            this.setState({ permissions: tempArray, checkedAll: false }, () => { console.log('All', this.state.permissions) })
-        } else {
-            moduleSelectList && moduleSelectList.map((item, index) => {
-                if (item.Value == 0) return false;
-                return tempArray.push(item.Value)
-            })
-            this.setState({ permissions: tempArray, checkedAll: true }, () => { console.log('All', this.state.permissions) })
-        }
-
-    }
+    // selectAllHandler = () => {
+    //     const { permissions, checkedAll } = this.state;
+    //     const { moduleSelectList } = this.props;
+    //     let tempArray = [];
+    //     let tempObj = {}
+    //     if (checkedAll) {
+    //         this.setState({ permissions: tempArray, checkedAll: false }, () => { console.log('All', this.state.permissions) })
+    //     } else {
+    //         moduleSelectList && moduleSelectList.map((item, index) => {
+    //             if (item.Value == 0) return false;
+    //             return tempArray.push(item.Value)
+    //         })
+    //         this.setState({ permissions: tempArray, checkedAll: true }, () => { console.log('All', this.state.permissions) })
+    //     }
+    // }
 
     /**
     * @method isSelected
@@ -189,86 +153,86 @@ class PermissionsUserWise extends Component {
     * @method isCheckAll
     * @description used to select permission's
     */
-    isCheckAll = () => {
-        const { permissions } = this.state;
-        const { moduleSelectList } = this.props;
-        if (moduleSelectList && moduleSelectList != undefined) {
-            return moduleSelectList.length - 1 == permissions.length ? true : false;
-        }
-    }
+    // isCheckAll = () => {
+    //     const { permissions } = this.state;
+    //     const { moduleSelectList } = this.props;
+    //     if (moduleSelectList && moduleSelectList != undefined) {
+    //         return moduleSelectList.length - 1 == permissions.length ? true : false;
+    //     }
+    // }
 
     /**
     * @method renderAdditionalModule
     * @description used to render additional module checkbox for permission
     */
-    renderAdditionalModule = () => {
-        const { moduleSelectList } = this.props;
-        const { selectedModules } = this.state;
+    // renderAdditionalModule = () => {
+    //     const { moduleSelectList } = this.props;
+    //     const { selectedModules } = this.state;
 
-        return moduleSelectList && moduleSelectList.map((item, index) => {
-            if (item.Value == 0) return false;
-            return (
-                <div key={index} className={'col-md-3 additional'}>
-                    <label
-                        className="custom-checkbox"
-                        onChange={() => this.moduleHandler(item.Value)}
-                    >
-                        {item.Text}
-                        <input type="checkbox" value={item.Value} checked={this.isSelected(item.Value)} />
-                        <span
-                            className=" before-box"
-                            checked={this.isSelected(item.Value)}
-                            onChange={() => this.moduleHandler(item.Value)}
-                        />
-                    </label>
-                </div>
-            )
-        })
-    }
+    //     return moduleSelectList && moduleSelectList.map((item, index) => {
+    //         if (item.Value == 0) return false;
+    //         return (
+    //             <div key={index} className={'col-md-3 additional'}>
+    //                 <label
+    //                     className="custom-checkbox"
+    //                     onChange={() => this.moduleHandler(item.Value)}
+    //                 >
+    //                     {item.Text}
+    //                     <input type="checkbox" value={item.Value} checked={this.isSelected(item.Value)} />
+    //                     <span
+    //                         className=" before-box"
+    //                         checked={this.isSelected(item.Value)}
+    //                         onChange={() => this.moduleHandler(item.Value)}
+    //                     />
+    //                 </label>
+    //             </div>
+    //         )
+    //     })
+    // }
 
     /**
     * @method handleUser
     * @description Used to handle user
     */
-    handleUser = (newValue, actionMeta) => {
-        if (newValue && newValue != null) {
-            this.setState({ user: newValue, permissions: [] }, () => {
-                this.getRolePermission()
-            });
-        } else {
-            this.props.change('Role', '');
-            this.setState({
-                user: [],
-                permissions: [],
-                selectedModules: []
-            });
-        }
-    };
+    // handleUser = (newValue, actionMeta) => {
+    //     if (newValue && newValue != null) {
+    //         this.setState({ user: newValue, permissions: [] }, () => {
+    //             this.getRolePermission()
+    //         });
+    //     } else {
+    //         this.props.change('Role', '');
+    //         this.setState({
+    //             user: [],
+    //             permissions: [],
+    //             selectedModules: []
+    //         });
+    //     }
+    // };
 
     /**
     * @method getRolePermission
     * @description Used to handle response of getRolePermissionByUser, called when user change
     */
-    getRolePermission = () => {
-        const { user, permissions } = this.state;
-        this.props.getRolePermissionByUser(user.value, (res) => {
-            if (res && res.data && res.data.Data) {
-                let Data = res.data.Data;
-                let ModulePermissions = Data.RoleInfo.ModulePermissions;
+    // getRolePermission = () => {
+    //     const { user, permissions } = this.state;
+    //     this.props.getRolePermissionByUser(user.value, (res) => {
+    //         if (res && res.data && res.data.Data) {
+    //             let Data = res.data.Data;
+    //             let ModulePermissions = Data.RoleInfo.ModulePermissions;
 
-                ModulePermissions && ModulePermissions.map((item, i) => {
-                    permissions.push(item.Value)
-                })
+    //             ModulePermissions && ModulePermissions.map((item, i) => {
+    //                 permissions.push(item.Value)
+    //             })
 
-                this.props.change('Role', Data.RoleInfo.RoleName);
-                this.setState({
-                    selectedModules: ModulePermissions,
-                    permissions,
-                    roleId: Data.RoleInfo.RoleId,
-                })
-            }
-        })
-    }
+    //             this.props.change('Role', Data.RoleInfo.RoleName);
+    //             this.setState({
+    //                 selectedModules: ModulePermissions,
+    //                 permissions,
+    //                 roleId: Data.RoleInfo.RoleId,
+    //             })
+    //         }
+    //     })
+    // }
 
     /**
     * @method addPermission
@@ -297,22 +261,238 @@ class PermissionsUserWise extends Component {
 
     // //////////////////////////////////////////////////////////////////////////////
     /**
-    * @method rowAllHandler
-    * @description used to add more permission for user
+    * @method isCheckModuleAll
+    * @description used to check Module checkbox, if select all and actions checked
     */
-    rowAllHandler = (index) => {
-        console.log('index', index)
+    isCheckModuleAll = (parentIndex, parentIsChecked, actionData) => {
+        const { Modules } = this.state;
+        const { actionSelectList } = this.props;
+
+        let tempArray = actionData.filter(item => item.IsChecked == true)
+        if (actionData && actionData != undefined) {
+            return tempArray.length == actionSelectList.length - 1 ? true : false;
+        }
     }
 
+    /**
+    * @method renderActionHeads
+    * @description used to add more permission for user
+    */
+    renderActionHeads = (actionHeads) => {
+        return actionHeads && actionHeads.map((item, index) => {
+            if (item.Value == 0) return false;
+            return (
+                <th >{item.Text}</th>
+            )
+        })
+    }
 
+    /**
+    * @method renderAction
+    * @description used to render row of actions
+    */
+    renderAction = (actions, parentIndex) => {
+        const { actionSelectList } = this.props;
 
+        return actionSelectList && actionSelectList.map((el, i) => {
+            return actions && actions.map((item, index) => {
+                if (el.Text != item.ActionName) return false;
+                return (
+                    <td>
+                        {<input
+                            type="checkbox"
+                            value={item.ActionId}
+                            onChange={() => this.actionCheckHandler(parentIndex, index)}
+                            checked={item.IsChecked}
+                        />}
+                    </td>
+                )
+            })
+        })
+    }
 
+    /**
+    * @method actionCheckHandler
+    * @description Used to check/uncheck action's checkbox
+    */
+    actionCheckHandler = (parentIndex, childIndex) => {
+        const { Modules } = this.state;
 
+        let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
+        let actionArray = actionRow && actionRow.map((el, index) => {
+            if (childIndex == index) {
+                el.IsChecked = !el.IsChecked
+            }
+            return el;
+        })
+        let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+        this.setState({ Modules: tempArray })
+    }
 
+    /**
+    * @method handleUser
+    * @description Used to handle user
+    */
+    handleUser = (newValue, actionMeta) => {
+        if (newValue && newValue != null) {
+            this.setState({ user: newValue }, () => {
+                this.getRolePermission()
+            });
+        } else {
+            this.props.change('Role', '');
+            this.setState({
+                user: [],
+                actionData: {},
+                Modules: [],
+                DefaultModuleIds: [],
+                roleId: '',
+            })
+        }
+    };
 
+    getRolePermission = () => {
+        const { user, permissions } = this.state;
+        this.props.getRolePermissionByUser(user.value, (res) => {
+            if (res && res.data && res.data.Data) {
 
+                let Data = res.data.Data;
+                let Modules = res.data.Data.Modules;
+                let DefaultModuleIds = res.data.Data.DefaultModuleIds;
 
+                let moduleCheckedArray = [];
+                Modules && Modules.map((el, i) => {
+                    let tempObj = {
+                        ModuleName: el.ModuleName,
+                        IsChecked: el.IsChecked,
+                        ModuleId: el.ModuleId,
+                    }
+                    moduleCheckedArray.push(tempObj)
+                })
+                this.props.change('Role', Data.RoleInfo.RoleName);
 
+                this.setState({
+                    actionData: Data,
+                    Modules: Modules,
+                    DefaultModuleIds: DefaultModuleIds,
+                    roleId: Data.RoleInfo.RoleId,
+                    moduleCheckedAll: moduleCheckedArray,
+                })
+            }
+        })
+    }
+
+    /**
+    * @method renderSelectedModule
+    * @description used to render selected module for roles permission
+    */
+    renderSelectedModule = () => {
+        const { DefaultModuleIds } = this.state;
+        const { moduleSelectList } = this.props;
+
+        return moduleSelectList && moduleSelectList.map((item, index) => {
+            if (DefaultModuleIds.includes(item.Value) == false) return false;
+            return (
+                <div key={index} className={'col-md-2 additional'}>
+                    <label
+                        className="custom-checkbox"
+                    >
+                        {item.Text}
+                        <input type="checkbox" disabled={true} value={item.Value} checked={true} />
+                        <span
+                            className=" before-box"
+                            checked={true}
+                        />
+                    </label>
+                </div>
+            )
+        })
+    }
+
+    /**
+    * @method moduleHandler
+    * @description used to checked module
+    */
+    moduleHandler = (index) => {
+        //alert('hi')
+        const { Modules, checkedAll } = this.state;
+        const isModuleChecked = Modules[index].IsChecked;
+
+        let actionArray = [];
+        let tempArray = [];
+
+        let actionRow = (Modules && Modules != undefined) ? Modules[index].Actions : [];
+        if (isModuleChecked) {
+            actionArray = actionRow && actionRow.map((item, index) => {
+                item.IsChecked = false;
+                return item;
+            })
+
+            tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
+
+            this.setState({ Modules: tempArray, checkedAll: false })
+        } else {
+            actionArray = actionRow && actionRow.map((item, index) => {
+                item.IsChecked = true;
+                return item;
+            })
+
+            tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
+
+            this.setState({ Modules: tempArray, checkedAll: true })
+        }
+    }
+
+    /**
+    * @method isCheckAll
+    * @description used to select module's action row (Horizontally)
+    */
+    isCheckAll = (parentIndex, actionData) => {
+        const { Modules, moduleCheckedAll } = this.state;
+        const { actionSelectList } = this.props;
+
+        //let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
+
+        let tempArray = actionData.filter(item => item.IsChecked == true)
+        //console.log('tempArray', tempArray.length)
+        if (actionData && actionData != undefined) {
+            return tempArray.length == actionSelectList.length - 1 ? true : false;
+        }
+    }
+
+    selectAllHandler = (parentIndex, actionRows) => {
+        const { Modules, checkedAll } = this.state;
+        const { moduleSelectList, actionSelectList } = this.props;
+
+        //let actionRows = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
+        //console.log('actionRows', parentIndex, actionRows)
+        let checkedActions = actionRows.filter(item => item.IsChecked == true)
+
+        let tempArray = [];
+        let tempObj = {}
+        let isCheckedSelectAll = (checkedActions.length == actionSelectList.length - 1) ? true : false;
+
+        if (isCheckedSelectAll) {
+            let actionArray = actionRows && actionRows.map((item, index) => {
+                item.IsChecked = false;
+                return item;
+            })
+            tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+            this.setState({
+                Modules: tempArray,
+                checkedAll: false,
+            })
+        } else {
+            let actionArray = actionRows && actionRows.map((item, index) => {
+                item.IsChecked = true;
+                return item;
+            })
+            tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+            this.setState({
+                Modules: tempArray,
+                checkedAll: true
+            })
+        }
+    }
 
 
 
@@ -329,8 +509,8 @@ class PermissionsUserWise extends Component {
         reset();
         this.setState({
             user: [],
-            permissions: [],
-            selectedModules: []
+            Modules: [],
+            DefaultModuleIds: []
         });
     }
 
@@ -342,26 +522,39 @@ class PermissionsUserWise extends Component {
      */
     onSubmit(values) {
         const { reset } = this.props;
-        const { user, roleId, selectedModules, permissions } = this.state;
+        const { user, roleId, DefaultModuleIds, Modules } = this.state;
 
         this.setState({ isLoader: true })
 
-        //Permission that alloted while role creation.
-        let DefaultModuleIds = [];
-        selectedModules && selectedModules.map((item, index) => {
-            DefaultModuleIds.push(item.Value)
+        //DefaultIds that alloted while role creation.
+        // let DefaultIds = [];
+        // DefaultModuleIds && DefaultModuleIds.map((item, index) => {
+        //     DefaultIds.push(item.Value)
+        // })
+
+        let checkedModuleIds = [];
+        Modules && Modules.map((el) => {
+            if (el.IsChecked) {
+                checkedModuleIds.push(el.ModuleId)
+            }
         })
 
-        //Permission that has been removed from default permissions(Default modules)
-        let difference = DefaultModuleIds.filter(x => !permissions.includes(x));
+        //Additonal module that has been added apart from default privilege(Modules)
+        let Additonal = checkedModuleIds.filter(x => !DefaultModuleIds.includes(x));
+
+        //Modules that has been removed from default modules.
+        let difference = DefaultModuleIds.filter(x => !checkedModuleIds.includes(x));
+
         let formData = {
             UserId: user.value,
             RoleId: roleId,
             DefaultModuleIds: DefaultModuleIds,
-            AdditionalModuleIds: permissions,
-            RemovedModuleIds: difference
+            AdditionalModuleIds: Additonal,
+            RemovedModuleIds: difference,
+            Modules: Modules,
         }
 
+        console.log('formData', formData)
         this.props.setUserAdditionalPermission(formData, (res) => {
             if (res && res.data && res.data.Result) {
                 toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
@@ -369,8 +562,8 @@ class PermissionsUserWise extends Component {
             reset();
             this.setState({
                 isLoader: false,
-                selectedModules: [],
-                permissions: [],
+                DefaultModuleIds: [],
+                Modules: [],
                 user: [],
             })
         })
@@ -378,7 +571,7 @@ class PermissionsUserWise extends Component {
 
 
     render() {
-        const { handleSubmit, pristine, reset, submitting } = this.props;
+        const { handleSubmit, pristine, reset, submitting, actionSelectList } = this.props;
         const { isLoader, isSubmitted, isOpen } = this.state;
 
         return (
@@ -393,7 +586,7 @@ class PermissionsUserWise extends Component {
                         </div>
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             <div className=" row form-group">
-                                <div className="col-md-3 input-withouticon" >
+                                <div className="col-md-6 input-withouticon" >
                                     <Field
                                         label="User Id"
                                         name="UserId"
@@ -422,13 +615,15 @@ class PermissionsUserWise extends Component {
                                         disabled={true}
                                     />
                                 </div>
-                                <div className="col-md-6 input-withouticon" >
-                                    <label>Permission's</label>
+
+                            </div>
+                            <div className=" row form-group">
+                                <div className="col-md-12 input-withouticon" >
+                                    <label>Default Permission's</label>
                                     {this.renderSelectedModule()}
-                                    {this.state.selectedModules.length == 0 ? <b>{"Permission's Not allowed yet"}</b> : ''}
+                                    {this.state.DefaultModuleIds.length == 0 ? <b>{"Permission's Not allowed yet"}</b> : ''}
                                 </div>
                             </div>
-
                             {/* <div className=" row form-group">
                                 <div className="col-md-3 input-withouticon" >
                                     <button
@@ -469,29 +664,41 @@ class PermissionsUserWise extends Component {
                                     <tr>
                                         <th>{`Module Name`}</th>
                                         <th>{`Select All`}</th>
-                                        <th>{`Add`}</th>
-                                        <th>{`Edit`}</th>
-                                        <th>{`Delete`}</th>
-                                        <th>{'View'}</th>
-                                        <th>{`Download`}</th>
+                                        {this.renderActionHeads(actionSelectList)}
                                     </tr>
                                 </thead>
                                 <tbody >
-                                    {this.state.actionData && this.state.actionData.map((item, index) => {
-                                        const isEdit = item && item.Edit && item.Edit.isAllowed ? true : false;
+                                    {this.state.Modules && this.state.Modules.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td >{item.ModuleName}</td>
-                                                <td >{<input type="checkbox" value={'All'} onClick={() => this.rowAllHandler(index)} />}</td>
-                                                <td >{<input type="checkbox" value={'All'} />}</td>
-                                                <td >{isEdit ? <input type="checkbox" value={'All'} checked={true} /> : '-'}</td>
-                                                <td >{'-'}</td>
-                                                <td >{'-'}</td>
-                                                <td >{'-'}</td>
+
+                                                <td >{
+                                                    <label
+                                                        className="custom-checkbox"
+                                                        onChange={() => this.moduleHandler(index)}
+                                                    >
+                                                        {item.ModuleName}
+                                                        <input type="checkbox" value={'All'} checked={item.IsChecked} />
+                                                        <span
+                                                            className=" before-box"
+                                                            checked={item.IsChecked}
+                                                            onChange={() => this.moduleHandler(index)}
+                                                        />
+                                                    </label>
+                                                }
+                                                </td>
+
+                                                <td >{<input
+                                                    type="checkbox"
+                                                    value={'All'}
+                                                    checked={this.isCheckAll(index, item.Actions)}
+                                                    onClick={() => this.selectAllHandler(index, item.Actions)} />}</td>
+
+                                                {this.renderAction(item.Actions, index)}
                                             </tr>
                                         )
                                     })}
-                                    {this.state.actionData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                    {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                 </tbody>
                             </Table>
 
@@ -525,9 +732,9 @@ class PermissionsUserWise extends Component {
 * @param {*} state
 */
 const mapStateToProps = ({ auth }) => {
-    const { userList, roleSelectList, moduleSelectList } = auth;
+    const { userList, roleSelectList, moduleSelectList, actionSelectList } = auth;
 
-    return { userList, roleSelectList, moduleSelectList };
+    return { userList, roleSelectList, moduleSelectList, actionSelectList };
 };
 
 /**
@@ -542,6 +749,7 @@ export default connect(mapStateToProps, {
     getModuleSelectList,
     getRolePermissionByUser,
     setUserAdditionalPermission,
+    getActionHeadsSelectList,
 })(reduxForm({
     form: 'PermissionsUserWise',
     enableReinitialize: true,

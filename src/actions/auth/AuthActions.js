@@ -30,6 +30,7 @@ import {
     GET_MODULE_SELECTLIST_SUCCESS,
     GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS,
     GET_PAGES_SELECTLIST_SUCCESS,
+    GET_ACTION_HEAD_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -725,6 +726,32 @@ export function getRolePermissionByUser(UserId, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getPageSelectList
+ * @description get Page select list
+ */
+export function getActionHeadsSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getActionHeadsSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ACTION_HEAD_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
