@@ -16,7 +16,8 @@ import {
 import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class PartBOMRegister extends Component {
     constructor(props) {
@@ -456,6 +457,7 @@ class PartBOMRegister extends Component {
         console.log("values from BOM", values)
         const { selectedParts, IsChildPart, materialType, newPartRMType, selectedUOM, assyPartNo, ChildPart, plantID, newPartPlantID,
             isNewPartBtnShow } = this.state;
+        let loginUserId = loggedInUserId();
         let plantArray = [];
         selectedParts && selectedParts.map((item, i) => {
             return plantArray.push({ PartId: item.Value });
@@ -495,7 +497,7 @@ class PartBOMRegister extends Component {
                 EcoNumber: values.NewChildPart_EcoNumber,
                 RevisionNumber: values.NewChildPart_RevisionNumber,
                 IsActive: true,
-                CreatedBy: "",
+                CreatedBy: loginUserId,
                 PartId: "",
                 PartNumber: values.NewChildPart_PartNumber,
                 PartDescription: values.NewChildPart_PartDescription,
@@ -526,7 +528,7 @@ class PartBOMRegister extends Component {
             PartId: assyPartNo.value,
             PartNumber: assyPartNo.label,
             PlantId: values.PlantId,
-            CreatedBy: "",
+            CreatedBy: loginUserId,
             SerialNumber: 0,
             PartType: materialType.label,
             IsActive: true
