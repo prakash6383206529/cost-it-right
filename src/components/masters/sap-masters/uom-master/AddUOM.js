@@ -5,11 +5,12 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText } from "../../../layout/FormInputs";
 import {
-    createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI,
-    getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
+    createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI,
+    getUnitOfMeasurementAPI
 } from '../../../../actions/master/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddUOM extends Component {
     constructor(props) {
@@ -46,6 +47,8 @@ class AddUOM extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        let loginUserId = loggedInUserId();
+        values.CreatedBy = loginUserId;
         /** Update detail of the existing UOM  */
         if (this.props.isEditFlag) {
             const { uomId } = this.props;
@@ -56,6 +59,7 @@ class AddUOM extends Component {
                 //Description: values.Description,
                 Id: uomId,
                 IsActive: true,
+                ModifiedBy: loginUserId,
             }
             this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
                 if (res.data.Result) {

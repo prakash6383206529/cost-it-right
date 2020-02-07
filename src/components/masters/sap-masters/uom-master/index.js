@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Container, Row, Col, Button, Table
-} from 'reactstrap';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../../actions/master/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
@@ -104,42 +102,39 @@ class UOMMaster extends Component {
                 </Row>
 
                 <hr />
-                {/* <Row>
+                <Row>
                     <Col>
-                        <h5>{`${CONSTANT.UOM} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row> */}
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>UOM Name</th>
-                                    <th>UOM Title</th>
-                                    {/* <th>UOM Description</th> */}
-                                    <th></th>
-                                </tr>
-                            </thead>}
-                        <tbody>
+                        <Table className="table table-striped" bordered>
                             {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
-                                this.props.unitOfMeasurementList.map((item, index) => {
-                                    return (
+                                <thead>
+                                    <tr>
+                                        <th>UOM Name</th>
+                                        <th>UOM Title</th>
+                                        {/* <th>UOM Description</th> */}
+                                        <th></th>
+                                    </tr>
+                                </thead>}
+                            <tbody>
+                                {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
+                                    this.props.unitOfMeasurementList.map((item, index) => {
+                                        return (
 
-                                        <tr key={index}>
-                                            <td >{item.Name}</td>
-                                            <td>{item.Title}</td>
-                                            {/* <td>{item.Description}</td> */}
-                                            <td>
-                                                <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.unitOfMeasurementList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                            <tr key={index}>
+                                                <td >{item.Name}</td>
+                                                <td>{item.Title}</td>
+                                                {/* <td>{item.Description}</td> */}
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.unitOfMeasurementList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddUOM
                         isOpen={isOpen}
