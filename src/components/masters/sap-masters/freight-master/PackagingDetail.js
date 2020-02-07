@@ -94,13 +94,8 @@ class PackagingDetail extends Component {
         const { isOpen, isEditFlag, freightId } = this.state;
         const { packagingDataRows } = this.props;
         return (
-            <Container>
+            <>
                 {/* {this.props.loading && <Loader/>} */}
-                {/* <Row>
-                    <Col>
-                        <h5>{`Packaging ${CONSTANT.DETAILS}`}</h5>
-                    </Col>
-                </Row> */}
                 <Row>
                     <Col>
                         <Table className="table table-striped" bordered>
@@ -162,7 +157,7 @@ class PackagingDetail extends Component {
                         />
                     )
                 }
-            </Container >
+            </ >
         );
     }
 }

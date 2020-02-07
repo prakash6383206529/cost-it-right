@@ -11,7 +11,8 @@ import {
 import { fetchFreightComboAPI, getPlantBySupplier } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddFreight extends Component {
     constructor(props) {
@@ -205,8 +206,9 @@ class AddFreight extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { sourceSupplier, sourcePlant, sourceCity, destinationSupplier,
-            destinationPlant, destinationCity, loadUnloadHead, packagingHead } = this.state;
+        const { sourceSupplier, sourcePlant, sourceCity, destinationSupplier, destinationPlant, destinationCity,
+            loadUnloadHead, packagingHead } = this.state;
+        let loginUserId = loggedInUserId();
 
         /** Update detail of the existing Freight  */
         if (this.props.isEditFlag) {
@@ -246,6 +248,7 @@ class AddFreight extends Component {
                     TollTax: values.TollTax,
                     Concession: values.Concession,
                     IsActive: true,
+                    CreatedBy: loginUserId,
                 }
 
                 this.props.updateFreightAPI(formData, (res) => {
@@ -283,7 +286,8 @@ class AddFreight extends Component {
                     PerKilogram: values.PerKilogram,
                     LodingUnloadingCostingHeadsId: values.LodingUnloadingCostingHeadsId,
                     LodingUnloading: values.LodingUnloading,
-                    IsActive: true
+                    IsActive: true,
+                    CreatedBy: loginUserId,
                 }
 
                 this.props.updateAdditionalFreightByIdAPI(formData, (res) => {
@@ -321,6 +325,7 @@ class AddFreight extends Component {
                     FullTruckLoadRateTwentyFiveTon: values.FullTruckLoadRateTwentyFiveTon,
                     FullTruckLoadRateThirtyOneTon: values.FullTruckLoadRateThirtyOneTon,
                     FullTruckLoadRateTrailer: values.FullTruckLoadRateTrailer,
+                    CreatedBy: loginUserId,
                 }
 
                 console.log('values: ', freighformData);
@@ -355,7 +360,7 @@ class AddFreight extends Component {
                     IsActive: true,
                     IsModified: true,
                     CreatedDate: "",
-                    CreatedBy: ""
+                    CreatedBy: loginUserId,
                 }
 
                 console.log('values: ', packagingformData);

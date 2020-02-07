@@ -99,13 +99,8 @@ class PackagingDetail extends Component {
     render() {
         const { isOpen, isEditFlag, freightId } = this.state;
         return (
-            <Container>
+            <>
                 {/* {this.props.loading && <Loader/>} */}
-                {/* <Row>
-                    <Col>
-                        <h5>{`${CONSTANT.FREIGHT} ${CONSTANT.DETAILS}`}</h5>
-                    </Col>
-                </Row> */}
                 <Row>
                     <Col>
                         <Table className="table table-striped" bordered>
@@ -181,7 +176,7 @@ class PackagingDetail extends Component {
                         FreightType={this.state.FreightType}
                     />
                 )}
-            </Container >
+            </ >
         );
     }
 }
