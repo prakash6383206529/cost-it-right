@@ -9,6 +9,7 @@ import { fetchRowMaterialAPI, fetchRMGradeAPI } from '../../../../../actions/mas
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../../helper/auth";
 
 class AddSpecification extends Component {
     constructor(props) {
@@ -79,6 +80,10 @@ class AddSpecification extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
+        let loginUserId = loggedInUserId();
+        //values.CreatedBy = loginUserId;
+
         this.props.createRMSpecificationAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);

@@ -9,6 +9,7 @@ import { createRMDetailAPI, getMaterialDetailAPI } from '../../../../../actions/
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
+import { loggedInUserId } from "../../../../../helper/auth";
 
 class AddRMDetail extends Component {
     constructor(props) {
@@ -104,6 +105,10 @@ class AddRMDetail extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
+        let loginUserId = loggedInUserId();
+        //values.CreatedBy = loginUserId;
+
         const formData = {
             BasicRate: values.BasicRate,
             Quantity: values.Quantity,

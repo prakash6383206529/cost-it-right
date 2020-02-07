@@ -9,6 +9,7 @@ import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddSupplier extends Component {
     constructor(props) {
@@ -153,7 +154,7 @@ class AddSupplier extends Component {
     onSubmit = (values) => {
         const { selectedPlants, supplierType, CityId } = this.state;
         const { radioSupplierTypeList } = this.props;
-
+        let loginUserId = loggedInUserId();
         const tempObj = radioSupplierTypeList.find(item => item.Value == supplierType)
 
         let plantArray = [];
@@ -174,6 +175,7 @@ class AddSupplier extends Component {
                 SelectedPlants: plantArray,
                 SupplierId: supplierId,
                 IsActive: true,
+                UserId: loginUserId,
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
@@ -200,7 +202,7 @@ class AddSupplier extends Component {
                 SupplierTypeId: tempObj.Value,
                 SelectedPlants: plantArray,
                 IsActive: true,
-                UserId: "00000000-0000-0000-0000-000000000000",
+                UserId: loginUserId,
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,

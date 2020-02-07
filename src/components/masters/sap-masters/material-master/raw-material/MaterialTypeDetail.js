@@ -32,31 +32,33 @@ class MaterialTypeDetail extends Component {
         return (
             <div>
                 {/* {this.props.loading && <Loader/>} */}
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.rmTypeDetail && this.props.rmTypeDetail.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
-                                    <th>{`${CONSTANT.DESCRIPTION}`}</th>
-                                    <th>{`${CONSTANT.DATE}`}</th>
-                                </tr>
-                            </thead>}
-                        <tbody >
+                <Row>
+                    <Col>
+                        <Table className="table table-striped" bordered>
                             {this.props.rmTypeDetail && this.props.rmTypeDetail.length > 0 &&
-                                this.props.rmTypeDetail.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.MaterialType}</td>
-                                            <td>{item.Description}</td>
-                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.rmTypeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
+                                        <th>{`${CONSTANT.DESCRIPTION}`}</th>
+                                        <th>{`${CONSTANT.DATE}`}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.rmTypeDetail && this.props.rmTypeDetail.length > 0 &&
+                                    this.props.rmTypeDetail.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.MaterialType}</td>
+                                                <td>{item.Description}</td>
+                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.rmTypeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
             </div>
         );
     }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import { required, number, maxLength6, maxLength10 } from "../../../../helper/validation";
-import { userDetails } from "../../../../helper/auth";
+import { userDetails, loggedInUserId } from "../../../../helper/auth";
 import { renderText, renderSelectField } from "../../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI } from '../../../../actions/master/Comman';
@@ -126,6 +126,7 @@ class AddPlant extends Component {
         console.log("values", values)
         const { cityId, IsZBCPlant } = this.state;
         let userDetail = userDetails();
+        let loginUserId = loggedInUserId();
 
         let formData = {
             PlantName: values.PlantName,
@@ -137,9 +138,10 @@ class AddPlant extends Component {
             ZipCode: values.ZipCode,
             PhoneNumber: values.PhoneNumber,
             Extension: values.Extension,
-            CreatedByUserId: '',
+            CreatedByUserId: loginUserId,
             IsPlantForZBC: IsZBCPlant,
-            ZBCSupplierId: IsZBCPlant ? userDetail.ZBCSupplierInfo.SupplierId : '',
+            ZBCSupplierId: IsZBCPlant ? userDetail.ZBCSupplierInfo.SupplierId : null,
+            ESupplierType: 0,
         }
         if (this.props.isEditFlag) {
             const { PlantId } = this.props;
@@ -155,10 +157,11 @@ class AddPlant extends Component {
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
-                CreatedByUserId: '',
+                CreatedByUserId: loginUserId,
                 IsActive: this.state.isActiveBox,
                 IsPlantForZBC: IsZBCPlant,
-                ZBCSupplierId: IsZBCPlant ? userDetail.ZBCSupplierInfo.SupplierId : '',
+                ZBCSupplierId: IsZBCPlant ? userDetail.ZBCSupplierInfo.SupplierId : null,
+                ESupplierType: 0,
             }
             this.props.updatePlantAPI(PlantId, formData1, (res) => {
                 if (res.data.Result) {

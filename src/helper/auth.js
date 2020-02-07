@@ -14,3 +14,13 @@ export function userDetails() {
     const userDetail = reactLocalStorage.getObject("userDetail");
     return userDetail;
 };
+
+export function loggedInUserId() {
+    const isLoggedIn = reactLocalStorage.getObject("isUserLoggedIn");
+    if (isLoggedIn == true) {
+        const userDetail = reactLocalStorage.getObject("userDetail");
+        return userDetail.LoggedInUserId;
+    } else {
+        return null;
+    }
+};

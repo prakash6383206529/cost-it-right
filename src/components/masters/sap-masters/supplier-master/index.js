@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Container, Row, Col, Button, Table
-} from 'reactstrap';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddSupplier from './AddSupplier';
 import { getSupplierDetailAPI, deleteSupplierAPI } from '../../../../actions/master/Supplier';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import {
-    convertISOToUtcDate,
-} from '../../../../helper';
+import { convertISOToUtcDate, } from '../../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import NoContentFound from '../../../common/NoContentFound';
@@ -122,7 +118,7 @@ class SupplierMaster extends Component {
                     </Col>
                 </Row>
                 <Col>
-                    <Table className="table table-striped" bordered>
+                    <Table className="table table-striped" hover bordered>
                         {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
                             <thead>
                                 <tr>
@@ -152,10 +148,10 @@ class SupplierMaster extends Component {
                                             <td>{item.SupplierNameWithCode}</td>
                                             <td>{this.associatedPlantsHandler(item.AssociatedPlants)}</td>
                                             <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                            <div>
+                                            <td>
                                                 <Button className="btn btn-secondary" onClick={() => this.editDetails(item.SupplierId)}><i className="fas fa-pencil-alt"></i></Button>
                                                 <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.SupplierId)}><i className="far fa-trash-alt"></i></Button>
-                                            </div>
+                                            </td>
                                         </tr>
                                     )
                                 })}

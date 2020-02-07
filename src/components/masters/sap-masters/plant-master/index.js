@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Container, Row, Col, Button, Table
-} from 'reactstrap';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddPlant from './AddPlant';
 import { getPlantDataAPI, deletePlantAPI } from '../../../../actions/master/Plant';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
+import { convertISOToUtcDate } from '../../../../helper/util'
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import NoContentFound from '../../../common/NoContentFound';
@@ -119,6 +118,7 @@ class PlantMaster extends Component {
                                     <th>{`${CONSTANT.ADDRESS}`}</th>
                                     <th>{`${CONSTANT.CITY}`}</th>
                                     <th>{`Status`}</th>
+                                    <th>{`Created Date`}</th>
                                     <th>{``}</th>
                                 </tr>
                             </thead>}
@@ -136,6 +136,7 @@ class PlantMaster extends Component {
                                             <td>{`${address1} ${address2} ${ZipCode}`}</td>
                                             <td>{item.CityName}</td>
                                             <td>{item && item.IsActive ? 'Active' : 'Inactive'}</td>
+                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                             <td>
                                                 <Button className="btn btn-secondary" onClick={() => this.editRow(index, item.PlantId)}><i className="fas fa-pencil-alt"></i></Button>
                                                 <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.PlantId)}><i className="far fa-trash-alt"></i></Button>

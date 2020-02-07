@@ -9,6 +9,7 @@ import { fetchRowMaterialAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../../helper/auth";
 
 class AddGrade extends Component {
     constructor(props) {
@@ -63,6 +64,10 @@ class AddGrade extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
+        let loginUserId = loggedInUserId();
+        //values.CreatedBy = loginUserId;
+
         this.props.createRMGradeAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.GRADE_ADD_SUCCESS);

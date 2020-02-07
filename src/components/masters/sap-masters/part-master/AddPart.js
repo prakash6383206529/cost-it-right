@@ -11,6 +11,7 @@ import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddPart extends Component {
     constructor(props) {
@@ -129,7 +130,10 @@ class AddPart extends Component {
     */
     onSubmit = (values) => {
         /** Updating the existing part master detail **/
+        let loginUserId = loggedInUserId();
+
         if (this.props.isEditFlag) {
+
             const { partId } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
@@ -144,6 +148,7 @@ class AddPart extends Component {
                 PartId: partId,
                 IsAssembly: this.state.IsPartAssociatedWithBOM,
                 IsPartAssociatedWithBOM: this.state.IsPartAssociatedWithBOM,
+                CreatedBy: loginUserId,
             }
             this.props.updatePartsAPI(formData, (res) => {
                 if (res.data.Result) {
@@ -154,10 +159,15 @@ class AddPart extends Component {
                     toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
-        } else { /** Adding new part master detail **/
+
+        } else {
+
+            /** Adding new part master detail **/
             values.IndustrialIdentity = values.PartName;
             values.IsPartAssociatedWithBOM = this.state.IsPartAssociatedWithBOM;
             values.IsAssembly = this.state.IsPartAssociatedWithBOM;
+            values.CreatedBy = loginUserId;
+
             this.props.createPartAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.PART_ADD_SUCCESS);
@@ -168,6 +178,7 @@ class AddPart extends Component {
                 }
             });
         }
+
     }
 
 

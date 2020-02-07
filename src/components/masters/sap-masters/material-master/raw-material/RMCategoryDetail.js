@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Row, Col, Table
-} from 'reactstrap';
+import { Row, Col, Table } from 'reactstrap';
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import {
-    convertISOToUtcDate,
-} from '../../../../../helper';
+import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-
 
 class RMCategoryDetail extends Component {
     constructor(props) {
@@ -37,37 +32,34 @@ class RMCategoryDetail extends Component {
         return (
             <div>
                 {this.props.loading && <Loader />}
-                {/* <Row>
+                <Row>
                     <Col>
-                        <h5>{`${CONSTANT.MATERIAL} ${CONSTANT.CATEGORY} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
-                    </Col>
-                </Row> */}
-                <Col>
-                    {/* <hr /> */}
-                    <Table className="table table-striped" bordered>
-                        {this.props.rowMaterialCategoryDetail && this.props.rowMaterialCategoryDetail.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
-                                    <th>{`${CONSTANT.DATE}`}</th>
-                                </tr>
-                            </thead>}
-                        <tbody >
+                        {/* <hr /> */}
+                        <Table className="table table-striped" bordered>
                             {this.props.rowMaterialCategoryDetail && this.props.rowMaterialCategoryDetail.length > 0 &&
-                                this.props.rowMaterialCategoryDetail.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.CategoryName}</td>
-                                            <td>{item.Description}</td>
-                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.rowMaterialCategoryDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
+                                        <th>{`${CONSTANT.DATE}`}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.rowMaterialCategoryDetail && this.props.rowMaterialCategoryDetail.length > 0 &&
+                                    this.props.rowMaterialCategoryDetail.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.CategoryName}</td>
+                                                <td>{item.Description}</td>
+                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.rowMaterialCategoryDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
             </div>
         );
     }

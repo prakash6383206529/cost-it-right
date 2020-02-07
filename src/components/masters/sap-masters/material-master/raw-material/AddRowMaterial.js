@@ -10,6 +10,7 @@ import { fetchPlantDataAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
+import { loggedInUserId } from "../../../../../helper/auth";
 
 class AddMaterial extends Component {
     constructor(props) {
@@ -75,8 +76,12 @@ class AddMaterial extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
         const { PlantId } = this.state;
+        let loginUserId = loggedInUserId();
+        //values.CreatedBy = loginUserId;
         values.PlantId = PlantId;
+
         this.props.createMaterialAPI(values, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);

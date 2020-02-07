@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Container, Row, Col, Button, Table
-} from 'reactstrap';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddPart from './AddPart';
 import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
@@ -10,6 +8,7 @@ import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
+import { convertISOToUtcDate } from '../../../../helper/util'
 
 class PartMaster extends Component {
     constructor(props) {
@@ -101,11 +100,6 @@ class PartMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
-                {/* <Row>
-                    <Col>
-                        <h5>{`${CONSTANT.PART} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
-                    </Col>
-                </Row> */}
                 <Col>
                     <Table className="table table-striped" bordered>
                         {this.props.partsListing && this.props.partsListing.length > 0 &&
@@ -135,6 +129,7 @@ class PartMaster extends Component {
                                             <td>{item.UnitOfMeasurementName}</td>
                                             <td>{item.IsAssembly ? 'true' : 'false'}</td>
                                             <td>{item.PartDescription}</td>
+                                            {/* <td>{convertISOToUtcDate(item.CreatedDate)}</td> */}
                                             <div>
                                                 <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.PartId)}><i className="fas fa-pencil-alt"></i></Button>
                                                 <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>

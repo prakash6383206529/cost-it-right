@@ -8,6 +8,7 @@ import { createRMCategoryAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../../helper/auth";
 
 class AddCategory extends Component {
     constructor(props) {
@@ -41,6 +42,10 @@ class AddCategory extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
+        let loginUserId = loggedInUserId();
+        //values.CreatedBy = loginUserId;
+
         this.props.createRMCategoryAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);

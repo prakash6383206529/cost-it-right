@@ -8,6 +8,7 @@ import { createMaterialTypeAPI, getMaterialDetailAPI } from '../../../../../acti
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../../helper/auth";
 
 class AddMaterialType extends Component {
     constructor(props) {
@@ -41,6 +42,9 @@ class AddMaterialType extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        let loginUserId = loggedInUserId();
+        values.CreatedBy = loginUserId;
+
         this.props.createMaterialTypeAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);

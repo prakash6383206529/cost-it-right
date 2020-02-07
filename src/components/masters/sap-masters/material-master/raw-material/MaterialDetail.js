@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Row, Col, Table
-} from 'reactstrap';
+import { Row, Col, Table } from 'reactstrap';
 import { getMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import {
-    convertISOToUtcDate,
-} from '../../../../../helper';
+import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 
 class MaterialDetail extends Component {
@@ -36,65 +32,62 @@ class MaterialDetail extends Component {
         return (
             <div>
                 {this.props.loading && <Loader />}
-                {/* <Row>
+                <Row>
                     <Col>
-                        <h5>{`${CONSTANT.MATERIAL_MASTER} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
-                    </Col>
-                </Row> */}
-                <Col>
-                    {/* <hr /> */}
-                    <Table className="table table-striped" bordered>
-                        {this.props.rmDetail && this.props.rmDetail.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.TECHNOLOGY}`}</th>
-                                    <th>{`${CONSTANT.MATERIAL} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.GRADE}`}</th>
-                                    <th>{`${CONSTANT.SPECIFICATION}`}</th>
-                                    <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
-                                    <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
-                                    <th>{` ${CONSTANT.UOM}`}</th>
-                                    <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.BASIC} ${CONSTANT.RATE}`}</th>
-                                    <th>{`${CONSTANT.QUANTITY}`}</th>
-                                    <th>{`${CONSTANT.SCRAP} ${CONSTANT.RATE}`}</th>
-                                    <th>{` ${CONSTANT.NLC}`}</th>
-                                    <th>{`${CONSTANT.REMARK} `}</th>
-                                    <th>{`${CONSTANT.DATE}`}</th>
-                                </tr>
-                            </thead>}
-                        <tbody >
+                        {/* <hr /> */}
+                        <Table className="table table-striped" bordered>
                             {this.props.rmDetail && this.props.rmDetail.length > 0 &&
-                                this.props.rmDetail.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{item.TechnologyName}</td>
-                                            <td >{item.RawMaterialName}</td>
-                                            <td>{item.GradeName}</td>
-                                            <td>{item.SpecificationName}</td>
-                                            <td >{item.CategoryName}</td>
-                                            <td>{item.SourceSupplierName}</td>
-                                            <td>{item.SourceSupplierLocation}</td>
-                                            <td>{item.DestinationSupplierName}</td>
-                                            <td>{item.DestinationSupplierLocation}</td>
-                                            <td>{item.UnitOfMeasurementName}</td>
-                                            <td>{item.PlantName}</td>
-                                            <td >{item.BasicRate}</td>
-                                            <td>{item.Quantity}</td>
-                                            <td>{item.ScrapRate}</td>
-                                            <td >{item.NetLandedCost}</td>
-                                            <td>{item.Remark}</td>
-                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.rmDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.TECHNOLOGY}`}</th>
+                                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.GRADE}`}</th>
+                                        <th>{`${CONSTANT.SPECIFICATION}`}</th>
+                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
+                                        <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
+                                        <th>{` ${CONSTANT.UOM}`}</th>
+                                        <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.BASIC} ${CONSTANT.RATE}`}</th>
+                                        <th>{`${CONSTANT.QUANTITY}`}</th>
+                                        <th>{`${CONSTANT.SCRAP} ${CONSTANT.RATE}`}</th>
+                                        <th>{` ${CONSTANT.NLC}`}</th>
+                                        <th>{`${CONSTANT.REMARK} `}</th>
+                                        <th>{`${CONSTANT.DATE}`}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.rmDetail && this.props.rmDetail.length > 0 &&
+                                    this.props.rmDetail.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{item.TechnologyName}</td>
+                                                <td >{item.RawMaterialName}</td>
+                                                <td>{item.GradeName}</td>
+                                                <td>{item.SpecificationName}</td>
+                                                <td >{item.CategoryName}</td>
+                                                <td>{item.SourceSupplierName}</td>
+                                                <td>{item.SourceSupplierLocation}</td>
+                                                <td>{item.DestinationSupplierName}</td>
+                                                <td>{item.DestinationSupplierLocation}</td>
+                                                <td>{item.UnitOfMeasurementName}</td>
+                                                <td>{item.PlantName}</td>
+                                                <td >{item.BasicRate}</td>
+                                                <td>{item.Quantity}</td>
+                                                <td>{item.ScrapRate}</td>
+                                                <td >{item.NetLandedCost}</td>
+                                                <td>{item.Remark}</td>
+                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.rmDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
             </div >
         );
     }
