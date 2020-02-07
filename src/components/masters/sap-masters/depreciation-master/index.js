@@ -69,38 +69,35 @@ class DepreciationMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.DEPRECIATION} ${CONSTANT.DETAILS}`} </h5>
+                        <div>
+                            <Table className="table table-striped" bordered>
+                                {this.props.depreciationDetail && this.props.depreciationDetail.length > 0 &&
+                                    <thead>
+                                        <tr>
+                                            <th>{`${CONSTANT.DEPRECIATION} ${CONSTANT.TYPE}`}</th>
+                                            <th>{`${CONSTANT.SHIFT}`}</th>
+                                            <th>{`${CONSTANT.DEPRECIATION} ${CONSTANT.RATE}`}</th>
+                                            <th>{`${CONSTANT.DATE}`}</th>
+                                        </tr>
+                                    </thead>}
+                                <tbody >
+                                    {this.props.depreciationDetail && this.props.depreciationDetail.length > 0 &&
+                                        this.props.depreciationDetail.map((item, index) => {
+                                            return (
+                                                <tr key={index}>
+                                                    <td >{item.DepreciationType}</td>
+                                                    <td>{item.Shift}</td>
+                                                    <td>{item.DepreciationRate}</td>
+                                                    <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                                </tr>
+                                            )
+                                        })}
+                                    {this.props.depreciationDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                </tbody>
+                            </Table>
+                        </div>
                     </Col>
                 </Row>
-                <Col>
-                    <div>
-                        <Table className="table table-striped" bordered>
-                        { this.props.depreciationDetail && this.props.depreciationDetail.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.DEPRECIATION} ${CONSTANT.TYPE}`}</th>
-                                    <th>{`${CONSTANT.SHIFT}`}</th>
-                                    <th>{`${CONSTANT.DEPRECIATION} ${CONSTANT.RATE}`}</th>
-                                    <th>{`${CONSTANT.DATE}`}</th>
-                                </tr>
-                            </thead>}
-                            <tbody >
-                                {this.props.depreciationDetail && this.props.depreciationDetail.length > 0 &&
-                                    this.props.depreciationDetail.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.DepreciationType}</td>
-                                                <td>{item.Shift}</td>
-                                                <td>{item.DepreciationRate}</td>
-                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                            </tr>
-                                        )
-                                    })}
-                                     {this.props.depreciationDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </div>
-                </Col>
                 {isOpen && (
                     <AddDepreciation
                         isOpen={isOpen}

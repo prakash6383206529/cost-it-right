@@ -6,8 +6,9 @@ import { required, number } from "../../../../helper/validation";
 import { renderText, renderNumberInputField } from "../../../layout/FormInputs";
 import { createDepreciationMasterAPI, } from '../../../../actions/master/MHRMaster';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddDepreciation extends Component {
     constructor(props) {
@@ -29,6 +30,8 @@ class AddDepreciation extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        let loginUserId = loggedInUserId();
+        values.CreatedBy = loginUserId;
         /** Add new detail of the depreciation  */
         this.props.createDepreciationMasterAPI(values, (res) => {
             if (res.data.Result === true) {
