@@ -12,6 +12,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddFuelDetail extends Component {
     constructor(props) {
@@ -95,6 +96,9 @@ class AddFuelDetail extends Component {
     */
     onSubmit = (values) => {
         const { startDate, endDate } = this.state;
+
+        let loginUserId = loggedInUserId();
+
         const formData = {
             Rate: values.Rate,
             StateId: values.StateId,

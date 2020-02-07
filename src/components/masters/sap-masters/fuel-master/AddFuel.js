@@ -8,6 +8,7 @@ import { createFuelAPI, getFuelUnitAPI } from '../../../../actions/master/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddFuel extends Component {
     constructor(props) {
@@ -46,6 +47,9 @@ class AddFuel extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
+        let loginUserId = loggedInUserId();
+
         /** Add new detail of Fuel  */
         this.props.createFuelAPI(values, (response) => {
             if (response && response.data) {

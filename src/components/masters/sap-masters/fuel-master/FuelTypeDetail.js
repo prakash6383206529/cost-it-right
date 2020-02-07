@@ -69,43 +69,38 @@ class FuelTypeDetail extends Component {
     render() {
         return (
             <div>
-                {/* <Container className="top-margin"> */}
-                {/* <Row>
+                <Row>
                     <Col>
-                        <h5>{`${CONSTANT.FUEL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row> */}
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.DESCRIPTION}`}</th>
-                                    <th>{`${CONSTANT.DATE}`}</th>
-                                    <th>{``}</th>
-                                </tr>
-                            </thead>}
-                        <tbody >
+                        <Table className="table table-striped" bordered>
                             {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
-                                this.props.fuelDetailList.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.FuelName}</td>
-                                            <td>{item.Description}</td>
-                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                            <td>
-                                                <Button className="btn btn-secondary" onClick={() => this.editFuelDetails(index, item.FuelId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.FuelId)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.fuelDetailList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
-                {/* </Container > */}
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.DESCRIPTION}`}</th>
+                                        <th>{`${CONSTANT.DATE}`}</th>
+                                        <th>{``}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
+                                    this.props.fuelDetailList.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.FuelName}</td>
+                                                <td>{item.Description}</td>
+                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editFuelDetails(index, item.FuelId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.FuelId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.fuelDetailList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
             </div>
         );
     }

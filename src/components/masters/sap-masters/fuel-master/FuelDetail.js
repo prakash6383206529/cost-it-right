@@ -70,48 +70,45 @@ class FuelDetail extends Component {
     render() {
         return (
             <div>
-                {/* <Row>
+                <Row>
                     <Col>
-                        <h5>{`${CONSTANT.FUEL} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row> */}
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.fuelList && this.props.fuelList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`Rate`}</th>
-                                    <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.UOM}`}</th>
-                                    <th>{`${CONSTANT.STATE} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.DATE} From`}</th>
-                                    <th>{`${CONSTANT.DATE} To`}</th>
-                                    <th>{``}</th>
-
-                                </tr>
-                            </thead>}
-                        <tbody >
+                        <Table className="table table-striped" bordered>
                             {this.props.fuelList && this.props.fuelList.length > 0 &&
-                                this.props.fuelList.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.Rate}</td>
-                                            <td >{item.FuelName}</td>
-                                            <td>{item.UnitOfMeasurementName}</td>
-                                            <td>{item.StateName}</td>
-                                            <td>{convertISOToUtcDate(item.ValidDateFrom)}</td>
-                                            <td>{convertISOToUtcDate(item.ValidDateTo)}</td>
-                                            <td>
-                                                <Button className="btn btn-secondary" onClick={() => this.editFuelDetails(index, item.FuelDetailId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.FuelDetailId)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.fuelList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                <thead>
+                                    <tr>
+                                        <th>{`Rate`}</th>
+                                        <th>{`${CONSTANT.FUEL} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.UOM}`}</th>
+                                        <th>{`${CONSTANT.STATE} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.DATE} From`}</th>
+                                        <th>{`${CONSTANT.DATE} To`}</th>
+                                        <th>{``}</th>
+
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.fuelList && this.props.fuelList.length > 0 &&
+                                    this.props.fuelList.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.Rate}</td>
+                                                <td >{item.FuelName}</td>
+                                                <td>{item.UnitOfMeasurementName}</td>
+                                                <td>{item.StateName}</td>
+                                                <td>{convertISOToUtcDate(item.ValidDateFrom)}</td>
+                                                <td>{convertISOToUtcDate(item.ValidDateTo)}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editFuelDetails(index, item.FuelDetailId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.FuelDetailId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.fuelList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
             </div>
         );
     }
