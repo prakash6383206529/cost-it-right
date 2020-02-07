@@ -61,6 +61,8 @@ class AddMHR extends Component {
         const { SupplierId, uom, PlantId, TechnologyId, supplierType } = this.state;
         const { Technologies } = this.props;
 
+        let loginUserId = loggedInUserId();
+
         values.TechnologyId = TechnologyId != '' ? TechnologyId : Technologies[0].Value;
         values.SupplierId = SupplierId;
         values.UnitOfMeasurementId = uom;
