@@ -7,7 +7,8 @@ import { renderText, renderSelectField, searchableSelect, renderMultiSelectField
 import { fetchMasterDataAPI, getOtherOperationData, getPlantBySupplier } from '../../../../actions/master/Comman';
 import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddOtherOperation extends Component {
     constructor(props) {
@@ -56,7 +57,7 @@ class AddOtherOperation extends Component {
     */
     onSubmit = (values) => {
         const { processOperationValue, supplierValue, selectedPlants, uom, technologyValue, PlantId } = this.state;
-
+        let loginUserId = loggedInUserId();
         let plantArray = [];
         selectedPlants.map((item, i) => {
             return plantArray.push({ PlantId: item.Value, PlantName: item.Text });

@@ -109,55 +109,52 @@ class OtherOperationMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.OTHER_OPERATION} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row>
-                <Col>
-                    <div>
-                        <Table className="table table-striped" bordered>
-                        { this.props.otherOperationList && this.props.otherOperationList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>Process Code</th>
-                                    <th>Supplier</th>
-                                    <th>Process Operation</th>
-                                    <th>UOM</th>
-                                    <th>Technology</th>
-                                    <th>Rate</th>
-                                    <th>Initiator</th>
-                                    <th>Created On</th>
-                                    <th>Modifier</th>
-                                    <th>Modified On</th>
-                                </tr>
-                            </thead>}
-                            <tbody >
+                        <div>
+                            <Table className="table table-striped" bordered>
                                 {this.props.otherOperationList && this.props.otherOperationList.length > 0 &&
-                                    this.props.otherOperationList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.OperationCode}</td>
-                                                <td>{item.SupplierName}</td>
-                                                <td>{item.ProcessName}</td>
-                                                <td>{item.UnitOfMeasurementName}</td>
-                                                <td>{item.TechnologyName}</td>
-                                                <td>{item.Rate}</td>
-                                                <td>{''}</td>
-                                                <td>{moment(item.CreatedDate).format('L')}</td>
-                                                <td>{item.ModifiedBy}</td>
-                                                <td>{item.ModifiedDate}</td>
-                                                {/* <td>
+                                    <thead>
+                                        <tr>
+                                            <th>Process Code</th>
+                                            <th>Supplier</th>
+                                            <th>Process Operation</th>
+                                            <th>UOM</th>
+                                            <th>Technology</th>
+                                            <th>Rate</th>
+                                            {/* <th>Initiator</th> */}
+                                            <th>Created On</th>
+                                            {/* <th>Modifier</th> */}
+                                            {/* <th>Modified On</th> */}
+                                        </tr>
+                                    </thead>}
+                                <tbody >
+                                    {this.props.otherOperationList && this.props.otherOperationList.length > 0 &&
+                                        this.props.otherOperationList.map((item, index) => {
+                                            return (
+                                                <tr key={index}>
+                                                    <td >{item.OperationCode}</td>
+                                                    <td>{item.SupplierName}</td>
+                                                    <td>{item.ProcessName}</td>
+                                                    <td>{item.UnitOfMeasurementName}</td>
+                                                    <td>{item.TechnologyName}</td>
+                                                    <td>{item.Rate}</td>
+                                                    {/* <td>{''}</td> */}
+                                                    <td>{moment(item.CreatedDate).format('L')}</td>
+                                                    {/* <td>{item.ModifiedBy}</td> */}
+                                                    {/* <td>{item.ModifiedDate}</td> */}
+                                                    {/* <td>
                                                     <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
                                                 </td> */}
-                                            </tr>
-                                        )
-                                    })}
+                                                </tr>
+                                            )
+                                        })}
                                     {this.props.otherOperationList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </div>
-                    {/* </Table> */}
-                </Col>
+                                </tbody>
+                            </Table>
+                        </div>
+                        {/* </Table> */}
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddOtherOperation
                         isOpen={isOpen}
