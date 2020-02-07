@@ -9,6 +9,7 @@ import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddProcess extends Component {
     constructor(props) {
@@ -60,6 +61,7 @@ class AddProcess extends Component {
     */
     onSubmit = (values) => {
         const { ProcessId, isEditFlag } = this.props;
+        let loginUserId = loggedInUserId();
         if (isEditFlag) {
             values.ProcessId = ProcessId;
             values.IsActive = this.state.isActiveBox;

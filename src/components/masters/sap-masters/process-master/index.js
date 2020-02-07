@@ -101,40 +101,42 @@ class ProcessMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
-                <Col>
-                    <Table className="table table-striped" hover bordered>
-                        {this.props.processList && this.props.processList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.PROCESS} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.PROCESS} ${CONSTANT.CODE}`}</th>
-                                    <th>{`${CONSTANT.PROCESS} ${CONSTANT.DESCRIPTION}`}</th>
-                                    <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                    <th>{`Status`}</th>
-                                    <th>{``}</th>
-                                </tr>
-                            </thead>}
-                        <tbody >
+                <Row>
+                    <Col>
+                        <Table className="table table-striped" hover bordered>
                             {this.props.processList && this.props.processList.length > 0 &&
-                                this.props.processList.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.ProcessName}</td>
-                                            <td>{item.ProcessCode}</td>
-                                            <td>{item.Description}</td>
-                                            <td>{item.PlantName}</td>
-                                            <td>{item && item.IsActive ? 'Active' : 'Inactive'}</td>
-                                            <td>
-                                                <Button className="btn btn-secondary" onClick={() => this.editRow(index, item.ProcessId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.ProcessId)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.processList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.PROCESS} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.PROCESS} ${CONSTANT.CODE}`}</th>
+                                        <th>{`${CONSTANT.PROCESS} ${CONSTANT.DESCRIPTION}`}</th>
+                                        <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                        <th>{`Status`}</th>
+                                        <th>{``}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.processList && this.props.processList.length > 0 &&
+                                    this.props.processList.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.ProcessName}</td>
+                                                <td>{item.ProcessCode}</td>
+                                                <td>{item.Description}</td>
+                                                <td>{item.PlantName}</td>
+                                                <td>{item && item.IsActive ? 'Active' : 'Inactive'}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editRow(index, item.ProcessId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.ProcessId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.processList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddProcess
                         isOpen={isOpen}

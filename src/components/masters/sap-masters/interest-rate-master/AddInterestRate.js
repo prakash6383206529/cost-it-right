@@ -8,7 +8,8 @@ import { renderText, renderSelectField, searchableSelect } from "../../../layout
 import { createInterestRateAPI, getInterestRateComboData } from '../../../../actions/master/InterestRateMaster';
 //import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddInterestRate extends Component {
     constructor(props) {
@@ -65,6 +66,9 @@ class AddInterestRate extends Component {
     onSubmit = (values) => {
         const { overHeadValue, profitTypesValue, supplierValue, modelId, TechnologyId, PlantId } = this.state;
         const { Technologies } = this.props;
+
+        let loginUserId = loggedInUserId();
+
         //values.OtherOperationName = processOperationValue.label;
         //"OperationCode": "string",
         //"Description": "string",
@@ -76,8 +80,7 @@ class AddInterestRate extends Component {
         //values.UnitOfMeasurementId = uom;
         values.PlantId = PlantId;
         values.ModelTypeId = modelId;
-
-        console.log('values: >>sss', values);
+        values.CreatedBy = loginUserId;
 
         if (this.props.isEditFlag) {
             // console.log('values', values);

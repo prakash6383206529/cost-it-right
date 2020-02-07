@@ -105,65 +105,60 @@ class InterestRate extends Component {
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.INTEREST_RATE}`}</Button>
                     </Col>
                 </Row>
-
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.INTEREST_RATE} ${CONSTANT.DETAILS}`} </h5>
+                        <div>
+                            <Table className="table table-striped" bordered>
+                                {this.props.interestRateList && this.props.interestRateList.length > 0 &&
+                                    <thead>
+                                        <tr>
+                                            <th>Supplier Name</th>
+                                            <th>RM Inventory Costing HeadName</th>
+                                            <th>WIP Inventory Costing HeadName</th>
+                                            <th>Payment Term Costing HeadName</th>
+                                            <th>Annual RateOfInterest Percent</th>
+                                            <th>Repayment Period</th>
+                                            <th>Average Year Percent</th>
+                                            <th>ICC Percent</th>
+                                            {/* <th>CostOfCredit Percent</th> */}
+                                            <th>RM Inventory Percentage</th>
+                                            <th>WIP Inventory Percent</th>
+                                            <th>Payment Term Percent</th>
+                                            <th>Created On</th>
+                                        </tr>
+                                    </thead>}
+                                <tbody >
+                                    {this.props.interestRateList && this.props.interestRateList.length > 0 &&
+                                        this.props.interestRateList.map((item, index) => {
+                                            return (
+                                                <tr key={index}>
+                                                    <td >{item.SupplierName}</td>
+                                                    <td>{item.RMInventoryCostingHeadName}</td>
+                                                    <td>{item.WIPInventoryCostingHeadName}</td>
+                                                    <td>{item.PaymentTermCostingHeadName}</td>
+                                                    <td>{item.AnnualRateOfInterestPercent}</td>
+                                                    <td>{item.RepaymentPeriod}</td>
+                                                    <td>{item.AverageForTheYearPercent}</td>
+                                                    <td>{item.ICCPercent}</td>
+                                                    {/* <td>{item.CostOfCreditPercent}</td> */}
+                                                    <td>{item.RMInventoryPercent}</td>
+                                                    <td>{item.WIPInventoryPercent}</td>
+                                                    <td>{item.PaymentTermPercent}</td>
+                                                    <td>{moment(item.CreatedDate).format('L')}</td>
+                                                    <td>
+                                                        <Button className="btn btn-secondary" onClick={() => this.editPartDetails(item.SupplierInterestRateId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                        <Button className="btn btn-danger" onClick={() => this.deletePart(item.SupplierInterestRateId)}><i className="far fa-trash-alt"></i></Button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    {this.props.interestRateList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                </tbody>
+                            </Table>
+                        </div>
                     </Col>
                 </Row>
-                <Col>
-                    <div>
-                        <Table className="table table-striped" bordered>
-                            {this.props.interestRateList && this.props.interestRateList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>Supplier Name</th>
-                                        <th>RM Inventory Costing HeadName</th>
-                                        <th>WIP Inventory Costing HeadName</th>
-                                        <th>Payment Term Costing HeadName</th>
-                                        <th>Annual RateOfInterest Percent</th>
-                                        <th>Repayment Period</th>
-                                        <th>Average Year Percent</th>
-                                        <th>ICC Percent</th>
-                                        {/* <th>CostOfCredit Percent</th> */}
-                                        <th>RM Inventory Percentage</th>
-                                        <th>WIP Inventory Percent</th>
-                                        <th>Payment Term Percent</th>
-                                        <th>Created On</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.interestRateList && this.props.interestRateList.length > 0 &&
-                                    this.props.interestRateList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.SupplierName}</td>
-                                                <td>{item.RMInventoryCostingHeadName}</td>
-                                                <td>{item.WIPInventoryCostingHeadName}</td>
-                                                <td>{item.PaymentTermCostingHeadName}</td>
-                                                <td>{item.AnnualRateOfInterestPercent}</td>
-                                                <td>{item.RepaymentPeriod}</td>
-                                                <td>{item.AverageForTheYearPercent}</td>
-                                                <td>{item.ICCPercent}</td>
-                                                {/* <td>{item.CostOfCreditPercent}</td> */}
-                                                <td>{item.RMInventoryPercent}</td>
-                                                <td>{item.WIPInventoryPercent}</td>
-                                                <td>{item.PaymentTermPercent}</td>
-                                                <td>{moment(item.CreatedDate).format('L')}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editPartDetails(item.SupplierInterestRateId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deletePart(item.SupplierInterestRateId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.interestRateList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </div>
-                    {/* </Table> */}
-                </Col>
                 {isOpen && (
                     <SupplierInterestRate
                         isOpen={isOpen}
