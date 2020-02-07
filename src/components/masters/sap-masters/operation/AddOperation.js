@@ -7,7 +7,8 @@ import { renderText, renderSelectField, searchableSelect } from "../../../layout
 import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
 import { createOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddOperation extends Component {
     constructor(props) {
@@ -55,6 +56,7 @@ class AddOperation extends Component {
     */
     onSubmit = (values) => {
         const { PlantId } = this.state;
+        let loginUserId = loggedInUserId();
 
         values.PlantId = PlantId;
 

@@ -104,57 +104,52 @@ class OperationMaster extends Component {
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.OPERATION}`}</Button>
                     </Col>
                 </Row>
-
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.OPERATION} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row>
-                <Col>
-                    <div>
-                        <Table className="table table-striped" bordered>
-                            {this.props.operationListData && this.props.operationListData.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>Operation Name</th>
-                                        <th>Operation Code</th>
-                                        <th>Plant Name</th>
-                                        <th>Description</th>
-                                        {/* <th>Operation Cost</th> */}
-                                        {/* <th>Initiator</th>
-                                    <th>Created On</th>
-                                    <th>Modifier</th>
-                                    <th>Modified On</th> */}
-                                    </tr>
-                                </thead>}
-                            <tbody >
+                        <div>
+                            <Table className="table table-striped" bordered>
                                 {this.props.operationListData && this.props.operationListData.length > 0 &&
-                                    this.props.operationListData.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.OperationName}</td>
-                                                <td >{item.OperationCode}</td>
-                                                <td>{item.PlantName}</td>
-                                                <td>{item.Description}</td>
-                                                {/* <td>{item.BasicOperationCost}</td> */}
-                                                {/* <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td> */}
-                                                {/* <td>
+                                    <thead>
+                                        <tr>
+                                            <th>Operation Name</th>
+                                            <th>Operation Code</th>
+                                            {/* <th>Plant Name</th> */}
+                                            <th>Description</th>
+                                            {/* <th>Operation Cost</th> */}
+                                            {/* <th>Initiator</th> */}
+                                            {/* <th>Created On</th> */}
+                                            {/* <th>Modifier</th> */}
+                                            {/* <th>Modified On</th> */}
+                                        </tr>
+                                    </thead>}
+                                <tbody >
+                                    {this.props.operationListData && this.props.operationListData.length > 0 &&
+                                        this.props.operationListData.map((item, index) => {
+                                            return (
+                                                <tr key={index}>
+                                                    <td >{item.OperationName}</td>
+                                                    <td >{item.OperationCode}</td>
+                                                    {/* <td>{item.PlantName}</td> */}
+                                                    <td>{item.Description}</td>
+                                                    {/* <td>{item.BasicOperationCost}</td> */}
+                                                    {/* <td>{''}</td> */}
+                                                    {/* <td>{''}</td> */}
+                                                    {/* <td>{''}</td> */}
+                                                    {/* <td>{''}</td> */}
+                                                    {/* <td>
                                                     <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
                                                 </td> */}
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.operationListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </div>
-                    {/* </Table> */}
-                </Col>
+                                                </tr>
+                                            )
+                                        })}
+                                    {this.props.operationListData === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                </tbody>
+                            </Table>
+                        </div>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddOperation
                         isOpen={isOpen}
