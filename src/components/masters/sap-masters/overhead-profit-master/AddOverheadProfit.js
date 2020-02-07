@@ -8,7 +8,8 @@ import { getPlantBySupplier } from '../../../../actions/master/Comman';
 import { createOverheadProfitAPI, getOverheadProfitComboData } from '../../../../actions/master/OverheadProfit';
 //import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message'
+import { MESSAGES } from '../../../../config/message';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddOverheadProfit extends Component {
     constructor(props) {
@@ -55,9 +56,11 @@ class AddOverheadProfit extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log('values: >>1111', values);
         const { overHeadValue, profitTypesValue, supplierValue, modelId, TechnologyId, PlantId } = this.state;
         const { Technologies } = this.props;
+
+        let loginUserId = loggedInUserId();
+
         //values.OtherOperationName = processOperationValue.label;
         //"OperationCode": "string",
         //"Description": "string",
@@ -69,8 +72,7 @@ class AddOverheadProfit extends Component {
         //values.UnitOfMeasurementId = uom;
         values.PlantId = PlantId;
         values.ModelTypeId = modelId;
-
-        console.log('values: >>sss', values);
+        values.CreatedBy = loginUserId;
 
         if (this.props.isEditFlag) {
             // console.log('values', values);

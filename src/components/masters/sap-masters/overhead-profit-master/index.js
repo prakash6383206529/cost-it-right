@@ -109,63 +109,59 @@ class OverheadProfit extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.OVERHEAD_AND_PROFIT} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row>
-                <Col>
-                    <div>
-                        <Table className="table table-striped" bordered>
-                        { this.props.overheadProfitList && this.props.overheadProfitList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>Supplier Code</th>
-                                    <th>Supplier Name</th>
-                                    <th>Technology</th>
-                                    <th>Overhead Type</th>
-                                    <th>Overhead Percent</th>
-                                    <th>Profit Type</th>
-                                    <th>Profit Percent</th>
-                                    <th>Overhead Machining(CC) (%)</th>
-                                    <th>Profit Machining(CC) (%)</th>
-                                    <th>Model type</th>
-                                    <th>Initiator</th>
-                                    <th>Created On</th>
-                                    {/* <th>Modifier</th>
-                                    <th>Modified On</th> */}
-                                </tr>
-                            </thead>}
-                            <tbody >
+                        <div>
+                            <Table className="table table-striped" bordered>
                                 {this.props.overheadProfitList && this.props.overheadProfitList.length > 0 &&
-                                    this.props.overheadProfitList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.SupplierCode}</td>
-                                                <td>{item.SupplierName}</td>
-                                                <td>{item.TechnologyName}</td>
-                                                <td>{item.OverheadTypeName}</td>
-                                                <td>{item.OverheadPercentage}</td>
-                                                <td>{item.ProfitTypeName}</td>
-                                                <td>{item.ProfitPercentage}</td>
-                                                <td>{item.OverheadMachiningCCPercentage}</td>
-                                                <td>{item.ProfitMachiningCCPercentage}</td>
-                                                <td>{item.ModelTypeName}</td>
-                                                <td>{item.CreatedBy}</td>
-                                                <td>{moment(item.CreatedDate).format('L')}</td>
-                                                {/* <td>{item.ModifiedBy}</td>
-                                                <td>{item.ModifiedDate}</td> */}
-                                                {/* <td>
+                                    <thead>
+                                        <tr>
+                                            <th>Supplier Code</th>
+                                            <th>Supplier Name</th>
+                                            <th>Technology</th>
+                                            <th>Overhead Type</th>
+                                            <th>Overhead Percent</th>
+                                            <th>Profit Type</th>
+                                            <th>Profit Percent</th>
+                                            <th>Overhead Machining(CC) (%)</th>
+                                            <th>Profit Machining(CC) (%)</th>
+                                            <th>Model type</th>
+                                            {/* <th>Initiator</th> */}
+                                            <th>Created On</th>
+                                            {/* <th>Modifier</th> */}
+                                            {/* <th>Modified On</th> */}
+                                        </tr>
+                                    </thead>}
+                                <tbody >
+                                    {this.props.overheadProfitList && this.props.overheadProfitList.length > 0 &&
+                                        this.props.overheadProfitList.map((item, index) => {
+                                            return (
+                                                <tr key={index}>
+                                                    <td >{item.SupplierCode}</td>
+                                                    <td>{item.SupplierName}</td>
+                                                    <td>{item.TechnologyName}</td>
+                                                    <td>{item.OverheadTypeName}</td>
+                                                    <td>{item.OverheadPercentage}</td>
+                                                    <td>{item.ProfitTypeName}</td>
+                                                    <td>{item.ProfitPercentage}</td>
+                                                    <td>{item.OverheadMachiningCCPercentage}</td>
+                                                    <td>{item.ProfitMachiningCCPercentage}</td>
+                                                    <td>{item.ModelTypeName}</td>
+                                                    {/* <td>{item.CreatedBy}</td> */}
+                                                    <td>{moment(item.CreatedDate).format('L')}</td>
+                                                    {/* <td>{item.ModifiedBy}</td> */}
+                                                    {/* <td>{item.ModifiedDate}</td> */}
+                                                    {/* <td>
                                                     <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
                                                 </td> */}
-                                            </tr>
-                                        )
-                                    })}
-                                     {this.props.overheadProfitList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </div>
-                    {/* </Table> */}
-                </Col>
+                                                </tr>
+                                            )
+                                        })}
+                                    {this.props.overheadProfitList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                </tbody>
+                            </Table>
+                        </div>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddOverheadProfit
                         isOpen={isOpen}
