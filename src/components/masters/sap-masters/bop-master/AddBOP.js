@@ -9,7 +9,8 @@ import { createBOPAPI, getBOPByIdAPI, updateBOPAPI, getAllBOPAPI } from '../../.
 import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../helper/auth";
 const selector = formValueSelector('AddBOP');
 
 class AddBOP extends Component {
@@ -147,6 +148,8 @@ class AddBOP extends Component {
     */
     onSubmit = (values) => {
 
+        let loginUserId = loggedInUserId();
+
         if (this.props.isEditFlag) {
             /** Update detail of the existing BOP  */
             const { bopId, BOPListing } = this.props;
@@ -169,7 +172,8 @@ class AddBOP extends Component {
                 UnitOfMeasurementId: values.UnitOfMeasurementId,
                 PlantId: values.PlantId,
                 PartId: values.PartId,
-                IsActive: this.state.isActive
+                IsActive: this.state.isActive,
+                ModifiedBy: loginUserId,
             }
             this.props.updateBOPAPI(formData, (res) => {
                 if (res.data.Result) {
