@@ -8,6 +8,7 @@ import { fetchMasterDataAPI, getCEDOtherOperationComboData, getPlantBySupplier }
 import { createCEDOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddCEDotherOperation extends Component {
     constructor(props) {
@@ -61,6 +62,7 @@ class AddCEDotherOperation extends Component {
     */
     onSubmit = (values) => {
         const { processOperationValue, SupplierId, supplierValue, uom, transportUOM, PlantId, selectedPlants } = this.state;
+        let loginUserId = loggedInUserId();
 
         let plantArray = [];
         selectedPlants.map((item, i) => {
@@ -95,7 +97,8 @@ class AddCEDotherOperation extends Component {
             //         toastr.error(MESSAGES.SOME_ERROR);
             //     }
             // });
-        } else {  /** Add new detail of the CED Other Operation  */
+        } else {
+            /** Add new detail of the CED Other Operation  */
             this.props.createCEDOtherOperationsAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.CED_OTHER_OPERATION_ADD_SUCCESS);

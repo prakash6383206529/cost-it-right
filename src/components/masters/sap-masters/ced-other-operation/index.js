@@ -105,59 +105,54 @@ class CEDoperationMaster extends Component {
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.CED_OTHER_OPERATION}`}</Button>
                     </Col>
                 </Row>
-
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{` ${CONSTANT.CED_OTHER_OPERATION} ${CONSTANT.DETAILS}`} </h5>
-                    </Col>
-                </Row>
-                <Col>
-                    <div>
-                        <Table className="table table-striped" bordered>
-                            {this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>Supplier Code</th>
-                                        <th>Supplier Name</th>
-                                        <th>Process</th>
-                                        <th>Operation Rate</th>
-                                        <th>UOM</th>
-                                        <th>Trans. Rate</th>
-                                        <th>Trans. UOM</th>
-                                        <th>Overhead/Profit(%)</th>
-                                        <th>Initiator</th>
-                                        <th>Created On</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
+                        <div>
+                            <Table className="table table-striped" bordered>
                                 {this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
-                                    this.props.cedOtherOperationList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.SupplierCode}</td>
-                                                <td>{item.SupplierName}</td>
-                                                <td>{item.OperationName}</td>
-                                                <td>{item.OperationRate}</td>
-                                                <td>{item.UnitOfMeasurementName}</td>
-                                                <td>{item.TrasnportationRate}</td>
-                                                <td>{item.TrasnportationUMOName}</td>
-                                                <td>{item.OverheadProfit}</td>
-                                                <td>{item.CreatedBy}</td>
-                                                <td>{''}</td>
-                                                {/* <td>
+                                    <thead>
+                                        <tr>
+                                            <th>Supplier Code</th>
+                                            <th>Supplier Name</th>
+                                            <th>Process</th>
+                                            <th>Operation Rate</th>
+                                            <th>UOM</th>
+                                            <th>Trans. Rate</th>
+                                            <th>Trans. UOM</th>
+                                            <th>Overhead/Profit(%)</th>
+                                            {/* <th>Initiator</th> */}
+                                            {/* <th>Created On</th> */}
+                                        </tr>
+                                    </thead>}
+                                <tbody >
+                                    {this.props.cedOtherOperationList && this.props.cedOtherOperationList.length > 0 &&
+                                        this.props.cedOtherOperationList.map((item, index) => {
+                                            return (
+                                                <tr key={index}>
+                                                    <td >{item.SupplierCode}</td>
+                                                    <td>{item.SupplierName}</td>
+                                                    <td>{item.OperationName}</td>
+                                                    <td>{item.OperationRate}</td>
+                                                    <td>{item.UnitOfMeasurementName}</td>
+                                                    <td>{item.TrasnportationRate}</td>
+                                                    <td>{item.TrasnportationUMOName}</td>
+                                                    <td>{item.OverheadProfit}</td>
+                                                    {/* <td>{item.CreatedBy}</td> */}
+                                                    {/* <td>{''}</td> */}
+                                                    {/* <td>
                                                     <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
                                                 </td> */}
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.cedOtherOperationList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </div>
-                    {/* </Table> */}
-                </Col>
+                                                </tr>
+                                            )
+                                        })}
+                                    {this.props.cedOtherOperationList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                </tbody>
+                            </Table>
+                        </div>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddCEDotherOperation
                         isOpen={isOpen}
