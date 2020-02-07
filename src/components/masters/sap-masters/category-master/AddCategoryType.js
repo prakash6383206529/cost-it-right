@@ -7,7 +7,8 @@ import { renderText } from "../../../layout/FormInputs";
 import { createCategoryTypeAPI } from '../../../../actions/master/Category';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddCategoryType extends Component {
     constructor(props) {
@@ -41,6 +42,10 @@ class AddCategoryType extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
+        let loginUserId = loggedInUserId();
+        values.CreatedBy = loginUserId;
+
         /** Add new detail of the Category Type  */
         this.props.createCategoryTypeAPI(values, (res) => {
             if (res.data.Result === true) {

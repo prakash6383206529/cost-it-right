@@ -18,10 +18,10 @@ class CategoryTypeDetail extends Component {
         }
     }
 
-     /**
-    * @method componentDidMount
-    * @description called after render the component
-    */
+    /**
+   * @method componentDidMount
+   * @description called after render the component
+   */
     componentDidMount() {
         this.props.getCategoryDataAPI(res => { });
     }
@@ -36,33 +36,29 @@ class CategoryTypeDetail extends Component {
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.CATEGORY}  ${CONSTANT.TYPE} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
+                        <Table className="table table-striped" bordered>
+                            {this.props.categoryTypeDetail && this.props.categoryTypeDetail.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</th>
+                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.categoryTypeDetail && this.props.categoryTypeDetail.length > 0 &&
+                                    this.props.categoryTypeDetail.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{item.CategoryType}</td>
+                                                <td>{item.Description}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.categoryTypeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
                     </Col>
                 </Row>
-                <Col>
-                    <hr />
-                    <Table className="table table-striped" bordered>
-                        { this.props.categoryTypeDetail && this.props.categoryTypeDetail.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</th>
-                                <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
-                            </tr>
-                        </thead>}
-                        <tbody >
-                            {this.props.categoryTypeDetail && this.props.categoryTypeDetail.length > 0 &&
-                                this.props.categoryTypeDetail.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{item.CategoryType}</td>
-                                            <td>{item.Description}</td>
-                                        </tr>
-                                    )
-                                })}
-                                {this.props.categoryTypeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
             </div>
         );
     }

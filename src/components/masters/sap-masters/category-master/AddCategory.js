@@ -8,6 +8,7 @@ import { createCategoryAPI, fetchCategoryMasterDataAPI } from '../../../../actio
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from "../../../../helper/auth";
 
 class AddCategory extends Component {
     constructor(props) {
@@ -73,6 +74,8 @@ class AddCategory extends Component {
     */
     onSubmit = (values) => {
         const { categoryTypeId } = this.state;
+        let loginUserId = loggedInUserId();
+        values.CreatedBy = loginUserId;
         /** Add new detail of the Category  */
         values.CategoryType = categoryTypeId.label;
         values.CategoryTypeId = categoryTypeId.value;

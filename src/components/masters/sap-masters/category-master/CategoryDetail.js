@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-     Row, Col, Table
+    Row, Col, Table
 } from 'reactstrap';
 import { getCategoryDataAPI } from '../../../../actions/master/Category';
 import { Loader } from '../../../common/Loader';
@@ -18,10 +18,10 @@ class CategoryDetail extends Component {
         }
     }
 
-     /**
-    * @method componentDidMount
-    * @description called after render the component
-    */
+    /**
+   * @method componentDidMount
+   * @description called after render the component
+   */
     componentDidMount() {
         this.props.getCategoryDataAPI(res => { });
     }
@@ -36,35 +36,31 @@ class CategoryDetail extends Component {
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.CATEGORY} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
+                        <Table className="table table-striped" bordered>
+                            {this.props.categoryDetail && this.props.categoryDetail.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</th>
+                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.categoryDetail && this.props.categoryDetail.length > 0 &&
+                                    this.props.categoryDetail.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.Category}</td>
+                                                <td>{item.CategoryType}</td>
+                                                <td>{item.Description}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.categoryDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
                     </Col>
                 </Row>
-                <Col>
-                    <hr />
-                    <Table className="table table-striped" bordered>
-                    { this.props.categoryDetail && this.props.categoryDetail.length > 0 &&
-                        <thead>
-                            <tr>
-                                <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
-                                <th>{`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</th>
-                                <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
-                            </tr>
-                        </thead>}
-                        <tbody >
-                            {this.props.categoryDetail && this.props.categoryDetail.length > 0 &&
-                                this.props.categoryDetail.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.Category}</td>
-                                            <td>{item.CategoryType}</td>
-                                            <td>{item.Description}</td>
-                                        </tr>
-                                    )
-                                })}
-                                 {this.props.categoryDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
             </div>
         );
     }
@@ -77,7 +73,7 @@ class CategoryDetail extends Component {
 */
 function mapStateToProps({ category }) {
     const { categoryDetail } = category;
-    return { categoryDetail } 
+    return { categoryDetail }
 }
 
 export default connect(
