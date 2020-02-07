@@ -36,6 +36,7 @@ import InterestRate from './masters/sap-masters/interest-rate-master';
 import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
 import MachineMaster from './masters/sap-masters/machine-master';
 import PowerMaster from './masters/sap-masters/power-master';
+import ReasonMaster from './masters/sap-masters/reason-master';
 import MassUpload from './massUpload';
 
 import Costing from './costing';
@@ -181,6 +182,8 @@ class Main extends Component {
               <Route path="/part-bom-register" component={AuthMiddleware(PartBOMRegister)} />
 
               <Route path="/mass-upload" component={AuthMiddleware(MassUpload)} />
+
+              <Route path="/reason-master" component={AuthMiddleware(ReasonMaster)} />
 
               <Route
                 render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}

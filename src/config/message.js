@@ -71,6 +71,10 @@ export const MESSAGES = {
   //POWER MASTER
   POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',
 
+  //REASON MASTER
+  REASON_ADD_SUCCESS: 'Reason has been added successfully.',
+  UPDATE_REASON_SUCESS: 'Reason has been updated successfully.',
+
   //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
 
