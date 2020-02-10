@@ -104,50 +104,47 @@ class PlantMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.PLANT} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
+                        <Table className="table table-striped" bordered>
+                            {this.props.plantDetail && this.props.plantDetail.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.PLANT} ${CONSTANT.TITLE}`}</th>
+                                        <th>{`Unit ${CONSTANT.NUMBER}`}</th>
+                                        <th>{`${CONSTANT.ADDRESS}`}</th>
+                                        <th>{`${CONSTANT.CITY}`}</th>
+                                        <th>{`Status`}</th>
+                                        <th>{`Created Date`}</th>
+                                        <th>{``}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.plantDetail && this.props.plantDetail.length > 0 &&
+                                    this.props.plantDetail.map((item, index) => {
+                                        const address1 = item.AddressLine1 != 'NA' ? `${item.AddressLine1}, ` : '';
+                                        const address2 = item.AddressLine2 != 'NA' ? `${item.AddressLine2}, ` : '';
+                                        const ZipCode = item.ZipCode != 0 ? item.ZipCode : '';
+                                        return (
+                                            <tr key={index}>
+                                                <td >{item.PlantName}</td>
+                                                <td>{item.PlantTitle}</td>
+                                                <td>{item.UnitNumber}</td>
+                                                <td>{`${address1} ${address2} ${ZipCode}`}</td>
+                                                <td>{item.CityName}</td>
+                                                <td>{item && item.IsActive ? 'Active' : 'Inactive'}</td>
+                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editRow(index, item.PlantId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.PlantId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.plantDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
                     </Col>
                 </Row>
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.plantDetail && this.props.plantDetail.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.PLANT} ${CONSTANT.TITLE}`}</th>
-                                    <th>{`Unit ${CONSTANT.NUMBER}`}</th>
-                                    <th>{`${CONSTANT.ADDRESS}`}</th>
-                                    <th>{`${CONSTANT.CITY}`}</th>
-                                    <th>{`Status`}</th>
-                                    <th>{`Created Date`}</th>
-                                    <th>{``}</th>
-                                </tr>
-                            </thead>}
-                        <tbody >
-                            {this.props.plantDetail && this.props.plantDetail.length > 0 &&
-                                this.props.plantDetail.map((item, index) => {
-                                    const address1 = item.AddressLine1 != 'NA' ? `${item.AddressLine1}, ` : '';
-                                    const address2 = item.AddressLine2 != 'NA' ? `${item.AddressLine2}, ` : '';
-                                    const ZipCode = item.ZipCode != 0 ? item.ZipCode : '';
-                                    return (
-                                        <tr key={index}>
-                                            <td >{item.PlantName}</td>
-                                            <td>{item.PlantTitle}</td>
-                                            <td>{item.UnitNumber}</td>
-                                            <td>{`${address1} ${address2} ${ZipCode}`}</td>
-                                            <td>{item.CityName}</td>
-                                            <td>{item && item.IsActive ? 'Active' : 'Inactive'}</td>
-                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                            <td>
-                                                <Button className="btn btn-secondary" onClick={() => this.editRow(index, item.PlantId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.PlantId)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.plantDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
                 {isOpen && (
                     <AddPlant
                         isOpen={isOpen}
