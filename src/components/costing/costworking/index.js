@@ -16,6 +16,7 @@ import OtherOperationGrid from './OtherOperationGrid';
 import ProcessGrid from './ProcessGrid';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
+import { loggedInUserId } from "../../../helper/auth";
 
 class CostWorking extends Component {
     constructor(props) {
@@ -356,12 +357,16 @@ class CostWorking extends Component {
     createNewCosting = () => {
         const { supplierId, plantId, partId } = this.props;
         const { activeCostingListData } = this.props;
+        const loginUserId = loggedInUserId();
         /** getting part id from active costing list */
         const sheetmetalCostingData = {
             PartId: partId,
             PlantId: plantId,
             SupplierId: supplierId,
-            CreatedBy: ''
+            CreatedBy: loginUserId,
+            CostingNumber: '',
+            ECONumber: '',
+            RevsionNumber: ''
         }
         /** create new costing on basis of selected supplier, part, and plat */
         this.props.createNewCosting(sheetmetalCostingData, (res) => {
