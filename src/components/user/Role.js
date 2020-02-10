@@ -155,7 +155,12 @@ class Role extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.setState({ isEditFlag: false, permissions: [] })
+        this.props.setEmptyRoleDataAPI('', () => { })
+        this.setState({
+            isEditFlag: false,
+            permissions: [],
+            RoleId: '',
+        })
     }
 
     /**
