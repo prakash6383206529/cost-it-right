@@ -75,7 +75,7 @@ class SideBar extends Component {
   render() {
     const { userData } = this.props;
     const isLoggedIn = isUserLoggedIn();
-    //console.log("isLoggedIn >>>", isLoggedIn)
+    console.log("Nav Bar >>>")
     return (
       <nav>
         <div className="flex-conatiner sign-social before-login">
@@ -127,6 +127,7 @@ class SideBar extends Component {
                     <a className="dropdown-item" href="/other-operation">Other Operation</a>
                     <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
                     <a className="dropdown-item" href="/mhr-master">Machine Rate Master</a>
+                    <a className="dropdown-item" href="/machine-type-master">Machine Type Master</a>
                     <a className="dropdown-item" href="/machine-master">Machine Master</a>
                     <a className="dropdown-item" href="/power-master">Power Master</a>
                   </div>

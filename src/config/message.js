@@ -66,7 +66,9 @@ export const MESSAGES = {
 
   //MACHINE MASTER
   DELETE_MACHINE_SUCCESS: 'Machine has been deleted successfully.',
+  DELETE_MACHINE_TYPE_SUCCESS: 'Machine Type has been deleted successfully.',
   MACHINE_DELETE_ALERT: 'Are you sure you want to delete Machine?',
+  MACHINE_TYPE_DELETE_ALERT: 'Are you sure you want to delete Machine Type?',
 
   //POWER MASTER
   POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',

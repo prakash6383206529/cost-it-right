@@ -34,6 +34,7 @@ import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import DepreciationMaster from './masters/sap-masters/depreciation-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
 import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
+import MachineTypeMaster from './masters/sap-masters/machine-type-master';
 import MachineMaster from './masters/sap-masters/machine-master';
 import PowerMaster from './masters/sap-masters/power-master';
 import ReasonMaster from './masters/sap-masters/reason-master';
@@ -158,6 +159,8 @@ class Main extends Component {
               <Route path="/ced-other-operation" component={AuthMiddleware(CEDoperationMaster)} />
 
               <Route path="/mhr-master" component={AuthMiddleware(MHRMaster)} />
+
+              <Route path="/machine-type-master" component={AuthMiddleware(MachineTypeMaster)} />
 
               <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
 

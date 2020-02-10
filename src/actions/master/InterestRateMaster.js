@@ -31,7 +31,6 @@ export function getInterestRateAPI(callback) {
         dispatch({ type: API_REQUEST });
         axios.get(API.getAllInterestRateAPI, { headers })
             .then((response) => {
-                console.log("interest respo", response)
                 if (response.data.Result === true) {
                     dispatch({
                         type: GET_INTEREST_RATE_SUCCESS,
