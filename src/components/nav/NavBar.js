@@ -113,6 +113,8 @@ class SideBar extends Component {
         return this.renderUser(module);
       case 'Privilege Permission':
         return this.renderPrivilege(module);
+      case 'AuditLog':
+        return this.renderAuditLog(module);
       default:
         return null;
     }
@@ -279,6 +281,26 @@ class SideBar extends Component {
           return (
             <li className="nav-item dropdown">
               <a className="nav-link " href="/privilege" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Privilege</a>
+            </li>
+          )
+        }
+        return null;
+      })
+    )
+  }
+
+  /**
+  * @method renderAuditLog
+  * @description Render User menu.
+  */
+  renderAuditLog = (module) => {
+    const { menusData } = this.props;
+    return (
+      menusData && menusData.map((el, i) => {
+        if (el.ModuleName == module) {
+          return (
+            <li className="nav-item dropdown">
+              <a className="nav-link " href="/audit-log" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Audit Log</a>
             </li>
           )
         }

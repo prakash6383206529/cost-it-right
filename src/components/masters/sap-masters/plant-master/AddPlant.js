@@ -37,6 +37,7 @@ class AddPlant extends Component {
                     this.setState({
                         cityId: response.CityIdRef,
                         isActiveBox: response.IsActive,
+                        IsZBCPlant: response.IsPlantForZBC,
                     })
                 })
             })
@@ -218,7 +219,7 @@ class AddPlant extends Component {
                                                 onChange={this.onPressZBCPlant}
                                             >
                                                 ZBC Plant
-                                                <input type="checkbox" checked={this.state.IsZBCPlant} />
+                                                <input type="checkbox" disabled={isEditFlag ? true : false} checked={this.state.IsZBCPlant} />
                                                 <span
                                                     className=" before-box"
                                                     checked={this.state.IsZBCPlant}
