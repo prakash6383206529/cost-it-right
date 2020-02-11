@@ -89,6 +89,8 @@ class AddFreight extends Component {
             let tempObj4 = supplierList.find(item => item.Value == response.DestinationSupplierId)
             let tempObj5 = plantList.find(item => item.Value == response.DestinationSupplierPlantId)
             let tempObj6 = cityList.find(item => item.Value == response.DestinationSupplierCityId)
+            let tempObj7 = costingHead.find(item => item.Value == response.PackagingCostingHeadsId)
+            let tempObj8 = costingHead.find(item => item.Value == response.LodingUnloadingCostingHeadsId)
 
             this.setState({
                 sourceSupplier: tempObj1 ? { label: tempObj1.Text, value: tempObj1.Value } : [],
@@ -97,6 +99,8 @@ class AddFreight extends Component {
                 destinationSupplier: tempObj4 ? { label: tempObj4.Text, value: tempObj4.Value } : [],
                 destinationPlant: tempObj5 ? { label: tempObj5.Text, value: tempObj5.Value } : [],
                 destinationCity: tempObj6 ? { label: tempObj6.Text, value: tempObj6.Value } : [],
+                packagingHead: tempObj7 ? { label: tempObj7.Text, value: tempObj7.Value } : [],
+                loadUnloadHead: tempObj8 ? { label: tempObj8.Text, value: tempObj8.Value } : [],
             })
         }
     }
