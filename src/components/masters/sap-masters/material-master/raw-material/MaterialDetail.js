@@ -35,7 +35,7 @@ class MaterialDetail extends Component {
                 <Row>
                     <Col>
                         {/* <hr /> */}
-                        <Table className="table table-striped" bordered>
+                        <Table className="table table-striped" hover bordered>
                             {this.props.rmDetail && this.props.rmDetail.length > 0 &&
                                 <thead>
                                     <tr>
@@ -43,7 +43,7 @@ class MaterialDetail extends Component {
                                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.NAME}`}</th>
                                         <th>{`${CONSTANT.GRADE}`}</th>
                                         <th>{`${CONSTANT.SPECIFICATION}`}</th>
-                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
+                                        {/* <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th> */}
                                         <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
                                         <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
                                         <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
@@ -67,7 +67,7 @@ class MaterialDetail extends Component {
                                                 <td >{item.RawMaterialName}</td>
                                                 <td>{item.GradeName}</td>
                                                 <td>{item.SpecificationName}</td>
-                                                <td >{item.CategoryName}</td>
+                                                {/* <td >{item.CategoryName}</td> */}
                                                 <td>{item.SourceSupplierName}</td>
                                                 <td>{item.SourceSupplierLocation}</td>
                                                 <td>{item.DestinationSupplierName}</td>

@@ -135,62 +135,64 @@ class RowMaterialMaster extends Component {
                         <Button onClick={this.openRMModel}>{`Add Raw Material Details`}</Button>
                     </Col>
                 </Row>
-                <Col>
-                    <div>
-                        <Nav tabs className="subtabs">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Material Type
+                <Row>
+                    <Col>
+                        <div>
+                            <Nav tabs className="subtabs">
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Material Type
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Raw Material
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        Raw Material
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                    Grade Detail
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                        Grade Detail
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
-                                    Category Detail
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                                        Category Detail
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
-                                    Specification Detail
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                                        Specification Detail
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
-                                    Raw Material Details
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
+                                        Raw Material Details
                                 </NavLink>
-                            </NavItem>
-                        </Nav>
-                        <TabContent activeTab={this.state.activeTab}>
-                            <TabPane tabId="1">
-                                <MaterialTypeDetail />
-                            </TabPane>
-                            <TabPane tabId="2">
-                                <RMDetail />
-                            </TabPane>
-                            <TabPane tabId="3">
-                                <RMGradeDetail />
-                            </TabPane>
-                            <TabPane tabId="4">
-                                <RMCategoryDetail />
-                            </TabPane>
-                            <TabPane tabId="5">
-                                <RMSpecificationDetail />
-                            </TabPane>
-                            <TabPane tabId="6">
-                                <MaterialDetail />
-                            </TabPane>
-                        </TabContent>
-                    </div>
-                </Col>
+                                </NavItem>
+                            </Nav>
+                            <TabContent activeTab={this.state.activeTab}>
+                                <TabPane tabId="1">
+                                    <MaterialTypeDetail />
+                                </TabPane>
+                                <TabPane tabId="2">
+                                    <RMDetail />
+                                </TabPane>
+                                <TabPane tabId="3">
+                                    <RMGradeDetail />
+                                </TabPane>
+                                <TabPane tabId="4">
+                                    <RMCategoryDetail />
+                                </TabPane>
+                                <TabPane tabId="5">
+                                    <RMSpecificationDetail />
+                                </TabPane>
+                                <TabPane tabId="6">
+                                    <MaterialDetail />
+                                </TabPane>
+                            </TabContent>
+                        </div>
+                    </Col>
+                </Row>
                 {isOpenMaterialType && (
                     <AddMaterialType
                         isOpen={isOpenMaterialType}

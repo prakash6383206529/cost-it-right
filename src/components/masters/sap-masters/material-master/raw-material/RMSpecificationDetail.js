@@ -35,7 +35,7 @@ class RMSpecificationDetail extends Component {
                 <Row>
                     <Col>
                         {/* <hr /> */}
-                        <Table className="table table-striped" bordered>
+                        <Table className="table table-striped" hover bordered>
                             {this.props.rmSpecificationDetail && this.props.rmSpecificationDetail.length > 0 &&
                                 <thead>
                                     <tr>
