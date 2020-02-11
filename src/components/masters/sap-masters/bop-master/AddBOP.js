@@ -51,6 +51,9 @@ class AddBOP extends Component {
                         const { bopData } = this.props;
                         this.props.change('CategoryId', bopData.CategoryId)
                     })
+                    this.setState({
+                        isActive: responseData.IsActive
+                    })
 
                 }
 
