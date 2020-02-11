@@ -32,6 +32,7 @@ import {
     GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS,
     GET_PAGES_SELECTLIST_SUCCESS,
     GET_ACTION_HEAD_SELECTLIST_SUCCESS,
+    GET_MENU_BY_USER_DATA_SUCCESS,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -221,6 +222,13 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 actionSelectList: action.payload
+            };
+        case GET_MENU_BY_USER_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                menusData: action.payload
             };
         // 		case FORGOT_PASSWORD_SUCCESS:
         // 			return {

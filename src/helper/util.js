@@ -233,3 +233,7 @@ export function renderOptionList(categoriesMaster) {
     });
     return categoryArray;
 }
+
+export function renderAction(menuData = [], Master = '', actionKey = '') {
+    console.log('HI')
+}

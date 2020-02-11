@@ -31,6 +31,7 @@ import {
     GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS,
     GET_PAGES_SELECTLIST_SUCCESS,
     GET_ACTION_HEAD_SELECTLIST_SUCCESS,
+    GET_MENU_BY_USER_DATA_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -870,6 +871,30 @@ export function setUserAdditionalPermission(requestData, callback) {
                 apiErrors(error);
                 callback(error);
             });
+    };
+}
+
+
+/**
+ * @method getMenuByUser
+ * @description get department detail
+ */
+export function getMenuByUser(UserId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMenuByUser}/${UserId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MENU_BY_USER_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }
 

@@ -5,10 +5,12 @@ import AddPlant from './AddPlant';
 import { getPlantDataAPI, deletePlantAPI } from '../../../../actions/master/Plant';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
-import { convertISOToUtcDate } from '../../../../helper/util'
+import { convertISOToUtcDate, renderAction } from '../../../../helper/util'
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import NoContentFound from '../../../common/NoContentFound';
+import { getMenuByUser } from '../../../../actions/auth/AuthActions';
+import { loggedInUserId } from '../../../../helper/auth';
 
 class PlantMaster extends Component {
     constructor(props) {
@@ -21,9 +23,11 @@ class PlantMaster extends Component {
     }
 
     componentDidMount() {
-        this.props.getPlantDataAPI(res => {
-
-        });
+        const loginUserId = loggedInUserId();
+        this.props.getPlantDataAPI(res => { });
+        if (loginUserId != null) {
+            this.props.getMenuByUser(loginUserId, () => { })
+        }
     }
     /**
      * @method openModel
@@ -90,6 +94,7 @@ class PlantMaster extends Component {
     */
     render() {
         const { isOpen, PlantId, isEditFlag } = this.state;
+        renderAction('', '', '')
         return (
             <Container className="top-margin">
                 {this.props.loading && <Loader />}
@@ -163,13 +168,14 @@ class PlantMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ plant }) {
+function mapStateToProps({ plant, auth }) {
+    const { menusData } = auth
     const { plantDetail, loading } = plant;
-    return { plantDetail, loading }
+    return { plantDetail, loading, menusData }
 }
 
 
 export default connect(
-    mapStateToProps, { getPlantDataAPI, deletePlantAPI }
+    mapStateToProps, { getPlantDataAPI, deletePlantAPI, getMenuByUser }
 )(PlantMaster);
 

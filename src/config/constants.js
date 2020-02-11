@@ -300,6 +300,7 @@ export const API = {
   setUserAdditionalPermission: `${BASE_URL}/app-privilege-permission/set-user-additional-permissions`,
   getRolePermissionByUser: `${BASE_URL}/app-privilege-permission/get-role-permissions-by-user`,
   getActionHeadsSelectList: `${BASE_URL}/app-privilege-permission/get-action-heads-list`,
+  getMenuByUser: `${BASE_URL}/app-privilege-permission/get-user-menu-by-user`,
 
 }
 
@@ -555,6 +556,7 @@ export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS';
 export const GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS = 'GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS';
 export const GET_PAGES_SELECTLIST_SUCCESS = 'GET_PAGES_SELECTLIST_SUCCESS';
 export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SUCCESS';
+export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS';
 
 //COSTING STATUS
 export const APPROVED = 'Approved';
