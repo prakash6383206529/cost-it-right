@@ -114,51 +114,48 @@ class SupplierMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.SUPPLIER} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
+                        <Table className="table table-striped" hover bordered>
+                            {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.CODE}`}</th>
+                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.EMAIL}`}</th>
+                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.TYPE}`}</th>
+                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.CITY}`}</th>
+                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.DESCRIPTION}`}</th>
+                                        <th>{`${CONSTANT.SUPPLIER} name with code`}</th>
+                                        <th>{`Associated Plants`}</th>
+                                        <th>{`${CONSTANT.DATE}`}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
+                                    this.props.supplierDetail.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{item.SupplierCode}</td>
+                                                <td >{item.SupplierName}</td>
+                                                <td>{item.SupplierEmail}</td>
+                                                <td>{item.SupplierType}</td>
+                                                <td>{item.CityName}</td>
+                                                <td>{item.Description}</td>
+                                                <td>{item.SupplierNameWithCode}</td>
+                                                <td>{this.associatedPlantsHandler(item.AssociatedPlants)}</td>
+                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editDetails(item.SupplierId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.SupplierId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.supplierDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
                     </Col>
                 </Row>
-                <Col>
-                    <Table className="table table-striped" hover bordered>
-                        {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.CODE}`}</th>
-                                    <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.EMAIL}`}</th>
-                                    <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.TYPE}`}</th>
-                                    <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.CITY}`}</th>
-                                    <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.DESCRIPTION}`}</th>
-                                    <th>{`${CONSTANT.SUPPLIER} name with code`}</th>
-                                    <th>{`Associated Plants`}</th>
-                                    <th>{`${CONSTANT.DATE}`}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>}
-                        <tbody >
-                            {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
-                                this.props.supplierDetail.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{item.SupplierCode}</td>
-                                            <td >{item.SupplierName}</td>
-                                            <td>{item.SupplierEmail}</td>
-                                            <td>{item.SupplierType}</td>
-                                            <td>{item.CityName}</td>
-                                            <td>{item.Description}</td>
-                                            <td>{item.SupplierNameWithCode}</td>
-                                            <td>{this.associatedPlantsHandler(item.AssociatedPlants)}</td>
-                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                            <td>
-                                                <Button className="btn btn-secondary" onClick={() => this.editDetails(item.SupplierId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.SupplierId)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.supplierDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
                 {isOpen && (
                     <AddSupplier
                         isOpen={isOpen}

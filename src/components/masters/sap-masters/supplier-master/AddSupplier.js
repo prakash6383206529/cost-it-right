@@ -265,6 +265,7 @@ class AddSupplier extends Component {
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
+                                                disabled={isEditFlag ? true : false}
                                             />
                                         </Col>
                                         {/* <Col className='form-group'>
