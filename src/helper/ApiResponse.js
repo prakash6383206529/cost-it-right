@@ -17,7 +17,7 @@ export function formatLoginResult(res) {
             Plants: res.Data.Plants,
             Permissions: res.Data.Permissions,
         };
-        console.log("userObj", userObj)
+        //console.log("userObj", userObj)
         return userObj;
     }
     return null;

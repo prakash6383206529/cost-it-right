@@ -40,7 +40,7 @@ class Login extends Component {
    */
 
   onSubmit(values) {
-    console.log("value", values)
+    //console.log("value", values)
 
     this.props.loginUserAPI(values, (res) => {
       if (res && res.data && res.data.Result) {
@@ -49,9 +49,10 @@ class Login extends Component {
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();
-        this.setState({
-          isRedirect: true
-        })
+        setTimeout(() => { window.location.replace("/"); }, 100)
+        // this.setState({
+        //   isRedirect: true
+        // })
       }
     });
   }

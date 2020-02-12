@@ -15,6 +15,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { required } from "../../../helper/validation";
 import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
 import { reactLocalStorage } from "reactjs-localstorage";
+import { loggedInUserId } from "../../../helper/auth";
 
 class Approval extends Component {
     constructor(props) {
@@ -148,8 +149,9 @@ class Approval extends Component {
 
     onSubmit = (values) => {
         console.log('Approval form')
-        // const { department, user, reason } = this.state;
-        // const { costingId, approvalData } = this.props;
+        const { department, user, reason } = this.state;
+        const { costingId, approvalData } = this.props;
+        const loginUserId = loggedInUserId();
 
         // let requestData = {
         //     CostingId: costingId,
@@ -161,6 +163,25 @@ class Approval extends Component {
         //     UserId: user.value,
         //     TechnologyId: approvalData.TechnologyId,
         // }
+
+        let requestData = {
+            CostingId: costingId,
+            IsFinalApproval: false,
+            IsApproved: true,
+            CostingApprovalId: '',
+            LoggedInUserId: loginUserId,
+            SenderReasonId: reason.value,
+            SenderRemark: values.Remarks,
+            SenderLevelId: '', //need to bind from user data
+            SentDate: '',
+            ReceiverUserId: user.value,
+            ReceiverLevelId: '', //need to incorporate
+            ReceiverRemark: '',
+            ReceivedDate: '',
+            CostVariancIdRef: '',
+            IsActive: true,
+            TechnologyId: '',
+        }
 
         // this.props.sendForApproval(requestData, (res) => {
         //     toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)

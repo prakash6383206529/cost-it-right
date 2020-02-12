@@ -54,7 +54,7 @@ export function loginUserAPI(requestData, callback) {
         axios.post(API.login, requestData, { headers })
             .then((response) => {
                 if (response && response.data && response.data.Result) {
-                    console.log("login res", response)
+                    //console.log("login res", response)
                     dispatch(getLoginSuccess(response));
                     callback(response);
                 }

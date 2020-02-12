@@ -15,7 +15,7 @@ import { uploadBOMxlsAPI } from '../../actions/master/BillOfMaterial';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 import { searchableSelect } from '../../components/layout/FormInputs'
 import DownloadBOMxls from './DownloadBOMxls';
-
+import { loggedInUserId } from "../../helper/auth";
 
 class Costing extends Component {
     constructor(props) {
@@ -56,6 +56,7 @@ class Costing extends Component {
     }
 
     supplierCosting = (reqData) => {
+        const loginUserId = loggedInUserId();
         this.setState({
             activeTab: '2',
             supplierId: reqData.supplierId,
@@ -65,6 +66,7 @@ class Costing extends Component {
             const Data = {
                 supplierId: this.state.supplierId,
                 partId: this.state.partId,
+                loggedInUserId: loginUserId,
             }
             this.props.getCostingBySupplier(Data, (res) => { console.log('res', res) })
         });
@@ -234,48 +236,49 @@ class Costing extends Component {
                 </Row>
                 <hr />
                 <Row>
-                    <Nav tabs className="subtabs">
-                        {/* <NavItem>
+                    <Col>
+                        <Nav tabs className="subtabs">
+                            {/* <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                 Dynamic Cost Summary
                                 </NavLink>
                         </NavItem> */}
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                Cost Summary
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                    Cost Summary
                                 </NavLink>
-                        </NavItem>
+                            </NavItem>
 
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                Cost Working
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                    Cost Working
                                 </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <TabContent activeTab={this.state.activeTab}>
-                        {/* <TabPane tabId="1">
+                            </NavItem>
+                        </Nav>
+                        <TabContent activeTab={this.state.activeTab}>
+                            {/* <TabPane tabId="1">
                             {this.fileUploadSection()}
                             <Col>
                                 <DynamicCostSummary
                                     supplierCosting={this.supplierCosting} />
                             </Col>
                         </TabPane> */}
-                        <TabPane tabId="1">
-                            {this.fileUploadSection()}
-                            <Col>
+                            <TabPane tabId="1">
+                                {this.fileUploadSection()}
+
                                 <CostSummary
                                     supplierCosting={this.supplierCosting} />
-                            </Col>
-                        </TabPane>
-                        <TabPane tabId="2">
-                            <CostWorking
-                                supplierId={supplierId}
-                                plantId={plantId}
-                                toggle={this.toggle}
-                                partId={partId} />
-                        </TabPane>
-                    </TabContent>
 
+                            </TabPane>
+                            <TabPane tabId="2">
+                                <CostWorking
+                                    supplierId={supplierId}
+                                    plantId={plantId}
+                                    toggle={this.toggle}
+                                    partId={partId} />
+                            </TabPane>
+                        </TabContent>
+                    </Col>
                 </Row>
             </Container >
         );

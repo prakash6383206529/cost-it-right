@@ -10,6 +10,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
+import { loggedInUserId } from "../../../helper/auth";
 
 class AddRawMaterialCosting extends Component {
     constructor(props) {
@@ -79,6 +80,7 @@ class AddRawMaterialCosting extends Component {
 
     rawMaterialHandler = (item) => {
         const { isRMEditFlag, costingId, selectedIndex, partId, PartNumber } = this.props;
+        const loginUserId = loggedInUserId();
         const requestData = {
             CostingId: costingId,
             RawMaterialDetailId: item.RawMaterialDetailsId,
@@ -88,7 +90,7 @@ class AddRawMaterialCosting extends Component {
             RawMaterialScrapRate: item.ScrapRate,
             PartId: partId,
             PartNumber: PartNumber,
-            CreatedBy: ""
+            CreatedBy: loginUserId,
         }
         // if (isRMEditFlag) {
         //     requestData = {

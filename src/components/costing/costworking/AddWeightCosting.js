@@ -11,6 +11,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { FIVE_DECIMAL_WEIGHT } from '../../../config/constants';
+import { loggedInUserId } from "../../../helper/auth";
 const selector = formValueSelector('AddWeightCostingForm');
 
 class AddWeightCosting extends Component {
@@ -317,6 +318,7 @@ class AddWeightCosting extends Component {
     onSubmit = (values) => {
         const { layoutingId } = this.state;
         const { fieldsObj } = this.props;
+        const loginUserId = loggedInUserId();
 
         let weightCalculationData = {
             CostingId: values.costingId,
@@ -352,7 +354,7 @@ class AddWeightCosting extends Component {
             WeightUnitKg: fieldsObj.weightOther,
             IsActive: true,
             CreatedDate: "",
-            CreatedBy: "",
+            CreatedBy: loginUserId,
             ModifiedBy: ""
         }
 

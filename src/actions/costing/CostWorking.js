@@ -144,7 +144,7 @@ export function updateWeightCalculationCosting(requestData, callback) {
 export function getCostingBySupplier(reqData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCostingBySupplier}?supplierId=${reqData.supplierId}&partId=${reqData.partId}`, headers);
+        const request = axios.get(`${API.getCostingBySupplier}?supplierId=${reqData.supplierId}&partId=${reqData.partId}&loggedInUserId=${reqData.loggedInUserId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

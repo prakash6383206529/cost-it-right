@@ -34,18 +34,6 @@ class SideBar extends Component {
   }
 
   /**
-  * @method componentDidUpdate
-  * @description used to called after mounting component
-  */
-  componentDidUpdate() {
-    const loginUserId = loggedInUserId();
-    //this.props.getModuleSelectList(() => { })
-    // if (loginUserId != null) {
-    //   this.props.getMenuByUser(loginUserId, () => { })
-    // }
-  }
-
-  /**
    * @method toggleMenue
    * @description Toggle the visibility of sidebar menue.
    */

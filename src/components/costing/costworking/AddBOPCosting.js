@@ -9,6 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
+import { loggedInUserId } from "../../../helper/auth";
 
 class AddBOPCosting extends Component {
     constructor(props) {
@@ -37,6 +38,7 @@ class AddBOPCosting extends Component {
 
     bopHandler = (item) => {
         const { isRMEditFlag, costingId, PartId, PartNumber } = this.props;
+        const loginUserId = loggedInUserId();
         const requestData = {
             CostingId: costingId,
             BoughtOutPartId: item.BoughtOutPartId,
@@ -45,7 +47,7 @@ class AddBOPCosting extends Component {
             AssyBoughtOutParRate: item.BasicRate,
             PartId: PartId,
             PartNumber: PartNumber,
-            CreatedBy: ""
+            CreatedBy: loginUserId,
         }
 
         this.props.addCostingBoughtOutPart(requestData, res => {

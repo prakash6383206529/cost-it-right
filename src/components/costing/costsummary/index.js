@@ -8,7 +8,7 @@ import { fetchMaterialComboAPI, fetchCostingHeadsAPI, fetchModelTypeAPI } from '
 import {
     getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier, checkPartWithTechnology,
     getCostingByCostingId, setInventoryRowData, getCostingOverHeadProByModelType, saveCosting, fetchFreightHeadsAPI,
-    getCostingFreight, emptyCostingData,
+    getCostingFreight, emptyCostingData, setEmptyExistingSupplierData,
 } from '../../../actions/costing/costing';
 import { getInterestRateAPI } from '../../../actions/master/InterestRateMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -22,7 +22,7 @@ import ApprovalModal from './ApprovalModal';
 import Approval from './Approval';
 import { MESSAGES } from '../../../config/message';
 import { DRAFT, REJECTED, APPROVED, PENDING, TWO_DECIMAL_PRICE } from '../../../config/constants';
-import { userDetails } from "../../../helper/auth";
+import { userDetails, loggedInUserId } from "../../../helper/auth";
 const selector = formValueSelector('CostSummary');
 
 
@@ -65,7 +65,7 @@ class CostSummary extends Component {
             sendForApprovalSupplierId: '',
             sendForApprovalCostingId: '',
             RejectionHeadType: '',
-            ZBCSupplierCostingStatus: false,
+            isDisabledZBCSupplierButton: true,
             isDisabledSupplierOneButton: true,
             isDisabledSupplierTwoButton: true,
             isDisabledSupplierThreeButton: true,
@@ -98,10 +98,10 @@ class CostSummary extends Component {
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
                 btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
-                this.setState({ ZBCSupplierCostingStatus: true, ZBCSupplierSaveButtonLabel: btnLabel })
+                this.setState({ isDisabledZBCSupplierButton: false, ZBCSupplierSaveButtonLabel: btnLabel })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
                 btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
-                this.setState({ ZBCSupplierCostingStatus: false, ZBCSupplierSaveButtonLabel: btnLabel })
+                this.setState({ isDisabledZBCSupplierButton: false, ZBCSupplierSaveButtonLabel: btnLabel })
             }
 
             this.props.change('ZBCsupplierData', returnContent)
@@ -157,7 +157,7 @@ class CostSummary extends Component {
     }
 
     columnCalculation = (Content, CostingHeads) => {
-        console.log("Content >>>", Content)
+        //console.log("Content >>>", Content)
         const RMCostingHeadObj = CostingHeads.find(item => item.Value == Content.RMCostingHeadsId)
         const WIPCostingHeadObj = CostingHeads.find(item => item.Value == Content.WIPCostingHeadsId)
         const PaymentTermCostingHeadObj = CostingHeads.find(item => item.Value == Content.PaymentTermsCostingHeadsId)
@@ -283,6 +283,7 @@ class CostSummary extends Component {
         const { partNo, plant, supplier, TechnologyId } = this.state;
         const { technologyList } = this.props;
         const selectedTechnology = TechnologyId != '' ? TechnologyId : technologyList[0].Value;
+        const loginUserId = loggedInUserId();
 
         if (plant == null) {
             this.props.change("part", '0')
@@ -297,24 +298,33 @@ class CostSummary extends Component {
         this.props.change('supplier3Data', {})
         this.props.emptyCostingData();
 
-        this.setState({
-            partNo: e.target.value,
-            supplier: [],
-        }, () => {
-            const checkPartData = {
-                PartId: this.state.partNo,
-                TechnologyId: selectedTechnology
-            }
-            this.props.checkPartWithTechnology(checkPartData, res => {
-                this.props.getExistingSupplierDetailByPartId(this.state.partNo, res => {
-                    // After get listing of exist suppliers
-                    if (res && res.data && res.data.Message != '') {
-                        toastr.warning(res.data.Message);
-                    }
-                    this.existingSupplierDetail()
+        if (e.target.value != 0) {
+            this.setState({
+                partNo: e.target.value,
+                supplier: [],
+            }, () => {
+                const checkPartData = {
+                    PartId: this.state.partNo,
+                    TechnologyId: selectedTechnology
+                }
+                this.props.checkPartWithTechnology(checkPartData, res => {
+                    this.props.getExistingSupplierDetailByPartId(this.state.partNo, loginUserId, res => {
+                        // After get listing of exist suppliers
+                        if (res && res.data && res.data.Message != '') {
+                            toastr.warning(res.data.Message);
+                        }
+                        this.existingSupplierDetail()
+                    })
                 })
+            });
+        } else {
+            this.setState({ partNo: '' })
+            this.props.setEmptyExistingSupplierData(() => {
+                setTimeout(() => {
+                    this.existingSupplierDetail()
+                }, 100)
             })
-        });
+        }
     };
 
     existingSupplierDetail = () => {
@@ -381,6 +391,7 @@ class CostSummary extends Component {
                 this.setSupplierCode()
             });
         } else {
+
             this.setState({
                 supplier: [],
                 supplier2: [],
@@ -919,7 +930,8 @@ class CostSummary extends Component {
         const { ZBCSupplier, FreightHeadsList, costingData } = this.props;
 
         let userDetail = userDetails();
-        const ZBCPlant = userDetail && userDetail.Plants ? userDetail.Plants[0].PlantId : '';
+        console.log('userDetail', userDetail, userDetail.Plants)
+        const ZBCPlant = (userDetail && userDetail.Plants.length > 0) ? userDetail.Plants[0].PlantId : '';
 
         let supplierColumn = '';
         let Content = '';
@@ -1861,8 +1873,8 @@ class CostSummary extends Component {
         const { handleSubmit, ZBCSupplier, costingData } = this.props;
         const { supplier, supplier2, supplier3, isShowOtherOpsModal, supplierIdForOtherOps, supplierColumn, isShowCEDotherOpsModal,
             isShowFreightModal, supplierIdForCEDOtherOps, isOpenSendForApprovalModal, isOpenSendForApproval, sendForApprovalSupplierId,
-            sendForApprovalCostingId, ZBCSupplierCostingStatus, isDisabledSupplierOneButton, isDisabledSupplierTwoButton, isDisabledSupplierThreeButton,
-            activeSupplier1, activeSupplier2, activeSupplier3 } = this.state;
+            sendForApprovalCostingId, isDisabledZBCSupplierButton, isDisabledSupplierOneButton, isDisabledSupplierTwoButton, isDisabledSupplierThreeButton,
+            activeSupplier0, activeSupplier1, activeSupplier2, activeSupplier3 } = this.state;
 
         let ZBCsupplierData = 'ZBCsupplierData';
         let supplier1Data = 'supplier1Data';
@@ -6004,11 +6016,11 @@ class CostSummary extends Component {
                             <button
                                 type={'button'}
                                 onClick={() => this.saveCosting(0)}
-                                disabled={ZBCSupplierCostingStatus ? true : false}
+                                disabled={(isDisabledZBCSupplierButton || activeSupplier0 == 0) ? true : false}
                                 className={'btn btn-primary mr5'}>Save</button>
                             <button
                                 type={'button'}
-                                disabled={ZBCSupplierCostingStatus ? true : false}
+                                disabled={(isDisabledZBCSupplierButton || activeSupplier0 == 0) ? true : false}
                                 onClick={() => this.sendApproval(0)}
                                 className={'btn btn-primary'}>{this.state.ZBCSupplierSaveButtonLabel}</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
@@ -6133,6 +6145,7 @@ export default connect(mapStateToProps, {
     fetchModelTypeAPI,
     getPlantCombo,
     getExistingSupplierDetailByPartId,
+    setEmptyExistingSupplierData,
     createPartWithSupplier,
     checkPartWithTechnology,
     getCostingByCostingId,

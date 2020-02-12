@@ -54,10 +54,10 @@ export function getPlantCombo(callback) {
  * @method getAllBOMAPI
  * @description get all bill of material list
  */
-export function getExistingSupplierDetailByPartId(partId, callback) {
+export function getExistingSupplierDetailByPartId(partId, loginUserId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getExistingSupplierDetailByPartId}/${partId}`, headers);
+        const request = axios.get(`${API.getExistingSupplierDetailByPartId}/${partId}/${loginUserId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -84,6 +84,19 @@ export function getExistingSupplierDetailByPartId(partId, callback) {
     };
 }
 
+/**
+ * @method createPartWithSupplier
+ * @description create part with supplier
+ */
+export function setEmptyExistingSupplierData(callback) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
+            payload: null,
+        });
+        callback()
+    }
+}
 
 
 /**
@@ -142,7 +155,7 @@ export function getCostingByCostingId(costingId, supplier, callback) {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getCostingByCostingId}/${costingId}`, headers);
         request.then((response) => {
-            console.log('res >>>>>>>>>>', response)
+            //console.log('res >>>>>>>>>>', response)
             if (response.data.Result) {
                 dispatch({
                     type: GET_COSTING_BY_COSTINGID,

@@ -364,6 +364,7 @@ class CostWorking extends Component {
             PlantId: plantId,
             SupplierId: supplierId,
             CreatedBy: loginUserId,
+            loggedInUserId: loginUserId,
             CostingNumber: '',
             ECONumber: '',
             RevsionNumber: ''
@@ -376,6 +377,7 @@ class CostWorking extends Component {
                 const Data = {
                     supplierId: supplierId,
                     partId: partId,
+                    loggedInUserId: loginUserId,
                 }
                 /** fetching records of supplier costing details */
                 this.props.getCostingBySupplier(Data, () => { })
@@ -647,7 +649,7 @@ class CostWorking extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <Col md="12">
-                    {activeCostingListData && `Part No. : ${activeCostingListData.PartDetail.PartNumber} Costing Type : ${activeCostingListData.SupplierType} Supplier Name : ${activeCostingListData.SupplierName} Supplier Code : ${activeCostingListData.SupplierCode} Created On : `}
+                    {activeCostingListData && `Part No. : ${activeCostingListData.PartDetail.PartNumber}, Costing Type : ${activeCostingListData.SupplierType}, Supplier Name : ${activeCostingListData.SupplierName}, Supplier Code : ${activeCostingListData.SupplierCode}, Created On : `}
                     <hr />
                     {supplierId && plantId &&
                         <Button color="secondary" onClick={this.createNewCosting} >
@@ -656,7 +658,7 @@ class CostWorking extends Component {
                     {supplierId && plantId && <h5><b>{`Costing Supplier List`}</b></h5>}
 
                     {/* Listing of active costings */}
-                    <Table className="table table-striped" bordered>
+                    <Table className="table table-striped" hover bordered>
                         {activeCostingListData && activeCostingListData.ActiveCostingDetatils.length > 0 &&
                             <thead>
                                 <tr>
