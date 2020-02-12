@@ -14,6 +14,7 @@ import {
     GET_FREIGHT_HEAD_SUCCESS,
     GET_FREIGHT_AMOUNT_DATA_SUCCESS,
     EMPTY_COSTING_DATA,
+    GET_ZBC_COSTING_SELECTLIST_BY_PART,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -51,8 +52,8 @@ export function getPlantCombo(callback) {
 }
 
 /**
- * @method getAllBOMAPI
- * @description get all bill of material list
+ * @method getExistingSupplierDetailByPartId
+ * @description get Existing Supplier Detail By PartId
  */
 export function getExistingSupplierDetailByPartId(partId, loginUserId, callback) {
     return (dispatch) => {
@@ -96,6 +97,32 @@ export function setEmptyExistingSupplierData(callback) {
         });
         callback()
     }
+}
+
+
+/**
+* @method getZBCCostingSelectListByPart
+* @description get ZBC Costing Select List By Part
+*/
+export function getZBCCostingSelectListByPart(PartId, SupplierId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getZBCCostingSelectListByPart}/${PartId}/${SupplierId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ZBC_COSTING_SELECTLIST_BY_PART,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
 }
 
 

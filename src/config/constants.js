@@ -214,6 +214,7 @@ export const API = {
   checkPartWithTechnology: `${BASE_URL}/costing-sheet-metal/check-part-with-technology`,
   createNewCosting: `${BASE_URL}/costing-sheet-metal/create`,
   getCostingDetailsById: `${BASE_URL}/costing-sheet-metal/get-costing-details-by-id`,
+  getZBCCostingSelectListByPart: `${BASE_URL}/costing-sheet-metal/get-costing-select-list-by-part`,
 
   //weight calculation costing
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -486,6 +487,7 @@ export const GET_COSTING_DATA_SUCCESS = 'GET_COSTING_DATA_SUCCESS';
 export const GET_FREIGHT_HEAD_SUCCESS = 'GET_FREIGHT_HEAD_SUCCESS';
 export const GET_FREIGHT_AMOUNT_DATA_SUCCESS = 'GET_FREIGHT_AMOUNT_DATA_SUCCESS';
 export const EMPTY_COSTING_DATA = 'EMPTY_COSTING_DATA';
+export const GET_ZBC_COSTING_SELECTLIST_BY_PART = 'GET_ZBC_COSTING_SELECTLIST_BY_PART';
 
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';

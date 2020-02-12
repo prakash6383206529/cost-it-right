@@ -3,6 +3,7 @@ export function formatLoginResult(res) {
         const userObj = {
             Token: res.Data.Token,
             LoggedInUserId: res.Data.LoggedInUserId,
+            LoggedInLevelId: res.Data.LoggedInLevelId,
             UserName: res.Data.UserName,
             Name: res.Data.Name,
             RememberMe: res.Data.RememberMe,

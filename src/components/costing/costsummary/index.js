@@ -8,7 +8,7 @@ import { fetchMaterialComboAPI, fetchCostingHeadsAPI, fetchModelTypeAPI } from '
 import {
     getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier, checkPartWithTechnology,
     getCostingByCostingId, setInventoryRowData, getCostingOverHeadProByModelType, saveCosting, fetchFreightHeadsAPI,
-    getCostingFreight, emptyCostingData, setEmptyExistingSupplierData,
+    getCostingFreight, emptyCostingData, setEmptyExistingSupplierData, getZBCCostingSelectListByPart,
 } from '../../../actions/costing/costing';
 import { getInterestRateAPI } from '../../../actions/master/InterestRateMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -283,7 +283,11 @@ class CostSummary extends Component {
         const { partNo, plant, supplier, TechnologyId } = this.state;
         const { technologyList } = this.props;
         const selectedTechnology = TechnologyId != '' ? TechnologyId : technologyList[0].Value;
+
         const loginUserId = loggedInUserId();
+        let userDetail = userDetails();
+
+        const ZBCSupplierId = userDetail && userDetail.ZBCSupplierInfo ? userDetail.ZBCSupplierInfo.SupplierId : '';
 
         if (plant == null) {
             this.props.change("part", '0')
@@ -308,6 +312,7 @@ class CostSummary extends Component {
                     TechnologyId: selectedTechnology
                 }
                 this.props.checkPartWithTechnology(checkPartData, res => {
+                    this.props.getZBCCostingSelectListByPart(this.state.partNo, ZBCSupplierId, () => { })
                     this.props.getExistingSupplierDetailByPartId(this.state.partNo, loginUserId, res => {
                         // After get listing of exist suppliers
                         if (res && res.data && res.data.Message != '') {
@@ -930,8 +935,7 @@ class CostSummary extends Component {
         const { ZBCSupplier, FreightHeadsList, costingData } = this.props;
 
         let userDetail = userDetails();
-        console.log('userDetail', userDetail, userDetail.Plants)
-        const ZBCPlant = (userDetail && userDetail.Plants.length > 0) ? userDetail.Plants[0].PlantId : '';
+        const ZBCPlant = userDetail && userDetail.ZBCSupplierInfo ? userDetail.ZBCSupplierInfo.PlantId : '';
 
         let supplierColumn = '';
         let Content = '';
@@ -1014,7 +1018,14 @@ class CostSummary extends Component {
             Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
         }
 
-        if (FreightData && FreightData != undefined) {
+        if (e.target.value == 0) {
+
+            Content.InputFreight = checkForNull(e.target.value);
+            Content.NetFreightCost = checkForNull(e.target.value);
+            this.props.change(supplierColumn, Content)
+
+        } else if (FreightData && FreightData != undefined) {
+
             Content.InputFreight = checkForNull(FreightAmount);
             FreightData.NetFreightCost = checkForNull(FreightData.FreightLoadRate);
             if (FreightData.FreightHeadName == 'Rs/Kg' || FreightData.FreightHeadName == 'perCubic feet') {
@@ -1024,6 +1035,7 @@ class CostSummary extends Component {
             }
             this.props.change(supplierColumn, Content)
         }
+
     }
 
     /**
@@ -1351,7 +1363,7 @@ class CostSummary extends Component {
     renderTypeOfListing = (label) => {
         const { supplierDropdown1Array, supplierDropdown2Array, supplierDropdown3Array } = this.state;
         const { technologyList, plantList, Parts, Suppliers, ZBCSupplier, supplier2CostingDat, costingHead,
-            modelTypes, FreightHeadsList } = this.props;
+            modelTypes, FreightHeadsList, zbcCostingSelectList } = this.props;
         const temp = [];
 
         if (label === 'technology') {
@@ -1418,7 +1430,7 @@ class CostSummary extends Component {
         }
 
         if (label === 'zbcSupplierDropdown') {
-            ZBCSupplier && ZBCSupplier.ZBCCostings.map(item =>
+            zbcCostingSelectList && zbcCostingSelectList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
@@ -1473,7 +1485,7 @@ class CostSummary extends Component {
     ZBCSupplierCosting = (supplierId) => {
         const { plant, partNo } = this.state;
         let userDetail = userDetails();
-        const Plant = userDetail && userDetail.Plants ? userDetail.Plants[0].PlantId : '';
+        const Plant = userDetail && userDetail.ZBCSupplierInfo ? userDetail.ZBCSupplierInfo.PlantId : '';
         if (partNo != '') {
             const data = {
                 supplierId: supplierId,
@@ -6115,7 +6127,7 @@ function mapStateToProps(state) {
     const { plantList, technologyList, modelTypes, costingHead } = comman;
 
     if (costing && costing.plantComboDetail) {
-        const { loading, existingSupplierDetail, costingData, FreightHeadsList, FreightData } = costing;
+        const { loading, existingSupplierDetail, costingData, FreightHeadsList, FreightData, zbcCostingSelectList } = costing;
         const { Plants, Parts, Suppliers, ZBCSupplier } = costing.plantComboDetail;
 
         return {
@@ -6134,6 +6146,7 @@ function mapStateToProps(state) {
             FreightData,
             sobObject,
             loading,
+            zbcCostingSelectList,
             //initialValues
         }
     }
@@ -6146,6 +6159,7 @@ export default connect(mapStateToProps, {
     getPlantCombo,
     getExistingSupplierDetailByPartId,
     setEmptyExistingSupplierData,
+    getZBCCostingSelectListByPart,
     createPartWithSupplier,
     checkPartWithTechnology,
     getCostingByCostingId,

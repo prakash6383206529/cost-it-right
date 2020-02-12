@@ -12,6 +12,7 @@ import {
     GET_FREIGHT_HEAD_SUCCESS,
     GET_FREIGHT_AMOUNT_DATA_SUCCESS,
     EMPTY_COSTING_DATA,
+    GET_ZBC_COSTING_SELECTLIST_BY_PART,
 } from '../../config/constants';
 
 const initialState = {
@@ -102,7 +103,6 @@ export default function costingReducer(state = initialState, action) {
         case SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY:
             let FreightRowData = action.payload;
             let Olddata = state.costingData[action.supplierColumn];
-            //console.log("Olddata 111>>>", FreightRowData, Olddata)
             Olddata = {
                 ...Olddata,
                 CostingDetail: {
@@ -111,8 +111,6 @@ export default function costingReducer(state = initialState, action) {
                     NetAdditionalFreightCost: FreightRowData.NetAdditionalFreightCost,
                 }
             }
-            //console.log("Olddata 222>>>", Olddata)
-
             return {
                 ...state,
                 loading: false,
@@ -123,7 +121,6 @@ export default function costingReducer(state = initialState, action) {
         case SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY:
             let InterestRowData = action.payload;
             let InventoryOlddata = state.costingData[action.supplierColumn];
-            //console.log("Olddata 111>>>", InterestRowData, InventoryOlddata)
             InventoryOlddata = {
                 ...InventoryOlddata,
                 CostingDetail: {
@@ -136,7 +133,6 @@ export default function costingReducer(state = initialState, action) {
                     //PaymentTermsCost: InterestRowData.NetAdditionalFreightCost,
                 }
             }
-            //console.log("InventoryOlddata 222>>>", InventoryOlddata)
             return {
                 ...state,
                 loading: false,
@@ -163,6 +159,13 @@ export default function costingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 costingData: action.payload
+            };
+        case GET_ZBC_COSTING_SELECTLIST_BY_PART:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                zbcCostingSelectList: action.payload
             };
         default:
             return state;

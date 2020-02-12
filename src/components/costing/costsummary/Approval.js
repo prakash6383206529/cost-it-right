@@ -15,7 +15,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { required } from "../../../helper/validation";
 import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { loggedInUserId } from "../../../helper/auth";
+import { userDetails, loggedInUserId } from "../../../helper/auth";
 
 class Approval extends Component {
     constructor(props) {
@@ -148,21 +148,12 @@ class Approval extends Component {
     }
 
     onSubmit = (values) => {
-        console.log('Approval form')
+
         const { department, user, reason } = this.state;
         const { costingId, approvalData } = this.props;
-        const loginUserId = loggedInUserId();
 
-        // let requestData = {
-        //     CostingId: costingId,
-        //     CostingStatusId: "",
-        //     IsFinalApproval: false,
-        //     IsApproved: true,
-        //     Remark: values.Remarks,
-        //     LevelId: "",
-        //     UserId: user.value,
-        //     TechnologyId: approvalData.TechnologyId,
-        // }
+        let userDetail = userDetails();
+        const loginUserId = loggedInUserId();
 
         let requestData = {
             CostingId: costingId,
@@ -172,21 +163,20 @@ class Approval extends Component {
             LoggedInUserId: loginUserId,
             SenderReasonId: reason.value,
             SenderRemark: values.Remarks,
-            SenderLevelId: '', //need to bind from user data
+            SenderLevelId: userDetail.LoggedInLevelId,
             SentDate: '',
             ReceiverUserId: user.value,
-            ReceiverLevelId: '', //need to incorporate
             ReceiverRemark: '',
             ReceivedDate: '',
             CostVariancIdRef: '',
-            IsActive: true,
-            TechnologyId: '',
+            IsActive: true
         }
 
-        // this.props.sendForApproval(requestData, (res) => {
-        //     toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
-        //     this.props.onCancelApproval();
-        // })
+        console.log('requestData', requestData)
+        this.props.sendForApproval(requestData, (res) => {
+            toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
+            this.props.onCancelApproval();
+        })
     }
 
     /**

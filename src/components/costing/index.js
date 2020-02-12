@@ -36,17 +36,17 @@ class Costing extends Component {
     }
 
     /**
-     * @method componentDidMount
-     * @description  called before mounting the component
-     */
+    * @method componentDidMount
+    * @description  called before mounting the component
+    */
     componentDidMount() {
         this.props.fetchPlantDataAPI(() => { })
     }
 
     /**
-   * @method toggle
-   * @description toggling the tabs
-   */
+    * @method toggle
+    * @description toggling the tabs
+    */
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
@@ -73,9 +73,9 @@ class Costing extends Component {
     }
 
     /**
-     * @method toggleUpload
-     * @description toggling the file upload tabs
-     */
+    * @method toggleUpload
+    * @description toggling the file upload tabs
+    */
     toggleUpload = () => {
         this.setState({
             isShowFileUpload: !this.state.isShowFileUpload
