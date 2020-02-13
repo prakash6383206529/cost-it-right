@@ -450,10 +450,8 @@ export function renderNumberInputField(field) {
 @desc: Render textarea input
 */
 export function renderTextAreaField(field) {
-  const {
-    input,
-    meta: { touched, error }
-  } = field;
+  const { input, disabled, meta: { touched, error } } = field;
+  const disabledLabel = disabled ? true : false;
   const placeholder = field.placeholder ? field.placeholder : "";
   return (
     <div className="form-group">
@@ -471,6 +469,7 @@ export function renderTextAreaField(field) {
           className="form-control withoutBorder"
           {...input}
           placeholder={placeholder}
+          disabled={disabledLabel}
         />
       </div>
       <div className="text-help">{touched && field.input.value === '' ? 'This field is required' : ""}</div>

@@ -6,6 +6,7 @@ import Role from './Role';
 import Department from './Department';
 import Level from './Level';
 import LevelUser from './LevelUser';
+import LevelTechnology from './LevelTechnology';
 import PermissionsUserWise from './PermissionsUserWise';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
@@ -87,6 +88,11 @@ class User extends Component {
                         </NavItem>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
+                                Level Technology
+                                </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
                                 User Wise Permissions
                                 </NavLink>
                         </NavItem>
@@ -113,6 +119,10 @@ class User extends Component {
                                 toggle={this.toggle} />
                         </TabPane>}
                         {this.state.activeTab === '6' && <TabPane tabId="6">
+                            <LevelTechnology
+                                toggle={this.toggle} />
+                        </TabPane>}
+                        {this.state.activeTab === '7' && <TabPane tabId="7">
                             <PermissionsUserWise
                                 toggle={this.toggle} />
                         </TabPane>}

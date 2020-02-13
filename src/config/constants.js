@@ -281,14 +281,20 @@ export const API = {
   updateUserLevelAPI: `${BASE_URL}/user-level/update`,
   deleteUserLevelAPI: `${BASE_URL}/user-level/delete`,
 
+  //SET LEVEL FOR TECHNOLOGY
+  setApprovalLevelForTechnology: `${BASE_URL}/costing/set-approval-level-for-technology`,
+
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-supplier`,
 
   //APPROVAL
   getSendForApproval: `${BASE_URL}/app-approval-system/send-for-approval-click`,
   getAllApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-approval-department`,
-  getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
+  //getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
+  getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-level-filter-by-department`,
   sendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
+  reassignCosting: `${BASE_URL}/app-approval-system/reassign-send-for-approval-click`,
+  cancelCosting: `${BASE_URL}/app-approval-system/cancel-for-approval-click`,
   getReasonSelectList: `${BASE_URL}/configuration/select-list-get-reasons`,
 
   //PRIVILEGE

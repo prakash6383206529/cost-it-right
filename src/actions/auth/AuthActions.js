@@ -618,6 +618,28 @@ export function assignUserLevelAPI(requestData, callback) {
 }
 
 /**
+ * @method addRoleAPI
+ * @description add Role API 
+ */
+export function setApprovalLevelForTechnology(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.setApprovalLevelForTechnology, requestData, { headers })
+            .then((response) => {
+                console.log('response >>>', response)
+                if (response.data.Result) {
+                    callback(response);
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
  * @method fetchPlantDataAPI
  * @description Used to fetch plant list
  */
@@ -897,6 +919,8 @@ export function getMenuByUser(UserId, callback) {
         });
     };
 }
+
+
 
 // /**
 //  * @method verifyOtpAPI

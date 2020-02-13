@@ -8,13 +8,14 @@ import { fetchMaterialComboAPI, fetchCostingHeadsAPI, fetchModelTypeAPI } from '
 import {
     getPlantCombo, getExistingSupplierDetailByPartId, createPartWithSupplier, checkPartWithTechnology,
     getCostingByCostingId, setInventoryRowData, getCostingOverHeadProByModelType, saveCosting, fetchFreightHeadsAPI,
-    getCostingFreight, emptyCostingData, setEmptyExistingSupplierData, getZBCCostingSelectListByPart,
+    getCostingFreight, emptyCostingData, setEmptyExistingSupplierData, getZBCCostingSelectListByPart, reassignCostingAPI,
+    cancelCostingAPI,
 } from '../../../actions/costing/costing';
 import { getInterestRateAPI } from '../../../actions/master/InterestRateMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
-import { required, number, alphaNumeric, checkForNull, getSupplierCode, trimDecimalPlace } from '../../../helper';
+import { required, number, alphaNumeric, checkForNull, getSupplierCode, trimDecimalPlace, getNameBetweenBraces } from '../../../helper';
 import OtherOperationsModal from './OtherOperationsModal';
 import CEDotherOperations from './CEDotherOperations';
 import AddFreightModal from './AddFreightModal';
@@ -73,6 +74,11 @@ class CostSummary extends Component {
             SupplierOneSaveButtonLabel: 'Send For Approval',
             SupplierTwoSaveButtonLabel: 'Send For Approval',
             SupplierThreeSaveButtonLabel: 'Send For Approval',
+            CostingStatusText: '',
+            ZBCCostingStatusText: '',
+            SupplierOneCostingStatusText: '',
+            SupplierTwoCostingStatusText: '',
+            SupplierThreeCostingStatusText: '',
         }
     }
 
@@ -81,7 +87,12 @@ class CostSummary extends Component {
      * @description  called before mounting the component
      */
     componentDidMount() {
-        this.props.fetchMaterialComboAPI(res => { });
+        this.props.fetchMaterialComboAPI(res => {
+            const { technologyList } = this.props;
+            if (technologyList && technologyList.length > 0) {
+                this.setState({ TechnologyId: technologyList[0].Value })
+            }
+        });
         this.props.getPlantCombo(res => { });
         this.props.fetchCostingHeadsAPI('--select--', () => { })
         this.props.fetchModelTypeAPI('--Model Type--', () => { })
@@ -306,6 +317,7 @@ class CostSummary extends Component {
             this.setState({
                 partNo: e.target.value,
                 supplier: [],
+                TechnologyId: selectedTechnology,
             }, () => {
                 const checkPartData = {
                     PartId: this.state.partNo,
@@ -601,6 +613,7 @@ class CostSummary extends Component {
         this.setState({
             [activeSupplier]: e.target.value
         }, () => {
+            this.getCostingStatus(e.target.value, supplier)
             if (e.target.value != '' && e.target.value != 0) {
                 this.props.getCostingByCostingId(e.target.value, supplier, (res) => {
                     if (res && res.data && res.data.Result) {
@@ -621,6 +634,47 @@ class CostSummary extends Component {
                 this.props.change(supplierColumn, {})
             }
         })
+    }
+
+    /**
+    * @method getCostingStatus
+    * @description get Costing Status for hide and show actions.
+    */
+    getCostingStatus = (value, supplier) => {
+        const { supplierDropdown1Array, supplierDropdown2Array, supplierDropdown3Array } = this.state;
+        let supplierColumn = '';
+        let tempData = '';
+        let supplierCostingStatusState = '';
+
+        if (supplier == 'zbcSupplier') {
+            supplierColumn = 'ZBCsupplierData';
+            tempData = supplierDropdown1Array;
+            supplierCostingStatusState = 'ZBCCostingStatusText';
+        } else if (supplier == 'supplierOne') {
+            supplierColumn = 'supplier1Data';
+            tempData = supplierDropdown1Array;
+            supplierCostingStatusState = 'SupplierOneCostingStatusText';
+        } else if (supplier == 'supplierTwo') {
+            supplierColumn = 'supplier2Data';
+            tempData = supplierDropdown2Array;
+            supplierCostingStatusState = 'SupplierTwoCostingStatusText';
+        } else if (supplier == 'supplierThree') {
+            supplierColumn = 'supplier3Data';
+            tempData = supplierDropdown3Array;
+            supplierCostingStatusState = 'SupplierThreeCostingStatusText';
+        }
+        if (value != 0) {
+            let tempObj = tempData.find(item => item.Value == value)
+            const CostingStatus = getNameBetweenBraces((tempObj != undefined) ? tempObj.Text : '')
+            this.setState({
+                [supplierCostingStatusState]: CostingStatus
+            })
+        } else {
+            this.setState({
+                [supplierCostingStatusState]: ''
+            })
+        }
+
     }
 
     /**
@@ -1717,28 +1771,149 @@ class CostSummary extends Component {
     }
 
     /**
+    * @method renderSendForApprovalAction
+    * @description Used to render action button according to costing status
+    */
+    renderSendForApprovalAction = (Number) => {
+        const { isDisabledSupplierOneButton, activeSupplier1 } = this.state;
+        return (
+            <>
+                <button
+                    type={'button'}
+                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    onClick={() => this.saveCosting(Number)}
+                    className={'btn btn-primary mr5'}>Save</button>
+                <button
+                    type={'button'}
+                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    onClick={() => this.sendApproval(Number)}
+                    className={'btn btn-primary'}>{this.state.SupplierOneSaveButtonLabel}</button>
+                {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
+            </>
+        )
+    }
+
+    /**
+    * @method renderReassignAction
+    * @description Used to reassign and cancel costing from approval
+    */
+    renderReassignAction = (Number) => {
+        const { isDisabledSupplierOneButton, activeSupplier1 } = this.state;
+        return (
+            <>
+                <button
+                    type={'button'}
+                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    onClick={() => this.reassignCosting(Number)}
+                    className={'btn btn-primary mr5'}>Reassign</button>
+                <button
+                    type={'button'}
+                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    onClick={() => this.cancelCosting(Number)}
+                    className={'btn btn-primary'}>{'Cancel'}</button>
+                {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
+            </>
+        )
+    }
+
+    /**
+    * @method renderProcessAction
+    * @description Used to reassign and cancel costing from approval
+    */
+    renderProcessAction = (Number) => {
+        const { isDisabledSupplierOneButton, activeSupplier1 } = this.state;
+        return (
+            <>
+                <button
+                    type={'button'}
+                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    onClick={() => this.sendApproval(Number)}
+                    className={'btn btn-primary mr5'}>Process</button>
+            </>
+        )
+    }
+
+    /**
+    * @method reassignCosting
+    * @description Used to reassign and cancel costing from approval
+    */
+    reassignCosting = (Number) => {
+        const { costingData } = this.props;
+
+        let Content = '';
+
+        if (Number == 0) {
+            Content = costingData && costingData.zbcSupplier ? costingData.zbcSupplier.CostingDetail : {};
+        } else if (Number == 1) {
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        this.props.reassignCostingAPI(Content.CostingId, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.REASSIGN_COSTING_SUCCESS_MESSAGE)
+            }
+        })
+    }
+
+    /**
+    * @method cancelCosting
+    * @description Used to cancel costing from approval. (Back to Draft mode)
+    */
+    cancelCosting = (Number) => {
+        const { costingData } = this.props;
+
+        let Content = '';
+
+        if (Number == 0) {
+            Content = costingData && costingData.zbcSupplier ? costingData.zbcSupplier.CostingDetail : {};
+        } else if (Number == 1) {
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+        } else if (Number == 2) {
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+        } else if (Number == 3) {
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+        }
+
+        this.props.cancelCostingAPI(Content.CostingId, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.COSTING_CANCEL_SUCCESS_MESSAGE)
+            }
+        })
+    }
+
+    /**
     * @method isSupplierAdded
     * @description Used to check supplier added in column or not
     */
     sendApproval = (Number) => {
-        const { supplier, supplier2, supplier3 } = this.state;
+        const { supplier, supplier2, supplier3, ZBCCostingStatusText, SupplierOneCostingStatusText, SupplierTwoCostingStatusText,
+            SupplierThreeCostingStatusText } = this.state;
         const { costingData, ZBCSupplier } = this.props;
 
         let Content = '';
         let supplierId = '';
+        let CostingStatusText = '';
 
         if (Number == 0) {
             supplierId = ZBCSupplier.SupplierId;
             Content = costingData && costingData.zbcSupplier ? costingData.zbcSupplier.CostingDetail : {};
+            CostingStatusText = ZBCCostingStatusText;
         } else if (Number == 1) {
             supplierId = supplier.value;
             Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+            CostingStatusText = SupplierOneCostingStatusText;
         } else if (Number == 2) {
             supplierId = supplier2.value;
             Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+            CostingStatusText = SupplierTwoCostingStatusText;
         } else if (Number == 3) {
             supplierId = supplier3.value;
             Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+            CostingStatusText = SupplierThreeCostingStatusText;
         }
 
         this.setState({
@@ -1746,6 +1921,7 @@ class CostSummary extends Component {
             isOpenSendForApproval: true,
             sendForApprovalSupplierId: supplierId,
             sendForApprovalCostingId: Content.CostingId,
+            CostingStatusText: CostingStatusText,
         })
     }
 
@@ -1885,13 +2061,32 @@ class CostSummary extends Component {
         const { handleSubmit, ZBCSupplier, costingData } = this.props;
         const { supplier, supplier2, supplier3, isShowOtherOpsModal, supplierIdForOtherOps, supplierColumn, isShowCEDotherOpsModal,
             isShowFreightModal, supplierIdForCEDOtherOps, isOpenSendForApprovalModal, isOpenSendForApproval, sendForApprovalSupplierId,
-            sendForApprovalCostingId, isDisabledZBCSupplierButton, isDisabledSupplierOneButton, isDisabledSupplierTwoButton, isDisabledSupplierThreeButton,
+            sendForApprovalCostingId, isDisabledZBCSupplierButton, isDisabledSupplierOneButton, isDisabledSupplierTwoButton,
+            isDisabledSupplierThreeButton, ZBCSupplierSaveButtonLabel, SupplierOneSaveButtonLabel, SupplierTwoSaveButtonLabel, SupplierThreeSaveButtonLabel,
             activeSupplier0, activeSupplier1, activeSupplier2, activeSupplier3 } = this.state;
 
         let ZBCsupplierData = 'ZBCsupplierData';
         let supplier1Data = 'supplier1Data';
         let supplier2Data = 'supplier2Data';
         let supplier3Data = 'supplier3Data';
+
+        let IsDisabledZBCSupplier = true;
+        let IsDisabledSupplierOne = true;
+        let IsDisabledSupplierTwo = true;
+        let IsDisabledSupplierThree = true;
+
+        if (this.state.ZBCCostingStatusText == 'Draft') {
+            IsDisabledZBCSupplier = false;
+        }
+        if (this.state.SupplierOneCostingStatusText == 'Draft') {
+            IsDisabledSupplierOne = false;
+        }
+        if (this.state.SupplierTwoCostingStatusText == 'Draft') {
+            IsDisabledSupplierTwo = false;
+        }
+        if (this.state.SupplierThreeCostingStatusText == 'Draft') {
+            IsDisabledSupplierThree = false;
+        }
 
         return (
             <div>
@@ -2345,7 +2540,7 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 onChange={(e) => this.ecoNumberHandler(e, 1)}
-                                disabled={false}
+                                disabled={IsDisabledSupplierOne}
                                 className="withoutBorder"
                                 title="Enter ECO No"
                             />
@@ -2413,7 +2608,7 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 onChange={(e) => this.RevsionNumber(e, 1)}
-                                disabled={false}
+                                disabled={IsDisabledSupplierOne}
                                 className="withoutBorder"
                                 title="Enter Rev No"
                             />
@@ -2860,6 +3055,7 @@ class CostSummary extends Component {
                                 optionValue={'Value'}
                                 optionLabel={'Text'}
                                 component={renderSelectField}
+                                disabled={IsDisabledSupplierOne}
                             />
                         </Col>
                         <Col md="3">
@@ -3095,6 +3291,7 @@ class CostSummary extends Component {
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
+                                    disabled={IsDisabledSupplierOne}
                                 />
                                 <Field
                                     label={`Rejection(%)`}
@@ -3107,7 +3304,7 @@ class CostSummary extends Component {
                                     value={this.state.rejectionBasePercentSupplier1}
                                     required={true}
                                     className="withoutBorder"
-                                //disabled={true}
+                                    disabled={IsDisabledSupplierOne}
                                 />
                             </div>
                             <div className={'base-cost'}>
@@ -3842,6 +4039,7 @@ class CostSummary extends Component {
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
+                                    disabled={IsDisabledSupplierOne}
                                 />
                                 <Field
                                     label={``}
@@ -3854,7 +4052,7 @@ class CostSummary extends Component {
                                     value={this.state.freightBaseSupplier1}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Enter Freight Amount"
                                 />
                             </div>
@@ -4013,10 +4211,10 @@ class CostSummary extends Component {
                                     onChange={(e) => this.AdditionalFreightCostHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Enter Freight Amount"
                                 />
-                                <button type="button" onClick={() => this.AddFreightToggle(1)} >Add Freight</button>
+                                <button type="button" disabled={IsDisabledSupplierOne} onClick={() => this.AddFreightToggle(1)} >Add Freight</button>
                             </div>
                             <div className={'base-cost'}>
                                 {''}
@@ -4156,13 +4354,14 @@ class CostSummary extends Component {
                                     value={this.state.cedCostOperationBaseSupplier1}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Enter Freight Amount"
                                 />
 
                                 <button
                                     type="button"
                                     onClick={() => this.CEDotherOperationToggle(supplier.value, 'supplierOne')}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Select CED Other Operation">CED Add</button>
 
                                 <Field
@@ -4418,7 +4617,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.transportationCostFinishWtHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Net Finish Wt/Component"
                                 />
                             </div>
@@ -4704,6 +4903,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierOne}
                                 />
                             </div>
                         </Col>
@@ -4854,7 +5054,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.packageCostingHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Enter Packaging Cost"
                                 />
                             </div>
@@ -4931,6 +5131,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierOne}
                                 />
                             </div>
                         </Col>
@@ -5005,7 +5206,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.anyOtherCostHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Enter Packaging Cost"
                                 />
                             </div>
@@ -5240,7 +5441,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.toolMaintenanceHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Enter Tool Maintenance Cost"
                                 />
                             </div>
@@ -5318,7 +5519,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.toolAmortizationHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Enter Tool Amortization Cost"
                                 />
                             </div>
@@ -5485,7 +5686,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.discountHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
                             </div>
@@ -5744,6 +5945,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierOne}
                                 />
                             </div>
                         </Col>
@@ -5908,7 +6110,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.landedFactorHandler(e, 1)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierOne}
                                     title="Landed Factor Percent"
                                 />
                             </div>
@@ -6024,6 +6226,10 @@ class CostSummary extends Component {
                     <hr />
 
                     <Row>
+
+
+
+
                         <Col md="3" >
                             <button
                                 type={'button'}
@@ -6037,8 +6243,14 @@ class CostSummary extends Component {
                                 className={'btn btn-primary'}>{this.state.ZBCSupplierSaveButtonLabel}</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
+
+
+
                         <Col md="3" >
-                            <button
+                            {this.state.SupplierOneCostingStatusText == 'Draft' ? this.renderSendForApprovalAction(1) : ''}
+                            {this.state.SupplierOneCostingStatusText == 'PendingForApproval' ? this.renderReassignAction(1) : ''}
+                            {this.state.SupplierOneCostingStatusText == 'WaitingForApproval' ? this.renderProcessAction(1) : ''}
+                            {/* <button
                                 type={'button'}
                                 disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
                                 onClick={() => this.saveCosting(1)}
@@ -6047,9 +6259,12 @@ class CostSummary extends Component {
                                 type={'button'}
                                 disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
                                 onClick={() => this.sendApproval(1)}
-                                className={'btn btn-primary'}>{this.state.SupplierOneSaveButtonLabel}</button>
+                                className={'btn btn-primary'}>{this.state.SupplierOneSaveButtonLabel}</button> */}
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
+
+
+
                         <Col md="3" >
                             <button
                                 type={'button'}
@@ -6063,6 +6278,8 @@ class CostSummary extends Component {
                                 className={'btn btn-primary'}>{this.state.SupplierTwoSaveButtonLabel}</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
+
+
                         <Col md="3" >
                             <button
                                 type={'button'}
@@ -6076,6 +6293,8 @@ class CostSummary extends Component {
                                 className={'btn btn-primary'}>{this.state.SupplierThreeSaveButtonLabel}</button>
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
+
+
                     </Row>
                     <hr />
 
@@ -6109,6 +6328,8 @@ class CostSummary extends Component {
                     onCancelApproval={this.onCancelApproval}
                     costingId={sendForApprovalCostingId}
                     supplierId={sendForApprovalSupplierId}
+                    TechnologyId={this.state.TechnologyId}
+                    costingStatusText={this.state.CostingStatusText}
                 />}
             </div >
         );
@@ -6170,6 +6391,8 @@ export default connect(mapStateToProps, {
     fetchFreightHeadsAPI,
     getCostingFreight,
     emptyCostingData,
+    reassignCostingAPI,
+    cancelCostingAPI,
 })(reduxForm({
     form: 'CostSummary',
     enableReinitialize: true,

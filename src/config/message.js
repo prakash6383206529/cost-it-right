@@ -99,6 +99,9 @@ export const MESSAGES = {
   LEVEL_DELETE_ALERT: 'Are you sure you want to delete Level?',
   ADD_LEVEL_USER_SUCCESSFULLY: 'Level of users has been added successfully.',
 
+  //LEVEL FOR TECHNOLOGY
+  ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY: 'Level of technology added successfully.',
+
   //ADDITIONAL FREIGHT
   ADDITIONAL_FREIGHT_ADD_SUCCESS: 'Packaging has been added successfully.',
   DELETE_ADDITIONAL_FREIGHT_SUCCESS: 'Additional Freight has been deleted successfully.',
@@ -110,6 +113,8 @@ export const MESSAGES = {
   COSTING_SAVED_SUCCESSFULLY: 'Costing has been saved successfully.',
   COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY: 'Costing has been sent for approval.',
   SELECT_PLANT_FOR_COSTING: 'Plant should not be empty.',
+  REASSIGN_COSTING_SUCCESS_MESSAGE: 'Costing has been reassign successfully.',
+  COSTING_CANCEL_SUCCESS_MESSAGE: 'Costing has been cancel successfully.',
 
   //PRIVILEGE
   ADD_PRIVILEGE_PAGE_SUCCESSFULLY: 'Privilege page added successfully.',

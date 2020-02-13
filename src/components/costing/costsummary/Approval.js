@@ -25,6 +25,7 @@ class Approval extends Component {
             department: [],
             user: [],
             reason: [],
+            LevelId: '',
         }
     }
 
@@ -91,8 +92,10 @@ class Approval extends Component {
                 const { department } = this.state;
                 if (department && department.value != '') {
                     let requestData = {
-                        UserId: userDetails.LoggedInUserId,
+                        //UserId: userDetails.LoggedInUserId,
+                        LoggedInUserId: userDetails.LoggedInUserId,
                         DepartmentId: department.value,
+                        TechnologyId: this.props.TechnologyId,
                     }
                     this.props.getAllApprovalUserByDepartment(requestData, () => { })
                 }
@@ -107,8 +110,13 @@ class Approval extends Component {
     * @description Used to handle 
     */
     userHandler = (newValue, actionMeta) => {
-        this.setState({ user: newValue }, () => {
-        });
+        const { approvalUsersList } = this.props;
+        if (newValue && newValue != null) {
+            let tempObj = approvalUsersList.find(item => item.Value == newValue.value)
+            this.setState({ user: newValue, LevelId: tempObj.LevelId });
+        } else {
+            this.setState({ LevelId: '', user: [] })
+        }
     };
 
     /**
@@ -116,8 +124,7 @@ class Approval extends Component {
     * @description Used to handle reason
     */
     reasonHandler = (newValue, actionMeta) => {
-        this.setState({ reason: newValue }, () => {
-        });
+        this.setState({ reason: newValue });
     };
 
     /**
@@ -149,7 +156,7 @@ class Approval extends Component {
 
     onSubmit = (values) => {
 
-        const { department, user, reason } = this.state;
+        const { department, user, reason, LevelId } = this.state;
         const { costingId, approvalData } = this.props;
 
         let userDetail = userDetails();
@@ -166,6 +173,7 @@ class Approval extends Component {
             SenderLevelId: userDetail.LoggedInLevelId,
             SentDate: '',
             ReceiverUserId: user.value,
+            ReceiverLevelId: LevelId,
             ReceiverRemark: '',
             ReceivedDate: '',
             CostVariancIdRef: '',
@@ -184,7 +192,15 @@ class Approval extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset } = this.props;
+        const { handleSubmit, reset, costingStatusText } = this.props;
+
+        let formHeading = '';
+        if (costingStatusText == 'Draft') {
+            formHeading = 'Send For Approval';
+        } else if (costingStatusText == 'WaitingForApproval') {
+            formHeading = 'Send For Approval';
+        }
+
         return (
 
             <>
@@ -195,7 +211,7 @@ class Approval extends Component {
                 >
                     <Row>
                         <Col>
-                            <h2>Send For Approval</h2>
+                            <h2>{formHeading}</h2>
                         </Col>
                     </Row>
                     <Row>
@@ -266,7 +282,7 @@ class Approval extends Component {
                     <Row className="sf-btn-footer no-gutters justify-content-between">
                         <div className="col-sm-12 text-center">
                             <button type="submit" className="btn mr20 btn-primary" >
-                                {'Send For Approval'}
+                                {costingStatusText == 'Draft' ? 'Send For Approval' : 'Approve'}
                             </button>
                             <button type={'button'} className="btn mr20 btn-secondary" onClick={this.resetForm} >
                                 {'Reset'}

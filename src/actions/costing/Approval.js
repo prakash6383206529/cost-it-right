@@ -82,7 +82,7 @@ export function getAllApprovalUserByDepartment(data, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
-                    payload: response.data.SelectList
+                    payload: response.data.DataList
                 });
                 callback(response);
             } else {
