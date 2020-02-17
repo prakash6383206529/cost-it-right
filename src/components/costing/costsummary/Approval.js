@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input, Table } from 'reactstrap';
+import { Field, reduxForm } from "redux-form";
+import { Row, Col } from 'reactstrap';
 import {
     getSendForApprovalByCostingId, getAllApprovalDepartment, getAllApprovalUserByDepartment,
-    sendForApproval, getReasonSelectList,
+    sendForApproval, approvalProcess, finalApprovalProcess, getReasonSelectList,
 } from '../../../actions/costing/Approval';
-import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../helper/AllConastant';
-import { convertISOToUtcDate } from '../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import NoContentFound from '../../common/NoContentFound';
 import { required } from "../../../helper/validation";
-import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
+import { searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
+import { PENDING, DRAFT, WAITING_FOR_APPROVAL, FINAL_APPROVAL } from '../../../config/constants';
 
 class Approval extends Component {
     constructor(props) {
@@ -26,6 +23,8 @@ class Approval extends Component {
             user: [],
             reason: [],
             LevelId: '',
+            remarks: '',
+            isRejected: false,
         }
     }
 
@@ -154,37 +153,87 @@ class Approval extends Component {
         })
     }
 
+    /**
+    * @method handleMessageChange
+    * @description used remarks handler
+    */
+    handleMessageChange = (e) => {
+        this.setState({
+            remarks: e.target.value
+        })
+    }
+
     onSubmit = (values) => {
 
-        const { department, user, reason, LevelId } = this.state;
-        const { costingId, approvalData } = this.props;
+        const { user, reason, LevelId, isRejected } = this.state;
+        const { costingId, costingStatusText, approvalUsersList } = this.props;
+
+        let tempObj = undefined;
+        if (approvalUsersList != undefined) {
+            tempObj = approvalUsersList.find(item => item.Text == FINAL_APPROVAL)
+        }
 
         let userDetail = userDetails();
         const loginUserId = loggedInUserId();
+        let requestData = {};
 
-        let requestData = {
-            CostingId: costingId,
-            IsFinalApproval: false,
-            IsApproved: true,
-            CostingApprovalId: '',
-            LoggedInUserId: loginUserId,
-            SenderReasonId: reason.value,
-            SenderRemark: values.Remarks,
-            SenderLevelId: userDetail.LoggedInLevelId,
-            SentDate: '',
-            ReceiverUserId: user.value,
-            ReceiverLevelId: LevelId,
-            ReceiverRemark: '',
-            ReceivedDate: '',
-            CostVariancIdRef: '',
-            IsActive: true
+        //Send for approval, When costing status Draft.
+        if (costingStatusText == DRAFT) {
+            requestData = {
+                CostingId: costingId,
+                LoggedInUserId: loginUserId,
+                SenderReasonId: reason.value,
+                SenderRemark: values.Remarks,
+                SenderLevelId: userDetail.LoggedInLevelId,
+                ReceiverUserId: user.value,
+                ReceiverLevelId: LevelId,
+                CostVariancIdRef: '',
+            }
+            this.props.sendForApproval(requestData, (res) => {
+                toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
+                this.props.onCancelApproval();
+            })
         }
 
-        console.log('requestData', requestData)
-        this.props.sendForApproval(requestData, (res) => {
-            toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
-            this.props.onCancelApproval();
-        })
+        //Send for approval(to the next level), When costing status waiting for approval.
+        if (costingStatusText == WAITING_FOR_APPROVAL && tempObj == undefined) {
+            requestData = {
+                CostingApprovalId: '',
+                CostingId: costingId,
+                IsApproved: isRejected ? false : true,
+                ReceiverUserId: isRejected ? '' : user.value,
+                ReceiverReasonId: reason.value,
+                ReceiverLevelId: isRejected ? '' : LevelId,
+                ReceiverRemark: values.Remarks,
+                IsReceived: true,
+                IsSendForNextLevel: isRejected ? false : true,
+                LoggedInUserId: loginUserId,
+                SenderReasonId: reason.value,
+                SenderRemark: values.Remarks,
+                SenderLevelId: userDetail.LoggedInLevelId,
+            }
+            this.props.approvalProcess(requestData, (res) => {
+                toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
+                this.props.onCancelApproval();
+            })
+        }
+
+        //Final approval, When costing status waiting for approval.
+        if (costingStatusText == WAITING_FOR_APPROVAL && tempObj != undefined) {
+            requestData = {
+                CostingApprovalId: '',
+                CostingId: costingId,
+                CostingStatusId: '',
+                IsFinalApproval: true,
+                IsApproved: isRejected ? false : true,
+                LoggedInUserId: loginUserId,
+                ReceiverRemark: values.Remarks,
+            }
+            this.props.finalApprovalProcess(requestData, (res) => {
+                toastr.success(MESSAGES.COSTING_SENT_FOR_APPROVAL_SUCCESSFULLY)
+                this.props.onCancelApproval();
+            })
+        }
     }
 
     /**
@@ -195,14 +244,13 @@ class Approval extends Component {
         const { handleSubmit, reset, costingStatusText } = this.props;
 
         let formHeading = '';
-        if (costingStatusText == 'Draft') {
+        if (costingStatusText == DRAFT || costingStatusText == PENDING) {
             formHeading = 'Send For Approval';
-        } else if (costingStatusText == 'WaitingForApproval') {
-            formHeading = 'Send For Approval';
+        } else if (costingStatusText == WAITING_FOR_APPROVAL) {
+            formHeading = 'Approve';
         }
 
         return (
-
             <>
                 <form
                     noValidate
@@ -267,13 +315,12 @@ class Approval extends Component {
                                 label={'Remarks'}
                                 name={`Remarks`}
                                 placeholder="Type your message here..."
-                                //onChange={this.handleMessageChange}
-                                value={0}
+                                value={this.state.remarks}
                                 className="withoutBorder"
+                                onChange={this.handleMessageChange}
                                 //validate={[required, maxLength5000]}
-                                //onChange={}
-                                component={renderTextAreaField}
                                 //required={true}
+                                component={renderTextAreaField}
                                 maxLength="5000"
                             />
                         </Col>
@@ -282,11 +329,21 @@ class Approval extends Component {
                     <Row className="sf-btn-footer no-gutters justify-content-between">
                         <div className="col-sm-12 text-center">
                             <button type="submit" className="btn mr20 btn-primary" >
-                                {costingStatusText == 'Draft' ? 'Send For Approval' : 'Approve'}
+                                {(costingStatusText == DRAFT || costingStatusText == PENDING) ? 'Send For Approval' : 'Approve'}
                             </button>
+
+                            {costingStatusText == WAITING_FOR_APPROVAL &&
+                                <button
+                                    type="submit"
+                                    className="btn mr20 btn-primary"
+                                    onClick={() => this.setState({ isRejected: true })} >
+                                    {'Reject'}
+                                </button>}
+
                             <button type={'button'} className="btn mr20 btn-secondary" onClick={this.resetForm} >
                                 {'Reset'}
                             </button>
+
                             <button type={'button'} className="btn btn-secondary" onClick={this.cancel} >
                                 {'Cancel'}
                             </button>
@@ -317,6 +374,8 @@ export default connect(mapStateToProps, {
     getAllApprovalDepartment,
     getAllApprovalUserByDepartment,
     sendForApproval,
+    approvalProcess,
+    finalApprovalProcess,
     getReasonSelectList,
 })(reduxForm({
     form: 'Approval',

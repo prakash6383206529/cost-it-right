@@ -22,7 +22,7 @@ import AddFreightModal from './AddFreightModal';
 import ApprovalModal from './ApprovalModal';
 import Approval from './Approval';
 import { MESSAGES } from '../../../config/message';
-import { DRAFT, REJECTED, APPROVED, PENDING, TWO_DECIMAL_PRICE } from '../../../config/constants';
+import { DRAFT, REJECTED, APPROVED, PENDING, TWO_DECIMAL_PRICE, WAITING_FOR_APPROVAL } from '../../../config/constants';
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 const selector = formValueSelector('CostSummary');
 
@@ -324,7 +324,7 @@ class CostSummary extends Component {
                     TechnologyId: selectedTechnology
                 }
                 this.props.checkPartWithTechnology(checkPartData, res => {
-                    this.props.getZBCCostingSelectListByPart(this.state.partNo, ZBCSupplierId, () => { })
+                    this.props.getZBCCostingSelectListByPart(this.state.partNo, ZBCSupplierId, loginUserId, () => { })
                     this.props.getExistingSupplierDetailByPartId(this.state.partNo, loginUserId, res => {
                         // After get listing of exist suppliers
                         if (res && res.data && res.data.Message != '') {
@@ -642,13 +642,14 @@ class CostSummary extends Component {
     */
     getCostingStatus = (value, supplier) => {
         const { supplierDropdown1Array, supplierDropdown2Array, supplierDropdown3Array } = this.state;
+        const { zbcCostingSelectList } = this.props;
         let supplierColumn = '';
         let tempData = '';
         let supplierCostingStatusState = '';
 
         if (supplier == 'zbcSupplier') {
             supplierColumn = 'ZBCsupplierData';
-            tempData = supplierDropdown1Array;
+            tempData = zbcCostingSelectList;
             supplierCostingStatusState = 'ZBCCostingStatusText';
         } else if (supplier == 'supplierOne') {
             supplierColumn = 'supplier1Data';
@@ -1775,19 +1776,45 @@ class CostSummary extends Component {
     * @description Used to render action button according to costing status
     */
     renderSendForApprovalAction = (Number) => {
-        const { isDisabledSupplierOneButton, activeSupplier1 } = this.state;
+        const { isDisabledZBCSupplierButton, isDisabledSupplierOneButton, isDisabledSupplierTwoButton, isDisabledSupplierThreeButton,
+            activeSupplier0, activeSupplier1, activeSupplier2, activeSupplier3, ZBCSupplierSaveButtonLabel,
+            SupplierOneSaveButtonLabel, SupplierTwoSaveButtonLabel, SupplierThreeSaveButtonLabel,
+        } = this.state;
+
+        let disableSupplierButton = '';
+        let activeSupplier = '';
+        let supplierBtnLabel = '';
+
+        if (Number == 0) {
+            disableSupplierButton = isDisabledZBCSupplierButton;
+            activeSupplier = activeSupplier0;
+            supplierBtnLabel = ZBCSupplierSaveButtonLabel;
+        } else if (Number == 1) {
+            disableSupplierButton = isDisabledSupplierOneButton;
+            activeSupplier = activeSupplier1;
+            supplierBtnLabel = SupplierOneSaveButtonLabel;
+        } else if (Number == 2) {
+            disableSupplierButton = isDisabledSupplierTwoButton;
+            activeSupplier = activeSupplier2;
+            supplierBtnLabel = SupplierTwoSaveButtonLabel;
+        } else if (Number == 3) {
+            disableSupplierButton = isDisabledSupplierThreeButton;
+            activeSupplier = activeSupplier3;
+            supplierBtnLabel = SupplierThreeSaveButtonLabel;
+        }
+
         return (
             <>
                 <button
                     type={'button'}
-                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    disabled={(disableSupplierButton || activeSupplier == 0) ? true : false}
                     onClick={() => this.saveCosting(Number)}
                     className={'btn btn-primary mr5'}>Save</button>
                 <button
                     type={'button'}
-                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    disabled={(disableSupplierButton || activeSupplier == 0) ? true : false}
                     onClick={() => this.sendApproval(Number)}
-                    className={'btn btn-primary'}>{this.state.SupplierOneSaveButtonLabel}</button>
+                    className={'btn btn-primary'}>{supplierBtnLabel}</button>
                 {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
             </>
         )
@@ -1798,19 +1825,37 @@ class CostSummary extends Component {
     * @description Used to reassign and cancel costing from approval
     */
     renderReassignAction = (Number) => {
-        const { isDisabledSupplierOneButton, activeSupplier1 } = this.state;
+        const { isDisabledZBCSupplierButton, isDisabledSupplierOneButton, isDisabledSupplierTwoButton, isDisabledSupplierThreeButton,
+            activeSupplier0, activeSupplier1, activeSupplier2, activeSupplier3 } = this.state;
+
+        let disableSupplierButton = '';
+        let activeSupplier = '';
+
+        if (Number == 0) {
+            disableSupplierButton = isDisabledZBCSupplierButton;
+            activeSupplier = activeSupplier0;
+        } else if (Number == 1) {
+            disableSupplierButton = isDisabledSupplierOneButton;
+            activeSupplier = activeSupplier1;
+        } else if (Number == 2) {
+            disableSupplierButton = isDisabledSupplierTwoButton;
+            activeSupplier = activeSupplier2;
+        } else if (Number == 3) {
+            disableSupplierButton = isDisabledSupplierThreeButton;
+            activeSupplier = activeSupplier3;
+        }
         return (
             <>
                 <button
                     type={'button'}
-                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    disabled={(disableSupplierButton || activeSupplier == 0) ? true : false}
                     onClick={() => this.reassignCosting(Number)}
                     className={'btn btn-primary mr5'}>Reassign</button>
-                <button
+                {/* <button
                     type={'button'}
                     disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
                     onClick={() => this.cancelCosting(Number)}
-                    className={'btn btn-primary'}>{'Cancel'}</button>
+                    className={'btn btn-primary'}>{'Cancel'}</button> */}
                 {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
             </>
         )
@@ -1821,12 +1866,31 @@ class CostSummary extends Component {
     * @description Used to reassign and cancel costing from approval
     */
     renderProcessAction = (Number) => {
-        const { isDisabledSupplierOneButton, activeSupplier1 } = this.state;
+        const { isDisabledZBCSupplierButton, isDisabledSupplierOneButton, isDisabledSupplierTwoButton, isDisabledSupplierThreeButton,
+            activeSupplier0, activeSupplier1, activeSupplier2, activeSupplier3 } = this.state;
+
+        let disableSupplierButton = '';
+        let activeSupplier = '';
+
+        if (Number == 0) {
+            disableSupplierButton = isDisabledZBCSupplierButton;
+            activeSupplier = activeSupplier0;
+        } else if (Number == 1) {
+            disableSupplierButton = isDisabledSupplierOneButton;
+            activeSupplier = activeSupplier1;
+        } else if (Number == 2) {
+            disableSupplierButton = isDisabledSupplierTwoButton;
+            activeSupplier = activeSupplier2;
+        } else if (Number == 3) {
+            disableSupplierButton = isDisabledSupplierThreeButton;
+            activeSupplier = activeSupplier3;
+        }
+
         return (
             <>
                 <button
                     type={'button'}
-                    disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
+                    disabled={(disableSupplierButton || activeSupplier == 0) ? true : false}
                     onClick={() => this.sendApproval(Number)}
                     className={'btn btn-primary mr5'}>Process</button>
             </>
@@ -1855,6 +1919,7 @@ class CostSummary extends Component {
         this.props.reassignCostingAPI(Content.CostingId, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.REASSIGN_COSTING_SUCCESS_MESSAGE)
+                this.sendApproval(Number)
             }
         })
     }
@@ -1864,6 +1929,20 @@ class CostSummary extends Component {
     * @description Used to cancel costing from approval. (Back to Draft mode)
     */
     cancelCosting = (Number) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmCancelCosting(Number)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(MESSAGES.CANCEL_COSTING_ALERT, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmCancelCosting
+    * @description confirm delete BOM
+    */
+    confirmCancelCosting = (Number) => {
         const { costingData } = this.props;
 
         let Content = '';
@@ -2524,7 +2603,7 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 onChange={(e) => this.ecoNumberHandler(e, 0)}
-                                disabled={false}
+                                disabled={IsDisabledZBCSupplier}
                                 className="withoutBorder"
                                 title="Enter ECO No"
                             />
@@ -2556,7 +2635,7 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 onChange={(e) => this.ecoNumberHandler(e, 2)}
-                                disabled={false}
+                                disabled={IsDisabledSupplierTwo}
                                 className="withoutBorder"
                                 title="Enter ECO No"
                             />
@@ -2572,7 +2651,7 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 onChange={(e) => this.ecoNumberHandler(e, 3)}
-                                disabled={false}
+                                disabled={IsDisabledSupplierThree}
                                 className="withoutBorder"
                                 title="Enter ECO No"
                             />
@@ -2592,7 +2671,7 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 onChange={(e) => this.RevsionNumber(e, 0)}
-                                disabled={false}
+                                disabled={IsDisabledZBCSupplier}
                                 className="withoutBorder"
                                 title="Enter Rev No"
                             />
@@ -2624,7 +2703,7 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 onChange={(e) => this.RevsionNumber(e, 2)}
-                                disabled={false}
+                                disabled={IsDisabledSupplierTwo}
                                 className="withoutBorder"
                                 title="Enter Rev No"
                             />
@@ -2640,7 +2719,7 @@ class CostSummary extends Component {
                                 value={0}
                                 //required={true}
                                 onChange={(e) => this.RevsionNumber(e, 3)}
-                                disabled={false}
+                                disabled={IsDisabledSupplierThree}
                                 className="withoutBorder"
                                 title="Enter Rev No"
                             />
@@ -3039,6 +3118,7 @@ class CostSummary extends Component {
                                 optionValue={'Value'}
                                 optionLabel={'Text'}
                                 component={renderSelectField}
+                                disabled={IsDisabledZBCSupplier}
                             />
                         </Col>
                         <Col md="3">
@@ -3072,6 +3152,7 @@ class CostSummary extends Component {
                                 optionValue={'Value'}
                                 optionLabel={'Text'}
                                 component={renderSelectField}
+                                disabled={IsDisabledSupplierTwo}
                             />
                         </Col>
                         <Col md="3">
@@ -3088,6 +3169,7 @@ class CostSummary extends Component {
                                 optionValue={'Value'}
                                 optionLabel={'Text'}
                                 component={renderSelectField}
+                                disabled={IsDisabledSupplierThree}
                             />
                         </Col>
                         {/* ----------------ModelType-Overhead/Profit------------------- */}
@@ -3245,6 +3327,7 @@ class CostSummary extends Component {
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
+                                    disabled={IsDisabledZBCSupplier}
                                 />
                                 <Field
                                     label={`Rejection(%)`}
@@ -3257,7 +3340,7 @@ class CostSummary extends Component {
                                     value={this.state.rejectionBasePercentSupplier1}
                                     required={true}
                                     className="withoutBorder"
-                                //disabled={true}
+                                    disabled={IsDisabledZBCSupplier}
                                 />
                             </div>
                             <div className={'base-cost'}>
@@ -3339,6 +3422,7 @@ class CostSummary extends Component {
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
+                                    disabled={IsDisabledSupplierTwo}
                                 />
                                 <Field
                                     label={`Rejection(%)`}
@@ -3351,7 +3435,7 @@ class CostSummary extends Component {
                                     value={this.state.rejectionBasePercentSupplier2}
                                     required={true}
                                     className="withoutBorder"
-                                //disabled={true}
+                                    disabled={IsDisabledSupplierTwo}
                                 />
                             </div>
                             <div className={'base-cost'}>
@@ -3386,6 +3470,7 @@ class CostSummary extends Component {
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
+                                    disabled={IsDisabledSupplierThree}
                                 />
                                 <Field
                                     label={`Rejection(%)`}
@@ -3398,7 +3483,7 @@ class CostSummary extends Component {
                                     value={this.state.rejectionBasePercentSupplier3}
                                     required={true}
                                     className="withoutBorder"
-                                //disabled={true}
+                                    disabled={IsDisabledSupplierThree}
                                 />
                             </div>
                             <div className={'base-cost'}>
@@ -3992,6 +4077,7 @@ class CostSummary extends Component {
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
+                                    disabled={IsDisabledZBCSupplier}
                                 />
                                 <Field
                                     label={``}
@@ -4004,7 +4090,7 @@ class CostSummary extends Component {
                                     value={0}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Enter Freight Amount"
                                 />
                             </div>
@@ -4087,6 +4173,7 @@ class CostSummary extends Component {
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
+                                    disabled={IsDisabledSupplierTwo}
                                 />
                                 {/* <input type="text" value={this.state.freightBaseSupplier2} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
                                 <Field
@@ -4100,7 +4187,7 @@ class CostSummary extends Component {
                                     value={this.state.freightBaseSupplier2}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Enter Freight Amount"
                                 />
                             </div>
@@ -4136,6 +4223,7 @@ class CostSummary extends Component {
                                     optionValue={'Value'}
                                     optionLabel={'Text'}
                                     component={renderSelectField}
+                                    disabled={IsDisabledSupplierThree}
                                 />
                                 {/* <input type="text" value={this.state.freightBaseSupplier3} className={'mt20 overhead-percent-supplier'} title="Enter Freight Amount" /> */}
                                 <Field
@@ -4149,7 +4237,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.freightAmountHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Enter Freight Amount"
                                 />
                             </div>
@@ -4189,7 +4277,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.AdditionalFreightCostHandler(e, 0)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Enter Freight Amount"
                                 />
                                 <button type="button" onClick={() => this.AddFreightToggle(0)} >Add Freight</button>
@@ -4233,7 +4321,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.AdditionalFreightCostHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Enter Freight Amount"
                                 />
                                 <button type="button" onClick={() => this.AddFreightToggle(2)} > Add Freight</button>
@@ -4255,7 +4343,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.AdditionalFreightCostHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Enter Freight Amount"
                                 />
                                 <button type="button" onClick={() => this.AddFreightToggle(3)} >Add Freight</button>
@@ -4290,13 +4378,14 @@ class CostSummary extends Component {
                                     value={0}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Enter Freight Amount"
                                 />
 
                                 <button
                                     type="button"
                                     onClick={() => this.CEDotherOperationToggle(ZBCSupplier.SupplierId, 'zbcSupplier')}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Select CED Other Operation">CED Add</button>
 
                                 <Field
@@ -4419,13 +4508,14 @@ class CostSummary extends Component {
                                     value={this.state.cedCostOperationBaseSupplier2}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Enter Freight Amount"
                                 />
 
                                 <button
                                     type="button"
                                     onClick={() => this.CEDotherOperationToggle(supplier2.value, 'supplierTwo')}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Select CED Other Operation">CED Add</button>
 
                                 <Field
@@ -4484,7 +4574,7 @@ class CostSummary extends Component {
                                     value={this.state.cedCostOperationBaseSupplier3}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Enter Freight Amount"
                                 />
 
@@ -4570,7 +4660,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.transportationCostFinishWtHandler(e, 0)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Net Finish Wt/Component"
                                 />
                             </div>
@@ -4664,7 +4754,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.transportationCostFinishWtHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Net Finish Wt/Component"
                                 />
                             </div>
@@ -4710,7 +4800,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.transportationCostFinishWtHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Net Finish Wt/Component"
                                 />
                             </div>
@@ -4886,6 +4976,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledZBCSupplier}
                                 />
                             </div>
                         </Col>
@@ -4921,6 +5012,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierTwo}
                                 />
                             </div>
                         </Col>
@@ -4938,6 +5030,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierThree}
                                 />
                             </div>
                         </Col>
@@ -5036,7 +5129,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.packageCostingHandler(e, 0)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Enter Packaging Cost"
                                 />
                             </div>
@@ -5072,7 +5165,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.packageCostingHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Enter Packaging Cost"
                                 />
                             </div>
@@ -5090,7 +5183,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.packageCostingHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Enter Packaging Cost"
                                 />
                             </div>
@@ -5114,6 +5207,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledZBCSupplier}
                                 />
                             </div>
                         </Col>
@@ -5149,6 +5243,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierTwo}
                                 />
                             </div>
                         </Col>
@@ -5166,6 +5261,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierThree}
                                 />
                             </div>
                         </Col>
@@ -5188,7 +5284,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.anyOtherCostHandler(e, 0)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Enter Packaging Cost"
                                 />
                             </div>
@@ -5224,7 +5320,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.anyOtherCostHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Enter Packaging Cost"
                                 />
                             </div>
@@ -5242,7 +5338,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.anyOtherCostHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Enter Packaging Cost"
                                 />
                             </div>
@@ -5423,7 +5519,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.toolMaintenanceHandler(e, 0)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Enter Tool Maintenance Cost"
                                 />
                             </div>
@@ -5459,7 +5555,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.toolMaintenanceHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Enter Tool Maintenance Cost"
                                 />
                             </div>
@@ -5477,7 +5573,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.toolMaintenanceHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Enter Tool Maintenance Cost"
                                 />
                             </div>
@@ -5501,7 +5597,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.toolAmortizationHandler(e, 0)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Enter Tool Amortization Cost"
                                 />
                             </div>
@@ -5537,7 +5633,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.toolAmortizationHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Enter Tool Amortization Cost"
                                 />
                             </div>
@@ -5555,7 +5651,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.toolAmortizationHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder"
-                                    //disabled={true}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Enter Tool Amortization Cost"
                                 />
                             </div>
@@ -5653,7 +5749,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.discountHandler(e, 0)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
                             </div>
@@ -5719,7 +5815,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.discountHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
                             </div>
@@ -5752,7 +5848,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.discountHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Enter CED Overhead/Profit (%)"
                                 />
                             </div>
@@ -5928,6 +6024,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledZBCSupplier}
                                 />
                             </div>
                         </Col>
@@ -5963,6 +6060,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierTwo}
                                 />
                             </div>
                         </Col>
@@ -5980,6 +6078,7 @@ class CostSummary extends Component {
                                     component={renderTextAreaField}
                                     //required={true}
                                     maxLength="5000"
+                                    disabled={IsDisabledSupplierThree}
                                 />
                             </div>
                         </Col>
@@ -6077,7 +6176,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.landedFactorHandler(e, 0)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledZBCSupplier}
                                     title="Landed Factor Percent"
                                 />
                             </div>
@@ -6143,7 +6242,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.landedFactorHandler(e, 2)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierTwo}
                                     title="Landed Factor Percent"
                                 />
                             </div>
@@ -6176,7 +6275,7 @@ class CostSummary extends Component {
                                     onChange={(e) => this.landedFactorHandler(e, 3)}
                                     //required={true}
                                     className="withoutBorder overhead-percent-supplier"
-                                    disabled={false}
+                                    disabled={IsDisabledSupplierThree}
                                     title="Landed Factor Percent"
                                 />
                             </div>
@@ -6231,7 +6330,10 @@ class CostSummary extends Component {
 
 
                         <Col md="3" >
-                            <button
+                            {this.state.ZBCCostingStatusText == DRAFT ? this.renderSendForApprovalAction(0) : ''}
+                            {this.state.ZBCCostingStatusText == PENDING ? this.renderReassignAction(0) : ''}
+                            {this.state.ZBCCostingStatusText == WAITING_FOR_APPROVAL ? this.renderProcessAction(0) : ''}
+                            {/* <button
                                 type={'button'}
                                 onClick={() => this.saveCosting(0)}
                                 disabled={(isDisabledZBCSupplierButton || activeSupplier0 == 0) ? true : false}
@@ -6240,16 +6342,16 @@ class CostSummary extends Component {
                                 type={'button'}
                                 disabled={(isDisabledZBCSupplierButton || activeSupplier0 == 0) ? true : false}
                                 onClick={() => this.sendApproval(0)}
-                                className={'btn btn-primary'}>{this.state.ZBCSupplierSaveButtonLabel}</button>
+                                className={'btn btn-primary'}>{this.state.ZBCSupplierSaveButtonLabel}</button> */}
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
 
 
 
                         <Col md="3" >
-                            {this.state.SupplierOneCostingStatusText == 'Draft' ? this.renderSendForApprovalAction(1) : ''}
-                            {this.state.SupplierOneCostingStatusText == 'PendingForApproval' ? this.renderReassignAction(1) : ''}
-                            {this.state.SupplierOneCostingStatusText == 'WaitingForApproval' ? this.renderProcessAction(1) : ''}
+                            {this.state.SupplierOneCostingStatusText == DRAFT ? this.renderSendForApprovalAction(1) : ''}
+                            {this.state.SupplierOneCostingStatusText == PENDING ? this.renderReassignAction(1) : ''}
+                            {this.state.SupplierOneCostingStatusText == WAITING_FOR_APPROVAL ? this.renderProcessAction(1) : ''}
                             {/* <button
                                 type={'button'}
                                 disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
@@ -6266,7 +6368,10 @@ class CostSummary extends Component {
 
 
                         <Col md="3" >
-                            <button
+                            {this.state.SupplierTwoCostingStatusText == DRAFT ? this.renderSendForApprovalAction(2) : ''}
+                            {this.state.SupplierTwoCostingStatusText == PENDING ? this.renderReassignAction(2) : ''}
+                            {this.state.SupplierTwoCostingStatusText == WAITING_FOR_APPROVAL ? this.renderProcessAction(2) : ''}
+                            {/* <button
                                 type={'button'}
                                 disabled={(isDisabledSupplierTwoButton || activeSupplier2 == 0) ? true : false}
                                 onClick={() => this.saveCosting(2)}
@@ -6275,13 +6380,16 @@ class CostSummary extends Component {
                                 type={'button'}
                                 disabled={(isDisabledSupplierTwoButton || activeSupplier2 == 0) ? true : false}
                                 onClick={() => this.sendApproval(2)}
-                                className={'btn btn-primary'}>{this.state.SupplierTwoSaveButtonLabel}</button>
+                                className={'btn btn-primary'}>{this.state.SupplierTwoSaveButtonLabel}</button> */}
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
 
 
                         <Col md="3" >
-                            <button
+                            {this.state.SupplierThreeCostingStatusText == DRAFT ? this.renderSendForApprovalAction(3) : ''}
+                            {this.state.SupplierThreeCostingStatusText == PENDING ? this.renderReassignAction(3) : ''}
+                            {this.state.SupplierThreeCostingStatusText == WAITING_FOR_APPROVAL ? this.renderProcessAction(3) : ''}
+                            {/* <button
                                 type={'button'}
                                 disabled={(isDisabledSupplierThreeButton || activeSupplier3 == 0) ? true : false}
                                 onClick={() => this.saveCosting(3)}
@@ -6290,7 +6398,7 @@ class CostSummary extends Component {
                                 type={'button'}
                                 disabled={(isDisabledSupplierThreeButton || activeSupplier3 == 0) ? true : false}
                                 onClick={() => this.sendApproval(3)}
-                                className={'btn btn-primary'}>{this.state.SupplierThreeSaveButtonLabel}</button>
+                                className={'btn btn-primary'}>{this.state.SupplierThreeSaveButtonLabel}</button> */}
                             {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
                         </Col>
 

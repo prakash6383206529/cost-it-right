@@ -293,6 +293,8 @@ export const API = {
   //getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
   getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-level-filter-by-department`,
   sendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
+  approvalProcess: `${BASE_URL}/app-approval-system/approval-process`,
+  finalApprovalProcess: `${BASE_URL}/app-approval-system/final-approval-process`,
   reassignCosting: `${BASE_URL}/app-approval-system/reassign-send-for-approval-click`,
   cancelCosting: `${BASE_URL}/app-approval-system/cancel-for-approval-click`,
   getReasonSelectList: `${BASE_URL}/configuration/select-list-get-reasons`,
@@ -567,10 +569,12 @@ export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SU
 export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS';
 
 //COSTING STATUS
-export const APPROVED = 'Approved';
-export const PENDING = 'PendingForApproval';
 export const DRAFT = 'Draft';
+export const PENDING = 'PendingForApproval';
+export const WAITING_FOR_APPROVAL = 'WaitingForApproval';
+export const APPROVED = 'Approved';
 export const REJECTED = 'Rejected';
+export const FINAL_APPROVAL = 'Final Approval';
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2;

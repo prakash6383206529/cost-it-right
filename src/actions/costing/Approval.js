@@ -123,6 +123,52 @@ export function sendForApproval(data, callback) {
     };
 }
 
+/**
+ * @method approvalProcess
+ * @description SEND COSTING FOR APPROVAL PROCESS
+ */
+export function approvalProcess(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.approvalProcess, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method finalApprovalProcess
+ * @description SEND COSTING FOR APPROVAL PROCESS
+ */
+export function finalApprovalProcess(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.finalApprovalProcess, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
 
 /**
  * @method getSendForApproval

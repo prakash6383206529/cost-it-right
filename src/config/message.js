@@ -63,6 +63,7 @@ export const MESSAGES = {
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated.',
   COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
   SELECT_PART_FOR_ZBC_COSTING: 'Please select part for zbc costing.',
+  CANCEL_COSTING_ALERT: 'Are you sure you want to cancel costing?',
 
   //MACHINE MASTER
   DELETE_MACHINE_SUCCESS: 'Machine has been deleted successfully.',

@@ -104,10 +104,10 @@ export function setEmptyExistingSupplierData(callback) {
 * @method getZBCCostingSelectListByPart
 * @description get ZBC Costing Select List By Part
 */
-export function getZBCCostingSelectListByPart(PartId, SupplierId, callback) {
+export function getZBCCostingSelectListByPart(PartId, SupplierId, UserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getZBCCostingSelectListByPart}/${PartId}/${SupplierId}`, headers);
+        const request = axios.get(`${API.getZBCCostingSelectListByPart}/${PartId}/${SupplierId}/${UserId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
