@@ -9,8 +9,6 @@ import {
     setUserAdditionalPermission, getActionHeadsSelectList,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
-import { reactLocalStorage } from "reactjs-localstorage";
-import { Redirect } from 'react-router-dom';
 import { toastr } from "react-redux-toastr";
 import { Container, Row, Col, Table, Collapse, Button, CardBody, Card, CardTitle } from 'reactstrap';
 import { EAccessType } from "../../config/masterData";

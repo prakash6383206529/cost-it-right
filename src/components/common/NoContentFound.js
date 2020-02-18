@@ -1,14 +1,14 @@
 import React from 'react';
 import { Container } from 'reactstrap'
 
-const NoContentFound = ({ title}) => (
+const NoContentFound = ({ title }) => (
     <Container>
         <div className="text-center nodate-section">
-            <img src={require('../assets/images/no-record.png')} />
+            <img src={require('../../assests/images/no-record.png')} />
             <div className="my-2">
                 <h5>{title}</h5>
-            </div> 
-        </div>      
+            </div>
+        </div>
     </Container>
 );
 

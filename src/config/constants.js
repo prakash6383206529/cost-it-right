@@ -310,6 +310,7 @@ export const API = {
   getRolePermissionByUser: `${BASE_URL}/app-privilege-permission/get-role-permissions-by-user`,
   getActionHeadsSelectList: `${BASE_URL}/app-privilege-permission/get-action-heads-list`,
   getMenuByUser: `${BASE_URL}/app-privilege-permission/get-user-menu-by-user`,
+  getModuleActionInit: `${BASE_URL}/user-role/get-module-action-init`,
 
 }
 

@@ -381,7 +381,7 @@ export function updateRoleAPI(requestData, callback) {
             .catch((error) => {
                 dispatch({ type: AUTH_API_FAILURE });
                 apiErrors(error);
-                callback(error);
+                //callback(error);
             });
     };
 }
@@ -746,6 +746,26 @@ export function getRolePermissionByUser(UserId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getRolePermissionByUser}/${UserId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getModuleActionInit
+ * @description get Roles permission by user
+ */
+export function getModuleActionInit(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getModuleActionInit}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
