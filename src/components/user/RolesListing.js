@@ -79,7 +79,7 @@ class RolesListing extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <Table className="table table-striped" bordered>
+                        <Table className="table table-striped" size="sm" bordered>
                             {this.props.roleList && this.props.roleList.length > 0 &&
                                 <thead>
                                     <tr>

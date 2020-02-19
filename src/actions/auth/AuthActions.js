@@ -209,6 +209,7 @@ export function registerUserAPI(requestData, callback) {
                 console.log("error", error)
                 dispatch(getRegisterFailure(error));
                 apiErrors(error);
+                //callback(error);
             });
     };
 }

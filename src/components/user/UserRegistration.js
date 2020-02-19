@@ -18,6 +18,7 @@ import { fetchSupplierCityDataAPI } from "../../actions/master/Comman";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
+import { loggedInUserId } from "../../helper/auth";
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -214,13 +215,16 @@ class UserRegistration extends Component {
     const { reset } = this.props;
     const { department, role, city } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
+
     this.setState({ isSubmitted: true })
 
     let userData = {
       UserName: values.email,
       Password: values.Password,
       RoleId: role.value,
+      PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
       DepartmentId: department.value,
+      loggedInUserId: loggedInUserId(),
       CompanyId: userDetails.CompanyId,
       Email: values.email,
       Mobile: values.Mobile,
@@ -236,17 +240,17 @@ class UserRegistration extends Component {
       CityId: city.value,
     }
     this.props.registerUserAPI(userData, res => {
-      if (res.data.Result) {
+      if (res && res.data && res.data.Result) {
         toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
+        reset();
+        this.setState({
+          isLoader: false,
+          isSubmitted: false,
+          department: [],
+          role: [],
+          city: [],
+        })
       }
-      reset();
-      this.setState({
-        isLoader: false,
-        isSubmitted: false,
-        department: [],
-        role: [],
-        city: [],
-      })
     })
   }
 
@@ -557,7 +561,7 @@ export default connect(mapStateToProps, {
   validate,
   form: 'Signup',
   onSubmitFail: errors => {
-    console.log('ddd', errors)
+    console.log('Register errors', errors)
     focusOnError(errors);
   },
   enableReinitialize: true,

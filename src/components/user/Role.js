@@ -44,6 +44,7 @@ class Role extends Component {
     }
 
     getRolePermission = () => {
+        this.setState({ isLoader: true });
         this.props.getModuleActionInit((res) => {
             if (res && res.data && res.data.Data) {
 
@@ -64,6 +65,7 @@ class Role extends Component {
                     actionData: Data,
                     Modules: Modules,
                     moduleCheckedAll: moduleCheckedArray,
+                    isLoader: false,
                 })
             }
         })
@@ -75,6 +77,7 @@ class Role extends Component {
     */
     getRoleDetail = (data) => {
         if (data && data.isEditFlag) {
+            this.setState({ isLoader: true })
             this.props.getRoleDataAPI(data.RoleId, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
@@ -95,6 +98,7 @@ class Role extends Component {
                         RoleId: data.RoleId,
                         Modules: Modules,
                         moduleCheckedAll: moduleCheckedArray,
+                        isLoader: false,
                     })
                     if (Modules.length == 0) this.getRolePermission();
                 }
@@ -240,7 +244,7 @@ class Role extends Component {
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
 
-            this.setState({ Modules: tempArray, checkedAll: false })
+            this.setState({ Modules: tempArray })
         } else {
             actionArray = actionRow && actionRow.map((item, index) => {
                 item.IsChecked = true;
@@ -249,7 +253,7 @@ class Role extends Component {
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
 
-            this.setState({ Modules: tempArray, checkedAll: true })
+            this.setState({ Modules: tempArray })
         }
     }
 
@@ -283,7 +287,7 @@ class Role extends Component {
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
             this.setState({
                 Modules: tempArray,
-                checkedAll: false,
+                //checkedAll: false,
             })
         } else {
             let actionArray = actionRows && actionRows.map((item, index) => {
@@ -293,7 +297,7 @@ class Role extends Component {
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
             this.setState({
                 Modules: tempArray,
-                checkedAll: true
+                //checkedAll: true
             })
         }
     }
@@ -393,6 +397,7 @@ class Role extends Component {
                 this.props.setEmptyRoleDataAPI('', () => { })
                 this.setState({ isLoader: false, isEditFlag: false, Modules: [] })
                 this.props.getAllRoleAPI(res => { })
+                this.getRolePermission()
             })
         } else {
             // Add new role
@@ -402,6 +407,7 @@ class Role extends Component {
                 }
                 reset();
                 this.props.getAllRoleAPI(res => { })
+                this.getRolePermission()
                 this.setState({ isLoader: false, Modules: [] })
             })
         }
@@ -415,7 +421,7 @@ class Role extends Component {
 
         return (
             <div>
-                {/* {isLoader && <Loader />} */}
+                {isLoader && <Loader />}
                 <div className="login-container  signup-form">
                     <div className="shadow-lg login-form">
                         <div className="form-heading">
