@@ -4,7 +4,7 @@ import {
     CREATE_FUEL_DETAIL_FAILURE,
     CREATE_FUEL_DETAIL_SUCCESS,
     CREATE_FUEL_FAILURE,
-    GET_FUEL_SUCCESS,
+    GET_FUEL_DATALIST_SUCCESS,
     GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS
@@ -45,7 +45,7 @@ export default function fuelReducer(state = initialState, action) {
                 error: false
             };
         }
-        case GET_FUEL_SUCCESS: {
+        case GET_FUEL_DATALIST_SUCCESS: {
             return {
                 ...state,
                 loading: false,

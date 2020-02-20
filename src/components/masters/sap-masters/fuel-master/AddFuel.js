@@ -113,7 +113,6 @@ class AddFuel extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Row />
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">

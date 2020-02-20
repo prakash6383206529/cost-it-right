@@ -7,7 +7,7 @@ import {
     CREATE_FUEL_DETAIL_FAILURE,
     CREATE_FUEL_DETAIL_SUCCESS,
     CREATE_FUEL_FAILURE,
-    GET_FUEL_SUCCESS,
+    GET_FUEL_DATALIST_SUCCESS,
     GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS
@@ -98,7 +98,7 @@ export function getFuelDetailAPI() {
         const request = axios.get(API.getAllFuelDetailAPI, headers);
         request.then((response) => {
             dispatch({
-                type: GET_FUEL_SUCCESS,
+                type: GET_FUEL_DATALIST_SUCCESS,
                 payload: response.data.DataList,
             });
 

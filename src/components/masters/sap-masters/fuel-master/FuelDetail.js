@@ -45,7 +45,7 @@ class FuelDetail extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.FUEL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**

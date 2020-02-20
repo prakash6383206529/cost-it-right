@@ -49,6 +49,8 @@ export const MESSAGES = {
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
   FUEL_ADD_SUCCESS: 'Fuel added successfully',
+  FUEL_DELETE_ALERT: 'Are you sure you want to delete Fule?',
+  FUEL_DETAIL_DELETE_ALERT: 'Are you sure you want to delete Fule Detail?',
   ADD_BOP_SUCCESS: 'BOP added successfully',
   BOP_ADD_SUCCESS: 'BOP added successfully',
   INTEREST_RATE_ADDED_SUCCESS: 'Suppiler interest rate added successfully',
