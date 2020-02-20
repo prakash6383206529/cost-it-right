@@ -456,6 +456,23 @@ export function getDepartmentAPI(DepartmentId, callback) {
     };
 }
 
+/**
+ * @method setEmptyDepartmentAPI
+ * @description set empty department detail in reducer
+ */
+export function setEmptyDepartmentAPI(DepartmentId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (DepartmentId == '') {
+            dispatch({
+                type: GET_UNIT_DEPARTMENT_DATA_SUCCESS,
+                payload: '',
+            });
+            callback();
+        }
+    }
+};
+
 
 /**
  * @method updateDepartmentAPI

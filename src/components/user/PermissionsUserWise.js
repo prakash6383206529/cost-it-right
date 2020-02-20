@@ -586,7 +586,7 @@ class PermissionsUserWise extends Component {
                             <div className=" row form-group">
                                 <div className="col-md-6 input-withouticon" >
                                     <Field
-                                        label="User Id"
+                                        label="User Name"
                                         name="UserId"
                                         type="text"
                                         placeholder={'Select user'}

@@ -7,7 +7,7 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addDepartmentAPI, getAllDepartmentAPI, getDepartmentAPI, updateDepartmentAPI } from "../../actions/auth/AuthActions";
+import { addDepartmentAPI, getAllDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -20,6 +20,7 @@ class Department extends Component {
             isLoader: false,
             isSubmitted: false,
             isEditFlag: false,
+            DepartmentId: '',
         };
     }
 
@@ -34,11 +35,11 @@ class Department extends Component {
     * @description used to get department detail
     */
     getDepartmentDetail = (data) => {
-        console.log('data', data)
         if (data && data.isEditFlag) {
             this.props.getDepartmentAPI(data.DepartmentId, () => {
                 this.setState({
                     isEditFlag: true,
+                    DepartmentId: data.DepartmentId,
                 })
             })
         }
@@ -52,6 +53,7 @@ class Department extends Component {
         const { reset } = this.props;
         reset();
         this.setState({ isEditFlag: false })
+        this.props.setEmptyDepartmentAPI('', () => { })
     }
 
     /**
@@ -61,21 +63,32 @@ class Department extends Component {
      * @returns {{}}
      */
     onSubmit(values) {
-        const { isEditFlag } = this.state;
+        const { isEditFlag, DepartmentId } = this.state;
         const { reset } = this.props;
         this.setState({ isLoader: true })
 
         if (isEditFlag) {
+
             // Update existing department
-            this.props.updateDepartmentAPI(values, (res) => {
-                if (res.data.Result) {
+            let formReq = {
+                DepartmentId: DepartmentId,
+                IsActive: true,
+                CreatedDate: '',
+                DepartmentName: values.DepartmentName,
+                Description: values.Description,
+            }
+            this.props.updateDepartmentAPI(formReq, (res) => {
+                if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
                 }
                 this.props.getAllDepartmentAPI(res => { });
                 reset();
                 this.setState({ isLoader: false, isEditFlag: false })
+                this.props.setEmptyDepartmentAPI('', () => { })
             })
+
         } else {
+
             // Add new department
             this.props.addDepartmentAPI(values, (res) => {
                 if (res.data.Result) {
@@ -85,6 +98,7 @@ class Department extends Component {
                 reset();
                 this.setState({ isLoader: false })
             })
+
         }
 
     }
@@ -137,7 +151,7 @@ class Department extends Component {
                                 <input
                                     disabled={isSubmitted ? true : false}
                                     type="submit"
-                                    value="Save"
+                                    value={this.state.isEditFlag ? 'Update' : 'Save'}
                                     className="btn  login-btn w-10 dark-pinkbtn"
                                 />
                                 <input
@@ -189,6 +203,7 @@ export default connect(mapStateToProps, {
     getDepartmentAPI,
     updateDepartmentAPI,
     getAllDepartmentAPI,
+    setEmptyDepartmentAPI,
 })(reduxForm({
     form: 'Department',
     enableReinitialize: true,
