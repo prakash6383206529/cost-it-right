@@ -56,7 +56,7 @@ class FuelDetail extends Component {
         this.props.deleteFuelDetailAPI(index, Id, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
-                this.props.toggle('1');
+                this.props.toggle('2');
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }

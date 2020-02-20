@@ -108,13 +108,13 @@ class FuelMaster extends Component {
         return (
             <Container className="top-margin">
                 <Row>
-                    <Col>
+                    <Col md="3">
                         <h3>Fuel Master </h3>
                     </Col>
-                    <Col>
+                    <Col md="3">
                         <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.FUEL}`}</Button>
                     </Col>
-                    <Col>
+                    <Col md="3">
                         <Button onClick={this.openFuelModel}>{`${CONSTANT.ADD} ${CONSTANT.FUEL} ${CONSTANT.DETAILS}`}</Button>
                     </Col>
                 </Row>

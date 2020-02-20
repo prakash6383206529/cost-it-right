@@ -47,20 +47,25 @@ class AddFuel extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-
+        const { fuelId, isEditFlag } = this.props;
         let loginUserId = loggedInUserId();
 
-        /** Add new detail of Fuel  */
-        this.props.createFuelAPI(values, (response) => {
-            if (response && response.data) {
-                if (response && response.data && response.data.Result) {
-                    toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
-                    this.toggleModel();
-                } else {
-                    toastr.error(response.data.Message);
+        if (isEditFlag) {
+            //Fuel type goes here
+
+        } else {
+            /** Add new detail of Fuel  */
+            this.props.createFuelAPI(values, (response) => {
+                if (response && response.data) {
+                    if (response && response.data && response.data.Result) {
+                        toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
+                        this.toggleModel();
+                    } else {
+                        toastr.error(response.data.Message);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 
@@ -69,7 +74,7 @@ class AddFuel extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <div>
                 {/* <Container className="top-margin"> */}
@@ -113,7 +118,7 @@ class AddFuel extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {CONSTANT.SAVE}
+                                                {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </Row>
