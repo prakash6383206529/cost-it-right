@@ -100,47 +100,49 @@ class PartMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.partsListing && this.props.partsListing.length > 0 &&
-                            <thead>
-                                <tr>
-                                    {/* <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
-                                    <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                                    <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
-                                    {/* <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th> */}
-                                    <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
-                                    <th>{`${CONSTANT.UOM}`}</th>
-                                    <th>{`Is Assembly`}</th>
-                                    <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>}
-                        <tbody >
+                <Row>
+                    <Col>
+                        <Table className="table table-striped" bordered>
                             {this.props.partsListing && this.props.partsListing.length > 0 &&
-                                this.props.partsListing.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            {/* <td >{item.PlantName}</td> */}
-                                            <td>{item.PartNumber}</td>
-                                            <td>{item.PartNumber}</td>
-                                            {/* <td>{item.MaterialTypeName}</td> */}
-                                            <td>{item.MaterialGroupCode}</td>
-                                            <td>{item.UnitOfMeasurementName}</td>
-                                            <td>{item.IsAssembly ? 'true' : 'false'}</td>
-                                            <td>{item.PartDescription}</td>
-                                            {/* <td>{convertISOToUtcDate(item.CreatedDate)}</td> */}
-                                            <div>
-                                                <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.PartId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
-                                            </div>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.partsListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                <thead>
+                                    <tr>
+                                        {/* <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
+                                        <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
+                                        <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
+                                        {/* <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th> */}
+                                        <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
+                                        <th>{`${CONSTANT.UOM}`}</th>
+                                        <th>{`Is Assembly`}</th>
+                                        <th>{`${CONSTANT.PART} ${CONSTANT.DESCRIPTION}`}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.partsListing && this.props.partsListing.length > 0 &&
+                                    this.props.partsListing.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                {/* <td >{item.PlantName}</td> */}
+                                                <td>{item.PartNumber}</td>
+                                                <td>{item.PartNumber}</td>
+                                                {/* <td>{item.MaterialTypeName}</td> */}
+                                                <td>{item.MaterialGroupCode}</td>
+                                                <td>{item.UnitOfMeasurementName}</td>
+                                                <td>{item.IsAssembly ? 'true' : 'false'}</td>
+                                                <td>{item.PartDescription}</td>
+                                                {/* <td>{convertISOToUtcDate(item.CreatedDate)}</td> */}
+                                                <div>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.PartId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.PartId)}><i className="far fa-trash-alt"></i></Button>
+                                                </div>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.partsListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddPart
                         isOpen={isOpen}
