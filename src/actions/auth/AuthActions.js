@@ -794,6 +794,26 @@ export function getRolePermissionByUser(UserId, callback) {
 }
 
 /**
+ * @method getPermissionByUser
+ * @description get permission by user
+ */
+export function getPermissionByUser(UserId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPermissionByUser}/${UserId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method getModuleActionInit
  * @description get Roles permission by user
  */
@@ -951,6 +971,26 @@ export function setUserAdditionalPermission(requestData, callback) {
     };
 }
 
+
+/**
+ * @method revertDefaultPermission
+ * @description revert user additional permission user wise API 
+ */
+export function revertDefaultPermission(UserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(`${API.revertDefaultPermission}/${UserId}`, { headers })
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
 
 /**
  * @method getMenuByUser

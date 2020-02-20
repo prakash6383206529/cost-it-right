@@ -5,8 +5,8 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText, searchableSelect, renderSelectField } from "../layout/FormInputs";
 import {
-    getAllUserAPI, rolesSelectList, getModuleSelectList, getRolePermissionByUser,
-    setUserAdditionalPermission, getActionHeadsSelectList,
+    getAllUserAPI, rolesSelectList, getModuleSelectList, getRolePermissionByUser, getPermissionByUser,
+    setUserAdditionalPermission, getActionHeadsSelectList, revertDefaultPermission,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { toastr } from "react-redux-toastr";
@@ -296,7 +296,7 @@ class PermissionsUserWise extends Component {
             return actions && actions.map((item, index) => {
                 if (el.Text != item.ActionName) return false;
                 return (
-                    <td>
+                    <td key={index}>
                         {<input
                             type="checkbox"
                             value={item.ActionId}
@@ -350,12 +350,12 @@ class PermissionsUserWise extends Component {
 
     getRolePermission = () => {
         const { user, permissions } = this.state;
-        this.props.getRolePermissionByUser(user.value, (res) => {
+        this.props.getPermissionByUser(user.value, (res) => {
             if (res && res.data && res.data.Data) {
 
                 let Data = res.data.Data;
-                let Modules = res.data.Data.Modules;
-                let DefaultModuleIds = res.data.Data.DefaultModuleIds;
+                let Modules = Data.Modules;
+                //let DefaultModuleIds = res.data.Data.DefaultModuleIds;
 
                 let moduleCheckedArray = [];
                 Modules && Modules.map((el, i) => {
@@ -366,13 +366,14 @@ class PermissionsUserWise extends Component {
                     }
                     moduleCheckedArray.push(tempObj)
                 })
-                this.props.change('Role', Data.RoleInfo.RoleName);
+                this.props.change('Role', Data.RoleName);
+                this.props.change('Description', Data.Description);
 
                 this.setState({
                     actionData: Data,
                     Modules: Modules,
-                    DefaultModuleIds: DefaultModuleIds,
-                    roleId: Data.RoleInfo.RoleId,
+                    //DefaultModuleIds: DefaultModuleIds,
+                    roleId: Data.RoleId,
                     moduleCheckedAll: moduleCheckedArray,
                 })
             }
@@ -492,11 +493,22 @@ class PermissionsUserWise extends Component {
         }
     }
 
-
-
-
-
-
+    /**
+    * @method cancel
+    * @description used to cancel privilege edit
+    */
+    revertPermission = () => {
+        const { user } = this.state;
+        const { reset } = this.props;
+        this.props.revertDefaultPermission(user.value, (res) => {
+            reset();
+            this.setState({
+                user: [],
+                Modules: [],
+                DefaultModuleIds: []
+            });
+        })
+    }
 
     /**
     * @method cancel
@@ -530,25 +542,25 @@ class PermissionsUserWise extends Component {
         //     DefaultIds.push(item.Value)
         // })
 
-        let checkedModuleIds = [];
-        Modules && Modules.map((el) => {
-            if (el.IsChecked) {
-                checkedModuleIds.push(el.ModuleId)
-            }
-        })
+        // let checkedModuleIds = [];
+        // Modules && Modules.map((el) => {
+        //     if (el.IsChecked) {
+        //         checkedModuleIds.push(el.ModuleId)
+        //     }
+        // })
 
         //Additonal module that has been added apart from default privilege(Modules)
-        let Additonal = checkedModuleIds.filter(x => !DefaultModuleIds.includes(x));
+        //let Additonal = checkedModuleIds.filter(x => !DefaultModuleIds.includes(x));
 
         //Modules that has been removed from default modules.
-        let difference = DefaultModuleIds.filter(x => !checkedModuleIds.includes(x));
+        //let difference = DefaultModuleIds.filter(x => !checkedModuleIds.includes(x));
 
         let formData = {
             UserId: user.value,
-            RoleId: roleId,
-            DefaultModuleIds: DefaultModuleIds,
-            AdditionalModuleIds: Additonal,
-            RemovedModuleIds: difference,
+            //RoleId: roleId,
+            //DefaultModuleIds: DefaultModuleIds,
+            //AdditionalModuleIds: Additonal,
+            //RemovedModuleIds: difference,
             Modules: Modules,
         }
 
@@ -609,19 +621,33 @@ class PermissionsUserWise extends Component {
                                         validate={[required]}
                                         component={renderText}
                                         required={true}
-                                        maxLength={26}
+                                        maxLength={100}
+                                        disabled={true}
+                                    />
+                                </div>
+                                <div className="col-md-3 input-withouticon " >
+                                    <Field
+                                        label="Description"
+                                        name={"Description"}
+                                        type="text"
+                                        placeholder={''}
+                                        customClassName={'withoutBorderBottom'}
+                                        validate={[required]}
+                                        component={renderText}
+                                        required={true}
+                                        maxLength={100}
                                         disabled={true}
                                     />
                                 </div>
 
                             </div>
-                            <div className=" row form-group">
+                            {/* <div className=" row form-group">
                                 <div className="col-md-12 input-withouticon" >
                                     <label>Default Permission's</label>
                                     {this.renderSelectedModule()}
                                     {this.state.DefaultModuleIds.length == 0 ? <b>{"Permission's Not allowed yet"}</b> : ''}
                                 </div>
-                            </div>
+                            </div> */}
                             {/* <div className=" row form-group">
                                 <div className="col-md-3 input-withouticon" >
                                     <button
@@ -714,6 +740,13 @@ class PermissionsUserWise extends Component {
                                     value="Reset"
                                     className="btn  login-btn w-10 dark-pinkbtn"
                                 />
+                                {/* <input
+                                    disabled={pristine || submitting}
+                                    onClick={this.revertPermission}
+                                    type="button"
+                                    value="Revert Permission"
+                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                /> */}
                             </div>
                         </form>
                     </div>
@@ -746,8 +779,10 @@ export default connect(mapStateToProps, {
     rolesSelectList,
     getModuleSelectList,
     getRolePermissionByUser,
+    getPermissionByUser,
     setUserAdditionalPermission,
     getActionHeadsSelectList,
+    revertDefaultPermission,
 })(reduxForm({
     form: 'PermissionsUserWise',
     enableReinitialize: true,

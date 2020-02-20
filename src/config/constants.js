@@ -308,6 +308,8 @@ export const API = {
   setPagePermissionUserWise: `${BASE_URL}/app-privilege-permission/set-page-permission-user-wise`,
   setUserAdditionalPermission: `${BASE_URL}/app-privilege-permission/set-user-additional-permissions`,
   getRolePermissionByUser: `${BASE_URL}/app-privilege-permission/get-role-permissions-by-user`,
+  getPermissionByUser: `${BASE_URL}/app-privilege-permission/get-permissions-by-user`,
+  revertDefaultPermission: `${BASE_URL}/app-privilege-permission/reset-default-permissions-by-user`,
   getActionHeadsSelectList: `${BASE_URL}/app-privilege-permission/get-action-heads-list`,
   getMenuByUser: `${BASE_URL}/app-privilege-permission/get-user-menu-by-user`,
   getModuleActionInit: `${BASE_URL}/user-role/get-module-action-init`,

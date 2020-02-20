@@ -394,10 +394,10 @@ class Role extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
                 }
-                this.props.setEmptyRoleDataAPI('', () => { })
                 this.setState({ isLoader: false, isEditFlag: false, Modules: [] })
                 this.props.getAllRoleAPI(res => { })
                 this.getRolePermission()
+                this.props.setEmptyRoleDataAPI('', () => { })
             })
         } else {
             // Add new role
