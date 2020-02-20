@@ -127,7 +127,7 @@ class Department extends Component {
                                         validate={[]}
                                         component={renderText}
                                         required={false}
-                                        maxLength={26}
+                                        maxLength={100}
                                     />
                                 </div>
 
