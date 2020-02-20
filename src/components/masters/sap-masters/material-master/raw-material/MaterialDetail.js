@@ -35,7 +35,7 @@ class MaterialDetail extends Component {
                 <Row>
                     <Col>
                         {/* <hr /> */}
-                        <Table className="table table-striped" hover bordered>
+                        <Table className="table table-striped" size={'sm'} hover bordered>
                             {this.props.rmDetail && this.props.rmDetail.length > 0 &&
                                 <thead>
                                     <tr>

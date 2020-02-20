@@ -114,25 +114,25 @@ class RowMaterialMaster extends Component {
                     </Col>
                 </Row>
                 <Row>
-                    <Col md="2">
+                    <Col className={'mt15 mb15'} md="12">
                         {/* Removed 'Raw' from title on 23/12/2019 MOM */}
-                        <Button onClick={this.openMaterialTypeModel}>{`Add Material Type`}</Button>
-                    </Col>
-                    <Col sm="2">
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL} `}</Button>
-                    </Col>
-                    <Col sm="2">
-                        <Button onClick={this.openCategorymodel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY} `}</Button>
-                    </Col>
-                    <Col sm="2">
-                        <Button onClick={this.openGrademodel}>{`${CONSTANT.ADD} ${CONSTANT.GRADE} `}</Button>
-                    </Col>
-                    <Col sm="2">
-                        <Button onClick={this.openSpecificationmodel}>{`${CONSTANT.ADD} ${CONSTANT.SPECIFICATION} `}</Button>
-                    </Col>
-                    <Col md="2">
+                        <Button className={'mr15'} onClick={this.openMaterialTypeModel}>{`Add Material Type`}</Button>
+                        {/* </Col>
+                    <Col sm="2"> */}
+                        <Button className={'mr15'} onClick={this.openModel}>{`Add Raw Material`}</Button>
+                        {/* </Col>
+                    <Col sm="2"> */}
+                        <Button className={'mr15'} onClick={this.openGrademodel}>{`Add Grade`}</Button>
+                        {/* </Col>
+                    <Col sm="2"> */}
+                        <Button className={'mr15'} onClick={this.openCategorymodel}>{`Add Category`}</Button>
+                        {/* </Col>
+                    <Col sm="2"> */}
+                        <Button className={'mr15'} onClick={this.openSpecificationmodel}>{`Add Specification`}</Button>
+                        {/* </Col>
+                    <Col md="2"> */}
                         {/* Removed 'Raw' from title on 23/12/2019 MOM */}
-                        <Button onClick={this.openRMModel}>{`Add Raw Material Details`}</Button>
+                        <Button className={'mr15'} onClick={this.openRMModel}>{`Add Raw Material Details`}</Button>
                     </Col>
                 </Row>
                 <Row>

@@ -119,10 +119,11 @@ class LevelUser extends Component {
         this.setState({ isLoader: true })
 
         let formData = {
-            LevelId: level.LevelId,
-            UserId: user.UserId,
-            TechnologyId: technology.TechnologyId,
+            LevelId: level.value,
+            UserId: user.value,
+            TechnologyId: technology.value,
         }
+        console.log('formData', formData)
         this.props.assignUserLevelAPI(formData, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.ADD_LEVEL_USER_SUCCESSFULLY)
