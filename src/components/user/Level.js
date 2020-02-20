@@ -7,7 +7,7 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI } from "../../actions/auth/AuthActions";
+import { addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI, setEmptyLevelAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -20,6 +20,7 @@ class Level extends Component {
             isLoader: false,
             isSubmitted: false,
             isEditFlag: false,
+            LevelId: '',
         };
     }
 
@@ -39,6 +40,7 @@ class Level extends Component {
         const { reset } = this.props;
         reset();
         this.setState({ isEditFlag: false })
+        this.props.setEmptyLevelAPI('', () => { })
     }
 
     /**
@@ -50,6 +52,7 @@ class Level extends Component {
             this.props.getUserLevelAPI(data.LevelId, () => {
                 this.setState({
                     isEditFlag: true,
+                    LevelId: data.LevelId,
                 })
             })
         }
@@ -62,17 +65,28 @@ class Level extends Component {
      * @returns {{}}
      */
     onSubmit(values) {
-        const { isEditFlag } = this.state;
+        const { isEditFlag, LevelId } = this.state;
         const { reset } = this.props;
         this.setState({ isLoader: true })
 
         if (isEditFlag) {
             // Update existing level
-            this.props.updateUserLevelAPI(values, (res) => {
-                if (res.data.Result) {
+
+            let formReq = {
+                LevelId: LevelId,
+                IsActive: true,
+                CreatedDate: '',
+                LevelName: values.LevelName,
+                Description: values.Description,
+                Sequence: values.Sequence,
+            }
+
+            this.props.updateUserLevelAPI(formReq, (res) => {
+                if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
                 }
                 this.props.getAllLevelAPI(res => { })
+                this.props.setEmptyLevelAPI('', () => { })
                 reset();
                 this.setState({ isLoader: false, isEditFlag: false })
             })
@@ -150,7 +164,7 @@ class Level extends Component {
                                 <input
                                     disabled={isSubmitted ? true : false}
                                     type="submit"
-                                    value="Save"
+                                    value={this.state.isEditFlag ? 'Update' : 'Save'}
                                     className="btn  login-btn w-10 dark-pinkbtn"
                                 />
                                 <input
@@ -203,6 +217,7 @@ export default connect(mapStateToProps, {
     getUserLevelAPI,
     getAllLevelAPI,
     updateUserLevelAPI,
+    setEmptyLevelAPI,
 })(reduxForm({
     form: 'Level',
     enableReinitialize: true,

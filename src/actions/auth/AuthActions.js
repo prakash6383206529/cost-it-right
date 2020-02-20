@@ -580,6 +580,23 @@ export function getUserLevelAPI(LevelId, callback) {
 }
 
 /**
+ * @method setEmptyLevelAPI
+ * @description set empty level detail in reducer
+ */
+export function setEmptyLevelAPI(LevelId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (LevelId == '') {
+            dispatch({
+                type: GET_UNIT_LEVEL_DATA_SUCCESS,
+                payload: '',
+            });
+            callback();
+        }
+    }
+};
+
+/**
  * @method updateUserLevelAPI
  * @description update Level details
  */
