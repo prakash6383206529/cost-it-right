@@ -3,13 +3,11 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText } from "../../../layout/FormInputs";
-import {
-    createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI,
-    getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
-} from '../../../../actions/master/unitOfMeasurment';
+import { renderText, focusOnError } from "../../../layout/FormInputs";
+import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../../../../actions/master/ReasonMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
+import { loggedInUserId } from '../../../../helper/auth';
 
 class AddReason extends Component {
     constructor(props) {
@@ -24,13 +22,16 @@ class AddReason extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { uomId, isEditFlag } = this.props;
+        const { ReasonId, isEditFlag } = this.props;
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
-                this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
+                this.props.getReasonAPI(ReasonId, res => {
+                    if (res && res.data && res.data.Data) {
+                        const Data = res.data.Data;
+                        this.setState({ IsActive: Data.IsActive })
+                    }
+                })
             })
-        } else {
-            this.props.getOneUnitOfMeasurementAPI('', false, res => { })
         }
     }
 
@@ -57,37 +58,41 @@ class AddReason extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+
         /** Update detail of the existing UOM  */
         if (this.props.isEditFlag) {
-            const { uomId } = this.props;
+            const { ReasonId } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
+                ReasonId: ReasonId,
+                ECostingStatus: 0,
                 Reason: values.Reason,
                 IsActive: this.state.IsActive,
+                CreatedBy: loggedInUserId(),
+                CreatedDate: '',
             }
-            this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_REASON_SUCESS);
-                    this.toggleModel();
-                    this.props.getUnitOfMeasurementAPI(res => { });
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
+            this.props.updateReasonAPI(formData, (res) => {
+                //if (res & res.data && res.data.Result) {
+                console.log(res.data.Result)
+                toastr.success(MESSAGES.UPDATE_REASON_SUCESS);
+                this.props.setEmptyReason();
+                this.props.onCancel();
+                //}
             });
         } else {
             /** Add detail for creating new UOM  */
             values.IsActive = this.state.IsActive;
 
-            this.props.createUnitOfMeasurementAPI(values, (res) => {
+            this.props.createReasonAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.REASON_ADD_SUCCESS);
-                    this.toggleModel();
-                    this.props.getUnitOfMeasurementAPI(res => { });
+                    this.props.onCancel();
                 } else {
                     toastr.error(res.data.message);
                 }
             });
         }
+
     }
 
     /**
@@ -162,17 +167,15 @@ class AddReason extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ unitOfMeasrement, reason }) {
-    const { unitOfMeasurementData, unitOfMeasurementList } = unitOfMeasrement;
+function mapStateToProps({ reason }) {
+    const { reasonData } = reason;
     let initialValues = {};
-    if (unitOfMeasurementData && unitOfMeasurementData !== undefined) {
+    if (reasonData && reasonData !== undefined) {
         initialValues = {
-            Name: unitOfMeasurementData.Name,
-            Title: unitOfMeasurementData.Title,
-            CreatedBy: unitOfMeasurementData.CreatedBy,
+            Reason: reasonData.Reason,
         }
     }
-    return { unitOfMeasurementData, initialValues, unitOfMeasurementList };
+    return { reasonData, initialValues };
 }
 
 /**
@@ -182,9 +185,14 @@ function mapStateToProps({ unitOfMeasrement, reason }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createUnitOfMeasurementAPI,
-    updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
+    createReasonAPI,
+    getReasonAPI,
+    updateReasonAPI,
+    setEmptyReason,
 })(reduxForm({
     form: 'AddReason',
+    onSubmitFail: errors => {
+        focusOnError(errors);
+    },
     enableReinitialize: true,
 })(AddReason));

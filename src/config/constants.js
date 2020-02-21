@@ -314,6 +314,14 @@ export const API = {
   getMenuByUser: `${BASE_URL}/app-privilege-permission/get-user-menu-by-user`,
   getModuleActionInit: `${BASE_URL}/user-role/get-module-action-init`,
 
+  //REASON
+  createReason: `${BASE_URL}/masters-reason/create`,
+  getAllReasonAPI: `${BASE_URL}/masters-reason/get-all`,
+  getReasonAPI: `${BASE_URL}/masters-reason/get`,
+  updateReasonAPI: `${BASE_URL}/masters-reason/update`,
+  deleteReasonAPI: `${BASE_URL}/masters-reason/delete`,
+
+
 }
 
 //Api constants
@@ -571,6 +579,10 @@ export const GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS = 'GET_PAGE_SELECTLIST_BY_MOD
 export const GET_PAGES_SELECTLIST_SUCCESS = 'GET_PAGES_SELECTLIST_SUCCESS';
 export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SUCCESS';
 export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS';
+
+//REASON
+export const GET_REASON_DATA_SUCCESS = 'GET_REASON_DATA_SUCCESS';
+export const GET_REASON_SUCCESS = 'GET_REASON_SUCCESS';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';

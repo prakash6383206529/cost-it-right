@@ -4,12 +4,13 @@ import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
 import AddReason from './AddReason';
-import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../../actions/master/unitOfMeasurment';
+import { getAllReasonAPI, deleteReasonAPI } from '../../../../actions/master/ReasonMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
+import { convertISOToUtcDate } from '../../../../helper/util';
 
 class ReasonMaster extends Component {
     constructor(props) {
@@ -17,68 +18,71 @@ class ReasonMaster extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            ReasonId: '',
         }
     }
 
     /**
-     * @method componentDidMount
-     * @description  called before rendering the component
-     */
+    * @method componentDidMount
+    * @description  called before rendering the component
+    */
     componentDidMount() {
-        this.props.getUnitOfMeasurementAPI(res => { });
+        this.props.getAllReasonAPI(res => { });
     }
 
     /**
-     * @method openModel
-     * @description  used to open filter form 
-     */
+    * @method openModel
+    * @description  used to open filter form 
+    */
     openModel = () => {
         this.setState({ isOpen: true, isEditFlag: false })
     }
 
     /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
+    * @method onCancel
+    * @description  used to cancel filter form
+    */
     onCancel = () => {
-        this.setState({ isOpen: false })
+        this.setState({ isOpen: false }, () => {
+            this.props.getAllReasonAPI(res => { })
+        })
     }
 
     /**
     * @method editPartDetails
     * @description confirm delete part
     */
-    editPartDetails = (index, Id) => {
+    editItem = (index, Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
-            uomId: Id,
+            ReasonId: Id,
         })
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete Reason
     */
-    deletePart = (index, Id) => {
+    deleteItem = (index, Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index, Id)
+                this.confirmDelete(index, Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Are you sure you want to delete UOM?`, toastrConfirmOptions);
+        return toastr.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions);
     }
 
     /**
     * @method confirmDeleteUOM
     * @description confirm delete unit of measurement
     */
-    confirmDeleteUOM = (index, Id) => {
-        this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
+    confirmDelete = (index, Id) => {
+        this.props.deleteReasonAPI(Id, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-                this.props.getUnitOfMeasurementAPI(res => { });
+                this.props.getAllReasonAPI(res => { });
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
@@ -90,7 +94,7 @@ class ReasonMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, uomId } = this.state;
+        const { isOpen, isEditFlag } = this.state;
         return (
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader />} */}
@@ -103,46 +107,47 @@ class ReasonMaster extends Component {
                     </Col>
                 </Row>
                 <hr />
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>S. No.</th>
-                                    <th>Reason</th>
-                                    <th>Status</th>
-                                    <th>Create Date</th>
-                                    <th>{''}</th>
-                                </tr>
-                            </thead>}
-                        <tbody>
-                            {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
-                                this.props.unitOfMeasurementList.map((item, index) => {
-                                    return (
+                <Row>
+                    <Col>
+                        <Table className="table table-striped" size={'sm'} bordered>
+                            {this.props.reasonDataList && this.props.reasonDataList.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>S. No.</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Create Date</th>
+                                        <th>{''}</th>
+                                    </tr>
+                                </thead>}
+                            <tbody>
+                                {this.props.reasonDataList && this.props.reasonDataList.length > 0 &&
+                                    this.props.reasonDataList.map((item, index) => {
+                                        return (
 
-                                        <tr key={index}>
-                                            <td >{index + 1}</td>
-                                            <td>{item.Title}</td>
-                                            <td>{item.Title}</td>
-                                            <td>{item.Title}</td>
-                                            <td>
-                                                <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.unitOfMeasurementList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
+                                            <tr key={index}>
+                                                <td >{index + 1}</td>
+                                                <td>{item.Reason}</td>
+                                                <td>{item.IsActive ? 'Active' : 'Inactive'}</td>
+                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editItem(index, item.ReasonId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.ReasonId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.reasonDataList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
                 {isOpen && (
                     <AddReason
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        uomId={uomId}
+                        ReasonId={this.state.ReasonId}
                     />
                 )}
             </Container >
@@ -155,12 +160,12 @@ class ReasonMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ unitOfMeasrement, reason }) {
-    const { unitOfMeasurementList, loading } = unitOfMeasrement;
-    return { unitOfMeasurementList, loading }
+function mapStateToProps({ reason }) {
+    const { reasonDataList, loading } = reason;
+    return { reasonDataList, loading }
 }
 
 export default connect(
-    mapStateToProps, { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI }
+    mapStateToProps, { getAllReasonAPI, deleteReasonAPI }
 )(ReasonMaster);
 
