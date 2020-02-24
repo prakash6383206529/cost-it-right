@@ -231,6 +231,7 @@ class UserRegistration extends Component {
    cancel = () => {
       const { reset } = this.props;
       reset();
+      this.props.setEmptyUserDataAPI('', () => { })
       this.setState({
          isEditFlag: false,
          department: [],
