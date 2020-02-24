@@ -5,6 +5,7 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../../layout/FormInputs";
 import { createRMSpecificationAPI } from '../../../../../actions/master/Material';
+import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
 import { fetchRowMaterialAPI, fetchRMGradeAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
@@ -26,6 +27,7 @@ class AddSpecification extends Component {
     */
     componentWillMount() {
         this.props.fetchRowMaterialAPI(res => { });
+        this.props.getMaterialTypeSelectList(() => { })
     }
 
     /**
@@ -57,7 +59,7 @@ class AddSpecification extends Component {
     * @description Used show listing of row material
     */
     renderTypeOfListing = (label) => {
-        const { rowMaterialList, rmGradeList } = this.props;
+        const { rowMaterialList, rmGradeList, MaterialSelectList } = this.props;
         const temp = [];
         if (label === 'rmList') {
             rowMaterialList && rowMaterialList.map(item =>
@@ -68,6 +70,13 @@ class AddSpecification extends Component {
 
         if (label === 'rmGrade') {
             rmGradeList && rmGradeList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'material') {
+            MaterialSelectList && MaterialSelectList.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
@@ -139,14 +148,14 @@ class AddSpecification extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.MATERIAL}`}
+                                                label={'Material'}
                                                 name={"RawMaterialId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
                                                 maxLength={26}
-                                                options={this.renderTypeOfListing('rmList')}
+                                                options={this.renderTypeOfListing('material')}
                                                 onChange={(Value) => this.handleTypeOfListingChange(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -194,9 +203,10 @@ class AddSpecification extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps({ comman, costWorking }) {
     const { rowMaterialList, rmGradeList } = comman;
-    return { rowMaterialList, rmGradeList }
+    const { MaterialSelectList } = costWorking;
+    return { rowMaterialList, rmGradeList, MaterialSelectList }
 }
 
 /**
@@ -205,7 +215,12 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createRMSpecificationAPI, fetchRowMaterialAPI, fetchRMGradeAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createRMSpecificationAPI,
+    fetchRowMaterialAPI,
+    fetchRMGradeAPI,
+    getMaterialTypeSelectList,
+})(reduxForm({
     form: 'AddSpecification',
     enableReinitialize: true,
 })(AddSpecification));

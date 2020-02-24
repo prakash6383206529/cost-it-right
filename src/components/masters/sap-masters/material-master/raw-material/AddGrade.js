@@ -5,6 +5,7 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../../layout/FormInputs";
 import { createRMGradeAPI } from '../../../../../actions/master/Material';
+import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
 import { fetchRowMaterialAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
@@ -26,6 +27,7 @@ class AddGrade extends Component {
     */
     componentWillMount() {
         this.props.fetchRowMaterialAPI(res => { });
+        this.props.getMaterialTypeSelectList(() => { })
     }
 
     /**
@@ -50,13 +52,24 @@ class AddGrade extends Component {
     * @method renderTypeOfListing
     * @description Used show listing of row material
     */
-    renderTypeOfListing = () => {
-        const { rowMaterialList } = this.props;
+    renderTypeOfListing = (label) => {
+        const { rowMaterialList, MaterialSelectList } = this.props;
         const temp = [];
-        rowMaterialList && rowMaterialList.map(item =>
-            temp.push({ Text: item.Text, Value: item.Value })
-        );
-        return temp;
+
+        // if (label === 'raw-material') {
+        //     rowMaterialList && rowMaterialList.map(item =>
+        //         temp.push({ Text: item.Text, Value: item.Value })
+        //     );
+        //     return temp;
+        // }
+
+        if (label === 'material') {
+            MaterialSelectList && MaterialSelectList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+
     }
 
     /**
@@ -123,13 +136,13 @@ class AddGrade extends Component {
                                         </Col>
                                         <Col md="12">
                                             <Field
-                                                label={`${CONSTANT.MATERIAL}`}
+                                                label={'Material'}
                                                 name={"RawMaterialId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing()}
+                                                options={this.renderTypeOfListing('material')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -160,9 +173,10 @@ class AddGrade extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps({ comman, costWorking }) {
     const { rowMaterialList } = comman;
-    return { rowMaterialList }
+    const { MaterialSelectList } = costWorking;
+    return { rowMaterialList, MaterialSelectList }
 }
 
 /**
@@ -171,7 +185,12 @@ function mapStateToProps({ comman }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createRMGradeAPI, fetchRowMaterialAPI })(reduxForm({
-    form: 'AddGrade',
-    enableReinitialize: true,
-})(AddGrade));
+export default connect(mapStateToProps,
+    {
+        createRMGradeAPI,
+        fetchRowMaterialAPI,
+        getMaterialTypeSelectList,
+    })(reduxForm({
+        form: 'AddGrade',
+        enableReinitialize: true,
+    })(AddGrade));

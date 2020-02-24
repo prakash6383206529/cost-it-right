@@ -117,20 +117,15 @@ class RowMaterialMaster extends Component {
                     <Col className={'mt15 mb15'} md="12">
                         {/* Removed 'Raw' from title on 23/12/2019 MOM */}
                         <Button className={'mr15'} onClick={this.openMaterialTypeModel}>{`Add Material Type`}</Button>
-                        {/* </Col>
-                    <Col sm="2"> */}
-                        <Button className={'mr15'} onClick={this.openModel}>{`Add Raw Material`}</Button>
-                        {/* </Col>
-                    <Col sm="2"> */}
+
                         <Button className={'mr15'} onClick={this.openGrademodel}>{`Add Grade`}</Button>
-                        {/* </Col>
-                    <Col sm="2"> */}
+
                         <Button className={'mr15'} onClick={this.openCategorymodel}>{`Add Category`}</Button>
-                        {/* </Col>
-                    <Col sm="2"> */}
+
                         <Button className={'mr15'} onClick={this.openSpecificationmodel}>{`Add Specification`}</Button>
-                        {/* </Col>
-                    <Col md="2"> */}
+
+                        <Button className={'mr15'} onClick={this.openModel}>{`Add Raw Material`}</Button>
+
                         {/* Removed 'Raw' from title on 23/12/2019 MOM */}
                         <Button className={'mr15'} onClick={this.openRMModel}>{`Add Raw Material Details`}</Button>
                     </Col>
@@ -142,11 +137,6 @@ class RowMaterialMaster extends Component {
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Material Type
-                                </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                        Raw Material
                                 </NavLink>
                                 </NavItem>
                                 <NavItem>
@@ -165,6 +155,11 @@ class RowMaterialMaster extends Component {
                                 </NavLink>
                                 </NavItem>
                                 <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        Raw Material
+                                </NavLink>
+                                </NavItem>
+                                <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                         Raw Material Details
                                 </NavLink>
@@ -174,9 +169,6 @@ class RowMaterialMaster extends Component {
                                 <TabPane tabId="1">
                                     <MaterialTypeDetail />
                                 </TabPane>
-                                <TabPane tabId="2">
-                                    <RMDetail />
-                                </TabPane>
                                 <TabPane tabId="3">
                                     <RMGradeDetail />
                                 </TabPane>
@@ -185,6 +177,9 @@ class RowMaterialMaster extends Component {
                                 </TabPane>
                                 <TabPane tabId="5">
                                     <RMSpecificationDetail />
+                                </TabPane>
+                                <TabPane tabId="2">
+                                    <RMDetail />
                                 </TabPane>
                                 <TabPane tabId="6">
                                     <MaterialDetail />
