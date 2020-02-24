@@ -452,7 +452,7 @@ class Role extends Component {
                                         validate={[]}
                                         component={renderText}
                                         required={false}
-                                        maxLength={26}
+                                        maxLength={100}
                                     />
                                 </div>
                                 {/* <div className="input-group  col-md-6 input-withouticon">
