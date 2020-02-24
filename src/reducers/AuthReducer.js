@@ -24,6 +24,8 @@ import {
     GET_LEVEL_USER_SUCCESS,
     GET_TECHNOLOGY_DATA_LIST_SUCCESS,
     GET_USER_SUCCESS,
+    GET_USER_DATA_SUCCESS,
+    GET_USER_UNIT_DATA_SUCCESS,
     GET_UNIT_ROLE_DATA_SUCCESS,
     GET_UNIT_DEPARTMENT_DATA_SUCCESS,
     GET_UNIT_LEVEL_DATA_SUCCESS,
@@ -188,6 +190,20 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 userList: action.payload
+            };
+        case GET_USER_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                userDataList: action.payload
+            };
+        case GET_USER_UNIT_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                registerUserData: action.payload
             };
         case GET_ROLES_SELECTLIST_SUCCESS:
             return {

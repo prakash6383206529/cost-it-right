@@ -82,6 +82,9 @@ export const MESSAGES = {
 
   //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
+  DELETE_USER_SUCCESSFULLY: 'User has been deleted successfully.',
+  USER_DELETE_ALERT: 'Are you sure you want to delete User?',
+  UPDATE_USER_SUCCESSFULLY: 'User has been updated successfully.',
 
   //ROLE
   ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully.',

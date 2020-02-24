@@ -23,6 +23,8 @@ import {
     GET_TECHNOLOGY_DATA_LIST_SUCCESS,
     GET_LEVEL_USER_SUCCESS,
     GET_USER_SUCCESS,
+    GET_USER_DATA_SUCCESS,
+    GET_USER_UNIT_DATA_SUCCESS,
     GET_UNIT_ROLE_DATA_SUCCESS,
     GET_UNIT_DEPARTMENT_DATA_SUCCESS,
     GET_UNIT_LEVEL_DATA_SUCCESS,
@@ -260,6 +262,113 @@ export function getAllUserAPI(callback) {
         });
     };
 }
+
+/**
+ * @method getAllUserDataAPI
+ * @description get all user's data list
+ */
+export function getAllUserDataAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.post(API.getAllUserDataAPI, requestData, { headers })
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_USER_DATA_SUCCESS,
+                        payload: response.data.DataList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+* @method getUserDataAPI
+* @description get all role's
+*/
+export function getUserDataAPI(UserId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserDataAPI}?userId=${UserId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_USER_UNIT_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method deleteUser
+ * @description delete user
+ */
+export function deleteUser(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteUserAPI}/${Id}`, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateUserAPI
+ * @description update User details
+ */
+export function updateUserAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateUserAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                //callback(error);
+            });
+    };
+}
+
+/**
+ * @method setEmptyUserDataAPI
+ * @description set empty user detail in reducer
+ */
+export function setEmptyUserDataAPI(UserId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (UserId == '') {
+            dispatch({
+                type: GET_USER_UNIT_DATA_SUCCESS,
+                payload: '',
+            });
+            callback();
+        }
+    }
+};
 
 /**
  * @method addRoleAPI

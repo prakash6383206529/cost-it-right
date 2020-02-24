@@ -257,6 +257,10 @@ export const API = {
 
   //User's API
   getUserSelectList: `${BASE_URL}/configuration/select-list-get-user`,
+  getAllUserDataAPI: `${BASE_URL}/user/get-all`,
+  getUserDataAPI: `${BASE_URL}/user/get-by-id`,
+  deleteUserAPI: `${BASE_URL}/user/delete`,
+  updateUserAPI: `${BASE_URL}/user/update`,
 
   //Role's API
   addRoleAPI: `${BASE_URL}/user-role/create`,
@@ -549,6 +553,8 @@ export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 
 //User 
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
+export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS';
+export const GET_USER_UNIT_DATA_SUCCESS = 'GET_USER_UNIT_DATA_SUCCESS';
 
 //Role
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS';
