@@ -72,6 +72,30 @@ class AddMaterial extends Component {
     }
 
     /**
+    * @method materialTypeHandler
+    * @description  used to handle material type
+    */
+    materialTypeHandler = (e) => {
+
+    }
+
+    /**
+    * @method handleGradeChange
+    * @description  used to handle grade change
+    */
+    handleGradeChange = (e) => {
+
+    }
+
+    /**
+    * @method handleSpecification
+    * @description  used to handle specification change
+    */
+    handleSpecification = (e) => {
+
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
@@ -159,6 +183,38 @@ class AddMaterial extends Component {
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Grade `}
+                                                name={"GradeId"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                // required={true}
+                                                className=" withoutBorder custom-select"
+                                                options={[]}
+                                                onChange={(Value) => this.handleGradeChange(Value)}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Specification`}
+                                                name={"SpecificationId"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                // required={true}
+                                                className=" withoutBorder custom-select"
+                                                options={[]}
+                                                onChange={this.handleSpecification}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
                                             />
                                         </Col>
                                         <Col md="6">

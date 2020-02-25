@@ -33,6 +33,7 @@ class RowMaterialMaster extends Component {
             isCategory: false,
             isGrade: false,
             isSpecification: false,
+            Id: '',
             activeTab: '1'
         }
     }
@@ -58,16 +59,44 @@ class RowMaterialMaster extends Component {
     }
 
     /**
+     * @method editMaterialTypeHandler
+     * @description  used to open Material type form 
+     */
+    editMaterialTypeHandler = (Id) => {
+        this.setState({
+            isOpenMaterialType: true,
+            Id: Id,
+            isEditFlag: true,
+        })
+    }
+
+    /**
      * @method openModel
      * @description  used to open filter form 
      */
     openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
+        this.setState({
+            isOpen: true,
+            isEditFlag: false
+        })
     }
 
     openCategorymodel = () => {
         this.setState({ isCategory: true })
     }
+
+    /**
+     * @method editCategoryHandler
+     * @description  used to open category form 
+     */
+    editCategoryHandler = (Id) => {
+        this.setState({
+            isCategory: true,
+            Id: Id,
+            isEditFlag: true,
+        })
+    }
+
     openGrademodel = () => {
         this.setState({ isGrade: true })
     }
@@ -94,6 +123,7 @@ class RowMaterialMaster extends Component {
             isSpecification: false,
             isOpenMaterialType: false,
             isRMOpen: false,
+            isEditFlag: false,
         }, () => {
             this.props.getRowMaterialDataAPI(res => { });
         })
@@ -167,13 +197,13 @@ class RowMaterialMaster extends Component {
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
                                 <TabPane tabId="1">
-                                    <MaterialTypeDetail />
+                                    <MaterialTypeDetail editMaterialTypeHandler={this.editMaterialTypeHandler} />
                                 </TabPane>
                                 <TabPane tabId="3">
                                     <RMGradeDetail />
                                 </TabPane>
                                 <TabPane tabId="4">
-                                    <RMCategoryDetail />
+                                    <RMCategoryDetail editCategoryHandler={this.editCategoryHandler} />
                                 </TabPane>
                                 <TabPane tabId="5">
                                     <RMSpecificationDetail />
@@ -191,6 +221,8 @@ class RowMaterialMaster extends Component {
                 {isOpenMaterialType && (
                     <AddMaterialType
                         isOpen={isOpenMaterialType}
+                        MaterialTypeId={this.state.Id}
+                        isEditFlag={this.state.isEditFlag}
                         onCancel={this.onCancel}
                     />
                 )}
@@ -203,6 +235,8 @@ class RowMaterialMaster extends Component {
                 {isCategory &&
                     <AddRMCategory
                         isOpen={isCategory}
+                        CategoryId={this.state.Id}
+                        isEditFlag={this.state.isEditFlag}
                         onCancel={this.onCancel}
                     />
                 }

@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText } from "../../../../layout/FormInputs";
-import { createRMCategoryAPI } from '../../../../../actions/master/Material';
+import { createRMCategoryAPI, getCategoryDataAPI, updateCategoryAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -16,6 +16,17 @@ class AddCategory extends Component {
         this.state = {
             typeOfListing: [],
             isEditFlag: false
+        }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
+    componentDidMount() {
+        const { CategoryId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getCategoryDataAPI(CategoryId, res => { });
         }
     }
 
@@ -42,18 +53,33 @@ class AddCategory extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-
+        const { CategoryId, isEditFlag } = this.props;
         let loginUserId = loggedInUserId();
         //values.CreatedBy = loginUserId;
 
-        this.props.createRMCategoryAPI(values, (res) => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
-                this.toggleModel();
-            } else {
-                toastr.error(res.data.message);
+        if (isEditFlag) {
+            let formData = {
+                CategoryId: CategoryId,
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
+                CategoryName: values.CategoryName,
+                Description: values.Description,
             }
-        });
+            this.props.updateCategoryAPI(formData, () => {
+                this.toggleModel()
+            })
+        } else {
+
+            this.props.createRMCategoryAPI(values, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
+                    this.toggleModel();
+                } else {
+                    toastr.error(res.data.message);
+                }
+            });
+        }
     }
 
     /**
@@ -123,8 +149,15 @@ class AddCategory extends Component {
 * @param {*} state
 */
 function mapStateToProps({ category }) {
-    const { categoryList } = category;
-    return { categoryList }
+    const { categoryList, categoryData } = category;
+    let initialValues = {};
+    if (categoryData && categoryData != undefined) {
+        initialValues = {
+            CategoryName: categoryData.CategoryName,
+            Description: categoryData.Description,
+        }
+    }
+    return { categoryList, categoryData, initialValues }
 }
 
 /**
@@ -133,7 +166,11 @@ function mapStateToProps({ category }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createRMCategoryAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createRMCategoryAPI,
+    getCategoryDataAPI,
+    updateCategoryAPI,
+})(reduxForm({
     form: 'AddCategory',
     enableReinitialize: true,
 })(AddCategory));

@@ -10,6 +10,8 @@ import {
     GET_MATERIAL_LIST_SUCCESS,
     GET_MATERIAL_LIST_TYPE_SUCCESS,
     RAWMATERIAL_ADDED_FOR_COSTING,
+    GET_MATERIAL_TYPE_DATA_SUCCESS,
+    GET_CATEGORY_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -88,6 +90,20 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 selectedRawMaterialDetail: action.payload
+            };
+        case GET_MATERIAL_TYPE_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                materialTypeData: action.payload
+            };
+        case GET_CATEGORY_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                categoryData: action.payload
             };
         default:
             return state;

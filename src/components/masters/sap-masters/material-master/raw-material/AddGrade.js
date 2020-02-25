@@ -110,31 +110,7 @@ class AddGrade extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.GRADE}`}
-                                                name={"Grade"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.DESCRIPTION}`}
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="12">
+                                        <Col md="4">
                                             <Field
                                                 label={'Material'}
                                                 name={"RawMaterialId"}
@@ -150,6 +126,31 @@ class AddGrade extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label={`${CONSTANT.GRADE}`}
+                                                name={"Grade"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label={`${CONSTANT.DESCRIPTION}`}
+                                                name={"Description"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                //required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">

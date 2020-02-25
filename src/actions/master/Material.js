@@ -12,6 +12,8 @@ import {
     GET_MATERIAL_LIST_SUCCESS,
     GET_MATERIAL_LIST_TYPE_SUCCESS,
     RAWMATERIAL_ADDED_FOR_COSTING,
+    GET_MATERIAL_TYPE_DATA_SUCCESS,
+    GET_CATEGORY_DATA_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -82,6 +84,62 @@ export function createRMCategoryAPI(data, callback) {
         });
     };
 }
+
+
+/**
+ * @method getCategoryDataAPI
+ * @description get category data
+ */
+export function getCategoryDataAPI(CategoryId, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getCategoryDataAPI}/${CategoryId}`, headers)
+            .then((response) => {
+                dispatch({
+                    type: GET_CATEGORY_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+ * @method updateCategoryAPI
+ * @description update category details
+ */
+export function updateCategoryAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateCategoryAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteCategoryAPI
+ * @description delete Material type API
+ */
+export function deleteCategoryAPI(CategoryId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteCategoryAPI}/${CategoryId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
 
 /**
  * @method createRMGradeAPI
@@ -210,6 +268,62 @@ export function createMaterialTypeAPI(data, callback) {
             });
             apiErrors(error);
         });
+    };
+}
+
+
+/**
+ * @method getMaterialTypeDataAPI
+ * @description get material type data
+ */
+export function getMaterialTypeDataAPI(MaterialTypeId, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getMaterialTypeDataAPI}/${MaterialTypeId}`, headers)
+            .then((response) => {
+                dispatch({
+                    type: GET_MATERIAL_TYPE_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+ * @method deleteMaterialTypeAPI
+ * @description delete Material type API
+ */
+export function deleteMaterialTypeAPI(MaterialTypeId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteMaterialTypeAPI}/${MaterialTypeId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method updateMaterialtypeAPI
+ * @description update Material Type details
+ */
+export function updateMaterialtypeAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateMaterialtypeAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 

@@ -51,6 +51,9 @@ export const API = {
 
   //Api's for material
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
+  getMaterialTypeDataAPI: `${BASE_URL}/masters-material/get-material-type`,
+  deleteMaterialTypeAPI: `${BASE_URL}/masters-material/delete-material-type`,
+  updateMaterialtypeAPI: `${BASE_URL}/masters-material/update-material-type`,
   createMaterial: `${BASE_URL}/masters-raw-material/add-costing-raw-material-details`,
   getMaterialTypeDataList: `${BASE_URL}/masters-material/get-all-material-type`,
   getMaterial: `${BASE_URL}/masters-raw-material/get-all-costing-raw-material-details`,
@@ -100,6 +103,9 @@ export const API = {
   //Api for row material master
   //createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
   createMaterialAPI: `${BASE_URL}/masters-raw-material/create`,
+  getCategoryDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
+  updateCategoryAPI: `${BASE_URL}/masters-raw-material/update-material-category`,
+  deleteCategoryAPI: `${BASE_URL}/masters-raw-material/delete-material-category`,
   createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
@@ -395,6 +401,7 @@ export const GET_RM_SPECIFICATION_LIST_SUCCESS = 'GET_RM_SPECIFICATION_LIST_SUCC
 export const GET_MATERIAL_LIST_SUCCESS = 'GET_MATERIAL_LIST_SUCCESS';
 export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS';
 export const RAWMATERIAL_ADDED_FOR_COSTING = 'RAWMATERIAL_ADDED_FOR_COSTING';
+export const GET_MATERIAL_TYPE_DATA_SUCCESS = 'GET_MATERIAL_TYPE_DATA_SUCCESS';
 
 //for plant master
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS';

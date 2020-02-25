@@ -124,30 +124,6 @@ class AddSpecification extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.SPECIFICATION}`}
-                                                name={"Specification"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.DESCRIPTION}`}
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
                                                 label={'Material'}
                                                 name={"RawMaterialId"}
                                                 type="text"
@@ -180,6 +156,31 @@ class AddSpecification extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.SPECIFICATION}`}
+                                                name={"Specification"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`${CONSTANT.DESCRIPTION}`}
+                                                name={"Description"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                //required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
