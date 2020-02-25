@@ -165,9 +165,12 @@ export const API = {
   createMHRMasterAPI: `${BASE_URL}/masters-machine-hour-rate/create`,
   getMHRList: `${BASE_URL}/masters-machine-hour-rate/get-all`,
 
-  //API's for MHR combo data
+  //API's for Operation
   getOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-operation`,
   createOperationAPI: `${BASE_URL}/masters-other-operation/create-operation`,
+  getOperationDataAPI: `${BASE_URL}/masters-other-operation/get-operation`,
+  updateOperationAPI: `${BASE_URL}/masters-other-operation/update`,
+  deleteOperationAPI: `${BASE_URL}/masters-other-operation/delete-operation`,
 
   //Api's for fright master
   createFreightAPI: `${BASE_URL}/masters-freight/create`,
@@ -469,6 +472,7 @@ export const CREATE_FAILURE = 'CREATE_FAILURE';
 
 //for Operation
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';
+export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS';
 
 //for freight master
 export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';

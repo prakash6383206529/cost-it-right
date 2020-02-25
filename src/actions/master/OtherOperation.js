@@ -4,6 +4,7 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_OTHER_OPERATION_SUCCESS,
+    GET_UNIT_OPERATION_DATA_SUCCESS,
     GET_OTHER_OPERATION_FAILURE,
     CREATE_OTHER_OPERATION_REQUEST,
     CREATE_OTHER_OPERATION_FAILURE,
@@ -203,6 +204,64 @@ export function createOperationsAPI(data, callback) {
     };
 }
 
+
+/**
+ * @method getOperationDataAPI
+ * @description Get operation unit operation data
+ */
+export function getOperationDataAPI(OperationId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.get(`${API.getOperationDataAPI}/${OperationId}`, headers)
+            .then((response) => {
+                if (response.data.Result === true) {
+                    dispatch({
+                        type: GET_UNIT_OPERATION_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateOperationAPI
+ * @description update Operation details
+ */
+export function updateOperationAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateOperationAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method deleteOperationAPI
+ * @description delete operation
+ */
+export function deleteOperationAPI(OperationId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteOperationAPI}/${OperationId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
 
 /**
  * @method getCostSummaryOtherOperation

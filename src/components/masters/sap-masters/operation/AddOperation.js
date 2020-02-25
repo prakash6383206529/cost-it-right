@@ -5,7 +5,7 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required, upper } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { fetchPlantDataAPI } from '../../../../actions/master/Comman';
-import { createOperationsAPI } from '../../../../actions/master/OtherOperation';
+import { createOperationsAPI, getOperationDataAPI, getOperationsMasterAPI, updateOperationAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from "../../../../helper/auth";
@@ -31,15 +31,13 @@ class AddOperation extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { uomId, isEditFlag } = this.props;
+        const { operationId, isEditFlag } = this.props;
 
-        // if (isEditFlag) {
-        //     this.setState({ isEditFlag }, () => {
-        //         this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
-        //     })
-        // } else {
-        //     this.props.getOneUnitOfMeasurementAPI('', false, res => { })
-        // }
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getOperationDataAPI(operationId, res => { })
+            })
+        }
     }
 
     /**
@@ -56,31 +54,29 @@ class AddOperation extends Component {
     */
     onSubmit = (values) => {
         const { PlantId } = this.state;
-        let loginUserId = loggedInUserId();
 
-        values.PlantId = PlantId;
-
-        console.log('values: >>sss', values);
+        //values.PlantId = PlantId;
 
         if (this.props.isEditFlag) {
-            // console.log('values', values);
-            // const { uomId } = this.props;
-            // this.setState({ isSubmitted: true });
-            // let formData = {
-            //     Name: values.Name,
-            //     Title: values.Title,
-            //     Description: values.Description,
-            //     Id: uomId
-            // }
-            // this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
-            //         this.toggleModel();
-            //         this.props.getUnitOfMeasurementAPI(res => { });
-            //     } else {
-            //         toastr.error(MESSAGES.SOME_ERROR);
-            //     }
-            // });
+            console.log('values', values);
+            const { operationId } = this.props;
+            this.setState({ isSubmitted: true });
+            let formData = {
+                OperationId: operationId,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
+                IsActive: true,
+                OperationName: values.OperationName,
+                OperationCode: values.OperationCode,
+                Description: values.Description,
+            }
+            this.props.updateOperationAPI(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                    this.toggleModel();
+                    this.props.getOperationsMasterAPI(res => { });
+                }
+            });
         } else {
             this.props.createOperationsAPI(values, (res) => {
                 if (res.data.Result === true) {
@@ -178,7 +174,7 @@ class AddOperation extends Component {
                                                 disabled={false}
                                             />
                                         </Col> */}
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`Plant`}
                                                 name={"PlantId"}
@@ -194,7 +190,7 @@ class AddOperation extends Component {
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
-                                        </Col>
+                                        </Col> */}
                                         <Col md="6">
                                             <Field
                                                 label="Description"
@@ -231,9 +227,21 @@ class AddOperation extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-    const { plantList } = comman
-    return { plantList };
+function mapStateToProps({ comman, otherOperation }) {
+    const { plantList } = comman;
+    const { operationData } = otherOperation;
+
+    let initialValues = {};
+
+    if (operationData && operationData != undefined) {
+        initialValues = {
+            OperationName: operationData.OperationName,
+            OperationCode: operationData.OperationCode,
+            Description: operationData.Description,
+        }
+    }
+
+    return { plantList, operationData, initialValues };
 }
 
 /**
@@ -244,7 +252,10 @@ function mapStateToProps({ comman }) {
 */
 export default connect(mapStateToProps, {
     fetchPlantDataAPI,
-    createOperationsAPI
+    createOperationsAPI,
+    getOperationDataAPI,
+    getOperationsMasterAPI,
+    updateOperationAPI,
 })(reduxForm({
     form: 'addOperation',
     enableReinitialize: true,

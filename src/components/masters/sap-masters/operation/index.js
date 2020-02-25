@@ -4,7 +4,7 @@ import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
 import AddOperation from './AddOperation';
-import { getOperationsMasterAPI } from '../../../../actions/master/OtherOperation';
+import { getOperationsMasterAPI, deleteOperationAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -17,6 +17,7 @@ class OperationMaster extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            operationId: '',
         }
     }
 
@@ -47,44 +48,42 @@ class OperationMaster extends Component {
     }
 
     /**
-    * @method editPartDetails
-    * @description confirm delete part
+    * @method editItemDetails
+    * @description Edit operation detail
     */
-    editPartDetails = (index, Id) => {
+    editItemDetails = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
-            uomId: Id,
+            operationId: Id,
         })
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete operation
     */
-    deletePart = (index, Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index, Id)
+                this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.OPERATION_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
-    * @method confirmDeleteUOM
-    * @description confirm delete unit of measurement
+    * @method confirmDelete
+    * @description confirm delete operation
     */
-    confirmDeleteUOM = (index, Id) => {
-        // this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-        //         this.props.getUnitOfMeasurementAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+    confirmDelete = (operationId) => {
+        this.props.deleteOperationAPI(operationId, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_OPERATION_SUCCESS);
+                this.props.getOperationsMasterAPI(res => { });
+            }
+        });
     }
 
     /**
@@ -108,7 +107,7 @@ class OperationMaster extends Component {
                 <Row>
                     <Col>
                         <div>
-                            <Table className="table table-striped" bordered>
+                            <Table className="table table-striped" size={'sm'} bordered>
                                 {this.props.operationListData && this.props.operationListData.length > 0 &&
                                     <thead>
                                         <tr>
@@ -117,10 +116,7 @@ class OperationMaster extends Component {
                                             {/* <th>Plant Name</th> */}
                                             <th>Description</th>
                                             {/* <th>Operation Cost</th> */}
-                                            {/* <th>Initiator</th> */}
-                                            {/* <th>Created On</th> */}
-                                            {/* <th>Modifier</th> */}
-                                            {/* <th>Modified On</th> */}
+                                            <th>{''}</th>
                                         </tr>
                                     </thead>}
                                 <tbody >
@@ -133,14 +129,10 @@ class OperationMaster extends Component {
                                                     {/* <td>{item.PlantName}</td> */}
                                                     <td>{item.Description}</td>
                                                     {/* <td>{item.BasicOperationCost}</td> */}
-                                                    {/* <td>{''}</td> */}
-                                                    {/* <td>{''}</td> */}
-                                                    {/* <td>{''}</td> */}
-                                                    {/* <td>{''}</td> */}
-                                                    {/* <td>
-                                                    <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                                </td> */}
+                                                    <td>
+                                                        <Button className="black-btn" onClick={() => this.editItemDetails(item.OperationId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                        <Button className="black-btn" onClick={() => this.deleteItem(item.OperationId)}><i className="far fa-trash-alt"></i></Button>
+                                                    </td>
                                                 </tr>
                                             )
                                         })}
@@ -155,8 +147,7 @@ class OperationMaster extends Component {
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        uomId={uomId}
+                        operationId={this.state.operationId}
                     />
                 )}
             </Container >
@@ -174,8 +165,9 @@ function mapStateToProps({ otherOperation }) {
     return { operationListData, loading }
 }
 
-
 export default connect(
-    mapStateToProps, { getOperationsMasterAPI }
-)(OperationMaster);
+    mapStateToProps, {
+    getOperationsMasterAPI,
+    deleteOperationAPI,
+})(OperationMaster);
 

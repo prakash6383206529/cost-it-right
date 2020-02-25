@@ -9,6 +9,7 @@ import {
     GET_CED_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_FAILURE,
     GET_OPERATION_SUCCESS,
+    GET_UNIT_OPERATION_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
 } from '../../config/constants';
 
@@ -62,6 +63,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 operationListData: action.payload
+            };
+        case GET_UNIT_OPERATION_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                operationData: action.payload
             };
         case CREATE_OTHER_OPERATION_SUCCESS: {
             return {
