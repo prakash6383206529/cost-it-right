@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, number, upper, decimalLength2, getNameBetweenBraces } from "../../../../helper/validation";
+import { required, number, upper, decimalLength2, getNameBetweenBraces, getSupplierCode } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getOtherOperationData, getPlantBySupplier } from '../../../../actions/master/Comman';
-import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
+import {
+    createOtherOperationsAPI, getOtherOperationDataAPI, updateOtherOperationAPI,
+    getOperationsAPI
+} from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from "../../../../helper/auth";
@@ -21,6 +24,7 @@ class AddOtherOperation extends Component {
             technologyValue: '',
             uom: '',
             PlantId: '',
+            plant: [],
         }
     }
 
@@ -31,7 +35,7 @@ class AddOtherOperation extends Component {
     componentWillMount() {
         this.props.getOtherOperationData(() => {
             const { Technologies } = this.props;
-            this.setState({ technologyValue: Technologies[0].Value })
+            this.setState({ technologyValue: Technologies && Technologies.length > 0 ? Technologies[0].Value : '' })
         });
     }
 
@@ -40,7 +44,41 @@ class AddOtherOperation extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { isEditFlag } = this.props;
+        const { isEditFlag, OperationId, OtherOperationId } = this.props;
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getOtherOperationDataAPI(OtherOperationId, res => {
+                    if (res && res.data && res.data.Result) {
+
+                        const { otherOperationData, Operations, Suppliers, UnitOfMeasurements } = this.props;
+                        if (otherOperationData && otherOperationData != undefined) {
+
+                            const OperationObj = Operations.find(item => item.Value == otherOperationData.OperationId)
+                            const SupplierObj = Suppliers.find(item => item.Value == otherOperationData.SupplierId)
+                            //const UOMObj = UnitOfMeasurements.find(item => item.Value == otherOperationData.UnitOfMeasurementId)
+                            const operationCode = getNameBetweenBraces(OperationObj.Text)
+                            this.props.change("OperationCode", operationCode.toUpperCase())
+
+                            this.setState({
+                                processOperationValue: { label: OperationObj.Text, value: OperationObj.Vale },
+                                supplierValue: { label: SupplierObj.Text, value: SupplierObj.Value },
+                                uom: otherOperationData.UnitOfMeasurementId,
+                            })
+
+                            this.props.getPlantBySupplier(SupplierObj.Value, (res) => {
+                                if (res && res.data && res.data.Result) {
+                                    const { filterPlantList } = this.props;
+                                    const PlantObj = filterPlantList && filterPlantList.find(item => item.Value == otherOperationData.PlantId)
+                                    this.setState({
+                                        plant: { label: PlantObj.Text, value: PlantObj.Value },
+                                    })
+                                }
+                            })
+                        }
+                    }
+                })
+            })
+        }
     }
 
     /**
@@ -49,62 +87,6 @@ class AddOtherOperation extends Component {
     */
     toggleModel = () => {
         this.props.onCancel();
-    }
-
-    /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-    onSubmit = (values) => {
-        const { processOperationValue, supplierValue, selectedPlants, uom, technologyValue, PlantId } = this.state;
-        let loginUserId = loggedInUserId();
-        let plantArray = [];
-        selectedPlants.map((item, i) => {
-            return plantArray.push({ PlantId: item.Value, PlantName: item.Text });
-        });
-
-        values.OtherOperationName = processOperationValue.label;
-        //"OperationCode": "string",
-        //"Description": "string",
-        values.TechnologyId = technologyValue;
-        values.SupplierId = supplierValue.value;
-        values.OperationId = processOperationValue.value;
-        values.UnitOfMeasurementId = uom;
-        values.PlantId = PlantId;
-        values.SelectedPlants = plantArray;
-
-        console.log('values: >>sss', values);
-
-        if (this.props.isEditFlag) {
-            // console.log('values', values);
-            // const { uomId } = this.props;
-            // this.setState({ isSubmitted: true });
-            // let formData = {
-            //     Name: values.Name,
-            //     Title: values.Title,
-            //     Description: values.Description,
-            //     Id: uomId
-            // }
-            // this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
-            //         this.toggleModel();
-            //         this.props.getUnitOfMeasurementAPI(res => { });
-            //     } else {
-            //         toastr.error(MESSAGES.SOME_ERROR);
-            //     }
-            // });
-        } else {
-            this.props.createOtherOperationsAPI(values, (res) => {
-                if (res.data.Result === true) {
-                    toastr.success(MESSAGES.OTHER_OPERATION_ADD_SUCCESS);
-                    { this.toggleModel() }
-                    this.props.getOtherOperationData(() => { });
-                } else {
-                    toastr.error(res.data.message);
-                }
-            });
-        }
     }
 
     /**
@@ -139,10 +121,18 @@ class AddOtherOperation extends Component {
     * @description Used to Supplier handle
     */
     handleChangeSupplier = (newValue, actionMeta) => {
-        this.setState({ supplierValue: newValue, selectedPlants: [] }, () => {
+        this.setState({ supplierValue: newValue, plant: [] }, () => {
             const { supplierValue } = this.state;
             this.props.getPlantBySupplier(supplierValue.value, () => { })
         });
+    };
+
+    /**
+    * @method handleChangePlant
+    * @description Used to Plant handle //serachable single select
+    */
+    handleChangePlant = (newValue, actionMeta) => {
+        this.setState({ plant: newValue });
     };
 
     /**
@@ -157,7 +147,7 @@ class AddOtherOperation extends Component {
 
     /**
     * @method plantHandler
-    * @description Used to plant handle
+    * @description Used to plant handle //single select
     */
     plantHandler = (e) => {
         this.setState({
@@ -196,39 +186,95 @@ class AddOtherOperation extends Component {
             );
             return temp;
         }
-        // if (label == 'plant') {
-        //     plantList && plantList.map(item =>
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     );
-        //     return temp;
-        // }
+        if (label == 'plant') {
+            filterPlantList && filterPlantList.map(item => {
+                if (item.Value != 0) {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
+            });
+            return temp;
+        }
 
     }
 
     /**
-    * @method renderSelectPlantList
-    * @description Used to render listing of selected plants
+    * @method handlePlantSelection
+    * @description called //Plant multiselect searchable
     */
-    renderSelectPlantList = () => {
-        const { filterPlantList } = this.props;
-        const temp = [];
-        filterPlantList && filterPlantList.map(item => {
-            if (item.Value != 0) {
-                temp.push({ Text: item.Text, Value: item.Value })
-            }
-        });
-        return temp;
-    }
-
-    /**
-       * @method handlePlantSelection
-       * @description called
-       */
     handlePlantSelection = e => {
         this.setState({
             selectedPlants: e
         });
     };
+
+    /**
+    * @method onSubmit
+    * @description Used to Submit the form
+    */
+    onSubmit = (values) => {
+
+        const { processOperationValue, supplierValue, selectedPlants, uom, technologyValue, PlantId, plant } = this.state;
+        const { otherOperationData } = this.props;
+
+        let plantArray = [];
+        selectedPlants.map((item, i) => {
+            return plantArray.push({ PlantId: item.Value, PlantName: item.Text });
+        });
+
+        values.OtherOperationName = processOperationValue.label;
+        values.TechnologyId = technologyValue;
+        values.SupplierId = supplierValue.value;
+        values.OperationId = processOperationValue.value;
+        values.UnitOfMeasurementId = uom;
+        values.PlantId = plant.value;
+        values.SelectedPlants = plantArray;
+
+        if (this.props.isEditFlag) {
+
+            this.setState({ isSubmitted: true });
+            let formData = {
+                OtherOperationId: otherOperationData.OtherOperationId,
+                PlantName: plant.label,
+                TechnologyName: '',
+                SupplierName: supplierValue.label,
+                SupplierCode: getSupplierCode(supplierValue.label),
+                ProcessName: processOperationValue.label,
+                UnitOfMeasurementName: '',
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
+                IsActive: true,
+                Rate: values.Rate,
+                OtherOperationName: processOperationValue.label,
+                OperationCode: values.OperationCode,
+                Description: '',
+                TechnologyId: technologyValue,
+                SupplierId: supplierValue.value,
+                OperationId: processOperationValue.value,
+                UnitOfMeasurementId: uom,
+                PlantId: plant.value,
+            }
+            this.props.updateOtherOperationAPI(formData, (res) => {
+                if (res && res.data && res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
+                    this.toggleModel();
+                    this.props.getOperationsAPI(res => { });
+                }
+            });
+
+        } else {
+
+            this.props.createOtherOperationsAPI(values, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.OTHER_OPERATION_ADD_SUCCESS);
+                    { this.toggleModel() }
+                    this.props.getOtherOperationData(() => { });
+                } else {
+                    toastr.error(res.data.message);
+                }
+            });
+
+        }
+    }
 
     /**
     * @method render
@@ -296,7 +342,7 @@ class AddOtherOperation extends Component {
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
-                                                disabled={false}
+                                                disabled={true}
                                                 normalize={upper}
                                             />
                                         </Col>
@@ -319,6 +365,19 @@ class AddOtherOperation extends Component {
                                             />
                                         </Col>
                                         <Col md="6">
+                                            <Field
+                                                label="Plant"
+                                                id="Plant"
+                                                name="PlantId"
+                                                type="text"
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                component={searchableSelect}
+                                                //validate={[required, maxLength50]}
+                                                options={this.renderTypeOfListing('plant')}
+                                                required={true}
+                                                handleChangeDescription={this.handleChangePlant}
+                                                valueDescription={this.state.plant}
+                                            />
                                             {/* <Field
                                                 label={`Plant`}
                                                 name={"PlantId"}
@@ -335,19 +394,19 @@ class AddOtherOperation extends Component {
                                                 className=" withoutBorder custom-select"
                                             /> */}
 
-                                            <Field
+                                            {/* <Field
                                                 label="Plants"
                                                 name="PlantId"
                                                 placeholder="--Select Plant--"
                                                 selection={this.state.selectedPlants}
-                                                options={this.renderSelectPlantList()}
+                                                options={this.renderTypeOfListing('plant')}
                                                 selectionChanged={this.handlePlantSelection}
                                                 optionValue={option => option.Value}
                                                 optionLabel={option => option.Text}
                                                 component={renderMultiSelectField}
                                                 mendatory={false}
                                                 className="withoutBorder"
-                                            />
+                                            /> */}
                                         </Col>
                                     </Row>
                                     <Row>
@@ -405,19 +464,18 @@ class AddOtherOperation extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps({ comman, otherOperation }) {
     const { filterPlantList } = comman;
+    const { otherOperationData } = otherOperation;
     if (comman && comman.otherOperationFormData) {
         const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = comman.otherOperationFormData;
-        // console.log('technologyList: ', technologyList, technologyList);
-        // let initialValues = {};
-        // if (technologyList !== undefined && uniOfMeasurementList !== undefined) {
-        //     initialValues = {
-        //         technologyList,
-        //         uniOfMeasurementList
-        //     }
-        // }
-        return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList };
+        let initialValues = {};
+        if (otherOperationData && otherOperationData !== undefined) {
+            initialValues = {
+
+            }
+        }
+        return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList, otherOperationData, initialValues };
     }
 }
 
@@ -432,6 +490,9 @@ export default connect(mapStateToProps, {
     getOtherOperationData,
     createOtherOperationsAPI,
     getPlantBySupplier,
+    getOtherOperationDataAPI,
+    updateOtherOperationAPI,
+    getOperationsAPI,
 })(reduxForm({
     form: 'addOtherOperation',
     enableReinitialize: true,

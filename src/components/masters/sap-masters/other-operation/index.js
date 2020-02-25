@@ -4,7 +4,7 @@ import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
 import AddOtherOperation from './AddOtherOperation';
-import { getOperationsAPI } from '../../../../actions/master/OtherOperation';
+import { getOperationsAPI, deleteOtherOperationAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -18,6 +18,8 @@ class OtherOperationMaster extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            OtherOperationId: '',
+            OperationId: '',
         }
     }
 
@@ -48,44 +50,43 @@ class OtherOperationMaster extends Component {
     }
 
     /**
-    * @method editPartDetails
-    * @description confirm delete part
+    * @method editItemDetails
+    * @description Edit Other Operation detail
     */
-    editPartDetails = (index, Id) => {
+    editItemDetails = (OtherOperationId, OperationId) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
-            uomId: Id,
+            OtherOperationId: OtherOperationId,
+            OperationId: OperationId,
         })
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete Other Operation
     */
-    deletePart = (index, Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index, Id)
+                this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.OTHER_OPERATION_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
-    * @method confirmDeleteUOM
-    * @description confirm delete unit of measurement
+    * @method confirmDelete
+    * @description confirm delete Other Operation
     */
-    confirmDeleteUOM = (index, Id) => {
-        // this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-        //         this.props.getUnitOfMeasurementAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+    confirmDelete = (operationId) => {
+        this.props.deleteOtherOperationAPI(operationId, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_OTHER_OPERATION_SUCCESS);
+                this.props.getOperationsAPI(res => { });
+            }
+        });
     }
 
     /**
@@ -120,10 +121,8 @@ class OtherOperationMaster extends Component {
                                             <th>UOM</th>
                                             <th>Technology</th>
                                             <th>Rate</th>
-                                            {/* <th>Initiator</th> */}
                                             <th>Created On</th>
-                                            {/* <th>Modifier</th> */}
-                                            {/* <th>Modified On</th> */}
+                                            <th>{''}</th>
                                         </tr>
                                     </thead>}
                                 <tbody >
@@ -137,14 +136,11 @@ class OtherOperationMaster extends Component {
                                                     <td>{item.UnitOfMeasurementName}</td>
                                                     <td>{item.TechnologyName}</td>
                                                     <td>{item.Rate}</td>
-                                                    {/* <td>{''}</td> */}
                                                     <td>{moment(item.CreatedDate).format('L')}</td>
-                                                    {/* <td>{item.ModifiedBy}</td> */}
-                                                    {/* <td>{item.ModifiedDate}</td> */}
-                                                    {/* <td>
-                                                    <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                                </td> */}
+                                                    <td>
+                                                        <Button className="black-btn" onClick={() => this.editItemDetails(item.OtherOperationId, item.OperationId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                        <Button className="black-btn" onClick={() => this.deleteItem(item.OtherOperationId)}><i className="far fa-trash-alt"></i></Button>
+                                                    </td>
                                                 </tr>
                                             )
                                         })}
@@ -160,8 +156,8 @@ class OtherOperationMaster extends Component {
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        uomId={uomId}
+                        OperationId={this.state.OperationId}
+                        OtherOperationId={this.state.OtherOperationId}
                     />
                 )}
             </Container >
@@ -181,6 +177,9 @@ function mapStateToProps({ otherOperation }) {
 
 
 export default connect(
-    mapStateToProps, { getOperationsAPI }
+    mapStateToProps, {
+    getOperationsAPI,
+    deleteOtherOperationAPI,
+}
 )(OtherOperationMaster);
 

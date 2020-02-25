@@ -153,6 +153,9 @@ export const API = {
   getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-other-operation`,
   getOtherOperationsFormDataAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
   createOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-other-operation`,
+  deleteOtherOperationAPI: `${BASE_URL}/masters-other-operation/delete-other-operation`,
+  getOtherOperationDataAPI: `${BASE_URL}/masters-other-operation/get-other-operation`,
+  updateOtherOperationAPI: `${BASE_URL}/masters-other-operation/update-other-operation`,
 
   //API's for CED other operations
   getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
@@ -446,6 +449,7 @@ export const GET_FUEL__DETAIL_DATA_SUCCESS = 'GET_FUEL_DETAIL_DATA_SUCCESS';
 
 //for Other Operation master
 export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS';
+export const GET_UNIT_OTHER_OPERATION_DATA_SUCCESS = 'GET_UNIT_OTHER_OPERATION_DATA_SUCCESS';
 export const GET_OTHER_OPERATION_FAILURE = 'GET_OTHER_OPERATION_FAILURE';
 export const CREATE_OTHER_OPERATION_REQUEST = 'CREATE_OTHER_OPERATION_REQUEST';
 export const CREATE_OTHER_OPERATION_FAILURE = 'CREATE_OTHER_OPERATION_FAILURE';

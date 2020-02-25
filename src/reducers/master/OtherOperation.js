@@ -4,6 +4,7 @@ import {
     CREATE_OTHER_OPERATION_REQUEST,
     CREATE_OTHER_OPERATION_FAILURE,
     GET_OTHER_OPERATION_SUCCESS,
+    GET_UNIT_OTHER_OPERATION_DATA_SUCCESS,
     GET_OTHER_OPERATION_FAILURE,
     CREATE_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_SUCCESS,
@@ -69,6 +70,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 operationData: action.payload
+            };
+        case GET_UNIT_OTHER_OPERATION_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                otherOperationData: action.payload
             };
         case CREATE_OTHER_OPERATION_SUCCESS: {
             return {

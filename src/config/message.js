@@ -23,7 +23,13 @@ export const MESSAGES = {
   GRADE_ADD_SUCCESS: 'Row material grade added successfully',
   SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
+
+  //OTHER OPERATION
   OTHER_OPERATION_ADD_SUCCESS: 'Other Operation added successfully',
+  OTHER_OPERATION_DELETE_ALERT: 'Are you sure you want to delete Other Operation?',
+  DELETE_OTHER_OPERATION_SUCCESS: 'Other Operation has been deleted successfully.',
+
+  //CED OTHER OPERATION
   CED_OTHER_OPERATION_ADD_SUCCESS: 'CED Other Operation added successfully',
   MHR_MASTER_ADD_SUCCESS: 'MHR Master added successfully',
 

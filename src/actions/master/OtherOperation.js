@@ -4,6 +4,7 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_OTHER_OPERATION_SUCCESS,
+    GET_UNIT_OTHER_OPERATION_DATA_SUCCESS,
     GET_UNIT_OPERATION_DATA_SUCCESS,
     GET_OTHER_OPERATION_FAILURE,
     CREATE_OTHER_OPERATION_REQUEST,
@@ -36,19 +37,13 @@ export function getOperationsAPI(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getOtherOperationsAPI, { headers })
             .then((response) => {
-                //if (response.data.Result === true) {
                 dispatch({
                     type: GET_OTHER_OPERATION_SUCCESS,
                     payload: response.data.DataList,
                 });
                 callback(response);
-                // } else {
-                //     toastr.error(MESSAGES.SOME_ERROR);
-                // }
             }).catch((error) => {
-                dispatch({
-                    type: GET_OTHER_OPERATION_FAILURE
-                });
+                dispatch({ type: GET_OTHER_OPERATION_FAILURE });
                 callback(error);
                 apiErrors(error);
             });
@@ -61,9 +56,7 @@ export function getOperationsAPI(callback) {
  */
 export function createOtherOperationsAPI(data, callback) {
     return (dispatch) => {
-        dispatch({
-            type: CREATE_OTHER_OPERATION_REQUEST
-        });
+        dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
         const request = axios.post(API.createOtherOperationAPI, data, headers);
         request.then((response) => {
             if (response.data.Result === true) {
@@ -71,18 +64,69 @@ export function createOtherOperationsAPI(data, callback) {
                     type: CREATE_OTHER_OPERATION_SUCCESS,
                 });
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_OTHER_OPERATION_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: CREATE_OTHER_OPERATION_FAILURE
-            });
+            dispatch({ type: CREATE_OTHER_OPERATION_FAILURE });
             apiErrors(error);
         });
+    };
+}
+
+
+/**
+ * @method deleteOtherOperationAPI
+ * @description delete Other Operation
+ */
+export function deleteOtherOperationAPI(OperationId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteOtherOperationAPI}/${OperationId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getOtherOperationDataAPI
+ * @description Get Other Operation unit operation data
+ */
+export function getOtherOperationDataAPI(OtherOperationId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.get(`${API.getOtherOperationDataAPI}/${OtherOperationId}`, headers)
+            .then((response) => {
+                if (response.data.Result === true) {
+                    dispatch({
+                        type: GET_UNIT_OTHER_OPERATION_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateOtherOperationAPI
+ * @description update Other Operation details
+ */
+export function updateOtherOperationAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateOtherOperationAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 
