@@ -4,7 +4,10 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText } from "../../../layout/FormInputs";
-import { createCategoryTypeAPI } from '../../../../actions/master/Category';
+import {
+    createCategoryTypeAPI, getCategoryTypeDataAPI, updateCategoryTypeAPI,
+    setEmptyCategoryTypeData
+} from '../../../../actions/master/Category';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -16,6 +19,13 @@ class AddCategoryType extends Component {
         this.state = {
             typeOfListing: [],
             isEditFlag: false
+        }
+    }
+
+    componentDidMount() {
+        const { isEditFlag, CategoryTypeId } = this.props;
+        if (isEditFlag) {
+            this.props.getCategoryTypeDataAPI(CategoryTypeId, () => { })
         }
     }
 
@@ -42,19 +52,37 @@ class AddCategoryType extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { isEditFlag, CategoryTypeId } = this.props;
+        values.CreatedBy = loggedInUserId();
 
-        let loginUserId = loggedInUserId();
-        values.CreatedBy = loginUserId;
-
-        /** Add new detail of the Category Type  */
-        this.props.createCategoryTypeAPI(values, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.CATEGORY_TYPE_ADDED_SUCCESS);
-                this.toggleModel();
-            } else {
-                toastr.error(res.data.message);
+        if (isEditFlag) {
+            let formData = {
+                CategoryTypeId: CategoryTypeId,
+                CategoryType: values.CategoryType,
+                Description: values.Description,
+                CreatedBy: loggedInUserId(),
+                ModifiedBy: loggedInUserId(),
+                IsActive: true
             }
-        });
+            this.props.updateCategoryTypeAPI(formData, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.CATEGORY_TYPE_UPDATE_SUCCESS);
+                    this.props.setEmptyCategoryTypeData(() => { })
+                    this.toggleModel();
+                }
+            })
+        } else {
+
+            /** Add new detail of the Category Type  */
+            this.props.createCategoryTypeAPI(values, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.CATEGORY_TYPE_ADDED_SUCCESS);
+                    this.toggleModel();
+                } else {
+                    toastr.error(res.data.message);
+                }
+            });
+        }
     }
 
     /**
@@ -62,11 +90,11 @@ class AddCategoryType extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.CATEGORY}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Category Type' : 'Add Category Type'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -104,7 +132,7 @@ class AddCategoryType extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {`${CONSTANT.SAVE}`}
+                                                {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </Row>
@@ -123,9 +151,16 @@ class AddCategoryType extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-
-    return {}
+function mapStateToProps({ category }) {
+    const { categoryTypeData } = category;
+    let initialValues = {};
+    if (categoryTypeData && categoryTypeData != undefined) {
+        initialValues = {
+            CategoryType: categoryTypeData.CategoryType,
+            Description: categoryTypeData.Description,
+        }
+    }
+    return { initialValues, categoryTypeData }
 }
 
 /**
@@ -134,7 +169,12 @@ function mapStateToProps({ }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, { createCategoryTypeAPI })(reduxForm({
+export default connect(mapStateToProps, {
+    createCategoryTypeAPI,
+    getCategoryTypeDataAPI,
+    updateCategoryTypeAPI,
+    setEmptyCategoryTypeData,
+})(reduxForm({
     form: 'AddCategoryType',
     enableReinitialize: true,
 })(AddCategoryType));

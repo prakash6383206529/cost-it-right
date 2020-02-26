@@ -11,7 +11,9 @@ import {
     GET_CATEGORY_DATA_SUCCESS,
     GET_DATA_FAILURE,
     GET_CATEGORY_LIST_SUCCESS,
-    GET_CATEGORY_TYPE_LIST_SUCCESS
+    GET_CATEGORY_TYPE_LIST_SUCCESS,
+    GET_CATEGORY_TYPE_DATA_SUCCESS,
+    GET_CATEGORY_MASTER_DATA_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -29,19 +31,19 @@ const headers = {
  */
 export function createCategoryTypeAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createcategoryTypeAPI, data,headers);
+        const request = axios.post(API.createcategoryTypeAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                    dispatch({
-                        type: CREATE_CATEGORY_TYPE_SUCCESS,
-                        payload: response.data.Data
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_CATEGORY_TYPE_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_CATEGORY_TYPE_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
             }
         }).catch((error) => {
             dispatch({
@@ -52,25 +54,94 @@ export function createCategoryTypeAPI(data, callback) {
     };
 }
 
+
+/**
+ * @method getCategoryTypeDataAPI
+ * @description get category type data
+ */
+export function getCategoryTypeDataAPI(CategoryTypeId, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getCategoryTypeDataAPI}/${CategoryTypeId}`, headers)
+            .then((response) => {
+                dispatch({
+                    type: GET_CATEGORY_TYPE_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+ * @method getCategoryTypeDataAPI
+ * @description get category type data
+ */
+export function setEmptyCategoryTypeData(callback) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_CATEGORY_TYPE_DATA_SUCCESS,
+            payload: {},
+        });
+        callback()
+    };
+}
+
+/**
+ * @method updateCategoryTypeAPI
+ * @description update category type details
+ */
+export function updateCategoryTypeAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateCategoryTypeAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteCategoryTypeAPI
+ * @description delete Category type API
+ */
+export function deleteCategoryTypeAPI(CategoryTypeId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteCategoryTypeAPI}/${CategoryTypeId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
 /**
  * @method createCategoryAPI
  * @description create category category
  */
 export function createCategoryAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createCategoryAPI, data,headers);
+        const request = axios.post(API.createCategoryAPI, data, headers);
         request.then((response) => {
             if (response && response.data && response.data.Result) {
-                    dispatch({
-                        type: CREATE_CATEGORY_SUCCESS,
-                    });
-                    callback(response);
+                dispatch({
+                    type: CREATE_CATEGORY_SUCCESS,
+                });
+                callback(response);
             } else {
                 dispatch({ type: CREATE_CATEGORY_FAILURE });
-                    if (response.data.Message) {
-                        toastr.error(response.data.Message);
-                    } 
-                    callback(response);
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+                callback(response);
             }
         }).catch((error) => {
             dispatch({
@@ -79,6 +150,62 @@ export function createCategoryAPI(data, callback) {
             apiErrors(error);
             callback(error);
         });
+    };
+}
+
+
+/**
+ * @method getCategoryData
+ * @description get category data
+ */
+export function getCategoryData(CategoryId, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getCategoryData}/${CategoryId}`, headers)
+            .then((response) => {
+                dispatch({
+                    type: GET_CATEGORY_MASTER_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+ * @method updateCategoryMasterAPI
+ * @description update category details
+ */
+export function updateCategoryMasterAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateCategoryMasterAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method deleteCategoryMasterAPI
+ * @description delete Category API
+ */
+export function deleteCategoryMasterAPI(CategoryId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteCategoryMasterAPI}/${CategoryId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 
@@ -95,7 +222,7 @@ export function fetchCategoryMasterDataAPI() {
                     type: GET_CATEGORY_DATA_SUCCESS,
                     payload: response[0].data.SelectList,
                 });
-                 
+
             }).catch((error) => {
                 dispatch({
                     type: FETCH_CATEGORY_DATA_FAILURE
@@ -113,7 +240,7 @@ export function getCategoryDataAPI() {
     return (dispatch) => {
         const API1 = axios.get(API.getCategoryAPI, headers);
         const API2 = axios.get(API.getCategoryTypeAPI, headers);
-        Promise.all([API1,API2])
+        Promise.all([API1, API2])
             .then((response) => {
                 dispatch({
                     type: GET_CATEGORY_LIST_SUCCESS,

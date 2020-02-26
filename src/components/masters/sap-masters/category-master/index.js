@@ -15,7 +15,9 @@ class CategoryMaster extends Component {
         this.state = {
             isOpen: false,
             isOpenModel: false,
-            activeTab: '1'
+            activeTab: '1',
+            ID: '',
+            isEditFlag: false,
         }
     }
 
@@ -40,11 +42,36 @@ class CategoryMaster extends Component {
     }
 
     /**
+     * @method editCategory
+     * @description  Category type detail edit section
+     */
+    editCategory = (CategoryId) => {
+        console.log('CategoryId', CategoryId)
+        this.setState({
+            isOpen: true,
+            ID: CategoryId,
+            isEditFlag: true,
+        })
+    }
+
+    /**
      * @method openCategoryModel
      * @description  used to open category type form 
      */
     openCategoryModel = () => {
         this.setState({ isOpenModel: true })
+    }
+
+    /**
+     * @method editCategoryType
+     * @description  Category type detail edit section
+     */
+    editCategoryType = (CategoryTypeId) => {
+        this.setState({
+            isOpenModel: true,
+            ID: CategoryTypeId,
+            isEditFlag: true,
+        })
     }
 
     /**
@@ -55,6 +82,7 @@ class CategoryMaster extends Component {
         this.setState({
             isOpen: false,
             isOpenModel: false,
+            isEditFlag: false,
         }, () => {
             this.props.getCategoryDataAPI(res => { });
         })
@@ -96,10 +124,10 @@ class CategoryMaster extends Component {
                     </Nav>
                     <TabContent activeTab={this.state.activeTab}>
                         <TabPane tabId="1">
-                            <CategoryTypeDetail />
+                            <CategoryTypeDetail editCategoryType={this.editCategoryType} />
                         </TabPane>
                         <TabPane tabId="2">
-                            <CategoryDetail />
+                            <CategoryDetail editCategory={this.editCategory} />
                         </TabPane>
                     </TabContent>
                 </div>
@@ -107,12 +135,16 @@ class CategoryMaster extends Component {
                     <AddCategory
                         isOpen={isOpen}
                         onCancel={this.onCancel}
+                        CategoryId={this.state.ID}
+                        isEditFlag={this.state.isEditFlag}
                     />
                 )}
                 {isOpenModel && (
                     <AddCategoryType
                         isOpen={isOpenModel}
                         onCancel={this.onCancel}
+                        CategoryTypeId={this.state.ID}
+                        isEditFlag={this.state.isEditFlag}
                     />
                 )}
             </Container >

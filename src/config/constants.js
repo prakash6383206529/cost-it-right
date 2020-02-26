@@ -96,9 +96,15 @@ export const API = {
   //Api for category master
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/masters-category/create`,
+  getCategoryTypeDataAPI: `${BASE_URL}/masters-category/get-category-type`,
+  updateCategoryTypeAPI: `${BASE_URL}/masters-category/update-category-type`,
+  deleteCategoryTypeAPI: `${BASE_URL}/masters-category/delete-category-type`,
   getCategoryTypeAPI: `${BASE_URL}/masters-category/get-all-category-type`,
-  getCategoryAPI: `${BASE_URL}/masters-category/get-all-category`,
   fetchCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
+  getCategoryAPI: `${BASE_URL}/masters-category/get-all-category`,
+  getCategoryData: `${BASE_URL}/masters-category/get-category`,
+  updateCategoryMasterAPI: `${BASE_URL}/masters-category/update-category`,
+  deleteCategoryMasterAPI: `${BASE_URL}/masters-category/delete-category`,
 
   //Api for row material master
   //createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
@@ -355,20 +361,26 @@ export const GET_PLANT_SUCCESS = 'GET_PLANT_SUCCESS';
 export const GET_SUPPLIER_SUCCESS = 'GET_SUPPLIER_SUCCESS';
 export const GET_SUPPLIER_CITY_SUCCESS = 'GET_SUPPLIER_CITY_SUCCESS';
 export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
+
+//CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
+export const GET_CATEGORY_TYPE_DATA_SUCCESS = 'GET_CATEGORY_TYPE_DATA_SUCCESS';
 export const GET_CATEGORY_TYPE_SUCCESS = ' GET_CATEGORY_TYPE_SUCCESS';
 export const GET_TECHNOLOGY_LIST_SUCCESS = 'GET_TECHNOLOGY_LIST_SUCCESS';
+export const GET_CATEGORY_MASTER_DATA_SUCCESS = 'GET_CATEGORY_MASTER_DATA_SUCCESS';
+
+//LABOUR
 export const GET_LABOUR_TYPE_SUCCESS = 'GET_LABOUR_TYPE_SUCCESS';
 export const GET_COSTING_HEAD_SUCCESS = 'GET_COSTING_HEAD_SUCCESS';
 export const GET_MODEL_TYPE_SUCCESS = 'GET_MODEL_TYPE_SUCCESS';
 
-//For unit of measurement master
+//UOM MASTER
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
 export const GET_UOM_DATA_FAILURE = 'GET_UOM_DATA_FAILURE';
 export const GET_UOM_SUCCESS = 'GET_UOM_SUCCESS';
 export const UNIT_OF_MEASUREMENT_API_FAILURE = 'UNIT_OF_MEASUREMENT_API_FAILURE';
 
-//for part master
+//PART MASTER
 export const CREATE_PART_REQUEST = 'CREATE_PART_REQUEST';
 export const CREATE_PART_FAILURE = 'CREATE_PART_FAILURE';
 export const CREATE_PART_SUCCESS = 'CREATE_PART_SUCCESS';

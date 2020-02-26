@@ -15,13 +15,21 @@ export const MESSAGES = {
   UPDATE_UOM_SUCESS: 'Unit Of measurement updated successfully',
   DELETE_UOM_SUCCESS: 'Unit Of measurement deleted successfully',
   CONFIRM_DELETE: 'Are you sure you want to delete This',
-  CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',
   MATERIAL_ADDED_SUCCESS: 'Material added successfully',
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
   GRADE_ADD_SUCCESS: 'Row material grade added successfully',
   SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
+
+  //CATEGORY MASTER
+  CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',
+  CATEGORY_TYPE_UPDATE_SUCCESS: 'Category type has been updated successfully.',
+  CATEGORY_TYPE_DELETE_ALERT: 'Are you sure you want to delete Category type?',
+  DELETE_CATEGORY_TYPE_SUCCESS: 'Category type has been deleted successfully.',
+  CATEGORY_UPDATE_SUCCESS: 'Category has been updated successfully.',
+  CATEGORY_DELETE_ALERT: 'Are you sure you want to delete Category?',
+  DELETE_CATEGORY_SUCCESS: 'Category has been deleted successfully.',
 
   //CATEGORY (RAW MATERIAL)
   CATEGORY_ADD_SUCCESS: 'Category created successfully',
@@ -47,7 +55,6 @@ export const MESSAGES = {
   MATERIAL_ADD_SUCCESS: 'Row material details added successfully.',
   MATERIAL_TYPE_DELETE_ALERT: 'Are you sure you want to delete Material Type?',
   DELETE_MATERIAL_TYPE_SUCCESS: 'Material Type has been deleted successfully.',
-
 
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
   LABOUR_ADDED_SUCCESS: 'Labour added successfully',

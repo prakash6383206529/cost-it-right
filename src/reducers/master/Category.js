@@ -6,12 +6,14 @@ import {
     CREATE_CATEGORY_SUCCESS,
     FETCH_CATEGORY_DATA_FAILURE,
     GET_CATEGORY_DATA_SUCCESS,
+    GET_CATEGORY_MASTER_DATA_SUCCESS,
     GET_CATEGORY_LIST_SUCCESS,
-    GET_CATEGORY_TYPE_LIST_SUCCESS
+    GET_CATEGORY_TYPE_LIST_SUCCESS,
+    GET_CATEGORY_TYPE_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
-   
+
 };
 
 export default function categoryReducer(state = initialState, action) {
@@ -40,14 +42,14 @@ export default function categoryReducer(state = initialState, action) {
                 loading: false,
                 //categoryTypeList : action.payload,
             };
-        case  CREATE_CATEGORY_SUCCESS: {
+        case CREATE_CATEGORY_SUCCESS: {
             return {
                 ...state,
                 //categoryList : action.payload,
                 loading: false,
                 error: false
             };
-        }   
+        }
         case CREATE_CATEGORY_FAILURE: {
             return {
                 ...state,
@@ -55,7 +57,7 @@ export default function categoryReducer(state = initialState, action) {
                 error: false
             };
         }
-        case  CREATE_CATEGORY_TYPE_FAILURE:
+        case CREATE_CATEGORY_TYPE_FAILURE:
             return {
                 ...state,
                 loading: false,
@@ -75,7 +77,21 @@ export default function categoryReducer(state = initialState, action) {
                 error: true,
                 categoryTypeDetail: action.payload
             };
-    
+        case GET_CATEGORY_TYPE_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                categoryTypeData: action.payload
+            };
+        case GET_CATEGORY_MASTER_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                categoryData: action.payload
+            };
+
         default:
             return state;
     }

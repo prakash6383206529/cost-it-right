@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Row, Col, Table
-} from 'reactstrap';
-import { getCategoryDataAPI } from '../../../../actions/master/Category';
+import { Row, Col, Table, Button } from 'reactstrap';
+import { getCategoryDataAPI, deleteCategoryTypeAPI } from '../../../../actions/master/Category';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
+import { toastr } from 'react-redux-toastr';
 
 class CategoryTypeDetail extends Component {
     constructor(props) {
@@ -27,6 +26,41 @@ class CategoryTypeDetail extends Component {
     }
 
     /**
+    * @method editItem
+    * @description confirm category type
+    */
+    editItem = (Id) => {
+        this.props.editCategoryType(Id)
+    }
+
+    /**
+    * @method deleteItem
+    * @description confirm delete Category Type
+    */
+    deleteItem = (Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDelete(Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(MESSAGES.CATEGORY_TYPE_DELETE_ALERT, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDelete
+    * @description confirm delete Category Type
+    */
+    confirmDelete = (Id) => {
+        this.props.deleteCategoryTypeAPI(Id, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.DELETE_CATEGORY_TYPE_SUCCESS);
+                this.props.getCategoryDataAPI(res => { });
+            }
+        });
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
@@ -36,12 +70,13 @@ class CategoryTypeDetail extends Component {
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
-                        <Table className="table table-striped" bordered>
+                        <Table className="table table-striped" size={'sm'} bordered>
                             {this.props.categoryTypeDetail && this.props.categoryTypeDetail.length > 0 &&
                                 <thead>
                                     <tr>
                                         <th>{`${CONSTANT.CATEGORY} ${CONSTANT.TYPE}`}</th>
                                         <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
+                                        <th>{''}</th>
                                     </tr>
                                 </thead>}
                             <tbody >
@@ -51,6 +86,10 @@ class CategoryTypeDetail extends Component {
                                             <tr key={index}>
                                                 <td>{item.CategoryType}</td>
                                                 <td>{item.Description}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editItem(item.CategoryTypeId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(item.CategoryTypeId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
                                             </tr>
                                         )
                                     })}
@@ -76,6 +115,9 @@ function mapStateToProps({ category }) {
 
 
 export default connect(
-    mapStateToProps, { getCategoryDataAPI }
+    mapStateToProps, {
+    getCategoryDataAPI,
+    deleteCategoryTypeAPI,
+}
 )(CategoryTypeDetail);
 
