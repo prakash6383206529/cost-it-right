@@ -39,7 +39,6 @@ import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
 import { MESSAGES } from "../../config/message";
 
-
 /**
  * @method loginUser
  * @description get data from dummy api
