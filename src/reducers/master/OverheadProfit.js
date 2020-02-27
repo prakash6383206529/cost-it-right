@@ -3,6 +3,7 @@ import {
     API_FAILURE,
     GET_OVERHEAD_PROFIT_SUCCESS,
     GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS,
+    GET_OVERHEAD_PROFIT_DATA_SUCCESS,
     CREATE_SUCCESS,
 } from '../../config/constants';
 
@@ -33,6 +34,12 @@ export default function OverheadProfitReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 overheadProfitComboData: action.payload
+            };
+        case GET_OVERHEAD_PROFIT_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                overheadProfitData: action.payload
             };
         case CREATE_SUCCESS: {
             return {

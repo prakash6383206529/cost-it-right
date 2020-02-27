@@ -60,7 +60,13 @@ export const MESSAGES = {
 
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
   LABOUR_ADDED_SUCCESS: 'Labour added successfully',
+
+  //OVERHEAD AND PROFIT
   OVERHEAD_PROFIT_ADDED_SUCCESS: 'Overhead profit added successfully',
+  OVERHEAD_PROFIT_DELETE_ALERT: 'Are you sure you want to delete Overhead & Profit?',
+  DELETE_OVERHEAD_PROFIT_SUCCESS: 'Overhead & Profit deleted successfully',
+  OVERHEAD_PROFIT_UPDATE_SUCCESS: 'Overhead & Profit has been updated successfully',
+
   DEPRECIATION_ADD_SUCCESS: 'Depreciation added successfully',
   DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
   DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',

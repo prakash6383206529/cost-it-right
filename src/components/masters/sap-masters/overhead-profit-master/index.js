@@ -4,7 +4,7 @@ import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
 import AddOverheadProfit from './AddOverheadProfit';
-import { getOverheadProfitAPI } from '../../../../actions/master/OverheadProfit';
+import { getOverheadProfitAPI, deleteOverheadProfitAPI } from '../../../../actions/master/OverheadProfit';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -18,6 +18,7 @@ class OverheadProfit extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            OverheadProfitId: '',
         }
     }
 
@@ -34,7 +35,10 @@ class OverheadProfit extends Component {
      * @description  used to open filter form 
      */
     openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
+        this.setState({
+            isOpen: true,
+            isEditFlag: false
+        })
     }
 
     /**
@@ -48,44 +52,42 @@ class OverheadProfit extends Component {
     }
 
     /**
-    * @method editPartDetails
-    * @description confirm delete part
+    * @method editItemDetails
+    * @description Edit operation detail
     */
-    editPartDetails = (index, Id) => {
+    editItemDetails = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
-            uomId: Id,
+            OverheadProfitId: Id,
         })
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete Overhead & Profit
     */
-    deletePart = (index, Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index, Id)
+                this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.OVERHEAD_PROFIT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
-    * @method confirmDeleteUOM
-    * @description confirm delete unit of measurement
+    * @method confirmDelete
+    * @description confirm delete Overhead & Profit
     */
-    confirmDeleteUOM = (index, Id) => {
-        // this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-        //         this.props.getUnitOfMeasurementAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+    confirmDelete = (ID) => {
+        this.props.deleteOverheadProfitAPI(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_OVERHEAD_PROFIT_SUCCESS);
+                this.props.getOverheadProfitAPI(res => { });
+            }
+        });
     }
 
     /**
@@ -93,7 +95,7 @@ class OverheadProfit extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, uomId } = this.state;
+        const { isOpen, isEditFlag } = this.state;
         return (
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader />} */}
@@ -110,7 +112,7 @@ class OverheadProfit extends Component {
                 <Row>
                     <Col>
                         <div>
-                            <Table className="table table-striped" bordered>
+                            <Table className="table table-striped" size={'sm'} bordered>
                                 {this.props.overheadProfitList && this.props.overheadProfitList.length > 0 &&
                                     <thead>
                                         <tr>
@@ -124,10 +126,8 @@ class OverheadProfit extends Component {
                                             <th>Overhead Machining(CC) (%)</th>
                                             <th>Profit Machining(CC) (%)</th>
                                             <th>Model type</th>
-                                            {/* <th>Initiator</th> */}
                                             <th>Created On</th>
-                                            {/* <th>Modifier</th> */}
-                                            {/* <th>Modified On</th> */}
+                                            <th>{''}</th>
                                         </tr>
                                     </thead>}
                                 <tbody >
@@ -145,14 +145,11 @@ class OverheadProfit extends Component {
                                                     <td>{item.OverheadMachiningCCPercentage}</td>
                                                     <td>{item.ProfitMachiningCCPercentage}</td>
                                                     <td>{item.ModelTypeName}</td>
-                                                    {/* <td>{item.CreatedBy}</td> */}
                                                     <td>{moment(item.CreatedDate).format('L')}</td>
-                                                    {/* <td>{item.ModifiedBy}</td> */}
-                                                    {/* <td>{item.ModifiedDate}</td> */}
-                                                    {/* <td>
-                                                    <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                                </td> */}
+                                                    <td>
+                                                        <Button className="black-btn" onClick={() => this.editItemDetails(item.OverheadProfitId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                        <Button className="black-btn" onClick={() => this.deleteItem(item.OverheadProfitId)}><i className="far fa-trash-alt"></i></Button>
+                                                    </td>
                                                 </tr>
                                             )
                                         })}
@@ -167,8 +164,7 @@ class OverheadProfit extends Component {
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        uomId={uomId}
+                        OverheadProfitId={this.state.OverheadProfitId}
                     />
                 )}
             </Container >
@@ -187,7 +183,9 @@ function mapStateToProps({ overheadProfit }) {
 }
 
 
-export default connect(
-    mapStateToProps, { getOverheadProfitAPI }
-)(OverheadProfit);
+export default connect(mapStateToProps,
+    {
+        getOverheadProfitAPI,
+        deleteOverheadProfitAPI,
+    })(OverheadProfit);
 

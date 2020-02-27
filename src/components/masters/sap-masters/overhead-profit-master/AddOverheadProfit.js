@@ -5,7 +5,10 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required, number, getSupplierCode } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect, focusOnError } from "../../../layout/FormInputs";
 import { getPlantBySupplier } from '../../../../actions/master/Comman';
-import { createOverheadProfitAPI, getOverheadProfitComboData } from '../../../../actions/master/OverheadProfit';
+import {
+    createOverheadProfitAPI, getOverheadProfitComboData, getOverheadProfitDataAPI,
+    updateOverheadProfitAPI, getOverheadProfitAPI
+} from '../../../../actions/master/OverheadProfit';
 //import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -40,7 +43,39 @@ class AddOverheadProfit extends Component {
     * @description called after render the component
     */
     componentDidMount() {
+        const { OverheadProfitId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getOverheadProfitDataAPI(OverheadProfitId, res => {
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    setTimeout(() => { this.getData(Data) }, 500)
+                }
+            })
+        } else {
+            this.props.getOverheadProfitDataAPI('', res => { })
+        }
+    }
 
+    getData = (Data) => {
+        this.props.getPlantBySupplier(Data.SupplierId, () => {
+            const { filterPlantList, Suppliers, ModelTypes, OverheadTypes, ProfitTypes, Technologies } = this.props;
+
+            const tempObj1 = Suppliers.find(item => item.Value == Data.SupplierId)
+            const tempObj2 = OverheadTypes.find(item => item.Value == Data.OverheadTypeId)
+            const tempObj3 = ProfitTypes.find(item => item.Value == Data.ProfitTypeId)
+            const tempObj4 = filterPlantList.find(item => item.Value == Data.PlantId)
+            const tempObj5 = ModelTypes.find(item => item.Value == Data.ModelTypeId)
+            const tempObj6 = Technologies.find(item => item.Value == Data.TechnologyId)
+
+            this.setState({
+                supplierValue: { label: tempObj1.Text, value: tempObj1.Value },
+                overHeadValue: { label: tempObj2.Text, value: tempObj2.Value },
+                profitTypesValue: { label: tempObj3.Text, value: tempObj3.Value },
+                PlantId: tempObj4.Value,
+                modelId: tempObj5.Value,
+                TechnologyId: tempObj6.Value,
+            });
+        })
     }
 
     /**
@@ -57,49 +92,54 @@ class AddOverheadProfit extends Component {
     */
     onSubmit = (values) => {
         const { overHeadValue, profitTypesValue, supplierValue, modelId, TechnologyId, PlantId } = this.state;
-        const { Technologies } = this.props;
+        const { Technologies, OverheadProfitId } = this.props;
 
-        let loginUserId = loggedInUserId();
-
-        //values.OtherOperationName = processOperationValue.label;
-        //"OperationCode": "string",
-        //"Description": "string",
         values.TechnologyId = TechnologyId != '' ? TechnologyId : Technologies[0].Value;;
         values.SupplierId = supplierValue.value;
         values.OverheadTypeId = overHeadValue.value;
         values.ProfitTypeId = profitTypesValue.value;
-        //values.OperationId = processOperationValue.value;
-        //values.UnitOfMeasurementId = uom;
         values.PlantId = PlantId;
         values.ModelTypeId = modelId;
-        values.CreatedBy = loginUserId;
+        values.CreatedBy = loggedInUserId();
 
         if (this.props.isEditFlag) {
-            // console.log('values', values);
-            // const { uomId } = this.props;
-            // this.setState({ isSubmitted: true });
-            // let formData = {
-            //     Name: values.Name,
-            //     Title: values.Title,
-            //     Description: values.Description,
-            //     Id: uomId
-            // }
-            // this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
-            //         this.toggleModel();
-            //         this.props.getUnitOfMeasurementAPI(res => { });
-            //     } else {
-            //         toastr.error(MESSAGES.SOME_ERROR);
-            //     }
-            // });
+
+            this.setState({ isSubmitted: true });
+            let formData = {
+                OverheadProfitId: OverheadProfitId,
+                TechnologyName: '',
+                SupplierName: supplierValue.label,
+                PlantName: '',
+                OverheadTypeName: overHeadValue.label,
+                ProfitTypeName: profitTypesValue.label,
+                ModelTypeName: '',
+                OverheadPercentage: values.OverheadPercentage,
+                ProfitPercentage: values.ProfitPercentage,
+                OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
+                ProfitMachiningCCPercentage: values.ProfitMachiningCCPercentage,
+                SupplierCode: '',
+                TechnologyId: TechnologyId,
+                SupplierId: supplierValue.value,
+                OverheadTypeId: overHeadValue.value,
+                ProfitTypeId: profitTypesValue.value,
+                ModelTypeId: modelId,
+                PlantId: PlantId,
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId()
+            }
+            this.props.updateOverheadProfitAPI(formData, (res) => {
+                if (res && res.data && res.data.Result) {
+                    toastr.success(MESSAGES.OVERHEAD_PROFIT_UPDATE_SUCCESS);
+                    this.toggleModel();
+                    this.props.getOverheadProfitAPI(res => { });
+                }
+            });
         } else {
             this.props.createOverheadProfitAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.OVERHEAD_PROFIT_ADDED_SUCCESS);
                     { this.toggleModel() }
-                } else {
-                    toastr.error(res.data.message);
                 }
             });
         }
@@ -159,7 +199,7 @@ class AddOverheadProfit extends Component {
     * @description Used show listing of unit of measurement
     */
     renderTypeOfListing = (label) => {
-        const { ModelTypes, ProfitTypes, OverheadTypes, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList } = this.props;
+        const { ModelTypes, ProfitTypes, OverheadTypes, Plants, Suppliers, Technologies, filterPlantList } = this.props;
         const temp = [];
         //const tempSupplier = [];
         if (label == 'technology') {
@@ -192,12 +232,7 @@ class AddOverheadProfit extends Component {
             );
             return temp;
         }
-        if (label == 'uom') {
-            UnitOfMeasurements && UnitOfMeasurements.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
+
         if (label == 'plant') {
             filterPlantList && filterPlantList.map(item =>
                 temp.push({ label: item.Text, value: item.Value })
@@ -433,18 +468,25 @@ class AddOverheadProfit extends Component {
 */
 function mapStateToProps({ overheadProfit, comman }) {
     const { filterPlantList } = comman;
-    if (overheadProfit && overheadProfit.overheadProfitComboData) {
-        const { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements } = overheadProfit.overheadProfitComboData;
-        // console.log('technologyList: ', technologyList, technologyList);
-        // let initialValues = {};
-        // if (technologyList !== undefined && uniOfMeasurementList !== undefined) {
-        //     initialValues = {
-        //         technologyList,
-        //         uniOfMeasurementList
-        //     }
-        // }
-        return { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements, filterPlantList };
+    if (overheadProfit && overheadProfit.overheadProfitComboData != undefined) {
+        const { overheadProfitData, overheadProfitComboData } = overheadProfit;
+        let { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies } = overheadProfit.overheadProfitComboData;
+
+        let initialValues = {};
+        if (overheadProfitData && overheadProfitData != undefined) {
+            initialValues = {
+                OverheadPercentage: overheadProfitData.OverheadPercentage,
+                ProfitPercentage: overheadProfitData.ProfitPercentage,
+                OverheadMachiningCCPercentage: overheadProfitData.OverheadMachiningCCPercentage,
+                ProfitMachiningCCPercentage: overheadProfitData.ProfitMachiningCCPercentage,
+                SupplierCode: overheadProfitData.SupplierCode,
+                PlantId: overheadProfitData.PlantId,
+                ModelTypeId: overheadProfitData.ModelTypeId,
+            }
+        }
+        return { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, filterPlantList, overheadProfitData, initialValues };
     }
+
 }
 
 /**
@@ -456,7 +498,10 @@ function mapStateToProps({ overheadProfit, comman }) {
 export default connect(mapStateToProps, {
     getPlantBySupplier,
     getOverheadProfitComboData,
-    createOverheadProfitAPI
+    createOverheadProfitAPI,
+    getOverheadProfitDataAPI,
+    updateOverheadProfitAPI,
+    getOverheadProfitAPI,
 })(reduxForm({
     form: 'addOverheadProfit',
     onSubmitFail: errors => {

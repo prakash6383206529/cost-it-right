@@ -211,10 +211,13 @@ export const API = {
   updateLabourAPI: `${BASE_URL}/masters-labour/update`,
   deleteLabourAPI: `${BASE_URL}/masters-labour/delete`,
 
-  //Api's for overhead profit
+  //OVERHEAD AND PROFIT API'S
   getOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/get-all`,
+  getOverheadProfitDataAPI: `${BASE_URL}/masters-overhead-and-profit/get`,
   getOverheadProfitComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
   createOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/create`,
+  deleteOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/delete`,
+  updateOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/update`,
 
   //Api's for depreciation master
   createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation`,
@@ -522,6 +525,7 @@ export const GET_LABOUR_DATA_SUCCESS = 'GET_LABOUR_DATA_SUCCESS';
 //for overhead profit
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS';
 export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS';
+export const GET_OVERHEAD_PROFIT_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_DATA_SUCCESS';
 
 //For depreciation
 export const CREATE_DEPRICIATION_SUCCESS = 'CREATE_LABOUR_SUCCESS';

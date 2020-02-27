@@ -5,6 +5,7 @@ import {
     API_FAILURE,
     GET_OVERHEAD_PROFIT_SUCCESS,
     GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS,
+    GET_OVERHEAD_PROFIT_DATA_SUCCESS,
     CREATE_SUCCESS,
 } from '../../config/constants';
 import {
@@ -103,5 +104,71 @@ export function createOverheadProfitAPI(data, callback) {
             });
             apiErrors(error);
         });
+    };
+}
+
+
+/**
+ * @method getOverheadProfitDataAPI
+ * @description Get Overhead and Profit data
+ */
+export function getOverheadProfitDataAPI(ID, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (ID != '') {
+            axios.get(`${API.getOverheadProfitDataAPI}/${ID}`, headers)
+                .then((response) => {
+                    if (response.data.Result == true) {
+                        dispatch({
+                            type: GET_OVERHEAD_PROFIT_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_OVERHEAD_PROFIT_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method deleteOverheadProfitAPI
+ * @description delete Overhead and Profit
+ */
+export function deleteOverheadProfitAPI(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteOverheadProfitAPI}/${Id}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateOverheadProfitAPI
+ * @description update Overhead and Profit details
+ */
+export function updateOverheadProfitAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateOverheadProfitAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
