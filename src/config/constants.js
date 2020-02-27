@@ -186,7 +186,7 @@ export const API = {
   getOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-operation`,
   createOperationAPI: `${BASE_URL}/masters-other-operation/create-operation`,
   getOperationDataAPI: `${BASE_URL}/masters-other-operation/get-operation`,
-  updateOperationAPI: `${BASE_URL}/masters-other-operation/update`,
+  updateOperationAPI: `${BASE_URL}/masters-other-operation/update-operation`,
   deleteOperationAPI: `${BASE_URL}/masters-other-operation/delete-operation`,
 
   //Api's for fright master

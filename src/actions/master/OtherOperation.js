@@ -297,19 +297,26 @@ export function createOperationsAPI(data, callback) {
 export function getOperationDataAPI(OperationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getOperationDataAPI}/${OperationId}`, headers)
-            .then((response) => {
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: GET_UNIT_OPERATION_DATA_SUCCESS,
-                        payload: response.data.Data,
-                    });
-                    callback(response);
-                }
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
+        if (OperationId != '') {
+            axios.get(`${API.getOperationDataAPI}/${OperationId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_UNIT_OPERATION_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_UNIT_OPERATION_DATA_SUCCESS,
+                payload: {},
             });
+        }
     };
 }
 

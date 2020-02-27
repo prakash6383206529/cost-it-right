@@ -37,6 +37,8 @@ class AddOperation extends Component {
             this.setState({ isEditFlag }, () => {
                 this.props.getOperationDataAPI(operationId, res => { })
             })
+        } else {
+            this.props.getOperationDataAPI('', res => { })
         }
     }
 
