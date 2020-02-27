@@ -27,6 +27,8 @@ class AddCategory extends Component {
         const { CategoryId, isEditFlag } = this.props;
         if (isEditFlag) {
             this.props.getCategoryDataAPI(CategoryId, res => { });
+        } else {
+            this.props.getCategoryDataAPI('', () => { });
         }
     }
 
@@ -148,8 +150,8 @@ class AddCategory extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ category }) {
-    const { categoryList, categoryData } = category;
+function mapStateToProps({ material }) {
+    const { categoryData } = material;
     let initialValues = {};
     if (categoryData && categoryData != undefined) {
         initialValues = {
@@ -157,7 +159,7 @@ function mapStateToProps({ category }) {
             Description: categoryData.Description,
         }
     }
-    return { categoryList, categoryData, initialValues }
+    return { categoryData, initialValues }
 }
 
 /**

@@ -86,24 +86,31 @@ export function createRMCategoryAPI(data, callback) {
     };
 }
 
-
 /**
  * @method getCategoryDataAPI
  * @description get category data
  */
 export function getCategoryDataAPI(CategoryId, callback) {
     return (dispatch) => {
-        axios.get(`${API.getCategoryDataAPI}/${CategoryId}`, headers)
-            .then((response) => {
-                dispatch({
-                    type: GET_CATEGORY_DATA_SUCCESS,
-                    payload: response.data.Data,
+        if (CategoryId != '') {
+            axios.get(`${API.getCategoryDataAPI}/${CategoryId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_CATEGORY_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
                 });
-                callback(response)
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                apiErrors(error);
+        } else {
+            dispatch({
+                type: GET_CATEGORY_DATA_SUCCESS,
+                payload: {},
             });
+            callback()
+        }
     };
 }
 
