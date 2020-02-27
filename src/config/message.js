@@ -44,6 +44,8 @@ export const MESSAGES = {
   //CED OTHER OPERATION
   CED_OTHER_OPERATION_ADD_SUCCESS: 'CED Other Operation added successfully',
   MHR_MASTER_ADD_SUCCESS: 'MHR Master added successfully',
+  CED_OTHER_OPERATION_DELETE_ALERT: 'Are you sure you want to delete CED Other Operation?',
+  DELETE_CED_OTHER_OPERATION_SUCCESS: 'CED Other Operation has been deleted successfully.',
 
   //OPERATION
   OPERATION_ADD_SUCCESS: 'Operation added successfully',

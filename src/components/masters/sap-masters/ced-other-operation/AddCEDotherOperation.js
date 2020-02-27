@@ -5,7 +5,7 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getCEDOtherOperationComboData, getPlantBySupplier } from '../../../../actions/master/Comman';
-import { createCEDOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
+import { createCEDOtherOperationsAPI, getCEDoperationDataAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 import { loggedInUserId } from "../../../../helper/auth";
@@ -38,14 +38,14 @@ class AddCEDotherOperation extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { uomId, isEditFlag } = this.props;
-        // if (isEditFlag) {
-        //     this.setState({ isEditFlag }, () => {
-        //         this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
-        //     })
-        // } else {
-        //     this.props.getOneUnitOfMeasurementAPI('', false, res => { })
-        // }
+        const { CEDotherOperationId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.setState({ isEditFlag }, () => {
+                this.props.getCEDoperationDataAPI(CEDotherOperationId, res => { })
+            })
+        } else {
+            this.props.getCEDoperationDataAPI('', res => { })
+        }
     }
 
     /**
@@ -258,7 +258,7 @@ class AddCEDotherOperation extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update UOM' : 'Add CED Other Operation'}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update CED Other Operation' : 'Add CED Other Operation'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -426,19 +426,20 @@ class AddCEDotherOperation extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps({ comman, otherOperation }) {
     const { filterPlantList } = comman;
+    const { cedOperationData } = otherOperation;
     if (comman && comman.cedOtherOperationComboData) {
         const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = comman.cedOtherOperationComboData;
-        // console.log('technologyList: ', technologyList, technologyList);
-        // let initialValues = {};
-        // if (technologyList !== undefined && uniOfMeasurementList !== undefined) {
-        //     initialValues = {
-        //         technologyList,
-        //         uniOfMeasurementList
-        //     }
-        // }
-        return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList };
+        let initialValues = {};
+        if (cedOperationData && cedOperationData != undefined) {
+            initialValues = {
+                OperationRate: cedOperationData.OperationRate,
+                TrasnportationRate: cedOperationData.TrasnportationRate,
+                OverheadProfit: cedOperationData.OverheadProfit,
+            }
+        }
+        return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList, initialValues };
     }
 }
 
@@ -453,6 +454,7 @@ export default connect(mapStateToProps, {
     getCEDOtherOperationComboData,
     createCEDOtherOperationsAPI,
     getPlantBySupplier,
+    getCEDoperationDataAPI,
 })(reduxForm({
     form: 'addOtherOperation',
     enableReinitialize: true,

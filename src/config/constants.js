@@ -171,9 +171,11 @@ export const API = {
 
   //API's for CED other operations
   getCEDotherOperationsComboDataAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
+  getCEDOtherOperationBySupplierID: `${BASE_URL}/costing-sheet-metal/get-ced-other-operation-by-supplier`,
   createCEDOtherOperationAPI: `${BASE_URL}/masters-other-operation/create-ced-other-operation`,
   getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-ced-other-operation`,
-  getCEDOtherOperationBySupplierID: `${BASE_URL}/costing-sheet-metal/get-ced-other-operation-by-supplier`,
+  getCEDoperationDataAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
+  deleteCEDotherOperationAPI: `${BASE_URL}/masters-other-operation/delete-ced-other-operation`,
 
   //API's for MHR combo data
   getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
@@ -480,6 +482,7 @@ export const GET_OTHER_OPERATION_FORMDATA_FAILURE = 'GET_OTHER_OPERATION_FORMDAT
 export const GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS';
 export const GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE = 'GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE';
 export const GET_CED_OTHER_OPERATION_SUCCESS = 'GET_CED_OTHER_OPERATION_SUCCESS';
+export const GET_CED_OTHER_OPERATION_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_DATA_SUCCESS';
 export const GET_CED_OTHER_OPERATION_FAILURE = 'GET_CED_OTHER_OPERATION_FAILURE';
 export const GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS = 'GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS';
 

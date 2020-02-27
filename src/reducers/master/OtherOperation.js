@@ -8,6 +8,7 @@ import {
     GET_OTHER_OPERATION_FAILURE,
     CREATE_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_SUCCESS,
+    GET_CED_OTHER_OPERATION_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_FAILURE,
     GET_OPERATION_SUCCESS,
     GET_UNIT_OPERATION_DATA_SUCCESS,
@@ -95,6 +96,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 cedOtherOperationListBySupplier: action.payload
+            };
+        case GET_CED_OTHER_OPERATION_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                cedOperationData: action.payload
             };
         default:
             return state;

@@ -4,7 +4,7 @@ import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
 import AddCEDotherOperation from './AddCEDotherOperation';
-import { getCEDOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
+import { getCEDOtherOperationsAPI, deleteCEDotherOperationAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -18,6 +18,7 @@ class CEDoperationMaster extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            CEDotherOperationId: '',
         }
     }
 
@@ -48,44 +49,42 @@ class CEDoperationMaster extends Component {
     }
 
     /**
-    * @method editPartDetails
-    * @description confirm delete part
+    * @method editItemDetails
+    * @description Edit operation detail
     */
-    editPartDetails = (index, Id) => {
+    editItemDetails = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
-            uomId: Id,
+            CEDotherOperationId: Id,
         })
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete CED Other Operation
     */
-    deletePart = (index, Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index, Id)
+                this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.CED_OTHER_OPERATION_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
-    * @method confirmDeleteUOM
-    * @description confirm delete unit of measurement
+    * @method confirmDelete
+    * @description confirm delete CED Other Operation
     */
-    confirmDeleteUOM = (index, Id) => {
-        // this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-        //         this.props.getUnitOfMeasurementAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+    confirmDelete = (ID) => {
+        this.props.deleteCEDotherOperationAPI(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_CED_OTHER_OPERATION_SUCCESS);
+                this.props.getCEDOtherOperationsAPI(res => { });
+            }
+        });
     }
 
     /**
@@ -93,7 +92,7 @@ class CEDoperationMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, uomId } = this.state;
+        const { isOpen, isEditFlag } = this.state;
         return (
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader />} */}
@@ -121,8 +120,7 @@ class CEDoperationMaster extends Component {
                                             <th>Trans. Rate</th>
                                             <th>Trans. UOM</th>
                                             <th>Overhead/Profit(%)</th>
-                                            {/* <th>Initiator</th> */}
-                                            {/* <th>Created On</th> */}
+                                            <th>{''}</th>
                                         </tr>
                                     </thead>}
                                 <tbody >
@@ -140,10 +138,10 @@ class CEDoperationMaster extends Component {
                                                     <td>{item.OverheadProfit}</td>
                                                     {/* <td>{item.CreatedBy}</td> */}
                                                     {/* <td>{''}</td> */}
-                                                    {/* <td>
-                                                    <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                                </td> */}
+                                                    <td>
+                                                        <Button className="black-btn" onClick={() => this.editItemDetails(item.CEDOperationId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                        <Button className="black-btn" onClick={() => this.deleteItem(item.CEDOperationId)}><i className="far fa-trash-alt"></i></Button>
+                                                    </td>
                                                 </tr>
                                             )
                                         })}
@@ -158,8 +156,7 @@ class CEDoperationMaster extends Component {
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        uomId={uomId}
+                        CEDotherOperationId={this.state.CEDotherOperationId}
                     />
                 )}
             </Container >
@@ -179,6 +176,9 @@ function mapStateToProps({ otherOperation }) {
 
 
 export default connect(
-    mapStateToProps, { getCEDOtherOperationsAPI }
+    mapStateToProps, {
+    getCEDOtherOperationsAPI,
+    deleteCEDotherOperationAPI,
+}
 )(CEDoperationMaster);
 

@@ -11,6 +11,7 @@ import {
     CREATE_OTHER_OPERATION_FAILURE,
     CREATE_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_SUCCESS,
+    GET_CED_OTHER_OPERATION_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_FAILURE,
     GET_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
@@ -136,9 +137,7 @@ export function updateOtherOperationAPI(requestData, callback) {
  */
 export function createCEDOtherOperationsAPI(data, callback) {
     return (dispatch) => {
-        dispatch({
-            type: CREATE_OTHER_OPERATION_REQUEST
-        });
+        dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
         const request = axios.post(API.createCEDOtherOperationAPI, data, headers);
         request.then((response) => {
             if (response.data.Result === true) {
@@ -146,16 +145,9 @@ export function createCEDOtherOperationsAPI(data, callback) {
                     type: CREATE_OTHER_OPERATION_SUCCESS,
                 });
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_OTHER_OPERATION_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: CREATE_OTHER_OPERATION_FAILURE
-            });
+            dispatch({ type: CREATE_OTHER_OPERATION_FAILURE });
             apiErrors(error);
         });
     };
@@ -185,6 +177,55 @@ export function getCEDOtherOperationsAPI(callback) {
                 });
                 callback(error);
                 apiErrors(error);
+            });
+    };
+}
+
+
+/**
+ * @method getCEDoperationDataAPI
+ * @description Get CED Other Operation data
+ */
+export function getCEDoperationDataAPI(ID, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (ID != '') {
+            axios.get(`${API.getCEDoperationDataAPI}/${ID}`, headers)
+                .then((response) => {
+                    if (response.data.Result == true) {
+                        dispatch({
+                            type: GET_CED_OTHER_OPERATION_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_CED_OTHER_OPERATION_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method deleteCEDotherOperationAPI
+ * @description delete operation
+ */
+export function deleteCEDotherOperationAPI(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteCEDotherOperationAPI}/${Id}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
             });
     };
 }
