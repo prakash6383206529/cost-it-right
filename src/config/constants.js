@@ -117,7 +117,13 @@ export const API = {
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
 
   getRMMaterialAPI: `${BASE_URL}/masters-raw-material/get-all-raw-materials`,
+
+  //RM GRADE
   getRMGradeAPI: `${BASE_URL}/masters-raw-material/get-all-raw-material-grades`,
+  deleteRMGradeAPI: `${BASE_URL}/masters-raw-material/delete-material-grade`,
+  getRMGradeDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-grades`,
+  updateRMGradeAPI: `${BASE_URL}/masters-raw-material/update-material-grade`,
+
   getRMSpecificationAPI: `${BASE_URL}/masters-raw-material/get-all-raw-material-specifications`,
   getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
 
@@ -411,7 +417,11 @@ export const GET_CATEGORY_TYPE_LIST_SUCCESS = 'GET_CATEGORY_TYPE_SUCCESS';
 export const CREATE_MATERIAL_SUCCESS = ' CREATE_MATERIAL_SUCCESS';
 export const CREATE_MATERIAL_FAILURE = 'CREATE_MATERIAL_FAILURE';
 export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
+
+//RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';
+export const GET_GRADE_DATA_SUCCESS = 'GET_GRADE_DATA_SUCCESS';
+
 export const GET_RM_LIST_SUCCESS = 'GET_RM_LIST_SUCCESS';
 export const GET_RM_GRADE_LIST_SUCCESS = 'GET_RM_GRADE_LIST_SUCCESS';
 export const GET_RM_CATEGORY_LIST_SUCCESS = 'GET_RM_CATEGORY_LIST_SUCCESS';

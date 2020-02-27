@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../../layout/FormInputs";
-import { createRMGradeAPI } from '../../../../../actions/master/Material';
+import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
 import { fetchRowMaterialAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
@@ -17,6 +17,7 @@ class AddGrade extends Component {
         super(props);
         this.state = {
             typeOfListing: [],
+            MaterialId: '',
             isEditFlag: false
         }
     }
@@ -31,6 +32,29 @@ class AddGrade extends Component {
     }
 
     /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
+    componentDidMount() {
+        const { GradeId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getRMGradeDataAPI(GradeId, res => {
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    const { MaterialSelectList } = this.props;
+                    const tempObj = MaterialSelectList.find(item => item.Value == Data.MaterialTypeId)
+                    this.setState({
+                        MaterialId: tempObj.Value
+                    });
+
+                }
+            });
+        } else {
+            this.props.getRMGradeDataAPI('', res => { });
+        }
+    }
+
+    /**
     * @method toggleModel
     * @description Used to cancel modal
     */
@@ -42,9 +66,9 @@ class AddGrade extends Component {
     * @method handleTypeOfListingChange
     * @description  used to handle type of listing selection
     */
-    handleTypeOfListingChange = (e) => {
+    handleMaterial = (e) => {
         this.setState({
-            typeOfListing: e
+            MaterialId: e.target.value
         })
     }
 
@@ -77,18 +101,38 @@ class AddGrade extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { GradeId, isEditFlag } = this.props;
+        const { MaterialId } = this.state;
 
-        let loginUserId = loggedInUserId();
-        //values.CreatedBy = loginUserId;
+        values.CreatedBy = loggedInUserId();
 
-        this.props.createRMGradeAPI(values, (res) => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
-                this.toggleModel();
-            } else {
-                toastr.error(res.data.message);
+        if (isEditFlag) {
+            let formData = {
+                GradeId: GradeId,
+                Grade: values.Grade,
+                Description: values.Description,
+                MaterialTypeId: MaterialId,
+                MaterialTypeName: '',
+                Density: '',
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
             }
-        });
+            this.props.updateRMGradeAPI(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
+                    this.toggleModel();
+                    this.props.getRowMaterialDataAPI(res => { });
+                }
+            })
+        } else {
+            this.props.createRMGradeAPI(values, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
+                    this.toggleModel();
+                }
+            });
+        }
     }
 
     /**
@@ -113,13 +157,13 @@ class AddGrade extends Component {
                                         <Col md="4">
                                             <Field
                                                 label={'Material'}
-                                                name={"RawMaterialId"}
+                                                name={"MaterialId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
                                                 options={this.renderTypeOfListing('material')}
-                                                onChange={this.handleTypeofListing}
+                                                onChange={this.handleMaterial}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -174,10 +218,20 @@ class AddGrade extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, costWorking }) {
+function mapStateToProps({ comman, costWorking, material }) {
     const { rowMaterialList } = comman;
     const { MaterialSelectList } = costWorking;
-    return { rowMaterialList, MaterialSelectList }
+    const { gradeData } = material;
+    let initialValues = {};
+
+    if (gradeData && gradeData != undefined) {
+        initialValues = {
+            MaterialId: gradeData.MaterialTypeId,
+            Grade: gradeData.Grade,
+            Description: gradeData.Description,
+        }
+    }
+    return { rowMaterialList, MaterialSelectList, gradeData, initialValues }
 }
 
 /**
@@ -191,6 +245,9 @@ export default connect(mapStateToProps,
         createRMGradeAPI,
         fetchRowMaterialAPI,
         getMaterialTypeSelectList,
+        getRMGradeDataAPI,
+        updateRMGradeAPI,
+        getRowMaterialDataAPI,
     })(reduxForm({
         form: 'AddGrade',
         enableReinitialize: true,

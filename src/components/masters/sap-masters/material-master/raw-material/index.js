@@ -100,6 +100,19 @@ class RowMaterialMaster extends Component {
     openGrademodel = () => {
         this.setState({ isGrade: true })
     }
+
+    /**
+     * @method editMaterialTypeHandler
+     * @description  used to open RM Grade form 
+     */
+    editRMGradeHandler = (Id) => {
+        this.setState({
+            isGrade: true,
+            Id: Id,
+            isEditFlag: true,
+        })
+    }
+
     openSpecificationmodel = () => {
         this.setState({ isSpecification: true })
     }
@@ -200,7 +213,7 @@ class RowMaterialMaster extends Component {
                                     <MaterialTypeDetail editMaterialTypeHandler={this.editMaterialTypeHandler} />
                                 </TabPane>}
                                 {this.state.activeTab == 3 && <TabPane tabId="3">
-                                    <RMGradeDetail />
+                                    <RMGradeDetail editRMGradeHandler={this.editRMGradeHandler} />
                                 </TabPane>}
                                 {this.state.activeTab == 4 && <TabPane tabId="4">
                                     <RMCategoryDetail editCategoryHandler={this.editCategoryHandler} />
@@ -244,6 +257,8 @@ class RowMaterialMaster extends Component {
                     <AddRMGrade
                         isOpen={isGrade}
                         onCancel={this.onCancel}
+                        GradeId={this.state.Id}
+                        isEditFlag={this.state.isEditFlag}
                     />
                 }
                 {isSpecification &&

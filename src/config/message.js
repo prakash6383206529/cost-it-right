@@ -18,7 +18,7 @@ export const MESSAGES = {
   MATERIAL_ADDED_SUCCESS: 'Material added successfully',
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
-  GRADE_ADD_SUCCESS: 'Row material grade added successfully',
+
   SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
 
@@ -58,6 +58,11 @@ export const MESSAGES = {
   MATERIAL_ADD_SUCCESS: 'Row material details added successfully.',
   MATERIAL_TYPE_DELETE_ALERT: 'Are you sure you want to delete Material Type?',
   DELETE_MATERIAL_TYPE_SUCCESS: 'Material Type has been deleted successfully.',
+
+  GRADE_ADD_SUCCESS: 'Raw Material Grade added successfully',
+  RM_GRADE_DELETE_ALERT: 'Are you sure you want to delete Grade?',
+  RM_GRADE_UPDATE_SUCCESS: 'Raw Material Grade has been updated successfully',
+  DELETE_RM_GRADE_SUCCESS: 'Grade has been deleted successfully.',
 
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
   LABOUR_ADDED_SUCCESS: 'Labour added successfully',

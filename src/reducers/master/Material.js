@@ -5,6 +5,7 @@ import {
     CREATE_MATERIAL_FAILURE,
     GET_RM_LIST_SUCCESS,
     GET_RM_GRADE_LIST_SUCCESS,
+    GET_GRADE_DATA_SUCCESS,
     GET_RM_CATEGORY_LIST_SUCCESS,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_MATERIAL_LIST_SUCCESS,
@@ -104,6 +105,13 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 categoryData: action.payload
+            };
+        case GET_GRADE_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                gradeData: action.payload
             };
         default:
             return state;

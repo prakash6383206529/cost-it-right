@@ -7,6 +7,7 @@ import {
     CREATE_MATERIAL_FAILURE,
     GET_RM_LIST_SUCCESS,
     GET_RM_GRADE_LIST_SUCCESS,
+    GET_GRADE_DATA_SUCCESS,
     GET_RM_CATEGORY_LIST_SUCCESS,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
     GET_MATERIAL_LIST_SUCCESS,
@@ -140,7 +141,6 @@ export function deleteCategoryAPI(CategoryId, callback) {
     };
 }
 
-
 /**
  * @method createRMGradeAPI
  * @description create row material grade master
@@ -169,6 +169,69 @@ export function createRMGradeAPI(data, callback) {
             });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getRMGradeDataAPI
+ * @description Get Grade data
+ */
+export function getRMGradeDataAPI(GradeId, callback) {
+    return (dispatch) => {
+        if (GradeId != '') {
+            axios.get(`${API.getRMGradeDataAPI}/${GradeId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_GRADE_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_GRADE_DATA_SUCCESS,
+                payload: {},
+            });
+            callback()
+        }
+    };
+}
+
+
+/**
+ * @method updateRMGradeAPI
+ * @description update RM Grade details
+ */
+export function updateRMGradeAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateRMGradeAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteRMGradeAPI
+ * @description delete RM Grade API
+ */
+export function deleteRMGradeAPI(ID, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteRMGradeAPI}/${ID}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 
