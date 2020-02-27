@@ -196,24 +196,24 @@ class RowMaterialMaster extends Component {
                                 </NavItem>
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
-                                <TabPane tabId="1">
+                                {this.state.activeTab == 1 && <TabPane tabId="1">
                                     <MaterialTypeDetail editMaterialTypeHandler={this.editMaterialTypeHandler} />
-                                </TabPane>
-                                <TabPane tabId="3">
+                                </TabPane>}
+                                {this.state.activeTab == 3 && <TabPane tabId="3">
                                     <RMGradeDetail />
-                                </TabPane>
-                                <TabPane tabId="4">
+                                </TabPane>}
+                                {this.state.activeTab == 4 && <TabPane tabId="4">
                                     <RMCategoryDetail editCategoryHandler={this.editCategoryHandler} />
-                                </TabPane>
-                                <TabPane tabId="5">
+                                </TabPane>}
+                                {this.state.activeTab == 5 && <TabPane tabId="5">
                                     <RMSpecificationDetail />
-                                </TabPane>
-                                <TabPane tabId="2">
+                                </TabPane>}
+                                {this.state.activeTab == 2 && <TabPane tabId="2">
                                     <RMDetail />
-                                </TabPane>
-                                <TabPane tabId="6">
+                                </TabPane>}
+                                {this.state.activeTab == 6 && <TabPane tabId="6">
                                     <MaterialDetail />
-                                </TabPane>
+                                </TabPane>}
                             </TabContent>
                         </div>
                     </Col>

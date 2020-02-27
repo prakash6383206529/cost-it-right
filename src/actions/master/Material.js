@@ -278,17 +278,25 @@ export function createMaterialTypeAPI(data, callback) {
  */
 export function getMaterialTypeDataAPI(MaterialTypeId, callback) {
     return (dispatch) => {
-        axios.get(`${API.getMaterialTypeDataAPI}/${MaterialTypeId}`, headers)
-            .then((response) => {
-                dispatch({
-                    type: GET_MATERIAL_TYPE_DATA_SUCCESS,
-                    payload: response.data.Data,
+        if (MaterialTypeId != '') {
+            axios.get(`${API.getMaterialTypeDataAPI}/${MaterialTypeId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_MATERIAL_TYPE_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
                 });
-                callback(response)
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                apiErrors(error);
+        } else {
+            dispatch({
+                type: GET_MATERIAL_TYPE_DATA_SUCCESS,
+                payload: {},
             });
+            callback()
+        }
     };
 }
 

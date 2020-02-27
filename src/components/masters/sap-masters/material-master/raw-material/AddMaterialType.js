@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText } from "../../../../layout/FormInputs";
-import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI } from '../../../../../actions/master/Material';
+import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -27,6 +27,8 @@ class AddMaterialType extends Component {
         const { MaterialTypeId, isEditFlag } = this.props;
         if (isEditFlag) {
             this.props.getMaterialTypeDataAPI(MaterialTypeId, res => { });
+        } else {
+            this.props.getMaterialTypeDataAPI('', res => { });
         }
     }
 
@@ -87,11 +89,11 @@ class AddMaterialType extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`Add Material Type`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Material Type' : 'Add Material Type'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -145,7 +147,7 @@ class AddMaterialType extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {`${CONSTANT.SAVE}`}
+                                                {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </Row>
@@ -170,7 +172,7 @@ function mapStateToProps({ material }) {
     if (materialTypeData && materialTypeData != undefined) {
         initialValues = {
             MaterialType: materialTypeData.MaterialType,
-            CalculatedDensityValue: materialTypeData.CalculatedDensityValue,
+            CalculatedDensityValue: materialTypeData.Density,
             Description: materialTypeData.Description,
         }
     }
@@ -187,6 +189,7 @@ export default connect(mapStateToProps, {
     createMaterialTypeAPI,
     getMaterialDetailAPI,
     getMaterialTypeDataAPI,
+    updateMaterialtypeAPI
 })(reduxForm({
     form: 'AddMaterialType',
     enableReinitialize: true,
