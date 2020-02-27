@@ -5,7 +5,10 @@ import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getCEDOtherOperationComboData, getPlantBySupplier } from '../../../../actions/master/Comman';
-import { createCEDOtherOperationsAPI, getCEDoperationDataAPI } from '../../../../actions/master/OtherOperation';
+import {
+    createCEDOtherOperationsAPI, getCEDoperationDataAPI, updateCEDoperationAPI,
+    getCEDOtherOperationsAPI
+} from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 import { loggedInUserId } from "../../../../helper/auth";
@@ -40,12 +43,33 @@ class AddCEDotherOperation extends Component {
     componentDidMount() {
         const { CEDotherOperationId, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.setState({ isEditFlag }, () => {
-                this.props.getCEDoperationDataAPI(CEDotherOperationId, res => { })
+            this.props.getCEDoperationDataAPI(CEDotherOperationId, res => {
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    this.props.getPlantBySupplier(Data.SupplierId, () => {
+                        setTimeout(() => { this.getData(Data) }, 500)
+                    })
+                }
             })
         } else {
             this.props.getCEDoperationDataAPI('', res => { })
         }
+    }
+
+    getData = (Data) => {
+        const { Operations, Suppliers, filterPlantList } = this.props;
+
+        const tempObj1 = Suppliers.find(item => item.Value == Data.SupplierId)
+        const tempObj4 = filterPlantList.find(item => item.Value == Data.PlantId)
+        const tempObj5 = Operations.find(item => item.Value == Data.OperationId)
+
+        this.setState({
+            supplierValue: { label: tempObj1.Text, value: tempObj1.Value },
+            selectedPlants: { label: tempObj4.Text, value: tempObj4.Value },
+            processOperationValue: { label: tempObj5.Text, value: tempObj5.Value },
+            uom: Data.UnitOfMeasurementId,
+            transportUOM: Data.TrasnportationUMOId,
+        });
     }
 
     /**
@@ -62,42 +86,49 @@ class AddCEDotherOperation extends Component {
     */
     onSubmit = (values) => {
         const { processOperationValue, SupplierId, supplierValue, uom, transportUOM, PlantId, selectedPlants } = this.state;
-        let loginUserId = loggedInUserId();
-
-        let plantArray = [];
-        selectedPlants.map((item, i) => {
-            return plantArray.push({ PlantId: item.Value, PlantName: item.Text });
-        });
 
         values.OtherOperationName = processOperationValue.label;
         values.SupplierId = supplierValue.value;
         values.OperationId = processOperationValue.value;
         values.UnitOfMeasurementId = uom;
         values.TrasportUnitOfMeasurementId = transportUOM;
-        values.PlantId = PlantId;
-        values.SelectedPlants = plantArray;
+        values.PlantId = selectedPlants.value;
+        values.CreatedBy = loggedInUserId();
 
         /** Update detail of the existing CED Other Operation  */
         if (this.props.isEditFlag) {
-            // console.log('values', values);
-            // const { uomId } = this.props;
-            // this.setState({ isSubmitted: true });
-            // let formData = {
-            //     Name: values.Name,
-            //     Title: values.Title,
-            //     Description: values.Description,
-            //     Id: uomId
-            // }
-            // this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
-            //         this.toggleModel();
-            //         this.props.getUnitOfMeasurementAPI(res => { });
-            //     } else {
-            //         toastr.error(MESSAGES.SOME_ERROR);
-            //     }
-            // });
+            const { CEDotherOperationId } = this.props;
+            let formData = {
+                CEDOperationId: CEDotherOperationId,
+                OperationRate: values.OperationRate,
+                TrasnportationRate: values.TrasnportationRate,
+                OverheadProfit: values.OverheadProfit,
+                SupplierId: supplierValue.value,
+                OperationId: processOperationValue.value,
+                UnitOfMeasurementId: uom,
+                TrasnportationUMOId: transportUOM,
+                PlantId: selectedPlants.value,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
+                IsActive: true,
+                SupplierName: supplierValue.value,
+                SupplierCode: '',
+                OperationName: processOperationValue.label,
+                UnitOfMeasurementName: '',
+                TrasnportationUMOName: '',
+                PlantName: '',
+                IsOtherSource: true
+            }
+            this.props.updateCEDoperationAPI(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.CED_OTHER_OPERATION_UPDATE_SUCCESS);
+                    this.toggleModel();
+                    this.props.getCEDOtherOperationsAPI(res => { });
+                }
+            });
+
         } else {
+
             /** Add new detail of the CED Other Operation  */
             this.props.createCEDOtherOperationsAPI(values, (res) => {
                 if (res.data.Result === true) {
@@ -107,6 +138,7 @@ class AddCEDotherOperation extends Component {
                     toastr.error(res.data.message);
                 }
             });
+
         }
     }
 
@@ -180,9 +212,9 @@ class AddCEDotherOperation extends Component {
        * @method handlePlantSelection
        * @description called
        */
-    handlePlantSelection = e => {
+    handlePlantSelection = (newValue, actionMeta) => {
         this.setState({
-            selectedPlants: e
+            selectedPlants: newValue
         });
     };
 
@@ -240,12 +272,12 @@ class AddCEDotherOperation extends Component {
             );
             return temp;
         }
-        // if (label == 'plant') {
-        //     plantList && plantList.map(item =>
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     );
-        //     return temp;
-        // }
+        if (label == 'plant') {
+            filterPlantList && filterPlantList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
     }
 
     /**
@@ -285,7 +317,7 @@ class AddCEDotherOperation extends Component {
                                             />
                                         </Col>
                                         <Col md="6">
-                                            <Field
+                                            {/* <Field
                                                 label="Plants"
                                                 name="PlantId"
                                                 placeholder="--Select Plant--"
@@ -297,6 +329,20 @@ class AddCEDotherOperation extends Component {
                                                 component={renderMultiSelectField}
                                                 mendatory={true}
                                                 className="withoutBorder"
+                                            /> */}
+                                            <Field
+                                                id="Plants"
+                                                name="PlantId"
+                                                type="text"
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                label="Plants"
+                                                component={searchableSelect}
+                                                //validate={[required, maxLength50]}
+                                                options={this.renderTypeOfListing('plant')}
+                                                //options={supplierOptions}
+                                                required={true}
+                                                handleChangeDescription={this.handlePlantSelection}
+                                                valueDescription={this.state.selectedPlants}
                                             />
                                         </Col>
 
@@ -437,6 +483,8 @@ function mapStateToProps({ comman, otherOperation }) {
                 OperationRate: cedOperationData.OperationRate,
                 TrasnportationRate: cedOperationData.TrasnportationRate,
                 OverheadProfit: cedOperationData.OverheadProfit,
+                TrasportUnitOfMeasurementId: cedOperationData.TrasnportationUMOId,
+                UnitOfMeasurementId: cedOperationData.UnitOfMeasurementId,
             }
         }
         return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList, initialValues };
@@ -455,6 +503,8 @@ export default connect(mapStateToProps, {
     createCEDOtherOperationsAPI,
     getPlantBySupplier,
     getCEDoperationDataAPI,
+    updateCEDoperationAPI,
+    getCEDOtherOperationsAPI,
 })(reduxForm({
     form: 'addOtherOperation',
     enableReinitialize: true,

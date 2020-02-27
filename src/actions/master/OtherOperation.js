@@ -162,15 +162,13 @@ export function getCEDOtherOperationsAPI(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getCEDOtherOperationsAPI, { headers })
             .then((response) => {
-                //if (response.data.Result === true) {
-                dispatch({
-                    type: GET_CED_OTHER_OPERATION_SUCCESS,
-                    payload: response.data.DataList,
-                });
-                callback(response);
-                // } else {
-                //     toastr.error(MESSAGES.SOME_ERROR);
-                // }
+                if (response.data.Result == true) {
+                    dispatch({
+                        type: GET_CED_OTHER_OPERATION_SUCCESS,
+                        payload: response.data.DataList,
+                    });
+                    callback(response);
+                }
             }).catch((error) => {
                 dispatch({
                     type: GET_CED_OTHER_OPERATION_FAILURE
@@ -210,6 +208,24 @@ export function getCEDoperationDataAPI(ID, callback) {
             });
             callback();
         }
+    };
+}
+
+
+/**
+ * @method updateCEDoperationAPI
+ * @description update CED other operation details
+ */
+export function updateCEDoperationAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateCEDoperationAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 

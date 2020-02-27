@@ -176,6 +176,7 @@ export const API = {
   getCEDOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-ced-other-operation`,
   getCEDoperationDataAPI: `${BASE_URL}/masters-other-operation/get-ced-other-operation`,
   deleteCEDotherOperationAPI: `${BASE_URL}/masters-other-operation/delete-ced-other-operation`,
+  updateCEDoperationAPI: `${BASE_URL}/masters-other-operation/update-ced-other-operation`,
 
   //API's for MHR combo data
   getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
