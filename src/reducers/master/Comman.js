@@ -29,6 +29,10 @@ import {
     GET_COSTING_HEAD_SUCCESS,
     GET_MODEL_TYPE_SUCCESS,
     GET_PLANTS_BY_SUPPLIER,
+    GET_PLANTS_BY_CITY,
+    GET_CITY_BY_SUPPLIER,
+    GET_SOURCE_PLANTS_BY_SOURCE_CITY,
+    GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
 } from '../../config/constants';
 
 const initialState = {
@@ -245,6 +249,34 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 filterPlantList: action.payload
+            };
+        case GET_PLANTS_BY_CITY:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterPlantListByCity: action.payload
+            };
+        case GET_SOURCE_PLANTS_BY_SOURCE_CITY:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterSourcePlantBySourceCity: action.payload
+            };
+        case GET_DESTINATION_PLANTS_BY_DESTINATION_CITY:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterDestinationPlantByDestinationCity: action.payload
+            };
+        case GET_CITY_BY_SUPPLIER:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterCityListBySupplier: action.payload
             };
         default:
             return state;

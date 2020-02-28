@@ -150,6 +150,18 @@ class RowMaterialMaster extends Component {
     }
 
     /**
+     * @method editRawMaterialDetailsHandler
+     * @description  used to open RM Detail form 
+     */
+    editRawMaterialDetailsHandler = (Id) => {
+        this.setState({
+            isRMOpen: true,
+            Id: Id,
+            isEditFlag: true,
+        })
+    }
+
+    /**
      * @method onCancel
      * @description  used to cancel filter form
      */
@@ -251,7 +263,7 @@ class RowMaterialMaster extends Component {
                                     <RMDetail editRawMaterialHandler={this.editRawMaterialHandler} />
                                 </TabPane>}
                                 {this.state.activeTab == 6 && <TabPane tabId="6">
-                                    <MaterialDetail />
+                                    <MaterialDetail editRawMaterialDetailsHandler={this.editRawMaterialDetailsHandler} />
                                 </TabPane>}
                             </TabContent>
                         </div>
@@ -301,6 +313,8 @@ class RowMaterialMaster extends Component {
                     <AddRMDetail
                         isOpen={isRMOpen}
                         onCancel={this.onCancel}
+                        RawMaterialDetailsId={this.state.Id}
+                        isEditFlag={this.state.isEditFlag}
                     />
                 )}
             </Container >

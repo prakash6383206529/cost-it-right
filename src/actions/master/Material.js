@@ -17,6 +17,8 @@ import {
     GET_MATERIAL_TYPE_DATA_SUCCESS,
     GET_CATEGORY_DATA_SUCCESS,
     GET_RAW_MATERIAL_DATA_SUCCESS,
+    GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
+    GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -561,6 +563,97 @@ export function createRMDetailAPI(data, callback) {
     };
 }
 
+
+/**
+ * @method getRawMaterialDetailsDataAPI
+ * @description get Raw Material Details
+ */
+export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
+    return (dispatch) => {
+        if (RawMaterialDetailsId != '') {
+            axios.get(`${API.getRawMaterialDetailsDataAPI}/${RawMaterialDetailsId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
+                payload: {},
+            });
+            callback()
+        }
+    };
+}
+
+
+/**
+ * @method getRawMaterialDetailsAPI
+ * @description get Raw Material Details
+ */
+export function getRawMaterialDetailsAPI(RawMaterialId, callback) {
+    return (dispatch) => {
+        if (RawMaterialId != '') {
+            axios.get(`${API.getRawMaterialDetailsAPI}/${RawMaterialId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
+                payload: {},
+            });
+            callback()
+        }
+    };
+}
+
+/**
+ * @method updateRawMaterialDetailsAPI
+ * @description update Raw Material details
+ */
+export function updateRawMaterialDetailsAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateRawMaterialDetailsAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteRawMaterialDetailAPI
+ * @description delete Raw Material Detail API
+ */
+export function deleteRawMaterialDetailAPI(RawMaterialDetailsId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteRawMaterialDetailAPI}/${RawMaterialDetailsId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
 
 /**
  * @method getMaterialDetailAPI

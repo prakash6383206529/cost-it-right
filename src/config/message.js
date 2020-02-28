@@ -57,6 +57,9 @@ export const MESSAGES = {
   MATERIAL_ADD_SUCCESS: 'Row material details added successfully.',
   MATERIAL_TYPE_DELETE_ALERT: 'Are you sure you want to delete Material Type?',
   DELETE_MATERIAL_TYPE_SUCCESS: 'Material Type has been deleted successfully.',
+  RAW_MATERIAL_DETAIL_DELETE_ALERT: 'Are you sure you want to delete Raw Material detail?',
+  DELETE_RAW_MATERIAL_SUCCESS: 'Raw Material detail has been deleted successfully.',
+  RAW_MATERIAL_DETAILS_UPDATE_SUCCESS: 'Raw Material Details has been updated successfully',
 
   //RM GRADE
   GRADE_ADD_SUCCESS: 'Raw Material Grade added successfully',

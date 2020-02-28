@@ -115,6 +115,11 @@ export const API = {
   updateRawMaterialAPI: `${BASE_URL}/masters-raw-material/update-raw-material`,
   deleteRawMaterialAPI: `${BASE_URL}/masters-raw-material/delete-raw-material`,
 
+  //RAW MATERIAL DETAILS
+  getRawMaterialDetailsAPI: `${BASE_URL}/masters-raw-material/get-raw-material-details`,
+  deleteRawMaterialDetailAPI: `${BASE_URL}/masters-raw-material/delete-raw-material-details`,
+  getRawMaterialDetailsDataAPI: `${BASE_URL}/masters-raw-material/get-all-costing-raw-material-details`,
+  updateRawMaterialDetailsAPI: `${BASE_URL}/masters-raw-material/update-raw-material-details`,
 
   getCategoryDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
   updateCategoryAPI: `${BASE_URL}/masters-raw-material/update-material-category`,
@@ -331,6 +336,8 @@ export const API = {
 
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-supplier`,
+  getPlantByCity: `${BASE_URL}/configuration/get-plant-by-city`,
+  getCityBySupplier: `${BASE_URL}/configuration/get-city-by-supplier`,
 
   //APPROVAL
   getSendForApproval: `${BASE_URL}/app-approval-system/send-for-approval-click`,
@@ -429,6 +436,8 @@ export const CREATE_MATERIAL_SUCCESS = ' CREATE_MATERIAL_SUCCESS';
 export const CREATE_MATERIAL_FAILURE = 'CREATE_MATERIAL_FAILURE';
 export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
 export const GET_RAW_MATERIAL_DATA_SUCCESS = 'GET_RAW_MATERIAL_DATA_SUCCESS';
+export const GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS';
+export const GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS';
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';
@@ -524,6 +533,10 @@ export const GET_MHR_DATA_SUCCESS = 'GET_MHR_DATA_SUCCESS';
 export const DATA_FAILURE = 'DATA_FAILURE';
 export const CREATE_SUCCESS = 'CREATE_SUCCESS';
 export const CREATE_FAILURE = 'CREATE_FAILURE';
+export const GET_PLANTS_BY_CITY = 'GET_PLANTS_BY_CITY';
+export const GET_CITY_BY_SUPPLIER = 'GET_CITY_BY_SUPPLIER';
+export const GET_SOURCE_PLANTS_BY_SOURCE_CITY = 'GET_SOURCE_PLANTS_BY_SOURCE_CITY';
+export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANTS_BY_DESTINATION_CITY';
 
 //for Operation
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';

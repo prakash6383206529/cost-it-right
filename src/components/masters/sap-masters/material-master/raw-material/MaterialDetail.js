@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Col, Table } from 'reactstrap';
-import { getMaterialDetailAPI } from '../../../../../actions/master/Material';
+import { Row, Col, Table, Button } from 'reactstrap';
+import { getMaterialDetailAPI, deleteRawMaterialDetailAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
+import { MESSAGES } from '../../../../../config/message';
+import { toastr } from 'react-redux-toastr';
 
 class MaterialDetail extends Component {
     constructor(props) {
@@ -22,6 +24,41 @@ class MaterialDetail extends Component {
     */
     componentDidMount() {
         this.props.getMaterialDetailAPI(res => { });
+    }
+
+    /**
+    * @method editItemDetails
+    * @description edit material type
+    */
+    editItemDetails = (Id) => {
+        this.props.editRawMaterialDetailsHandler(Id);
+    }
+
+    /**
+    * @method deleteItem
+    * @description confirm delete Raw Material details
+    */
+    deleteItem = (Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDelete(Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDelete
+    * @description confirm delete Raw Material details
+    */
+    confirmDelete = (ID) => {
+        this.props.deleteRawMaterialDetailAPI(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+                this.props.getMaterialDetailAPI(res => { });
+            }
+        });
     }
 
     /**
@@ -56,6 +93,7 @@ class MaterialDetail extends Component {
                                         <th>{` ${CONSTANT.NLC}`}</th>
                                         <th>{`${CONSTANT.REMARK} `}</th>
                                         <th>{`${CONSTANT.DATE}`}</th>
+                                        <th>{``}</th>
                                     </tr>
                                 </thead>}
                             <tbody >
@@ -65,8 +103,8 @@ class MaterialDetail extends Component {
                                             <tr key={index}>
                                                 <td>{item.TechnologyName}</td>
                                                 <td >{item.RawMaterialName}</td>
-                                                <td>{item.GradeName}</td>
-                                                <td>{item.SpecificationName}</td>
+                                                <td>{item.RawMaterialGradeName}</td>
+                                                <td>{item.RawMaterialSpecificationName}</td>
                                                 {/* <td >{item.CategoryName}</td> */}
                                                 <td>{item.SourceSupplierName}</td>
                                                 <td>{item.SourceSupplierLocation}</td>
@@ -80,6 +118,10 @@ class MaterialDetail extends Component {
                                                 <td >{item.NetLandedCost}</td>
                                                 <td>{item.Remark}</td>
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                                <td>
+                                                    <Button className="black-btn" onClick={() => this.editItemDetails(item.RawMaterialDetailsId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="black-btn" onClick={() => this.deleteItem(item.RawMaterialDetailsId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
                                             </tr>
                                         )
                                     })}
@@ -104,6 +146,9 @@ function mapStateToProps({ material }) {
 }
 
 export default connect(
-    mapStateToProps, { getMaterialDetailAPI }
+    mapStateToProps, {
+    getMaterialDetailAPI,
+    deleteRawMaterialDetailAPI,
+}
 )(MaterialDetail);
 

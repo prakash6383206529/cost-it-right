@@ -28,6 +28,10 @@ import {
     GET_COSTING_HEAD_SUCCESS,
     GET_MODEL_TYPE_SUCCESS,
     GET_PLANTS_BY_SUPPLIER,
+    GET_PLANTS_BY_CITY,
+    GET_CITY_BY_SUPPLIER,
+    GET_SOURCE_PLANTS_BY_SOURCE_CITY,
+    GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
 } from '../../config/constants';
 import {
     apiErrors
@@ -906,5 +910,133 @@ export function getPlantBySupplier(supplierId, callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getCityBySupplier
+ * @description Used to fetch city by Supplier
+ */
+export function getCityBySupplier(SupplierId, callback) {
+    return (dispatch) => {
+        if (SupplierId != 0) {
+            dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getCityBySupplier}/${SupplierId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_CITY_BY_SUPPLIER,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_CITY_BY_SUPPLIER,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method fetchCostingHeadsAPI
+ * @description Used to fetch costing heads
+ */
+export function getPlantByCity(CityId, callback) {
+    return (dispatch) => {
+        if (CityId != 0) {
+            dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getPlantByCity}/${CityId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_PLANTS_BY_CITY,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_PLANTS_BY_CITY,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method fetchCostingHeadsAPI
+ * @description Used to fetch costing heads
+ */
+export function getSourcePlantBySourceCity(CityId, callback) {
+    return (dispatch) => {
+        if (CityId != 0) {
+            dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getPlantByCity}/${CityId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_SOURCE_PLANTS_BY_SOURCE_CITY,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_SOURCE_PLANTS_BY_SOURCE_CITY,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method fetchCostingHeadsAPI
+ * @description Used to fetch costing heads
+ */
+export function getDestinationPlantByDestinationCity(CityId, callback) {
+    return (dispatch) => {
+        if (CityId != 0) {
+            dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getPlantByCity}/${CityId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
+                payload: {},
+            });
+            callback();
+        }
     };
 }
