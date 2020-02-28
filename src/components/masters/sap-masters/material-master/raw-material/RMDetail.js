@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Table } from 'reactstrap';
-import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
+import { Container, Row, Col, Table, Button } from 'reactstrap';
+import { getRowMaterialDataAPI, deleteRawMaterialAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
+import { MESSAGES } from '../../../../../config/message';
+import { toastr } from 'react-redux-toastr';
 
 class RMDetail extends Component {
     constructor(props) {
@@ -25,6 +27,41 @@ class RMDetail extends Component {
     }
 
     /**
+    * @method editItemDetails
+    * @description edit Raw Material
+    */
+    editItemDetails = (Id) => {
+        this.props.editRawMaterialHandler(Id);
+    }
+
+    /**
+    * @method deleteItem
+    * @description confirm delete Raw Material
+    */
+    deleteItem = (Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDelete(Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.MATERIAL_DELETE_ALERT}`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDelete
+    * @description confirm delete Raw Material
+    */
+    confirmDelete = (ID) => {
+        this.props.deleteRawMaterialAPI(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+                this.props.getRowMaterialDataAPI(res => { });
+            }
+        });
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
@@ -35,7 +72,7 @@ class RMDetail extends Component {
                 <Row>
                     <Col>
                         {/* <hr /> */}
-                        <Table className="table table-striped" hover bordered>
+                        <Table className="table table-striped" size={'sm'} hover bordered>
                             {this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
                                 <thead>
                                     <tr>
@@ -43,6 +80,7 @@ class RMDetail extends Component {
                                         <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
                                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
                                         <th>{`${CONSTANT.DATE}`}</th>
+                                        <th>{``}</th>
                                     </tr>
                                 </thead>}
                             <tbody >
@@ -54,6 +92,10 @@ class RMDetail extends Component {
                                                 <td>{item.PlantName}</td>
                                                 <td>{item.Description}</td>
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                                <td>
+                                                    <Button className="black-btn" onClick={() => this.editItemDetails(item.RawMaterialId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="black-btn" onClick={() => this.deleteItem(item.RawMaterialId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
                                             </tr>
                                         )
                                     })}
@@ -79,6 +121,9 @@ function mapStateToProps({ material }) {
 
 
 export default connect(
-    mapStateToProps, { getRowMaterialDataAPI }
+    mapStateToProps, {
+    getRowMaterialDataAPI,
+    deleteRawMaterialAPI,
+}
 )(RMDetail);
 

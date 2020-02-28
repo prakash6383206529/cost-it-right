@@ -4,9 +4,9 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../../layout/FormInputs";
-import { createMaterialAPI } from '../../../../../actions/master/Material';
+import { createMaterialAPI, getRawMaterialDataAPI, updateRawMaterialAPI, getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
-import { fetchPlantDataAPI } from '../../../../../actions/master/Comman';
+import { fetchPlantDataAPI, fetchRMGradeAPI, fetchSpecificationDataAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
@@ -32,19 +32,38 @@ class AddMaterial extends Component {
     }
 
     /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
+    componentDidMount() {
+        const { RawMaterialId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getRawMaterialDataAPI(RawMaterialId, res => {
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    this.props.fetchRMGradeAPI(Data.MaterialTypeId, res => { })
+                    this.props.fetchSpecificationDataAPI(Data.RawMaterialGradeId, res => { })
+                }
+            });
+        } else {
+            this.props.getRawMaterialDataAPI('', res => { });
+        }
+    }
+
+    /**
     * @method toggleModel
     * @description Used to cancel modal
     */
     toggleModel = () => {
-        this.props.onCancel();
+        this.props.onCancel('2');
     }
 
     /**
-    * @method renderTypeOfListing
+    * @method renderListing
     * @description Used show plant master list
     */
-    renderTypeOfListing = (label) => {
-        const { plantList, MaterialSelectList } = this.props;
+    renderListing = (label) => {
+        const { plantList, MaterialSelectList, rmGradeList, rmSpecification } = this.props;
         const temp = [];
         if (label === 'plant') {
             plantList && plantList.map(item =>
@@ -59,24 +78,29 @@ class AddMaterial extends Component {
             );
             return temp;
         }
+
+        if (label === 'rmGrade') {
+            rmGradeList && rmGradeList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'specification') {
+            rmSpecification && rmSpecification.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
     }
 
-    /**
-    * @method handleTypeOfListingChange
-    * @description  used to handle type of listing selection
-    */
-    handleTypeOfListingChange = (e) => {
-        this.setState({
-            typeOfListing: e
-        })
-    }
 
     /**
     * @method materialTypeHandler
     * @description  used to handle material type
     */
     materialTypeHandler = (e) => {
-
+        this.props.fetchRMGradeAPI(e.target.value, res => { })
     }
 
     /**
@@ -84,7 +108,7 @@ class AddMaterial extends Component {
     * @description  used to handle grade change
     */
     handleGradeChange = (e) => {
-
+        this.props.fetchSpecificationDataAPI(e.target.value, res => { })
     }
 
     /**
@@ -93,27 +117,6 @@ class AddMaterial extends Component {
     */
     handleSpecification = (e) => {
 
-    }
-
-    /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-    onSubmit = (values) => {
-
-        const { PlantId } = this.state;
-        let loginUserId = loggedInUserId();
-        //values.CreatedBy = loginUserId;
-        values.PlantId = PlantId;
-
-        this.props.createMaterialAPI(values, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-                this.toggleModel();
-            } else {
-                toastr.error(res.data.Message);
-            }
-        });
     }
 
     /**
@@ -127,15 +130,61 @@ class AddMaterial extends Component {
     }
 
     /**
+    * @method onSubmit
+    * @description Used to Submit the form
+    */
+    onSubmit = (values) => {
+        const { RawMaterialId, MaterialSelectList, isEditFlag } = this.props;
+        let loginUserId = loggedInUserId();
+
+        if (isEditFlag) {
+
+            let formData = {
+                RawMaterialId: RawMaterialId,
+                RawMaterialName: values.RawMaterialName,
+                MaterialTypeId: values.MaterialTypeId,
+                MaterialTypeName: '',
+                RawMaterialGradeId: values.RawMaterialGradeId,
+                RawMaterialGradeName: '',
+                RawMaterialSpecificationId: values.RawMaterialSpecificationId,
+                RawMaterialSpecificationName: '',
+                Description: values.Description,
+                PlantId: values.PlantId,
+                PlantName: '',
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
+                Density: 0
+            }
+            this.props.updateRawMaterialAPI(formData, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
+                    this.toggleModel();
+                    this.props.getRowMaterialDataAPI(res => { });
+                }
+            })
+
+        } else {
+            console.log('values', values)
+            this.props.createMaterialAPI(values, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+                    this.toggleModel();
+                }
+            });
+        }
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.MATERIAL}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Raw Material' : 'Add Raw Material'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -177,7 +226,7 @@ class AddMaterial extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('material')}
+                                                options={this.renderListing('material')}
                                                 onChange={this.materialTypeHandler}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -187,15 +236,15 @@ class AddMaterial extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`Grade `}
-                                                name={"GradeId"}
+                                                label={`Grade`}
+                                                name={"RawMaterialGradeId"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
                                                 // required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={[]}
-                                                onChange={(Value) => this.handleGradeChange(Value)}
+                                                options={this.renderListing('rmGrade')}
+                                                onChange={this.handleGradeChange}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -204,13 +253,13 @@ class AddMaterial extends Component {
                                         <Col md="6">
                                             <Field
                                                 label={`Specification`}
-                                                name={"SpecificationId"}
+                                                name={"RawMaterialSpecificationId"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
                                                 // required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={[]}
+                                                options={this.renderListing('specification')}
                                                 onChange={this.handleSpecification}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -225,7 +274,7 @@ class AddMaterial extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('plant')}
+                                                options={this.renderListing('plant')}
                                                 onChange={this.plantHandler}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -237,7 +286,7 @@ class AddMaterial extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {`${CONSTANT.SAVE}`}
+                                                {isEditFlag ? 'Update' : 'Add'}
                                             </button>
                                         </div>
                                     </Row>
@@ -256,15 +305,29 @@ class AddMaterial extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, costWorking }) {
-    const { plantList } = comman;
+function mapStateToProps({ comman, costWorking, material }) {
+    const { plantList, rmGradeList, rmSpecification } = comman;
     const { MaterialSelectList } = costWorking;
-    return { plantList, MaterialSelectList }
+    const { rawMaterialData } = material;
+
+    let initialValues = {};
+    if (rawMaterialData && rawMaterialData != undefined) {
+        initialValues = {
+            RawMaterialName: rawMaterialData.RawMaterialName,
+            Description: rawMaterialData.Description,
+            MaterialTypeId: rawMaterialData.MaterialTypeId,
+            RawMaterialGradeId: rawMaterialData.RawMaterialGradeId,
+            RawMaterialSpecificationId: rawMaterialData.RawMaterialSpecificationId,
+            PlantId: rawMaterialData.PlantId,
+        }
+    }
+
+    return { plantList, MaterialSelectList, rmGradeList, rmSpecification, initialValues, rawMaterialData }
 }
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
@@ -272,7 +335,12 @@ export default connect(mapStateToProps,
     {
         createMaterialAPI,
         fetchPlantDataAPI,
+        fetchRMGradeAPI,
         getMaterialTypeSelectList,
+        fetchSpecificationDataAPI,
+        getRawMaterialDataAPI,
+        updateRawMaterialAPI,
+        getRowMaterialDataAPI,
     })(reduxForm({
         form: 'AddMaterial',
         enableReinitialize: true,

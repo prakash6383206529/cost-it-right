@@ -37,7 +37,7 @@ class AddMaterialType extends Component {
     * @description Used to cancel modal
     */
     toggleModel = () => {
-        this.props.onCancel();
+        this.props.onCancel('1');
     }
 
     /**

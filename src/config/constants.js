@@ -108,7 +108,14 @@ export const API = {
 
   //Api for row material master
   //createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
-  createMaterialAPI: `${BASE_URL}/masters-raw-material/create`,
+
+  //RAW MATERIAL MASTER
+  createMaterialAPI: `${BASE_URL}/masters-raw-material/create-raw-material`,
+  getRawMaterialDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material`,
+  updateRawMaterialAPI: `${BASE_URL}/masters-raw-material/update-raw-material`,
+  deleteRawMaterialAPI: `${BASE_URL}/masters-raw-material/delete-raw-material`,
+
+
   getCategoryDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
   updateCategoryAPI: `${BASE_URL}/masters-raw-material/update-material-category`,
   deleteCategoryAPI: `${BASE_URL}/masters-raw-material/delete-material-category`,
@@ -417,10 +424,11 @@ export const GET_DATA_FAILURE = 'GET_DATA_FAILURE';
 export const GET_CATEGORY_LIST_SUCCESS = 'GET_CATEGORY_LIST_SUCCESS';
 export const GET_CATEGORY_TYPE_LIST_SUCCESS = 'GET_CATEGORY_TYPE_SUCCESS';
 
-//for material master
+//RAW MATERIAL
 export const CREATE_MATERIAL_SUCCESS = ' CREATE_MATERIAL_SUCCESS';
 export const CREATE_MATERIAL_FAILURE = 'CREATE_MATERIAL_FAILURE';
 export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
+export const GET_RAW_MATERIAL_DATA_SUCCESS = 'GET_RAW_MATERIAL_DATA_SUCCESS';
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';

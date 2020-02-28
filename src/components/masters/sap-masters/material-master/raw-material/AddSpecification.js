@@ -51,7 +51,7 @@ class AddSpecification extends Component {
     * @description Used to cancel modal
     */
     toggleModel = () => {
-        this.props.onCancel();
+        this.props.onCancel('5');
     }
 
     /**
@@ -114,11 +114,13 @@ class AddSpecification extends Component {
                 SpecificationId: SpecificationId,
                 Specification: values.Specification,
                 Description: values.Description,
-                GradeId: '',
+                GradeId: values.GradeId,
                 IsActive: true,
                 CreatedDate: '',
                 CreatedBy: loggedInUserId(),
-                GradeName: ''
+                GradeName: '',
+                MaterialTypeId: values.MaterialTypeId,
+                MaterialTypeName: '',
             }
             this.props.updateRMSpecificationAPI(formData, (res) => {
                 if (res.data.Result) {
@@ -143,11 +145,11 @@ class AddSpecification extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.SPECIFICATION}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Specification' : 'Add Specification'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -159,8 +161,8 @@ class AddSpecification extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={'Material'}
-                                                name={"RawMaterialId"}
+                                                label={'Material Type'}
+                                                name={"MaterialTypeId"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -220,7 +222,7 @@ class AddSpecification extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {CONSTANT.SAVE}
+                                                {isEditFlag ? 'Update' : 'Add'}
                                             </button>
                                         </div>
                                     </Row>
@@ -246,7 +248,7 @@ function mapStateToProps({ comman, costWorking, material }) {
     let initialValues = {};
     if (specificationData && specificationData != undefined) {
         initialValues = {
-            RawMaterialId: specificationData.RawMaterialId,
+            MaterialTypeId: specificationData.MaterialTypeId,
             GradeId: specificationData.GradeId,
             Specification: specificationData.Specification,
             Description: specificationData.Description,

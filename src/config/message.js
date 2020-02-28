@@ -15,7 +15,7 @@ export const MESSAGES = {
   UPDATE_UOM_SUCESS: 'Unit Of measurement updated successfully',
   DELETE_UOM_SUCCESS: 'Unit Of measurement deleted successfully',
   CONFIRM_DELETE: 'Are you sure you want to delete This',
-  MATERIAL_ADDED_SUCCESS: 'Material added successfully',
+
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
 
@@ -69,6 +69,12 @@ export const MESSAGES = {
   SPECIFICATION_DELETE_ALERT: 'Are you sure you want to delete RM Specification?',
   DELETE_SPECIFICATION_SUCCESS: 'RM Specification has been deleted successfully.',
   SPECIFICATION_UPDATE_SUCCESS: 'RM Specification has been updated successfully',
+
+  //RAW MATERIAL
+  MATERIAL_ADDED_SUCCESS: 'Raw Material added successfully',
+  MATERIAL_DELETE_ALERT: 'Are you sure you want to delete Raw Material?',
+  DELETE_MATERIAL_SUCCESS: 'Raw Material has been deleted successfully.',
+  MATERIAL_UPDATE_SUCCESS: 'Raw Material has been updated successfully',
 
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
   LABOUR_ADDED_SUCCESS: 'Labour added successfully',

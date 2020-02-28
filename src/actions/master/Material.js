@@ -16,6 +16,7 @@ import {
     RAWMATERIAL_ADDED_FOR_COSTING,
     GET_MATERIAL_TYPE_DATA_SUCCESS,
     GET_CATEGORY_DATA_SUCCESS,
+    GET_RAW_MATERIAL_DATA_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -53,6 +54,69 @@ export function createMaterialAPI(data, callback) {
             });
             apiErrors(error);
         });
+    };
+}
+
+
+/**
+ * @method getRawMaterialDataAPI
+ * @description get category data
+ */
+export function getRawMaterialDataAPI(RawMaterialId, callback) {
+    return (dispatch) => {
+        if (RawMaterialId != '') {
+            axios.get(`${API.getRawMaterialDataAPI}/${RawMaterialId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_RAW_MATERIAL_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_RAW_MATERIAL_DATA_SUCCESS,
+                payload: {},
+            });
+            callback()
+        }
+    };
+}
+
+/**
+ * @method updateRawMaterialAPI
+ * @description update Raw Material
+ */
+export function updateRawMaterialAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateRawMaterialAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteRawMaterialAPI
+ * @description delete Raw Material API
+ */
+export function deleteRawMaterialAPI(RawMaterialId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteRawMaterialAPI}/${RawMaterialId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 
