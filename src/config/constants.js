@@ -124,7 +124,11 @@ export const API = {
   getRMGradeDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-grades`,
   updateRMGradeAPI: `${BASE_URL}/masters-raw-material/update-material-grade`,
 
+  //RM SPECIFICATION
   getRMSpecificationAPI: `${BASE_URL}/masters-raw-material/get-all-raw-material-specifications`,
+  getRMSpecificationDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-specifications`,
+  updateRMSpecificationAPI: `${BASE_URL}/masters-raw-material/update-material-specification`,
+  deleteRMSpecificationAPI: `${BASE_URL}/masters-raw-material/delete-material-specification`,
   getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
 
   //Api for plant master
@@ -421,11 +425,14 @@ export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';
 export const GET_GRADE_DATA_SUCCESS = 'GET_GRADE_DATA_SUCCESS';
+export const GET_RM_GRADE_LIST_SUCCESS = 'GET_RM_GRADE_LIST_SUCCESS';
+
+//RM SPECIFICATION
+export const GET_RM_SPECIFICATION_LIST_SUCCESS = 'GET_RM_SPECIFICATION_LIST_SUCCESS';
+export const GET_SPECIFICATION_DATA_SUCCESS = 'GET_SPECIFICATION_DATA_SUCCESS';
 
 export const GET_RM_LIST_SUCCESS = 'GET_RM_LIST_SUCCESS';
-export const GET_RM_GRADE_LIST_SUCCESS = 'GET_RM_GRADE_LIST_SUCCESS';
 export const GET_RM_CATEGORY_LIST_SUCCESS = 'GET_RM_CATEGORY_LIST_SUCCESS';
-export const GET_RM_SPECIFICATION_LIST_SUCCESS = 'GET_RM_SPECIFICATION_LIST_SUCCESS';
 export const GET_MATERIAL_LIST_SUCCESS = 'GET_MATERIAL_LIST_SUCCESS';
 export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS';
 export const RAWMATERIAL_ADDED_FOR_COSTING = 'RAWMATERIAL_ADDED_FOR_COSTING';

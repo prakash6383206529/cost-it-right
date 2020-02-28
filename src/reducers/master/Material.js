@@ -8,6 +8,7 @@ import {
     GET_GRADE_DATA_SUCCESS,
     GET_RM_CATEGORY_LIST_SUCCESS,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
+    GET_SPECIFICATION_DATA_SUCCESS,
     GET_MATERIAL_LIST_SUCCESS,
     GET_MATERIAL_LIST_TYPE_SUCCESS,
     RAWMATERIAL_ADDED_FOR_COSTING,
@@ -112,6 +113,13 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 gradeData: action.payload
+            };
+        case GET_SPECIFICATION_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                specificationData: action.payload
             };
         default:
             return state;

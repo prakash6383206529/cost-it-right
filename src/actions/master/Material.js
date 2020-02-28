@@ -10,6 +10,7 @@ import {
     GET_GRADE_DATA_SUCCESS,
     GET_RM_CATEGORY_LIST_SUCCESS,
     GET_RM_SPECIFICATION_LIST_SUCCESS,
+    GET_SPECIFICATION_DATA_SUCCESS,
     GET_MATERIAL_LIST_SUCCESS,
     GET_MATERIAL_LIST_TYPE_SUCCESS,
     RAWMATERIAL_ADDED_FOR_COSTING,
@@ -270,6 +271,68 @@ export function createRMSpecificationAPI(data, callback) {
             });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getRMSpecificationDataAPI
+ * @description Get RM Specification data
+ */
+export function getRMSpecificationDataAPI(SpecificationId, callback) {
+    return (dispatch) => {
+        if (SpecificationId != '') {
+            axios.get(`${API.getRMSpecificationDataAPI}/${SpecificationId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_SPECIFICATION_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_SPECIFICATION_DATA_SUCCESS,
+                payload: {},
+            });
+            callback()
+        }
+    };
+}
+
+/**
+ * @method updateRMSpecificationAPI
+ * @description update RM Grade details
+ */
+export function updateRMSpecificationAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateRMSpecificationAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteRMSpecificationAPI
+ * @description delete RM Specification API
+ */
+export function deleteRMSpecificationAPI(ID, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteRMSpecificationAPI}/${ID}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 

@@ -4,7 +4,10 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../../layout/FormInputs";
-import { createRMSpecificationAPI } from '../../../../../actions/master/Material';
+import {
+    createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
+    getRowMaterialDataAPI,
+} from '../../../../../actions/master/Material';
 import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
 import { fetchRowMaterialAPI, fetchRMGradeAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
@@ -16,7 +19,7 @@ class AddSpecification extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            typeOfListing: [],
+            GradeId: '',
             isEditFlag: false
         }
     }
@@ -31,6 +34,19 @@ class AddSpecification extends Component {
     }
 
     /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
+    componentDidMount() {
+        const { SpecificationId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getRMSpecificationDataAPI(SpecificationId, res => { });
+        } else {
+            this.props.getRMSpecificationDataAPI('', res => { });
+        }
+    }
+
+    /**
     * @method toggleModel
     * @description Used to cancel modal
     */
@@ -39,19 +55,19 @@ class AddSpecification extends Component {
     }
 
     /**
-    * @method handleTypeOfListingChange
-    * @description  used to handle type of listing selection
+    * @method handleMaterialChange
+    * @description  used to material change and get grade's
     */
-    handleTypeOfListingChange = (e) => {
+    handleMaterialChange = (e) => {
         this.props.fetchRMGradeAPI(e.target.value, res => { })
     }
 
     /**
-    * @method handleTypeofListing
+    * @method handleGrade
     * @description  used to handle type of listing change
     */
-    handleTypeofListing = (e) => {
-        this.setState({ typeOfListing: e })
+    handleGrade = (e) => {
+        this.setState({ GradeId: e })
     }
 
     /**
@@ -89,18 +105,37 @@ class AddSpecification extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { SpecificationId, isEditFlag } = this.props;
 
-        let loginUserId = loggedInUserId();
-        //values.CreatedBy = loginUserId;
+        values.CreatedBy = loggedInUserId();
 
-        this.props.createRMSpecificationAPI(values, (res) => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
-                this.toggleModel();
-            } else {
-                toastr.error(res.data.message);
+        if (isEditFlag) {
+            let formData = {
+                SpecificationId: SpecificationId,
+                Specification: values.Specification,
+                Description: values.Description,
+                GradeId: '',
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
+                GradeName: ''
             }
-        });
+            this.props.updateRMSpecificationAPI(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
+                    this.toggleModel();
+                    this.props.getRowMaterialDataAPI(res => { });
+                }
+            })
+        } else {
+
+            this.props.createRMSpecificationAPI(values, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
+                    this.toggleModel();
+                }
+            });
+        }
     }
 
     /**
@@ -132,7 +167,7 @@ class AddSpecification extends Component {
                                                 required={true}
                                                 maxLength={26}
                                                 options={this.renderTypeOfListing('material')}
-                                                onChange={(Value) => this.handleTypeOfListingChange(Value)}
+                                                onChange={(Value) => this.handleMaterialChange(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -149,7 +184,7 @@ class AddSpecification extends Component {
                                                 required={true}
                                                 maxLength={26}
                                                 options={this.renderTypeOfListing('rmGrade')}
-                                                onChange={this.handleTypeofListing}
+                                                onChange={this.handleGrade}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -204,23 +239,38 @@ class AddSpecification extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, costWorking }) {
+function mapStateToProps({ comman, costWorking, material }) {
     const { rowMaterialList, rmGradeList } = comman;
+    const { specificationData } = material;
     const { MaterialSelectList } = costWorking;
-    return { rowMaterialList, rmGradeList, MaterialSelectList }
+    let initialValues = {};
+    if (specificationData && specificationData != undefined) {
+        initialValues = {
+            RawMaterialId: specificationData.RawMaterialId,
+            GradeId: specificationData.GradeId,
+            Specification: specificationData.Specification,
+            Description: specificationData.Description,
+        }
+    }
+
+    return { rowMaterialList, rmGradeList, MaterialSelectList, specificationData, initialValues }
 }
 
 /**
  * @method connect
  * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
+ * @param {function} mapStateToProps
+ * @param {function} mapDispatchToProps
+ */
 export default connect(mapStateToProps, {
     createRMSpecificationAPI,
     fetchRowMaterialAPI,
     fetchRMGradeAPI,
     getMaterialTypeSelectList,
+    updateRMSpecificationAPI,
+    getRMSpecificationDataAPI,
+    updateRMSpecificationAPI,
+    getRowMaterialDataAPI,
 })(reduxForm({
     form: 'AddSpecification',
     enableReinitialize: true,

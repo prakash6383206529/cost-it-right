@@ -19,7 +19,6 @@ export const MESSAGES = {
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
 
-  SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
 
   //CATEGORY MASTER
@@ -59,10 +58,17 @@ export const MESSAGES = {
   MATERIAL_TYPE_DELETE_ALERT: 'Are you sure you want to delete Material Type?',
   DELETE_MATERIAL_TYPE_SUCCESS: 'Material Type has been deleted successfully.',
 
+  //RM GRADE
   GRADE_ADD_SUCCESS: 'Raw Material Grade added successfully',
   RM_GRADE_DELETE_ALERT: 'Are you sure you want to delete Grade?',
   RM_GRADE_UPDATE_SUCCESS: 'Raw Material Grade has been updated successfully',
   DELETE_RM_GRADE_SUCCESS: 'Grade has been deleted successfully.',
+
+  //RM SPECIFICATION
+  SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
+  SPECIFICATION_DELETE_ALERT: 'Are you sure you want to delete RM Specification?',
+  DELETE_SPECIFICATION_SUCCESS: 'RM Specification has been deleted successfully.',
+  SPECIFICATION_UPDATE_SUCCESS: 'RM Specification has been updated successfully',
 
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
   LABOUR_ADDED_SUCCESS: 'Labour added successfully',

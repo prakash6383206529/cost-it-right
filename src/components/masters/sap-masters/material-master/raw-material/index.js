@@ -116,6 +116,19 @@ class RowMaterialMaster extends Component {
     openSpecificationmodel = () => {
         this.setState({ isSpecification: true })
     }
+
+    /**
+     * @method editRMSpecificationHandler
+     * @description  used to open RM Specification form 
+     */
+    editRMSpecificationHandler = (Id) => {
+        this.setState({
+            isSpecification: true,
+            Id: Id,
+            isEditFlag: true,
+        })
+    }
+
     /**
     * @method openRMModel
     * @description  used to open filter form 
@@ -219,7 +232,7 @@ class RowMaterialMaster extends Component {
                                     <RMCategoryDetail editCategoryHandler={this.editCategoryHandler} />
                                 </TabPane>}
                                 {this.state.activeTab == 5 && <TabPane tabId="5">
-                                    <RMSpecificationDetail />
+                                    <RMSpecificationDetail editRMSpecificationHandler={this.editRMSpecificationHandler} />
                                 </TabPane>}
                                 {this.state.activeTab == 2 && <TabPane tabId="2">
                                     <RMDetail />
@@ -265,6 +278,8 @@ class RowMaterialMaster extends Component {
                     <AddSpecification
                         isOpen={isSpecification}
                         onCancel={this.onCancel}
+                        SpecificationId={this.state.Id}
+                        isEditFlag={this.state.isEditFlag}
                     />
                 }
                 {isRMOpen && (
