@@ -893,23 +893,31 @@ export function fetchModelTypeAPI(modelTypeHeading, callback) {
  */
 export function getPlantBySupplier(supplierId, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantBySupplier}/${supplierId}`, headers);
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_PLANTS_BY_SUPPLIER,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        }).catch((error) => {
-            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
+        if (supplierId != '') {
+            dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getPlantBySupplier}/${supplierId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_PLANTS_BY_SUPPLIER,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_PLANTS_BY_SUPPLIER,
+                payload: [],
+            });
+            callback();
+        }
     };
 }
 

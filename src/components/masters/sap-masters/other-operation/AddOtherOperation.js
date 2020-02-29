@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, number, upper, decimalLength2, getNameBetweenBraces, getSupplierCode } from "../../../../helper/validation";
+import { required, number, upper, decimalLength2, getNameBetweenBraces, getSupplierCode, decimalLength4 } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getOtherOperationData, getPlantBySupplier } from '../../../../actions/master/Comman';
 import {
@@ -121,10 +121,15 @@ class AddOtherOperation extends Component {
     * @description Used to Supplier handle
     */
     handleChangeSupplier = (newValue, actionMeta) => {
-        this.setState({ supplierValue: newValue, plant: [] }, () => {
-            const { supplierValue } = this.state;
-            this.props.getPlantBySupplier(supplierValue.value, () => { })
-        });
+        if (newValue != null) {
+            this.setState({ supplierValue: newValue, plant: [] }, () => {
+                const { supplierValue } = this.state;
+                this.props.getPlantBySupplier(supplierValue.value, () => { })
+            });
+        } else {
+            this.setState({ supplierValue: [], plant: [] });
+            this.props.getPlantBySupplier('', () => { })
+        }
     };
 
     /**
@@ -358,7 +363,6 @@ class AddOtherOperation extends Component {
                                                 component={searchableSelect}
                                                 //validate={[required, maxLength50]}
                                                 options={this.renderTypeOfListing('supplier')}
-                                                //options={supplierOptions}
                                                 required={true}
                                                 handleChangeDescription={this.handleChangeSupplier}
                                                 valueDescription={this.state.supplierValue}
@@ -433,7 +437,7 @@ class AddOtherOperation extends Component {
                                                 name={"Rate"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required, number, decimalLength2]}
+                                                validate={[required, number, decimalLength4]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"

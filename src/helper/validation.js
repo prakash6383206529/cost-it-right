@@ -140,6 +140,8 @@ export const decimalLength = max => value =>
         : undefined;
 
 export const decimalLength2 = decimalLength(2);
+export const decimalLength3 = decimalLength(3);
+export const decimalLength4 = decimalLength(4);
 
 export const getNameBetweenBraces = (name) => {
     const firstIndex = name.indexOf('(');
