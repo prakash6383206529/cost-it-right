@@ -17,7 +17,8 @@ class AddProcess extends Component {
         this.state = {
             typeOfListing: [],
             //isEditFlag:false
-            isActiveBox: true
+            isActiveBox: true,
+            PlantId: '',
         }
     }
 
@@ -27,11 +28,13 @@ class AddProcess extends Component {
         if (isEditFlag) {
             const { processUnitData } = this.props;
             this.props.getProcessUnitAPI(ProcessId, true, res => {
-                console.log("processUnitData", res.data.Data.IsActive)
-                const isActive = res && res.data && res.data.Data && res.data.Data.IsActive;
-                this.setState({
-                    isActiveBox: isActive
-                })
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    this.setState({
+                        isActiveBox: Data.IsActive,
+                        PlantId: Data.PlantId
+                    })
+                }
             })
         } else {
             this.props.getProcessUnitAPI('', false, res => { })
@@ -46,13 +49,11 @@ class AddProcess extends Component {
     }
 
     /**
-    * @method handleTypeOfListingChange
-    * @description  used to handle type of listing selection
+    * @method handlePlant
+    * @description  used to handle Plant
     */
-    handleTypeOfListingChange = (e) => {
-        this.setState({
-            typeOfListing: e
-        })
+    handlePlant = (e) => {
+        this.setState({ PlantId: e.target.value })
     }
 
     /**
@@ -61,7 +62,12 @@ class AddProcess extends Component {
     */
     onSubmit = (values) => {
         const { ProcessId, isEditFlag } = this.props;
-        let loginUserId = loggedInUserId();
+        const { PlantId } = this.state;
+
+        if (PlantId == 0 && PlantId == '') {
+            return false;
+        }
+
         if (isEditFlag) {
             values.ProcessId = ProcessId;
             values.IsActive = this.state.isActiveBox;
@@ -205,7 +211,7 @@ class AddProcess extends Component {
                                                 required={true}
                                                 maxLength={26}
                                                 options={this.renderTypeOfListing('plant')}
-                                                onChange={this.handleTypeofListing}
+                                                onChange={this.handlePlant}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
