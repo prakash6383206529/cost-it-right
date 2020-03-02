@@ -59,7 +59,7 @@ class AddOverheadProfit extends Component {
     getData = (Data) => {
         this.props.getPlantBySupplier(Data.SupplierId, () => {
             const { filterPlantList, Suppliers, ModelTypes, OverheadTypes, ProfitTypes, Technologies } = this.props;
-
+            console.log('filterPlantList', filterPlantList)
             const tempObj1 = Suppliers.find(item => item.Value == Data.SupplierId)
             const tempObj2 = OverheadTypes.find(item => item.Value == Data.OverheadTypeId)
             const tempObj3 = ProfitTypes.find(item => item.Value == Data.ProfitTypeId)
@@ -94,6 +94,12 @@ class AddOverheadProfit extends Component {
         const { overHeadValue, profitTypesValue, supplierValue, modelId, TechnologyId, PlantId } = this.state;
         const { Technologies, OverheadProfitId } = this.props;
 
+        if (PlantId == '' || PlantId == 0) {
+            return false;
+        }
+        if (modelId == '' || modelId == 0) {
+            return false;
+        }
         values.TechnologyId = TechnologyId != '' ? TechnologyId : Technologies[0].Value;;
         values.SupplierId = supplierValue.value;
         values.OverheadTypeId = overHeadValue.value;
