@@ -33,6 +33,7 @@ import {
     GET_CITY_BY_SUPPLIER,
     GET_SOURCE_PLANTS_BY_SOURCE_CITY,
     GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
+    GET_LABOUR_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -277,6 +278,13 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 filterCityListBySupplier: action.payload
+            };
+        case GET_LABOUR_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                labourTypeSelectList: action.payload
             };
         default:
             return state;

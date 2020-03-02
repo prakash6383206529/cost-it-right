@@ -32,6 +32,7 @@ import {
     GET_CITY_BY_SUPPLIER,
     GET_SOURCE_PLANTS_BY_SOURCE_CITY,
     GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
+    GET_LABOUR_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -1046,5 +1047,31 @@ export function getDestinationPlantByDestinationCity(CityId, callback) {
             });
             callback();
         }
+    };
+}
+
+/**
+ * @method getLabourTypeSelectList
+ * @description Used to fetch Labour type selectlist
+ */
+export function getLabourTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getLabourTypeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_LABOUR_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

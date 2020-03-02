@@ -35,6 +35,7 @@ export const API = {
   getFreightComboAPI: `${BASE_URL}/configuration-master/get-freight-combo-select-list`,
   getLabourComboAPI: `${BASE_URL}/configuration-master/get-labour-combo-select-list`,
   getWeightCalculationLayoutType: `${BASE_URL}/configuration/radio-button-list-get-weight-calculate-layout-type`,
+  getLabourTypeSelectList: `${BASE_URL}/configuration/select-list-get-labour-type`,
 
 
   //api's for configure location
@@ -376,6 +377,12 @@ export const API = {
   updateReasonAPI: `${BASE_URL}/masters-reason/update`,
   deleteReasonAPI: `${BASE_URL}/masters-reason/delete`,
 
+  //MACHINE TYPE
+  createMachineTypeAPI: `${BASE_URL}/masters-machine/create-machine-type`,
+  getMachineTypeListAPI: `${BASE_URL}/masters-machine/get-all-machine-type`,
+  getMachineTypeDataAPI: `${BASE_URL}/masters-machine/get-machine-type`,
+  updateMachineTypeAPI: `${BASE_URL}/masters-machine/update-machine-type`,
+  deleteMachineTypeAPI: `${BASE_URL}/masters-machine/delete-machine-type`,
 
 }
 
@@ -406,6 +413,7 @@ export const GET_CATEGORY_MASTER_DATA_SUCCESS = 'GET_CATEGORY_MASTER_DATA_SUCCES
 export const GET_LABOUR_TYPE_SUCCESS = 'GET_LABOUR_TYPE_SUCCESS';
 export const GET_COSTING_HEAD_SUCCESS = 'GET_COSTING_HEAD_SUCCESS';
 export const GET_MODEL_TYPE_SUCCESS = 'GET_MODEL_TYPE_SUCCESS';
+export const GET_LABOUR_TYPE_SELECTLIST_SUCCESS = 'GET_LABOUR_TYPE_SELECTLIST_SUCCESS';
 
 //UOM MASTER
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
@@ -622,7 +630,7 @@ export const SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY = 'SET_INVENTORY_ROW_DATA_TO
 export const UPDATE_COSTING_OTHER_OPERATION_SUCCESS = 'UPDATE_COSTING_OTHER_OPERATION_SUCCESS';
 export const SAVE_COSTING_AS_DRAFT_SUCCESS = 'SAVE_COSTING_AS_DRAFT_SUCCESS';
 
-// Login const
+//Login const
 export const AUTH_API_FAILURE = 'AUTH_API_FAILURE';
 export const AUTH_API_REQUEST = 'AUTH_API_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -666,6 +674,11 @@ export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS';
 //REASON
 export const GET_REASON_DATA_SUCCESS = 'GET_REASON_DATA_SUCCESS';
 export const GET_REASON_SUCCESS = 'GET_REASON_SUCCESS';
+
+//MACHINE TYPE
+export const CREATE_MACHINE_TYPE_SUCCESS = 'CREATE_MACHINE_TYPE_SUCCESS';
+export const GET_MACHINE_TYPE_DATALIST_SUCCESS = 'GET_MACHINE_TYPE_DATALIST_SUCCESS';
+export const GET_MACHINE_TYPE_DATA_SUCCESS = 'GET_MACHINE_TYPE_DATA_SUCCESS';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';

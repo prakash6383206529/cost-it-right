@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText } from "../../../layout/FormInputs";
+import { renderText, renderMultiSelectField } from "../../../layout/FormInputs";
 import {
-    createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI,
-    getUnitOfMeasurementAPI
-} from '../../../../actions/master/unitOfMeasurment';
+    createMachineTypeAPI, getMachineTypeListAPI, getMachineTypeDataAPI,
+    updateMachineTypeAPI
+} from '../../../../actions/master/MachineMaster';
+import { getLabourTypeSelectList } from "../../../../actions/master/Comman";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from "../../../../helper/auth";
@@ -17,7 +18,12 @@ class AddMachineType extends Component {
         super(props);
         this.state = {
             IsActive: false,
+            selectedLabourIds: [],
         }
+    }
+
+    componentWillMount() {
+        this.props.getLabourTypeSelectList((res) => { })
     }
 
     /**
@@ -25,13 +31,23 @@ class AddMachineType extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { uomId, isEditFlag } = this.props;
+        const { MachineTypeId, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.setState({ isEditFlag }, () => {
-                this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
+            this.props.getMachineTypeDataAPI(MachineTypeId, (res) => {
+                const { labourTypeSelectList } = this.props;
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    let labourIds = Data.LabourTypeIds;
+                    let tempArr = [];
+                    labourIds && labourIds.map((el) => {
+                        const filterData = labourTypeSelectList && labourTypeSelectList.find(item => item.Value == el)
+                        tempArr.push({ Text: filterData.Text, Value: filterData.Value })
+                    })
+                    this.setState({ selectedLabourIds: tempArr, IsActive: Data.IsActive });
+                }
             })
         } else {
-            this.props.getOneUnitOfMeasurementAPI('', false, res => { })
+            this.props.getMachineTypeDataAPI('', () => { })
         }
     }
 
@@ -54,47 +70,73 @@ class AddMachineType extends Component {
     }
 
     /**
+    * @method handleLabourSelection
+    * @description Used handle labour select list
+    */
+    handleLabourSelection = (e) => {
+        this.setState({ selectedLabourIds: e })
+    }
+
+    /**
+    * @method renderListing
+    * @description Used show select listings
+    */
+    renderListing = (label) => {
+        const { labourTypeSelectList } = this.props;
+        const temp = [];
+
+        if (label == 'labourList') {
+            labourTypeSelectList && labourTypeSelectList.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { selectedLabourIds, IsActive } = this.state;
+        const { MachineTypeId, isEditFlag } = this.props;
 
-        let loginUserId = loggedInUserId();
-        values.CreatedBy = loginUserId;
+        const labourIds = [];
+        selectedLabourIds && selectedLabourIds.map((item) => {
+            labourIds.push(item.Value);
+        })
+
+        values.CreatedBy = loggedInUserId();
+        values.LabourTypeIds = labourIds;
+        values.IsActive = true;
 
         /** Update detail of the existing UOM  */
-        if (this.props.isEditFlag) {
+        if (isEditFlag) {
 
-            const { uomId } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
-                Name: values.Name,
-                Title: values.Title,
-                //Description: values.Description,
-                Id: uomId,
-                IsActive: true,
-                ModifiedBy: loginUserId,
+                MachineTypeId: MachineTypeId,
+                CreatedByName: loggedInUserId(),
+                IsActive: IsActive,
+                CreatedDate: '',
+                MachineClassName: values.MachineClassName,
+                CreatedBy: loggedInUserId(),
+                LabourTypeIds: labourIds
             }
-            this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
+            this.props.updateMachineTypeAPI(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
+                    toastr.success(MESSAGES.UPDATE_MACHINE_TYPE_SUCESS);
                     this.toggleModel();
-                    this.props.getUnitOfMeasurementAPI(res => { });
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
                 }
             });
 
         } else {
 
-            /** Add detail for creating new UOM  */
-            this.props.createUnitOfMeasurementAPI(values, (res) => {
-                if (res.data.Result === true) {
-                    toastr.success(MESSAGES.UOM_ADD_SUCCESS);
+            /** Add detail for creating new machine type  */
+            this.props.createMachineTypeAPI(values, (res) => {
+                if (res.data.Result == true) {
+                    toastr.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
                     this.toggleModel();
-                    this.props.getUnitOfMeasurementAPI(res => { });
-                } else {
-                    toastr.error(res.data.message);
                 }
             });
 
@@ -110,7 +152,7 @@ class AddMachineType extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update UOM' : 'Add UOM'}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Machine Type' : 'Add Machine Type'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -120,10 +162,10 @@ class AddMachineType extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
-                                        <Col md="4">
+                                        <Col md="6">
                                             <Field
-                                                label="Machine Type"
-                                                name={"MachineType"}
+                                                label="Machine Class Name"
+                                                name={"MachineClassName"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -132,18 +174,24 @@ class AddMachineType extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Col md="4">
+                                        <Col md="6">
                                             <Field
-                                                label="Capacity"
-                                                name={"Capacity"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
+                                                label="Labour Types"
+                                                name="LabourTypeIds"
+                                                placeholder="--Select Labour Type --"
+                                                selection={this.state.selectedLabourIds}
+                                                options={this.renderListing('labourList')}
+                                                selectionChanged={this.handleLabourSelection}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={true}
+                                                className="withoutBorder"
                                             />
                                         </Col>
+
+                                    </Row>
+                                    {this.props.isEditFlag && <Row>
                                         <Col md="4">
                                             <label
                                                 className="custom-checkbox"
@@ -158,7 +206,7 @@ class AddMachineType extends Component {
                                                 />
                                             </label>
                                         </Col>
-                                    </Row>
+                                    </Row>}
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
@@ -185,18 +233,16 @@ class AddMachineType extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ unitOfMeasrement }) {
-    const { unitOfMeasurementData, unitOfMeasurementList } = unitOfMeasrement;
+function mapStateToProps({ machine, comman }) {
+    const { machineTypeDataList, machineTypeData } = machine;
+    const { labourTypeSelectList } = comman;
     let initialValues = {};
-    if (unitOfMeasurementData && unitOfMeasurementData !== undefined) {
+    if (machineTypeData && machineTypeData !== undefined) {
         initialValues = {
-            Name: unitOfMeasurementData.Name,
-            Title: unitOfMeasurementData.Title,
-            //Description: unitOfMeasurementData.Description,
-            CreatedBy: unitOfMeasurementData.CreatedBy,
+            MachineClassName: machineTypeData.MachineClassName,
         }
     }
-    return { unitOfMeasurementData, initialValues, unitOfMeasurementList };
+    return { initialValues, machineTypeDataList, machineTypeData, labourTypeSelectList };
 }
 
 /**
@@ -206,8 +252,11 @@ function mapStateToProps({ unitOfMeasrement }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createUnitOfMeasurementAPI,
-    updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
+    getMachineTypeListAPI,
+    createMachineTypeAPI,
+    getMachineTypeDataAPI,
+    updateMachineTypeAPI,
+    getLabourTypeSelectList,
 })(reduxForm({
     form: 'AddMachineType',
     enableReinitialize: true,
