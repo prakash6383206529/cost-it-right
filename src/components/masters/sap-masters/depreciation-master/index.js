@@ -80,8 +80,8 @@ class DepreciationMaster extends Component {
         this.props.deleteDepreciationAPI(ID, (res) => {
             if (res.data.Result == true) {
                 toastr.success(MESSAGES.DEPRECIATION_DELETE_SUCCESS);
-                this.setState({ isOpen: false })
-                this.props.getDepreciationListDataAPI(res => { });
+                //this.setState({ isOpen: false })
+                this.props.getDepreciationListDataAPI((r) => { });
             }
         });
     }
