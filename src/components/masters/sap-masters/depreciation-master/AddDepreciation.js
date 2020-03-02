@@ -4,7 +4,10 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required, number } from "../../../../helper/validation";
 import { renderText, renderNumberInputField } from "../../../layout/FormInputs";
-import { createDepreciationMasterAPI, } from '../../../../actions/master/MHRMaster';
+import {
+    createDepreciationMasterAPI, getDepreciationDataAPI, getDepreciationListDataAPI,
+    updateDepreciationAPI
+} from '../../../../actions/master/MHRMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -14,6 +17,19 @@ class AddDepreciation extends Component {
     constructor(props) {
         super(props);
         this.state = {
+        }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
+    componentDidMount() {
+        const { DepreciationId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getDepreciationDataAPI(DepreciationId, res => { })
+        } else {
+            this.props.getDepreciationDataAPI('', res => { })
         }
     }
 
@@ -30,17 +46,39 @@ class AddDepreciation extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        let loginUserId = loggedInUserId();
-        values.CreatedBy = loginUserId;
-        /** Add new detail of the depreciation  */
-        this.props.createDepreciationMasterAPI(values, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.DEPRECIATION_ADD_SUCCESS);
-                this.toggleModel()
-            } else {
-                toastr.error(res.data.message);
+        const { isEditFlag, DepreciationId } = this.props;
+        values.CreatedBy = loggedInUserId();
+        if (isEditFlag) {
+
+            this.setState({ isSubmitted: true });
+            let formData = {
+                DepreciationId: DepreciationId,
+                DepreciationType: values.DepreciationType,
+                Shift: values.Shift,
+                DepreciationRate: values.DepreciationRate,
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
             }
-        });
+            this.props.updateDepreciationAPI(formData, (res) => {
+                if (res && res.data && res.data.Result) {
+                    toastr.success(MESSAGES.DEPRECIATION_UPDATE_SUCCESS);
+                    this.toggleModel();
+                    this.props.getDepreciationListDataAPI(res => { });
+                }
+            });
+
+        } else {
+            /** Add new detail of the depreciation  */
+            this.props.createDepreciationMasterAPI(values, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.DEPRECIATION_ADD_SUCCESS);
+                    this.toggleModel()
+                } else {
+                    toastr.error(res.data.message);
+                }
+            });
+        }
     }
 
     /**
@@ -48,11 +86,11 @@ class AddDepreciation extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.DEPRECIATION}`}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Depreciation' : 'Add Deprciation'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>
@@ -107,7 +145,7 @@ class AddDepreciation extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
-                                                {`${CONSTANT.SAVE}`}
+                                                {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </Row>
@@ -126,8 +164,17 @@ class AddDepreciation extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-
+function mapStateToProps({ MHRReducer }) {
+    const { depreciationData, loading } = MHRReducer;
+    let initialValues = {};
+    if (depreciationData && depreciationData !== undefined) {
+        initialValues = {
+            DepreciationType: depreciationData.DepreciationType,
+            Shift: depreciationData.Shift,
+            DepreciationRate: depreciationData.DepreciationRate,
+        }
+    }
+    return { depreciationData, loading, initialValues }
 }
 
 /**
@@ -138,7 +185,10 @@ function mapStateToProps({ }) {
 */
 export default connect(mapStateToProps, {
     createDepreciationMasterAPI,
+    getDepreciationDataAPI,
+    getDepreciationListDataAPI,
+    updateDepreciationAPI,
 })(reduxForm({
     form: 'AddDepreciation',
-    //enableReinitialize: true,
+    enableReinitialize: true,
 })(AddDepreciation));

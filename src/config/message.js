@@ -88,7 +88,12 @@ export const MESSAGES = {
   DELETE_OVERHEAD_PROFIT_SUCCESS: 'Overhead & Profit deleted successfully',
   OVERHEAD_PROFIT_UPDATE_SUCCESS: 'Overhead & Profit has been updated successfully',
 
+  //DEPRECIATION 
   DEPRECIATION_ADD_SUCCESS: 'Depreciation added successfully',
+  DEPRECIATION_DELETE_ALERT: 'Are you sure you want to delete Depreciation?',
+  DEPRECIATION_DELETE_SUCCESS: 'Depreciation deleted successfully',
+  DEPRECIATION_UPDATE_SUCCESS: 'Depreciation has been updated successfully',
+
   DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
   DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
   DELETE_PLANT_SUCCESS: 'Plant deleted successfully',

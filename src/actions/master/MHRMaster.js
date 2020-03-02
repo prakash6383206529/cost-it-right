@@ -6,6 +6,7 @@ import {
     DATA_FAILURE,
     GET_MHR_DATA_SUCCESS,
     GET_DEPRICIATION_SUCCESS,
+    GET_DEPRECIATION_DATA_SUCCESS,
     CREATE_SUCCESS,
     CREATE_FAILURE
 } from '../../config/constants';
@@ -110,10 +111,10 @@ export function createDepreciationMasterAPI(data, callback) {
 }
 
 /**
- * @method getDepreciationDataAPI
+ * @method getDepreciationListDataAPI
  * @description Used get depreciation detail
  */
-export function getDepreciationDataAPI(callback) {
+export function getDepreciationListDataAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getDepreciationAPI}`, headers);
@@ -130,5 +131,69 @@ export function getDepreciationDataAPI(callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method deleteDepreciationAPI
+ * @description delete Depriciation
+ */
+export function deleteDepreciationAPI(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteDepreciationAPI}/${Id}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getDepreciationDataAPI
+ * @description Get Depreciation data
+ */
+export function getDepreciationDataAPI(ID, callback) {
+    return (dispatch) => {
+        if (ID != '') {
+            axios.get(`${API.getDepreciationDataAPI}/${ID}`, headers)
+                .then((response) => {
+                    if (response.data.Result == true) {
+                        dispatch({
+                            type: GET_DEPRECIATION_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_DEPRECIATION_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method updateDepreciationAPI
+ * @description update Depreciation details
+ */
+export function updateDepreciationAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateDepreciationAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
