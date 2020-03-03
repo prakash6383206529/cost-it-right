@@ -384,6 +384,12 @@ export const API = {
   updateMachineTypeAPI: `${BASE_URL}/masters-machine/update-machine-type`,
   deleteMachineTypeAPI: `${BASE_URL}/masters-machine/delete-machine-type`,
 
+  //POWER MASTER
+  getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
+  getChargeTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-charges-type`,
+  getPowerSupplierTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-supplier-type`,
+  getUOMSelectList: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
+
 }
 
 //Api constants
@@ -679,6 +685,12 @@ export const GET_REASON_SUCCESS = 'GET_REASON_SUCCESS';
 export const CREATE_MACHINE_TYPE_SUCCESS = 'CREATE_MACHINE_TYPE_SUCCESS';
 export const GET_MACHINE_TYPE_DATALIST_SUCCESS = 'GET_MACHINE_TYPE_DATALIST_SUCCESS';
 export const GET_MACHINE_TYPE_DATA_SUCCESS = 'GET_MACHINE_TYPE_DATA_SUCCESS';
+
+//POWER MASTER
+export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS';
+export const GET_CHARGE_TYPE_SELECTLIST_SUCCESS = 'GET_CHARGE_TYPE_SELECTLIST_SUCCESS';
+export const GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS';
+export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';

@@ -210,7 +210,7 @@ class AddRMDetail extends Component {
                 DestinationSupplierId: values.DestinationSupplierId,
                 UnitOfMeasurementId: values.UnitOfMeasurementId,
                 IsAssembly: true,
-                MaterialId: RawMaterialId,
+                MaterialId: '',
                 GradeId: GradeId,
                 SpecificationId: GradeId,
                 RawMaterialDetailsId: RawMaterialDetailsId,
@@ -259,7 +259,7 @@ class AddRMDetail extends Component {
                 DestinationSupplierId: values.DestinationSupplierId,
                 UnitOfMeasurementId: values.UnitOfMeasurementId,
                 RawMaterialSupplierId: '', //Provision
-                PlantId: '',
+                //PlantId: '',
                 IsAssembly: true,
             }
             this.props.createRMDetailAPI(formData, (res) => {
@@ -662,7 +662,7 @@ class AddRMDetail extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`Plant`}
                                                 name={"PlantId"}
@@ -677,7 +677,7 @@ class AddRMDetail extends Component {
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">

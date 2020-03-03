@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { required, decimalLength2 } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getCEDOtherOperationComboData, getPlantBySupplier } from '../../../../actions/master/Comman';
 import {
@@ -62,7 +62,7 @@ class AddCEDotherOperation extends Component {
         const tempObj1 = Suppliers.find(item => item.Value == Data.SupplierId)
         const tempObj4 = filterPlantList.find(item => item.Value == Data.PlantId)
         const tempObj5 = Operations.find(item => item.Value == Data.OperationId)
-
+        console.log('tempObj4', tempObj4)
         this.setState({
             supplierValue: { label: tempObj1.Text, value: tempObj1.Value },
             selectedPlants: { label: tempObj4.Text, value: tempObj4.Value },
@@ -105,8 +105,8 @@ class AddCEDotherOperation extends Component {
                 OverheadProfit: values.OverheadProfit,
                 SupplierId: supplierValue.value,
                 OperationId: processOperationValue.value,
-                UnitOfMeasurementId: uom,
-                TrasnportationUMOId: transportUOM,
+                UnitOfMeasurementId: values.UnitOfMeasurementId,
+                TrasnportationUMOId: values.TrasportUnitOfMeasurementId,
                 PlantId: selectedPlants.value,
                 CreatedDate: '',
                 CreatedBy: loggedInUserId(),
@@ -371,7 +371,7 @@ class AddCEDotherOperation extends Component {
                                                 name={"OperationRate"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, decimalLength2]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -387,7 +387,7 @@ class AddCEDotherOperation extends Component {
                                                 name={"TrasnportationRate"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, decimalLength2]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"

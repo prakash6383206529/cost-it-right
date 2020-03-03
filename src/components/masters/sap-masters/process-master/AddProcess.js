@@ -64,7 +64,7 @@ class AddProcess extends Component {
         const { ProcessId, isEditFlag } = this.props;
         const { PlantId } = this.state;
 
-        if (PlantId == 0 && PlantId == '') {
+        if (PlantId == 0 || PlantId == '') {
             return false;
         }
 

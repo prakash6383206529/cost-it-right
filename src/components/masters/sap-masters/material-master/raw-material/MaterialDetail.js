@@ -86,7 +86,7 @@ class MaterialDetail extends Component {
                                         <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
                                         <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
                                         <th>{` ${CONSTANT.UOM}`}</th>
-                                        <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                        {/* <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
                                         <th>{`${CONSTANT.BASIC} ${CONSTANT.RATE}`}</th>
                                         <th>{`${CONSTANT.QUANTITY}`}</th>
                                         <th>{`${CONSTANT.SCRAP} ${CONSTANT.RATE}`}</th>
@@ -111,7 +111,7 @@ class MaterialDetail extends Component {
                                                 <td>{item.DestinationSupplierName}</td>
                                                 <td>{item.DestinationSupplierLocation}</td>
                                                 <td>{item.UnitOfMeasurementName}</td>
-                                                <td>{item.PlantName}</td>
+                                                {/* <td>{item.PlantName}</td> */}
                                                 <td >{item.BasicRate}</td>
                                                 <td>{item.Quantity}</td>
                                                 <td>{item.ScrapRate}</td>

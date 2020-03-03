@@ -34,6 +34,10 @@ import {
     GET_SOURCE_PLANTS_BY_SOURCE_CITY,
     GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
     GET_LABOUR_TYPE_SELECTLIST_SUCCESS,
+    GET_POWER_TYPE_SELECTLIST_SUCCESS,
+    GET_CHARGE_TYPE_SELECTLIST_SUCCESS,
+    GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS,
+    GET_UOM_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -285,6 +289,34 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 labourTypeSelectList: action.payload
+            };
+        case GET_POWER_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                powerTypeSelectList: action.payload
+            };
+        case GET_CHARGE_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                chargeTypeSelectList: action.payload
+            };
+        case GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                powerSupplierTypeSelectList: action.payload
+            };
+        case GET_UOM_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                UOMSelectList: action.payload
             };
         default:
             return state;

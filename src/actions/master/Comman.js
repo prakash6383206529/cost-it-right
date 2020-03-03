@@ -33,6 +33,10 @@ import {
     GET_SOURCE_PLANTS_BY_SOURCE_CITY,
     GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
     GET_LABOUR_TYPE_SELECTLIST_SUCCESS,
+    GET_POWER_TYPE_SELECTLIST_SUCCESS,
+    GET_CHARGE_TYPE_SELECTLIST_SUCCESS,
+    GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS,
+    GET_UOM_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -1070,6 +1074,110 @@ export function getLabourTypeSelectList(callback) {
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getPowerTypeSelectList
+ * @description Used to fetch Power type selectlist
+ */
+export function getPowerTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPowerTypeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_POWER_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getChargeTypeSelectList
+ * @description Used to fetch Charge type selectlist
+ */
+export function getChargeTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getChargeTypeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CHARGE_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getPowerSupplierTypeSelectList
+ * @description Used to fetch Power Supplier type selectlist
+ */
+export function getPowerSupplierTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPowerSupplierTypeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getUOMSelectList
+ * @description Used to fetch Power Supplier type selectlist
+ */
+export function getUOMSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUOMSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_UOM_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
             callback(error);
             apiErrors(error);
         });

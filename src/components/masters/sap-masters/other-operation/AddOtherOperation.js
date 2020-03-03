@@ -60,7 +60,7 @@ class AddOtherOperation extends Component {
                             this.props.change("OperationCode", operationCode.toUpperCase())
 
                             this.setState({
-                                processOperationValue: { label: OperationObj.Text, value: OperationObj.Vale },
+                                processOperationValue: { label: OperationObj.Text, value: OperationObj.Value },
                                 supplierValue: { label: SupplierObj.Text, value: SupplierObj.Value },
                                 uom: otherOperationData.UnitOfMeasurementId,
                             })
@@ -437,7 +437,7 @@ class AddOtherOperation extends Component {
                                                 name={"Rate"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required, number, decimalLength4]}
+                                                validate={[required, number, decimalLength2]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -476,7 +476,8 @@ function mapStateToProps({ comman, otherOperation }) {
         let initialValues = {};
         if (otherOperationData && otherOperationData !== undefined) {
             initialValues = {
-
+                Rate: otherOperationData.Rate,
+                UnitOfMeasurementId: otherOperationData.UnitOfMeasurementId,
             }
         }
         return { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements, filterPlantList, otherOperationData, initialValues };
