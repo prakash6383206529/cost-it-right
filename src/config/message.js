@@ -141,6 +141,9 @@ export const MESSAGES = {
 
   //POWER MASTER
   POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',
+  POWER_DELETE_SUCCESS: 'Power has been deleted successfully.',
+  POWER_ADDED_SUCCESS: 'Power added successfully',
+  UPDATE_POWER_SUCESS: 'Power has been updated successfully.',
 
   //REASON MASTER
   REASON_ADD_SUCCESS: 'Reason has been added successfully.',

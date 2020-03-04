@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddPower from './AddPower';
-import { } from '../../../../actions/master/PowerMaster';
+import { getPowerDataListAPI, deletePowerAPI } from '../../../../actions/master/PowerMaster';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { convertISOToUtcDate, } from '../../../../helper';
@@ -25,6 +25,7 @@ class PowerMaster extends Component {
    * @description Called after rendering the component
    */
     componentDidMount() {
+        this.props.getPowerDataListAPI(() => { })
     }
 
     /**
@@ -40,14 +41,14 @@ class PowerMaster extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false })
+        this.setState({ isOpen: false }, () => this.props.getPowerDataListAPI(() => { }))
     }
 
     /**
-  * @method editDetails
-  * @description used to edit machine details
+  * @method editItem
+  * @description used to edit Power Details
   */
-    editDetails = (Id) => {
+    editItem = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
@@ -74,14 +75,12 @@ class PowerMaster extends Component {
     * @description confirm delete power
     */
     confirmDelete = (Id) => {
-        // this.props.deleteLabourAPI(Id, (res) => {
-        //     if (res.data.Result) {
-        //         toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-        //         this.props.getLabourDetailAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+        this.props.deletePowerAPI(Id, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.POWER_DELETE_SUCCESS);
+                this.props.getPowerDataListAPI(() => { })
+            }
+        });
     }
     /**
     * @method render
@@ -103,42 +102,41 @@ class PowerMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <Table className="table table-striped" bordered>
-                            {/* {this.props.labourDetail && this.props.labourDetail.length > 0 && */}
+                        <Table className="table table-striped" size={'sm'} bordered>
                             <thead>
                                 <tr>
-                                    <th>{`Power ID`}</th>
-                                    <th>{`Charge Type`}</th>
+                                    <th>{`Power`}</th>
                                     <th>{`Power supplier Name`}</th>
                                     <th>{`Plant`}</th>
                                     <th>{`UOM`}</th>
                                     <th>{`Fuel`}</th>
-                                    <th>{`Contract`}</th>
-                                    <th>{`Demand`}</th>
                                     <th>{`Unit Consumption`}</th>
-                                    <th>{`Demand Energy`}</th>
+                                    <th>{`Per unit Cost`}</th>
+                                    <th>{`Total Cost`}</th>
+                                    <th>{``}</th>
                                 </tr>
                             </thead>
-                            {/* } */}
                             <tbody >
-                                {/* {this.props.labourDetail && this.props.labourDetail.length > 0 &&
-                                    this.props.labourDetail.map((item, index) => {
-                                        return ( */}
-                                <tr>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                </tr>
-                                {/* )
-                                    })} */}
-                                {/* {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />} */}
+                                {this.props.powerList && this.props.powerList.length > 0 &&
+                                    this.props.powerList.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{item.PowerType}</td>
+                                                <td>{item.PowerSupplierName}</td>
+                                                <td>{item.PlantName}</td>
+                                                <td>{item.UnitOfMeasurementName}</td>
+                                                <td>{item.FuelName}</td>
+                                                <td>{item.TotalUnitCharge}</td>
+                                                <td>{item.FuelCostPerUnit}</td>
+                                                <td>{item.NetPowerCost}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editItem(item.PowerId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(item.PowerId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.powerList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </Col>
@@ -162,12 +160,14 @@ class PowerMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ power }) {
-    const { loading } = power;
-    return { loading }
+    const { powerList, loading } = power;
+
+    return { loading, powerList }
 }
 
-
-export default connect(
-    mapStateToProps, {}
-)(PowerMaster);
+export default connect(mapStateToProps,
+    {
+        getPowerDataListAPI,
+        deletePowerAPI,
+    })(PowerMaster);
 

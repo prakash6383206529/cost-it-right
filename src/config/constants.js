@@ -389,6 +389,11 @@ export const API = {
   getChargeTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-charges-type`,
   getPowerSupplierTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-supplier-type`,
   getUOMSelectList: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
+  createPowerAPI: `${BASE_URL}/masters-power/create`,
+  getPowerDataListAPI: `${BASE_URL}/masters-power/get-all`,
+  deletePowerAPI: `${BASE_URL}/masters-power/delete`,
+  getPowerDataAPI: `${BASE_URL}/masters-power/get`,
+  updatePowerAPI: `${BASE_URL}/masters-power/update`,
 
 }
 
@@ -691,6 +696,8 @@ export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCC
 export const GET_CHARGE_TYPE_SELECTLIST_SUCCESS = 'GET_CHARGE_TYPE_SELECTLIST_SUCCESS';
 export const GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS';
 export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS';
+export const GET_POWER_DATALIST_SUCCESS = 'GET_POWER_DATALIST_SUCCESS';
+export const GET_POWER_DATA_SUCCESS = 'GET_POWER_DATA_SUCCESS';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';

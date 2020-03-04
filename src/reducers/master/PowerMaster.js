@@ -3,8 +3,8 @@ import {
     API_FAILURE,
     CREATE_SUCCESS,
     CREATE_FAILURE,
-    GET_MHR_DATA_SUCCESS,
-    GET_DEPRICIATION_SUCCESS,
+    GET_POWER_DATALIST_SUCCESS,
+    GET_POWER_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -35,6 +35,20 @@ export default function PowerReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true
+            };
+        case GET_POWER_DATALIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                powerList: action.payload,
+            };
+        case GET_POWER_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                powerData: action.payload,
             };
         default:
             return state;

@@ -139,9 +139,14 @@ export const decimalLength = max => value =>
         ? `Only ${max} decimal allowed.`
         : undefined;
 
+export const decimalLength4 = max => value =>
+    value && !/^[0-9]\d{0,12}(\.\d{1,4})?%?$/i.test(value)
+        ? `Only ${max} decimal allowed.`
+        : undefined;
+
 export const decimalLength2 = decimalLength(2);
 export const decimalLength3 = decimalLength(3);
-export const decimalLength4 = decimalLength(4);
+export const decimalLengthFour = decimalLength4(4);
 
 export const getNameBetweenBraces = (name) => {
     const firstIndex = name.indexOf('(');

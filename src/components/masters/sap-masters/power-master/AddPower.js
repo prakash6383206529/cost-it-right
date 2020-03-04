@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { required, decimalLengthFour, trimFourDecimalPlace } from "../../../../helper/validation";
 import { renderSelectField, renderNumberInputField, renderText, searchableSelect } from "../../../layout/FormInputs";
 import { } from '../../../../actions/master/MachineMaster';
 import {
     getPowerTypeSelectList, getChargeTypeSelectList, getPowerSupplierTypeSelectList,
     fetchPlantDataAPI, getUOMSelectList, fetchFuelComboAPI
 } from '../../../../actions/master/Comman';
+import { createPowerAPI, getPowerDataAPI, updatePowerAPI } from '../../../../actions/master/PowerMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
+import { loggedInUserId } from '../../../../helper';
+const selector = formValueSelector('AddPower');
 
 class AddPower extends Component {
     constructor(props) {
@@ -20,6 +23,7 @@ class AddPower extends Component {
             powerSupplier: [],
             plant: [],
             uom: [],
+            fuel: [],
             power: '',
             chargeType: '',
         }
@@ -45,10 +49,31 @@ class AddPower extends Component {
     componentDidMount() {
         const { powerId, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.setState({ isEditFlag }, () => {
-                this.props.getLabourByIdAPI(powerId, true, res => { })
+            this.props.getPowerDataAPI(powerId, res => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    setTimeout(() => { this.getData(Data) }, 500)
+                }
             })
+        } else {
+            this.props.getPowerDataAPI('', res => { })
         }
+    }
+
+    getData = (Data) => {
+        const { powerSupplierTypeSelectList, plantList, UOMSelectList, fuelList } = this.props;
+        const powerObj = powerSupplierTypeSelectList.find(item => item.Value == Data.PowerSupplierId)
+        const plantObj = plantList.find(item => item.Value == Data.PlantId)
+        const UOMObj = UOMSelectList.find(item => item.Value == Data.UnitOfMeasurementId)
+        const fuelObj = fuelList.find(item => item.Value == Data.FuelId)
+
+        this.setState({
+            powerSupplier: { label: powerObj.Text, value: powerObj.Value },
+            plant: { label: plantObj.Text, value: plantObj.Value },
+            uom: { label: UOMObj.Text, value: UOMObj.Value },
+            fuel: { label: fuelObj.Text, value: fuelObj.Value },
+            power: Data.PowerType,
+        });
     }
 
     /**
@@ -194,63 +219,122 @@ class AddPower extends Component {
         })
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.fieldsObj != this.props.fieldsObj) {
+            this.costCalculation()
+        }
+    }
+
+    /**
+    * @method costCalculation
+    * @description used to Reset form
+    */
+    costCalculation = () => {
+        const { fieldsObj } = this.props;
+        console.log('fieldsObj', fieldsObj)
+        const totalCost = fieldsObj.FuelCostPerUnit * fieldsObj.TotalUnitCharge;
+        this.props.change('NetPowerCost', trimFourDecimalPlace(totalCost))
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        // if (this.props.isEditFlag) { 
-        //     const { powerId } = this.props;
+        const { power, powerSupplier, plant, uom, fuel } = this.state;
 
-        //     this.props.updateLabourAPI(formData, (res) => {
-        //         if (res.data.Result) {
-        //             toastr.success(MESSAGES.UPDATE_LABOUR_SUCCESS);
-        //             this.toggleModel();
-        //             this.props.getLabourDetailAPI(res => {});
-        //         } else {
-        //             toastr.error(MESSAGES.SOME_ERROR);
-        //         }
-        //     });
-        // }else{
+        if (this.props.isEditFlag) {
 
-        let formData = {
-            // FuelBasicRate: 0,
-            // CreatedBy: 00000000 - 0000 - 0000 - 0000 - 000000000000,
-            // PowerId: 00000000 - 0000 - 0000 - 0000 - 000000000000,
-            // PowerChargesType: string,
-            // PowerType: string,
-            // PowerSupplierId: 00000000 - 0000 - 0000 - 0000 - 000000000000,
-            // PlantId: 00000000 - 0000 - 0000 - 0000 - 000000000000,
-            // UnitOfMeasurementId: 00000000 - 0000 - 0000 - 0000 - 000000000000,
-            // FuelId: 00000000 - 0000 - 0000 - 0000 - 000000000000,
-            // ContractDemandKVA: 0,
-            // DemandChargesRsPerKVA: 0,
-            // AvgUnitConsumptionPerMonth: 0,
-            // MaxDemandCharges: 0,
-            // EnergyChargesUnit: 0, //
-            // MeterRent: 0,
-            // OtherCharges: 0,
-            // FuelCostPerUnit: 0,
-            // DutyOnEnergyCharges: 0,
-            // DutyOnEnergyFCA: string,
-            // TotalUnitCharge: 0,
-            // PercentOfUsageToStateElectricityBoard: 0,
-            // PercentOfUsageToSelfGenerated: 0,
-            // NetPowerCost: 0,
-            // Remark: string,
-            // Division: string,
-            // PercentFCA: 0,
-            // PowerRateing: 0
-        }
+            const { powerId } = this.props;
 
-        this.props.createLabourAPI(formData, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.LABOUR_ADDED_SUCCESS);
-                this.props.getLabourDetailAPI(res => { });
-                this.toggleModel()
+            let updateData = {
+                CreatedBy: loggedInUserId(),
+                PowerId: powerId,
+                PowerType: values.PowerType,
+                PowerSupplierId: powerSupplier.value,
+                PlantId: plant.value,
+                UnitOfMeasurementId: uom.value,
+                FuelId: fuel.value,
+                FuelCostPerUnit: values.FuelCostPerUnit,
+                TotalUnitCharge: values.TotalUnitCharge,
+                NetPowerCost: values.NetPowerCost,
+                // SupplierName: string,
+                // SupplierCost: string,
+                // SupplierCityName: string,
+                // SupplierStateName: string,
+                // UnitOfMeasurementName: string,
+                // FuelName: string,
+                // PlantName: string,
+                // CreatedByName: string,
+                // IsActive: true,
+                // CreatedDate: 2020-03-03T14:25:34.763Z,
+                // PowerSupplierName: string,
+                // FuelBasicRate: 0,
+                // PowerChargesType: string,
+                // ContractDemandKVA: 0,
+                // DemandChargesRsPerKVA: 0,
+                // AvgUnitConsumptionPerMonth: 0,
+                // MaxDemandCharges: 0,
+                // EnergyChargesUnit: 0,
+                // MeterRent: 0,
+                // OtherCharges: 0,
+                // DutyOnEnergyCharges: 0,
+                // DutyOnEnergyFCA: string,
+                // PercentOfUsageToStateElectricityBoard: 0,
+                // PercentOfUsageToSelfGenerated: 0,
+                // Remark: string,
+                // Division: string,
+                // PercentFCA: 0,
+                // PowerRateing: 0
             }
-        });
-        // }
+
+            this.props.updatePowerAPI(updateData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_POWER_SUCESS);
+                    this.toggleModel();
+                }
+            });
+
+        } else {
+
+            let formData = {
+                CreatedBy: loggedInUserId(),
+                PowerId: '',
+                PowerType: values.PowerType,
+                PowerSupplierId: powerSupplier.value,
+                PlantId: plant.value,
+                UnitOfMeasurementId: uom.value,
+                FuelId: fuel.value,
+                FuelCostPerUnit: values.FuelCostPerUnit,
+                TotalUnitCharge: values.TotalUnitCharge,
+                NetPowerCost: values.NetPowerCost,
+                // FuelBasicRate: 0,
+                // PowerChargesType: string,
+                // ContractDemandKVA: 0,
+                // DemandChargesRsPerKVA: 0,
+                // AvgUnitConsumptionPerMonth: 0,
+                // MaxDemandCharges: 0,
+                // EnergyChargesUnit: 0, //
+                // MeterRent: 0,
+                // OtherCharges: 0,
+                // DutyOnEnergyCharges: 0,
+                // DutyOnEnergyFCA: string,
+                // PercentOfUsageToStateElectricityBoard: 0,
+                // PercentOfUsageToSelfGenerated: 0,
+                // Remark: string,
+                // Division: string,
+                // PercentFCA: 0,
+                // PowerRateing: 0
+            }
+
+            this.props.createPowerAPI(formData, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.POWER_ADDED_SUCCESS);
+                    //this.props.getPowerDataListAPI(res => { });
+                    this.toggleModel()
+                }
+            });
+        }
 
     }
 
@@ -276,7 +360,7 @@ class AddPower extends Component {
                                         <Col md="6">
                                             <Field
                                                 label={`Power`}
-                                                name={"PowerID"}
+                                                name={"PowerType"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -290,7 +374,7 @@ class AddPower extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`Charge Type`}
                                                 name={"ChargeType"}
@@ -306,7 +390,7 @@ class AddPower extends Component {
                                                 component={renderSelectField}
                                                 className=" withoutBorder custom-select"
                                             />
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                     <Row>
                                         <Col md="6">
@@ -372,7 +456,7 @@ class AddPower extends Component {
                                             />
                                         </Col>
                                     </Row>
-                                    <Row className={'mt20'} >
+                                    {/* <Row className={'mt20'} >
                                         <Col md="6">
                                             <Field
                                                 label={`Contract`}
@@ -399,8 +483,8 @@ class AddPower extends Component {
                                                 disabled={false}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row className={'mt20'}>
+                                    </Row> */}
+                                    {/* <Row className={'mt20'}>
                                         <Col md="6">
                                             <Field
                                                 label={`Avg. unit consumption per month`}
@@ -427,8 +511,8 @@ class AddPower extends Component {
                                                 disabled={false}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
+                                    </Row> */}
+                                    {/* <Row>
                                         <Col md="6">
                                             <Field
                                                 label={`Meter rent`}
@@ -455,12 +539,42 @@ class AddPower extends Component {
                                                 disabled={false}
                                             />
                                         </Col>
-                                    </Row>
+                                    </Row> */}
                                     <Row>
                                         <Col md="6">
                                             <Field
                                                 label={`Fuel Cost per unit`}
                                                 name={"FuelCostPerUnit"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required, decimalLengthFour]}
+                                                component={renderNumberInputField}
+                                                //onChange={this.costCalculation}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Total unit`}
+                                                name={"TotalUnitCharge"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required, decimalLengthFour]}
+                                                component={renderNumberInputField}
+                                                //onChange={this.costCalculation}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    {/* <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label={`FCA`}
+                                                name={"DutyOnEnergyFCA"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
@@ -483,37 +597,9 @@ class AddPower extends Component {
                                                 disabled={false}
                                             />
                                         </Col>
-                                    </Row>
+                                    </Row> */}
                                     <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`FCA`}
-                                                name={"DutyOnEnergyFCA"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Total unit`}
-                                                name={"TotalUnitCharge"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`Percentage`}
                                                 name={"PercentOfUsageToStateElectricityBoard"}
@@ -526,6 +612,7 @@ class AddPower extends Component {
                                                 disabled={false}
                                             />
                                         </Col>
+                                        
                                         <Col md="6">
                                             <Field
                                                 label={`Percentage`}
@@ -538,10 +625,10 @@ class AddPower extends Component {
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
-                                        </Col>
+                                        </Col> */}
                                         <Col md="6">
                                             <Field
-                                                label={`Percentage`}
+                                                label={`Net Power Cost`}
                                                 name={"NetPowerCost"}
                                                 type="text"
                                                 placeholder={''}
@@ -549,11 +636,11 @@ class AddPower extends Component {
                                                 component={renderText}
                                                 //required={true}
                                                 className=" withoutBorder"
-                                                disabled={false}
+                                                disabled={true}
                                             />
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    {/* <Row>
                                         <Col md="6">
                                             <Field
                                                 label={`Remark`}
@@ -580,7 +667,7 @@ class AddPower extends Component {
                                                 disabled={false}
                                             />
                                         </Col>
-                                    </Row>
+                                    </Row> */}
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
@@ -607,21 +694,25 @@ class AddPower extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, machine }) {
-    const { powerTypeSelectList, chargeTypeSelectList, powerSupplierTypeSelectList, plantList,
-        UOMSelectList, fuelList } = comman;
+function mapStateToProps(state) {
+    const { comman, power } = state;
+    const { powerData } = power;
+    const fieldsObj = selector(state, 'FuelCostPerUnit', 'TotalUnitCharge');
+    const { powerTypeSelectList, chargeTypeSelectList, powerSupplierTypeSelectList, plantList, UOMSelectList, fuelList } = comman;
+
     let initialValues = {};
-    // if(labourData && labourData !== undefined){
-    //     initialValues = {
-    //         LabourRate: labourData.LabourRate,
-    //         LabourTypeId: labourData.LabourTypeId,
-    //         PlantId: labourData.PlantId,
-    //         TechnologyId: labourData.TechnologyId,
-    //     }
-    // }
+    if (powerData && powerData !== undefined) {
+        initialValues = {
+            PowerType: powerData.PowerType,
+            FuelCostPerUnit: powerData.FuelCostPerUnit,
+            TotalUnitCharge: powerData.TotalUnitCharge,
+            NetPowerCost: powerData.NetPowerCost,
+        }
+    }
+
     return {
         initialValues, powerTypeSelectList, chargeTypeSelectList, powerSupplierTypeSelectList, plantList,
-        UOMSelectList, fuelList
+        UOMSelectList, fuelList, fieldsObj, powerData,
     }
 }
 
@@ -638,6 +729,9 @@ export default connect(mapStateToProps, {
     fetchPlantDataAPI,
     getUOMSelectList,
     fetchFuelComboAPI,
+    createPowerAPI,
+    getPowerDataAPI,
+    updatePowerAPI,
 })(reduxForm({
     form: 'AddPower',
     enableReinitialize: true,
