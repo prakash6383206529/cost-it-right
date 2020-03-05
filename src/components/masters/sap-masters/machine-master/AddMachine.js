@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Input, Label, Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderSelectField, renderNumberInputField, renderText, searchableSelect } from "../../../layout/FormInputs";
-import { createMachineAPI, getMachineDataAPI, updateMachineAPI } from '../../../../actions/master/MachineMaster';
+import { createMachineAPI, getMachineDataAPI, updateMachineAPI, getMachineTypeDataAPI } from '../../../../actions/master/MachineMaster';
 import { getMachineTypeSelectList, fetchFuelComboAPI, getDepreciationTypeSelectList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -45,10 +45,32 @@ class AddMachine extends Component {
     componentDidMount() {
         const { machineId, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.props.getMachineDataAPI(machineId, res => { })
+            this.props.getMachineDataAPI(machineId, res => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    setTimeout(() => { this.getData(Data) }, 500)
+                }
+            })
         } else {
             this.props.getMachineDataAPI('', res => { })
         }
+    }
+
+    /**
+    * @method getData
+    * @description Used to get Data
+    */
+    getData = (Data) => {
+        const { MachineTypeSelectList, fuelList, DepreciationTypeSelectList } = this.props;
+        const machineObj = MachineTypeSelectList.find(item => item.Value == Data.MachineClassId)
+        const fuelObj = fuelList.find(item => item.Value == Data.FuelId)
+        const depreciationObj = DepreciationTypeSelectList.find(item => item.Value == Data.DepreciationId)
+
+        this.setState({
+            MachineClass: { label: machineObj.Text, value: machineObj.Value },
+            fuel: { label: fuelObj.Text, value: fuelObj.Value },
+            depreciation: { label: depreciationObj.Text, value: depreciationObj.Value },
+        }, () => this.machineTypeData());
     }
 
     /**
@@ -103,7 +125,26 @@ class AddMachine extends Component {
     * @description Used to handle machine class
     */
     classHandler = (newValue, actionMeta) => {
-        this.setState({ MachineClass: newValue });
+        if (newValue != '') {
+            this.setState({ MachineClass: newValue }, () => {
+                this.machineTypeData()
+            });
+        }
+    };
+
+    /**
+    * @method machineTypeData
+    * @description Used to handle labour
+    */
+    machineTypeData = () => {
+        const { MachineClass } = this.state;
+        this.props.getMachineTypeDataAPI(MachineClass.value, (res) => {
+            if (res && res.data && res.data.Data) {
+                let Data = res.data.Data;
+                this.props.change('LabourType', Data.LabourTypeNames)
+                this.props.change('MachineCapacity', Data.MachineCapacity)
+            }
+        })
     };
 
     /**
@@ -170,7 +211,8 @@ class AddMachine extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { MachineClass, isActiveBox } = this.state;
+
+        const { MachineClass, fuel, depreciation, isActiveBox } = this.state;
         const { machineId, isEditFlag } = this.props;
         const userData = userDetails();
 
@@ -201,6 +243,11 @@ class AddMachine extends Component {
                 CreatedBy: loggedInUserId(),
                 CreatedDate: '',
                 MachineTonnage: '',
+                LoanAmount: values.LoanAmount,
+                Equity: values.Equity,
+                RateOfInterest: values.RateOfInterest,
+                DepreciationId: depreciation.value,
+                FuelId: fuel.value,
             }
             this.props.updateMachineAPI(reqData, (res) => {
                 if (res.data.Result) {
@@ -233,7 +280,12 @@ class AddMachine extends Component {
                 IsActive: isActiveBox,
                 CreatedBy: loggedInUserId(),
                 CreatedDate: '',
-                //MachineTonnage: string
+                //MachineTonnage: string,
+                LoanAmount: values.LoanAmount,
+                Equity: values.Equity,
+                RateOfInterest: values.RateOfInterest,
+                DepreciationId: depreciation.value,
+                FuelId: fuel.value,
             }
 
             this.props.createMachineAPI(formData, (res) => {
@@ -449,7 +501,7 @@ class AddMachine extends Component {
                                         <Col md="6">
                                             <Field
                                                 label={`Loan`}
-                                                name={"Loan"}
+                                                name={"LoanAmount"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -477,7 +529,7 @@ class AddMachine extends Component {
                                         <Col md="6">
                                             <Field
                                                 label={`Equity`}
-                                                name={"Loan"}
+                                                name={"Equity"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -489,8 +541,8 @@ class AddMachine extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`Rate of Machine`}
-                                                name={"CostOfMachine"}
+                                                label={`Rate of Interest`}
+                                                name={"RateOfInterest"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -575,16 +627,24 @@ class AddMachine extends Component {
 */
 function mapStateToProps({ comman, machine }) {
     const { MachineTypeSelectList, fuelList, DepreciationTypeSelectList } = comman;
+    const { machineData } = machine;
     let initialValues = {};
-    // if(labourData && labourData !== undefined){
-    //     initialValues = {
-    //         LabourRate: labourData.LabourRate,
-    //         LabourTypeId: labourData.LabourTypeId,
-    //         PlantId: labourData.PlantId,
-    //         TechnologyId: labourData.TechnologyId,
-    //     }
-    // }
-    return { initialValues, MachineTypeSelectList, fuelList, DepreciationTypeSelectList }
+    if (machineData && machineData !== undefined) {
+        initialValues = {
+            MachineName: machineData.MachineName,
+            MachineNumber: machineData.MachineNumber,
+            Description: machineData.Description,
+            LabourType: machineData.LabourType,
+            MachineCapacity: machineData.MachineCapacity,
+            PowerRating: machineData.PowerRating,
+            UtilizationFactor: machineData.UtilizationFactor,
+            Loan: machineData.Loan,
+            CostOfMachine: machineData.CostOfMachine,
+            Equity: machineData.Equity,
+            RateOfInterest: machineData.RateOfInterest,
+        }
+    }
+    return { initialValues, MachineTypeSelectList, fuelList, DepreciationTypeSelectList, machineData }
 }
 
 /**
@@ -601,6 +661,7 @@ export default connect(mapStateToProps,
         createMachineAPI,
         getMachineDataAPI,
         updateMachineAPI,
+        getMachineTypeDataAPI,
     })(reduxForm({
         form: 'AddMachine',
         enableReinitialize: true,

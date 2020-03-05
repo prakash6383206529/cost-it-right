@@ -98,6 +98,7 @@ class AddMachineType extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        console.log('values', values)
         const { selectedLabourIds, IsActive } = this.state;
         const { MachineTypeId, isEditFlag } = this.props;
 
@@ -108,6 +109,7 @@ class AddMachineType extends Component {
 
         values.CreatedBy = loggedInUserId();
         values.LabourTypeIds = labourIds;
+        values.MachineCapacity = values.MachineCapacity;
         values.IsActive = true;
 
         /** Update detail of the existing UOM  */
@@ -122,7 +124,7 @@ class AddMachineType extends Component {
                 MachineClassName: values.MachineClassName,
                 CreatedBy: loggedInUserId(),
                 LabourTypeIds: labourIds,
-                Capacity: values.Capacity,
+                MachineCapacity: values.MachineCapacity,
             }
             this.props.updateMachineTypeAPI(formData, (res) => {
                 if (res.data.Result) {
@@ -196,7 +198,7 @@ class AddMachineType extends Component {
                                         <Col md="6">
                                             <Field
                                                 label="Capacity"
-                                                name={"Capacity"}
+                                                name={"MachineCapacity"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -255,7 +257,7 @@ function mapStateToProps({ machine, comman }) {
     if (machineTypeData && machineTypeData !== undefined) {
         initialValues = {
             MachineClassName: machineTypeData.MachineClassName,
-            Capacity: machineTypeData.Capacity,
+            MachineCapacity: machineTypeData.MachineCapacity,
         }
     }
     return { initialValues, machineTypeDataList, machineTypeData, labourTypeSelectList };

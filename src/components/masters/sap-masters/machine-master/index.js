@@ -45,10 +45,10 @@ class MachineMaster extends Component {
     }
 
     /**
-  * @method editDetails
+  * @method editItem
   * @description used to edit machine details
   */
-    editDetails = (Id) => {
+    editItem = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
@@ -106,8 +106,8 @@ class MachineMaster extends Component {
                         <Table className="table table-striped" bordered>
                             <thead>
                                 <tr>
-                                    <th>{`Class`}</th>
-                                    <th>{`Number`}</th>
+                                    <th>{`Machine Name`}</th>
+                                    <th>{`Machine Number`}</th>
                                     <th>{`Power`}</th>
                                     <th>{`Depreciation`}</th>
                                     <th>{`Labour Type`}</th>

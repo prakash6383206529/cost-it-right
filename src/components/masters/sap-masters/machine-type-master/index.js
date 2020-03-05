@@ -106,6 +106,7 @@ class MachineTypeMaster extends Component {
                             <thead>
                                 <tr>
                                     <th>Machine Class Name</th>
+                                    <th>Machine Capacity</th>
                                     <th>Labour types</th>
                                     <th>{''}</th>
                                 </tr>
@@ -117,6 +118,7 @@ class MachineTypeMaster extends Component {
 
                                             <tr key={index}>
                                                 <td >{item.MachineClassName}</td>
+                                                <td >{item.MachineCapacity}</td>
                                                 <td>{item.LabourTypeNames}</td>
                                                 <td>
                                                     <Button className="black-btn" onClick={() => this.editItemDetails(item.MachineTypeId)}><i className="fas fa-pencil-alt"></i></Button>
