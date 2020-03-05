@@ -121,7 +121,8 @@ class AddMachineType extends Component {
                 CreatedDate: '',
                 MachineClassName: values.MachineClassName,
                 CreatedBy: loggedInUserId(),
-                LabourTypeIds: labourIds
+                LabourTypeIds: labourIds,
+                Capacity: values.Capacity,
             }
             this.props.updateMachineTypeAPI(formData, (res) => {
                 if (res.data.Result) {
@@ -191,6 +192,20 @@ class AddMachineType extends Component {
                                         </Col>
 
                                     </Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label="Capacity"
+                                                name={"Capacity"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
+                                    </Row>
                                     {this.props.isEditFlag && <Row>
                                         <Col md="4">
                                             <label
@@ -240,6 +255,7 @@ function mapStateToProps({ machine, comman }) {
     if (machineTypeData && machineTypeData !== undefined) {
         initialValues = {
             MachineClassName: machineTypeData.MachineClassName,
+            Capacity: machineTypeData.Capacity,
         }
     }
     return { initialValues, machineTypeDataList, machineTypeData, labourTypeSelectList };
