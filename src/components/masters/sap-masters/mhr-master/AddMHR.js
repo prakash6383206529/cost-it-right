@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { required, getSupplierCode } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { fetchMasterDataAPI, getMHRMasterComboData } from '../../../../actions/master/Comman';
 import { createMHRMasterAPI } from '../../../../actions/master/MHRMaster';
@@ -18,7 +18,8 @@ class AddMHR extends Component {
             uom: '',
             TechnologyId: '',
             PlantId: '',
-            supplierType: 'vbc'
+            supplierType: 'vbc',
+            MachineName: [],
         }
     }
 
@@ -53,6 +54,108 @@ class AddMHR extends Component {
     toggleModel = () => {
         this.props.onCancel();
     }
+
+
+
+    /**
+    * @method technologyHandler
+    * @description Used to technologyHandler
+    */
+    technologyHandler = (e) => {
+        this.setState({ TechnologyId: e.target.value });
+    }
+
+    /**
+    * @method supplierHandler
+    * @description Used to supplierHandler
+    */
+    supplierHandler = (e) => {
+        if (e.target.value != 0) {
+            this.setState({ SupplierId: e.target.value }, () => {
+                const { Suppliers } = this.props;
+                const tempObj = Suppliers.find(item => item.Value == e.target.value)
+                const supplierCode = getSupplierCode(tempObj.Text);
+                this.props.change('SupplierCode', supplierCode)
+            });
+        } else {
+            this.setState({ SupplierId: '' }, () => {
+                this.props.change('SupplierCode', '')
+            });
+        }
+    }
+
+    /**
+    * @method plantHandler
+    * @description Used to plantHandler
+    */
+    plantHandler = (e) => {
+        this.setState({ PlantId: e.target.value })
+    }
+
+
+    /**
+    * @method renderListing
+    * @description Used show listing
+    */
+    renderListing = (label) => {
+        const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = this.props;
+        const temp = [];
+
+        if (label == 'technology') {
+            Technologies && Technologies.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label == 'processOperation') {
+            Operations && Operations.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label == 'supplier') {
+            Suppliers && Suppliers.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label == 'TransportUOM') {
+            UnitOfMeasurements && UnitOfMeasurements.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label == 'plant') {
+            Plants && Plants.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label == 'MachineName') {
+            // Plants && Plants.map(item =>
+            //     temp.push({ label: item.Text, value: item.Value })
+            // );
+            return temp;
+        }
+
+    }
+
+    supplierTypeHandler = (value) => {
+        this.setState({ supplierType: value })
+    }
+
+    /**
+    * @method MachineNameHandler
+    * @description Used to handle machine name
+    */
+    MachineNameHandler = (newValue, actionMeta) => {
+        this.setState({ MachineName: newValue });
+    };
 
     /**
     * @method onSubmit
@@ -94,101 +197,9 @@ class AddMHR extends Component {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.MHR_MASTER_ADD_SUCCESS);
                     { this.toggleModel() }
-                } else {
-                    toastr.error(res.data.message);
                 }
             });
         }
-    }
-
-    /**
-    * @method technologyHandler
-    * @description Used to technologyHandler
-    */
-    technologyHandler = (e) => {
-        this.setState({ TechnologyId: e.target.value });
-    }
-
-    /**
-    * @method supplierHandler
-    * @description Used to supplierHandler
-    */
-    supplierHandler = (e) => {
-        this.setState({ SupplierId: e.target.value });
-    }
-
-    /**
-    * @method uomHandler
-    * @description Used to uomHandler
-    */
-    uomHandler = (e) => {
-        this.setState({
-            uom: e.target.value
-        })
-    }
-
-    /**
-    * @method plantHandler
-    * @description Used to plantHandler
-    */
-    plantHandler = (e) => {
-        this.setState({
-            PlantId: e.target.value
-        })
-    }
-
-
-    /**
-    * @method selectUnitOfMeasurement
-    * @description Used show listing of unit of measurement
-    */
-    renderTypeOfListing = (label) => {
-        const { Operations, Plants, Suppliers, Technologies, UnitOfMeasurements } = this.props;
-        const temp = [];
-        //const tempSupplier = [];
-        if (label == 'technology') {
-            Technologies && Technologies.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'processOperation') {
-            Operations && Operations.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'supplier') {
-            Suppliers && Suppliers.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'uom') {
-            UnitOfMeasurements && UnitOfMeasurements.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'TransportUOM') {
-            UnitOfMeasurements && UnitOfMeasurements.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'plant') {
-            Plants && Plants.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-    }
-
-    supplierTypeHandler = (value) => {
-        console.log('valueeeee', value)
-        this.setState({
-            supplierType: value
-        })
     }
 
     /**
@@ -200,7 +211,7 @@ class AddMHR extends Component {
 
         return (
             <Container className="top-margin">
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
+                <Modal size={'xl'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update MHR' : 'Add MHR'}</ModalHeader>
                     <ModalBody>
                         <Row>
@@ -239,6 +250,7 @@ class AddMHR extends Component {
                                             </Label>
                                         </Col>
                                     </Row>
+
                                     <Row>
                                         <Col md="6">
                                             <Field
@@ -249,7 +261,7 @@ class AddMHR extends Component {
                                                 //validate={[required]}
                                                 //required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('technology')}
+                                                options={this.renderListing('technology')}
                                                 //options={technologyOptions}
                                                 onChange={this.technologyHandler}
                                                 optionValue={'value'}
@@ -259,25 +271,6 @@ class AddMHR extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`Supplier`}
-                                                name={"SupplierId"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                //required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('supplier')}
-                                                //options={technologyOptions}
-                                                onChange={this.supplierHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
                                                 label={`Plant`}
                                                 name={"PlantId"}
                                                 type="text"
@@ -285,7 +278,7 @@ class AddMHR extends Component {
                                                 validate={[required]}
                                                 required={true}
                                                 maxLength={26}
-                                                options={this.renderTypeOfListing('plant')}
+                                                options={this.renderListing('plant')}
                                                 onChange={this.plantHandler}
                                                 optionValue={'value'}
                                                 optionLabel={'label'}
@@ -293,74 +286,76 @@ class AddMHR extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+                                    </Row>
+
+                                    <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`UOM`}
-                                                name={"UnitOfMeasurementId"}
+                                                label={`Supplier`}
+                                                name={"SupplierId"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                required={true}
+                                                //validate={[required]}
+                                                //required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('uom')}
-                                                //options={uomOptions}
-                                                onChange={this.uomHandler}
+                                                options={this.renderListing('supplier')}
+                                                onChange={this.supplierHandler}
                                                 optionValue={'value'}
                                                 optionLabel={'label'}
                                                 component={renderSelectField}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
                                         <Col md="6">
                                             <Field
-                                                label="Machine Name"
-                                                name={"MachineName"}
+                                                label="Supplier Code"
+                                                name={"SupplierCode"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Machine Number"
-                                                name={"MachineNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
+                                                disabled={true}
                                             />
                                         </Col>
                                     </Row>
-                                    <Row>
 
-                                        <Col md="6">
+                                    <Row>
+                                        <Col md="4">
                                             <Field
-                                                label="Description"
-                                                name={"Description"}
+                                                name="MachineName"
+                                                type="text"
+                                                label="Machine Name"
+                                                component={searchableSelect}
+                                                placeholder={'Select Machine Name'}
+                                                options={this.renderListing('MachineName')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                //validate={[required]}
+                                                //required={true}
+                                                handleChangeDescription={this.MachineNameHandler}
+                                                valueDescription={this.state.MachineName}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="Machine Description"
+                                                name={"MachineDescription"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
                                         </Col>
-                                        <Col md="6">
+                                        <Col md="4">
                                             <Field
-                                                label="Machine Tonnage"
-                                                name={"MachineTonnage"}
+                                                label="Power Rating"
+                                                name={"PowerRating"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -369,10 +364,51 @@ class AddMHR extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col md="6">
+                                        <Col md="4">
                                             <Field
-                                                label="Machine Rate"
-                                                name={"BasicMachineRate"}
+                                                label="Depreciation"
+                                                name={"Depreciation"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="Shift"
+                                                name={"Shift"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="Fuel Type"
+                                                name={"FuelType"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="4">
+                                            <Field
+                                                label="Consumable"
+                                                name={"Consumable"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -384,6 +420,88 @@ class AddMHR extends Component {
                                         </Col>
                                     </Row>
 
+                                    <Row>
+                                        <Col md="4">
+                                            <Field
+                                                label="Efficiency"
+                                                name={"Efficiency"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="Rate"
+                                                name={"Rate"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="UOM"
+                                                name={"UOM"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="4">
+                                            <Field
+                                                label="Loan"
+                                                name={"Loan"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="Equity"
+                                                name={"Equity"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="Rate Of Interest"
+                                                name={"RateOfInterest"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                    </Row>
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
