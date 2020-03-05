@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Input, Label, Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderSelectField, renderNumberInputField, renderText, searchableSelect } from "../../../layout/FormInputs";
-import { } from '../../../../actions/master/MachineMaster';
-import { } from '../../../../actions/master/Comman';
+import { createMachineAPI, getMachineDataAPI, updateMachineAPI } from '../../../../actions/master/MachineMaster';
+import { getMachineTypeSelectList, fetchFuelComboAPI, getDepreciationTypeSelectList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
+import { userDetails, loggedInUserId } from '../../../../helper';
 
 class AddMachine extends Component {
     constructor(props) {
         super(props);
         this.state = {
             depreciation: [],
-            class: [],
+            MachineClass: [],
             labour: [],
             fuel: [],
             shift: [],
             effectiveDate: '',
+            isActiveBox: false,
         }
     }
 
@@ -31,7 +33,9 @@ class AddMachine extends Component {
     * @description Called after rendering the component
     */
     componentWillMount() {
-
+        this.props.getMachineTypeSelectList(() => { })
+        this.props.fetchFuelComboAPI(() => { })
+        this.props.getDepreciationTypeSelectList(() => { })
     }
 
     /**
@@ -41,9 +45,9 @@ class AddMachine extends Component {
     componentDidMount() {
         const { machineId, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.setState({ isEditFlag }, () => {
-                this.props.getLabourByIdAPI(machineId, true, res => { })
-            })
+            this.props.getMachineDataAPI(machineId, res => { })
+        } else {
+            this.props.getMachineDataAPI('', res => { })
         }
     }
 
@@ -56,36 +60,34 @@ class AddMachine extends Component {
     }
 
     /**
-    * @method selectType
-    * @description Used show listing of unit of measurement
+    * @method renderListing
+    * @description Used show listing
     */
-    searchableSelectType = (label) => {
-        //const { roleList, departmentList, cityList } = this.props;
-        //const temp = [];
+    renderListing = (label) => {
+        const { MachineTypeSelectList, fuelList, DepreciationTypeSelectList } = this.props;
+        const temp = [];
 
-        // if (label === 'role') {
-        //   roleList && roleList.map(item => {
-        //     if (item.Value == 0) return false;
-        //     temp.push({ label: item.RoleName, value: item.RoleId })
-        //   });
-        //   return temp;
-        // }
+        if (label === 'class') {
+            MachineTypeSelectList && MachineTypeSelectList.map(item => {
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
 
-        // if (label === 'department') {
-        //   departmentList && departmentList.map(item => {
-        //     if (item.Value == 0) return false;
-        //     temp.push({ label: item.DepartmentName, value: item.DepartmentId })
-        //   });
-        //   return temp;
-        // }
+        if (label === 'fuel') {
+            fuelList && fuelList.map(item => {
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
 
-        // if (label === 'city') {
-        //   cityList && cityList.map(item => {
-        //     if (item.Value == 0) return false;
-        //     temp.push({ label: item.Text, value: item.Value })
-        //   });
-        //   return temp;
-        // }
+        if (label == 'depreciation') {
+            DepreciationTypeSelectList && DepreciationTypeSelectList.map(item => {
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
     }
 
     /**
@@ -101,7 +103,7 @@ class AddMachine extends Component {
     * @description Used to handle machine class
     */
     classHandler = (newValue, actionMeta) => {
-        this.setState({ class: newValue });
+        this.setState({ MachineClass: newValue });
     };
 
     /**
@@ -129,14 +131,24 @@ class AddMachine extends Component {
     };
 
     /**
-  * @method handleChange
-  * @description Handle user data
-  */
+    * @method handleChange
+    * @description Handle user data
+    */
     handleEffectiveDate = (date) => {
         this.setState({
             effectiveDate: date,
         });
     };
+
+    /**
+    * @method activeHandler
+    * @description Used to handle plant detail active or not
+    */
+    activeHandler = () => {
+        this.setState({
+            isActiveBox: !this.state.isActiveBox
+        })
+    }
 
     /**
     * @method cancel
@@ -158,29 +170,80 @@ class AddMachine extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        // if (this.props.isEditFlag) { 
-        //     const { machineId } = this.props;
+        const { MachineClass, isActiveBox } = this.state;
+        const { machineId, isEditFlag } = this.props;
+        const userData = userDetails();
 
-        //     this.props.updateLabourAPI(formData, (res) => {
-        //         if (res.data.Result) {
-        //             toastr.success(MESSAGES.UPDATE_LABOUR_SUCCESS);
-        //             this.toggleModel();
-        //             this.props.getLabourDetailAPI(res => {});
-        //         } else {
-        //             toastr.error(MESSAGES.SOME_ERROR);
-        //         }
-        //     });
-        // }else{
-        //     this.props.createLabourAPI(values, (res) => {
-        //         if (res.data.Result === true) {
-        //             toastr.success(MESSAGES.LABOUR_ADDED_SUCCESS);
-        //             this.props.getLabourDetailAPI(res => {});
-        //             this.toggleModel()
-        //         } else {
-        //             toastr.error(res.data.Message);
-        //         }
-        //     });
-        // }
+        if (isEditFlag) {
+            let reqData = {
+                MachineClassName: MachineClass.label,
+                //PlantName: '',
+                CreatedByName: loggedInUserId(),
+                MachineId: machineId,
+                MachineNumber: values.MachineNumber,
+                MachineName: values.MachineName,
+                Description: values.Description,
+                //Make: '',
+                MachineCapacity: values.MachineCapacity,
+                //YearOfManufacturing: '',
+                CostOfMachine: values.CostOfMachine,
+                //CostOfAccessories: 0,
+                TotalMachineCost: values.TotalMachineCost,
+                PowerRating: values.PowerRating,
+                UtilizationFactor: values.UtilizationFactor,
+                //WorkingHourShift: '',
+                //NumberOfWorkingDaysYear: '',
+                //PlantId: '',
+                CompanyId: userData.CompanyId,
+                MachineClassId: MachineClass.value,
+                IsOtherSource: true,
+                IsActive: isActiveBox,
+                CreatedBy: loggedInUserId(),
+                CreatedDate: '',
+                MachineTonnage: '',
+            }
+            this.props.updateMachineAPI(reqData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_LABOUR_SUCCESS);
+                    this.toggleModel();
+                }
+            });
+
+        } else {
+
+            let formData = {
+                MachineId: '',
+                MachineNumber: values.MachineNumber,
+                MachineName: values.MachineName,
+                Description: values.Description,
+                //Make: string,
+                MachineCapacity: values.MachineCapacity,
+                //YearOfManufacturing: string,
+                CostOfMachine: values.CostOfMachine,
+                //CostOfAccessories: 0,
+                //TotalMachineCost: 0,
+                PowerRating: values.PowerRating,
+                UtilizationFactor: values.UtilizationFactor,
+                //WorkingHourShift: string,
+                //NumberOfWorkingDaysYear: string,
+                //PlantId: '',
+                CompanyId: userData.CompanyId,
+                MachineClassId: MachineClass.value,
+                IsOtherSource: true,
+                IsActive: isActiveBox,
+                CreatedBy: loggedInUserId(),
+                CreatedDate: '',
+                //MachineTonnage: string
+            }
+
+            this.props.createMachineAPI(formData, (res) => {
+                if (res.data.Result == true) {
+                    toastr.success(MESSAGES.MACHINE_ADD_SUCCESS);
+                    this.toggleModel()
+                }
+            });
+
+        }
 
     }
 
@@ -202,41 +265,40 @@ class AddMachine extends Component {
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
-                                    <Row className={'mb20'}>
-                                        <Col md="12">
+
+                                    <Row>
+                                        <Col md="6">
                                             <Field
-                                                name="MachineClass"
+                                                label={`Machine Name`}
+                                                name={"MachineName"}
                                                 type="text"
-                                                label="Machine Class"
-                                                component={searchableSelect}
-                                                placeholder={'Select Machine Class'}
-                                                options={this.searchableSelectType('class')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                //validate={[required]}
-                                                //required={true}
-                                                handleChangeDescription={this.classHandler}
-                                                valueDescription={this.state.class}
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 label={`Machine Number`}
                                                 name={"MachineNumber"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
                                         </Col>
+                                    </Row>
+                                    <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`Machine Power`}
-                                                name={"MachinePower"}
+                                                label={`Description`}
+                                                name={"Description"}
                                                 type="text"
                                                 placeholder={''}
                                                 //validate={[required]}
@@ -246,24 +308,53 @@ class AddMachine extends Component {
                                                 disabled={false}
                                             />
                                         </Col>
+                                        <Col md="6">
+                                            <Field
+                                                name="MachineClass"
+                                                type="text"
+                                                label="Machine Class"
+                                                component={searchableSelect}
+                                                placeholder={'Select Machine Class'}
+                                                options={this.renderListing('class')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                //validate={[required]}
+                                                //required={true}
+                                                handleChangeDescription={this.classHandler}
+                                                valueDescription={this.state.MachineClass}
+                                            />
+                                        </Col>
                                     </Row>
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                name="MachineDepreciation"
+                                                label={`Labour Type`}
+                                                name={"LabourType"}
                                                 type="text"
-                                                label="Machine Depreciation"
-                                                component={searchableSelect}
-                                                placeholder={'Select Depreciation'}
-                                                options={this.searchableSelectType('depreciation')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                //validate={[required]}
-                                                //required={true}
-                                                handleChangeDescription={this.depreciationHandler}
-                                                valueDescription={this.state.depreciation}
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
                                             />
                                         </Col>
                                         <Col md="6">
+                                            <Field
+                                                label={`Capacity`}
+                                                name={"MachineCapacity"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+
+                                        {/* <Col md="6">
                                             <Field
                                                 name="Labour"
                                                 type="text"
@@ -277,9 +368,9 @@ class AddMachine extends Component {
                                                 handleChangeDescription={this.labourHandler}
                                                 valueDescription={this.state.labour}
                                             />
-                                        </Col>
+                                        </Col> */}
                                     </Row>
-                                    <Row className={'mt20'} >
+                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 name="Fuel"
@@ -287,7 +378,7 @@ class AddMachine extends Component {
                                                 label="Fuel Type"
                                                 component={searchableSelect}
                                                 placeholder={'Select Fuel'}
-                                                options={this.searchableSelectType('fuel')}
+                                                options={this.renderListing('fuel')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 //validate={[required]}
                                                 //required={true}
@@ -296,6 +387,21 @@ class AddMachine extends Component {
                                             />
                                         </Col>
                                         <Col md="6">
+                                            <Field
+                                                name="MachineDepreciation"
+                                                type="text"
+                                                label="Machine Depreciation"
+                                                component={searchableSelect}
+                                                placeholder={'Select Depreciation'}
+                                                options={this.renderListing('depreciation')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                //validate={[required]}
+                                                //required={true}
+                                                handleChangeDescription={this.depreciationHandler}
+                                                valueDescription={this.state.depreciation}
+                                            />
+                                        </Col>
+                                        {/* <Col md="6">
                                             <Field
                                                 name="shift"
                                                 type="text"
@@ -309,59 +415,31 @@ class AddMachine extends Component {
                                                 handleChangeDescription={this.shiftHandler}
                                                 valueDescription={this.state.shift}
                                             />
-                                        </Col>
+                                        </Col> */}
                                     </Row>
-                                    <Row className={'mt20'} >
+                                    <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`Machine Cost`}
-                                                name={"MachineCost"}
+                                                label={`Power Rating`}
+                                                name={"PowerRating"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`Manufacturing year`}
-                                                name={"ManufacturingYear"}
+                                                label={`Consumable`}
+                                                name={"UtilizationFactor"}
                                                 type="text"
                                                 placeholder={''}
-                                                //validate={[required]}
+                                                validate={[required]}
                                                 component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row className={'mt20'}>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Machine Maintenance Cost`}
-                                                name={"MachineMaintenanceCost"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`PUC`}
-                                                name={"PUC"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
+                                                required={true}
                                                 className=" withoutBorder"
                                                 disabled={false}
                                             />
@@ -369,10 +447,66 @@ class AddMachine extends Component {
                                     </Row>
                                     <Row>
                                         <Col md="6">
+                                            <Field
+                                                label={`Loan`}
+                                                name={"Loan"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Machine Cost`}
+                                                name={"CostOfMachine"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Equity`}
+                                                name={"Loan"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Rate of Machine`}
+                                                name={"CostOfMachine"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                    </Row>
+
+                                    {/* <Row>
+                                        <Col md="6">
                                             <div className="form-group">
                                                 <label>
                                                     Effective Date
-                                                    {/* <span className="asterisk-required">*</span> */}
                                                 </label>
                                                 <div className="inputbox date-section">
                                                     <DatePicker
@@ -393,7 +527,25 @@ class AddMachine extends Component {
                                                 </div>
                                             </div>
                                         </Col>
+                                    </Row> */}
+
+                                    <Row>
+                                        <Col md="4">
+                                            <label
+                                                className="custom-checkbox"
+                                                onChange={this.activeHandler}
+                                            >
+                                                IsActive
+                                                <input type="checkbox" disabled={false} checked={this.state.isActiveBox} />
+                                                <span
+                                                    className=" before-box"
+                                                    checked={this.state.isActiveBox}
+                                                    onChange={this.activeHandler}
+                                                />
+                                            </label>
+                                        </Col>
                                     </Row>
+
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">
                                             <button type="submit" className="btn dark-pinkbtn" >
@@ -405,6 +557,7 @@ class AddMachine extends Component {
                                                 </button>}
                                         </div>
                                     </Row>
+
                                 </form>
                             </Container>
                         </Row>
@@ -421,7 +574,7 @@ class AddMachine extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, machine }) {
-
+    const { MachineTypeSelectList, fuelList, DepreciationTypeSelectList } = comman;
     let initialValues = {};
     // if(labourData && labourData !== undefined){
     //     initialValues = {
@@ -431,18 +584,24 @@ function mapStateToProps({ comman, machine }) {
     //         TechnologyId: labourData.TechnologyId,
     //     }
     // }
-    return { initialValues }
+    return { initialValues, MachineTypeSelectList, fuelList, DepreciationTypeSelectList }
 }
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, {
-
-})(reduxForm({
-    form: 'AddMachine',
-    enableReinitialize: true,
-})(AddMachine));
+export default connect(mapStateToProps,
+    {
+        getMachineTypeSelectList,
+        fetchFuelComboAPI,
+        getDepreciationTypeSelectList,
+        createMachineAPI,
+        getMachineDataAPI,
+        updateMachineAPI,
+    })(reduxForm({
+        form: 'AddMachine',
+        enableReinitialize: true,
+    })(AddMachine));

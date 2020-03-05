@@ -37,6 +37,8 @@ import {
     GET_CHARGE_TYPE_SELECTLIST_SUCCESS,
     GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS,
     GET_UOM_SELECTLIST_SUCCESS,
+    GET_MACHINE_TYPE_SELECTLIST_SUCCESS,
+    GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -1175,6 +1177,54 @@ export function getUOMSelectList(callback) {
                 callback(response);
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getMachineTypeSelectList
+ * @description Used to fetch Machine type selectlist
+ */
+export function getMachineTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMachineTypeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MACHINE_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getDepreciationTypeSelectList
+ * @description Used to fetch Depreciation type selectlist
+ */
+export function getDepreciationTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getDepreciationTypeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });

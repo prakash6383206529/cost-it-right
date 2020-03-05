@@ -383,6 +383,15 @@ export const API = {
   getMachineTypeDataAPI: `${BASE_URL}/masters-machine/get-machine-type`,
   updateMachineTypeAPI: `${BASE_URL}/masters-machine/update-machine-type`,
   deleteMachineTypeAPI: `${BASE_URL}/masters-machine/delete-machine-type`,
+  getMachineTypeSelectList: `${BASE_URL}/configuration/select-list-get-machine-type`,
+  getDepreciationTypeSelectList: `${BASE_URL}/configuration/select-list-get-depreciation-type`,
+
+  //MACHINE
+  createMachineAPI: `${BASE_URL}/masters-machine/create`,
+  getMachineListAPI: `${BASE_URL}/masters-machine/get-all`,
+  deleteMachineAPI: `${BASE_URL}/masters-machine/delete`,
+  getMachineDataAPI: `${BASE_URL}/masters-machine/get`,
+  updateMachineAPI: `${BASE_URL}/masters-machine/update`,
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
@@ -690,6 +699,12 @@ export const GET_REASON_SUCCESS = 'GET_REASON_SUCCESS';
 export const CREATE_MACHINE_TYPE_SUCCESS = 'CREATE_MACHINE_TYPE_SUCCESS';
 export const GET_MACHINE_TYPE_DATALIST_SUCCESS = 'GET_MACHINE_TYPE_DATALIST_SUCCESS';
 export const GET_MACHINE_TYPE_DATA_SUCCESS = 'GET_MACHINE_TYPE_DATA_SUCCESS';
+export const GET_MACHINE_TYPE_SELECTLIST_SUCCESS = 'GET_MACHINE_TYPE_SELECTLIST_SUCCESS';
+export const GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS';
+
+//MACHINE
+export const GET_MACHINE_DATALIST_SUCCESS = 'GET_MACHINE_DATALIST_SUCCESS';
+export const GET_MACHINE_DATA_SUCCESS = 'GET_MACHINE_DATA_SUCCESS';
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS';

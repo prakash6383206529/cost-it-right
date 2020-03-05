@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddMachine from './AddMachine';
-import { } from '../../../../actions/master/MachineMaster';
+import { getMachineListAPI, deleteMachineAPI } from '../../../../actions/master/MachineMaster';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { convertISOToUtcDate, } from '../../../../helper';
@@ -21,10 +21,11 @@ class MachineMaster extends Component {
     }
 
     /**
-   * @method componentDidMount
-   * @description Called after rendering the component
-   */
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
     componentDidMount() {
+        this.props.getMachineListAPI(() => { })
     }
 
     /**
@@ -40,7 +41,7 @@ class MachineMaster extends Component {
      * @description  used to cancel filter form
      */
     onCancel = () => {
-        this.setState({ isOpen: false })
+        this.setState({ isOpen: false }, () => this.props.getMachineListAPI(() => { }))
     }
 
     /**
@@ -74,15 +75,14 @@ class MachineMaster extends Component {
     * @description confirm delete machine
     */
     confirmDelete = (Id) => {
-        // this.props.deleteLabourAPI(Id, (res) => {
-        //     if (res.data.Result) {
-        //         toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-        //         this.props.getLabourDetailAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+        this.props.deleteMachineAPI(Id, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
+                this.props.getMachineListAPI(res => { });
+            }
+        });
     }
+
     /**
     * @method render
     * @description Renders the component
@@ -104,7 +104,6 @@ class MachineMaster extends Component {
                 <Row>
                     <Col>
                         <Table className="table table-striped" bordered>
-                            {/* {this.props.labourDetail && this.props.labourDetail.length > 0 && */}
                             <thead>
                                 <tr>
                                     <th>{`Class`}</th>
@@ -119,30 +118,33 @@ class MachineMaster extends Component {
                                     <th>{`Maintenance Cost`}</th>
                                     <th>{`PUC`}</th>
                                     <th>{`Effective Date`}</th>
+                                    <th>{``}</th>
                                 </tr>
                             </thead>
-                            {/* } */}
                             <tbody >
-                                {/* {this.props.labourDetail && this.props.labourDetail.length > 0 &&
-                                    this.props.labourDetail.map((item, index) => {
-                                        return ( */}
-                                <tr>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                    <td>{''}</td>
-                                </tr>
-                                {/* )
-                                    })} */}
-                                {/* {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />} */}
+                                {this.props.machineDatalist && this.props.machineDatalist.length > 0 &&
+                                    this.props.machineDatalist.map((item, index) => {
+                                        return (
+                                            <tr>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>{''}</td>
+                                                <td>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editItem(item.MachineId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(item.MachineId)}><i className="far fa-trash-alt"></i></Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.machineDatalist === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </Col>
@@ -166,12 +168,15 @@ class MachineMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ machine }) {
-    const { loading } = machine;
-    return { loading }
+    const { loading, machineDatalist } = machine;
+
+    return { loading, machineDatalist }
 }
 
-
-export default connect(
-    mapStateToProps, {}
+export default connect(mapStateToProps,
+    {
+        getMachineListAPI,
+        deleteMachineAPI,
+    }
 )(MachineMaster);
 

@@ -138,6 +138,7 @@ export const MESSAGES = {
   //MACHINE TYPE
   MACHINE_TYPE_ADD_SUCCESS: 'Machine Class has been added successfully.',
   UPDATE_MACHINE_TYPE_SUCESS: 'Machine Class has been updated successfully.',
+  MACHINE_ADD_SUCCESS: 'Machine has been added successfully.',
 
   //POWER MASTER
   POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',

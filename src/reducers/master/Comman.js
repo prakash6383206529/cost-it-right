@@ -38,6 +38,8 @@ import {
     GET_CHARGE_TYPE_SELECTLIST_SUCCESS,
     GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS,
     GET_UOM_SELECTLIST_SUCCESS,
+    GET_MACHINE_TYPE_SELECTLIST_SUCCESS,
+    GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -317,6 +319,20 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 UOMSelectList: action.payload
+            };
+        case GET_MACHINE_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                MachineTypeSelectList: action.payload
+            };
+        case GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                DepreciationTypeSelectList: action.payload
             };
         default:
             return state;

@@ -6,6 +6,8 @@ import {
     CREATE_MACHINE_TYPE_SUCCESS,
     GET_MACHINE_TYPE_DATALIST_SUCCESS,
     GET_MACHINE_TYPE_DATA_SUCCESS,
+    GET_MACHINE_DATALIST_SUCCESS,
+    GET_MACHINE_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -56,6 +58,20 @@ export default function MachineReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 machineTypeData: action.payload
+            };
+        case GET_MACHINE_DATALIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                machineDatalist: action.payload
+            };
+        case GET_MACHINE_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                machineData: action.payload
             };
         default:
             return state;
