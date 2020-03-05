@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required, number } from "../../../../helper/validation";
-import { renderText, renderNumberInputField } from "../../../layout/FormInputs";
+import { renderText, renderNumberInputField, searchableSelect } from "../../../layout/FormInputs";
 import {
     createDepreciationMasterAPI, getDepreciationDataAPI, getDepreciationListDataAPI,
     updateDepreciationAPI
 } from '../../../../actions/master/MHRMaster';
+import { getDepreciationTypeSelectList, getShiftTypeSelectList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -17,7 +18,18 @@ class AddDepreciation extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            depreciation: [],
+            shift: [],
         }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
+    componentWillMount() {
+        this.props.getDepreciationTypeSelectList(() => { })
+        this.props.getShiftTypeSelectList(() => { })
     }
 
     /**
@@ -27,10 +39,30 @@ class AddDepreciation extends Component {
     componentDidMount() {
         const { DepreciationId, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.props.getDepreciationDataAPI(DepreciationId, res => { })
+            this.props.getDepreciationDataAPI(DepreciationId, res => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    setTimeout(() => { this.getData(Data) }, 500)
+                }
+            })
         } else {
             this.props.getDepreciationDataAPI('', res => { })
         }
+    }
+
+    /**
+    * @method getData
+    * @description Used to get Data
+    */
+    getData = (Data) => {
+        const { DepreciationTypeSelectList, ShiftTypeSelectList } = this.props;
+        const shiftObj = ShiftTypeSelectList.find(item => item.Value == Data.Shift)
+        const depreciationObj = DepreciationTypeSelectList.find(item => item.Value == Data.DepreciationType)
+
+        this.setState({
+            shift: { label: shiftObj.Text, value: shiftObj.Value },
+            depreciation: { label: depreciationObj.Text, value: depreciationObj.Value },
+        });
     }
 
     /**
@@ -42,19 +74,61 @@ class AddDepreciation extends Component {
     }
 
     /**
+    * @method depreciationHandler
+    * @description Used to handle depreciation
+    */
+    depreciationHandler = (newValue, actionMeta) => {
+        this.setState({ depreciation: newValue });
+    };
+
+    /**
+    * @method shiftHandler
+    * @description Used to handle shift
+    */
+    shiftHandler = (newValue, actionMeta) => {
+        this.setState({ shift: newValue });
+    };
+
+    /**
+    * @method renderListing
+    * @description Used show listing
+    */
+    renderListing = (label) => {
+        const { DepreciationTypeSelectList, ShiftTypeSelectList } = this.props;
+        const temp = [];
+
+        if (label == 'depreciation') {
+            DepreciationTypeSelectList && DepreciationTypeSelectList.map(item => {
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label == 'shift') {
+            ShiftTypeSelectList && ShiftTypeSelectList.map(item => {
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { depreciation, shift } = this.state;
         const { isEditFlag, DepreciationId } = this.props;
         values.CreatedBy = loggedInUserId();
+
         if (isEditFlag) {
 
             this.setState({ isSubmitted: true });
             let formData = {
                 DepreciationId: DepreciationId,
-                DepreciationType: values.DepreciationType,
-                Shift: values.Shift,
+                DepreciationType: depreciation.value,
+                Shift: shift.value,
                 DepreciationRate: values.DepreciationRate,
                 IsActive: true,
                 CreatedDate: '',
@@ -69,8 +143,17 @@ class AddDepreciation extends Component {
             });
 
         } else {
+
             /** Add new detail of the depreciation  */
-            this.props.createDepreciationMasterAPI(values, (res) => {
+            let reqData = {
+                DepreciationType: depreciation.value,
+                Shift: shift.value,
+                DepreciationRate: values.DepreciationRate,
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
+            }
+            this.props.createDepreciationMasterAPI(reqData, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.DEPRECIATION_ADD_SUCCESS);
                     this.toggleModel()
@@ -102,28 +185,32 @@ class AddDepreciation extends Component {
                                     <Row>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.DEPRECIATION} ${CONSTANT.TYPE}`}
-                                                name={"DepreciationType"}
+                                                name="DepreciationType"
                                                 type="text"
-                                                placeholder={''}
+                                                label="Depreciation Type"
+                                                component={searchableSelect}
+                                                placeholder={'Select Depreciation'}
+                                                options={this.renderListing('depreciation')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 //validate={[required]}
-                                                component={renderText}
                                                 //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
+                                                handleChangeDescription={this.depreciationHandler}
+                                                valueDescription={this.state.depreciation}
                                             />
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.SHIFT}`}
-                                                name={"Shift"}
+                                                name="Shift"
                                                 type="text"
-                                                placeholder={''}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
+                                                label="Shift"
+                                                component={searchableSelect}
+                                                placeholder={'Select Shift'}
+                                                options={this.renderListing('shift')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                //validate={[required]}
+                                                //required={true}
+                                                handleChangeDescription={this.shiftHandler}
+                                                valueDescription={this.state.shift}
                                             />
                                         </Col>
                                     </Row>
@@ -164,8 +251,9 @@ class AddDepreciation extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ MHRReducer }) {
+function mapStateToProps({ MHRReducer, comman }) {
     const { depreciationData, loading } = MHRReducer;
+    const { DepreciationTypeSelectList, ShiftTypeSelectList } = comman;
     let initialValues = {};
     if (depreciationData && depreciationData !== undefined) {
         initialValues = {
@@ -174,7 +262,7 @@ function mapStateToProps({ MHRReducer }) {
             DepreciationRate: depreciationData.DepreciationRate,
         }
     }
-    return { depreciationData, loading, initialValues }
+    return { depreciationData, loading, initialValues, DepreciationTypeSelectList, ShiftTypeSelectList }
 }
 
 /**
@@ -188,6 +276,8 @@ export default connect(mapStateToProps, {
     getDepreciationDataAPI,
     getDepreciationListDataAPI,
     updateDepreciationAPI,
+    getDepreciationTypeSelectList,
+    getShiftTypeSelectList,
 })(reduxForm({
     form: 'AddDepreciation',
     enableReinitialize: true,

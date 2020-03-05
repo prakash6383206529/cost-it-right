@@ -5,7 +5,7 @@ import { Input, Label, Container, Row, Col, Modal, ModalHeader, ModalBody } from
 import { required } from "../../../../helper/validation";
 import { renderSelectField, renderNumberInputField, renderText, searchableSelect } from "../../../layout/FormInputs";
 import { createMachineAPI, getMachineDataAPI, updateMachineAPI, getMachineTypeDataAPI } from '../../../../actions/master/MachineMaster';
-import { getMachineTypeSelectList, fetchFuelComboAPI, getDepreciationTypeSelectList } from '../../../../actions/master/Comman';
+import { getMachineTypeSelectList, fetchFuelComboAPI, getDepreciationSelectList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -35,7 +35,7 @@ class AddMachine extends Component {
     componentWillMount() {
         this.props.getMachineTypeSelectList(() => { })
         this.props.fetchFuelComboAPI(() => { })
-        this.props.getDepreciationTypeSelectList(() => { })
+        this.props.getDepreciationSelectList(() => { })
     }
 
     /**
@@ -64,12 +64,13 @@ class AddMachine extends Component {
         const { MachineTypeSelectList, fuelList, DepreciationTypeSelectList } = this.props;
         const machineObj = MachineTypeSelectList.find(item => item.Value == Data.MachineClassId)
         const fuelObj = fuelList.find(item => item.Value == Data.FuelId)
-        const depreciationObj = DepreciationTypeSelectList.find(item => item.Value == Data.DepreciationId)
+        //const depreciationObj = DepreciationTypeSelectList.find(item => item.Value == Data.DepreciationId)
 
         this.setState({
             MachineClass: { label: machineObj.Text, value: machineObj.Value },
             fuel: { label: fuelObj.Text, value: fuelObj.Value },
-            depreciation: { label: depreciationObj.Text, value: depreciationObj.Value },
+            //depreciation: { label: depreciationObj.Text, value: depreciationObj.Value },
+            isActiveBox: Data.IsActive,
         }, () => this.machineTypeData());
     }
 
@@ -86,7 +87,7 @@ class AddMachine extends Component {
     * @description Used show listing
     */
     renderListing = (label) => {
-        const { MachineTypeSelectList, fuelList, DepreciationTypeSelectList } = this.props;
+        const { MachineTypeSelectList, fuelList, DepreciationSelectList } = this.props;
         const temp = [];
 
         if (label === 'class') {
@@ -104,7 +105,7 @@ class AddMachine extends Component {
         }
 
         if (label == 'depreciation') {
-            DepreciationTypeSelectList && DepreciationTypeSelectList.map(item => {
+            DepreciationSelectList && DepreciationSelectList.map(item => {
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -626,7 +627,7 @@ class AddMachine extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, machine }) {
-    const { MachineTypeSelectList, fuelList, DepreciationTypeSelectList } = comman;
+    const { MachineTypeSelectList, fuelList, DepreciationSelectList } = comman;
     const { machineData } = machine;
     let initialValues = {};
     if (machineData && machineData !== undefined) {
@@ -638,13 +639,13 @@ function mapStateToProps({ comman, machine }) {
             MachineCapacity: machineData.MachineCapacity,
             PowerRating: machineData.PowerRating,
             UtilizationFactor: machineData.UtilizationFactor,
-            Loan: machineData.Loan,
+            LoanAmount: machineData.LoanAmount,
             CostOfMachine: machineData.CostOfMachine,
             Equity: machineData.Equity,
             RateOfInterest: machineData.RateOfInterest,
         }
     }
-    return { initialValues, MachineTypeSelectList, fuelList, DepreciationTypeSelectList, machineData }
+    return { initialValues, MachineTypeSelectList, fuelList, DepreciationSelectList, machineData }
 }
 
 /**
@@ -657,7 +658,7 @@ export default connect(mapStateToProps,
     {
         getMachineTypeSelectList,
         fetchFuelComboAPI,
-        getDepreciationTypeSelectList,
+        getDepreciationSelectList,
         createMachineAPI,
         getMachineDataAPI,
         updateMachineAPI,

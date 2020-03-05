@@ -40,6 +40,8 @@ import {
     GET_UOM_SELECTLIST_SUCCESS,
     GET_MACHINE_TYPE_SELECTLIST_SUCCESS,
     GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS,
+    GET_DEPRECIATION_SELECTLIST_SUCCESS,
+    GET_SHIFT_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -333,6 +335,20 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 DepreciationTypeSelectList: action.payload
+            };
+        case GET_DEPRECIATION_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                DepreciationSelectList: action.payload
+            };
+        case GET_SHIFT_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                ShiftTypeSelectList: action.payload
             };
         default:
             return state;

@@ -39,6 +39,8 @@ import {
     GET_UOM_SELECTLIST_SUCCESS,
     GET_MACHINE_TYPE_SELECTLIST_SUCCESS,
     GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS,
+    GET_SHIFT_TYPE_SELECTLIST_SUCCESS,
+    GET_DEPRECIATION_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -1212,7 +1214,7 @@ export function getMachineTypeSelectList(callback) {
 
 /**
  * @method getDepreciationTypeSelectList
- * @description Used to fetch Depreciation type selectlist
+ * @description Used to fetch Depreciation type selectlist //used in Depreciation master
  */
 export function getDepreciationTypeSelectList(callback) {
     return (dispatch) => {
@@ -1222,6 +1224,54 @@ export function getDepreciationTypeSelectList(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getDepreciationSelectList
+ * @description Used to fetch Depreciation selectlist //Used in machine master
+ */
+export function getDepreciationSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getDepreciationSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_DEPRECIATION_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getShiftTypeSelectList
+ * @description Used to fetch Depreciation type selectlist
+ */
+export function getShiftTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getShiftTypeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SHIFT_TYPE_SELECTLIST_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);
