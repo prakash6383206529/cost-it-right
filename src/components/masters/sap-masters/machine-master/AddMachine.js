@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Input, Label, Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { required, decimalLengthFour } from "../../../../helper/validation";
 import { renderSelectField, renderNumberInputField, renderText, searchableSelect } from "../../../layout/FormInputs";
 import { createMachineAPI, getMachineDataAPI, updateMachineAPI, getMachineTypeDataAPI } from '../../../../actions/master/MachineMaster';
 import { getMachineTypeSelectList, fetchFuelComboAPI, getDepreciationSelectList } from '../../../../actions/master/Comman';
@@ -61,15 +61,15 @@ class AddMachine extends Component {
     * @description Used to get Data
     */
     getData = (Data) => {
-        const { MachineTypeSelectList, fuelList, DepreciationTypeSelectList } = this.props;
+        const { MachineTypeSelectList, fuelList, DepreciationSelectList } = this.props;
         const machineObj = MachineTypeSelectList.find(item => item.Value == Data.MachineClassId)
         const fuelObj = fuelList.find(item => item.Value == Data.FuelId)
-        //const depreciationObj = DepreciationTypeSelectList.find(item => item.Value == Data.DepreciationId)
+        const depreciationObj = DepreciationSelectList.find(item => item.Value == Data.DepreciationId)
 
         this.setState({
             MachineClass: { label: machineObj.Text, value: machineObj.Value },
             fuel: { label: fuelObj.Text, value: fuelObj.Value },
-            //depreciation: { label: depreciationObj.Text, value: depreciationObj.Value },
+            depreciation: { label: depreciationObj.Text, value: depreciationObj.Value },
             isActiveBox: Data.IsActive,
         }, () => this.machineTypeData());
     }
@@ -477,7 +477,7 @@ class AddMachine extends Component {
                                                 name={"PowerRating"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, decimalLengthFour]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -490,7 +490,7 @@ class AddMachine extends Component {
                                                 name={"UtilizationFactor"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, decimalLengthFour]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -505,7 +505,7 @@ class AddMachine extends Component {
                                                 name={"LoanAmount"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, decimalLengthFour]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -518,7 +518,7 @@ class AddMachine extends Component {
                                                 name={"CostOfMachine"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, decimalLengthFour]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -533,7 +533,7 @@ class AddMachine extends Component {
                                                 name={"Equity"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, decimalLengthFour]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
@@ -546,7 +546,7 @@ class AddMachine extends Component {
                                                 name={"RateOfInterest"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[required, decimalLengthFour]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"

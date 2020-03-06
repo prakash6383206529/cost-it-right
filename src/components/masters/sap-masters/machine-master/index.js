@@ -108,16 +108,17 @@ class MachineMaster extends Component {
                                 <tr>
                                     <th>{`Machine Name`}</th>
                                     <th>{`Machine Number`}</th>
-                                    <th>{`Power`}</th>
-                                    <th>{`Depreciation`}</th>
-                                    <th>{`Labour Type`}</th>
-                                    <th>{`Fuel Type`}</th>
-                                    <th>{`Shift`}</th>
-                                    <th>{`Cost`}</th>
-                                    <th>{`Mfd year`}</th>
-                                    <th>{`Maintenance Cost`}</th>
-                                    <th>{`PUC`}</th>
-                                    <th>{`Effective Date`}</th>
+                                    <th>{`Description`}</th>
+                                    <th>{`Machine Class Name`}</th>
+                                    {/* <th>{`Labour Type`}</th> */}
+                                    <th>{`Capacity`}</th>
+                                    {/* <th>{`Fuel Type`}</th> */}
+                                    <th>{`Power Rating`}</th>
+                                    <th>{`Consumable`}</th>
+                                    <th>{`Loan`}</th>
+                                    <th>{`Machine Cost`}</th>
+                                    <th>{`Equity`}</th>
+                                    <th>{`Rate of Interest`}</th>
                                     <th>{``}</th>
                                 </tr>
                             </thead>
@@ -126,17 +127,19 @@ class MachineMaster extends Component {
                                     this.props.machineDatalist.map((item, index) => {
                                         return (
                                             <tr>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
+                                                <td>{item.MachineName}</td>
+                                                <td>{item.MachineNumber}</td>
+                                                <td>{item.Description}</td>
+                                                <td>{item.MachineClassName}</td>
+                                                {/* <td>{item.LabourType}</td> */}
+                                                <td>{item.MachineCapacity}</td>
+                                                {/* <td>{item.FuelType}</td> */}
+                                                <td>{item.PowerRating}</td>
+                                                <td>{item.UtilizationFactor}</td>
+                                                <td>{item.LoanAmount}</td>
+                                                <td>{item.CostOfMachine}</td>
+                                                <td>{item.Equity}</td>
+                                                <td>{item.RateOfInterest}</td>
                                                 <td>
                                                     <Button className="btn btn-secondary" onClick={() => this.editItem(item.MachineId)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="btn btn-danger" onClick={() => this.deleteItem(item.MachineId)}><i className="far fa-trash-alt"></i></Button>
