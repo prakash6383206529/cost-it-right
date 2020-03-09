@@ -73,7 +73,7 @@ class FuelDetail extends Component {
                 <Row>
                     <Col>
                         <Table className="table table-striped" bordered>
-                            {this.props.fuelList && this.props.fuelList.length > 0 &&
+                            {this.props.fuelDataList && this.props.fuelDataList.length > 0 &&
                                 <thead>
                                     <tr>
                                         <th>{`Rate`}</th>
@@ -87,8 +87,8 @@ class FuelDetail extends Component {
                                     </tr>
                                 </thead>}
                             <tbody >
-                                {this.props.fuelList && this.props.fuelList.length > 0 &&
-                                    this.props.fuelList.map((item, index) => {
+                                {this.props.fuelDataList && this.props.fuelDataList.length > 0 &&
+                                    this.props.fuelDataList.map((item, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.Rate}</td>
@@ -104,7 +104,7 @@ class FuelDetail extends Component {
                                             </tr>
                                         )
                                     })}
-                                {this.props.fuelList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.fuelDataList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </Col>
@@ -120,8 +120,8 @@ class FuelDetail extends Component {
 * @param {*} state
 */
 function mapStateToProps({ fuel }) {
-    const { fuelList } = fuel;
-    return { fuelList }
+    const { fuelDataList } = fuel;
+    return { fuelDataList }
 }
 
 

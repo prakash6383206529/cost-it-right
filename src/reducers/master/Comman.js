@@ -42,6 +42,7 @@ import {
     GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS,
     GET_DEPRECIATION_SELECTLIST_SUCCESS,
     GET_SHIFT_TYPE_SELECTLIST_SUCCESS,
+    GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -349,6 +350,13 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 ShiftTypeSelectList: action.payload
+            };
+        case GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                MachineByMachineTypeSelectList: action.payload
             };
         default:
             return state;

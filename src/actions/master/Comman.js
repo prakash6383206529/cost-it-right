@@ -41,6 +41,7 @@ import {
     GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS,
     GET_SHIFT_TYPE_SELECTLIST_SUCCESS,
     GET_DEPRECIATION_SELECTLIST_SUCCESS,
+    GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -1281,5 +1282,37 @@ export function getShiftTypeSelectList(callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getMachineSelectListByMachineType
+ * @description Used to fetch Machine selectlist by Machine type(Class)
+ */
+export function getMachineSelectListByMachineType(MachineClassId, callback) {
+    return (dispatch) => {
+        if (MachineClassId != '') {
+            //dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getMachineSelectListByMachineType}/${MachineClassId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
+                payload: [],
+            });
+            callback();
+        }
     };
 }

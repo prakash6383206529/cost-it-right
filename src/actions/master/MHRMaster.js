@@ -4,11 +4,14 @@ import {
     API_REQUEST,
     API_FAILURE,
     DATA_FAILURE,
+    GET_MHR_DATALIST_SUCCESS,
     GET_MHR_DATA_SUCCESS,
     GET_DEPRICIATION_SUCCESS,
     GET_DEPRECIATION_DATA_SUCCESS,
     CREATE_SUCCESS,
-    CREATE_FAILURE
+    CREATE_FAILURE,
+    GET_LABOUR_SELECTLIST_BY_MACHINE_SUCCESS,
+    GET_SUPPLIER_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -66,7 +69,7 @@ export function fetchMHRListAPI(callback) {
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_MHR_DATA_SUCCESS,
+                    type: GET_MHR_DATALIST_SUCCESS,
                     payload: response.data.DataList,
                 });
                 callback(response);
@@ -76,6 +79,70 @@ export function fetchMHRListAPI(callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getMHRDataAPI
+ * @description Get MHR data
+ */
+export function getMHRDataAPI(ID, callback) {
+    return (dispatch) => {
+        if (ID != '') {
+            axios.get(`${API.getMHRDataAPI}/${ID}`, headers)
+                .then((response) => {
+                    if (response.data.Result == true) {
+                        dispatch({
+                            type: GET_MHR_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_MHR_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method updateMHRAPI
+ * @description update Depreciation details
+ */
+export function updateMHRAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateMHRAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteMHRAPI
+ * @description delete MHR Id
+ */
+export function deleteMHRAPI(MHRId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteMHRAPI}/${MHRId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
 
@@ -195,5 +262,60 @@ export function updateDepreciationAPI(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method getLabourDetailsSelectListByMachine
+ * @description Used to fetch Labour details selectlist by Machine and plant 
+ */
+export function getLabourDetailsSelectListByMachine(MachineTypeId, PlantId, callback) {
+    return (dispatch) => {
+        if (MachineTypeId != '' && PlantId != '') {
+            //dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getLabourDetailsSelectListByMachine}/${MachineTypeId}/${PlantId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_LABOUR_SELECTLIST_BY_MACHINE_SUCCESS,
+                        payload: response.data.DataList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_LABOUR_SELECTLIST_BY_MACHINE_SUCCESS,
+                payload: [],
+            });
+            callback();
+        }
+    };
+}
+
+
+/**
+ * @method getSupplierType
+ * @description get radio button supplier type
+ */
+export function getSupplierType() {
+    return (dispatch) => {
+        const request = axios.get(API.getSupplierType, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_SUPPLIER_TYPE_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
+
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
     };
 }

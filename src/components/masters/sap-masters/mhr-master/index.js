@@ -4,7 +4,7 @@ import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
 import AddMHR from './AddMHR';
-import { fetchMHRListAPI } from '../../../../actions/master/MHRMaster';
+import { fetchMHRListAPI, deleteMHRAPI } from '../../../../actions/master/MHRMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -17,6 +17,7 @@ class MHRMaster extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            MachineHourRateId: '',
         }
     }
 
@@ -47,44 +48,42 @@ class MHRMaster extends Component {
     }
 
     /**
-    * @method editPartDetails
-    * @description confirm delete part
+    * @method editItemDetails
+    * @description Edit operation detail
     */
-    editPartDetails = (index, Id) => {
+    editItemDetails = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
-            uomId: Id,
+            MachineHourRateId: Id,
         })
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete item
     */
-    deletePart = (index, Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index, Id)
+                this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} UOM ?`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.MHR_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
     * @method confirmDeleteUOM
     * @description confirm delete unit of measurement
     */
-    confirmDeleteUOM = (index, Id) => {
-        // this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-        //         this.props.getUnitOfMeasurementAPI(res => { });
-        //     } else {
-        //         toastr.error(MESSAGES.SOME_ERROR);
-        //     }
-        // });
+    confirmDelete = (Id) => {
+        this.props.deleteMHRAPI(Id, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_MHR_SUCCESS);
+                this.props.fetchMHRListAPI(res => { });
+            }
+        });
     }
 
     /**
@@ -92,7 +91,7 @@ class MHRMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, uomId } = this.state;
+        const { isOpen, isEditFlag } = this.state;
         return (
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader />} */}
@@ -121,10 +120,8 @@ class MHRMaster extends Component {
                                             <th>Machine Capacity</th>
                                             <th>Machine Rate</th>
                                             <th>UOM</th>
-                                            {/* <th>Initiator</th>
-                                    <th>Created On</th>
-                                    <th>Modifier</th>
-                                    <th>Modified On</th> */}
+                                            <th>{''}</th>
+
                                         </tr>
                                     </thead>}
                                 <tbody >
@@ -137,17 +134,13 @@ class MHRMaster extends Component {
                                                     <td>{item.SupplierName}</td>
                                                     <td>{item.MachineNumber}</td>
                                                     <td>{item.Description}</td>
-                                                    <td>{item.MachineTonnage}</td>
-                                                    <td>{item.BasicMachineRate}</td>
+                                                    <td>{item.MachineCapacity}</td>
+                                                    <td>{item.MachineCapacity}</td>
                                                     <td>{item.UnitOfMeasurementName}</td>
-                                                    {/* <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td>
-                                                <td>{''}</td> */}
-                                                    {/* <td>
-                                                    <Button className="black-btn" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="black-btn" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                                </td> */}
+                                                    <td>
+                                                        <Button className="black-btn" onClick={() => this.editItemDetails(item.MachineHourRateId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                        <Button className="black-btn" onClick={() => this.deleteItem(item.MachineHourRateId)}><i className="far fa-trash-alt"></i></Button>
+                                                    </td>
                                                 </tr>
                                             )
                                         })}
@@ -162,8 +155,7 @@ class MHRMaster extends Component {
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
-                        editIndex={editIndex}
-                        uomId={uomId}
+                        MachineHourRateId={this.state.MachineHourRateId}
                     />
                 )}
             </Container >
@@ -183,6 +175,9 @@ function mapStateToProps({ MHRReducer }) {
 
 
 export default connect(
-    mapStateToProps, { fetchMHRListAPI }
+    mapStateToProps, {
+    fetchMHRListAPI,
+    deleteMHRAPI,
+}
 )(MHRMaster);
 

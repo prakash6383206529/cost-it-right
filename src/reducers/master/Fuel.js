@@ -50,7 +50,7 @@ export default function fuelReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: false,
-                fuelList: action.payload
+                fuelDataList: action.payload
             };
         }
         case GET_FUEL_UNIT_DATA_SUCCESS: {

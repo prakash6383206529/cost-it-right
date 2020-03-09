@@ -211,3 +211,8 @@ export const trimDecimalPlace = (floatValue, Number) => {
 export const checkForDecimalAndNull = (floatValue, Number) => {
     return checkForNull(trimDecimalPlace(floatValue, Number))
 }
+
+export const Numeric = value =>
+    value && /[^0-9]/i.test(value)
+        ? 'Please enter valid number'
+        : undefined;

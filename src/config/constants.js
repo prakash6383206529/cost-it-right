@@ -201,11 +201,6 @@ export const API = {
   deleteCEDotherOperationAPI: `${BASE_URL}/masters-other-operation/delete-ced-other-operation`,
   updateCEDoperationAPI: `${BASE_URL}/masters-other-operation/update-ced-other-operation`,
 
-  //API's for MHR combo data
-  getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
-  createMHRMasterAPI: `${BASE_URL}/masters-machine-hour-rate/create`,
-  getMHRList: `${BASE_URL}/masters-machine-hour-rate/get-all`,
-
   //API's for Operation
   getOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-operation`,
   createOperationAPI: `${BASE_URL}/masters-other-operation/create-operation`,
@@ -377,6 +372,16 @@ export const API = {
   updateReasonAPI: `${BASE_URL}/masters-reason/update`,
   deleteReasonAPI: `${BASE_URL}/masters-reason/delete`,
 
+  //MHR
+  getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
+  createMHRMasterAPI: `${BASE_URL}/masters-machine-hour-rate/create`,
+  getMHRList: `${BASE_URL}/masters-machine-hour-rate/get-all`,
+  getMHRDataAPI: `${BASE_URL}/masters-machine-hour-rate/get`,
+  updateMHRAPI: `${BASE_URL}/masters-machine-hour-rate/update`,
+  deleteMHRAPI: `${BASE_URL}/masters-machine-hour-rate/delete`,
+  getLabourDetailsSelectListByMachine: `${BASE_URL}/masters-labour/get-labour-details`,
+  getSupplierType: `${BASE_URL}/configuration/radio-button-list-get-costing-supplier-type`,
+
   //MACHINE TYPE
   createMachineTypeAPI: `${BASE_URL}/masters-machine/create-machine-type`,
   getMachineTypeListAPI: `${BASE_URL}/masters-machine/get-all-machine-type`,
@@ -384,6 +389,7 @@ export const API = {
   updateMachineTypeAPI: `${BASE_URL}/masters-machine/update-machine-type`,
   deleteMachineTypeAPI: `${BASE_URL}/masters-machine/delete-machine-type`,
   getMachineTypeSelectList: `${BASE_URL}/configuration/select-list-get-machine-type`,
+  getMachineSelectListByMachineType: `${BASE_URL}/configuration/select-list-get-machine`,
   getDepreciationTypeSelectList: `${BASE_URL}/configuration/select-list-get-depreciation-type`, //Used in Depreciation master
   getDepreciationSelectList: `${BASE_URL}/configuration/select-list-get-depreciation`,
   getShiftTypeSelectList: `${BASE_URL}/configuration/select-list-get-shifts`,
@@ -488,21 +494,21 @@ export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS';
 export const RAWMATERIAL_ADDED_FOR_COSTING = 'RAWMATERIAL_ADDED_FOR_COSTING';
 export const GET_MATERIAL_TYPE_DATA_SUCCESS = 'GET_MATERIAL_TYPE_DATA_SUCCESS';
 
-//for plant master
+//PLANT MASTER
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS';
 export const GET_PLANT_UNIT_SUCCESS = 'GET_PLANT_UNIT_SUCCESS';
 export const CREATE_PLANT_FAILURE = 'CREATE_PLANT_FAILURE';
 export const GET_PLANT_FAILURE = 'GET_PLANT_FAILURE';
 export const GET_PLANT_DATA_SUCCESS = 'GET_PLANT_DATA_SUCCESS';
 
-//for supplier master
+//SUPPLIER MASTER
 export const CREATE_SUPPLIER_SUCCESS = 'CREATE_SUPPLIER_SUCCESS';
 export const CREATE_SUPPLIER_FAILURE = 'CREATE_SUPPLIER_FAILURE';
 export const GET_SUPPLIER_FAILURE = 'GET_SUPPLIER_FAILURE';
 export const GET_SUPPLIER_DATA_SUCCESS = 'GET_SUPPLIER_DATA_SUCCESS';
 export const GET_RADIO_SUPPLIER_TYPE_SUCCESS = 'GET_RADIO_SUPPLIER_TYPE_SUCCESS';
 
-//for BOM master
+//BOM MASTER
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
 export const CREATE_BOM_FAILURE = 'CREATE_BOM_FAILURE';
 export const GET_BOM_SUCCESS = 'GET_BOM_SUCCESS';
@@ -510,7 +516,7 @@ export const GET_BOM_FAILURE = 'GET_BOM_FAILURE';
 export const UPLOAD_BOM_XLS_SUCCESS = 'UPLOAD_BOM_XLS_SUCCESS';
 export const GET_BOM_UNIT_DATA_BY_PART_SUCCESS = 'GET_BOM_UNIT_DATA_BY_PART_SUCCESS';
 
-//for BOP master
+//BOP MASTER
 export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';
 export const CREATE_BOP_FAILURE = 'CREATE_BOP_FAILURE';
 export const GET_BOP_SUCCESS = 'GET_BOP_SUCCESS';
@@ -518,7 +524,7 @@ export const GET_BOP_DATA_SUCCESS = 'GET_BOP_DATA_SUCCESS';
 export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 export const UPDATE_BOP_SUCCESS = 'UPDATE_BOP_SUCCESS';
 
-//For process master 
+//PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS';
 export const CREATE_PROCESS_FAILURE = 'CREATE_PROCESS_FAILURE';
 export const GET_PROCESS_LIST_SUCCESS = 'GET_PROCESS_LIST_SUCCESS';
@@ -526,7 +532,7 @@ export const GET_PROCESS_LIST_FAILURE = 'GET_PROCESS_LIST_FAILURE';
 export const GET_PROCESS_UNIT_DATA_SUCCESS = 'GET_PROCESS_UNIT_DATA_SUCCESS';
 export const GET_PROCESS_DATA_SUCCESS = 'GET_PROCESS_DATA_SUCCESS';
 
-//For Fuel master 
+//FUEL MASTER
 export const CREATE_FUEL_SUCCESS = 'CREATE_FUEL_SUCCESS';
 export const CREATE_FUEL_FAILURE = 'CREATE_FUEL_FAILURE';
 export const GET_FUEL_SUCCESS = 'GET_FUEL_SUCCESS';
@@ -539,7 +545,7 @@ export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS';
 export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS';
 export const GET_FUEL__DETAIL_DATA_SUCCESS = 'GET_FUEL_DETAIL_DATA_SUCCESS';
 
-//for Other Operation master
+//OTHER OPERATION MASTER
 export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS';
 export const GET_UNIT_OTHER_OPERATION_DATA_SUCCESS = 'GET_UNIT_OTHER_OPERATION_DATA_SUCCESS';
 export const GET_OTHER_OPERATION_FAILURE = 'GET_OTHER_OPERATION_FAILURE';
@@ -549,7 +555,7 @@ export const CREATE_OTHER_OPERATION_SUCCESS = 'CREATE_OTHER_OPERATION_SUCCESS';
 export const GET_OTHER_OPERATION_FORMDATA_SUCCESS = 'GET_OTHER_OPERATION_FORMDATA_SUCCESS';
 export const GET_OTHER_OPERATION_FORMDATA_FAILURE = 'GET_OTHER_OPERATION_FORMDATA_FAILURE';
 
-//for CED Other Operation master
+//CED OTHER OPERATION
 export const GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS';
 export const GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE = 'GET_CED_OTHER_OPERATION_COMBO_DATA_FAILURE';
 export const GET_CED_OTHER_OPERATION_SUCCESS = 'GET_CED_OTHER_OPERATION_SUCCESS';
@@ -557,12 +563,7 @@ export const GET_CED_OTHER_OPERATION_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_DAT
 export const GET_CED_OTHER_OPERATION_FAILURE = 'GET_CED_OTHER_OPERATION_FAILURE';
 export const GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS = 'GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS';
 
-//for MHR master
-export const GET_MHR_COMBO_DATA_SUCCESS = 'GET_MHR_COMBO_DATA_SUCCESS';
-export const GET_MHR_COMBO_DATA_FAILURE = 'GET_MHR_COMBO_DATA_FAILURE';
-export const GET_MHR_DATA_SUCCESS = 'GET_MHR_DATA_SUCCESS';
-
-//for common
+//COMMON
 export const DATA_FAILURE = 'DATA_FAILURE';
 export const CREATE_SUCCESS = 'CREATE_SUCCESS';
 export const CREATE_FAILURE = 'CREATE_FAILURE';
@@ -571,45 +572,45 @@ export const GET_CITY_BY_SUPPLIER = 'GET_CITY_BY_SUPPLIER';
 export const GET_SOURCE_PLANTS_BY_SOURCE_CITY = 'GET_SOURCE_PLANTS_BY_SOURCE_CITY';
 export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANTS_BY_DESTINATION_CITY';
 
-//for Operation
+//OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';
 export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS';
 
-//for freight master
+//FREIGHT MASTER
 export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';
 export const CREATE_FREIGHT_FAILURE = 'CREATE_FREIGHT_FAILURE';
 export const GET_FREIGHT_SUCCESS = 'GET_FREIGHT_SUCCESS';
 export const GET_FREIGHT_DATA_SUCCESS = 'GET_FREIGHT_DATA_SUCCESS';
 export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
 
-//For Additional Freight Master
+//ADDITIONAL FREIGHT MASTER
 export const GET_ALL_ADDITIONAL_FREIGHT_SUCCESS = 'GET_ALL_ADDITIONAL_FREIGHT_SUCCESS';
 export const GET_ADDITIONAL_FREIGHT_DATA_SUCCESS = 'GET_ADDITIONAL_FREIGHT_DATA_SUCCESS';
 export const GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS = 'GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS';
 
-//for labour master
+//LABOUR MASTER
 export const CREATE_LABOUR_SUCCESS = 'CREATE_LABOUR_SUCCESS';
 export const CREATE_LABOUR_FAILURE = 'CREATE_LABOUR_FAILURE';
 export const GET_LABOUR_SUCCESS = 'GET_LABOUR_SUCCESS';
 export const GET_LABOUR_FAILURE = 'GET_LABOUR_FAILURE';
 export const GET_LABOUR_DATA_SUCCESS = 'GET_LABOUR_DATA_SUCCESS';
 
-//for overhead profit
+//OVERHEAD AND PROFIT
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS';
 export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS';
 export const GET_OVERHEAD_PROFIT_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_DATA_SUCCESS';
 
-//For depreciation
+//DEPRECIATION
 export const CREATE_DEPRICIATION_SUCCESS = 'CREATE_LABOUR_SUCCESS';
 export const GET_DEPRICIATION_SUCCESS = 'GET_LABOUR_SUCCESS';
 export const GET_DEPRECIATION_DATA_SUCCESS = 'GET_DEPRECIATION_DATA_SUCCESS';
 
-//For Interest Rate 
+//INTEREST RATE
 export const GET_INTEREST_RATE_SUCCESS = 'GET_INTEREST_RATE_SUCCESS';
 export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DATA_SUCCESS';
 export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS';
 
-//for costing 
+//COSTING
 export const GET_PLANT_COMBO_SUCCESS = 'GET_PLANT_COMBO_SUCCESS';
 export const GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS = 'GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS';
 export const CREATE_PART_WITH_SUPPLIER_SUCCESS = 'CREATE_PART_WITH_SUPPLIER_SUCCESS';
@@ -697,11 +698,20 @@ export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS';
 export const GET_REASON_DATA_SUCCESS = 'GET_REASON_DATA_SUCCESS';
 export const GET_REASON_SUCCESS = 'GET_REASON_SUCCESS';
 
+//MHR
+export const GET_MHR_COMBO_DATA_SUCCESS = 'GET_MHR_COMBO_DATA_SUCCESS';
+export const GET_MHR_COMBO_DATA_FAILURE = 'GET_MHR_COMBO_DATA_FAILURE';
+export const GET_MHR_DATALIST_SUCCESS = 'GET_MHR_DATALIST_SUCCESS';
+export const GET_MHR_DATA_SUCCESS = 'GET_MHR_DATA_SUCCESS';
+export const GET_LABOUR_SELECTLIST_BY_MACHINE_SUCCESS = 'GET_LABOUR_SELECTLIST_BY_MACHINE_SUCCESS';
+export const GET_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_SUPPLIER_TYPE_SELECTLIST_SUCCESS';
+
 //MACHINE TYPE
 export const CREATE_MACHINE_TYPE_SUCCESS = 'CREATE_MACHINE_TYPE_SUCCESS';
 export const GET_MACHINE_TYPE_DATALIST_SUCCESS = 'GET_MACHINE_TYPE_DATALIST_SUCCESS';
 export const GET_MACHINE_TYPE_DATA_SUCCESS = 'GET_MACHINE_TYPE_DATA_SUCCESS';
 export const GET_MACHINE_TYPE_SELECTLIST_SUCCESS = 'GET_MACHINE_TYPE_SELECTLIST_SUCCESS';
+export const GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS = 'GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS';
 export const GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS';
 export const GET_SHIFT_TYPE_SELECTLIST_SUCCESS = 'GET_SHIFT_TYPE_SELECTLIST_SUCCESS';
 
@@ -732,3 +742,9 @@ export const FOUR_DECIMAL_PRICE = 4;
 
 //DECIMAL VALUES FOR WEIGHT
 export const FIVE_DECIMAL_WEIGHT = 5;
+
+//LABOUR ENUMS
+export const SKILLED = 'Skilled';
+export const CONTRACT = 'Contract';
+export const SEMI_SKILLED = 'Semi-Skilled';
+export const UNSKILLED = 'Unskilled';

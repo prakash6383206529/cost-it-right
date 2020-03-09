@@ -368,7 +368,6 @@ export function renderTextInputField(field) {
 @desc: Render select input
 */
 export function renderSelectField(field) {
-  console.log('field', field)
   const { disabled, meta: { touched, error, active } } = field;
   const inputbox = ` ${active ? "active" : ""}`;
   const className = `form-group inputbox ${touched && error ? "has-danger" : ""}`;

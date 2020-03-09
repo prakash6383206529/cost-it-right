@@ -42,7 +42,6 @@ export const MESSAGES = {
 
   //CED OTHER OPERATION
   CED_OTHER_OPERATION_ADD_SUCCESS: 'CED Other Operation added successfully',
-  MHR_MASTER_ADD_SUCCESS: 'MHR Master added successfully',
   CED_OTHER_OPERATION_DELETE_ALERT: 'Are you sure you want to delete CED Other Operation?',
   DELETE_CED_OTHER_OPERATION_SUCCESS: 'CED Other Operation has been deleted successfully.',
   CED_OTHER_OPERATION_UPDATE_SUCCESS: 'CED Other Operation has been updated successfully.',
@@ -200,6 +199,12 @@ export const MESSAGES = {
 
   //REASON
   REASON_DELETE_ALERT: 'Are you sure you want to delete Reason?',
+
+  //MHR
+  MHR_DELETE_ALERT: 'Are you sure you want to delete Machine Rate?',
+  DELETE_MHR_SUCCESS: 'Machine Rate has been deleted successfully.',
+  MHR_MASTER_ADD_SUCCESS: 'MHR Master added successfully',
+  UPDATE_MHR_SUCCESSFULLY: 'Machine Rate has been updated successfully.',
 
 };
 
