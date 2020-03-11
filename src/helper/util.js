@@ -237,3 +237,18 @@ export function renderOptionList(categoriesMaster) {
 export function renderAction(menuData = [], Master = '', actionKey = '') {
     console.log('HI')
 }
+
+export function machineRateCalculation(Data) {
+
+    const MachineRateCost = Data.RateOfInterest +
+        Data.TotalDepreciationCost +
+        Data.NetPowerCost +
+        Data.RateSkilledLabour +
+        Data.RateSemiSkilledLabour +
+        Data.RateUnskilledLabour +
+        Data.RateContractLabour +
+        Data.ConsumableCost +
+        Data.MaintenanceCharges;
+
+    return MachineRateCost;
+}

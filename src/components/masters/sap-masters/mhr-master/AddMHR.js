@@ -15,11 +15,11 @@ import { getMachineTypeSelectList, getDepreciationSelectList, fetchFuelComboAPI,
 import { getMachineDataAPI } from '../../../../actions/master/MachineMaster';
 import { getFuelDetailAPI } from '../../../../actions/master/Fuel';
 import { getPowerDataListAPI, getPowerDataAPI } from '../../../../actions/master/PowerMaster';
-import { getRadioButtonSupplierType } from '../../../../actions/master/Supplier';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from "../../../../helper/auth";
 import { SKILLED, CONTRACT, SEMI_SKILLED, UNSKILLED } from '../../../../config/constants';
+import { machineRateCalculation } from '../../../../helper/util';
 const selector = formValueSelector('AddMHR');
 
 class AddMHR extends Component {
@@ -173,9 +173,7 @@ class AddMHR extends Component {
 
         if (label == 'supplierType') {
             supplierTypeList && supplierTypeList.map((item, i) => {
-                // if (item.Value != 0) {
                 temp.push({ Text: item.Text, Value: item.Value })
-                //}
             });
             return temp;
         }
@@ -438,7 +436,7 @@ class AddMHR extends Component {
         this.props.change('UnSkilledLabourCost', typeof netUnSkilledCost == NaN ? 0 : trimFourDecimalPlace(netUnSkilledCost))
         this.props.change('SemiSkilledLabourCost', typeof netSemiSkilledCost == NaN ? 0 : trimFourDecimalPlace(netSemiSkilledCost))
         this.props.change('ContractLabourCost', typeof netContractCost == NaN ? 0 : trimFourDecimalPlace(netContractCost))
-        this.props.change('TotalLabourCost', TotallabourCost)
+        this.props.change('TotalLabourCost', trimFourDecimalPlace(TotallabourCost))
 
     }
 
@@ -734,6 +732,18 @@ class AddMHR extends Component {
 
         let fuelDetails = fuelDataList && fuelDataList.find(item => item.FuelId == values.FuelType)
 
+        const machineCalculationData = {
+            RateOfInterest: values.RateOfInterest,
+            TotalDepreciationCost: values.TotalDepreciationCost,
+            NetPowerCost: powerData.NetPowerCost,
+            RateSkilledLabour: values.RateSkilledLabour,
+            RateSemiSkilledLabour: values.RateSemiSkilledLabour,
+            RateUnskilledLabour: values.RateUnskilledLabour,
+            RateContractLabour: values.RateContractLabour,
+            ConsumableCost: values.Consumable,
+            MaintenanceCharges: 0,
+        }
+        const MachineRateCost = machineRateCalculation(machineCalculationData)
         if (this.props.isEditFlag) {
 
             const { MachineHourRateId } = this.props;
@@ -830,7 +840,7 @@ class AddMHR extends Component {
                 EffectiveDate: '',
                 WorkingShift: values.Shift,
                 NumberOfWorkingDays: 0,
-                CalculatedMHRCost: values.Rate,
+                CalculatedMHRCost: MachineRateCost,
                 Efficiency: values.Efficiency,
                 CreatedBy: loggedInUserId(),
             }
@@ -891,7 +901,7 @@ class AddMHR extends Component {
                 UnitOfMeasurementId: values.UOM,
                 PlantId: PlantId,
 
-                CalculatedMHRCost: values.Rate,
+                CalculatedMHRCost: MachineRateCost,
                 Efficiency: values.Efficiency,
 
                 CompanyId: '',
@@ -917,16 +927,12 @@ class AddMHR extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, LabourDatalistByMachine } = this.props;
-        //console.log('LabourDatalistByMachine', LabourDatalistByMachine)
 
         let skilledLabour = LabourDatalistByMachine && LabourDatalistByMachine.find(item => item.LabourTypeName == SKILLED)
         let unSkilledLabour = LabourDatalistByMachine && LabourDatalistByMachine.find(item => item.LabourTypeName == UNSKILLED)
         let semiSkilledLabour = LabourDatalistByMachine && LabourDatalistByMachine.find(item => item.LabourTypeName == SEMI_SKILLED)
         let contractLabour = LabourDatalistByMachine && LabourDatalistByMachine.find(item => item.LabourTypeName == CONTRACT)
-        console.log('yurrrrrr', skilledLabour,
-            unSkilledLabour,
-            semiSkilledLabour,
-            contractLabour)
+
         return (
             <Container className="top-margin">
                 <Modal size={'xl'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>

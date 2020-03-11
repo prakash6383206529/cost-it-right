@@ -108,7 +108,7 @@ class MHRMaster extends Component {
                 <Row>
                     <Col>
                         <div>
-                            <Table className="table table-striped" bordered>
+                            <Table className="table table-striped" size={'sm'} bordered>
                                 {this.props.mhrMasterList && this.props.mhrMasterList.length > 0 &&
                                     <thead>
                                         <tr>
@@ -118,7 +118,8 @@ class MHRMaster extends Component {
                                             <th>Machine No.</th>
                                             <th>Description</th>
                                             <th>Machine Capacity</th>
-                                            <th>Machine Rate</th>
+                                            <th>Machine Cost</th>
+                                            <th>Machine Rate Cost</th>
                                             <th>UOM</th>
                                             <th>{''}</th>
 
@@ -135,7 +136,8 @@ class MHRMaster extends Component {
                                                     <td>{item.MachineNumber}</td>
                                                     <td>{item.Description}</td>
                                                     <td>{item.MachineCapacity}</td>
-                                                    <td>{item.MachineCapacity}</td>
+                                                    <td>{item.CostOfMachine}</td>
+                                                    <td>{item.CalculatedMHRCost}</td>
                                                     <td>{item.UnitOfMeasurementName}</td>
                                                     <td>
                                                         <Button className="black-btn" onClick={() => this.editItemDetails(item.MachineHourRateId)}><i className="fas fa-pencil-alt"></i></Button>
