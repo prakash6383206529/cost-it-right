@@ -70,6 +70,10 @@ export const API = {
   //Api for the part master
 
   // partCreateAPI: `${BASE_URL}/masters-part/create`,
+  createAssemblyPartAPI: `${BASE_URL}/masters-part/create-assembly-part`,
+  getAssemblyPartDataListAPI: `${BASE_URL}/masters-part/get-all-assembly-parts`,
+  getAssemblyPartDetailAPI: `${BASE_URL}/masters-part/get-assembly-part`,
+  deleteAssemblyPartAPI: `${BASE_URL}/masters-part/delete-assembly-part`,
   // getAllPartsAPI: `${BASE_URL}/masters-part/get-all`,
   // getOnePartAPI: `${BASE_URL}/masters-part/get`,
   // filterPartAPI: `${BASE_URL}/masters-part/get`,
@@ -515,6 +519,8 @@ export const GET_BOM_SUCCESS = 'GET_BOM_SUCCESS';
 export const GET_BOM_FAILURE = 'GET_BOM_FAILURE';
 export const UPLOAD_BOM_XLS_SUCCESS = 'UPLOAD_BOM_XLS_SUCCESS';
 export const GET_BOM_UNIT_DATA_BY_PART_SUCCESS = 'GET_BOM_UNIT_DATA_BY_PART_SUCCESS';
+export const GET_ASSEMBLY_PART_DATALIST_SUCCESS = 'GET_ASSEMBLY_PART_DATALIST_SUCCESS';
+export const GET_ASSEMBLY_PART_DATA_SUCCESS = 'GET_ASSEMBLY_PART_DATA_SUCCESS';
 
 //BOP MASTER
 export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';

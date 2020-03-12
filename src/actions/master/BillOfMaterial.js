@@ -8,6 +8,8 @@ import {
     GET_BOM_SUCCESS,
     UPLOAD_BOM_XLS_SUCCESS,
     GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
+    GET_ASSEMBLY_PART_DATALIST_SUCCESS,
+    GET_ASSEMBLY_PART_DATA_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -221,5 +223,98 @@ export function deleteExisCostingByPartID(PartId, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
+    };
+}
+
+
+
+
+
+// New API for assembly part creation 
+
+
+/**
+ * @method createAssemblyPartAPI
+ * @description create new bill of material for BOM and Part Combination
+ */
+export function createAssemblyPartAPI(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createAssemblyPartAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({ type: CREATE_BOM_SUCCESS, });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAssemblyPartDataListAPI
+ * @description get all bill of material list
+ */
+export function getAssemblyPartDataListAPI(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getAssemblyPartDataListAPI}`, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_ASSEMBLY_PART_DATALIST_SUCCESS,
+                payload: response.data.DataList,
+            });
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAssemblyPartDetailAPI
+ * @description get BOM detail
+ */
+export function getAssemblyPartDetailAPI(PartId, callback) {
+    return (dispatch) => {
+        if (PartId != '') {
+            const request = axios.get(`${API.getAssemblyPartDetailAPI}/${PartId}`, headers);
+            request.then((response) => {
+                dispatch({
+                    type: GET_ASSEMBLY_PART_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_ASSEMBLY_PART_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method deleteAssemblyPartAPI
+ * @description delete Assembly Part
+ */
+export function deleteAssemblyPartAPI(AssemblyPartId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteAssemblyPartAPI}/${AssemblyPartId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }

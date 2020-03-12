@@ -20,6 +20,8 @@ export const MESSAGES = {
   SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
 
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
+  BOM_DELETE_ALERT: 'Are you sure you want to delete Assembly Part?',
+  DELETE_BOM_SUCCESS: 'Assembly Part deleted successfully',
 
   //CATEGORY MASTER
   CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',

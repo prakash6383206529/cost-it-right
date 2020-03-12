@@ -6,6 +6,8 @@ import {
     GET_BOM_FAILURE,
     UPLOAD_BOM_XLS_SUCCESS,
     GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
+    GET_ASSEMBLY_PART_DATALIST_SUCCESS,
+    GET_ASSEMBLY_PART_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -56,6 +58,20 @@ export default function BOMReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
+            };
+        case GET_ASSEMBLY_PART_DATALIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                AssemblyPartDataList: action.payload
+            };
+        case GET_ASSEMBLY_PART_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                AssemblyPartData: action.payload
             };
         default:
             return state;
