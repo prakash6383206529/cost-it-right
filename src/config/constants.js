@@ -73,6 +73,7 @@ export const API = {
   createAssemblyPartAPI: `${BASE_URL}/masters-part/create-assembly-part`,
   getAssemblyPartDataListAPI: `${BASE_URL}/masters-part/get-all-assembly-parts`,
   getAssemblyPartDetailAPI: `${BASE_URL}/masters-part/get-assembly-part`,
+  updateAssemblyPartAPI: `${BASE_URL}/masters-part/update-assembly-part`,
   deleteAssemblyPartAPI: `${BASE_URL}/masters-part/delete-assembly-part`,
   // getAllPartsAPI: `${BASE_URL}/masters-part/get-all`,
   // getOnePartAPI: `${BASE_URL}/masters-part/get`,

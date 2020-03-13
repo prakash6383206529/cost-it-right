@@ -22,6 +22,7 @@ export const MESSAGES = {
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
   BOM_DELETE_ALERT: 'Are you sure you want to delete Assembly Part?',
   DELETE_BOM_SUCCESS: 'Assembly Part deleted successfully',
+  UPDATE_BOM_SUCCESS: 'Assembly Part updated successfully',
 
   //CATEGORY MASTER
   CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',

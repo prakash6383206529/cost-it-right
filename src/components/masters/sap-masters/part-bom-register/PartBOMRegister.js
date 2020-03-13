@@ -11,7 +11,8 @@ import { createPartAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '.
 import { fetchBOMComboAPI, fetchPlantDataAPI, fetchPartComboAPI } from '../../../../actions/master/Comman';
 import {
     getAllBOMAPI, createBOMAPI, checkCostingExistForPart, deleteExisCostingByPartID, getBOMDetailAPI,
-    createNewBOMAPI, createAssemblyPartAPI, getAssemblyPartDataListAPI, getAssemblyPartDetailAPI
+    createNewBOMAPI, createAssemblyPartAPI, getAssemblyPartDataListAPI, getAssemblyPartDetailAPI, 
+    updateAssemblyPartAPI, 
 } from '../../../../actions/master/BillOfMaterial';
 import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
@@ -60,6 +61,7 @@ const renderMembers = ({
     newPartRMTypeHandler,
     uomChildHandler,
     childPlantHandler,
+    isEditFlag,
     meta: { error, submitFailed } }) => {
 
     return (
@@ -95,11 +97,11 @@ const renderMembers = ({
                                         labelKey={'label'}
                                         valueKey={'value'}
                                         onChangeHsn={ChildPartHandler}
-                                        //validate={[required]}
-                                        //mendatory={false}
+                                        validate={[required]}
+                                        mendatory={true}
                                         selType={'ChildPartId'}
                                         rowIndex={index}
-                                        disabled={false}
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -111,11 +113,11 @@ const renderMembers = ({
                                         labelKey={'label'}
                                         valueKey={'value'}
                                         onChangeHsn={newPartRMTypeHandler}
-                                        //validate={[required]}
-                                        //mendatory={false}
+                                        validate={[required]}
+                                        mendatory={true}
                                         selType={'RawMaterialId'}
                                         rowIndex={index}
-                                        disabled={true}
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -127,11 +129,11 @@ const renderMembers = ({
                                         labelKey={'label'}
                                         valueKey={'value'}
                                         onChangeHsn={uomChildHandler}
-                                        //validate={[required]}
-                                        //mendatory={false}
+                                        validate={[required]}
+                                        mendatory={true}
                                         selType={'UnitOfMeasurementId'}
                                         rowIndex={index}
-                                        disabled={true}
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -145,11 +147,11 @@ const renderMembers = ({
                                         labelKey={'label'}
                                         valueKey={'value'}
                                         onChangeHsn={childPlantHandler}
-                                        //validate={[required]}
-                                        //mendatory={false}
+                                        validate={[required]}
+                                        mendatory={true}
                                         selType={'PlantId'}
                                         rowIndex={index}
-                                        disabled={true}
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
                                 {/* <Col md='4'>
@@ -472,25 +474,16 @@ class PartBOMRegister extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            typeOfListing: [],
             isEditFlag: false,
-            IsPartAssociatedWithBOM: false,
-            selectedBOMs: [],
             selectedParts: [],
-            selectedChildParts: [],
             assyPartNo: [],
             ChildPart: [],
-            isBOMDisabled: false,
             materialType: [],
             newPartRMType: [],
             selectedUOM: [],
             plantID: '',
-            newPartPlantID: '',
-            isPartShow: '',
             isChildPart: false,
-            isNewPartBtnShow: false,
             selectedPlant: [],
-            selectedChildUOM: [],
             selectedChildPlant: [],
         }
     }
@@ -748,6 +741,7 @@ class PartBOMRegister extends Component {
                         materialType: { label: RMObj.RawMaterialName, value: RMObj.RawMaterialId },
                         selectedUOM: { label: UOMObj.Text, value: UOMObj.Value },
                         isChildPart: true,
+                        isEditFlag: true,
                     });
                 }
             })
@@ -761,9 +755,9 @@ class PartBOMRegister extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedParts, isChildPart, isNewPart, selectedChildPlant, newPartRMType, selectedChildUOM,
-            selectedPlant, selectedUOM, materialType } = this.state;
-        const { childPartsRow } = this.props;
+        const { selectedParts, isChildPart, isNewPart, selectedChildPlant, newPartRMType,
+            selectedPlant, selectedUOM, materialType, isEditFlag } = this.state;
+        const { childPartsRow, AssemblyPartData } = this.props;
         let loginUserId = loggedInUserId();
 
         let plantArray = [];
@@ -804,45 +798,97 @@ class PartBOMRegister extends Component {
             tempArray3 = tempArray1;
         }
 
-        const formData = {
-            ChildParts: tempArray3,
-            PartId: '',
-            CreatedBy: loggedInUserId(),
-            CreatedDate: '',
-            IsActive: true,
-            IsExistPart: isChildPart ? true : false,
-            Quantity: values.Quantity,
-            RevisionNumber: values.RevisionNumber,
-            EcoNumber: values.EcoNumber,
-            PartNumber: values.AssyPartNo,
-            PartName: values.AssyPartNo,
-            PartDescription: values.PartDescription,
-            IndustrialIdentity: '',
-            MaterialGroupCode: '',
-            IsOtherSource: true,
-            PartFamily: '',
-            PlantId: selectedPlant.value,
-            CompanyId: userDetail.CompanyId,
-            MaterialTypeId: '',
-            RawMaterialId: materialType.value,
-            UnitOfMeasurementId: selectedUOM.value,
-            TechnologyId: '',
-            IsAssembly: true,
-            PartTypeId: '',
-            IsChildPart: false,
-            BOMNumber: values.BillNumber
-        }
+        if (isEditFlag) {
 
-        console.log('formData1', formData)
+            const updateData = {
+                PartId: AssemblyPartData.PartId,
+                BillOfMaterialId: AssemblyPartData.BillOfMaterialId ,
+                ChildParts: tempArray3,
+                PlantName: AssemblyPartData.PlantName,
+                CompanyName: '',
+                MaterialTypeName: '',
+                UnitOfMeasurementName: selectedUOM.label,
+                RawMaterialName: materialType.label,
+                TechnologyName: '',
+                PartTypeName: '',
+                CreatedByName: '',
+                BOMLevel: values.BOMLevel,
+                IsForceUpdate: true,
+                CreatedBy: loggedInUserId(),
+                CreatedDate: '',
+                IsActive: true,
+                IsExistPart: true,
+                Quantity: AssemblyPartData.Quantity,
+                RevisionNumber: values.RevisionNumber,
+                EcoNumber: values.EcoNumber,
+                PartNumber: AssemblyPartData.PartNumber,
+                PartName: AssemblyPartData.PartName,
+                PartDescription: AssemblyPartData.PartDescription,
+                IndustrialIdentity: AssemblyPartData.IndustrialIdentity,
+                MaterialGroupCode: AssemblyPartData.MaterialGroupCode,
+                IsOtherSource: true,
+                PartFamily: '',
+                PlantId: selectedPlant.value,
+                CompanyId: userDetail.CompanyId,
+                MaterialTypeId: '',
+                RawMaterialId: materialType.value,
+                UnitOfMeasurementId: selectedUOM.value,
+                TechnologyId: '',
+                IsAssembly: true,
+                PartTypeId: '',
+                IsChildPart: true,
+                BOMNumber: AssemblyPartData.BOMNumber
+              }
 
-        /** Add new detail of the BOM  */
-        this.props.createAssemblyPartAPI(formData, (res) => {
-            if (res.data.Result == true) {
-                toastr.success(MESSAGES.BOM_ADD_SUCCESS);
-                this.props.getAssemblyPartDataListAPI(res => { });
+            console.log('formData1', updateData)
+
+            /** Add new detail of the BOM  */
+            this.props.updateAssemblyPartAPI(updateData, (res) => {
+                if (res.data.Result == true) {
+                    toastr.success(MESSAGES.BOM_ADD_SUCCESS);
+                    this.props.getAssemblyPartDataListAPI(res => { });
+                }
+            });
+
+        } else {
+
+            const formData = {
+                ChildParts: tempArray3,
+                PartId: '',
+                CreatedBy: loggedInUserId(),
+                CreatedDate: '',
+                IsActive: true,
+                IsExistPart: isChildPart ? true : false,
+                Quantity: values.Quantity,
+                RevisionNumber: values.RevisionNumber,
+                EcoNumber: values.EcoNumber,
+                PartNumber: values.AssyPartNo,
+                PartName: values.AssyPartNo,
+                PartDescription: values.PartDescription,
+                IndustrialIdentity: '',
+                MaterialGroupCode: '',
+                IsOtherSource: true,
+                PartFamily: '',
+                PlantId: selectedPlant.value,
+                CompanyId: userDetail.CompanyId,
+                MaterialTypeId: '',
+                RawMaterialId: materialType.value,
+                UnitOfMeasurementId: selectedUOM.value,
+                TechnologyId: '',
+                IsAssembly: true,
+                PartTypeId: '',
+                IsChildPart: false,
+                BOMNumber: values.BillNumber
             }
-        });
 
+            /** Add new detail of the BOM  */
+            this.props.createAssemblyPartAPI(formData, (res) => {
+                if (res.data.Result == true) {
+                    toastr.success(MESSAGES.BOM_ADD_SUCCESS);
+                    this.props.getAssemblyPartDataListAPI(res => { });
+                }
+            });
+        }
     }
 
     /**
@@ -850,12 +896,17 @@ class PartBOMRegister extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset, partData } = this.props;
-        const { isNewPartBtnShow, ChildPart } = this.state;
+        const { handleSubmit, reset, partData } = this.props;
+        const { isEditFlag } = this.state;
 
         return (
 
             <Container className="top-margin BOM_form">
+                <Row>
+                    <Col>
+                        <h3><b>{'Add Assembly Part'}</b></h3>
+                    </Col>
+                </Row>
                 <form
                     noValidate
                     className="form"
@@ -865,7 +916,7 @@ class PartBOMRegister extends Component {
                     <Card className={'BOM_Card mb20'}>
                         <CardBody>
                             <Row>
-                                <Col md={"6"}>
+                                <Col md={"4"}>
                                     <Field
                                         label={`Assy Part No.`}
                                         name={"AssyPartNo"}
@@ -875,9 +926,10 @@ class PartBOMRegister extends Component {
                                         component={renderText}
                                         required={true}
                                         className="withoutBorder"
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <Field
                                         label={`BOM Number`}
                                         name={"BillNumber"}
@@ -887,9 +939,10 @@ class PartBOMRegister extends Component {
                                         component={renderText}
                                         required={true}
                                         className="withoutBorder"
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <Field
                                         label={`Part Description`}
                                         name={"PartDescription"}
@@ -899,9 +952,10 @@ class PartBOMRegister extends Component {
                                         component={renderText}
                                         required={true}
                                         className=" withoutBorder"
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <Field
                                         label={`Quantity`}
                                         name={"Quantity"}
@@ -911,9 +965,10 @@ class PartBOMRegister extends Component {
                                         component={renderText}
                                         required={true}
                                         className=" withoutBorder"
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <Field
                                         label={`ECO ${CONSTANT.NUMBER}`}
                                         name={"EcoNumber"}
@@ -925,7 +980,7 @@ class PartBOMRegister extends Component {
                                         className=" withoutBorder"
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <Field
                                         label={`Revision Number`}
                                         name={"RevisionNumber"}
@@ -937,7 +992,7 @@ class PartBOMRegister extends Component {
                                         className=" withoutBorder"
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <Field
                                         label="Assembly Raw Material"
                                         name="MaterialTypeId"
@@ -949,9 +1004,10 @@ class PartBOMRegister extends Component {
                                         //required={true}
                                         handleChangeDescription={this.materialTypeHandler}
                                         valueDescription={this.state.materialType}
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <Field
                                         label={'Assembly Unit Of Measurement'}
                                         name={'UnitOfMeasurementId'}
@@ -963,9 +1019,10 @@ class PartBOMRegister extends Component {
                                         //required={true}
                                         handleChangeDescription={this.uomHandler}
                                         valueDescription={this.state.selectedUOM}
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <Field
                                         label={'Assembly Plant'}
                                         name={'PlantId'}
@@ -977,6 +1034,7 @@ class PartBOMRegister extends Component {
                                         //required={true}
                                         handleChangeDescription={this.plantHandler}
                                         valueDescription={this.state.selectedPlant}
+                                        disabled={isEditFlag ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -1010,6 +1068,7 @@ class PartBOMRegister extends Component {
                                 uomChildHandler={this.uomChildHandler}
                                 userDetail={userDetail}
                                 component={renderMembers}
+                                isEditFlag={isEditFlag}
                             />
                         </>
                     }
@@ -1042,6 +1101,7 @@ class PartBOMRegister extends Component {
                                 uomChildHandler={this.uomChildHandler}
                                 userDetail={userDetail}
                                 component={renderNewPartMembers}
+                                isEditFlag={isEditFlag}
                             />
                         </>
                     }
@@ -1190,6 +1250,7 @@ export default connect(mapStateToProps, {
     createAssemblyPartAPI,
     getAssemblyPartDataListAPI,
     getAssemblyPartDetailAPI,
+    updateAssemblyPartAPI,
 })(reduxForm({
     form: 'PartBOMRegister',
     enableReinitialize: true,

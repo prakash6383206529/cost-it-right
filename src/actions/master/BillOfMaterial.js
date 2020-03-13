@@ -25,9 +25,9 @@ const headers = {
 };
 
 /**
- * @method createBOMAPI
- * @description create bill of material master
- */
+* @method createBOMAPI
+* @description create bill of material master
+*/
 export function createBOMAPI(data, callback) {
     return (dispatch) => {
         // dispatch({
@@ -57,9 +57,9 @@ export function createBOMAPI(data, callback) {
 }
 
 /**
- * @method createNewBOMAPI
- * @description create new bill of material for BOM and Part Combination
- */
+* @method createNewBOMAPI
+* @description create new bill of material for BOM and Part Combination
+*/
 export function createNewBOMAPI(data, callback) {
     return (dispatch) => {
         // dispatch({ type:  API_REQUEST });
@@ -87,9 +87,9 @@ export function createNewBOMAPI(data, callback) {
 }
 
 /**
- * @method getBOMDetailAPI
- * @description get BOM detail
- */
+* @method getBOMDetailAPI
+* @description get BOM detail
+*/
 export function getBOMDetailAPI(flag, PartId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -117,9 +117,9 @@ export function getBOMDetailAPI(flag, PartId, callback) {
 }
 
 /**
- * @method getAllBOMAPI
- * @description get all bill of material list
- */
+* @method getAllBOMAPI
+* @description get all bill of material list
+*/
 export function getAllBOMAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -143,9 +143,9 @@ export function getAllBOMAPI(callback) {
 }
 
 /**
- * @method BOM Upload XLS file
- * @description Upload BOM xls file to create multiple BOM
- */
+* @method BOM Upload XLS file
+* @description Upload BOM xls file to create multiple BOM
+*/
 export function uploadBOMxlsAPI(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.uploadBOMxlsAPI, data, headers);
@@ -172,9 +172,9 @@ export function uploadBOMxlsAPI(data, callback) {
 }
 
 /**
- * @method deleteBOMAPI
- * @description delete BOM
- */
+* @method deleteBOMAPI
+* @description delete BOM
+*/
 export function deleteBOMAPI(BomId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -192,9 +192,9 @@ export function deleteBOMAPI(BomId, callback) {
 }
 
 /**
- * @method checkCostingExistForPart
- * @description Used for check part has costing or not
- */
+* @method checkCostingExistForPart
+* @description Used for check part has costing or not
+*/
 export function checkCostingExistForPart(PartId, callback) {
     return (dispatch) => {
         const request = axios.post(`${API.checkCostingExistForPart}/${PartId}`, headers);
@@ -211,9 +211,9 @@ export function checkCostingExistForPart(PartId, callback) {
 }
 
 /**
- * @method deleteExisCostingByPartID
- * @description Used for check part has costing or not
- */
+* @method deleteExisCostingByPartID
+* @description Used for check part has costing or not
+*/
 export function deleteExisCostingByPartID(PartId, callback) {
     return (dispatch) => {
         const request = axios.post(`${API.deleteExisCostingByPartID}/${PartId}`, headers);
@@ -226,17 +226,12 @@ export function deleteExisCostingByPartID(PartId, callback) {
     };
 }
 
-
-
-
-
 // New API for assembly part creation 
 
-
 /**
- * @method createAssemblyPartAPI
- * @description create new bill of material for BOM and Part Combination
- */
+* @method createAssemblyPartAPI
+* @description create new bill of material for BOM and Part Combination
+*/
 export function createAssemblyPartAPI(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.createAssemblyPartAPI, data, headers);
@@ -253,9 +248,9 @@ export function createAssemblyPartAPI(data, callback) {
 }
 
 /**
- * @method getAssemblyPartDataListAPI
- * @description get all bill of material list
- */
+* @method getAssemblyPartDataListAPI
+* @description get all bill of material list
+*/
 export function getAssemblyPartDataListAPI(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAssemblyPartDataListAPI}`, headers);
@@ -274,9 +269,9 @@ export function getAssemblyPartDataListAPI(callback) {
 }
 
 /**
- * @method getAssemblyPartDetailAPI
- * @description get BOM detail
- */
+* @method getAssemblyPartDetailAPI
+* @description get BOM detail
+*/
 export function getAssemblyPartDetailAPI(PartId, callback) {
     return (dispatch) => {
         if (PartId != '') {
@@ -303,9 +298,26 @@ export function getAssemblyPartDetailAPI(PartId, callback) {
 }
 
 /**
- * @method deleteAssemblyPartAPI
- * @description delete Assembly Part
- */
+* @method updateAssemblyPartAPI
+* @description update Assembly Part details
+*/
+export function updateAssemblyPartAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateAssemblyPartAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+* @method deleteAssemblyPartAPI
+* @description delete Assembly Part
+*/
 export function deleteAssemblyPartAPI(AssemblyPartId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
