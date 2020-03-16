@@ -1,6 +1,7 @@
 import {
     API_REQUEST,
     API_FAILURE,
+    API_SUCCESS,
     GET_PLANT_COMBO_SUCCESS,
     GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
     CREATE_PART_WITH_SUPPLIER_SUCCESS,
@@ -35,6 +36,12 @@ export default function costingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true
+            };
+        case API_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
             };
         case GET_PLANT_COMBO_SUCCESS:
             return {

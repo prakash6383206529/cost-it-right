@@ -209,5 +209,8 @@ export const MESSAGES = {
   MHR_MASTER_ADD_SUCCESS: 'MHR Master added successfully',
   UPDATE_MHR_SUCCESSFULLY: 'Machine Rate has been updated successfully.',
 
+  //COPY COSTING
+  COPY_COSTING_SUCCESS: 'Costing successfully copied.',
+
 };
 

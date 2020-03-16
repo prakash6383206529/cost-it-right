@@ -3,6 +3,7 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
+    API_SUCCESS,
     GET_PLANT_COMBO_SUCCESS,
     GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
     CREATE_PART_WITH_SUPPLIER_SUCCESS,
@@ -418,4 +419,24 @@ export function emptyCostingData() {
             payload: {}
         });
     }
+}
+
+/**
+ * @method copyCostingAPI
+ * @description Used to copy costing API
+ */
+export function copyCostingAPI(data, callback) {
+    return (dispatch) => {
+        // dispatch({ type: API_REQUEST });
+        const request = axios.post(`${API.copyCostingAPI}`, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({ type: API_SUCCESS, });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
 }

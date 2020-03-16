@@ -24,6 +24,7 @@ import Approval from './Approval';
 import { MESSAGES } from '../../../config/message';
 import { DRAFT, REJECTED, APPROVED, PENDING, TWO_DECIMAL_PRICE, WAITING_FOR_APPROVAL } from '../../../config/constants';
 import { userDetails, loggedInUserId } from "../../../helper/auth";
+import CopyCosting from './CopyCosting';
 const selector = formValueSelector('CostSummary');
 
 
@@ -79,6 +80,7 @@ class CostSummary extends Component {
             SupplierOneCostingStatusText: '',
             SupplierTwoCostingStatusText: '',
             SupplierThreeCostingStatusText: '',
+            isOpenCopyCosting: false,
         }
     }
 
@@ -1898,6 +1900,42 @@ class CostSummary extends Component {
     }
 
     /**
+    * @method renderCopyCostingAction
+    * @description Used to Copy costing
+    */
+    renderCopyCostingAction = (Number) => {
+        const { isDisabledZBCSupplierButton, isDisabledSupplierOneButton, isDisabledSupplierTwoButton, isDisabledSupplierThreeButton,
+            activeSupplier0, activeSupplier1, activeSupplier2, activeSupplier3 } = this.state;
+
+        let disableSupplierButton = '';
+        let activeSupplier = '';
+
+        if (Number == 0) {
+            disableSupplierButton = isDisabledZBCSupplierButton;
+            activeSupplier = activeSupplier0;
+        } else if (Number == 1) {
+            disableSupplierButton = isDisabledSupplierOneButton;
+            activeSupplier = activeSupplier1;
+        } else if (Number == 2) {
+            disableSupplierButton = isDisabledSupplierTwoButton;
+            activeSupplier = activeSupplier2;
+        } else if (Number == 3) {
+            disableSupplierButton = isDisabledSupplierThreeButton;
+            activeSupplier = activeSupplier3;
+        }
+
+        return (
+            <>
+                <button
+                    type={'button'}
+                    disabled={(disableSupplierButton || activeSupplier == 0) ? true : false}
+                    onClick={() => this.copyCosting(Number)}
+                    className={'btn btn-primary mr5'}>Copy Costing</button>
+            </>
+        )
+    }
+
+    /**
     * @method reassignCosting
     * @description Used to reassign and cancel costing from approval
     */
@@ -2005,6 +2043,45 @@ class CostSummary extends Component {
     }
 
     /**
+    * @method copyCosting
+    * @description Used to open copy costing form.
+    */
+    copyCosting = (Number) => {
+        const { supplier, supplier2, supplier3, ZBCCostingStatusText, SupplierOneCostingStatusText, SupplierTwoCostingStatusText,
+            SupplierThreeCostingStatusText } = this.state;
+        const { costingData, ZBCSupplier } = this.props;
+
+        let Content = '';
+        let supplierId = '';
+        let CostingStatusText = '';
+
+        if (Number == 0) {
+            supplierId = ZBCSupplier.SupplierId;
+            Content = costingData && costingData.zbcSupplier ? costingData.zbcSupplier.CostingDetail : {};
+            CostingStatusText = ZBCCostingStatusText;
+        } else if (Number == 1) {
+            supplierId = supplier.value;
+            Content = costingData && costingData.supplierOne ? costingData.supplierOne.CostingDetail : {};
+            CostingStatusText = SupplierOneCostingStatusText;
+        } else if (Number == 2) {
+            supplierId = supplier2.value;
+            Content = costingData && costingData.supplierTwo ? costingData.supplierTwo.CostingDetail : {};
+            CostingStatusText = SupplierTwoCostingStatusText;
+        } else if (Number == 3) {
+            supplierId = supplier3.value;
+            Content = costingData && costingData.supplierThree ? costingData.supplierThree.CostingDetail : {};
+            CostingStatusText = SupplierThreeCostingStatusText;
+        }
+
+        this.setState({
+            isOpenCopyCosting: !this.state.isOpenCopyCosting,
+            sendForApprovalSupplierId: supplierId,
+            sendForApprovalCostingId: Content.CostingId,
+            CostingStatusText: CostingStatusText,
+        })
+    }
+
+    /**
     * @method onCancelApprovalModal
     * @description Used to cancel send for approval modal. // Right now we are not using modal for approval
     */
@@ -2021,6 +2098,7 @@ class CostSummary extends Component {
     onCancelApproval = () => {
         this.setState({
             isOpenSendForApproval: false,
+            isOpenCopyCosting: false,
             sendForApprovalSupplierId: '',
             sendForApprovalCostingId: '',
         })
@@ -2142,7 +2220,7 @@ class CostSummary extends Component {
             isShowFreightModal, supplierIdForCEDOtherOps, isOpenSendForApprovalModal, isOpenSendForApproval, sendForApprovalSupplierId,
             sendForApprovalCostingId, isDisabledZBCSupplierButton, isDisabledSupplierOneButton, isDisabledSupplierTwoButton,
             isDisabledSupplierThreeButton, ZBCSupplierSaveButtonLabel, SupplierOneSaveButtonLabel, SupplierTwoSaveButtonLabel, SupplierThreeSaveButtonLabel,
-            activeSupplier0, activeSupplier1, activeSupplier2, activeSupplier3 } = this.state;
+            activeSupplier0, activeSupplier1, activeSupplier2, activeSupplier3, isOpenCopyCosting } = this.state;
 
         let ZBCsupplierData = 'ZBCsupplierData';
         let supplier1Data = 'supplier1Data';
@@ -6325,83 +6403,41 @@ class CostSummary extends Component {
                     <hr />
 
                     <Row>
-
-
-
-
                         <Col md="3" >
                             {this.state.ZBCCostingStatusText == DRAFT ? this.renderSendForApprovalAction(0) : ''}
                             {this.state.ZBCCostingStatusText == PENDING ? this.renderReassignAction(0) : ''}
                             {this.state.ZBCCostingStatusText == WAITING_FOR_APPROVAL ? this.renderProcessAction(0) : ''}
-                            {/* <button
-                                type={'button'}
-                                onClick={() => this.saveCosting(0)}
-                                disabled={(isDisabledZBCSupplierButton || activeSupplier0 == 0) ? true : false}
-                                className={'btn btn-primary mr5'}>Save</button>
-                            <button
-                                type={'button'}
-                                disabled={(isDisabledZBCSupplierButton || activeSupplier0 == 0) ? true : false}
-                                onClick={() => this.sendApproval(0)}
-                                className={'btn btn-primary'}>{this.state.ZBCSupplierSaveButtonLabel}</button> */}
-                            {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
+                            {(this.state.ZBCCostingStatusText == DRAFT ||
+                                this.state.ZBCCostingStatusText == APPROVED ||
+                                this.state.ZBCCostingStatusText == WAITING_FOR_APPROVAL) ? this.renderCopyCostingAction(0) : ''}
                         </Col>
-
-
 
                         <Col md="3" >
                             {this.state.SupplierOneCostingStatusText == DRAFT ? this.renderSendForApprovalAction(1) : ''}
                             {this.state.SupplierOneCostingStatusText == PENDING ? this.renderReassignAction(1) : ''}
                             {this.state.SupplierOneCostingStatusText == WAITING_FOR_APPROVAL ? this.renderProcessAction(1) : ''}
-                            {/* <button
-                                type={'button'}
-                                disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
-                                onClick={() => this.saveCosting(1)}
-                                className={'btn btn-primary mr5'}>Save</button>
-                            <button
-                                type={'button'}
-                                disabled={(isDisabledSupplierOneButton || activeSupplier1 == 0) ? true : false}
-                                onClick={() => this.sendApproval(1)}
-                                className={'btn btn-primary'}>{this.state.SupplierOneSaveButtonLabel}</button> */}
-                            {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
+                            {(this.state.SupplierOneCostingStatusText == DRAFT ||
+                                this.state.SupplierOneCostingStatusText == APPROVED ||
+                                this.state.SupplierOneCostingStatusText == WAITING_FOR_APPROVAL) ? this.renderCopyCostingAction(1) : ''}
                         </Col>
-
-
 
                         <Col md="3" >
                             {this.state.SupplierTwoCostingStatusText == DRAFT ? this.renderSendForApprovalAction(2) : ''}
                             {this.state.SupplierTwoCostingStatusText == PENDING ? this.renderReassignAction(2) : ''}
                             {this.state.SupplierTwoCostingStatusText == WAITING_FOR_APPROVAL ? this.renderProcessAction(2) : ''}
-                            {/* <button
-                                type={'button'}
-                                disabled={(isDisabledSupplierTwoButton || activeSupplier2 == 0) ? true : false}
-                                onClick={() => this.saveCosting(2)}
-                                className={'btn btn-primary mr5'}>Save</button>
-                            <button
-                                type={'button'}
-                                disabled={(isDisabledSupplierTwoButton || activeSupplier2 == 0) ? true : false}
-                                onClick={() => this.sendApproval(2)}
-                                className={'btn btn-primary'}>{this.state.SupplierTwoSaveButtonLabel}</button> */}
-                            {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
+                            {(this.state.SupplierTwoCostingStatusText == DRAFT ||
+                                this.state.SupplierTwoCostingStatusText == APPROVED ||
+                                this.state.SupplierTwoCostingStatusText == WAITING_FOR_APPROVAL) ? this.renderCopyCostingAction(2) : ''}
                         </Col>
-
 
                         <Col md="3" >
                             {this.state.SupplierThreeCostingStatusText == DRAFT ? this.renderSendForApprovalAction(3) : ''}
                             {this.state.SupplierThreeCostingStatusText == PENDING ? this.renderReassignAction(3) : ''}
                             {this.state.SupplierThreeCostingStatusText == WAITING_FOR_APPROVAL ? this.renderProcessAction(3) : ''}
-                            {/* <button
-                                type={'button'}
-                                disabled={(isDisabledSupplierThreeButton || activeSupplier3 == 0) ? true : false}
-                                onClick={() => this.saveCosting(3)}
-                                className={'btn btn-primary mr5'}>Save</button>
-                            <button
-                                type={'button'}
-                                disabled={(isDisabledSupplierThreeButton || activeSupplier3 == 0) ? true : false}
-                                onClick={() => this.sendApproval(3)}
-                                className={'btn btn-primary'}>{this.state.SupplierThreeSaveButtonLabel}</button> */}
-                            {/* <button className={'btn btn-warning'}>Copy Costing</button> */}
+                            {(this.state.SupplierThreeCostingStatusText == DRAFT ||
+                                this.state.SupplierThreeCostingStatusText == APPROVED ||
+                                this.state.SupplierThreeCostingStatusText == WAITING_FOR_APPROVAL) ? this.renderCopyCostingAction(3) : ''}
                         </Col>
-
 
                     </Row>
                     <hr />
@@ -6438,6 +6474,14 @@ class CostSummary extends Component {
                     supplierId={sendForApprovalSupplierId}
                     TechnologyId={this.state.TechnologyId}
                     costingStatusText={this.state.CostingStatusText}
+                />}
+                {isOpenCopyCosting && <CopyCosting
+                    isOpen={isOpenCopyCosting}
+                    onCancelApproval={this.onCancelApproval}
+                    costingId={sendForApprovalCostingId}
+                    supplierId={sendForApprovalSupplierId}
+                    PlantId={this.state.plant}
+                    PartId={this.state.partNo}
                 />}
             </div >
         );

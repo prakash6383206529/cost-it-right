@@ -299,6 +299,7 @@ export const API = {
   getCostSummaryOtherOperationList: `${BASE_URL}/costing-sheet-metal/get-other-operation-by-supplier`,
   fetchFreightHeadsAPI: `${BASE_URL}/configuration/get-freight-heads`,
   getCostingFreight: `${BASE_URL}/costing-sheet-metal/get-costing-freight`,
+  copyCostingAPI: `${BASE_URL}/costing/copy-costing`,
 
   // Login API
   login: `${BASE_URL}/user/login`,
