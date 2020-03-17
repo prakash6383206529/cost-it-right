@@ -154,20 +154,20 @@ class SideBar extends Component {
             <li className="nav-item dropdown">
               <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
               <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a className="dropdown-item" href="/plant-master">Plant Master</a>
-                <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
-                <a className="dropdown-item" href="/raw-material-master">Raw Material Master</a>
+                <a className="dropdown-item" href="/plant-master">Plant</a>
+                <a className="dropdown-item" href="/supplier-master">Supplier</a>
+                <a className="dropdown-item" href="/raw-material-master">Raw Material</a>
                 {/* <a className="dropdown-item" href="/material-master">Raw Material Detail Master</a> */}
-                <a className="dropdown-item" href="/PartMaster">Part Master</a>
+                <a className="dropdown-item" href="/PartMaster">Part</a>
                 <a className="dropdown-item" href="/bom-master">BOM Master Old</a>
-                <a className="dropdown-item" href="/part-bom-register">BOM Master</a>
-                <a className="dropdown-item" href="/bop-master">BOP Master</a>
+                <a className="dropdown-item" href="/part-bom-register">Bill Of Material</a>
+                <a className="dropdown-item" href="/bop-master">Bought Out Parts</a>
                 <a className="dropdown-item" href="/other-operation">Other Operation</a>
                 <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
-                <a className="dropdown-item" href="/mhr-master">Machine Rate Master</a>
-                <a className="dropdown-item" href="/machine-type-master">Machine Type Master</a>
-                <a className="dropdown-item" href="/machine-master">Machine Master</a>
-                <a className="dropdown-item" href="/power-master">Power Master</a>
+                <a className="dropdown-item" href="/mhr-master">Machine Rate</a>
+                <a className="dropdown-item" href="/machine-type-master">Machine Type</a>
+                <a className="dropdown-item" href="/machine-master">Machine</a>
+                <a className="dropdown-item" href="/power-master">Power</a>
               </div>
             </li>
 
@@ -175,16 +175,16 @@ class SideBar extends Component {
               <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Additional Masters</a>
               <div className="dropdown-menu" aria-labelledby="navbarDropdown1">
                 <a className="dropdown-item" href="/operation-master">Process Operation</a>
-                <a className="dropdown-item" href='/UOMMaster'>UOM Master</a>
-                <a className="dropdown-item" href='/category-master'>Category Master</a>
-                <a className="dropdown-item" href="/freight-master">Freight Master</a>
-                <a className="dropdown-item" href="/labour-master">Labour Master</a>
+                <a className="dropdown-item" href='/UOMMaster'>UOM</a>
+                <a className="dropdown-item" href='/category-master'>Category</a>
+                <a className="dropdown-item" href="/freight-master">Freight</a>
+                <a className="dropdown-item" href="/labour-master">Labour</a>
                 <a className="dropdown-item" href="/overhead-profit-master">Overhead and Profit</a>
-                <a className="dropdown-item" href="/depreciation-master">Depreciation Master</a>
-                <a className="dropdown-item" href="/process-master">Process MHR Master</a>
-                <a className="dropdown-item" href="/interest-rate-master">Interest Rate Master</a>
-                <a className="dropdown-item" href="/fuel-master">Fuel Master</a>
-                <a className="dropdown-item" href="/reason-master">Reason Master</a>
+                <a className="dropdown-item" href="/depreciation-master">Depreciation</a>
+                <a className="dropdown-item" href="/process-master">Process MHR</a>
+                <a className="dropdown-item" href="/interest-rate-master">Interest Rate</a>
+                <a className="dropdown-item" href="/fuel-master">Fuel</a>
+                <a className="dropdown-item" href="/reason-master">Reason</a>
               </div>
             </li>
           </>)

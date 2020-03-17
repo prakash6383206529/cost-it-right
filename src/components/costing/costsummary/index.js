@@ -872,9 +872,7 @@ class CostSummary extends Component {
                         Content.ProfitCost = (profitCostCalculation * Data.ProfitPercentage) / 100;
 
                         // TotalOtherCosts
-                        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
-                            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
-                            + Content.ProfitCost + Content.NetFreightCost;
+                        Content.TotalOtherCosts = this.calculateTotalOtherCosts(Content);
 
                         this.props.change(supplierColumn, Content)
                     } else {
@@ -884,9 +882,7 @@ class CostSummary extends Component {
                         Content.ProfitCost = 0;
                         Content.ProfitPercentage = 0;
 
-                        Content.TotalOtherCosts = Content.OverheadCost + Content.ProfitCost + Content.RejectionCost
-                            + Content.RMInventotyCost + Content.WIPInventotyCost + Content.PaymentTermsCost
-                            + Content.ProfitCost + Content.NetFreightCost;
+                        Content.TotalOtherCosts = this.calculateTotalOtherCosts(Content);
 
                         this.props.change(supplierColumn, Content)
                     }
@@ -907,7 +903,7 @@ class CostSummary extends Component {
     HeadsCalculation = (HeadType, Content) => {
         console.log("HeadType", HeadType, Content)
         let total = 0;
-        const TotalConversionCost = Content.NetProcessCost + Content.NetOtherOperationCost + Content.NetSurfaceCost;
+        const TotalConversionCost = this.calculateTotalConversionCost(Content)
 
         if (HeadType == "BOP + CC") {
             total = Content.NetBoughtOutParCost + TotalConversionCost;

@@ -68,7 +68,7 @@ class CopyCosting extends Component {
             SupplierId: supplierId,
             PlantId: PlantId.value,
             PartId: PartId,
-            loggedInUserId: loggedInUserId()
+            LoggedInUserId: loggedInUserId()
         }
         this.props.copyCostingAPI(formData, (res) => {
             toastr.success(MESSAGES.COPY_COSTING_SUCCESS)
