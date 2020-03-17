@@ -625,7 +625,7 @@ class PermissionsUserWise extends Component {
                                         disabled={true}
                                     />
                                 </div>
-                                <div className="col-md-3 input-withouticon " >
+                                {/* <div className="col-md-3 input-withouticon " >
                                     <Field
                                         label="Description"
                                         name={"Description"}
@@ -638,7 +638,7 @@ class PermissionsUserWise extends Component {
                                         maxLength={100}
                                         disabled={true}
                                     />
-                                </div>
+                                </div> */}
 
                             </div>
                             {/* <div className=" row form-group">

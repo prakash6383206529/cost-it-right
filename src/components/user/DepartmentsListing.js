@@ -69,7 +69,7 @@ class DepartmentsListing extends Component {
     render() {
         const { isOpen, isEditFlag, editIndex, PartId } = this.state;
         return (
-            <Container className="listing">
+            <>
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
@@ -84,7 +84,7 @@ class DepartmentsListing extends Component {
                                 <thead>
                                     <tr>
                                         <th>{`Department`}</th>
-                                        <th>{`Description`}</th>
+                                        {/* <th>{`Description`}</th> */}
                                         <th>{''}</th>
                                     </tr>
                                 </thead>}
@@ -94,7 +94,7 @@ class DepartmentsListing extends Component {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.DepartmentName}</td>
-                                                <td>{item.Description}</td>
+                                                {/* <td>{item.Description}</td> */}
                                                 <div>
                                                     <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.DepartmentId)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.DepartmentId)}><i className="far fa-trash-alt"></i></Button>
@@ -107,7 +107,7 @@ class DepartmentsListing extends Component {
                         </Table>
                     </Col>
                 </Row>
-            </Container >
+            </ >
         );
     }
 }

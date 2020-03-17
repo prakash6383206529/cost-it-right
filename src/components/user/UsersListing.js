@@ -81,7 +81,7 @@ class UsersListing extends Component {
     render() {
         const { isOpen, isEditFlag, editIndex, PartId } = this.state;
         return (
-            <Container className="listing">
+            <>
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
@@ -91,7 +91,7 @@ class UsersListing extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <Table className="table table-striped" size="sm" bordered>
+                        <Table className="table table-striped" size="sm" hover bordered>
                             {this.props.userDataList && this.props.userDataList.length > 0 &&
                                 <thead>
                                     <tr>
@@ -125,7 +125,7 @@ class UsersListing extends Component {
                         </Table>
                     </Col>
                 </Row>
-            </Container >
+            </ >
         );
     }
 }

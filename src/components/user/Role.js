@@ -443,7 +443,7 @@ class Role extends Component {
                                         maxLength={26}
                                     />
                                 </div>
-                                <div className="input-group  col-md-6 input-withouticon">
+                                {/* <div className="input-group  col-md-6 input-withouticon">
                                     <Field
                                         label="Description"
                                         name={"Description"}
@@ -454,7 +454,7 @@ class Role extends Component {
                                         required={false}
                                         maxLength={100}
                                     />
-                                </div>
+                                </div> */}
                                 {/* <div className="input-group  col-md-6 input-withouticon">
                                     <label>Select Permission</label>
                                     <label

@@ -340,6 +340,13 @@ class UserRegistration extends Component {
                   role: [],
                   city: [],
                })
+               let data = {
+                  Id: '',
+                  PageSize: 0,
+                  LastIndex: 0,
+                  Expression: {}
+               }
+               this.props.getAllUserDataAPI(data, res => { });
             }
          })
 
@@ -457,21 +464,7 @@ class UserRegistration extends Component {
                               valueDescription={this.state.role}
                            />
                         </div>
-                        <div className="col-md-4">
-                           <Field
-                              name="CityId"
-                              type="text"
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              label="City"
-                              component={searchableSelect}
-                              placeholder={'Select city'}
-                              //validate={[required]}
-                              options={this.searchableSelectType('city')}
-                              //required={true}
-                              handleChangeDescription={this.cityHandler}
-                              valueDescription={this.state.city}
-                           />
-                        </div>
+
                      </div>
 
                      <div className="row form-group">
@@ -504,7 +497,7 @@ class UserRegistration extends Component {
                               isEyeIcon={true}
                            />
                         </div>
-                        <div className="input-group  col-md-6 input-withouticon">
+                        <div className="input-group  col-md-4 input-withouticon">
                            <Field
                               label="Address 1"
                               name={"AddressLine1"}
@@ -516,7 +509,7 @@ class UserRegistration extends Component {
                               maxLength={26}
                            />
                         </div>
-                        <div className="input-group  col-md-6 input-withouticon">
+                        <div className="input-group  col-md-4 input-withouticon">
                            <Field
                               label="Address 2"
                               name={"AddressLine2"}
@@ -540,30 +533,62 @@ class UserRegistration extends Component {
                               maxLength={26}
                            />
                         </div>
-                        <div className="input-group  col-md-4 input-withouticon">
+                        <div className="col-md-4">
                            <Field
-                              label="Phone Number"
-                              name={"PhoneNumber"}
+                              name="CityId"
                               type="text"
-                              placeholder={''}
-                              validate={[required, number]}
-                              component={renderText}
-                              required={true}
-                              maxLength={26}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              label="City"
+                              component={searchableSelect}
+                              placeholder={'Select city'}
+                              //validate={[required]}
+                              options={this.searchableSelectType('city')}
+                              //required={true}
+                              handleChangeDescription={this.cityHandler}
+                              valueDescription={this.state.city}
                            />
                         </div>
                         <div className="input-group  col-md-4 input-withouticon">
+                           <div className="Phone phoneNumber col-md-8 input-withouticon">
+                              <Field
+                                 label="Phone Number"
+                                 name={"PhoneNumber"}
+                                 type="text"
+                                 placeholder={''}
+                                 validate={[number]}
+                                 component={renderText}
+                                 //required={true}
+                                 maxLength={26}
+                              />
+                           </div>
+                           <div className="dash phoneNumber col-md-1 input-withouticon">
+                              {'-'}
+                           </div>
+                           <div className="Ext phoneNumber col-md-3 input-withouticon">
+                              <Field
+                                 label="Extension"
+                                 name={"Extension"}
+                                 type="text"
+                                 placeholder={'Ext'}
+                                 validate={[number]}
+                                 component={renderText}
+                                 //required={true}
+                                 maxLength={26}
+                              />
+                           </div>
+                        </div>
+                        {/* <div className="input-group  col-md-4 input-withouticon">
                            <Field
                               label="Extension"
                               name={"Extension"}
                               type="text"
-                              placeholder={''}
-                              validate={[required]}
+                              placeholder={'Ext'}
+                              validate={[number]}
                               component={renderText}
-                              required={true}
+                              //required={true}
                               maxLength={26}
                            />
-                        </div>
+                        </div> */}
                      </div>
 
                      <div className="text-center ">

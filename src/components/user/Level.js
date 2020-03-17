@@ -133,7 +133,7 @@ class Level extends Component {
                                         maxLength={26}
                                     />
                                 </div>
-                                <div className="input-group  col-md-4 input-withouticon">
+                                {/* <div className="input-group  col-md-4 input-withouticon">
                                     <Field
                                         label="Description"
                                         name={"Description"}
@@ -144,7 +144,7 @@ class Level extends Component {
                                         required={false}
                                         maxLength={100}
                                     />
-                                </div>
+                                </div> */}
                                 <div className="input-group  col-md-4 input-withouticon">
                                     <Field
                                         label="Sequence"

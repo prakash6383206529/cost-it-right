@@ -83,7 +83,7 @@ class LevelsListing extends Component {
                                 <thead>
                                     <tr>
                                         <th>{`Level`}</th>
-                                        <th>{`Description`}</th>
+                                        {/* <th>{`Description`}</th> */}
                                         <th>{'Sequence'}</th>
                                         <th>{''}</th>
                                     </tr>
@@ -94,7 +94,7 @@ class LevelsListing extends Component {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.LevelName}</td>
-                                                <td>{item.Description}</td>
+                                                {/* <td>{item.Description}</td> */}
                                                 <td>{item.Sequence}</td>
                                                 <td>
                                                     <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.LevelId)}><i className="fas fa-pencil-alt"></i></Button>
