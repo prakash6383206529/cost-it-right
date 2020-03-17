@@ -179,19 +179,24 @@ class CostSummary extends Component {
         const WIPICCCostValue = WIPCostingHeadObj ? this.InventoryCostCalculation(WIPCostingHeadObj.Text, Content, 'WIPICC') : 0;
         const PaymentTermICCCostValue = PaymentTermCostingHeadObj ? this.InventoryCostCalculation(PaymentTermCostingHeadObj.Text, Content, 'PaymentTermICC') : 0;
 
-        Content.TotalConversionCost = checkForNull(Content.NetProcessCost) + checkForNull(Content.NetOtherOperationCost) + checkForNull(Content.NetSurfaceCost);
+        // Total Conversion Cost
+        Content.TotalConversionCost = this.calculateTotalConversionCost(Content)
         Content.RMInventotyCost = checkForNull(RMICCCostValue);
         Content.WIPInventotyCost = checkForNull(WIPICCCostValue);
         Content.PaymentTermsCost = checkForNull(PaymentTermICCCostValue);
         Content.NetSurfaceArea = checkForNull(Content.NetSurfaceArea);
-        Content.NetSurfaceAreaCost = checkForNull(Content.Quantity) * checkForNull(Content.CEDOperationRate) * checkForNull(Content.NetSurfaceArea); // CED cost 
-        Content.OverheadProfitCost = (checkForNull(Content.OverheadProfitPercentage) * checkForNull(Content.NetSurfaceAreaCost)) / 100    //  (CED cost * overheat % ) / 100 
-        Content.CEDtotalCost = checkForNull(Content.NetSurfaceAreaCost) + checkForNull(Content.OverheadProfitCost) + checkForNull(Content.TransportationOperationCost);
+
+        // NetSurface Area Cost
+        Content.NetSurfaceAreaCost = this.calculateNetSurfaceAreaCost(Content) // CED cost 
+
+        // Overhead Profit Cost
+        Content.OverheadProfitCost = this.calculateOverheadProfitCost(Content)    //  (CED cost * overheat % ) / 100 
+
+        // CED total cost
+        Content.CEDtotalCost = this.calculateCEDtotalCost(Content)
 
         // Total Other Costs
-        Content.TotalOtherCosts = checkForNull(Content.OverheadCost) + checkForNull(Content.ProfitCost) + checkForNull(Content.RejectionCost)
-            + checkForNull(Content.RMInventotyCost) + checkForNull(Content.WIPInventotyCost) + checkForNull(Content.PaymentTermsCost)
-            + checkForNull(Content.ProfitCost) + checkForNull(Content.NetFreightCost);
+        Content.TotalOtherCosts = this.calculateTotalOtherCosts(Content)
 
         Content.ToolMaintenanceCost = checkForNull(Content.ToolMaintenanceCost);
         Content.ToolAmortizationCost = checkForNull(Content.ToolAmortizationCost);
@@ -200,23 +205,107 @@ class CostSummary extends Component {
         Content.Discount = checkForNull(Content.Discount);
 
         //Tool Cost
-        Content.ToolCost = checkForNull(Content.ToolMaintenanceCost) + checkForNull(Content.ToolAmortizationCost);
+        Content.ToolCost = this.calculateToolCost(Content)
 
         //Total Cost
-        Content.TotalCost = checkForNull(Content.TotalConversionCost) + checkForNull(Content.TotalOtherCosts) + checkForNull(Content.ToolMaintenanceCost)
-            + checkForNull(Content.NetBoughtOutParCost) + checkForNull(Content.NetRawMaterialCost) + checkForNull(Content.CEDtotalCost) + checkForNull(Content.NetAdditionalFreightCost);
+        Content.TotalCost = this.calculateTotalCost(Content);
 
-        const HundiDiscount = ((Content.TotalCost * checkForNull(Content.Discount)) / 100);
-        Content.DiscountCost = HundiDiscount != NaN ? HundiDiscount : 0;
+        //Discount Cost
+        Content.DiscountCost = this.calculateDiscountCost(Content)
 
         //Net PO price
-        const NetPOPrice = Content.TotalCost - Content.DiscountCost;
-        Content.NetPurchaseOrderPrice = NetPOPrice != NaN ? NetPOPrice : 0;
+        Content.NetPurchaseOrderPrice = this.calculateNetPurchaseOrderPrice(Content)
 
         //LANDED FACTOR
-        Content.LandedFactorCost = checkForNull(Content.NetPurchaseOrderPrice) * checkForNull(Content.LandedFactorPercentage);
+        Content.LandedFactorCost = this.calculateLandedFactorCost(Content);
 
         return Content;
+    }
+
+    /**
+    * @method calculateTotalConversionCost
+    * @description Used for calculate TotalConversionCost
+    */
+    calculateTotalConversionCost = (Content) => {
+        return checkForNull(Content.NetProcessCost) + checkForNull(Content.NetOtherOperationCost) + checkForNull(Content.NetSurfaceCost);
+    }
+
+    /**
+    * @method calculateNetSurfaceAreaCost
+    * @description Used for calculate NetSurfaceAreaCost
+    */
+    calculateNetSurfaceAreaCost = (Content) => {
+        return checkForNull(Content.Quantity) * checkForNull(Content.CEDOperationRate) * checkForNull(Content.NetSurfaceArea); // CED cost
+    }
+
+    /**
+    * @method calculateOverheadProfitCost
+    * @description Used for calculate OverheadProfitCost
+    */
+    calculateOverheadProfitCost = (Content) => {
+        return (checkForNull(Content.OverheadProfitPercentage) * checkForNull(Content.NetSurfaceAreaCost)) / 100
+    }
+
+    /**
+    * @method calculateCEDtotalCost
+    * @description Used for calculate CEDtotalCost
+    */
+    calculateCEDtotalCost = (Content) => {
+        return checkForNull(Content.NetSurfaceAreaCost) + checkForNull(Content.OverheadProfitCost) + checkForNull(Content.TransportationOperationCost);
+    }
+
+    /**
+    * @method calculateTotalOtherCosts
+    * @description Used for calculate TotalOtherCosts
+    */
+    calculateTotalOtherCosts = (Content) => {
+        return checkForNull(Content.OverheadCost) + checkForNull(Content.ProfitCost) + checkForNull(Content.RejectionCost)
+            + checkForNull(Content.RMInventotyCost) + checkForNull(Content.WIPInventotyCost) + checkForNull(Content.PaymentTermsCost)
+            + checkForNull(Content.ProfitCost) + checkForNull(Content.NetFreightCost);
+    }
+
+    /**
+    * @method calculateToolCost
+    * @description Used for calculate ToolCost
+    */
+    calculateToolCost = (Content) => {
+        return checkForNull(Content.ToolMaintenanceCost) + checkForNull(Content.ToolAmortizationCost);
+    }
+
+    /**
+    * @method calculateTotalCost
+    * @description Used for calculate TotalCost
+    */
+    calculateTotalCost = (Content) => {
+        return checkForNull(Content.TotalConversionCost) + checkForNull(Content.TotalOtherCosts) + checkForNull(Content.ToolMaintenanceCost)
+            + checkForNull(Content.NetBoughtOutParCost) + checkForNull(Content.NetRawMaterialCost)
+            + checkForNull(Content.CEDtotalCost) + checkForNull(Content.NetAdditionalFreightCost);
+    }
+
+    /**
+    * @method calculateDiscountCost
+    * @description Used for calculate DiscountCost
+    */
+    calculateDiscountCost = (Content) => {
+        const HundiDiscount = ((Content.TotalCost * checkForNull(Content.Discount)) / 100);
+        return HundiDiscount != NaN ? HundiDiscount : 0;
+    }
+
+    /**
+    * @method calculateNetPurchaseOrderPrice
+    * @description Used for calculate NetPurchaseOrderPrice
+    */
+    calculateNetPurchaseOrderPrice = (Content) => {
+        const NetPOPrice = Content.TotalCost - Content.DiscountCost;
+        return NetPOPrice != NaN ? NetPOPrice : 0;
+    }
+
+    /**
+    * @method calculateLandedFactorCost
+    * @description Used for calculate LandedFactorCost
+    */
+    calculateLandedFactorCost = (Content) => {
+        return checkForNull(Content.NetPurchaseOrderPrice) * checkForNull(Content.LandedFactorPercentage);
     }
 
     /**
