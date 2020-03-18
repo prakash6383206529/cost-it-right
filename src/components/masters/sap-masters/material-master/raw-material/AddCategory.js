@@ -115,7 +115,7 @@ class AddCategory extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.DESCRIPTION}`}
                                                 name={"Description"}
@@ -126,7 +126,7 @@ class AddCategory extends Component {
                                                 //required={true}
                                                 className=" withoutBorder"
                                             />
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">

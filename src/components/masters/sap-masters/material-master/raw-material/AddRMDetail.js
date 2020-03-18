@@ -6,7 +6,6 @@ import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField, renderNumberInputField } from "../../../../layout/FormInputs";
 import {
     fetchMaterialComboAPI, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
-    getSourcePlantBySourceCity, getDestinationPlantByDestinationCity
 } from '../../../../../actions/master/Comman';
 import {
     createRMDetailAPI, getMaterialDetailAPI, getRawMaterialDataAPI, getRawMaterialDetailsAPI,
@@ -30,6 +29,10 @@ class AddRMDetail extends Component {
             RawMaterialId: '',
             GradeId: '',
             SpecificationId: '',
+            SourceSupplierCity: [],
+            DestinationSupplierCity: [],
+            SourcePlant: [],
+            DestinationPlant: [],
         }
     }
 
@@ -46,12 +49,9 @@ class AddRMDetail extends Component {
             this.props.getRawMaterialDetailsDataAPI(RawMaterialDetailsId, res => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
-                    this.props.getPlantByCity(Data.SourceSupplierCityId, () => {
-                        this.props.change('SourceSupplierPlantId', Data.SourceSupplierPlantId)
-                    })
-                    this.props.getPlantByCity(Data.DestinationSupplierCityId, () => {
-                        this.props.change('DestinationSupplierPlantId', Data.DestinationSupplierPlantId)
-                    })
+
+                    setTimeout(() => { this.getData(Data) }, 500)
+
                 }
             });
         } else {
@@ -60,22 +60,44 @@ class AddRMDetail extends Component {
 
     }
 
+    getData = (Data) => {
+        this.props.getCityBySupplier(Data.SourceSupplierId, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                this.setState({ SourceSupplierCity: Data })
+            }
+        })
+
+        this.props.getCityBySupplier(Data.DestinationSupplierId, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                this.setState({ DestinationSupplierCity: Data })
+            }
+        })
+
+        this.props.getPlantByCity(Data.SourceSupplierCityId, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                console.log('Data 11', Data)
+                this.setState({ SourcePlant: Data })
+            }
+        })
+
+        this.props.getPlantByCity(Data.DestinationSupplierCityId, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                console.log('Data 22', Data)
+                this.setState({ DestinationPlant: Data })
+            }
+        })
+    }
+
     /**
     * @method toggleModel
     * @description Used to cancel modal
     */
     toggleModel = () => {
         this.props.onCancel('6');
-    }
-
-    /**
-    * @method handleTypeOfListingChange
-    * @description  used to handle type of listing selection
-    */
-    handleTypeOfListingChange = (e) => {
-        this.setState({
-            typeOfListing: e
-        })
     }
 
     /**
@@ -142,8 +164,31 @@ class AddRMDetail extends Component {
     * @description called
     */
     handleSourceSupplier = e => {
-        console.log('handleSourceSupplier', e.target.value)
-        this.props.getCityBySupplier(e.target.value, () => { })
+        if (e.target.value != '') {
+            this.setState({ SourceSupplierCity: [], SourcePlant: [] }, () => {
+                this.props.getCityBySupplier(e.target.value, (res) => {
+                    if (res && res.data && res.data.SelectList) {
+                        let Data = res.data.SelectList;
+                        this.setState({ SourceSupplierCity: Data })
+                    }
+                })
+            })
+        } else {
+            this.setState({ SourceSupplierCity: [], SourcePlant: [] })
+        }
+    };
+
+    /**
+    * @method handleDestinationSupplier
+    * @description called
+    */
+    handleDestinationSupplier = e => {
+        this.props.getCityBySupplier(e.target.value, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                this.setState({ DestinationSupplierCity: Data })
+            }
+        })
 
     };
 
@@ -152,8 +197,18 @@ class AddRMDetail extends Component {
     * @description called
     */
     handleSourceSupplierCity = e => {
-        console.log('handleSourceSupplierCity', e.target.value)
-        this.props.getPlantByCity(e.target.value, () => { })
+        if (e.target.value != '') {
+            this.setState({ SourcePlant: [] }, () => {
+                this.props.getPlantByCity(e.target.value, (res) => {
+                    if (res && res.data && res.data.SelectList) {
+                        let Data = res.data.SelectList;
+                        this.setState({ SourcePlant: Data })
+                    }
+                })
+            });
+        } else {
+            this.setState({ SourcePlant: [] })
+        }
     };
 
     /**
@@ -161,8 +216,12 @@ class AddRMDetail extends Component {
     * @description called
     */
     handleDestinationSupplierCity = e => {
-        console.log('handleDestinationSupplierCity', e.target.value)
-        this.props.getPlantByCity(e.target.value, () => { })
+        this.props.getPlantByCity(e.target.value, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                this.setState({ DestinationPlant: Data })
+            }
+        })
     };
 
     /**
@@ -273,13 +332,13 @@ class AddRMDetail extends Component {
     }
 
     /**
-    * @method renderTypeOfListing
+    * @method renderListing
     * @description Used to show type of listing
     */
-    renderTypeOfListing = (label) => {
+    renderListing = (label) => {
         const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
-            supplierList, cityList, technologyList, categoryList, filterPlantListByCity, filterCityListBySupplier,
-            filterSourcePlantBySourceCity, filterDestinationPlantByDestinationCity } = this.props;
+            supplierList, cityList, technologyList, categoryList, filterPlantListByCity, filterCityListBySupplier } = this.props;
+        const { SourceSupplierCity, DestinationSupplierCity, SourcePlant, DestinationPlant } = this.state;
         const temp = [];
         if (label === 'material') {
             rowMaterialList && rowMaterialList.map(item =>
@@ -318,7 +377,19 @@ class AddRMDetail extends Component {
             return temp;
         }
         if (label === 'city') {
-            cityList && cityList.map(item =>
+            filterCityListBySupplier && filterCityListBySupplier.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if (label === 'SourceCity') {
+            SourceSupplierCity && SourceSupplierCity.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if (label === 'DestinationCity') {
+            DestinationSupplierCity && DestinationSupplierCity.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
@@ -336,13 +407,13 @@ class AddRMDetail extends Component {
             return temp;
         }
         if (label === 'SourceSupplierPlant') {
-            filterPlantListByCity && filterPlantListByCity.map(item =>
+            SourcePlant && SourcePlant.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
         if (label === 'DestinationSupplierPlant') {
-            filterPlantListByCity && filterPlantListByCity.map(item =>
+            DestinationPlant && DestinationPlant.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
@@ -392,7 +463,7 @@ class AddRMDetail extends Component {
                                                 //validate={[required]}
                                                 // required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('material')}
+                                                options={this.renderListing('material')}
                                                 onChange={this.handleRMChange}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -419,7 +490,7 @@ class AddRMDetail extends Component {
                                                 //validate={[required]}
                                                 // required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('grade')}
+                                                options={this.renderListing('grade')}
                                                 onChange={(Value) => this.handleGradeChange(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -446,7 +517,7 @@ class AddRMDetail extends Component {
                                                 //validate={[required]}
                                                 // required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('specification')}
+                                                options={this.renderListing('specification')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -461,7 +532,7 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('category')}
+                                                options={this.renderListing('category')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -541,7 +612,7 @@ class AddRMDetail extends Component {
                                                 //validate={[required]}
                                                 // required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('technology')}
+                                                options={this.renderListing('technology')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -558,7 +629,7 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('supplier')}
+                                                options={this.renderListing('supplier')}
                                                 onChange={this.handleSourceSupplier}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -571,10 +642,10 @@ class AddRMDetail extends Component {
                                                 label={`Source Supplier City`}
                                                 name={"SourceSupplierCityId"}
                                                 type="text"
-                                                placeholder={''}
+                                                placeholder={'--Supplier City--'}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('city')}
+                                                options={this.renderListing('SourceCity')}
                                                 onChange={this.handleSourceSupplierCity}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -590,7 +661,7 @@ class AddRMDetail extends Component {
                                                 placeholder={'--Source Plant--'}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('SourceSupplierPlant')}
+                                                options={this.renderListing('SourceSupplierPlant')}
                                                 onChange={this.handleSourceSupplierPlant}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -606,8 +677,8 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('supplier')}
-                                                onChange={this.handleTypeofListing}
+                                                options={this.renderListing('supplier')}
+                                                onChange={this.handleDestinationSupplier}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
@@ -619,10 +690,10 @@ class AddRMDetail extends Component {
                                                 label={`Destination Supplier City`}
                                                 name={"DestinationSupplierCityId"}
                                                 type="text"
-                                                placeholder={''}
+                                                placeholder={'--Supplier City--'}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('city')}
+                                                options={this.renderListing('DestinationCity')}
                                                 onChange={this.handleDestinationSupplierCity}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -638,7 +709,7 @@ class AddRMDetail extends Component {
                                                 placeholder={'--Destination Plant--'}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('DestinationSupplierPlant')}
+                                                options={this.renderListing('DestinationSupplierPlant')}
                                                 onChange={this.handleDestinationSupplierPlant}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -654,7 +725,7 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('uom')}
+                                                options={this.renderListing('uom')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -670,7 +741,7 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('plant')}
+                                                options={this.renderListing('plant')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -704,8 +775,7 @@ class AddRMDetail extends Component {
 function mapStateToProps({ comman, material }) {
 
     const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
-        supplierList, cityList, technologyList, categoryList, filterPlantListByCity, filterCityListBySupplier,
-        filterSourcePlantBySourceCity, filterDestinationPlantByDestinationCity } = comman;
+        supplierList, cityList, technologyList, categoryList, filterPlantListByCity, filterCityListBySupplier } = comman;
 
     const { rawMaterialDetails, rawMaterialDetailsData } = material;
 
@@ -736,8 +806,7 @@ function mapStateToProps({ comman, material }) {
     return {
         uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification,
         plantList, supplierList, cityList, technologyList, categoryList, rawMaterialDetails,
-        filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, filterSourcePlantBySourceCity,
-        filterDestinationPlantByDestinationCity, initialValues
+        filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues
     }
 
 }
@@ -760,8 +829,6 @@ export default connect(mapStateToProps, {
     getCityBySupplier,
     getPlantByCity,
     updateRawMaterialDetailsAPI,
-    getSourcePlantBySourceCity,
-    getDestinationPlantByDestinationCity,
 })(reduxForm({
     form: 'AddRMDetail',
     enableReinitialize: true,

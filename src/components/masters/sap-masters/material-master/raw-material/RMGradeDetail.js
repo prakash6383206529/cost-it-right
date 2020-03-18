@@ -78,7 +78,7 @@ class RMGradeDetail extends Component {
                                     <tr>
                                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th>
                                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
-                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
+                                        {/* <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th> */}
                                         <th>{`${CONSTANT.DATE}`}</th>
                                         <th>{``}</th>
                                     </tr>
@@ -90,7 +90,7 @@ class RMGradeDetail extends Component {
                                             <tr key={index}>
                                                 <td >{item.Grade}</td>
                                                 <td>{item.MaterialTypeName}</td>
-                                                <td>{item.Description}</td>
+                                                {/* <td>{item.Description}</td> */}
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                                 <td>
                                                     <Button className="black-btn" onClick={() => this.editItemDetails(item.GradeId)}><i className="fas fa-pencil-alt"></i></Button>

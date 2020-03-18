@@ -131,7 +131,7 @@ class AddMaterialType extends Component {
                                         <Col md="1">
                                             <label>(kg/m3)</label>
                                         </Col>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`Description`}
                                                 name={"Description"}
@@ -142,7 +142,7 @@ class AddMaterialType extends Component {
                                                 //required={true}
                                                 className=" withoutBorder"
                                             />
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-sm-12 text-center">

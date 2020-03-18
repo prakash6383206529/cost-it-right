@@ -78,7 +78,7 @@ class RMSpecificationDetail extends Component {
                                     <tr>
                                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th>
                                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.SPECIFICATION}`}</th>
-                                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
+                                        {/* <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th> */}
                                         <th>{`${CONSTANT.DATE}`}</th>
                                         <th>{``}</th>
                                     </tr>
@@ -90,7 +90,7 @@ class RMSpecificationDetail extends Component {
                                             <tr key={index}>
                                                 <td>{item.GradeName}</td>
                                                 <td >{item.Specification}</td>
-                                                <td>{item.Description}</td>
+                                                {/* <td>{item.Description}</td> */}
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                                 <td>
                                                     <Button className="black-btn" onClick={() => this.editItemDetails(item.SpecificationId)}><i className="fas fa-pencil-alt"></i></Button>

@@ -206,7 +206,7 @@ class AddMaterial extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.DESCRIPTION}`}
                                                 name={"Description"}
@@ -217,7 +217,7 @@ class AddMaterial extends Component {
                                                 //required={true}
                                                 className=" withoutBorder"
                                             />
-                                        </Col>
+                                        </Col> */}
                                         <Col md="6">
                                             <Field
                                                 label={`Material Type`}

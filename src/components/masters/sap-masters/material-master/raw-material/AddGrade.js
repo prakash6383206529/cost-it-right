@@ -154,7 +154,7 @@ class AddGrade extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
-                                        <Col md="4">
+                                        <Col md="6">
                                             <Field
                                                 label={'Material'}
                                                 name={"MaterialId"}
@@ -170,7 +170,7 @@ class AddGrade extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        <Col md="4">
+                                        <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.GRADE}`}
                                                 name={"Grade"}
@@ -182,7 +182,7 @@ class AddGrade extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Col md="4">
+                                        {/* <Col md="4">
                                             <Field
                                                 label={`${CONSTANT.DESCRIPTION}`}
                                                 name={"Description"}
@@ -193,7 +193,7 @@ class AddGrade extends Component {
                                                 //required={true}
                                                 className=" withoutBorder"
                                             />
-                                        </Col>
+                                        </Col> */}
 
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">

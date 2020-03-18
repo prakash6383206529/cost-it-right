@@ -267,20 +267,6 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 filterPlantListByCity: action.payload
             };
-        case GET_SOURCE_PLANTS_BY_SOURCE_CITY:
-            return {
-                ...state,
-                loading: false,
-                error: true,
-                filterSourcePlantBySourceCity: action.payload
-            };
-        case GET_DESTINATION_PLANTS_BY_DESTINATION_CITY:
-            return {
-                ...state,
-                loading: false,
-                error: true,
-                filterDestinationPlantByDestinationCity: action.payload
-            };
         case GET_CITY_BY_SUPPLIER:
             return {
                 ...state,

@@ -40,7 +40,12 @@ class AddSpecification extends Component {
     componentDidMount() {
         const { SpecificationId, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.props.getRMSpecificationDataAPI(SpecificationId, res => { });
+            this.props.getRMSpecificationDataAPI(SpecificationId, res => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    this.props.fetchRMGradeAPI(Data.MaterialTypeId, res => { })
+                }
+            });
         } else {
             this.props.getRMSpecificationDataAPI('', res => { });
         }
@@ -205,7 +210,7 @@ class AddSpecification extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Col md="6">
+                                        {/* <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.DESCRIPTION}`}
                                                 name={"Description"}
@@ -216,7 +221,7 @@ class AddSpecification extends Component {
                                                 //required={true}
                                                 className=" withoutBorder"
                                             />
-                                        </Col>
+                                        </Col> */}
 
                                     </Row>
                                     <Row className="sf-btn-footer no-gutters justify-content-between">

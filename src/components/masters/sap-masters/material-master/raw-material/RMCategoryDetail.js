@@ -77,7 +77,7 @@ class RMCategoryDetail extends Component {
                                 <thead>
                                     <tr>
                                         <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
-                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th>
+                                        {/* <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th> */}
                                         <th>{`${CONSTANT.DATE}`}</th>
                                     </tr>
                                 </thead>}
@@ -87,7 +87,7 @@ class RMCategoryDetail extends Component {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.CategoryName}</td>
-                                                <td>{item.Description}</td>
+                                                {/* <td>{item.Description}</td> */}
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                                 <td>
                                                     <Button className="black-btn" onClick={() => this.editItemDetails(item.CategoryId)}><i className="fas fa-pencil-alt"></i></Button>

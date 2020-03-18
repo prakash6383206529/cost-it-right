@@ -78,7 +78,7 @@ class RMDetail extends Component {
                                     <tr>
                                         <th>{`Raw Material Name`}</th>
                                         <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th>
+                                        {/* <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th> */}
                                         <th>{`${CONSTANT.DATE}`}</th>
                                         <th>{``}</th>
                                     </tr>
@@ -90,7 +90,7 @@ class RMDetail extends Component {
                                             <tr key={index}>
                                                 <td >{item.RawMaterialName}</td>
                                                 <td>{item.PlantName}</td>
-                                                <td>{item.Description}</td>
+                                                {/* <td>{item.Description}</td> */}
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                                 <td>
                                                     <Button className="black-btn" onClick={() => this.editItemDetails(item.RawMaterialId)}><i className="fas fa-pencil-alt"></i></Button>
