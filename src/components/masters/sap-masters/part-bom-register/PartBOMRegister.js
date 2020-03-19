@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, FieldArray, formValueSelector } from "redux-form";
+import { Field, reduxForm, FieldArray, formValueSelector, initialize } from "redux-form";
 import { Container, Row, Col, Card, CardBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import {
     renderText, renderSelectField, renderCheckboxInputField, renderMultiSelectField,
-    searchableSelect, RFReactSelect
+    searchableSelect, RFReactSelect, focusOnError,
 } from "../../../layout/FormInputs";
 import { createPartAPI, updatePartsAPI, getOnePartsAPI, getAllPartsAPI } from '../../../../actions/master/Part';
 import { fetchBOMComboAPI, fetchPlantDataAPI, fetchPartComboAPI } from '../../../../actions/master/Comman';
 import {
     getAllBOMAPI, createBOMAPI, checkCostingExistForPart, deleteExisCostingByPartID, getBOMDetailAPI,
-    createNewBOMAPI, createAssemblyPartAPI, getAssemblyPartDataListAPI, getAssemblyPartDetailAPI, 
-    updateAssemblyPartAPI, 
+    createNewBOMAPI, createAssemblyPartAPI, getAssemblyPartDataListAPI, getAssemblyPartDetailAPI,
+    updateAssemblyPartAPI,
 } from '../../../../actions/master/BillOfMaterial';
 import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
@@ -751,6 +751,17 @@ class PartBOMRegister extends Component {
     }
 
     /**
+    * @method cancel
+    * @description used to Reset form
+    */
+    cancel = () => {
+        const { reset, initialize, destroy } = this.props;
+        reset();
+        //destroy();
+        initialize();
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
@@ -802,7 +813,7 @@ class PartBOMRegister extends Component {
 
             const updateData = {
                 PartId: AssemblyPartData.PartId,
-                BillOfMaterialId: AssemblyPartData.BillOfMaterialId ,
+                BillOfMaterialId: AssemblyPartData.BillOfMaterialId,
                 ChildParts: tempArray3,
                 PlantName: AssemblyPartData.PlantName,
                 CompanyName: '',
@@ -838,7 +849,7 @@ class PartBOMRegister extends Component {
                 PartTypeId: '',
                 IsChildPart: true,
                 BOMNumber: AssemblyPartData.BOMNumber
-              }
+            }
 
             console.log('formData1', updateData)
 
@@ -896,7 +907,8 @@ class PartBOMRegister extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset, partData } = this.props;
+        const { handleSubmit, reset, partData, pristine,
+            submitting } = this.props;
         const { isEditFlag } = this.state;
 
         return (
@@ -1112,9 +1124,10 @@ class PartBOMRegister extends Component {
                                 {isEditFlag ? 'Update' : 'Save'}
                             </button>
                             {!isEditFlag &&
-                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                <button type={'button'} className="btn btn-secondary" disabled={pristine || submitting} onClick={reset} >
                                     {'Reset'}
-                                </button>}
+                                </button>
+                            }
                         </div>
                     </Row>
 
@@ -1253,5 +1266,9 @@ export default connect(mapStateToProps, {
     updateAssemblyPartAPI,
 })(reduxForm({
     form: 'PartBOMRegister',
+    onSubmitFail: errors => {
+        console.log('errorsssss', errors)
+        focusOnError(errors);
+    },
     enableReinitialize: true,
 })(PartBOMRegister));
