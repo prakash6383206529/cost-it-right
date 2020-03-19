@@ -12,6 +12,13 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { FIVE_DECIMAL_WEIGHT } from '../../../config/constants';
 import { loggedInUserId } from "../../../helper/auth";
+import Drawer from 'rc-drawer';
+
+import 'antd/lib/button/style';
+import 'antd/lib/style';
+
+//import '../assets/index.less';
+//import './assets/index.less';
 const selector = formValueSelector('AddWeightCostingForm');
 
 class AddWeightCosting extends Component {
@@ -390,7 +397,7 @@ class AddWeightCosting extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset, weightCostingInfo } = this.props;
+        const { handleSubmit, isEditFlag, reset, weightCostingInfo, isOpen } = this.props;
         const { weightType, isPartBlankDisabled } = this.state;
 
         let weightTitle = '';
@@ -405,10 +412,20 @@ class AddWeightCosting extends Component {
         }
 
         return (
-            <Container className="top-margin">
+            <>
                 <Modal size={'xl'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
                     <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Weight Costing' : 'Add Weight Costing'}</ModalHeader>
                     <ModalBody>
+                        {/* <Drawer
+                    className={'weight-drawer'}
+                    wrapperClassName={'weight--drawer-wrapper'}
+                    open={isOpen}
+                    width="20vw"
+                    height={'667'}
+                    placement={'right'}
+                    handler={false}
+                    onClose={this.props.onCancel}
+                > */}
                         <Row>
                             <Container>
                                 <form
@@ -1296,9 +1313,10 @@ class AddWeightCosting extends Component {
                                 </form>
                             </Container>
                         </Row>
+                        {/* </Drawer> */}
                     </ModalBody>
                 </Modal>
-            </Container >
+            </ >
         );
     }
 }
