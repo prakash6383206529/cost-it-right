@@ -284,6 +284,7 @@ export const API = {
   getMHRCostingList: `${BASE_URL}/costing-sheet-metal/get-machine-hour-rate-by-supplier`,
   addCostingProcesses: `${BASE_URL}/costing-sheet-metal/add-costing-process`,
   getCostingProcesses: `${BASE_URL}/costing-sheet-metal/get-costing-process`,
+  getCostingBOP: `${BASE_URL}/costing-sheet-metal/get-costing-bought-out-parts`,
   getProcessesSelectList: `${BASE_URL}/configuration/select-list-get-process`,
   saveProcessCosting: `${BASE_URL}/costing-sheet-metal/save-costing-process`,
   getOtherOpsSelectList: `${BASE_URL}/configuration/select-list-get-operation`,
@@ -293,6 +294,7 @@ export const API = {
   saveCostingAsDraft: `${BASE_URL}/costing-sheet-metal/save-costing-details-as-draft`,
   getCostingOverHeadProByModelType: `${BASE_URL}/costing-sheet-metal/get-costing-overhead-profit-by-model-type`,
   saveCosting: `${BASE_URL}/costing-sheet-metal/save-costing`,
+  saveBOPCosting: `${BASE_URL}/costing-sheet-metal/save-costing-bought-out-part`,
 
   //cost summary 
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -628,6 +630,8 @@ export const GET_FREIGHT_HEAD_SUCCESS = 'GET_FREIGHT_HEAD_SUCCESS';
 export const GET_FREIGHT_AMOUNT_DATA_SUCCESS = 'GET_FREIGHT_AMOUNT_DATA_SUCCESS';
 export const EMPTY_COSTING_DATA = 'EMPTY_COSTING_DATA';
 export const GET_ZBC_COSTING_SELECTLIST_BY_PART = 'GET_ZBC_COSTING_SELECTLIST_BY_PART';
+export const ADD_BOP_GRID_COSTING_SUCCESS = 'ADD_BOP_GRID_COSTING_SUCCESS';
+export const SAVE_BOP_COSTING_SUCCESS = 'SAVE_BOP_COSTING_SUCCESS';
 
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';

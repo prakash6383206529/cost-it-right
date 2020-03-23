@@ -88,7 +88,7 @@ class MaterialDetail extends Component {
                                         <th>{` ${CONSTANT.UOM}`}</th>
                                         {/* <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
                                         <th>{`${CONSTANT.BASIC} ${CONSTANT.RATE}`}</th>
-                                        <th>{`${CONSTANT.QUANTITY}`}</th>
+                                        <th>{`Piece`}</th>
                                         <th>{`${CONSTANT.SCRAP} ${CONSTANT.RATE}`}</th>
                                         <th>{` ${CONSTANT.NLC}`}</th>
                                         <th>{`${CONSTANT.REMARK} `}</th>

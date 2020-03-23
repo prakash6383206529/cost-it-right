@@ -26,6 +26,7 @@ import {
     SET_COSTING_DETAIL_ROW_DATA,
     UPDATE_COSTING_OTHER_OPERATION_SUCCESS,
     SAVE_COSTING_AS_DRAFT_SUCCESS,
+    ADD_BOP_GRID_COSTING_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -182,6 +183,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 costingGridProcessData: action.payload
+            };
+        case ADD_BOP_GRID_COSTING_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                BOPGridData: action.payload
             };
         case GET_OTHER_OPERATION_SELECT_LIST_SUCCESS:
             return {

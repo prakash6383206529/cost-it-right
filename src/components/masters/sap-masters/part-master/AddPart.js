@@ -95,6 +95,7 @@ class AddPart extends Component {
         //     return temp;
         // }
         if (label === 'material') {
+            temp.push({ Text: "--Select Material Type--", Value: 0 })
             rowMaterialDetail && rowMaterialDetail.map(item =>
                 temp.push({ Text: item.RawMaterialName, Value: item.RawMaterialId })
             );

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     createNewCosting, getCostingBySupplier, getCostingDetailsById, getMaterialTypeSelectList, setCostingDetailRowData,
-    getCostingProcesses, getCostingOtherOperation, saveCostingAsDraft
+    getCostingProcesses, getCostingOtherOperation, saveCostingAsDraft, getCostingBOP,
 } from '../../../actions/costing/CostWorking';
 import { getAllRawMaterialList } from '../../../actions/master/Material';
 import { Button, Col, Row, Table, Label, Input } from 'reactstrap';
@@ -17,6 +17,7 @@ import ProcessGrid from './ProcessGrid';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
+import BOPGrid from './BOPGrid';
 
 
 class CostWorking extends Component {
@@ -458,6 +459,29 @@ class CostWorking extends Component {
     }
 
     /**
+     * @method toggleBOPGrid
+     * @description  used to toggle BOP
+     */
+    toggleBOPGrid = (selectedIndex) => {
+        const { costingId } = this.state;
+        this.setState({
+            isOpenBOPModal: !this.state.isOpenBOPModal,
+            selectedIndex: selectedIndex,
+        }, () => {
+            this.props.getCostingBOP(costingId, res => { })
+            this.props.getCostingDetailsById(costingId, true, res => {
+                this.setState({
+                    isCollapes: true,
+                    isEditFlag: true,
+                    isNewCostingFlag: false,
+                    costingId: costingId,
+                    isLoader: false,
+                })
+            })
+        })
+    }
+
+    /**
      * @method materialDropDown
      * @description  Raw material dropdown in grid
      */
@@ -508,6 +532,10 @@ class CostWorking extends Component {
         this.props.setCostingDetailRowData(DetailData, index);
     }
 
+    /**
+     * @method assemblyPartDetail
+     * @description  used for assemblyPartDetail Handle
+     */
     assemblyPartDetail = () => {
         const { getCostingDetailData } = this.props;
         let data = (getCostingDetailData && getCostingDetailData.AssemblyPartDetail) ? getCostingDetailData.AssemblyPartDetail : {};
@@ -522,7 +550,7 @@ class CostWorking extends Component {
         }
 
         //if (data && data.BoughtOutPartDetails.length > 0) {
-        const BOPcost = data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : 0;
+        const BOPcost = data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].GrandTotal : 0;
         const ProcessCost = data.ProcessDetails.length > 0 ? data.ProcessDetails[0].AssyTotalProcessCost : 0;
         const SurfaceTreatmentCost = data.OtherOperationDetails.length > 0 ? data.OtherOperationDetails[0].AssySurfaceTreatmentCost : 0;
         NetCC_Cost = (BOPcost + ProcessCost + SurfaceTreatmentCost);
@@ -579,8 +607,9 @@ class CostWorking extends Component {
                     <td>{data && data.WeightCalculationDetails.length > 0 ? data.WeightCalculationDetails[0].FinishWeight : '0'}</td>
                     <td>{data && data.WeightCalculationDetails.length > 0 ? NetRMCost : '0'}</td>
 
-                    <td><button onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails.length > 0 ? 'Update' : 'Add'}</button></td>
-                    <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].AssyBoughtOutParRate : '0'}</td>
+                    {/* <td><button onClick={() => this.openBOPModal(index)}>{data && data.BoughtOutPartDetails.length > 0 ? 'Update' : 'Add'}</button></td> */}
+                    <td><button onClick={() => this.toggleBOPGrid(index)}>{data && data.BoughtOutPartDetails.length > 0 ? 'Update' : 'Add'}</button></td>
+                    <td>{data && data.BoughtOutPartDetails.length > 0 ? data.BoughtOutPartDetails[0].GrandTotal : '0'}</td>
 
                     <td><button onClick={() => this.toggleProcessGrid(index)}>{processFlag ? 'Update' : 'Add'}</button></td>
                     <td>{data && data.ProcessDetails.length > 0 ? data.ProcessDetails[0].TotalProcessCost : '0'}</td>
@@ -891,6 +920,16 @@ class CostWorking extends Component {
                                 selectedIndex={selectedIndex}
                             />}
 
+                        {isOpenBOPModal &&
+                            <BOPGrid
+                                onCancelBOPGrid={this.toggleBOPGrid}
+                                supplierId={supplierId}
+                                costingId={costingId}
+                                PartId={partId}
+                                PartNumber={PartNumber}
+                                selectedIndex={selectedIndex}
+                            />}
+
                     </Col>
                 )}
                 {isOpen && (
@@ -916,18 +955,7 @@ class CostWorking extends Component {
                         isRMEditFlag={isRMEditFlag}
                     />
                 )}
-                {isOpenBOPModal && (
-                    <AddBOPCosting
-                        isOpen={isOpenBOPModal}
-                        onCancel={this.onCancel}
-                        supplierId={supplierId}
-                        costingId={costingId}
-                        PartId={partId}
-                        PartNumber={PartNumber}
-                        selectedIndex={selectedIndex}
-                    //isBOPEditFlag={isBOPEditFlag}
-                    />
-                )}
+
             </div >
         );
     }
@@ -956,6 +984,7 @@ export default connect(mapStateToProps,
         getCostingOtherOperation,
         saveCostingAsDraft,
         getAllRawMaterialList,
+        getCostingBOP,
     }
 )(CostWorking);
 

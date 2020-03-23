@@ -126,6 +126,7 @@ export const MESSAGES = {
   WEIGHT_ADD_SUCCESS: 'Weight specification added successfully',
   SAVE_OTHER_OPERATION_SUCCESS: 'Other Operation saved successfully.',
   SAVE_PROCESS_COSTING_SUCCESS: 'Process costing saved successfully.',
+  SAVE_BOP_COSTING_SUCCESS: 'Bought Out Part costing saved successfully.',
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated.',
   COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully.',
   SELECT_PART_FOR_ZBC_COSTING: 'Please select part for zbc costing.',

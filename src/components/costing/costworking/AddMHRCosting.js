@@ -73,17 +73,17 @@ class AddMHRCosting extends Component {
                                             <th>{`Created On`}</th>
                                         </tr>
                                     </thead>
-                                    <tbody >
+                                    <tbody>
                                         {getMHRCostingListData && getMHRCostingListData.map((item, index) => {
                                             return (
                                                 <tr row={index} >
                                                     <td><button type={'button'} onClick={() => this.addMHRHandler(item)}>{'Add'}</button></td>
                                                     <td>{item.TechnologyName}</td>
-                                                    <td>{'N/A'}</td> { /** TODO Supplier code need to add */}
+                                                    <td>{item.SupplierCode}</td>
                                                     <td>{item.SupplierName}</td>
                                                     <td>{item.MachineNumber}</td>
                                                     <td>{item.Description}</td>
-                                                    <td>{item.MachineTonnage}</td>
+                                                    <td>{item.MachineCapacity}</td>
                                                     <td>{item.BasicMachineRate}</td>
                                                     <td>{item.UnitOfMeasurementName}</td>
                                                     <td>{item.CreatedBy}</td>

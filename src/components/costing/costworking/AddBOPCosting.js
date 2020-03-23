@@ -37,29 +37,28 @@ class AddBOPCosting extends Component {
     }
 
     bopHandler = (item) => {
-        const { isRMEditFlag, costingId, PartId, PartNumber } = this.props;
-        const loginUserId = loggedInUserId();
-        const requestData = {
-            CostingId: costingId,
-            BoughtOutPartId: item.BoughtOutPartId,
-            GrandTotal: item.BasicRate * item.Quantity,
-            BoughtOutParRate: item.BasicRate,
-            AssyBoughtOutParRate: item.BasicRate,
-            PartId: PartId,
-            PartNumber: PartNumber,
-            CreatedBy: loginUserId,
-        }
 
-        this.props.addCostingBoughtOutPart(requestData, res => {
-            this.props.getCostingDetailsById(costingId, true, res => {
-                // this.setState({
-                //     isCollapes: true,
-                //     isEditFlag: true,
-                //     isNewCostingFlag: false
-                // })
-                this.toggleModel()
-            })
-        })
+        this.props.setRowData(item)
+        this.toggleModel()
+
+        // const { isRMEditFlag, costingId, PartId, PartNumber } = this.props;
+        // const loginUserId = loggedInUserId();
+        // const requestData = {
+        //     CostingId: costingId,
+        //     BoughtOutPartId: item.BoughtOutPartId,
+        //     GrandTotal: item.BasicRate * item.Quantity,
+        //     BoughtOutParRate: item.BasicRate,
+        //     AssyBoughtOutParRate: item.BasicRate,
+        //     PartId: PartId,
+        //     PartNumber: PartNumber,
+        //     CreatedBy: loginUserId,
+        // }
+
+        // this.props.addCostingBoughtOutPart(requestData, res => {
+        //     this.props.getCostingDetailsById(costingId, true, res => {
+        //         this.toggleModel()
+        //     })
+        // })
     }
 
 

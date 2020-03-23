@@ -555,7 +555,7 @@ class AddRMDetail extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`${CONSTANT.QUANTITY}`}
+                                                label={`Piece`}
                                                 name={"Quantity"}
                                                 type="text"
                                                 placeholder={''}

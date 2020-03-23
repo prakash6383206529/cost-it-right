@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../../helper/validation";
-import { renderText } from "../../../../layout/FormInputs";
+import { required, decimalLengthFour } from "../../../../../helper/validation";
+import { renderText, renderNumberInputField } from "../../../../layout/FormInputs";
 import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
@@ -121,8 +121,8 @@ class AddMaterialType extends Component {
                                                 name={"CalculatedDensityValue"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
+                                                validate={[required, decimalLengthFour]}
+                                                component={renderNumberInputField}
                                                 required={true}
                                                 className=" withoutBorder"
                                             //customClassName=" withoutBorderBottom"

@@ -29,6 +29,8 @@ import {
     SET_COSTING_DETAIL_ROW_DATA,
     UPDATE_COSTING_OTHER_OPERATION_SUCCESS,
     SAVE_COSTING_AS_DRAFT_SUCCESS,
+    ADD_BOP_GRID_COSTING_SUCCESS,
+    SAVE_BOP_COSTING_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -564,6 +566,50 @@ export function getCostingProcesses(costingId, callback) {
             dispatch({
                 type: API_FAILURE
             });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getCostingBOP
+ * @description add process to costing
+ */
+export function getCostingBOP(costingId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getCostingBOP}/${costingId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: ADD_BOP_GRID_COSTING_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method saveBOPCosting
+ * @description save Process Costing
+ */
+export function saveBOPCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.saveBOPCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: SAVE_BOP_COSTING_SUCCESS,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
