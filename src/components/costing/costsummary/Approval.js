@@ -8,7 +8,7 @@ import {
 } from '../../../actions/costing/Approval';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { required } from "../../../helper/validation";
+import { required, isGuid } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
@@ -34,9 +34,22 @@ class Approval extends Component {
     */
     componentDidMount() {
         const { costingId, supplierId } = this.props;
-        this.props.getSendForApprovalByCostingId(costingId, () => { })
-        this.props.getAllApprovalDepartment(() => { })
         this.props.getReasonSelectList(() => { })
+        this.props.getAllApprovalDepartment(() => { })
+        this.props.getSendForApprovalByCostingId(costingId, (res) => {
+            if (res && res.data && res.data.Data) {
+                let Data = res.data.Data;
+                setTimeout(() => { this.getData(Data) }, 500)
+            }
+        })
+    }
+
+    getData = (Data) => {
+        const { reasonsList, costingStatusText } = this.props;
+        if (costingStatusText != DRAFT) {
+            const tempObj = reasonsList.find(item => item.Value == Data.ReasonId)
+            this.setState({ reason: { label: tempObj.Text, value: tempObj.Value } });
+        }
     }
 
     /**
@@ -241,7 +254,7 @@ class Approval extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset, costingStatusText } = this.props;
+        const { handleSubmit, reset, costingStatusText, approvalData, reAssign } = this.props;
 
         let formHeading = '';
         if (costingStatusText == DRAFT || costingStatusText == PENDING) {
@@ -306,6 +319,8 @@ class Approval extends Component {
                                 //required={true}
                                 handleChangeDescription={this.reasonHandler}
                                 valueDescription={this.state.reason}
+                                //disabled={approvalData && approvalData != undefined ? isGuid(approvalData.ReasonId) : false}
+                                disabled={costingStatusText != DRAFT ? true : false}
                             />
                         </Col>
                     </Row>

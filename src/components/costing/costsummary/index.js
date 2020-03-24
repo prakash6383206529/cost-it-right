@@ -81,6 +81,7 @@ class CostSummary extends Component {
             SupplierTwoCostingStatusText: '',
             SupplierThreeCostingStatusText: '',
             isOpenCopyCosting: false,
+            reAssign: false,
         }
     }
 
@@ -111,10 +112,16 @@ class CostSummary extends Component {
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
                 btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
-                this.setState({ isDisabledZBCSupplierButton: false, ZBCSupplierSaveButtonLabel: btnLabel })
+                this.setState({
+                    isDisabledZBCSupplierButton: false,
+                    ZBCSupplierSaveButtonLabel: btnLabel
+                })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
                 btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
-                this.setState({ isDisabledZBCSupplierButton: false, ZBCSupplierSaveButtonLabel: btnLabel })
+                this.setState({
+                    isDisabledZBCSupplierButton: false,
+                    ZBCSupplierSaveButtonLabel: btnLabel
+                })
             }
 
             this.props.change('ZBCsupplierData', returnContent)
@@ -127,10 +134,16 @@ class CostSummary extends Component {
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
                 btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
-                this.setState({ isDisabledSupplierOneButton: false, SupplierOneSaveButtonLabel: btnLabel })
+                this.setState({
+                    isDisabledSupplierOneButton: false,
+                    SupplierOneSaveButtonLabel: btnLabel
+                })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
                 btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
-                this.setState({ isDisabledSupplierOneButton: false, SupplierOneSaveButtonLabel: btnLabel })
+                this.setState({
+                    isDisabledSupplierOneButton: false,
+                    SupplierOneSaveButtonLabel: btnLabel
+                })
             }
 
             this.props.change('supplier1Data', returnContent)
@@ -143,10 +156,16 @@ class CostSummary extends Component {
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
                 btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
-                this.setState({ isDisabledSupplierTwoButton: false, SupplierTwoSaveButtonLabel: btnLabel })
+                this.setState({
+                    isDisabledSupplierTwoButton: false,
+                    SupplierTwoSaveButtonLabel: btnLabel
+                })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
                 btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
-                this.setState({ isDisabledSupplierTwoButton: false, SupplierTwoSaveButtonLabel: btnLabel })
+                this.setState({
+                    isDisabledSupplierTwoButton: false,
+                    SupplierTwoSaveButtonLabel: btnLabel
+                })
             }
 
             this.props.change('supplier2Data', returnContent)
@@ -159,10 +178,16 @@ class CostSummary extends Component {
 
             if (Content.CostingStatusName == APPROVED || Content.CostingStatusName == PENDING) {
                 btnLabel = (Content.CostingStatusName == APPROVED) ? 'Approved' : 'Pending For Approval';
-                this.setState({ isDisabledSupplierThreeButton: false, SupplierThreeSaveButtonLabel: btnLabel })
+                this.setState({
+                    isDisabledSupplierThreeButton: false,
+                    SupplierThreeSaveButtonLabel: btnLabel
+                })
             } else if (Content.CostingStatusName == DRAFT || Content.CostingStatusName == REJECTED) {
                 btnLabel = (Content.CostingStatusName == DRAFT) ? 'Send For Approval' : 'Rejected';
-                this.setState({ isDisabledSupplierThreeButton: false, SupplierThreeSaveButtonLabel: btnLabel })
+                this.setState({
+                    isDisabledSupplierThreeButton: false,
+                    SupplierThreeSaveButtonLabel: btnLabel
+                })
             }
 
             this.props.change('supplier3Data', returnContent)
@@ -702,7 +727,8 @@ class CostSummary extends Component {
         }
 
         this.setState({
-            [activeSupplier]: e.target.value
+            [activeSupplier]: e.target.value,
+            isOpenSendForApproval: false,
         }, () => {
             this.getCostingStatus(e.target.value, supplier)
             if (e.target.value != '' && e.target.value != 0) {
@@ -2041,8 +2067,11 @@ class CostSummary extends Component {
 
         this.props.reassignCostingAPI(Content.CostingId, (res) => {
             if (res.data.Result) {
-                toastr.success(MESSAGES.REASSIGN_COSTING_SUCCESS_MESSAGE)
-                this.sendApproval(Number)
+                this.setState({ reAssign: true }, () => {
+                    toastr.success(MESSAGES.REASSIGN_COSTING_SUCCESS_MESSAGE)
+                    this.sendApproval(Number)
+                });
+
             }
         })
     }
@@ -2123,7 +2152,7 @@ class CostSummary extends Component {
             isOpenSendForApproval: true,
             sendForApprovalSupplierId: supplierId,
             sendForApprovalCostingId: Content.CostingId,
-            CostingStatusText: CostingStatusText,
+            CostingStatusText: this.state.reAssign == true ? DRAFT : CostingStatusText,
         })
     }
 
@@ -2186,6 +2215,7 @@ class CostSummary extends Component {
             isOpenCopyCosting: false,
             sendForApprovalSupplierId: '',
             sendForApprovalCostingId: '',
+            reAssign: false,
         })
     }
 
@@ -6559,6 +6589,7 @@ class CostSummary extends Component {
                     supplierId={sendForApprovalSupplierId}
                     TechnologyId={this.state.TechnologyId}
                     costingStatusText={this.state.CostingStatusText}
+                    reAssign={this.state.reAssign}
                 />}
                 {isOpenCopyCosting && <CopyCosting
                     isOpen={isOpenCopyCosting}

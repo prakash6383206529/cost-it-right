@@ -216,3 +216,9 @@ export const Numeric = value =>
     value && /[^0-9]/i.test(value)
         ? 'Please enter valid number'
         : undefined;
+
+export const isGuid = (value) => {
+    var regex = /[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i;
+    var match = regex.exec(value);
+    return match != null;
+}
