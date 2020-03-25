@@ -8,7 +8,9 @@ import {
     GET_ALL_PARTS_FAILURE,
     GET_PART_SUCCESS,
     GET_UNIT_PART_DATA_SUCCESS,
-    GET_MATERIAL_TYPE_SUCCESS
+    GET_MATERIAL_TYPE_SUCCESS,
+    GET_ALL_NEW_PARTS_SUCCESS,
+    GET_UNIT_NEW_PART_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -61,10 +63,26 @@ export default function partReducer(state = initialState, action) {
                 error: false
             };
         }
+        case GET_ALL_NEW_PARTS_SUCCESS: {
+            return {
+                ...state,
+                newPartsListing: action.payload,
+                loading: false,
+                error: false
+            };
+        }
         case GET_UNIT_PART_DATA_SUCCESS: {
             return {
                 ...state,
                 partData: action.payload,
+                loading: false,
+                error: false
+            };
+        }
+        case GET_UNIT_NEW_PART_DATA_SUCCESS: {
+            return {
+                ...state,
+                newPartData: action.payload,
                 loading: false,
                 error: false
             };

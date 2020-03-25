@@ -158,6 +158,7 @@ class SideBar extends Component {
                 <a className="dropdown-item" href="/supplier-master">Supplier</a>
                 <a className="dropdown-item" href="/raw-material-master">Raw Material</a>
                 {/* <a className="dropdown-item" href="/material-master">Raw Material Detail Master</a> */}
+                {/* <a className="dropdown-item" href="/PartMasterOld">Part</a> */}
                 <a className="dropdown-item" href="/PartMaster">Part</a>
                 <a className="dropdown-item" href="/bom-master">BOM Master Old</a>
                 <a className="dropdown-item" href="/part-bom-register">Bill Of Material</a>

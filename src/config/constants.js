@@ -88,6 +88,13 @@ export const API = {
   deletePartAPI: `${BASE_URL}/masters-part-bill-of-material/delete-part`,
   updatePartAPI: `${BASE_URL}/masters-part-bill-of-material/update-part`,
 
+  //NEW PART API
+  createNewPartAPI: `${BASE_URL}/masters-part/create-part`,
+  getAllNewPartsAPI: `${BASE_URL}/masters-part/get-all-parts`,
+  deleteNewPartsAPI: `${BASE_URL}/masters-part/delete-part`,
+  getNewPartsDataAPI: `${BASE_URL}/masters-part/get-part`,
+  updateNewPartsAPI: `${BASE_URL}/masters-part/update-part`,
+
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
   createNewBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-new-bill-of-material`,
@@ -466,6 +473,10 @@ export const GET_PART_SUCCESS = 'GET_PART_SUCCESS';
 export const GET_UNIT_PART_DATA_SUCCESS = 'GET_UNIT_PART_DATA_SUCCESS';
 export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE';
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS';
+
+//NEW PART MASTER
+export const GET_ALL_NEW_PARTS_SUCCESS = 'GET_ALL_NEW_PARTS_SUCCESS';
+export const GET_UNIT_NEW_PART_DATA_SUCCESS = 'GET_UNIT_NEW_PART_DATA_SUCCESS';
 
 //for category master
 export const CREATE_CATEGORY_TYPE_SUCCESS = 'CREATE_CATEGORY_TYPE_SUCCESS';

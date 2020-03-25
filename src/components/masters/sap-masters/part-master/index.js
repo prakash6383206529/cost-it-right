@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddPart from './AddPart';
-import { getAllPartsAPI, deletePartsAPI } from '../../../../actions/master/Part';
+import { getAllPartsAPI, getAllNewPartsAPI, deletePartsAPI, deleteNewPartsAPI } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { convertISOToUtcDate } from '../../../../helper/util'
+import AddPartNew from './AddPartNew';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -20,7 +21,8 @@ class PartMaster extends Component {
     }
 
     componentDidMount() {
-        this.props.getAllPartsAPI(res => { });
+        //this.props.getAllPartsAPI(res => { });
+        this.props.getAllNewPartsAPI(res => { });
     }
     /**
      * @method openModel
@@ -71,10 +73,10 @@ class PartMaster extends Component {
     * @description confirm delete part
     */
     confirmDeletePart = (index, PartId) => {
-        this.props.deletePartsAPI(PartId, (res) => {
+        this.props.deleteNewPartsAPI(PartId, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.props.getAllPartsAPI(res => { });
+                this.props.getAllNewPartsAPI(res => { });
             } else {
                 toastr.error(MESSAGES.SOME_ERROR);
             }
@@ -103,7 +105,7 @@ class PartMaster extends Component {
                 <Row>
                     <Col>
                         <Table className="table table-striped" bordered>
-                            {this.props.partsListing && this.props.partsListing.length > 0 &&
+                            {this.props.newPartsListing && this.props.newPartsListing.length > 0 &&
                                 <thead>
                                     <tr>
                                         {/* <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
@@ -118,8 +120,8 @@ class PartMaster extends Component {
                                     </tr>
                                 </thead>}
                             <tbody >
-                                {this.props.partsListing && this.props.partsListing.length > 0 &&
-                                    this.props.partsListing.map((item, index) => {
+                                {this.props.newPartsListing && this.props.newPartsListing.length > 0 &&
+                                    this.props.newPartsListing.map((item, index) => {
                                         return (
                                             <tr key={index}>
                                                 {/* <td >{item.PlantName}</td> */}
@@ -138,13 +140,23 @@ class PartMaster extends Component {
                                             </tr>
                                         )
                                     })}
-                                {this.props.partsListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.newPartsListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </Col>
                 </Row>
-                {isOpen && (
+                {/* {isOpen && (
                     <AddPart
+                        isOpen={isOpen}
+                        onCancel={this.onCancel}
+                        isEditFlag={isEditFlag}
+                        editIndex={editIndex}
+                        partId={PartId}
+                    />
+                )} */}
+
+                {isOpen && (
+                    <AddPartNew
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
@@ -163,12 +175,12 @@ class PartMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ part }) {
-    const { partsListing, loading } = part;
-    return { partsListing, loading }
+    const { partsListing, newPartsListing, loading } = part;
+    return { partsListing, newPartsListing, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getAllPartsAPI, deletePartsAPI }
+    mapStateToProps, { getAllPartsAPI, getAllNewPartsAPI, deletePartsAPI, deleteNewPartsAPI }
 )(PartMaster);
 

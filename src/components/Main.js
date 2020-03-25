@@ -134,6 +134,8 @@ class Main extends Component {
 
               <Route path="/dashboard" component={AuthMiddleware(Dashboard)} />
 
+              {/* <Route path="/PartMasterOld" component={AuthMiddleware(PartMaster)} /> */}
+
               <Route path="/PartMaster" component={AuthMiddleware(PartMaster)} />
 
               <Route path="/UOMMaster" component={AuthMiddleware(UOMMaster)} />

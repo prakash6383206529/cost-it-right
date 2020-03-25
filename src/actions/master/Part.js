@@ -12,7 +12,9 @@ import {
     GET_ALL_PARTS_FAILURE,
     GET_PART_SUCCESS,
     GET_UNIT_PART_DATA_SUCCESS,
-    GET_MATERIAL_TYPE_SUCCESS
+    GET_MATERIAL_TYPE_SUCCESS,
+    GET_ALL_NEW_PARTS_SUCCESS,
+    GET_UNIT_NEW_PART_DATA_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -182,5 +184,126 @@ export function getOnePartsAPI(PartId, isEditFlag, callback) {
             });
             callback({});
         }
+    };
+}
+
+
+
+
+
+
+
+//////////////////////////////// NEW PART API'S ////////////////////////////////
+
+
+
+
+/**
+ * @method createNewPartAPI
+ * @description create New Part
+ */
+export function createNewPartAPI(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createNewPartAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result === true) {
+                dispatch({ type: CREATE_PART_SUCCESS, });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getAllNewPartsAPI
+ * @description get all parts
+ */
+export function getAllNewPartsAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllNewPartsAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result === true) {
+                dispatch({
+                    type: GET_ALL_NEW_PARTS_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getNewPartsDataAPI
+ * @description get one part based on id
+ */
+export function getNewPartsDataAPI(PartId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (PartId != '') {
+            axios.get(`${API.getNewPartsDataAPI}/${PartId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_UNIT_NEW_PART_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_UNIT_NEW_PART_DATA_SUCCESS,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+
+/**
+ * @method deleteNewPartsAPI
+ * @description delete part
+ */
+export function deleteNewPartsAPI(PartId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteNewPartsAPI}/${PartId}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateNewPartsAPI
+ * @description update part details
+ */
+export function updateNewPartsAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateNewPartsAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }
