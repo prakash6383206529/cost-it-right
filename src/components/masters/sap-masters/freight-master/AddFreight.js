@@ -518,11 +518,11 @@ class AddFreight extends Component {
                                                 <Field
                                                     name="SourceSupplierId"
                                                     type="text"
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
                                                     label="Source Supplier Name"
                                                     component={searchableSelect}
-                                                    //validate={[required, maxLength50]}
                                                     options={this.searchableSelectType('supplier')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    //validate={[required, maxLength50]}
                                                     //required={true}
                                                     handleChangeDescription={this.sourceSupplierHandler}
                                                     valueDescription={this.state.sourceSupplier}
@@ -532,11 +532,11 @@ class AddFreight extends Component {
                                                 <Field
                                                     name="SourceSupplierCityId"
                                                     type="text"
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
                                                     label="Source Supplier City"
                                                     component={searchableSelect}
-                                                    //validate={[required, maxLength50]}
                                                     options={this.searchableSelectType('city')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    //validate={[required, maxLength50]}
                                                     //required={true}
                                                     handleChangeDescription={this.sourceCityHandler}
                                                     valueDescription={this.state.sourceCity}
@@ -546,11 +546,11 @@ class AddFreight extends Component {
                                                 <Field
                                                     name="SourceSupplierPlantId"
                                                     type="text"
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
                                                     label="Source Supplier Plant"
                                                     component={searchableSelect}
-                                                    //validate={[required, maxLength50]}
                                                     options={this.searchableSelectType('plant')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    //validate={[required, maxLength50]}
                                                     //required={true}
                                                     handleChangeDescription={this.sourcePlantHandler}
                                                     valueDescription={this.state.sourcePlant}
@@ -574,11 +574,11 @@ class AddFreight extends Component {
                                                 <Field
                                                     name="DestinationSupplierPlantId"
                                                     type="text"
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
                                                     label="Destination Supplier Plant"
                                                     component={searchableSelect}
-                                                    //validate={[required, maxLength50]}
                                                     options={this.searchableSelectType('DestinationPlant')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    //validate={[required, maxLength50]}
                                                     //required={true}
                                                     handleChangeDescription={this.destinationPlantHandler}
                                                     valueDescription={this.state.destinationPlant}
@@ -588,11 +588,11 @@ class AddFreight extends Component {
                                                 <Field
                                                     name="DestinationSupplierCityId"
                                                     type="text"
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
                                                     label="Destination Supplier City"
                                                     component={searchableSelect}
-                                                    //validate={[required, maxLength50]}
                                                     options={this.searchableSelectType('city')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    //validate={[required, maxLength50]}
                                                     //required={true}
                                                     handleChangeDescription={this.destinationCityHandler}
                                                     valueDescription={this.state.destinationCity}
@@ -631,7 +631,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <Field
-                                                    label={`1 tone Ace`}
+                                                    label={`1 Ton`}
                                                     name={"FullTruckLoadRateOneTon"}
                                                     type="text"
                                                     placeholder={''}

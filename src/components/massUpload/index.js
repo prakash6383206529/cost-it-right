@@ -13,7 +13,9 @@ import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import DownloadMasterxls from './DownloadMasterxls';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
+import { supplierMassUpload } from '../../actions/MassUpload';
 import { Masters } from '../../config/masterData';
+import { loggedInUserId } from '../../helper/auth';
 
 class MassUpload extends Component {
     constructor(props) {
@@ -44,30 +46,29 @@ class MassUpload extends Component {
         let fileHeads = [];
         let fileName = fileObj.name;
         let fileType = fileName.substr(fileName.indexOf('.'));
-
+        console.log('fileType', fileType)
         //pass the fileObj as parameter
-        if (fileType != '.xls' || fileName != 'BOM.xls') {
-            if (fileName != 'BOM.xls') {
-                toastr.warning('File name should be BOM.xls')
-            }
-            if (fileType != '.xls') {
-                toastr.warning('File type should be .xls')
-            }
+        if (fileType != '.xls') {
+            // if (fileName != 'BOM.xls') {
+            //     toastr.warning('File name should be BOM.xls')
+            // }
+            toastr.warning('File type should be .xls')
         } else {
             ExcelRenderer(fileObj, (err, resp) => {
                 if (err) {
                     console.log(err);
                 } else {
 
-                    //fileHeads = resp.rows[0];
-                    fileHeads = ["SerialNumber", "BillNumber", "AssemblyBOMPartNumber", "PartNumber", "MaterialDescription",
-                        "MaterialTypeName", "UnitOfMeasurementName", "Quantity", "AssemblyPartNumberMark", "BOMLevel", "EcoNumber",
-                        "RevisionNumber"]
+                    fileHeads = resp.rows[0];
+                    // fileHeads = ["SerialNumber", "BillNumber", "AssemblyBOMPartNumber", "PartNumber", "MaterialDescription",
+                    //     "MaterialTypeName", "UnitOfMeasurementName", "Quantity", "AssemblyPartNumberMark", "BOMLevel", "EcoNumber",
+                    //     "RevisionNumber"];
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
                         if (index > 0) {
-                            let obj = { PlantId: uploadBOMplantID.value }
+                            let obj = { CreatedBy: loggedInUserId() }
+                            //let obj = {}
                             val.map((el, i) => {
                                 obj[fileHeads[i]] = el
                             })
@@ -87,10 +88,15 @@ class MassUpload extends Component {
     }
 
     UploadBOMHandler = () => {
-        const { fileData } = this.state;
-        // this.props.uploadBOMxlsAPI(fileData, () => {
-        //     toastr.success('BOM has been uploaded successfully.')
-        // });
+        const { fileData, selectedMaster } = this.state;
+
+        if (selectedMaster.label == 'Supplier') {
+            console.log('supplier called', fileData)
+            this.props.supplierMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
     }
 
     /**
@@ -183,17 +189,18 @@ const validate = values => {
 };
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default reduxForm({
-    validate,
-    form: "Login",
+
+export default connect(null, {
+    supplierMassUpload,
+})(reduxForm({
+    form: 'MassUpload',
     onSubmitFail: errors => {
         focusOnError(errors);
-    }
-})(connect(null,
-    {}
-)(MassUpload));
+    },
+    enableReinitialize: true,
+})(MassUpload));

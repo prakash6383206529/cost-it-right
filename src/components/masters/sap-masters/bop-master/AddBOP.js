@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField } from "../../../layout/FormInputs";
+import { required, decimalLength2, Numeric } from "../../../../helper/validation";
+import { renderText, renderSelectField, renderNumberInputField } from "../../../layout/FormInputs";
 import { fetchBOPComboAPI, fetchCategoryAPI } from '../../../../actions/master/Comman';
 import { createBOPAPI, getBOPByIdAPI, updateBOPAPI, getAllBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { getAllRawMaterialList } from '../../../../actions/master/Material';
@@ -312,8 +312,8 @@ class AddBOP extends Component {
                                                 name={"BasicRate"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
+                                                validate={[required, decimalLength2]}
+                                                component={renderNumberInputField}
                                                 required={true}
                                                 className="withoutBorder"
                                                 onChange={(e) => this.basicRateKeyUp(e)}
@@ -325,8 +325,8 @@ class AddBOP extends Component {
                                                 name={"Quantity"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
+                                                validate={[required, Numeric]}
+                                                component={renderNumberInputField}
                                                 required={true}
                                                 className=" withoutBorder"
                                             />

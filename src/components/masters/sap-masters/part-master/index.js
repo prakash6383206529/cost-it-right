@@ -110,7 +110,7 @@ class PartMaster extends Component {
                                     <tr>
                                         {/* <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th> */}
                                         <th>{`${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                                        <th>{`${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
+                                        <th>{`Industrial Part Name`}</th>
                                         {/* <th>{`${CONSTANT.PART} ${CONSTANT.TYPE}`}</th> */}
                                         <th>{`${CONSTANT.PART} ${CONSTANT.GROUPCODE}`}</th>
                                         <th>{`${CONSTANT.UOM}`}</th>

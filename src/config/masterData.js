@@ -4,6 +4,10 @@
  */
 export const Masters = [
     {
+        label: 'Supplier',
+        value: 1
+    },
+    {
         label: 'BOP-Domestic',
         value: 24
     },
@@ -56,6 +60,22 @@ export const Masters = [
         value: 9
     },
 ];
+
+export const Supplier = [
+    { label: 'SupplierName', value: 'SupplierName', },
+    { label: 'SupplierCode', value: 'SupplierCode', },
+    { label: 'SupplierEmail', value: 'SupplierEmail', },
+    { label: 'Description', value: 'Description', },
+    { label: 'AddressLine1', value: 'AddressLine1', },
+    { label: 'AddressLine2', value: 'AddressLine2', },
+    { label: 'ZipCode', value: 'ZipCode', },
+    { label: 'PhoneNumber', value: 'PhoneNumber', },
+    { label: 'Extension', value: 'Extension', },
+    { label: 'SupplierType', value: 'SupplierType', },
+    { label: 'CityName', value: 'CityName', },
+    { label: 'CreatedBy', value: 'CreatedBy', },
+    { label: 'Plants', value: 'Plants', },
+]
 
 export const BOP_Domestic = [
     { label: 'Technology', value: 'Technology', },

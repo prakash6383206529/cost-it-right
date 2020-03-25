@@ -61,17 +61,25 @@ export function createCategoryTypeAPI(data, callback) {
  */
 export function getCategoryTypeDataAPI(CategoryTypeId, callback) {
     return (dispatch) => {
-        axios.get(`${API.getCategoryTypeDataAPI}/${CategoryTypeId}`, headers)
-            .then((response) => {
-                dispatch({
-                    type: GET_CATEGORY_TYPE_DATA_SUCCESS,
-                    payload: response.data.Data,
+        if (CategoryTypeId != '') {
+            axios.get(`${API.getCategoryTypeDataAPI}/${CategoryTypeId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_CATEGORY_TYPE_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
                 });
-                callback(response)
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                apiErrors(error);
+        } else {
+            dispatch({
+                type: GET_CATEGORY_TYPE_DATA_SUCCESS,
+                payload: {},
             });
+            callback()
+        }
     };
 }
 
@@ -160,17 +168,25 @@ export function createCategoryAPI(data, callback) {
  */
 export function getCategoryData(CategoryId, callback) {
     return (dispatch) => {
-        axios.get(`${API.getCategoryData}/${CategoryId}`, headers)
-            .then((response) => {
-                dispatch({
-                    type: GET_CATEGORY_MASTER_DATA_SUCCESS,
-                    payload: response.data.Data,
+        if (CategoryId != '') {
+            axios.get(`${API.getCategoryData}/${CategoryId}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_CATEGORY_MASTER_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
                 });
-                callback(response)
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                apiErrors(error);
+        } else {
+            dispatch({
+                type: GET_CATEGORY_MASTER_DATA_SUCCESS,
+                payload: {},
             });
+            callback()
+        }
     };
 }
 

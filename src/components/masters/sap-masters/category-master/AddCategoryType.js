@@ -26,6 +26,8 @@ class AddCategoryType extends Component {
         const { isEditFlag, CategoryTypeId } = this.props;
         if (isEditFlag) {
             this.props.getCategoryTypeDataAPI(CategoryTypeId, () => { })
+        } else {
+            this.props.getCategoryTypeDataAPI('', () => { })
         }
     }
 
@@ -94,7 +96,7 @@ class AddCategoryType extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Category Type' : 'Add Category Type'}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update BOP Category Type' : 'Add BOP Category Type'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>

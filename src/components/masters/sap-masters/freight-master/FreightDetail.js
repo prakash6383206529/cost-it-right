@@ -115,7 +115,7 @@ class PackagingDetail extends Component {
                                         <th>{`Destination Supplier City`}</th>
                                         <th>{`Per Kg`}</th>
                                         <th>{`Per Cubic Feet`}</th>
-                                        <th>{`1 Ton Ace`}</th>
+                                        <th>{`1 Ton`}</th>
                                         <th>{`2 Ton`}</th>
                                         <th>{`5 Ton`}</th>
                                         <th>{`9 Ton`}</th>

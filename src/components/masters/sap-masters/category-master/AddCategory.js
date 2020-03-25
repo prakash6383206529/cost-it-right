@@ -43,6 +43,8 @@ class AddCategory extends Component {
                     });
                 }
             })
+        } else {
+            this.props.getCategoryData('', (res) => { })
         }
     }
 
@@ -141,7 +143,7 @@ class AddCategory extends Component {
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Category' : 'Add Category'}</ModalHeader>
+                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update BOP Category' : 'Add BOP Category'}</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Container>

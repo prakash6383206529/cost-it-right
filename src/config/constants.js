@@ -427,6 +427,10 @@ export const API = {
   getPowerDataAPI: `${BASE_URL}/masters-power/get`,
   updatePowerAPI: `${BASE_URL}/masters-power/update`,
 
+  //MASS UPLOAD
+  supplierMassUpload: `${BASE_URL}/supplier/mass-upload-supplier`,
+
+
 }
 
 //Api constants

@@ -321,7 +321,7 @@ class AddPartNew extends Component {
                                         </Col>
                                         <Col md="6">
                                             <Field
-                                                label={`Part Name`}
+                                                label={`Industrial Part Name`}
                                                 name={"PartName"}
                                                 type="text"
                                                 placeholder={''}

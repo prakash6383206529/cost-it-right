@@ -114,16 +114,16 @@ class SupplierMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <Table className="table table-striped" hover bordered>
+                        <Table className="table table-striped" size={'sm'} hover bordered>
                             {this.props.supplierDetail && this.props.supplierDetail.length > 0 &&
                                 <thead>
                                     <tr>
-                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.CODE}`}</th>
                                         <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.CODE}`}</th>
                                         <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.EMAIL}`}</th>
+                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.DESCRIPTION}`}</th>
                                         <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.TYPE}`}</th>
                                         <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.CITY}`}</th>
-                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.DESCRIPTION}`}</th>
                                         <th>{`${CONSTANT.SUPPLIER} name with code`}</th>
                                         <th>{`Associated Plants`}</th>
                                         <th>{`${CONSTANT.DATE}`}</th>
@@ -135,12 +135,12 @@ class SupplierMaster extends Component {
                                     this.props.supplierDetail.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td>{item.SupplierCode}</td>
                                                 <td >{item.SupplierName}</td>
+                                                <td>{item.SupplierCode}</td>
                                                 <td>{item.SupplierEmail}</td>
+                                                <td>{item.Description}</td>
                                                 <td>{item.SupplierType}</td>
                                                 <td>{item.CityName}</td>
-                                                <td>{item.Description}</td>
                                                 <td>{item.SupplierNameWithCode}</td>
                                                 <td>{this.associatedPlantsHandler(item.AssociatedPlants)}</td>
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
