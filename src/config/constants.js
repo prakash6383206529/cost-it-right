@@ -434,6 +434,8 @@ export const API = {
   ProcessesMassUpload: `${BASE_URL}/masters-process/mass-upload-process`,
   MachineClassMassUpload: `${BASE_URL}/masters-machine/mass-upload-machine-type`,
   LabourMassUpload: `${BASE_URL}/masters-labour/mass-upload-labour`,
+  OperationMassUpload: `${BASE_URL}/masters-other-operation/mass-upload-operation`,
+  OtherOperationMassUpload: `${BASE_URL}/masters-other-operation/mass-upload-other-operation`,
 
 }
 

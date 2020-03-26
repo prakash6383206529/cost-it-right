@@ -15,7 +15,7 @@ import DownloadMasterxls from './DownloadMasterxls';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 import {
     supplierMassUpload, plantMassUpload, BOPMassUpload, ProcessesMassUpload,
-    MachineClassMassUpload, LabourMassUpload
+    MachineClassMassUpload, LabourMassUpload, OperationMassUpload, OtherOperationMassUpload,
 } from '../../actions/MassUpload';
 import { Masters } from '../../config/masterData';
 import { loggedInUserId } from '../../helper/auth';
@@ -129,6 +129,18 @@ class MassUpload extends Component {
             });
         }
 
+        if (selectedMaster.label == 'Operation') {
+            this.props.OperationMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
+        if (selectedMaster.label == 'OtherOperation') {
+            this.props.OtherOperationMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
     }
 
     /**
@@ -234,6 +246,8 @@ export default connect(null, {
     ProcessesMassUpload,
     MachineClassMassUpload,
     LabourMassUpload,
+    OperationMassUpload,
+    OtherOperationMassUpload,
 })(reduxForm({
     form: 'MassUpload',
     onSubmitFail: errors => {

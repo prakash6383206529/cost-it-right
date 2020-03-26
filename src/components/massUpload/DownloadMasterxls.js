@@ -1,12 +1,9 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
 import {
-    BOP_Domestic, BOP_Import, MHR_Casting_Ferrous_VBC, Fuel, MHR_Forging_VBC, MHR_VBC, MHR_ZBC,
-    OtherOperation, OverheadAndProfit, Power, RawMaterial_Domestic, RawMaterial_Import, RM, Supplier, Plant,
-    Bought_Out_Parts,
-    Processes,
-    MachineClass,
-    Labour,
+    Fuel, OverheadAndProfit, Power, RM, Supplier, Plant,
+    Bought_Out_Parts, Processes, MachineClass, Labour, Operation,
+    OtherOperation,
 } from '../../config/masterData';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -49,30 +46,16 @@ class DownloadMasterxls extends React.Component {
                 return this.returnExcelColumn(MachineClass);
             case 'Labour':
                 return this.returnExcelColumn(Labour);
-            case 'BOP-Domestic':
-                return this.returnExcelColumn(BOP_Domestic);
-            case 'BOP-Import':
-                return this.returnExcelColumn(BOP_Import);
-            case 'Fuel':
-                return this.returnExcelColumn(Fuel);
-            case 'MHR-Casting-Ferrous-VBC':
-                return this.returnExcelColumn(MHR_Casting_Ferrous_VBC);
-            case 'MHR-Forging-VBC':
-                return this.returnExcelColumn(MHR_Forging_VBC);
-            case 'MHR-VBC':
-                return this.returnExcelColumn(MHR_VBC);
-            case 'MHR-ZBC':
-                return this.returnExcelColumn(MHR_ZBC);
+            case 'Operation':
+                return this.returnExcelColumn(Operation);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
+            case 'Fuel':
+                return this.returnExcelColumn(Fuel);
             case 'OverheadAndProfit':
                 return this.returnExcelColumn(OverheadAndProfit);
             case 'Power':
                 return this.returnExcelColumn(Power);
-            case 'RawMaterial-Domestic':
-                return this.returnExcelColumn(RawMaterial_Domestic);
-            case 'RawMaterial-Import':
-                return this.returnExcelColumn(RawMaterial_Import);
             case 'RM':
                 return this.returnExcelColumn(RM);
             default:

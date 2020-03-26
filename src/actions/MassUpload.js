@@ -152,3 +152,49 @@ export function LabourMassUpload(data, callback) {
         });
     };
 }
+
+/**
+ * @method OperationMassUpload
+ * @description Operation Mass Upload
+ */
+export function OperationMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.OperationMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method OtherOperationMassUpload
+ * @description OtherOperation Mass Upload
+ */
+export function OtherOperationMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.OtherOperationMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

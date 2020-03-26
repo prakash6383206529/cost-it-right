@@ -28,36 +28,16 @@ export const Masters = [
         value: 6
     },
     {
-        label: 'BOP-Domestic',
-        value: 24
+        label: 'Operation',
+        value: 7
     },
     {
-        label: 'BOP-Import',
-        value: 22
+        label: 'OtherOperation',
+        value: 8
     },
     {
         label: 'Fuel',
         value: 51
-    },
-    {
-        label: 'MHR-Casting-Ferrous-VBC',
-        value: 29
-    },
-    {
-        label: 'MHR-Forging-VBC',
-        value: 30
-    },
-    {
-        label: 'MHR-VBC',
-        value: 28
-    },
-    {
-        label: 'MHR-ZBC',
-        value: 27
-    },
-    {
-        label: 'OtherOperation',
-        value: 55
     },
     {
         label: 'OverheadAndProfit',
@@ -66,14 +46,6 @@ export const Masters = [
     {
         label: 'Power',
         value: 12
-    },
-    {
-        label: 'RawMaterial-Domestic',
-        value: 25
-    },
-    {
-        label: 'RawMaterial-Import',
-        value: 23
     },
     {
         label: 'RM',
@@ -148,75 +120,26 @@ export const Labour = [
     { label: 'CityName', value: 'CityName', },
 ]
 
-export const BOP_Domestic = [
-    { label: 'Technology', value: 'Technology', },
-    { label: 'SupplierPartNo', value: 'SupplierPartNo', },
-    { label: 'Category', value: 'Category', },
-    { label: 'Specification', value: 'Specification', },
-    { label: 'Material', value: 'Material', },
-    { label: 'SourceSupplier', value: 'SourceSupplier', },
-    { label: 'SourceSupplierLocation', value: 'SourceSupplierLocation', },
-    { label: 'DestinationSupplier', value: 'DestinationSupplier', },
-    { label: 'DestinationSupplierLocation', value: 'DestinationSupplierLocation', },
-]
-
-export const BOP_Import = [
-    { label: 'Technology', value: 'Technology', },
-    { label: 'SupplierPartNo', value: 'SupplierPartNo', },
-    { label: 'Category', value: 'Category', },
-    { label: 'Specification', value: 'Specification', },
-    { label: 'Material', value: 'Material', },
-    { label: 'SourceSupplier', value: 'SourceSupplier', },
-    { label: 'SourceSupplierLocation', value: 'SourceSupplierLocation', },
-    { label: 'DestinationSupplier', value: 'DestinationSupplier', },
-    { label: 'DestinationSupplierLocation', value: 'DestinationSupplierLocation', },
-]
-
-export const MHR_Casting_Ferrous_VBC = [
-    { label: 'Technology', value: 'Technology', },
-    { label: 'SupplierPartNo', value: 'SupplierPartNo', },
-    { label: 'Category', value: 'Category', },
-    { label: 'Specification', value: 'Specification', },
-    { label: 'Material', value: 'Material', },
-    { label: 'SourceSupplier', value: 'SourceSupplier', },
-    { label: 'SourceSupplierLocation', value: 'SourceSupplierLocation', },
-    { label: 'DestinationSupplier', value: 'DestinationSupplier', },
-    { label: 'DestinationSupplierLocation', value: 'DestinationSupplierLocation', },
-]
-
-export const Fuel = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
-]
-
-export const MHR_Forging_VBC = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
-]
-
-export const MHR_VBC = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
-]
-
-export const MHR_ZBC = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
+export const Operation = [
+    { label: 'OperationName', value: 'OperationName', },
+    { label: 'OperationCode', value: 'OperationCode', },
+    { label: 'Description', value: 'Description', },
+    { label: 'BasicOperationRate', value: 'BasicOperationRate', },
 ]
 
 export const OtherOperation = [
+    { label: 'Rate', value: 'Rate', },
+    { label: 'OtherOperationName', value: 'OtherOperationName', },
+    { label: 'OperationProcessCode', value: 'OperationProcessCode', },
+    { label: 'Description', value: 'Description', },
+    { label: 'TechnologyName', value: 'TechnologyName', },
+    { label: 'SupplierName', value: 'SupplierName', },
+    { label: 'OperationName', value: 'OperationName', },
+    { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
+    { label: 'PlantName', value: 'PlantName', },
+]
+
+export const Fuel = [
     { label: 'State', value: 'State', },
     { label: 'Fuel', value: 'Fuel', },
     { label: 'UOM', value: 'UOM', },
@@ -233,22 +156,6 @@ export const OverheadAndProfit = [
 ]
 
 export const Power = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
-]
-
-export const RawMaterial_Domestic = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
-]
-
-export const RawMaterial_Import = [
     { label: 'State', value: 'State', },
     { label: 'Fuel', value: 'Fuel', },
     { label: 'UOM', value: 'UOM', },
