@@ -107,43 +107,40 @@ class LabourMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <h5>{`${CONSTANT.LABOUR} ${CONSTANT.MASTER} ${CONSTANT.DETAILS}`}</h5>
+                        <Table className="table table-striped" size={'sm'} bordered>
+                            {this.props.labourDetail && this.props.labourDetail.length > 0 &&
+                                <thead>
+                                    <tr>
+                                        <th>{`${CONSTANT.TECHNOLOGY} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.LABOUR} ${CONSTANT.TYPE} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CONSTANT.LABOUR} ${CONSTANT.RATE}`}</th>
+                                        <th>{`${CONSTANT.DATE}`}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>}
+                            <tbody >
+                                {this.props.labourDetail && this.props.labourDetail.length > 0 &&
+                                    this.props.labourDetail.map((item, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{item.TechnologyName}</td>
+                                                <td >{item.LabourTypeName}</td>
+                                                <td>{item.PlantName}</td>
+                                                <td>{item.LabourRate}</td>
+                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
+                                                <div>
+                                                    <Button className="btn btn-secondary" onClick={() => this.editDetails(item.LabourId)}><i className="fas fa-pencil-alt"></i></Button>
+                                                    <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.LabourId)}><i className="far fa-trash-alt"></i></Button>
+                                                </div>
+                                            </tr>
+                                        )
+                                    })}
+                                {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </tbody>
+                        </Table>
                     </Col>
                 </Row>
-                <Col>
-                    <Table className="table table-striped" bordered>
-                        {this.props.labourDetail && this.props.labourDetail.length > 0 &&
-                            <thead>
-                                <tr>
-                                    <th>{`${CONSTANT.TECHNOLOGY} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.LABOUR} ${CONSTANT.TYPE} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                    <th>{`${CONSTANT.LABOUR} ${CONSTANT.RATE}`}</th>
-                                    <th>{`${CONSTANT.DATE}`}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>}
-                        <tbody >
-                            {this.props.labourDetail && this.props.labourDetail.length > 0 &&
-                                this.props.labourDetail.map((item, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{item.TechnologyName}</td>
-                                            <td >{item.LabourTypeName}</td>
-                                            <td>{item.PlantName}</td>
-                                            <td>{item.LabourRate}</td>
-                                            <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                            <div>
-                                                <Button className="btn btn-secondary" onClick={() => this.editDetails(item.LabourId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.LabourId)}><i className="far fa-trash-alt"></i></Button>
-                                            </div>
-                                        </tr>
-                                    )
-                                })}
-                            {this.props.labourDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
-                    </Table>
-                </Col>
                 {isOpen && (
                     <AddLabour
                         isOpen={isOpen}
