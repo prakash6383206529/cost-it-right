@@ -2,7 +2,11 @@ import React from "react";
 import ReactExport from 'react-export-excel';
 import {
     BOP_Domestic, BOP_Import, MHR_Casting_Ferrous_VBC, Fuel, MHR_Forging_VBC, MHR_VBC, MHR_ZBC,
-    OtherOperation, OverheadAndProfit, Power, RawMaterial_Domestic, RawMaterial_Import, RM, Supplier,
+    OtherOperation, OverheadAndProfit, Power, RawMaterial_Domestic, RawMaterial_Import, RM, Supplier, Plant,
+    Bought_Out_Parts,
+    Processes,
+    MachineClass,
+    Labour,
 } from '../../config/masterData';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -35,6 +39,16 @@ class DownloadMasterxls extends React.Component {
         switch (master) {
             case 'Supplier':
                 return this.returnExcelColumn(Supplier);
+            case 'Plant':
+                return this.returnExcelColumn(Plant);
+            case 'BOP':
+                return this.returnExcelColumn(Bought_Out_Parts);
+            case 'Processes':
+                return this.returnExcelColumn(Processes);
+            case 'MachineClass':
+                return this.returnExcelColumn(MachineClass);
+            case 'Labour':
+                return this.returnExcelColumn(Labour);
             case 'BOP-Domestic':
                 return this.returnExcelColumn(BOP_Domestic);
             case 'BOP-Import':

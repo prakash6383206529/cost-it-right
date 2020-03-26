@@ -8,6 +8,26 @@ export const Masters = [
         value: 1
     },
     {
+        label: 'Plant',
+        value: 2
+    },
+    {
+        label: 'BOP',
+        value: 3
+    },
+    {
+        label: 'Processes',
+        value: 4
+    },
+    {
+        label: 'MachineClass',
+        value: 5
+    },
+    {
+        label: 'Labour',
+        value: 6
+    },
+    {
         label: 'BOP-Domestic',
         value: 24
     },
@@ -17,7 +37,7 @@ export const Masters = [
     },
     {
         label: 'Fuel',
-        value: 4
+        value: 51
     },
     {
         label: 'MHR-Casting-Ferrous-VBC',
@@ -37,7 +57,7 @@ export const Masters = [
     },
     {
         label: 'OtherOperation',
-        value: 6
+        value: 55
     },
     {
         label: 'OverheadAndProfit',
@@ -75,6 +95,57 @@ export const Supplier = [
     { label: 'CityName', value: 'CityName', },
     { label: 'CreatedBy', value: 'CreatedBy', },
     { label: 'Plants', value: 'Plants', },
+]
+
+export const Plant = [
+    { label: 'PlantName', value: 'PlantName', },
+    { label: 'PlantTitle', value: 'PlantTitle', },
+    { label: 'UnitNumber', value: 'UnitNumber', },
+    { label: 'AddressLine1', value: 'AddressLine1', },
+    { label: 'AddressLine2', value: 'AddressLine2', },
+    { label: 'ZipCode', value: 'ZipCode', },
+    { label: 'PhoneNumber', value: 'PhoneNumber', },
+    { label: 'Extension', value: 'Extension', },
+    { label: 'CityName', value: 'CityName', },
+    { label: 'IsPlantForZBC', value: 'IsPlantForZBC', },
+]
+
+export const Bought_Out_Parts = [
+    { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'Quantity', value: 'Quantity', },
+    { label: 'NetLandedCost', value: 'NetLandedCost', },
+    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'TechnologyName', value: 'TechnologyName', },
+    { label: 'CategoryName', value: 'CategoryName', },
+    { label: 'CategoryTypeName', value: 'CategoryTypeName', },
+    { label: 'Specification', value: 'Specification', },
+    { label: 'MaterialTypeName', value: 'MaterialTypeName', },
+    { label: 'SourceSupplierCityName', value: 'SourceSupplierCityName', },
+    { label: 'SourceSupplierName', value: 'SourceSupplierName', },
+    { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
+    { label: 'PlantName', value: 'PlantName', },
+]
+
+export const Processes = [
+    { label: 'ProcessName', value: 'ProcessName', },
+    { label: 'ProcessCode', value: 'ProcessCode', },
+    { label: 'Description', value: 'Description', },
+    { label: 'BasicProcessRate', value: 'BasicProcessRate', },
+]
+
+export const MachineClass = [
+    { label: 'MachineClassName', value: 'MachineClassName', },
+    { label: 'LabourTypeNames', value: 'LabourTypeNames', },
+    { label: 'MachineCapacity', value: 'MachineCapacity', },
+]
+
+export const Labour = [
+    { label: 'TechnologyName', value: 'TechnologyName', },
+    { label: 'LabourTypeName', value: 'LabourTypeName', },
+    { label: 'LabourRate', value: 'LabourRate', },
+    { label: 'IsContractBase', value: 'IsContractBase', },
+    { label: 'PlantName', value: 'PlantName', },
+    { label: 'CityName', value: 'CityName', },
 ]
 
 export const BOP_Domestic = [

@@ -103,7 +103,7 @@ class ProcessMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <Table className="table table-striped" hover bordered>
+                        <Table className="table table-striped" size={'sm'} hover bordered>
                             {this.props.processList && this.props.processList.length > 0 &&
                                 <thead>
                                     <tr>

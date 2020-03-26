@@ -37,3 +37,118 @@ export function supplierMassUpload(data, callback) {
         });
     };
 }
+
+/**
+ * @method plantMassUpload
+ * @description Plants Mass Upload
+ */
+export function plantMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.plantMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method BOPMassUpload
+ * @description BOP Mass Upload
+ */
+export function BOPMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.BOPMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method ProcessesMassUpload
+ * @description Processes Mass Upload
+ */
+export function ProcessesMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.ProcessesMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method MachineClassMassUpload
+ * @description MachineClassMassUpload Mass Upload
+ */
+export function MachineClassMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.MachineClassMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method LabourMassUpload
+ * @description Labour Mass Upload
+ */
+export function LabourMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.LabourMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

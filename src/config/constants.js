@@ -429,7 +429,11 @@ export const API = {
 
   //MASS UPLOAD
   supplierMassUpload: `${BASE_URL}/supplier/mass-upload-supplier`,
-
+  plantMassUpload: `${BASE_URL}/masters-plant/mass-upload-plant`,
+  BOPMassUpload: `${BASE_URL}/masters-bought-out-part/mass-upload-bought-out-part`,
+  ProcessesMassUpload: `${BASE_URL}/masters-process/mass-upload-process`,
+  MachineClassMassUpload: `${BASE_URL}/masters-machine/mass-upload-machine-type`,
+  LabourMassUpload: `${BASE_URL}/masters-labour/mass-upload-labour`,
 
 }
 

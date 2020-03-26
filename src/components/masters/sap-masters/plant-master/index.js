@@ -109,7 +109,7 @@ class PlantMaster extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <Table className="table table-striped" bordered>
+                        <Table className="table table-striped" size={'sm'} bordered>
                             {this.props.plantDetail && this.props.plantDetail.length > 0 &&
                                 <thead>
                                     <tr>

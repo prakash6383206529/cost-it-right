@@ -13,7 +13,10 @@ import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import DownloadMasterxls from './DownloadMasterxls';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
-import { supplierMassUpload } from '../../actions/MassUpload';
+import {
+    supplierMassUpload, plantMassUpload, BOPMassUpload, ProcessesMassUpload,
+    MachineClassMassUpload, LabourMassUpload
+} from '../../actions/MassUpload';
 import { Masters } from '../../config/masterData';
 import { loggedInUserId } from '../../helper/auth';
 
@@ -91,8 +94,37 @@ class MassUpload extends Component {
         const { fileData, selectedMaster } = this.state;
 
         if (selectedMaster.label == 'Supplier') {
-            console.log('supplier called', fileData)
             this.props.supplierMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
+        if (selectedMaster.label == 'Plant') {
+            this.props.plantMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
+        if (selectedMaster.label == 'BOP') {
+            this.props.BOPMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
+        if (selectedMaster.label == 'Processes') {
+            this.props.ProcessesMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
+        if (selectedMaster.label == 'MachineClass') {
+            this.props.MachineClassMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
+        if (selectedMaster.label == 'Labour') {
+            this.props.LabourMassUpload(fileData, () => {
                 toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
             });
         }
@@ -197,6 +229,11 @@ const validate = values => {
 
 export default connect(null, {
     supplierMassUpload,
+    plantMassUpload,
+    BOPMassUpload,
+    ProcessesMassUpload,
+    MachineClassMassUpload,
+    LabourMassUpload,
 })(reduxForm({
     form: 'MassUpload',
     onSubmitFail: errors => {
