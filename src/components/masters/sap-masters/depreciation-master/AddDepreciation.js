@@ -169,7 +169,7 @@ class AddDepreciation extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, reset, pristine, submitting } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -234,6 +234,10 @@ class AddDepreciation extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {isEditFlag ? 'Update' : 'Save'}
                                             </button>
+                                            <button
+                                                onClick={reset}
+                                                disabled={pristine || submitting}
+                                                className={'btn btn-secondary'}>Cancel</button>
                                         </div>
                                     </Row>
                                 </form>
