@@ -44,6 +44,10 @@ export const Masters = [
         value: 10
     },
     {
+        label: 'MHR',
+        value: 11
+    },
+    {
         label: 'Fuel',
         value: 51
     },
@@ -177,6 +181,51 @@ export const OverheadAndProfit = [
     { label: 'ProfitTypeName', value: 'ProfitTypeName', },
     { label: 'CostingModelNmae', value: 'CostingModelNmae', },
     { label: 'PlantName', value: 'PlantName', },
+]
+
+export const MHR = [
+    { label: 'TechnologyName', value: 'TechnologyName', },
+    { label: 'SupplierName', value: 'SupplierName', },
+    { label: 'SupplierTypeName', value: 'SupplierTypeName', },
+    { label: 'MachineName', value: 'MachineName', },
+    { label: 'MachineTypeName', value: 'MachineTypeName', },
+    { label: 'DepreciationType', value: 'DepreciationType', },
+    { label: 'PowerType', value: 'PowerType', },
+    { label: 'FuelDetailId', value: 'FuelDetailId', },
+    { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
+    { label: 'PlantName', value: 'PlantName', },
+    { label: 'LabourTypes', value: 'LabourTypes', },
+    { label: 'PUCCharges', value: 'PUCCharges', },
+    { label: 'MaintenanceCharges', value: 'MaintenanceCharges', },
+    { label: 'ServiceCharges', value: 'ServiceCharges', },
+    { label: 'ConsumableCost', value: 'ConsumableCost', },
+    { label: 'OtherCharges', value: 'OtherCharges', },
+    { label: 'TotalMachineCost', value: 'TotalMachineCost', },
+    { label: 'TotalDepreciationCost', value: 'TotalDepreciationCost', },
+    { label: 'PowerRate', value: 'PowerRate', },
+    { label: 'TotalPowerCost', value: 'TotalPowerCost', },
+    { label: 'FuelRate', value: 'FuelRate', },
+    { label: 'TotalFuelCost', value: 'TotalFuelCost', },
+    { label: 'DepreciationType', value: 'DepreciationType', },
+    { label: 'NumberOfSkilledLabour', value: 'NumberOfSkilledLabour', },
+    { label: 'RateSkilledLabour', value: 'RateSkilledLabour', },
+    { label: 'SkilledLabourWorkingDays', value: 'SkilledLabourWorkingDays', },
+    { label: 'NumberOfSemiSkilledLabour', value: 'NumberOfSemiSkilledLabour', },
+    { label: 'RateSemiSkilledLabour', value: 'RateSemiSkilledLabour', },
+    { label: 'SemiSkilledLabourWorkingDays', value: 'SemiSkilledLabourWorkingDays', },
+    { label: 'NumberOfUnskilledLabour', value: 'NumberOfUnskilledLabour', },
+    { label: 'RateUnskilledLabour', value: 'RateUnskilledLabour', },
+    { label: 'UnkilledLabourWorkingDays', value: 'UnkilledLabourWorkingDays', },
+    { label: 'NumberOfContractLabour', value: 'NumberOfContractLabour', },
+    { label: 'RateContractLabour', value: 'RateContractLabour', },
+    { label: 'ContractLabourWorkingDays', value: 'ContractLabourWorkingDays', },
+    { label: 'TotalLabourCost', value: 'TotalLabourCost', },
+    { label: 'IsOtherSource', value: 'IsOtherSource', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'WorkingShift', value: 'WorkingShift', },
+    { label: 'NumberOfWorkingDays', value: 'NumberOfWorkingDays', },
+    { label: 'CalculatedMHRCost', value: 'CalculatedMHRCost', },
+    { label: 'Efficiency', value: 'Efficiency', },
 ]
 
 export const Fuel = [

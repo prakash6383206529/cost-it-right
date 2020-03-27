@@ -3,7 +3,7 @@ import ReactExport from 'react-export-excel';
 import {
     Fuel, OverheadAndProfit, RM, Supplier, Plant,
     Bought_Out_Parts, Processes, MachineClass, Labour, Operation,
-    OtherOperation, Power,
+    OtherOperation, Power, MHR,
 } from '../../config/masterData';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -54,6 +54,8 @@ class DownloadMasterxls extends React.Component {
                 return this.returnExcelColumn(Power);
             case 'OverheadAndProfit':
                 return this.returnExcelColumn(OverheadAndProfit);
+            case 'MHR':
+                return this.returnExcelColumn(MHR);
             case 'Fuel':
                 return this.returnExcelColumn(Fuel);
             case 'RM':

@@ -244,3 +244,26 @@ export function OverheadAndProfitMassUpload(data, callback) {
         });
     };
 }
+
+/**
+ * @method MHRMassUpload
+ * @description MHR Mass Upload
+ */
+export function MHRMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.MHRMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

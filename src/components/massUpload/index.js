@@ -13,7 +13,7 @@ import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 import {
     supplierMassUpload, plantMassUpload, BOPMassUpload, ProcessesMassUpload,
     MachineClassMassUpload, LabourMassUpload, OperationMassUpload, OtherOperationMassUpload,
-    PowerMassUpload, OverheadAndProfitMassUpload,
+    PowerMassUpload, OverheadAndProfitMassUpload, MHRMassUpload,
 } from '../../actions/MassUpload';
 import { Masters } from '../../config/masterData';
 import { loggedInUserId } from '../../helper/auth';
@@ -151,6 +151,12 @@ class MassUpload extends Component {
             });
         }
 
+        if (selectedMaster.label == 'MHR') {
+            this.props.MHRMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
     }
 
     /**
@@ -260,6 +266,7 @@ export default connect(null, {
     OtherOperationMassUpload,
     PowerMassUpload,
     OverheadAndProfitMassUpload,
+    MHRMassUpload,
 })(reduxForm({
     form: 'MassUpload',
     onSubmitFail: errors => {

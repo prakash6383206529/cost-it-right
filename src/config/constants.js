@@ -438,6 +438,7 @@ export const API = {
   OtherOperationMassUpload: `${BASE_URL}/masters-other-operation/mass-upload-other-operation`,
   PowerMassUpload: `${BASE_URL}/masters-power/mass-upload-power`,
   OverheadAndProfitMassUpload: `${BASE_URL}/masters-overhead-and-profit/mass-upload-overhead-profit`,
+  MHRMassUpload: `${BASE_URL}/masters-machine-hour-rate/mass-upload-machine-hour-rate`,
 
 }
 
