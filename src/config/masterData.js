@@ -36,16 +36,16 @@ export const Masters = [
         value: 8
     },
     {
+        label: 'Power',
+        value: 9
+    },
+    {
         label: 'Fuel',
         value: 51
     },
     {
         label: 'OverheadAndProfit',
         value: 20
-    },
-    {
-        label: 'Power',
-        value: 12
     },
     {
         label: 'RM',
@@ -139,6 +139,32 @@ export const OtherOperation = [
     { label: 'PlantName', value: 'PlantName', },
 ]
 
+export const Power = [
+    { label: 'PowerChargesType', value: 'PowerChargesType', },
+    { label: 'PowerType', value: 'PowerType', },
+    { label: 'PowerSupplierName', value: 'PowerSupplierName', },
+    { label: 'PlantName', value: 'PlantName', },
+    { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
+    { label: 'FuelName', value: 'FuelName', },
+    { label: 'ContractDemandKVA', value: 'ContractDemandKVA', },
+    { label: 'DemandChargesRsPerKVA', value: 'DemandChargesRsPerKVA', },
+    { label: 'AvgUnitConsumptionPerMonth', value: 'AvgUnitConsumptionPerMonth', },
+    { label: 'MaxDemandCharges', value: 'MaxDemandCharges', },
+    { label: 'EnergyChargesUnit', value: 'EnergyChargesUnit', },
+    { label: 'MeterRent', value: 'MeterRent', },
+    { label: 'FuelCostPerUnit', value: 'FuelCostPerUnit', },
+    { label: 'DutyOnEnergyCharges', value: 'DutyOnEnergyCharges', },
+    { label: 'DutyOnEnergyFCA', value: 'DutyOnEnergyFCA', },
+    { label: 'TotalUnitCharge', value: 'TotalUnitCharge', },
+    { label: 'PercentOfUsageToStateElectricityBoard', value: 'PercentOfUsageToStateElectricityBoard', },
+    { label: 'PercentOfUsageToSelfGenerated', value: 'PercentOfUsageToSelfGenerated', },
+    { label: 'NetPowerCost', value: 'NetPowerCost', },
+    { label: 'Remark', value: 'Remark', },
+    { label: 'Division', value: 'Division', },
+    { label: 'PercentFCA', value: 'PercentFCA', },
+    { label: 'PowerRateing', value: 'PowerRateing', },
+]
+
 export const Fuel = [
     { label: 'State', value: 'State', },
     { label: 'Fuel', value: 'Fuel', },
@@ -155,13 +181,7 @@ export const OverheadAndProfit = [
     { label: 'Date', value: 'Date', },
 ]
 
-export const Power = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
-]
+
 
 export const RM = [
     { label: 'State', value: 'State', },

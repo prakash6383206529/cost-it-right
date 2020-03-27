@@ -1,21 +1,19 @@
 import React, { Component } from "react";
 import { Row, Container, Col, CardTitle } from 'reactstrap';
 import { Field, reduxForm } from "redux-form";
-import { Link } from "react-router-dom";
-import { searchableSelect, renderCheckboxInputField, focusOnError } from "../layout/FormInputs";
+import { searchableSelect, focusOnError } from "../layout/FormInputs";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
 import { maxLength70, minLength5, maxLength25, required, email } from "../../helper/validation";
 import { MESSAGES } from "../../config/message";
 import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { Redirect } from 'react-router-dom';
-import { formatLoginResult } from '../../helper/ApiResponse';
 import DownloadMasterxls from './DownloadMasterxls';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 import {
     supplierMassUpload, plantMassUpload, BOPMassUpload, ProcessesMassUpload,
     MachineClassMassUpload, LabourMassUpload, OperationMassUpload, OtherOperationMassUpload,
+    PowerMassUpload,
 } from '../../actions/MassUpload';
 import { Masters } from '../../config/masterData';
 import { loggedInUserId } from '../../helper/auth';
@@ -141,12 +139,18 @@ class MassUpload extends Component {
             });
         }
 
+        if (selectedMaster.label == 'Power') {
+            this.props.PowerMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
     }
 
     /**
-   * Submit the login form
-   * @param values
-   */
+    * Submit the login form
+    * @param values
+    */
     onSubmit(values) {
 
     }
@@ -222,10 +226,10 @@ class MassUpload extends Component {
 }
 
 /**
- * Form validations
- * @param values
- * @returns {{}}
- */
+* Form validations
+* @param values
+* @returns {{}}
+*/
 const validate = values => {
     let errors = {};
 
@@ -248,6 +252,7 @@ export default connect(null, {
     LabourMassUpload,
     OperationMassUpload,
     OtherOperationMassUpload,
+    PowerMassUpload,
 })(reduxForm({
     form: 'MassUpload',
     onSubmitFail: errors => {

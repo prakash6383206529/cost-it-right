@@ -198,3 +198,26 @@ export function OtherOperationMassUpload(data, callback) {
         });
     };
 }
+
+/**
+ * @method PowerMassUpload
+ * @description Power Mass Upload
+ */
+export function PowerMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.PowerMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
