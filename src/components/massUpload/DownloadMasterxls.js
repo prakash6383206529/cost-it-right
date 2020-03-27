@@ -52,10 +52,10 @@ class DownloadMasterxls extends React.Component {
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
                 return this.returnExcelColumn(Power);
-            case 'Fuel':
-                return this.returnExcelColumn(Fuel);
             case 'OverheadAndProfit':
                 return this.returnExcelColumn(OverheadAndProfit);
+            case 'Fuel':
+                return this.returnExcelColumn(Fuel);
             case 'RM':
                 return this.returnExcelColumn(RM);
             default:

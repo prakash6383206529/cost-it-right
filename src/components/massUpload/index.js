@@ -13,7 +13,7 @@ import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 import {
     supplierMassUpload, plantMassUpload, BOPMassUpload, ProcessesMassUpload,
     MachineClassMassUpload, LabourMassUpload, OperationMassUpload, OtherOperationMassUpload,
-    PowerMassUpload,
+    PowerMassUpload, OverheadAndProfitMassUpload,
 } from '../../actions/MassUpload';
 import { Masters } from '../../config/masterData';
 import { loggedInUserId } from '../../helper/auth';
@@ -145,6 +145,12 @@ class MassUpload extends Component {
             });
         }
 
+        if (selectedMaster.label == 'OverheadAndProfit') {
+            this.props.OverheadAndProfitMassUpload(fileData, () => {
+                toastr.success(`${selectedMaster.label} has been uploaded successfully.`)
+            });
+        }
+
     }
 
     /**
@@ -253,6 +259,7 @@ export default connect(null, {
     OperationMassUpload,
     OtherOperationMassUpload,
     PowerMassUpload,
+    OverheadAndProfitMassUpload,
 })(reduxForm({
     form: 'MassUpload',
     onSubmitFail: errors => {

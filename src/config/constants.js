@@ -437,6 +437,7 @@ export const API = {
   OperationMassUpload: `${BASE_URL}/masters-other-operation/mass-upload-operation`,
   OtherOperationMassUpload: `${BASE_URL}/masters-other-operation/mass-upload-other-operation`,
   PowerMassUpload: `${BASE_URL}/masters-power/mass-upload-power`,
+  OverheadAndProfitMassUpload: `${BASE_URL}/masters-overhead-and-profit/mass-upload-overhead-profit`,
 
 }
 

@@ -40,12 +40,12 @@ export const Masters = [
         value: 9
     },
     {
-        label: 'Fuel',
-        value: 51
+        label: 'OverheadAndProfit',
+        value: 10
     },
     {
-        label: 'OverheadAndProfit',
-        value: 20
+        label: 'Fuel',
+        value: 51
     },
     {
         label: 'RM',
@@ -165,6 +165,20 @@ export const Power = [
     { label: 'PowerRateing', value: 'PowerRateing', },
 ]
 
+export const OverheadAndProfit = [
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'ProfitPercentage', value: 'ProfitPercentage', },
+    { label: 'OverheadMachiningCCPercentage', value: 'OverheadMachiningCCPercentage', },
+    { label: 'ProfitMachiningCCPercentage', value: 'ProfitMachiningCCPercentage', },
+    { label: 'SupplierCode', value: 'SupplierCode', },
+    { label: 'TechnologyName', value: 'TechnologyName', },
+    { label: 'SupplierName', value: 'SupplierName', },
+    { label: 'OverheadTypeName', value: 'OverheadTypeName', },
+    { label: 'ProfitTypeName', value: 'ProfitTypeName', },
+    { label: 'CostingModelNmae', value: 'CostingModelNmae', },
+    { label: 'PlantName', value: 'PlantName', },
+]
+
 export const Fuel = [
     { label: 'State', value: 'State', },
     { label: 'Fuel', value: 'Fuel', },
@@ -172,16 +186,6 @@ export const Fuel = [
     { label: 'Rate', value: 'Rate', },
     { label: 'Date', value: 'Date', },
 ]
-
-export const OverheadAndProfit = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
-]
-
-
 
 export const RM = [
     { label: 'State', value: 'State', },

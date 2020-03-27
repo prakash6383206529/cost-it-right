@@ -221,3 +221,26 @@ export function PowerMassUpload(data, callback) {
         });
     };
 }
+
+/**
+ * @method OverheadAndProfitMassUpload
+ * @description OverheadAndProfit Mass Upload
+ */
+export function OverheadAndProfitMassUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.OverheadAndProfitMassUpload, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
