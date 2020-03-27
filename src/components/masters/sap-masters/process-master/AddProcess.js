@@ -137,7 +137,7 @@ class AddProcess extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset, isEditFlag, processUnitData } = this.props;
+        const { handleSubmit, reset, isEditFlag, processUnitData, pristine, submitting } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -240,7 +240,11 @@ class AddProcess extends Component {
                                                 {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                             {!isEditFlag &&
-                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                                <button
+                                                    type={'button'}
+                                                    className="btn btn-secondary"
+                                                    disabled={pristine || submitting}
+                                                    onClick={reset} >
                                                     {'Reset'}
                                                 </button>}
                                         </div>
