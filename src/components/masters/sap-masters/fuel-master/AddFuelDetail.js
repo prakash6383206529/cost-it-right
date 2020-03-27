@@ -155,7 +155,7 @@ class AddFuelDetail extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, reset, pristine, submitting } = this.props;
         return (
             <Container className="top-margin">
                 <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
@@ -304,6 +304,14 @@ class AddFuelDetail extends Component {
                                             <button type="submit" className="btn dark-pinkbtn" >
                                                 {isEditFlag ? 'Update' : 'Save'}
                                             </button>
+                                            {!isEditFlag &&
+                                                <button
+                                                    type={'button'}
+                                                    className="btn btn-secondary"
+                                                    disabled={pristine || submitting}
+                                                    onClick={reset} >
+                                                    {'Reset'}
+                                                </button>}
                                         </div>
                                     </Row>
                                 </form>

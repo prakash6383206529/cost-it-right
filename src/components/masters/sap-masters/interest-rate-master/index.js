@@ -109,7 +109,7 @@ class InterestRate extends Component {
                 <Row>
                     <Col>
                         <div>
-                            <Table className="table table-striped" bordered>
+                            <Table className="table table-striped" size={'sm'} hover bordered>
                                 {this.props.interestRateList && this.props.interestRateList.length > 0 &&
                                     <thead>
                                         <tr>
@@ -126,6 +126,7 @@ class InterestRate extends Component {
                                             <th>WIP Inventory Percent</th>
                                             <th>Payment Term Percent</th>
                                             <th>Created On</th>
+                                            <th>{''}</th>
                                         </tr>
                                     </thead>}
                                 <tbody >

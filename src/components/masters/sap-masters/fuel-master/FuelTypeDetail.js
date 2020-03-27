@@ -71,7 +71,7 @@ class FuelTypeDetail extends Component {
             <div>
                 <Row>
                     <Col>
-                        <Table className="table table-striped" bordered>
+                        <Table className="table table-striped" size={'sm'} hover bordered>
                             {this.props.fuelDetailList && this.props.fuelDetailList.length > 0 &&
                                 <thead>
                                     <tr>
