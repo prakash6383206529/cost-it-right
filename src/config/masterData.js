@@ -69,7 +69,6 @@ export const Supplier = [
     { label: 'Extension', value: 'Extension', },
     { label: 'SupplierType', value: 'SupplierType', },
     { label: 'CityName', value: 'CityName', },
-    { label: 'CreatedBy', value: 'CreatedBy', },
     { label: 'Plants', value: 'Plants', },
 ]
 

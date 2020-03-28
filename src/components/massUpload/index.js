@@ -15,6 +15,7 @@ import {
     MachineClassMassUpload, LabourMassUpload, OperationMassUpload, OtherOperationMassUpload,
     PowerMassUpload, OverheadAndProfitMassUpload, MHRMassUpload,
 } from '../../actions/MassUpload';
+import { getAllTechnologyAPI } from '../../actions/auth/AuthActions';
 import { Masters } from '../../config/masterData';
 import { loggedInUserId } from '../../helper/auth';
 
@@ -26,7 +27,12 @@ class MassUpload extends Component {
             isSubmitted: false,
             fileData: [],
             selectedMaster: [],
+            selectedTechnology: [],
         };
+    }
+
+    componentDidMount() {
+        this.props.getAllTechnologyAPI(() => { })
     }
 
     /**
@@ -38,16 +44,39 @@ class MassUpload extends Component {
     };
 
     /**
+    * @method technologyHandler
+    * @description Used to handle technology
+    */
+    technologyHandler = (newValue, actionMeta) => {
+        this.setState({ selectedTechnology: newValue });
+    };
+
+    /**
+    * @method renderListing
+    * @description Used show listing
+    */
+    renderListing = (label) => {
+        const { technologyList } = this.props;
+        const temp = [];
+        if (label == 'technology') {
+            temp.push({ label: '---Select Technology---', value: 0 })
+            technologyList && technologyList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+    }
+
+    /**
      * @method fileChangedHandler
-     * @description called for profile pic change
+     * @description Used for file upload
      */
     fileHandler = event => {
-        const { uploadBOMplantID } = this.state;
         let fileObj = event.target.files[0];
         let fileHeads = [];
         let fileName = fileObj.name;
         let fileType = fileName.substr(fileName.indexOf('.'));
-        console.log('fileType', fileType)
+
         //pass the fileObj as parameter
         if (fileType != '.xls') {
             // if (fileName != 'BOM.xls') {
@@ -88,8 +117,21 @@ class MassUpload extends Component {
         }
     }
 
-    UploadBOMHandler = () => {
-        const { fileData, selectedMaster } = this.state;
+    /**
+     * @method UploadMassHandler
+     * @description Used for mass upload
+     */
+    UploadMassHandler = () => {
+        const { fileData, selectedMaster, selectedTechnology } = this.state;
+
+        if (selectedTechnology && selectedTechnology.value == 0) {
+            return false;
+        } else {
+            //fileData.TechnologyName = selectedTechnology.label;
+            fileData && fileData.map(el => {
+                el.TechnologyName = selectedTechnology.label;
+            })
+        }
 
         if (selectedMaster.label == 'Supplier') {
             this.props.supplierMassUpload(fileData, () => {
@@ -195,7 +237,22 @@ class MassUpload extends Component {
                                         accept="xls/*"
                                         className="" />
                                 </Col>
-                                <Col md="4" className={'mt20'}>
+                                <Col md="3" className={'mt20'}>
+                                    <Field
+                                        id="technology"
+                                        name="technology"
+                                        type="text"
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        label="Technology"
+                                        component={searchableSelect}
+                                        //validate={[required, maxLength50]}
+                                        options={this.renderListing('technology')}
+                                        required={true}
+                                        handleChangeDescription={this.technologyHandler}
+                                        valueDescription={this.state.selectedTechnology}
+                                    />
+                                </Col>
+                                <Col md="3" className={'mt20'}>
                                     <Field
                                         id="master"
                                         name="master"
@@ -218,7 +275,7 @@ class MassUpload extends Component {
                             <Row>
                                 <Col md="2" className={''}>
                                     <button
-                                        onClick={this.UploadBOMHandler}
+                                        onClick={this.UploadMassHandler}
                                         disabled={selectedMaster && selectedMaster.hasOwnProperty('value') ? false : true}
                                         className={'btn btn-primary pull-right'}>Save</button>
                                 </Col>
@@ -249,13 +306,23 @@ const validate = values => {
 };
 
 /**
+* @method mapStateToProps
+* @description return state to component as props
+* @param {*} state
+*/
+function mapStateToProps({ auth }) {
+    const { technologyList, loading } = auth;;
+    return { technologyList, loading }
+}
+
+/**
 * @method connect
 * @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-
-export default connect(null, {
+export default connect(mapStateToProps, {
+    getAllTechnologyAPI,
     supplierMassUpload,
     plantMassUpload,
     BOPMassUpload,
