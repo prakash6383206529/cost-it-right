@@ -24,7 +24,7 @@ const BOPGridRowData = {
         BoughtOutPartName: '',
         SourceSupplierName: '',
         MaterialTypeName: '',
-        Quantity: 0,
+        Quantity: '',
         GrandTotal: 0,
         BoughtOutPartRate: 0,
         AssyBoughtOutParRate: 0
@@ -103,13 +103,13 @@ const renderMembers = ({ fields, openBOPModal, rowDataHandler, meta: { error, su
                                 name={`${cost}.Quantity`}
                                 //type="text"
                                 placeholder={''}
-                                //validate={[required]}
+                                validate={[required]}
                                 component={renderNumberInputField}
-                                //required={true}
+                                required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
-                                parse={value => Number(value)}
+                            //parse={value => Number(value)}
                             />
                         </td>
                         <td>
@@ -226,7 +226,7 @@ class BOPGrid extends Component {
         let netCost = 0;
 
         const Rate = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].BoughtOutPartRate) : 0;
-        const Quantity = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Quantity) : 0;
+        const Quantity = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Quantity) : '';
         netCost = Rate * Quantity;
         this.props.change(`LinkedBoughtOutParts[${index}]['GrandTotal']`, checkForNull(trimDecimalPlace(netCost, TWO_DECIMAL_PRICE)));
     }
