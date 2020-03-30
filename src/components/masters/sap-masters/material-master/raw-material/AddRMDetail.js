@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField, renderNumberInputField } from "../../../../layout/FormInputs";
 import {
     fetchMaterialComboAPI, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
+    getPlantByCityAndSupplier,
 } from '../../../../../actions/master/Comman';
 import {
     createRMDetailAPI, getMaterialDetailAPI, getRawMaterialDataAPI, getRawMaterialDetailsAPI,
@@ -15,6 +16,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../../helper/auth";
+const selector = formValueSelector('AddRMDetail');
 
 class AddRMDetail extends Component {
     constructor(props) {
@@ -29,10 +31,17 @@ class AddRMDetail extends Component {
             RawMaterialId: '',
             GradeId: '',
             SpecificationId: '',
-            SourceSupplierCity: [],
-            DestinationSupplierCity: [],
-            SourcePlant: [],
-            DestinationPlant: [],
+
+            SourceSupplier: '',
+            SourceSupplierCity: '',
+            SourceSupplierCityArray: [],
+            SourcePlantArray: [],
+
+            DestinationSupplier: '',
+            DestinationSupplierCity: '',
+            DestinationSupplierCityArray: [],
+            DestinationPlantArray: [],
+
         }
     }
 
@@ -64,32 +73,46 @@ class AddRMDetail extends Component {
         this.props.getCityBySupplier(Data.SourceSupplierId, (res) => {
             if (res && res.data && res.data.SelectList) {
                 let Data = res.data.SelectList;
-                this.setState({ SourceSupplierCity: Data })
+                this.setState({ SourceSupplierCityArray: Data })
             }
         })
+
+        this.props.getPlantByCityAndSupplier(Data.SourceSupplierId, Data.SourceSupplierCityId, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                this.setState({ SourcePlantArray: Data })
+            }
+        })
+
+        // this.props.getPlantByCity(Data.SourceSupplierCityId, (res) => {
+        //     if (res && res.data && res.data.SelectList) {
+        //         let Data = res.data.SelectList;
+        //         console.log('Data 11', Data)
+        //         this.setState({ SourcePlantArray: Data })
+        //     }
+        // })
 
         this.props.getCityBySupplier(Data.DestinationSupplierId, (res) => {
             if (res && res.data && res.data.SelectList) {
                 let Data = res.data.SelectList;
-                this.setState({ DestinationSupplierCity: Data })
+                this.setState({ DestinationSupplierCityArray: Data })
             }
         })
 
-        this.props.getPlantByCity(Data.SourceSupplierCityId, (res) => {
+        this.props.getPlantByCityAndSupplier(Data.DestinationSupplierId, Data.DestinationSupplierCityId, (res) => {
             if (res && res.data && res.data.SelectList) {
                 let Data = res.data.SelectList;
-                console.log('Data 11', Data)
-                this.setState({ SourcePlant: Data })
+                this.setState({ DestinationPlantArray: Data })
             }
         })
 
-        this.props.getPlantByCity(Data.DestinationSupplierCityId, (res) => {
-            if (res && res.data && res.data.SelectList) {
-                let Data = res.data.SelectList;
-                console.log('Data 22', Data)
-                this.setState({ DestinationPlant: Data })
-            }
-        })
+        // this.props.getPlantByCity(Data.DestinationSupplierCityId, (res) => {
+        //     if (res && res.data && res.data.SelectList) {
+        //         let Data = res.data.SelectList;
+        //         console.log('Data 22', Data)
+        //         this.setState({ DestinationPlantArray: Data })
+        //     }
+        // })
     }
 
     /**
@@ -165,16 +188,20 @@ class AddRMDetail extends Component {
     */
     handleSourceSupplier = e => {
         if (e.target.value != '') {
-            this.setState({ SourceSupplierCity: [], SourcePlant: [] }, () => {
+            this.setState({
+                SourceSupplier: e.target.value,
+                SourceSupplierCityArray: [],
+                SourcePlantArray: []
+            }, () => {
                 this.props.getCityBySupplier(e.target.value, (res) => {
                     if (res && res.data && res.data.SelectList) {
                         let Data = res.data.SelectList;
-                        this.setState({ SourceSupplierCity: Data })
+                        this.setState({ SourceSupplierCityArray: Data })
                     }
                 })
             })
         } else {
-            this.setState({ SourceSupplierCity: [], SourcePlant: [] })
+            this.setState({ SourceSupplierCityArray: [], SourcePlantArray: [] })
         }
     };
 
@@ -182,13 +209,23 @@ class AddRMDetail extends Component {
     * @method handleDestinationSupplier
     * @description called
     */
-    handleDestinationSupplier = e => {
-        this.props.getCityBySupplier(e.target.value, (res) => {
-            if (res && res.data && res.data.SelectList) {
-                let Data = res.data.SelectList;
-                this.setState({ DestinationSupplierCity: Data })
-            }
-        })
+    handleDestinationSupplier = (e) => {
+        if (e.target.value != '' && e.target.value != 0) {
+            this.setState({
+                DestinationSupplier: e.target.value,
+                DestinationSupplierCityArray: [],
+                DestinationPlantArray: []
+            }, () => {
+                this.props.getCityBySupplier(e.target.value, (res) => {
+                    if (res && res.data && res.data.SelectList) {
+                        let Data = res.data.SelectList;
+                        this.setState({ DestinationSupplierCityArray: Data })
+                    }
+                })
+            })
+        } else {
+            this.setState({ DestinationSupplierCityArray: [], DestinationPlantArray: [] })
+        }
 
     };
 
@@ -197,17 +234,27 @@ class AddRMDetail extends Component {
     * @description called
     */
     handleSourceSupplierCity = e => {
-        if (e.target.value != '') {
-            this.setState({ SourcePlant: [] }, () => {
-                this.props.getPlantByCity(e.target.value, (res) => {
+        if (e.target.value != '' && e.target.value != 0) {
+            this.setState({
+                SourceSupplierCity: e.target.value,
+                SourcePlantArray: []
+            }, () => {
+                // this.props.getPlantByCity(e.target.value, (res) => {
+                //     if (res && res.data && res.data.SelectList) {
+                //         let Data = res.data.SelectList;
+                //         this.setState({ SourcePlantArray: Data })
+                //     }
+                // })
+                const { SourceSupplier, SourceSupplierCity } = this.state;
+                this.props.getPlantByCityAndSupplier(SourceSupplier, SourceSupplierCity, (res) => {
                     if (res && res.data && res.data.SelectList) {
                         let Data = res.data.SelectList;
-                        this.setState({ SourcePlant: Data })
+                        this.setState({ SourcePlantArray: Data })
                     }
                 })
             });
         } else {
-            this.setState({ SourcePlant: [] })
+            this.setState({ SourcePlantArray: [] })
         }
     };
 
@@ -216,12 +263,28 @@ class AddRMDetail extends Component {
     * @description called
     */
     handleDestinationSupplierCity = e => {
-        this.props.getPlantByCity(e.target.value, (res) => {
-            if (res && res.data && res.data.SelectList) {
-                let Data = res.data.SelectList;
-                this.setState({ DestinationPlant: Data })
-            }
-        })
+        if (e.target.value != '' && e.target.value != 0) {
+            this.setState({
+                DestinationSupplierCity: e.target.value,
+                DestinationPlantArray: []
+            }, () => {
+                // this.props.getPlantByCity(e.target.value, (res) => {
+                //     if (res && res.data && res.data.SelectList) {
+                //         let Data = res.data.SelectList;
+                //         this.setState({ DestinationPlantArray: Data })
+                //     }
+                // })
+                const { DestinationSupplier, DestinationSupplierCity } = this.state;
+                this.props.getPlantByCityAndSupplier(DestinationSupplier, DestinationSupplierCity, (res) => {
+                    if (res && res.data && res.data.SelectList) {
+                        let Data = res.data.SelectList;
+                        this.setState({ DestinationPlantArray: Data })
+                    }
+                })
+            })
+        } else {
+            this.setState({ DestinationPlantArray: [] })
+        }
     };
 
     /**
@@ -338,7 +401,7 @@ class AddRMDetail extends Component {
     renderListing = (label) => {
         const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
             supplierList, cityList, technologyList, categoryList, filterPlantListByCity, filterCityListBySupplier } = this.props;
-        const { SourceSupplierCity, DestinationSupplierCity, SourcePlant, DestinationPlant } = this.state;
+        const { SourceSupplierCityArray, DestinationSupplierCityArray, SourcePlantArray, DestinationPlantArray } = this.state;
         const temp = [];
         if (label === 'material') {
             rowMaterialList && rowMaterialList.map(item =>
@@ -383,13 +446,13 @@ class AddRMDetail extends Component {
             return temp;
         }
         if (label === 'SourceCity') {
-            SourceSupplierCity && SourceSupplierCity.map(item =>
+            SourceSupplierCityArray && SourceSupplierCityArray.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
         if (label === 'DestinationCity') {
-            DestinationSupplierCity && DestinationSupplierCity.map(item =>
+            DestinationSupplierCityArray && DestinationSupplierCityArray.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
@@ -407,18 +470,24 @@ class AddRMDetail extends Component {
             return temp;
         }
         if (label === 'SourceSupplierPlant') {
-            SourcePlant && SourcePlant.map(item =>
+            SourcePlantArray && SourcePlantArray.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
         if (label === 'DestinationSupplierPlant') {
-            DestinationPlant && DestinationPlant.map(item =>
+            DestinationPlantArray && DestinationPlantArray.map(item =>
                 temp.push({ Text: item.Text, Value: item.Value })
             );
             return temp;
         }
 
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.fieldsObj != this.props.fieldsObj) {
+            this.netLandedCalculation()
+        }
     }
 
     basicRateHandler = (e) => {
@@ -430,8 +499,8 @@ class AddRMDetail extends Component {
     }
 
     netLandedCalculation = () => {
-        const { basicRate, Quantity } = this.state;
-        const netLandedCost = basicRate * Quantity;
+        const { fieldsObj } = this.props;
+        const netLandedCost = fieldsObj.BasicRate * fieldsObj.Quantity;
         this.props.change('NetLandedCost', netLandedCost)
     }
 
@@ -468,6 +537,7 @@ class AddRMDetail extends Component {
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
                                                 component={renderSelectField}
+                                                disabled={isEditFlag ? true : false}
                                             />
                                         </Col>
                                         <Col md="6">
@@ -548,7 +618,7 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 component={renderNumberInputField}
-                                                onChange={this.basicRateHandler}
+                                                //onChange={this.basicRateHandler}
                                                 required={true}
                                                 className="withoutBorder"
                                             />
@@ -561,7 +631,7 @@ class AddRMDetail extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 component={renderNumberInputField}
-                                                onChange={this.QuantityHandler}
+                                                //onChange={this.QuantityHandler}
                                                 required={true}
                                                 className=" withoutBorder"
                                             />
@@ -621,6 +691,13 @@ class AddRMDetail extends Component {
                                         </Col>
 
 
+
+
+
+
+
+
+
                                         <Col md="4">
                                             <Field
                                                 label={`Source Supplier`}
@@ -669,6 +746,18 @@ class AddRMDetail extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+
+
+
+
+
+
+
+
+
+
+
+
                                         <Col md="4">
                                             <Field
                                                 label={`Destination Supplier`}
@@ -717,6 +806,12 @@ class AddRMDetail extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
+
+
+
+
+
+
                                         <Col md="6">
                                             <Field
                                                 label={`UnitOfMeasurement`}
@@ -772,10 +867,13 @@ class AddRMDetail extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, material }) {
+function mapStateToProps(state) {
+    const { comman, material } = state;
+    const fieldsObj = selector(state, 'BasicRate', 'Quantity');
 
     const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
-        supplierList, cityList, technologyList, categoryList, filterPlantListByCity, filterCityListBySupplier } = comman;
+        supplierList, cityList, technologyList, categoryList, filterPlantListByCity,
+        filterCityListBySupplier, filterPlantListByCityAndSupplier } = comman;
 
     const { rawMaterialDetails, rawMaterialDetailsData } = material;
 
@@ -806,7 +904,8 @@ function mapStateToProps({ comman, material }) {
     return {
         uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification,
         plantList, supplierList, cityList, technologyList, categoryList, rawMaterialDetails,
-        filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues
+        filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
+        fieldsObj, filterPlantListByCityAndSupplier,
     }
 
 }
@@ -828,6 +927,7 @@ export default connect(mapStateToProps, {
     getRawMaterialDetailsDataAPI,
     getCityBySupplier,
     getPlantByCity,
+    getPlantByCityAndSupplier,
     updateRawMaterialDetailsAPI,
 })(reduxForm({
     form: 'AddRMDetail',

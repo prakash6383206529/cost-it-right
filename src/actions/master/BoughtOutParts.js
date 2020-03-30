@@ -82,10 +82,10 @@ export function getAllBOPAPI(callback) {
  * @method getBOPByIdAPI
  * @description get one bought out part based on id
  */
-export function getBOPByIdAPI(bopId, isEditFlag, callback) {
+export function getBOPByIdAPI(bopId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (isEditFlag) {
+        if (bopId != '') {
             axios.get(`${API.getBOPAPI}/${bopId}`, headers)
                 .then((response) => {
                     if (response.data.Result) {
@@ -94,10 +94,7 @@ export function getBOPByIdAPI(bopId, isEditFlag, callback) {
                             payload: response.data.Data,
                         });
                         callback(response);
-                    } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
                     }
-                    callback(response);
                 }).catch((error) => {
                     apiErrors(error);
                     dispatch({ type: API_FAILURE });
@@ -107,7 +104,7 @@ export function getBOPByIdAPI(bopId, isEditFlag, callback) {
                 type: GET_BOP_DATA_SUCCESS,
                 payload: {},
             });
-            callback({});
+            callback();
         }
     };
 }

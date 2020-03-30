@@ -2482,6 +2482,7 @@ class CostSummary extends Component {
                                 value={0}
                                 required={true}
                                 className="withoutBorder"
+                                disabled={true}
                             />
                         </Col>
                         <Col md="2" className={'existing-supplier'}>
@@ -2542,6 +2543,7 @@ class CostSummary extends Component {
                                 value={0}
                                 required={true}
                                 className="withoutBorder"
+                                disabled={true}
                             />
                         </Col>
                         <Col md="2" className={'existing-supplier'}>
@@ -2602,6 +2604,7 @@ class CostSummary extends Component {
                                 value={0}
                                 required={true}
                                 className="withoutBorder"
+                                disabled={true}
                             />
                         </Col>
                         <Col md="2" className={'existing-supplier'}>

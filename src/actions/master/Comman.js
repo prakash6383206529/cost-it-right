@@ -42,6 +42,7 @@ import {
     GET_SHIFT_TYPE_SELECTLIST_SUCCESS,
     GET_DEPRECIATION_SELECTLIST_SUCCESS,
     GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
+    GET_PLANTS_BY_SUPPLIER_AND_CITY,
 } from '../../config/constants';
 import {
     apiErrors
@@ -964,8 +965,8 @@ export function getCityBySupplier(SupplierId, callback) {
 }
 
 /**
- * @method fetchCostingHeadsAPI
- * @description Used to fetch costing heads
+ * @method getPlantByCity
+ * @description Used to getPlantByCity
  */
 export function getPlantByCity(CityId, callback) {
     return (dispatch) => {
@@ -992,6 +993,30 @@ export function getPlantByCity(CityId, callback) {
             });
             callback();
         }
+    };
+}
+
+/**
+ * @method getPlantByCityAndSupplier
+ * @description Used to getPlantByCityAndSupplier
+ */
+export function getPlantByCityAndSupplier(SupplierID, CityId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlantByCityAndSupplier}/${SupplierID}/${CityId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PLANTS_BY_SUPPLIER_AND_CITY,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
 

@@ -76,7 +76,11 @@ class RMDetail extends Component {
                             {this.props.rowMaterialDetail && this.props.rowMaterialDetail.length > 0 &&
                                 <thead>
                                     <tr>
-                                        <th>{`Raw Material Name`}</th>
+                                        <th>{`Raw Material`}</th>
+                                        <th>{`Material Type`}</th>
+                                        <th>{`RM Grade`}</th>
+                                        <th>{`RM Specification`}</th>
+                                        <th>{`Density`}</th>
                                         <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
                                         {/* <th>{`${CONSTANT.MATERIAL} ${CONSTANT.DESCRIPTION}`}</th> */}
                                         <th>{`${CONSTANT.DATE}`}</th>
@@ -89,6 +93,10 @@ class RMDetail extends Component {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.RawMaterialName}</td>
+                                                <td >{item.MaterialTypeName}</td>
+                                                <td >{item.RawMaterialGradeName}</td>
+                                                <td >{item.RawMaterialSpecificationName}</td>
+                                                <td >{item.Density}</td>
                                                 <td>{item.PlantName}</td>
                                                 {/* <td>{item.Description}</td> */}
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>

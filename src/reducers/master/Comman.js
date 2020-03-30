@@ -43,6 +43,7 @@ import {
     GET_DEPRECIATION_SELECTLIST_SUCCESS,
     GET_SHIFT_TYPE_SELECTLIST_SUCCESS,
     GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
+    GET_PLANTS_BY_SUPPLIER_AND_CITY,
 } from '../../config/constants';
 
 const initialState = {
@@ -266,6 +267,13 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 filterPlantListByCity: action.payload
+            };
+        case GET_PLANTS_BY_SUPPLIER_AND_CITY:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterPlantListByCityAndSupplier: action.payload
             };
         case GET_CITY_BY_SUPPLIER:
             return {

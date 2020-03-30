@@ -81,8 +81,8 @@ class PartAssemblyListing extends Component {
                             {this.props.AssemblyPartDataList && this.props.AssemblyPartDataList.length > 0 &&
                                 <thead>
                                     <tr>
+                                        <th>{`Assembly Part Number`}</th>
                                         <th>{`BOM Number`}</th>
-                                        <th>{`Part Number`}</th>
                                         <th>{`BOM Level`}</th>
                                         <th>{`Assembly`}</th>
                                         <th>{`Child Part`}</th>
@@ -96,8 +96,8 @@ class PartAssemblyListing extends Component {
                                     this.props.AssemblyPartDataList.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td >{item.BOMNumber}</td>
                                                 <td>{item.PartNumber}</td>
+                                                <td >{item.BOMNumber}</td>
                                                 <td>{item.BOMLevel}</td>
                                                 <td>{item.IsAssembly ? 'True' : 'False'}</td>
                                                 <td>{item.IsChildPart != null ? 'True' : 'False'}</td>

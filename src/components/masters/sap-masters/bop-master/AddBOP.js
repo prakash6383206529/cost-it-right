@@ -41,11 +41,8 @@ class AddBOP extends Component {
     componentDidMount() {
         const { bopId, isEditFlag } = this.props;
         if (isEditFlag) {
-
-            this.props.getBOPByIdAPI(bopId, true, res => {
-
+            this.props.getBOPByIdAPI(bopId, res => {
                 if (res && res.data && res.data.Data) {
-
                     let responseData = res.data.Data;
                     this.props.fetchCategoryAPI(responseData.CategoryTypeId, res => {
                         const { bopData } = this.props;
@@ -54,11 +51,10 @@ class AddBOP extends Component {
                     this.setState({
                         isActive: responseData.IsActive
                     })
-
                 }
-
             })
-
+        } else {
+            this.props.getBOPByIdAPI('', res => { })
         }
     }
 

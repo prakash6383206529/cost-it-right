@@ -352,6 +352,7 @@ export const API = {
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-supplier`,
   getPlantByCity: `${BASE_URL}/configuration/get-plant-by-city`,
   getCityBySupplier: `${BASE_URL}/configuration/get-city-by-supplier`,
+  getPlantByCityAndSupplier: `${BASE_URL}/configuration/get-plant-by-supplier-and-city`,
 
   //APPROVAL
   getSendForApproval: `${BASE_URL}/app-approval-system/send-for-approval-click`,
@@ -603,6 +604,7 @@ export const CREATE_SUCCESS = 'CREATE_SUCCESS';
 export const CREATE_FAILURE = 'CREATE_FAILURE';
 export const GET_PLANTS_BY_CITY = 'GET_PLANTS_BY_CITY';
 export const GET_CITY_BY_SUPPLIER = 'GET_CITY_BY_SUPPLIER';
+export const GET_PLANTS_BY_SUPPLIER_AND_CITY = 'GET_PLANTS_BY_SUPPLIER_AND_CITY';
 export const GET_SOURCE_PLANTS_BY_SOURCE_CITY = 'GET_SOURCE_PLANTS_BY_SOURCE_CITY';
 export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANTS_BY_DESTINATION_CITY';
 

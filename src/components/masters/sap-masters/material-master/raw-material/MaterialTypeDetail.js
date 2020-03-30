@@ -76,7 +76,7 @@ class MaterialTypeDetail extends Component {
                                 <thead>
                                     <tr>
                                         <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
-                                        {/* <th>{`${CONSTANT.DESCRIPTION}`}</th> */}
+                                        <th>{`Density`}</th>
                                         <th>{`${CONSTANT.DATE}`}</th>
                                         <th>{``}</th>
                                     </tr>
@@ -87,7 +87,7 @@ class MaterialTypeDetail extends Component {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.MaterialType}</td>
-                                                {/* <td>{item.Description}</td> */}
+                                                <td>{item.Density}</td>
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                                 <td>
                                                     <Button className="black-btn" onClick={() => this.editItemDetails(item.MaterialTypeId)}><i className="fas fa-pencil-alt"></i></Button>
