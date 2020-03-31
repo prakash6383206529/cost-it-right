@@ -63,7 +63,7 @@ class User extends Component {
                     <Nav tabs className="subtabs">
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                User Register
+                                Add User
                                 </NavLink>
                         </NavItem>
                         <NavItem>

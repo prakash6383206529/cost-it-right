@@ -26,14 +26,14 @@ const processGridRowData = {
         MachineHourRateId: "",
         ProcessId: "",
         Rate: 0,
-        Quantity: 0,
+        Quantity: '',
         NetCost: 0,
         IsActive: true,
         CreatedDate: "",
         UnitOfMeasurementName: "",
-        CycleTime: 0,
-        Efficiency: 0,
-        Cavity: 0
+        CycleTime: '',
+        Efficiency: '',
+        Cavity: '',
     }]
 }
 
@@ -61,8 +61,8 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 labelKey={'label'}
                                 valueKey={'value'}
                                 onChangeHsn={processHandler}
-                                //validate={[required]}
-                                //mendatory={false}
+                                validate={[required]}
+                                mendatory={true}
                                 selType={'ProcessId'}
                                 rowIndex={index}
                                 disabled={false}
@@ -88,9 +88,9 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 name={`${cost}.UnitOfMeasurementName`}
                                 type="text"
                                 placeholder={''}
-                                //validate={[required]}
+                                validate={[required]}
                                 component={renderText}
-                                //required={true}
+                                required={true}
                                 className=" withoutBorder"
                                 disabled={true}
                             />
@@ -125,9 +125,9 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 name={`${cost}.CycleTime`}
                                 //type="text"
                                 placeholder={''}
-                                //validate={[required]}
+                                validate={[required]}
                                 component={renderNumberInputField}
-                                //required={true}
+                                required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
@@ -140,9 +140,9 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 name={`${cost}.Efficiency`}
                                 //type="text"
                                 placeholder={''}
-                                //validate={[required]}
+                                validate={[required]}
                                 component={renderNumberInputField}
-                                //required={true}
+                                required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
@@ -155,9 +155,9 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 name={`${cost}.Quantity`}
                                 //type="text"
                                 placeholder={''}
-                                //validate={[required]}
+                                validate={[required]}
                                 component={renderNumberInputField}
-                                //required={true}
+                                required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
@@ -170,9 +170,9 @@ const renderMembers = ({ fields, openMHRModal, renderTypeOfListing, processHandl
                                 name={`${cost}.Cavity`}
                                 //type="text"
                                 placeholder={''}
-                                //validate={[required]}
+                                validate={[required]}
                                 component={renderNumberInputField}
-                                //required={true}
+                                required={true}
                                 onChange={(e) => rowDataHandler(e, index)}
                                 className=" withoutBorder"
                                 disabled={false}
@@ -317,11 +317,11 @@ class ProcessGrid extends Component {
         const { index } = this.state;
         let netCost = 0;
 
-        const Rate = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Rate) : 0;
-        const CycleTime = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].CycleTime) : 0;
-        const Efficiency = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Efficiency) : 0;
-        const Cavity = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Cavity) : 0;
-        const Quantity = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Quantity) : 0;
+        const Rate = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Rate) : '';
+        const CycleTime = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].CycleTime) : '';
+        const Efficiency = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Efficiency) : '';
+        const Cavity = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Cavity) : '';
+        const Quantity = lineItemData && lineItemData[index] ? checkForNull(lineItemData[index].Quantity) : '';
 
         if (lineItemData[index].UnitOfMeasurementName == "Kilogram" || lineItemData[index].UnitOfMeasurementName == "KG") {
             netCost = ((Rate * CycleTime * Efficiency / 100)) * Quantity;

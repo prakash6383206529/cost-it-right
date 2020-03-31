@@ -364,7 +364,7 @@ class UserRegistration extends Component {
             <div className="login-container  signup-form">
                <div className="shadow-lg login-form">
                   <div className="form-heading">
-                     <h2>{this.state.isEditFlag ? 'Update User' : 'User Registration'}</h2>
+                     <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
                   </div>
                   <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                      <div className=" row form-group">
