@@ -60,6 +60,7 @@ class User extends Component {
             <Container className="user-page">
                 {/* {this.props.loading && <Loader/>} */}
                 <div>
+                    <h1>User Management</h1>
                     <Nav tabs className="subtabs">
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
