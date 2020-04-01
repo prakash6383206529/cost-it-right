@@ -41,16 +41,20 @@ class AddSupplier extends Component {
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
                 this.props.getSupplierByIdAPI(supplierId, true, res => {
-                    let plantArray = [];
-                    const AssociatedPlants = res.data.Data.AssociatedPlants;
-                    AssociatedPlants.map((Value, index) => {
-                        const plantObj = AssociatedPlants.find(item => item.PlantId === Value.PlantId);
-                        return plantArray.push({ Text: plantObj.PlantName, Value: plantObj.PlantId });
-                    });
-                    this.setState({
-                        supplierType: res.data.Data.SupplierTypeId,
-                        selectedPlants: plantArray
-                    });
+                    if (res && res.data && res.data.Data) {
+                        let Data = res.data.Data;
+                        let plantArray = [];
+                        const AssociatedPlants = Data.AssociatedPlants;
+                        AssociatedPlants.map((Value, index) => {
+                            const plantObj = AssociatedPlants.find(item => item.PlantId === Value.PlantId);
+                            return plantArray.push({ Text: plantObj.PlantName, Value: plantObj.PlantId });
+                        });
+                        this.setState({
+                            supplierType: Data.SupplierTypeId,
+                            selectedPlants: plantArray,
+                            CityId: Data.CityId,
+                        });
+                    }
                 });
             });
         } else {
@@ -173,6 +177,7 @@ class AddSupplier extends Component {
                 SupplierType: tempObj.Text,
                 SupplierTypeId: tempObj.Value,
                 SelectedPlants: plantArray,
+                AssociatedPlants: plantArray,
                 SupplierId: supplierId,
                 IsActive: true,
                 UserId: loginUserId,

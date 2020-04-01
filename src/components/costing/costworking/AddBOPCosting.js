@@ -24,8 +24,8 @@ class AddBOPCosting extends Component {
     * @description called before rendering the component
     */
     componentDidMount() {
-        const { supplierId, costingId } = this.props;
-        this.props.getBoughtOutPartList(supplierId, res => { });
+        const { supplierId, PlantId, costingId } = this.props;
+        this.props.getBoughtOutPartList(supplierId, PlantId, res => { });
     }
 
     /**

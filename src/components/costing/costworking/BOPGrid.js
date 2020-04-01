@@ -258,7 +258,7 @@ class BOPGrid extends Component {
     render() {
 
         const { isOpenBOPModal, GridselectedIndex } = this.state;
-        const { handleSubmit, supplierId, costingId, PartId, PartNumber,
+        const { handleSubmit, supplierId, costingId, PartId, PlantId, PartNumber,
             selectedIndex, initialValues } = this.props;
 
         return (
@@ -311,6 +311,7 @@ class BOPGrid extends Component {
                         supplierId={supplierId}
                         costingId={costingId}
                         PartId={PartId}
+                        PlantId={PlantId}
                         PartNumber={PartNumber}
                         selectedIndex={selectedIndex}
                         GridselectedIndex={GridselectedIndex}

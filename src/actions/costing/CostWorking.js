@@ -318,10 +318,10 @@ export function updateCostingRawMatrial(requestData, callback) {
  * @method getBoughtOutPartList
  * @description get all BOP list
  */
-export function getBoughtOutPartList(supplierId, callback) {
+export function getBoughtOutPartList(supplierId, PlantId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBoughtOutPartList}/${supplierId}`, headers);
+        const request = axios.get(`${API.getBoughtOutPartListBySupplierAndPlant}/${supplierId}/${PlantId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -329,8 +329,6 @@ export function getBoughtOutPartList(supplierId, callback) {
                     payload: response.data.DataList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -588,7 +586,7 @@ export function getCostingBOP(costingId, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
+            //apiErrors(error);
         });
     };
 }

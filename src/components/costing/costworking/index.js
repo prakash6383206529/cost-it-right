@@ -926,6 +926,7 @@ class CostWorking extends Component {
                                 supplierId={supplierId}
                                 costingId={costingId}
                                 PartId={partId}
+                                PlantId={plantId}
                                 PartNumber={PartNumber}
                                 selectedIndex={selectedIndex}
                             />}

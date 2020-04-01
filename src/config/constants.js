@@ -284,6 +284,7 @@ export const API = {
   addCostingRawMaterial: `${BASE_URL}/costing-sheet-metal/add-costing-raw-material`,
   updateCostingRawMatrial: `${BASE_URL}/costing-sheet-metal/update-costing-raw-material`,
   getBoughtOutPartList: `${BASE_URL}/costing-sheet-metal/get-bought-out-part-by-supplier`,
+  getBoughtOutPartListBySupplierAndPlant: `${BASE_URL}/costing-sheet-metal/get-bought-out-part-by-supplier-and-plant`,
   addCostingBoughtOutPart: `${BASE_URL}/costing-sheet-metal/add-costing-bought-out-part`,
   getOtherOperationList: `${BASE_URL}/costing-sheet-metal/get-other-operation-by-supplier`,
   addCostingOtherOperation: `${BASE_URL}/costing-sheet-metal/add-costing-other-operations`,
