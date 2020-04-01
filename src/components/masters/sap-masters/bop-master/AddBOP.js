@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required, decimalLength2, Numeric } from "../../../../helper/validation";
 import { renderText, renderSelectField, renderNumberInputField } from "../../../layout/FormInputs";
-import { fetchBOPComboAPI, fetchCategoryAPI } from '../../../../actions/master/Comman';
+import { fetchBOPComboAPI, fetchCategoryAPI, getCityBySupplier, getPlantByCityAndSupplier } from '../../../../actions/master/Comman';
 import { createBOPAPI, getBOPByIdAPI, updateBOPAPI, getAllBOPAPI } from '../../../../actions/master/BoughtOutParts';
 import { getAllRawMaterialList } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
@@ -21,7 +21,17 @@ class AddBOP extends Component {
             isEditFlag: false,
             selectedParts: [],
             isActive: false,
-            categoryIds: []
+            categoryIds: [],
+
+            SourceSupplier: '',
+            SourceSupplierCity: '',
+            SourceSupplierCityArray: [],
+            SourcePlantArray: [],
+
+            DestinationSupplier: '',
+            DestinationSupplierCity: '',
+            DestinationSupplierCityArray: [],
+            DestinationPlantArray: [],
         }
     }
 
@@ -43,19 +53,55 @@ class AddBOP extends Component {
         if (isEditFlag) {
             this.props.getBOPByIdAPI(bopId, res => {
                 if (res && res.data && res.data.Data) {
-                    let responseData = res.data.Data;
-                    this.props.fetchCategoryAPI(responseData.CategoryTypeId, res => {
-                        const { bopData } = this.props;
-                        this.props.change('CategoryId', bopData.CategoryId)
-                    })
-                    this.setState({
-                        isActive: responseData.IsActive
-                    })
+                    let Data = res.data.Data;
+
+                    setTimeout(() => { this.getData(Data) }, 500)
+
                 }
             })
         } else {
             this.props.getBOPByIdAPI('', res => { })
         }
+    }
+
+    getData = (Data) => {
+
+        this.props.fetchCategoryAPI(Data.CategoryTypeId, res => {
+            const { bopData } = this.props;
+            this.props.change('CategoryId', bopData.CategoryId)
+        })
+        this.setState({
+            isActive: Data.IsActive
+        })
+
+        this.props.getCityBySupplier(Data.SourceSupplierId, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                this.setState({ SourceSupplierCityArray: Data })
+            }
+        })
+
+        // this.props.getPlantByCityAndSupplier(Data.SourceSupplierId, Data.SourceSupplierCityId, (res) => {
+        //     if (res && res.data && res.data.SelectList) {
+        //         let Data = res.data.SelectList;
+        //         this.setState({ SourcePlantArray: Data })
+        //     }
+        // })
+
+        this.props.getCityBySupplier(Data.DestinationSupplierId, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                this.setState({ DestinationSupplierCityArray: Data })
+            }
+        })
+
+        this.props.getPlantByCityAndSupplier(Data.DestinationSupplierId, Data.DestinationSupplierCityId, (res) => {
+            if (res && res.data && res.data.SelectList) {
+                let Data = res.data.SelectList;
+                this.setState({ DestinationPlantArray: Data })
+            }
+        })
+
     }
 
     getCategoryIdEdit = (response) => {
@@ -216,12 +262,106 @@ class AddBOP extends Component {
     }
 
     /**
-    * @method renderTypeOfListing
+    * @method handleSourceSupplier
+    * @description called
+    */
+    handleSourceSupplier = e => {
+        if (e.target.value != '') {
+            this.setState({
+                SourceSupplier: e.target.value,
+                SourceSupplierCityArray: [],
+                SourcePlantArray: []
+            }, () => {
+                this.props.getCityBySupplier(e.target.value, (res) => {
+                    if (res && res.data && res.data.SelectList) {
+                        let Data = res.data.SelectList;
+                        this.setState({ SourceSupplierCityArray: Data })
+                    }
+                })
+            })
+        } else {
+            this.setState({ SourceSupplierCityArray: [], SourcePlantArray: [] })
+        }
+    };
+
+    /**
+        * @method handleSourceSupplierCity
+        * @description called
+        */
+    handleSourceSupplierCity = e => {
+        if (e.target.value != '' && e.target.value != 0) {
+            this.setState({
+                SourceSupplierCity: e.target.value,
+                SourcePlantArray: []
+            }, () => {
+                // const { SourceSupplier, SourceSupplierCity } = this.state;
+                // this.props.getPlantByCityAndSupplier(SourceSupplier, SourceSupplierCity, (res) => {
+                //     if (res && res.data && res.data.SelectList) {
+                //         let Data = res.data.SelectList;
+                //         this.setState({ SourcePlantArray: Data })
+                //     }
+                // })
+            });
+        } else {
+            this.setState({ SourcePlantArray: [] })
+        }
+    };
+
+    /**
+    * @method handleDestinationSupplier
+    * @description called
+    */
+    handleDestinationSupplier = (e) => {
+        if (e.target.value != '' && e.target.value != 0) {
+            this.setState({
+                DestinationSupplier: e.target.value,
+                DestinationSupplierCityArray: [],
+                DestinationPlantArray: []
+            }, () => {
+                this.props.getCityBySupplier(e.target.value, (res) => {
+                    if (res && res.data && res.data.SelectList) {
+                        let Data = res.data.SelectList;
+                        this.setState({ DestinationSupplierCityArray: Data })
+                    }
+                })
+            })
+        } else {
+            this.setState({ DestinationSupplierCityArray: [], DestinationPlantArray: [] })
+        }
+
+    };
+
+    /**
+        * @method handleDestinationSupplierCity
+        * @description called
+        */
+    handleDestinationSupplierCity = e => {
+        if (e.target.value != '' && e.target.value != 0) {
+            this.setState({
+                DestinationSupplierCity: e.target.value,
+                DestinationPlantArray: []
+            }, () => {
+                const { DestinationSupplier, DestinationSupplierCity } = this.state;
+                this.props.getPlantByCityAndSupplier(DestinationSupplier, DestinationSupplierCity, (res) => {
+                    if (res && res.data && res.data.SelectList) {
+                        let Data = res.data.SelectList;
+                        this.setState({ DestinationPlantArray: Data })
+                    }
+                })
+            })
+        } else {
+            this.setState({ DestinationPlantArray: [] })
+        }
+    };
+
+    /**
+    * @method renderListing
     * @description Used show type of listing
     */
-    renderTypeOfListing = (label) => {
+    renderListing = (label) => {
         const { uniOfMeasurementList, partList, materialTypeList, plantList, rowMaterialDetail,
             supplierList, cityList, technologyList, categoryTypeList, categoryList } = this.props;
+        const { SourceSupplierCityArray, DestinationSupplierCityArray, DestinationPlantArray } = this.state;
         const temp = [];
         if (label === 'material') {
             materialTypeList && materialTypeList.map(item =>
@@ -277,6 +417,24 @@ class AddBOP extends Component {
             );
             return temp;
         }
+        if (label === 'SourceCity') {
+            SourceSupplierCityArray && SourceSupplierCityArray.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if (label === 'DestinationCity') {
+            DestinationSupplierCityArray && DestinationSupplierCityArray.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
+        if (label === 'DestinationSupplierPlant') {
+            DestinationPlantArray && DestinationPlantArray.map(item =>
+                temp.push({ Text: item.Text, Value: item.Value })
+            );
+            return temp;
+        }
     }
 
     basicRateKeyUp = (e) => {
@@ -302,6 +460,135 @@ class AddBOP extends Component {
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Source Supplier`}
+                                                name={"SourceSupplierId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                options={this.renderListing('supplier')}
+                                                onChange={this.handleSourceSupplier}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={`Source Supplier City`}
+                                                name={"SourceSupplierCityId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                options={this.renderListing('SourceCity')}
+                                                onChange={this.handleSourceSupplierCity}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        <Col md="4">
+                                            <Field
+                                                label={`Destination Supplier`}
+                                                name={"DestinationSupplierId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                options={this.renderListing('supplier')}
+                                                onChange={this.handleDestinationSupplier}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label={`Destination Supplier City`}
+                                                name={"DestinationSupplierCityId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                options={this.renderListing('DestinationCity')}
+                                                onChange={this.handleDestinationSupplierCity}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label={`Destination Plant`}
+                                                name={"PlantId"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                options={this.renderListing('DestinationSupplierPlant')}
+                                                onChange={this.handleTypeofListing}
+                                                optionValue={'Value'}
+                                                optionLabel={'Text'}
+                                                component={renderSelectField}
+                                                className=" withoutBorder custom-select"
+                                            />
+                                        </Col>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        <Col md="4">
+                                            <Field
+                                                label={`BOP Part`}
+                                                name={"PartNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                //validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                            />
+                                        </Col>
                                         <Col md="4">
                                             <Field
                                                 label={`Basic Rate`}
@@ -323,18 +610,6 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required, Numeric]}
                                                 component={renderNumberInputField}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="4">
-                                            <Field
-                                                label={`Part Number`}
-                                                name={"PartNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
                                                 required={true}
                                                 className=" withoutBorder"
                                             />
@@ -363,7 +638,7 @@ class AddBOP extends Component {
                                                 //validate={[required]}
                                                 required={true}
                                                 className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('technology')}
+                                                options={this.renderListing('technology')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -390,7 +665,7 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('categoryType')}
+                                                options={this.renderListing('categoryType')}
                                                 onChange={(Value) => this.handleCategoryType(Value)}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -406,7 +681,7 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 //validate={[required]}
                                                 //required={true}
-                                                options={this.renderTypeOfListing('category')}
+                                                options={this.renderListing('category')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -423,7 +698,7 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('material')}
+                                                options={this.renderListing('material')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -439,7 +714,7 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('uom')}
+                                                options={this.renderListing('uom')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -447,22 +722,7 @@ class AddBOP extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        <Col md="4">
-                                            <Field
-                                                label={`Plant`}
-                                                name={"PlantId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('plant')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
+
                                         <Col md="4">
                                             <Field
                                                 label={`Part`}
@@ -471,7 +731,7 @@ class AddBOP extends Component {
                                                 placeholder={''}
                                                 validate={[required]}
                                                 required={true}
-                                                options={this.renderTypeOfListing('part')}
+                                                options={this.renderListing('part')}
                                                 onChange={this.handleTypeofListing}
                                                 optionValue={'Value'}
                                                 optionLabel={'Text'}
@@ -479,70 +739,7 @@ class AddBOP extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Source Supplier City`}
-                                                name={"SourceSupplierCityId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('city')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Source Supplier`}
-                                                name={"SourceSupplierId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('supplier')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Destination Supplier City`}
-                                                name={"DestinationSupplierCityId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('city')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Destination Supplier`}
-                                                name={"DestinationSupplierId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('supplier')}
-                                                onChange={this.handleTypeofListing}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
+
 
                                         {isEditFlag &&
                                             <Col>
@@ -605,8 +802,8 @@ function mapStateToProps(state) {
             SourceSupplierId: bopData.SourceSupplierId,
             DestinationSupplierCityId: bopData.DestinationSupplierCityId,
             DestinationSupplierId: bopData.DestinationSupplierId,
-            UnitOfMeasurementId: bopData.UnitOfMeasurementId,
             PlantId: bopData.PlantId,
+            UnitOfMeasurementId: bopData.UnitOfMeasurementId,
             PartId: bopData.PartId,
         }
 
@@ -633,6 +830,8 @@ export default connect(mapStateToProps, {
     fetchCategoryAPI,
     getBOPByIdAPI,
     getAllRawMaterialList,
+    getCityBySupplier,
+    getPlantByCityAndSupplier,
 })(reduxForm({
     form: 'AddBOP',
     enableReinitialize: true,
