@@ -9,6 +9,63 @@ import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
+import ReactTable from 'react-table';
+//import 'react-table/react-table.css';
+
+
+const columnOrder = [{
+    Header: 'Name',
+    accessor: 'name', // String-based value accessors!
+    // Cell: ((row) => {
+    //     return 'Arpit';
+    // })
+}, {
+    Header: 'Role',
+    width: 100,
+    accessor: 'age',
+    // Cell: ((row) => {
+    //     return 'Arpit';
+    // })
+},
+    // {
+    //     Header: props => <span>Action</span>, // Custom header components!
+    //     accessor: 'friend.age',
+    //     Cell: (row) => (
+    //         <div style={{ padding: 5 }}>
+    //             <Button className='btn-rp-primary table-action-btn' style={{
+    //                 height: 25,
+    //                 marginRight: 10,
+    //             }} >Edit</Button>
+    //             <Button className='btn-rp-secondary table-action-btn' style={{
+    //                 height: 25,
+    //             }} onClick={() => {
+    //                 this.setState({ showConfirmModal: true, deletedItem: row.original })
+    //             }}>Delete</Button>
+
+    //         </div >
+    //     ),
+    // }
+];
+
+const data = [{
+    name: 'Ayaan',
+    age: 26
+}, {
+    name: 'Ahana',
+    age: 22
+}, {
+    name: 'Peter',
+    age: 40
+}, {
+    name: 'Virat',
+    age: 30
+}, {
+    name: 'Rohit',
+    age: 32
+}, {
+    name: 'Dhoni',
+    age: 37
+}]
 
 class UsersListing extends Component {
     constructor(props) {
@@ -80,6 +137,9 @@ class UsersListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, editIndex, PartId } = this.state;
+
+
+
         return (
             <>
                 {this.props.loading && <Loader />}
@@ -89,6 +149,14 @@ class UsersListing extends Component {
                     </Col>
                 </Row>
                 <hr />
+                <Row>
+                    <Col>
+                        {/* <ReactTable
+                            data={data}
+                            columns={columnOrder}
+                        /> */}
+                    </Col>
+                </Row>
                 <Row>
                     <Col>
                         <Table className="table table-striped" size="sm" hover bordered>

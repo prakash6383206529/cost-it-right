@@ -12,10 +12,10 @@ import {
    renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
    searchableSelect
 } from "../layout/FormInputs";
-import "./UserRegistration.scss";
 import {
-   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI,
-   setEmptyUserDataAPI
+   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
+   updateUserAPI, setEmptyUserDataAPI, getActionHeadsSelectList, getModuleSelectList,
+   getModuleActionInit, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI
 } from "../../actions/auth/AuthActions";
 import { fetchSupplierCityDataAPI } from "../../actions/master/Comman";
 import { MESSAGES } from "../../config/message";
@@ -23,7 +23,11 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { loggedInUserId } from "../../helper/auth";
 import UsersListing from "./UsersListing";
+import { Table, Button } from 'reactstrap';
+import "./UserRegistration.scss";
 import $ from 'jquery';
+import { CONSTANT } from "../../helper/AllConastant";
+import NoContentFound from "../common/NoContentFound";
 
 class UserRegistration extends Component {
    constructor(props) {
@@ -47,6 +51,16 @@ class UserRegistration extends Component {
          role: [],
          city: [],
          isEditFlag: false,
+         isShowUserForm: false,
+
+         IsShowAdditionalPermission: false,
+         Modules: [],
+
+         technology: [],
+         level: [],
+         TechnologyLevelGrid: [],
+         technologyLevelEditIndex: '',
+         isEditIndex: false,
       };
    }
 
@@ -58,6 +72,42 @@ class UserRegistration extends Component {
       this.props.getAllRoleAPI(() => { })
       this.props.getAllDepartmentAPI(() => { })
       this.props.fetchSupplierCityDataAPI(() => { })
+
+      this.props.getActionHeadsSelectList(() => {
+         this.getRolePermission()
+      })
+      this.props.getModuleSelectList(() => { })
+
+      this.props.getAllTechnologyAPI(() => { })
+      this.props.getAllLevelAPI(() => { })
+   }
+
+   getRolePermission = () => {
+      this.setState({ isLoader: true });
+      this.props.getModuleActionInit((res) => {
+         if (res && res.data && res.data.Data) {
+
+            let Data = res.data.Data;
+            let Modules = res.data.Data;
+
+            let moduleCheckedArray = [];
+            Modules && Modules.map((el, i) => {
+               let tempObj = {
+                  ModuleName: el.ModuleName,
+                  IsChecked: el.IsChecked,
+                  ModuleId: el.ModuleId,
+               }
+               moduleCheckedArray.push(tempObj)
+            })
+
+            this.setState({
+               actionData: Data,
+               Modules: Modules,
+               moduleCheckedAll: moduleCheckedArray,
+               isLoader: false,
+            })
+         }
+      })
    }
 
    /**
@@ -144,7 +194,7 @@ class UserRegistration extends Component {
    * @description Used show listing of unit of measurement
    */
    searchableSelectType = (label) => {
-      const { roleList, departmentList, cityList } = this.props;
+      const { roleList, departmentList, cityList, technologyList, levelList } = this.props;
       const temp = [];
 
       if (label === 'role') {
@@ -166,6 +216,20 @@ class UserRegistration extends Component {
             if (item.Value == 0) return false;
             temp.push({ label: item.Text, value: item.Value })
          });
+         return temp;
+      }
+
+      if (label === 'technology') {
+         technologyList && technologyList.map(item =>
+            temp.push({ label: item.Text, value: item.Value })
+         );
+         return temp;
+      }
+
+      if (label === 'level') {
+         levelList && levelList.map(item =>
+            temp.push({ label: item.LevelName, value: item.LevelId })
+         );
          return temp;
       }
    }
@@ -193,6 +257,8 @@ class UserRegistration extends Component {
    cityHandler = (newValue, actionMeta) => {
       this.setState({ city: newValue });
    };
+
+
 
    /**
    * @method getUserDetail
@@ -222,6 +288,328 @@ class UserRegistration extends Component {
             }
          })
       }
+   }
+
+
+
+
+
+
+
+
+
+   //Below code for Table rendering...... 
+
+   /**
+   * @method renderActionHeads
+   * @description used to add more permission for user
+   */
+   renderActionHeads = (actionHeads) => {
+      return actionHeads && actionHeads.map((item, index) => {
+         if (item.Value == 0) return false;
+         return (
+            <th >{item.Text}</th>
+         )
+      })
+   }
+
+   /**
+       * @method moduleHandler
+       * @description used to checked module
+       */
+   moduleHandler = (index) => {
+      //alert('hi')
+      const { Modules, checkedAll } = this.state;
+      const isModuleChecked = Modules[index].IsChecked;
+
+      let actionArray = [];
+      let tempArray = [];
+
+      let actionRow = (Modules && Modules != undefined) ? Modules[index].Actions : [];
+      if (isModuleChecked) {
+         actionArray = actionRow && actionRow.map((item, index) => {
+            item.IsChecked = false;
+            return item;
+         })
+
+         tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
+
+         this.setState({ Modules: tempArray })
+      } else {
+         actionArray = actionRow && actionRow.map((item, index) => {
+            item.IsChecked = true;
+            return item;
+         })
+
+         tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
+
+         this.setState({ Modules: tempArray })
+      }
+   }
+
+   /**
+   * @method isCheckAll
+   * @description used to select module's action row (Horizontally)
+   */
+   isCheckAll = (parentIndex, actionData) => {
+      const { actionSelectList } = this.props;
+
+      let tempArray = actionData.filter(item => item.IsChecked == true)
+      if (actionData && actionData != undefined) {
+         return tempArray.length == actionSelectList.length - 1 ? true : false;
+      }
+   }
+
+   /**
+    * @method renderAction
+    * @description used to render row of actions
+    */
+   renderAction = (actions, parentIndex) => {
+      const { actionSelectList } = this.props;
+
+      return actionSelectList && actionSelectList.map((el, i) => {
+         return actions && actions.map((item, index) => {
+            if (el.Text != item.ActionName) return false;
+            return (
+               <td>
+                  {<input
+                     type="checkbox"
+                     value={item.ActionId}
+                     onChange={() => this.actionCheckHandler(parentIndex, index)}
+                     checked={item.IsChecked}
+                  />}
+               </td>
+            )
+         })
+      })
+   }
+
+   /**
+    * @method actionCheckHandler
+    * @description Used to check/uncheck action's checkbox
+    */
+   actionCheckHandler = (parentIndex, childIndex) => {
+      const { Modules } = this.state;
+
+      let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
+      let actionArray = actionRow && actionRow.map((el, index) => {
+         if (childIndex == index) {
+            el.IsChecked = !el.IsChecked
+         }
+         return el;
+      })
+      let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+      this.setState({ Modules: tempArray })
+   }
+
+   selectAllHandler = (parentIndex, actionRows) => {
+      const { Modules } = this.state;
+      const { actionSelectList } = this.props;
+
+      let checkedActions = actionRows.filter(item => item.IsChecked == true)
+
+      let tempArray = [];
+      let isCheckedSelectAll = (checkedActions.length == actionSelectList.length - 1) ? true : false;
+
+      if (isCheckedSelectAll) {
+         let actionArray = actionRows && actionRows.map((item, index) => {
+            item.IsChecked = false;
+            return item;
+         })
+         tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+         this.setState({
+            Modules: tempArray,
+            //checkedAll: false,
+         })
+      } else {
+         let actionArray = actionRows && actionRows.map((item, index) => {
+            item.IsChecked = true;
+            return item;
+         })
+         tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+         this.setState({
+            Modules: tempArray,
+            //checkedAll: true
+         })
+      }
+   }
+
+   /**
+    * @method onPressUserPermission
+    * @description Used for User's additional permission
+    */
+   onPressUserPermission = () => {
+      const { IsShowAdditionalPermission, role } = this.state;
+      if (role && role.value) {
+         this.setState({ IsShowAdditionalPermission: !IsShowAdditionalPermission }, () => {
+            if (this.state.IsShowAdditionalPermission) {
+               this.getRoleDetail();
+            }
+         });
+      } else {
+         toastr.warning('Please select role.')
+      }
+   }
+
+   /**
+    * @method getRoleDetail
+    * @description used to get role detail
+    */
+   getRoleDetail = () => {
+      const { role } = this.state;
+      if (role && role.value != '') {
+         this.props.getRoleDataAPI(role.value, (res) => {
+            if (res && res.data && res.data.Data) {
+               let Data = res.data.Data;
+               let Modules = Data.Modules;
+
+               let moduleCheckedArray = [];
+               Modules && Modules.map((el, i) => {
+                  let tempObj = {
+                     ModuleName: el.ModuleName,
+                     IsChecked: el.IsChecked,
+                     ModuleId: el.ModuleId,
+                  }
+                  moduleCheckedArray.push(tempObj)
+               })
+
+               this.setState({
+                  isEditFlag: true,
+                  RoleId: role.value,
+                  Modules: Modules,
+                  moduleCheckedAll: moduleCheckedArray,
+                  isLoader: false,
+               })
+               if (Modules.length == 0) this.getRolePermission();
+            }
+         })
+      }
+   }
+
+
+
+
+   /**
+    * @method technologyHandler
+    * @description Used to handle 
+    */
+   technologyHandler = (newValue, actionMeta) => {
+      if (newValue && newValue != '') {
+         this.setState({ technology: newValue });
+      } else {
+         this.setState({ technology: [] });
+      }
+   };
+
+   /**
+     * @method levelHandler
+     * @description Used to handle 
+     */
+   levelHandler = (newValue, actionMeta) => {
+      if (newValue && newValue != '') {
+         this.setState({ level: newValue });
+      } else {
+         this.setState({ level: [] });
+      }
+   };
+
+   /**
+     * @method setTechnologyLevel
+     * @description Used to handle setTechnologyLevel
+     */
+   setTechnologyLevel = () => {
+      const { technology, level, TechnologyLevelGrid } = this.state;
+      const tempArray = [];
+
+      tempArray.push(...TechnologyLevelGrid, {
+         technologName: technology.label,
+         technologValue: technology.value,
+         levelName: level.label,
+         levelValue: level.value,
+         id: ''
+      })
+
+      this.setState({
+         TechnologyLevelGrid: tempArray,
+         level: [],
+         technology: [],
+      });
+   };
+
+   /**
+     * @method updateTechnologyLevel
+     * @description Used to handle updateTechnologyLevel
+     */
+   updateTechnologyLevel = () => {
+      const { technology, level, TechnologyLevelGrid, technologyLevelEditIndex } = this.state;
+      let tempArray = [];
+
+      let tempData = TechnologyLevelGrid[technologyLevelEditIndex];
+      tempData = {
+         technologName: technology.label,
+         technologValue: technology.value,
+         levelName: level.label,
+         levelValue: level.value,
+         id: ''
+      }
+
+      tempArray = Object.assign([...TechnologyLevelGrid], { [technologyLevelEditIndex]: tempData })
+
+      this.setState({
+         TechnologyLevelGrid: tempArray,
+         level: [],
+         technology: [],
+         technologyLevelEditIndex: '',
+         isEditIndex: false,
+      });
+   };
+
+   /**
+     * @method resetTechnologyLevel
+     * @description Used to handle setTechnologyLevel
+     */
+   resetTechnologyLevel = () => {
+      this.setState({
+         level: [],
+         technology: [],
+         technologyLevelEditIndex: '',
+         isEditIndex: false,
+      });
+   };
+
+   /**
+   * @method editItemDetails
+   * @description used to Reset form
+   */
+   editItemDetails = (index, Id) => {
+      const { TechnologyLevelGrid } = this.state;
+      const tempData = TechnologyLevelGrid[index];
+
+      this.setState({
+         technologyLevelEditIndex: index,
+         isEditIndex: true,
+         technology: { label: tempData.technologName, value: tempData.technologValue },
+         level: { label: tempData.levelName, value: tempData.levelValue },
+      })
+   }
+
+   /**
+   * @method deleteItem
+   * @description used to Reset form
+   */
+   deleteItem = (index, Id) => {
+      const { TechnologyLevelGrid } = this.state;
+
+      let tempData = TechnologyLevelGrid.filter((item, i) => {
+         if (i == index) {
+            return false;
+         }
+         return true;
+      });
+
+      this.setState({
+         TechnologyLevelGrid: tempData
+      })
    }
 
    /**
@@ -355,229 +743,242 @@ class UserRegistration extends Component {
 
 
    render() {
-      const { handleSubmit, pristine, submitting, reset } = this.props;
+      const { handleSubmit, pristine, submitting, reset, actionSelectList } = this.props;
       const { isLoader, isSubmitted } = this.state;
 
       return (
          <div>
             {isLoader && <Loader />}
-            <div className="login-container  signup-form">
-               <div className="shadow-lg login-form">
-                  <div className="form-heading">
-                     <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
+            <div className="login-container signup-form">
+               <div className="row">
+                  <div className="col-md-12" >
+                     <button
+                        type="button"
+                        className={'btn btn-primary user-btn'}
+                        onClick={() => this.setState({ isShowUserForm: !this.state.isShowUserForm })}>Add</button>
                   </div>
-                  <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                     <div className=" row form-group">
-                        <div className="input-group col-md-4 input-withouticon" >
-                           <Field
-                              label="First Name"
-                              name={"FirstName"}
-                              type="text"
-                              placeholder={''}
-                              validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
-                              component={renderText}
-                              required={true}
-                              maxLength={26}
-                           />
-                        </div>
-                        <div className="input-group  col-md-4 input-withouticon">
-                           <Field
-                              label="Middle Name"
-                              name={"MiddleName"}
-                              type="text"
-                              placeholder={''}
-                              validate={[alphabetsOnlyForName]}
-                              component={renderText}
-                              required={false}
-                              maxLength={26}
-                           />
-                        </div>
-                        <div className="input-group  col-md-4 input-withouticon">
-                           <Field
-                              label="Last Name"
-                              name={"LastName"}
-                              type="text"
-                              placeholder={''}
-                              validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
-                              component={renderText}
-                              required={true}
-                              maxLength={26}
-                           />
-                        </div>
-                     </div>
-                     <div className="row form-group">
-                        <div className="input-group col-md-6">
-                           <Field
-                              name="email"
-                              label="Email Address"
-                              component={renderEmailInputField}
-                              isDisabled={false}
-                              placeholder={''}
-                              validate={[required, email, minLength7, maxLength70]}
-                              required={true}
-                              maxLength={70}
-                           />
-                        </div>
-                        <div className="input-group col-md-6">
-                           <Field
-                              name="Mobile"
-                              label="Mobile"
-                              type="text"
-                              placeholder={''}
-                              component={renderText}
-                              isDisabled={false}
-                              validate={[required, number, minLength7]}
-                              required={true}
-                              maxLength={70}
-                           />
-                        </div>
-                     </div>
 
-                     <div className="row form-group">
-                        <div className="col-md-4">
-                           <Field
-                              name="DepartmentId"
-                              type="text"
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              label="Department"
-                              component={searchableSelect}
-                              placeholder={'Select department'}
-                              //validate={[required]}
-                              options={this.searchableSelectType('department')}
-                              //required={true}
-                              handleChangeDescription={this.departmentHandler}
-                              valueDescription={this.state.department}
-                           />
-                        </div>
-                        <div className="col-md-4">
-                           <Field
-                              name="RoleId"
-                              type="text"
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              label="Role"
-                              component={searchableSelect}
-                              placeholder={'Select role'}
-                              //validate={[required]}
-                              options={this.searchableSelectType('role')}
-                              //required={true}
-                              handleChangeDescription={this.roleHandler}
-                              valueDescription={this.state.role}
-                           />
-                        </div>
+                  {this.state.isShowUserForm &&
+                     <div className="col-md-12">
+                        <div className="shadow-lg login-form">
+                           <div className="form-heading">
+                              <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
+                           </div>
 
-                     </div>
+                           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 
-                     <div className="row form-group">
-                        <div className="input-group col-md-6">
-                           <Field
-                              name="Password"
-                              label="Password"
-                              placeholder="Must have atleast 6 characters"
-                              component={renderPasswordInputField}
-                              onChange={this.passwordPatternHandler}
-                              validate={[required, minLength6, maxLength25]}
-                              isShowHide={this.state.isShowHidePassword}
-                              showHide={this.showHidePasswordHandler}
-                              required={true}
-                              maxLength={26}
-                              isEyeIcon={true}
-                           />
-                        </div>
-                        <div className="input-group col-md-6">
-                           <Field
-                              name="passwordConfirm"
-                              label="Confirm Password"
-                              placeholder={''}
-                              component={renderPasswordInputField}
-                              validate={[required, minLength6, maxLength25]}
-                              required={true}
-                              maxLength={26}
-                              isShowHide={this.state.isShowHide}
-                              showHide={this.showHideHandler}
-                              isEyeIcon={true}
-                           />
-                        </div>
-                        <div className="input-group  col-md-4 input-withouticon">
-                           <Field
-                              label="Address 1"
-                              name={"AddressLine1"}
-                              type="text"
-                              placeholder={''}
-                              validate={[required]}
-                              component={renderText}
-                              required={true}
-                              maxLength={26}
-                           />
-                        </div>
-                        <div className="input-group  col-md-4 input-withouticon">
-                           <Field
-                              label="Address 2"
-                              name={"AddressLine2"}
-                              type="text"
-                              placeholder={''}
-                              validate={[required]}
-                              component={renderText}
-                              required={true}
-                              maxLength={26}
-                           />
-                        </div>
-                        <div className="input-group  col-md-4 input-withouticon">
-                           <Field
-                              label="ZipCode"
-                              name={"ZipCode"}
-                              type="text"
-                              placeholder={''}
-                              validate={[required, number]}
-                              component={renderText}
-                              required={true}
-                              maxLength={26}
-                           />
-                        </div>
-                        <div className="col-md-4">
-                           <Field
-                              name="CityId"
-                              type="text"
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              label="City"
-                              component={searchableSelect}
-                              placeholder={'Select city'}
-                              //validate={[required]}
-                              options={this.searchableSelectType('city')}
-                              //required={true}
-                              handleChangeDescription={this.cityHandler}
-                              valueDescription={this.state.city}
-                           />
-                        </div>
-                        <div className="input-group  col-md-4 input-withouticon">
-                           <div className="Phone phoneNumber col-md-8 input-withouticon">
-                              <Field
-                                 label="Phone Number"
-                                 name={"PhoneNumber"}
-                                 type="text"
-                                 placeholder={''}
-                                 validate={[number]}
-                                 component={renderText}
-                                 //required={true}
-                                 maxLength={26}
-                              />
-                           </div>
-                           <div className="dash phoneNumber col-md-1 input-withouticon">
-                              {'-'}
-                           </div>
-                           <div className="Ext phoneNumber col-md-3 input-withouticon">
-                              <Field
-                                 label="Extension"
-                                 name={"Extension"}
-                                 type="text"
-                                 placeholder={'Ext'}
-                                 validate={[number]}
-                                 component={renderText}
-                                 //required={true}
-                                 maxLength={26}
-                              />
-                           </div>
-                        </div>
-                        {/* <div className="input-group  col-md-4 input-withouticon">
+
+                              <div className=" row form-group">
+                                 <div className="input-group col-md-4 input-withouticon" >
+                                    <Field
+                                       label="First Name"
+                                       name={"FirstName"}
+                                       type="text"
+                                       placeholder={''}
+                                       validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                                       component={renderText}
+                                       required={true}
+                                       maxLength={26}
+                                    />
+                                 </div>
+                                 <div className="input-group  col-md-4 input-withouticon">
+                                    <Field
+                                       label="Middle Name"
+                                       name={"MiddleName"}
+                                       type="text"
+                                       placeholder={''}
+                                       validate={[alphabetsOnlyForName]}
+                                       component={renderText}
+                                       required={false}
+                                       maxLength={26}
+                                    />
+                                 </div>
+                                 <div className="input-group  col-md-4 input-withouticon">
+                                    <Field
+                                       label="Last Name"
+                                       name={"LastName"}
+                                       type="text"
+                                       placeholder={''}
+                                       validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                                       component={renderText}
+                                       required={true}
+                                       maxLength={26}
+                                    />
+                                 </div>
+                              </div>
+                              <div className="row form-group">
+                                 <div className="input-group col-md-6">
+                                    <Field
+                                       name="email"
+                                       label="Email Address"
+                                       component={renderEmailInputField}
+                                       isDisabled={false}
+                                       placeholder={''}
+                                       validate={[required, email, minLength7, maxLength70]}
+                                       required={true}
+                                       maxLength={70}
+                                    />
+                                 </div>
+                                 <div className="input-group col-md-6">
+                                    <Field
+                                       name="Mobile"
+                                       label="Mobile"
+                                       type="text"
+                                       placeholder={''}
+                                       component={renderText}
+                                       isDisabled={false}
+                                       validate={[required, number, minLength7]}
+                                       required={true}
+                                       maxLength={70}
+                                    />
+                                 </div>
+                              </div>
+
+                              <div className="row form-group">
+                                 <div className="col-md-4">
+                                    <Field
+                                       name="DepartmentId"
+                                       type="text"
+                                       //onKeyUp={(e) => this.changeItemDesc(e)}
+                                       label="Department"
+                                       component={searchableSelect}
+                                       placeholder={'Select department'}
+                                       //validate={[required]}
+                                       options={this.searchableSelectType('department')}
+                                       //required={true}
+                                       handleChangeDescription={this.departmentHandler}
+                                       valueDescription={this.state.department}
+                                    />
+                                 </div>
+                                 <div className="col-md-4">
+                                    <Field
+                                       name="RoleId"
+                                       type="text"
+                                       //onKeyUp={(e) => this.changeItemDesc(e)}
+                                       label="Role"
+                                       component={searchableSelect}
+                                       placeholder={'Select role'}
+                                       //validate={[required]}
+                                       options={this.searchableSelectType('role')}
+                                       //required={true}
+                                       handleChangeDescription={this.roleHandler}
+                                       valueDescription={this.state.role}
+                                    />
+                                 </div>
+
+                              </div>
+
+                              <div className="row form-group">
+                                 <div className="input-group col-md-6">
+                                    <Field
+                                       name="Password"
+                                       label="Password"
+                                       placeholder="Must have atleast 6 characters"
+                                       component={renderPasswordInputField}
+                                       onChange={this.passwordPatternHandler}
+                                       validate={[required, minLength6, maxLength25]}
+                                       isShowHide={this.state.isShowHidePassword}
+                                       showHide={this.showHidePasswordHandler}
+                                       required={true}
+                                       maxLength={26}
+                                       isEyeIcon={true}
+                                    />
+                                 </div>
+                                 <div className="input-group col-md-6">
+                                    <Field
+                                       name="passwordConfirm"
+                                       label="Confirm Password"
+                                       placeholder={''}
+                                       component={renderPasswordInputField}
+                                       validate={[required, minLength6, maxLength25]}
+                                       required={true}
+                                       maxLength={26}
+                                       isShowHide={this.state.isShowHide}
+                                       showHide={this.showHideHandler}
+                                       isEyeIcon={true}
+                                    />
+                                 </div>
+                                 <div className="input-group  col-md-4 input-withouticon">
+                                    <Field
+                                       label="Address 1"
+                                       name={"AddressLine1"}
+                                       type="text"
+                                       placeholder={''}
+                                       validate={[required]}
+                                       component={renderText}
+                                       required={true}
+                                       maxLength={26}
+                                    />
+                                 </div>
+                                 <div className="input-group  col-md-4 input-withouticon">
+                                    <Field
+                                       label="Address 2"
+                                       name={"AddressLine2"}
+                                       type="text"
+                                       placeholder={''}
+                                       validate={[required]}
+                                       component={renderText}
+                                       required={true}
+                                       maxLength={26}
+                                    />
+                                 </div>
+                                 <div className="input-group  col-md-4 input-withouticon">
+                                    <Field
+                                       label="ZipCode"
+                                       name={"ZipCode"}
+                                       type="text"
+                                       placeholder={''}
+                                       validate={[required, number]}
+                                       component={renderText}
+                                       required={true}
+                                       maxLength={26}
+                                    />
+                                 </div>
+                                 <div className="col-md-4">
+                                    <Field
+                                       name="CityId"
+                                       type="text"
+                                       //onKeyUp={(e) => this.changeItemDesc(e)}
+                                       label="City"
+                                       component={searchableSelect}
+                                       placeholder={'Select city'}
+                                       //validate={[required]}
+                                       options={this.searchableSelectType('city')}
+                                       //required={true}
+                                       handleChangeDescription={this.cityHandler}
+                                       valueDescription={this.state.city}
+                                    />
+                                 </div>
+                                 <div className="input-group  col-md-4 input-withouticon">
+                                    <div className="Phone phoneNumber col-md-8 input-withouticon">
+                                       <Field
+                                          label="Phone Number"
+                                          name={"PhoneNumber"}
+                                          type="text"
+                                          placeholder={''}
+                                          validate={[number]}
+                                          component={renderText}
+                                          //required={true}
+                                          maxLength={26}
+                                       />
+                                    </div>
+                                    <div className="dash phoneNumber col-md-1 input-withouticon">
+                                       {'-'}
+                                    </div>
+                                    <div className="Ext phoneNumber col-md-3 input-withouticon">
+                                       <Field
+                                          label="Extension"
+                                          name={"Extension"}
+                                          type="text"
+                                          placeholder={'Ext'}
+                                          validate={[number]}
+                                          component={renderText}
+                                          //required={true}
+                                          maxLength={26}
+                                       />
+                                    </div>
+                                 </div>
+                                 {/* <div className="input-group  col-md-4 input-withouticon">
                            <Field
                               label="Extension"
                               name={"Extension"}
@@ -589,31 +990,214 @@ class UserRegistration extends Component {
                               maxLength={26}
                            />
                         </div> */}
-                     </div>
+                              </div>
 
-                     <div className="text-center ">
-                        {/* <input
-                  disabled={isSubmitted ? true : false}
-                  type="submit"
-                  value="Save"
-                  className="btn  login-btn w-10 dark-pinkbtn"
-                /> */}
-                        <button
-                           type="submit"
-                           disabled={isSubmitted ? true : false}
-                           className="btn  login-btn w-10 dark-pinkbtn"
-                        >
-                           {this.state.isEditFlag ? 'Update' : 'Save'}
-                        </button>
-                        <input
-                           disabled={pristine || submitting}
-                           onClick={this.cancel}
-                           type="submit"
-                           value="Reset"
-                           className="btn  login-btn w-10 dark-pinkbtn"
-                        />
-                     </div>
-                  </form>
+
+
+                              {/* ///////////////////////////////////////////////
+////////////////////////////////////////////////////
+/////////////// USER WISE PERMISSION START ////////
+//////////////////////////////////////////////////
+///////////////////////////////////////////////// */}
+
+
+
+
+                              <div className=" row form-group">
+                                 <div className={'col-md-4'}>
+                                    <label
+                                       className="custom-checkbox"
+                                       onChange={this.onPressUserPermission}
+                                    >
+                                       Grand userwise permission
+                                                <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
+                                       <span
+                                          className=" before-box"
+                                          checked={this.state.IsShowAdditionalPermission}
+                                          onChange={this.onPressUserPermission}
+                                       />
+                                    </label>
+                                 </div>
+                              </div>
+
+                              {this.state.IsShowAdditionalPermission &&
+                                 <div className=" row form-group">
+                                    <div className="col-md-12">
+                                       <Table className="table table-striped" size="sm" bordered dark striped >
+                                          <thead>
+                                             <tr>
+                                                <th>{`Module`}</th>
+                                                <th>{`Select All`}</th>
+                                                {this.renderActionHeads(actionSelectList)}
+                                             </tr>
+                                          </thead>
+                                          <tbody >
+                                             {this.state.Modules && this.state.Modules.map((item, index) => {
+                                                return (
+                                                   <tr key={index}>
+
+                                                      <td >{
+                                                         <label
+                                                            className="custom-checkbox"
+                                                            onChange={() => this.moduleHandler(index)}
+                                                         >
+                                                            {item.ModuleName}
+                                                            <input type="checkbox" value={'All'} checked={item.IsChecked} />
+                                                            <span
+                                                               className=" before-box"
+                                                               checked={item.IsChecked}
+                                                               onChange={() => this.moduleHandler(index)}
+                                                            />
+                                                         </label>
+                                                      }
+                                                      </td>
+
+                                                      <td >{<input
+                                                         type="checkbox"
+                                                         value={'All'}
+                                                         checked={this.isCheckAll(index, item.Actions)}
+                                                         onClick={() => this.selectAllHandler(index, item.Actions)} />}</td>
+
+                                                      {this.renderAction(item.Actions, index)}
+                                                   </tr>
+                                                )
+                                             })}
+                                             {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                          </tbody>
+                                       </Table>
+                                    </div>
+                                 </div>}
+
+
+                              {/* ///////////////////////////////////////////////
+////////////////////////////////////////////////////
+/////////////// USER WISE PERMISSION END ////////
+//////////////////////////////////////////////////
+///////////////////////////////////////////////// */}
+
+
+
+
+
+                              {/* ///////////////////////////////////////////////
+////////////////////////////////////////////////////
+/////////////// User's technology level START ////////
+//////////////////////////////////////////////////
+///////////////////////////////////////////////// */}
+
+
+                              <div className="row form-group">
+                                 <div className="col-md-5">
+                                    <Field
+                                       name="TechnologyId"
+                                       type="text"
+                                       label="Technology"
+                                       component={searchableSelect}
+                                       options={this.searchableSelectType('technology')}
+                                       //onKeyUp={(e) => this.changeItemDesc(e)}
+                                       //validate={[required, maxLength50]}
+                                       //required={true}
+                                       handleChangeDescription={this.technologyHandler}
+                                       valueDescription={this.state.technology}
+                                    />
+                                 </div>
+                                 <div className="col-md-5">
+                                    <Field
+                                       name="LevelId"
+                                       type="text"
+                                       label="Level"
+                                       component={searchableSelect}
+                                       options={this.searchableSelectType('level')}
+                                       //onKeyUp={(e) => this.changeItemDesc(e)}
+                                       //validate={[required, maxLength50]}
+                                       //required={true}
+                                       handleChangeDescription={this.levelHandler}
+                                       valueDescription={this.state.level}
+                                    />
+                                 </div>
+                                 <div className="col-md-2 mt25">
+                                    {this.state.isEditIndex ?
+                                       <>
+                                          <button
+                                             type="button"
+                                             className={'btn btn-primary'}
+                                             onClick={this.updateTechnologyLevel}
+                                          >Update</button>
+
+                                          <button
+                                             type="button"
+                                             className={'btn btn-secondary'}
+                                             onClick={this.resetTechnologyLevel}
+                                          >Cancel</button>
+                                       </>
+                                       :
+                                       <button
+                                          type="button"
+                                          className={'btn btn-primary'}
+                                          onClick={this.setTechnologyLevel}
+                                       ><i className="fas fa-plus" /></button>}
+                                 </div>
+                              </div>
+
+                              <div className="row form-group">
+                                 <div className="col-md-12">
+                                    <Table className="table table-striped" size="sm" bordered dark striped >
+                                       <thead>
+                                          <tr>
+                                             <th>{`Technology`}</th>
+                                             <th>{`Level`}</th>
+                                             <th>{`Action`}</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody >
+                                          {
+                                             this.state.TechnologyLevelGrid &&
+                                             this.state.TechnologyLevelGrid.map((item, index) => {
+                                                return (
+                                                   <tr key={index}>
+                                                      <td>{item.technologName}</td>
+                                                      <td>{item.levelName}</td>
+                                                      <td>
+                                                         <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
+                                                         <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
+                                                      </td>
+                                                   </tr>
+                                                )
+                                             })
+                                          }
+                                       </tbody>
+                                       {this.state.TechnologyLevelGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                    </Table>
+                                 </div>
+                              </div>
+
+                              {/* ///////////////////////////////////////////////
+////////////////////////////////////////////////////
+/////////////// User's technology level END ////////
+//////////////////////////////////////////////////
+///////////////////////////////////////////////// */}
+
+
+                              <div className="text-center ">
+                                 <button
+                                    type="submit"
+                                    disabled={isSubmitted ? true : false}
+                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                 >
+                                    {this.state.isEditFlag ? 'Update' : 'Save'}
+                                 </button>
+                                 <input
+                                    disabled={pristine || submitting}
+                                    onClick={this.cancel}
+                                    type="submit"
+                                    value="Reset"
+                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                 />
+                              </div>
+
+                           </form>
+                        </div>
+                     </div>}
                </div>
             </div>
             <UsersListing getUserDetail={this.getUserDetail} />
@@ -656,7 +1240,8 @@ function validate(values) {
 * @param {*} state
 */
 const mapStateToProps = ({ auth, comman }) => {
-   const { roleList, departmentList, registerUserData } = auth;
+   const { roleList, departmentList, registerUserData, actionSelectList,
+      technologyList, levelList, } = auth;
    const { cityList } = comman;
 
    let initialValues = {};
@@ -678,7 +1263,10 @@ const mapStateToProps = ({ auth, comman }) => {
       }
    }
 
-   return { roleList, departmentList, cityList, registerUserData, initialValues };
+   return {
+      roleList, departmentList, cityList, registerUserData, actionSelectList,
+      initialValues, technologyList, levelList,
+   };
 };
 
 /**
@@ -697,6 +1285,12 @@ export default connect(mapStateToProps, {
    getAllUserDataAPI,
    updateUserAPI,
    setEmptyUserDataAPI,
+   getActionHeadsSelectList,
+   getModuleSelectList,
+   getModuleActionInit,
+   getRoleDataAPI,
+   getAllTechnologyAPI,
+   getAllLevelAPI,
 })(reduxForm({
    validate,
    form: 'Signup',

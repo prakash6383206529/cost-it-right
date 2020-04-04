@@ -5,7 +5,7 @@ import {
     API_FAILURE,
     CREATE_SUPPLIER_SUCCESS,
     CREATE_SUPPLIER_FAILURE,
-    GET_SUPPLIER_SUCCESS,
+    GET_SUPPLIER_DATALIST_SUCCESS,
     GET_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATA_SUCCESS,
     GET_RADIO_SUPPLIER_TYPE_SUCCESS,
@@ -62,7 +62,7 @@ export function getSupplierDetailAPI() {
         const request = axios.get(API.getAllSupplierAPI, headers);
         request.then((response) => {
             dispatch({
-                type: GET_SUPPLIER_SUCCESS,
+                type: GET_SUPPLIER_DATALIST_SUCCESS,
                 payload: response.data.DataList,
             });
 
