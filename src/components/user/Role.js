@@ -284,7 +284,7 @@ class Role extends Component {
                 item.IsChecked = false;
                 return item;
             })
-            tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+            tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
             this.setState({
                 Modules: tempArray,
                 //checkedAll: false,
@@ -294,7 +294,7 @@ class Role extends Component {
                 item.IsChecked = true;
                 return item;
             })
-            tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+            tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
             this.setState({
                 Modules: tempArray,
                 //checkedAll: true
@@ -333,6 +333,10 @@ class Role extends Component {
     actionCheckHandler = (parentIndex, childIndex) => {
         const { Modules } = this.state;
 
+        let checkedActions = Modules[parentIndex].Actions.filter(item => item.IsChecked == true)
+
+        let isCheckedSelectAll = (checkedActions.length - 1 != 0) ? true : false;
+
         let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
         let actionArray = actionRow && actionRow.map((el, index) => {
             if (childIndex == index) {
@@ -340,7 +344,7 @@ class Role extends Component {
             }
             return el;
         })
-        let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+        let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: isCheckedSelectAll, Actions: actionArray }) })
         this.setState({ Modules: tempArray })
     }
 
