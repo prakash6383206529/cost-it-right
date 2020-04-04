@@ -424,7 +424,7 @@ class AddMHR extends Component {
     }
 
     handleCalculation = () => {
-        const { fieldsObj } = this.props;
+        const { fieldsObj, powerData } = this.props;
 
         const netSkilledCost = fieldsObj.RateSkilledLabour * fieldsObj.NumberOfSkilledLabour;
         const netUnSkilledCost = fieldsObj.RateUnskilledLabour * fieldsObj.NumberOfUnskilledLabour;
@@ -437,6 +437,20 @@ class AddMHR extends Component {
         this.props.change('SemiSkilledLabourCost', typeof netSemiSkilledCost == NaN ? 0 : trimFourDecimalPlace(netSemiSkilledCost))
         this.props.change('ContractLabourCost', typeof netContractCost == NaN ? 0 : trimFourDecimalPlace(netContractCost))
         this.props.change('TotalLabourCost', trimFourDecimalPlace(TotallabourCost))
+
+        const machineCalculationData = {
+            RateOfInterest: fieldsObj.RateOfInterest,
+            TotalDepreciationCost: fieldsObj.TotalDepreciationCost,
+            NetPowerCost: powerData ? powerData.NetPowerCost : 0,
+            RateSkilledLabour: netSkilledCost,
+            RateSemiSkilledLabour: netSemiSkilledCost,
+            RateUnskilledLabour: netUnSkilledCost,
+            RateContractLabour: netContractCost,
+            ConsumableCost: fieldsObj.Consumable,
+            MaintenanceCharges: 0,
+        }
+        const MachineRateCost = machineRateCalculation(machineCalculationData)
+        this.props.change('Rate', trimFourDecimalPlace(MachineRateCost))
 
     }
 
@@ -736,10 +750,10 @@ class AddMHR extends Component {
             RateOfInterest: values.RateOfInterest,
             TotalDepreciationCost: values.TotalDepreciationCost,
             NetPowerCost: powerData.NetPowerCost,
-            RateSkilledLabour: values.RateSkilledLabour,
-            RateSemiSkilledLabour: values.RateSemiSkilledLabour,
-            RateUnskilledLabour: values.RateUnskilledLabour,
-            RateContractLabour: values.RateContractLabour,
+            RateSkilledLabour: values.RateSkilledLabour * values.NumberOfSkilledLabour,
+            RateSemiSkilledLabour: values.RateSemiSkilledLabour * values.NumberOfSemiSkilledLabour,
+            RateUnskilledLabour: values.RateUnskilledLabour * values.NumberOfUnskilledLabour,
+            RateContractLabour: values.RateContractLabour * values.NumberOfContractLabour,
             ConsumableCost: values.Consumable,
             MaintenanceCharges: 0,
         }
@@ -1257,51 +1271,7 @@ class AddMHR extends Component {
                                         </Col>
                                     </Row>
 
-                                    <Row>
-                                        <Col md="4">
-                                            <Field
-                                                label="Efficiency"
-                                                name={"Efficiency"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="4">
-                                            <Field
-                                                label="Rate"
-                                                name={"Rate"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="4">
-                                            <Field
-                                                label={`UOM`}
-                                                name={"UOM"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.renderListing('UOM')}
-                                                //onChange={this.depreciationHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                    </Row>
+
 
                                     <Row>
                                         <Col md="4">
@@ -1334,6 +1304,52 @@ class AddMHR extends Component {
                                             <Field
                                                 label="Rate Of Interest"
                                                 name={"RateOfInterest"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={true}
+                                            />
+                                        </Col>
+                                    </Row>
+
+                                    <Row>
+                                        <Col md="4">
+                                            <Field
+                                                label="Efficiency"
+                                                name={"Efficiency"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" withoutBorder"
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label={`UOM`}
+                                                name={"UOM"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                required={true}
+                                                className=" withoutBorder custom-select"
+                                                options={this.renderListing('UOM')}
+                                                //onChange={this.depreciationHandler}
+                                                optionValue={'value'}
+                                                optionLabel={'label'}
+                                                component={renderSelectField}
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="4">
+                                            <Field
+                                                label="Rate"
+                                                name={"Rate"}
                                                 type="text"
                                                 placeholder={''}
                                                 validate={[required]}
@@ -1379,6 +1395,7 @@ function mapStateToProps(state) {
         'RateContractLabour', 'NumberOfContractLabour', 'ContractLabourCost',
         'RateUnskilledLabour', 'NumberOfUnskilledLabour', 'UnSkilledLabourCost',
         'RateSemiSkilledLabour', 'NumberOfSemiSkilledLabour', 'SemiSkilledLabourCost',
+        'RateOfInterest', 'TotalDepreciationCost', 'Consumable',
     );
 
     if (comman && comman.comboDataMHR) {
