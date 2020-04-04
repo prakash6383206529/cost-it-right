@@ -148,7 +148,7 @@ export function getAllBOMAPI(callback) {
 */
 export function uploadBOMxlsAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.uploadBOMxlsAPI, data, headers);
+        const request = axios.post(API.uploadBOMAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

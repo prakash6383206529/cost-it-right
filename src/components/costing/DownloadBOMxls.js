@@ -19,18 +19,20 @@ class DownloadBOMxls extends React.Component {
         return (
             <ExcelFile filename={'BOM'} fileExtension={'.xls'} element={<button className={'btn btn-primary pull-right'}>Download BOM Format</button>}>
                 <ExcelSheet data={dataSet1} name="BOM">
-                    <ExcelColumn label="SN" value="SN" />
-                    <ExcelColumn label="BOMNo" value="BOMNo" />
-                    <ExcelColumn label="Assy" value="Assy" />
-                    <ExcelColumn label="MaterialCODE" value="MaterialCODE" />
+                    <ExcelColumn label="BOMLevel" value="BOMLevel" />
+                    <ExcelColumn label="AssemblyPartNumber" value="AssemblyPartNumber" />
+                    <ExcelColumn label="PartNumber" value="PartNumber" />
                     <ExcelColumn label="MaterialDescription" value="MaterialDescription" />
-                    <ExcelColumn label="MaterialType" value="MaterialType" />
-                    <ExcelColumn label="UOM" value="UOM" />
+                    <ExcelColumn label="MaterialGroupCode" value="MaterialGroupCode" />
+                    <ExcelColumn label="PartType" value="PartType" />
+                    <ExcelColumn label="PlantName" value="PlantName" />
+                    <ExcelColumn label="RawMaterialName" value="RawMaterialName" />
+                    <ExcelColumn label="UnitOfMeasurementName" value="UnitOfMeasurementName" />
+                    <ExcelColumn label="TechnologyName" value="TechnologyName" />
                     <ExcelColumn label="Quantity" value="Quantity" />
-                    <ExcelColumn label="AssyMark" value="AssyMark" />
-                    <ExcelColumn label="LEVEL" value="LEVEL" />
-                    <ExcelColumn label="EcoNo" value="EcoNo" />
-                    <ExcelColumn label="RevNo" value="RevNo" />
+                    <ExcelColumn label="RevisionNumber" value="RevisionNumber" />
+                    <ExcelColumn label="EcoNumber" value="EcoNumber" />
+                    <ExcelColumn label="Assembly" value="Assembly" />
                 </ExcelSheet>
             </ExcelFile>
         );

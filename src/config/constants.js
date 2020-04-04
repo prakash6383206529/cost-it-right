@@ -101,6 +101,7 @@ export const API = {
   getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-materials`,
   getAllBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-all-bill-of-materials`,
   uploadBOMxlsAPI: `${BASE_URL}/masters-part-bill-of-material/upload-bill-of-material`,
+  uploadBOMAPI: `${BASE_URL}/masters-part/mass-upload-bom`,
   deleteBOMAPI: `${BASE_URL}/masters-part-bill-of-material/delete-bill-of-material`,
   getBOMByPartAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-material-by-part`,
   checkCostingExistForPart: `${BASE_URL}/masters-part-bill-of-material/check-exist-costing-by-part`,

@@ -107,15 +107,18 @@ class Costing extends Component {
                     console.log(err);
                 } else {
 
-                    //fileHeads = resp.rows[0];
-                    fileHeads = ["SerialNumber", "BillNumber", "AssemblyBOMPartNumber", "PartNumber", "MaterialDescription",
-                        "MaterialTypeName", "UnitOfMeasurementName", "Quantity", "AssemblyPartNumberMark", "BOMLevel", "EcoNumber",
-                        "RevisionNumber"]
+                    fileHeads = resp.rows[0];
+                    // fileHeads = ["SerialNumber", "BillNumber", "AssemblyBOMPartNumber", "PartNumber", "MaterialDescription",
+                    //     "MaterialTypeName", "UnitOfMeasurementName", "Quantity", "AssemblyPartNumberMark", "BOMLevel", "EcoNumber",
+                    //     "RevisionNumber"]
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
                         if (index > 0) {
-                            let obj = { PlantId: uploadBOMplantID.value }
+                            let obj = {
+                                PlantId: uploadBOMplantID.value,
+                                CreatedBy: loggedInUserId(),
+                            }
                             val.map((el, i) => {
                                 obj[fileHeads[i]] = el
                             })
