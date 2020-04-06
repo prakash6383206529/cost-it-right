@@ -426,28 +426,35 @@ class Role extends Component {
         return (
             <div>
                 {isLoader && <Loader />}
-                <div className="login-container  signup-form">
-                    <div className="shadow-lg login-form">
-                        <div className="form-heading">
-                            <h2>
-                                Add Role
-                            </h2>
+                <div className="login-container signup-form">
+                    <div className="row">
+                        <div className="col-md-12" >
+                            <button
+                                type="button"
+                                className={'btn btn-primary user-btn'}
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
                         </div>
-                        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                            <div className=" row form-group">
-                                <div className="input-group col-md-6 input-withouticon" >
-                                    <Field
-                                        label="Role Name"
-                                        name={"RoleName"}
-                                        type="text"
-                                        placeholder={''}
-                                        validate={[required, alphabetsOnlyForName]}
-                                        component={renderText}
-                                        required={true}
-                                        maxLength={26}
-                                    />
-                                </div>
-                                {/* <div className="input-group  col-md-6 input-withouticon">
+                        {this.state.isShowForm &&
+                            <div className="col-md-12">
+                                <div className="shadow-lg login-form">
+                                    <div className="form-heading">
+                                        <h2>{isEditFlag ? 'Update Role' : 'Add Role'}</h2>
+                                    </div>
+                                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                                        <div className=" row form-group">
+                                            <div className="input-group col-md-6 input-withouticon" >
+                                                <Field
+                                                    label="Role Name"
+                                                    name={"RoleName"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required, alphabetsOnlyForName]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    maxLength={26}
+                                                />
+                                            </div>
+                                            {/* <div className="input-group  col-md-6 input-withouticon">
                                     <Field
                                         label="Description"
                                         name={"Description"}
@@ -459,7 +466,7 @@ class Role extends Component {
                                         maxLength={100}
                                     />
                                 </div> */}
-                                {/* <div className="input-group  col-md-6 input-withouticon">
+                                            {/* <div className="input-group  col-md-6 input-withouticon">
                                     <label>Select Permission</label>
                                     <label
                                         className="custom-checkbox"
@@ -476,73 +483,74 @@ class Role extends Component {
                                     {this.renderModule()}
                                 </div> */}
 
-                            </div>
+                                        </div>
 
-                            <div className=" row form-group">
-                                <div className="col-md-12">
-                                    <Table className="table table-striped" size="sm" bordered dark striped >
-                                        <thead>
-                                            <tr>
-                                                <th>{`Module`}</th>
-                                                <th>{`Select All`}</th>
-                                                {this.renderActionHeads(actionSelectList)}
-                                            </tr>
-                                        </thead>
-                                        <tbody >
-                                            {this.state.Modules && this.state.Modules.map((item, index) => {
-                                                return (
-                                                    <tr key={index}>
+                                        <div className=" row form-group">
+                                            <div className="col-md-12">
+                                                <Table className="table table-striped" size="sm" bordered dark striped >
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{`Module`}</th>
+                                                            <th>{`Select All`}</th>
+                                                            {this.renderActionHeads(actionSelectList)}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody >
+                                                        {this.state.Modules && this.state.Modules.map((item, index) => {
+                                                            return (
+                                                                <tr key={index}>
 
-                                                        <td >{
-                                                            <label
-                                                                className="custom-checkbox"
-                                                                onChange={() => this.moduleHandler(index)}
-                                                            >
-                                                                {item.ModuleName}
-                                                                <input type="checkbox" value={'All'} checked={item.IsChecked} />
-                                                                <span
-                                                                    className=" before-box"
-                                                                    checked={item.IsChecked}
-                                                                    onChange={() => this.moduleHandler(index)}
-                                                                />
-                                                            </label>
-                                                        }
-                                                        </td>
+                                                                    <td >{
+                                                                        <label
+                                                                            className="custom-checkbox"
+                                                                            onChange={() => this.moduleHandler(index)}
+                                                                        >
+                                                                            {item.ModuleName}
+                                                                            <input type="checkbox" value={'All'} checked={item.IsChecked} />
+                                                                            <span
+                                                                                className=" before-box"
+                                                                                checked={item.IsChecked}
+                                                                                onChange={() => this.moduleHandler(index)}
+                                                                            />
+                                                                        </label>
+                                                                    }
+                                                                    </td>
 
-                                                        <td >{<input
-                                                            type="checkbox"
-                                                            value={'All'}
-                                                            checked={this.isCheckAll(index, item.Actions)}
-                                                            onClick={() => this.selectAllHandler(index, item.Actions)} />}</td>
+                                                                    <td >{<input
+                                                                        type="checkbox"
+                                                                        value={'All'}
+                                                                        checked={this.isCheckAll(index, item.Actions)}
+                                                                        onClick={() => this.selectAllHandler(index, item.Actions)} />}</td>
 
-                                                        {this.renderAction(item.Actions, index)}
-                                                    </tr>
-                                                )
-                                            })}
-                                            {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                                        </tbody>
-                                    </Table>
+                                                                    {this.renderAction(item.Actions, index)}
+                                                                </tr>
+                                                            )
+                                                        })}
+                                                        {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                                    </tbody>
+                                                </Table>
+                                            </div>
+                                        </div>
+
+                                        <div className="text-center ">
+                                            <input
+                                                disabled={isSubmitted ? true : false}
+                                                type="submit"
+                                                value={isEditFlag ? 'Update' : 'Save'}
+                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                            />
+                                            <input
+                                                disabled={pristine || submitting}
+                                                onClick={this.cancel}
+                                                type="button"
+                                                value="Reset"
+                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                            />
+                                        </div>
+                                    </form>
                                 </div>
-                            </div>
-
-                            <div className="text-center ">
-                                <input
-                                    disabled={isSubmitted ? true : false}
-                                    type="submit"
-                                    value={isEditFlag ? 'Update' : 'Save'}
-                                    className="btn  login-btn w-10 dark-pinkbtn"
-                                />
-                                <input
-                                    disabled={pristine || submitting}
-                                    onClick={this.cancel}
-                                    type="button"
-                                    value="Reset"
-                                    className="btn  login-btn w-10 dark-pinkbtn"
-                                />
-                            </div>
-                        </form>
+                            </div>}
                     </div>
-
                 </div>
                 <RolesListing
                     getRoleDetail={this.getRoleDetail}

@@ -64,25 +64,25 @@ class User extends Component {
                     <Nav tabs className="subtabs">
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                Add User
+                                Manage Users
                                 </NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                Add Role
+                                Roles & Permission
                                 </NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                Add Department
+                                Manage Department
                                 </NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
-                                Add Level
+                                Manage Levels
                                 </NavLink>
                         </NavItem>
-                        <NavItem>
+                        {/* <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                 Level User's
                                 </NavLink>
@@ -91,7 +91,7 @@ class User extends Component {
                             <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                 Level Technology
                                 </NavLink>
-                        </NavItem>
+                        </NavItem> */}
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
                                 User Wise Permissions
@@ -115,14 +115,14 @@ class User extends Component {
                             <Level
                                 toggle={this.toggle} />
                         </TabPane>}
-                        {this.state.activeTab === '5' && <TabPane tabId="5">
+                        {/* {this.state.activeTab === '5' && <TabPane tabId="5">
                             <LevelUser
                                 toggle={this.toggle} />
                         </TabPane>}
                         {this.state.activeTab === '6' && <TabPane tabId="6">
                             <LevelTechnology
                                 toggle={this.toggle} />
-                        </TabPane>}
+                        </TabPane>} */}
                         {this.state.activeTab === '7' && <TabPane tabId="7">
                             <PermissionsUserWise
                                 toggle={this.toggle} />

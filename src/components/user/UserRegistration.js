@@ -52,7 +52,7 @@ class UserRegistration extends Component {
          role: [],
          city: [],
          isEditFlag: false,
-         isShowUserForm: false,
+         isShowForm: false,
 
          IsShowAdditionalPermission: false,
          Modules: [],
@@ -269,7 +269,7 @@ class UserRegistration extends Component {
       if (data && data.isEditFlag) {
          this.setState({
             isLoader: true,
-            isShowUserForm: true,
+            isShowForm: true,
             IsShowAdditionalPermission: true
          })
          $('html, body').animate({ scrollTop: 0 }, 'slow');
@@ -663,7 +663,7 @@ class UserRegistration extends Component {
       this.props.setEmptyUserDataAPI('', () => { })
       this.setState({
          isEditFlag: false,
-         isShowUserForm: false,
+         isShowForm: false,
          department: [],
          role: [],
          city: [],
@@ -871,10 +871,10 @@ class UserRegistration extends Component {
                      <button
                         type="button"
                         className={'btn btn-primary user-btn'}
-                        onClick={() => this.setState({ isShowUserForm: !this.state.isShowUserForm })}>Add</button>
+                        onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
                   </div>
 
-                  {this.state.isShowUserForm &&
+                  {this.state.isShowForm &&
                      <div className="col-md-12">
                         <div className="shadow-lg login-form">
                            <div className="form-heading">
