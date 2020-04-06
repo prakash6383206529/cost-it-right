@@ -388,34 +388,39 @@ class AddSupplier extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label="Extension"
-                                                name={"Extension"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                maxLength={26}
-                                                className=" withoutBorder"
-                                            />
+                                        <Col md="6" >
+                                            <Row>
+                                                <Col className="Phone phoneNumber" md="8">
+                                                    <Field
+                                                        label="Phone Number"
+                                                        name={"PhoneNumber"}
+                                                        type="text"
+                                                        placeholder={''}
+                                                        validate={[required, number]}
+                                                        component={renderText}
+                                                        required={true}
+                                                        maxLength={12}
+                                                        className=" withoutBorder"
+                                                    />
+                                                </Col>
+                                                <Col className="dash phoneNumber col-md-1">
+                                                    {'-'}
+                                                </Col>
+                                                <Col className="Ext phoneNumber" md="3">
+                                                    <Field
+                                                        label="Extension"
+                                                        name={"Extension"}
+                                                        type="text"
+                                                        placeholder={''}
+                                                        validate={[required]}
+                                                        component={renderText}
+                                                        required={true}
+                                                        maxLength={5}
+                                                        className=" withoutBorder"
+                                                    />
+                                                </Col>
+                                            </Row>
                                         </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Phone Number"
-                                                name={"PhoneNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                maxLength={26}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
                                         <Col md="6">
                                             <Field
                                                 label="ZipCode"
@@ -429,6 +434,9 @@ class AddSupplier extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
+                                    </Row>
+                                    <Row>
+
                                         <Col md="6">
                                             <Field
                                                 label={`${CONSTANT.CITY}`}
@@ -446,9 +454,7 @@ class AddSupplier extends Component {
                                                 className=" withoutBorder custom-select"
                                             />
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="12">
+                                        <Col md="6">
                                             <Field
                                                 label="Plants"
                                                 name="SelectedPlants"

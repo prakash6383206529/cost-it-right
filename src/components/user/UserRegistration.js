@@ -15,19 +15,20 @@ import {
 import {
    registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
    updateUserAPI, setEmptyUserDataAPI, getActionHeadsSelectList, getModuleSelectList,
-   getModuleActionInit, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI
+   getModuleActionInit, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI,
+   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
+   setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
 } from "../../actions/auth/AuthActions";
 import { fetchSupplierCityDataAPI } from "../../actions/master/Comman";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { Redirect } from 'react-router-dom';
 import { loggedInUserId } from "../../helper/auth";
 import UsersListing from "./UsersListing";
 import { Table, Button } from 'reactstrap';
 import "./UserRegistration.scss";
-import $ from 'jquery';
 import { CONSTANT } from "../../helper/AllConastant";
 import NoContentFound from "../common/NoContentFound";
+import $ from 'jquery';
 
 class UserRegistration extends Component {
    constructor(props) {
@@ -266,7 +267,11 @@ class UserRegistration extends Component {
    */
    getUserDetail = (data) => {
       if (data && data.isEditFlag) {
-         //this.setState({ isLoader: true })
+         this.setState({
+            isLoader: true,
+            isShowUserForm: true,
+            IsShowAdditionalPermission: true
+         })
          $('html, body').animate({ scrollTop: 0 }, 'slow');
          this.props.getUserDataAPI(data.UserId, (res) => {
             if (res && res.data && res.data.Data) {
@@ -280,23 +285,64 @@ class UserRegistration extends Component {
 
                this.setState({
                   isEditFlag: true,
+                  isLoader: false,
                   department: { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId },
                   role: { label: RoleObj.RoleName, value: RoleObj.RoleId },
                   city: { label: CityObj.Text, value: CityObj.Value },
                })
-
+               this.getUserPermission(data.UserId)
+               this.getUsersTechnologyLevelData(data.UserId)
             }
          })
       }
    }
 
+   /**
+   * @method getUserPermission
+   * @description used to get user additional permissions
+   */
+   getUserPermission = (UserId) => {
+      this.props.getPermissionByUser(UserId, (res) => {
+         if (res && res.data && res.data.Data) {
 
+            let Data = res.data.Data;
+            let Modules = Data.Modules;
 
+            let moduleCheckedArray = [];
+            Modules && Modules.map((el, i) => {
+               let tempObj = {
+                  ModuleName: el.ModuleName,
+                  IsChecked: el.IsChecked,
+                  ModuleId: el.ModuleId,
+               }
+               moduleCheckedArray.push(tempObj)
+            })
+            this.setState({
+               actionData: Data,
+               Modules: Modules,
+               moduleCheckedAll: moduleCheckedArray,
+            })
+         }
+      })
+   }
 
+   /**
+   * @method getUsersTechnologyLevelData
+   * @description used to get users technology level listing
+   */
+   getUsersTechnologyLevelData = (UserId) => {
+      this.props.getUsersTechnologyLevelAPI(UserId, (res) => {
+         if (res && res.data && res.data.Data) {
 
+            let Data = res.data.Data;
+            let TechnologyLevels = Data.TechnologyLevels;
 
-
-
+            this.setState({
+               TechnologyLevelGrid: TechnologyLevels,
+            })
+         }
+      })
+   }
 
    //Below code for Table rendering...... 
 
@@ -486,9 +532,6 @@ class UserRegistration extends Component {
       }
    }
 
-
-
-
    /**
     * @method technologyHandler
     * @description Used to handle 
@@ -502,9 +545,9 @@ class UserRegistration extends Component {
    };
 
    /**
-     * @method levelHandler
-     * @description Used to handle 
-     */
+   * @method levelHandler
+   * @description Used to handle 
+   */
    levelHandler = (newValue, actionMeta) => {
       if (newValue && newValue != '') {
          this.setState({ level: newValue });
@@ -514,19 +557,18 @@ class UserRegistration extends Component {
    };
 
    /**
-     * @method setTechnologyLevel
-     * @description Used to handle setTechnologyLevel
-     */
+   * @method setTechnologyLevel
+   * @description Used to handle setTechnologyLevel
+   */
    setTechnologyLevel = () => {
       const { technology, level, TechnologyLevelGrid } = this.state;
       const tempArray = [];
 
       tempArray.push(...TechnologyLevelGrid, {
-         technologName: technology.label,
-         technologValue: technology.value,
-         levelName: level.label,
-         levelValue: level.value,
-         id: ''
+         Technology: technology.label,
+         TechnologyId: technology.value,
+         Level: level.label,
+         LevelId: level.value,
       })
 
       this.setState({
@@ -537,20 +579,19 @@ class UserRegistration extends Component {
    };
 
    /**
-     * @method updateTechnologyLevel
-     * @description Used to handle updateTechnologyLevel
-     */
+   * @method updateTechnologyLevel
+   * @description Used to handle updateTechnologyLevel
+   */
    updateTechnologyLevel = () => {
       const { technology, level, TechnologyLevelGrid, technologyLevelEditIndex } = this.state;
       let tempArray = [];
 
       let tempData = TechnologyLevelGrid[technologyLevelEditIndex];
       tempData = {
-         technologName: technology.label,
-         technologValue: technology.value,
-         levelName: level.label,
-         levelValue: level.value,
-         id: ''
+         Technology: technology.label,
+         TechnologyId: technology.value,
+         Level: level.label,
+         LevelId: level.value,
       }
 
       tempArray = Object.assign([...TechnologyLevelGrid], { [technologyLevelEditIndex]: tempData })
@@ -565,9 +606,9 @@ class UserRegistration extends Component {
    };
 
    /**
-     * @method resetTechnologyLevel
-     * @description Used to handle setTechnologyLevel
-     */
+   * @method resetTechnologyLevel
+   * @description Used to handle setTechnologyLevel
+   */
    resetTechnologyLevel = () => {
       this.setState({
          level: [],
@@ -581,7 +622,7 @@ class UserRegistration extends Component {
    * @method editItemDetails
    * @description used to Reset form
    */
-   editItemDetails = (index, Id) => {
+   editItemDetails = (index) => {
       const { TechnologyLevelGrid } = this.state;
       const tempData = TechnologyLevelGrid[index];
 
@@ -597,7 +638,7 @@ class UserRegistration extends Component {
    * @method deleteItem
    * @description used to Reset form
    */
-   deleteItem = (index, Id) => {
+   deleteItem = (index) => {
       const { TechnologyLevelGrid } = this.state;
 
       let tempData = TechnologyLevelGrid.filter((item, i) => {
@@ -622,6 +663,7 @@ class UserRegistration extends Component {
       this.props.setEmptyUserDataAPI('', () => { })
       this.setState({
          isEditFlag: false,
+         isShowUserForm: false,
          department: [],
          role: [],
          city: [],
@@ -637,7 +679,7 @@ class UserRegistration extends Component {
    onSubmit(values) {
       console.log("signup values", values)
       const { reset, registerUserData } = this.props;
-      const { department, role, city, isEditFlag } = this.state;
+      const { department, role, city, isEditFlag, Modules, TechnologyLevelGrid } = this.state;
       const userDetails = reactLocalStorage.getObject("userDetail")
 
       this.setState({ isSubmitted: true })
@@ -684,6 +726,32 @@ class UserRegistration extends Component {
                toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
             }
             this.setState({ isLoader: false, isEditFlag: false })
+
+            //////////////////  TECHNOLOGY LEVEL START /////////
+            let tempTechnologyLevelArray = []
+
+            TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
+               tempTechnologyLevelArray.push({
+                  Technology: item.Technology,
+                  Level: item.Level,
+                  TechnologyId: item.TechnologyId,
+                  LevelId: item.LevelId
+               })
+            })
+
+            let technologyLevelFormData = {
+               UserId: res.data.id,
+               TechnologyLevels: tempTechnologyLevelArray
+            }
+
+            this.props.updateUserTechnologyLevelForCosting(technologyLevelFormData, (res) => {
+               if (res && res.data && res.data.Result) {
+                  //toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+               }
+               this.setState({ TechnologyLevelGrid: [] })
+            })
+            //////////////////  TECHNOLOGY LEVEL END /////////
+
             let data = {
                Id: '',
                PageSize: 0,
@@ -718,6 +786,7 @@ class UserRegistration extends Component {
             CityId: city.value,
          }
          this.props.registerUserAPI(userData, res => {
+
             if (res && res.data && res.data.Result) {
                toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
                reset();
@@ -728,6 +797,52 @@ class UserRegistration extends Component {
                   role: [],
                   city: [],
                })
+
+
+
+
+               //////////////////  ADDITIONAL PERMISSION START /////////
+               let formData = {
+                  UserId: res.data.id,
+                  Modules: Modules,
+               }
+
+               this.props.setUserAdditionalPermission(formData, (res) => {
+                  if (res && res.data && res.data.Result) {
+                     toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+                  }
+                  this.setState({ Modules: [] })
+               })
+               //////////////////  ADDITIONAL PERMISSION END /////////
+
+
+
+               //////////////////  TECHNOLOGY LEVEL START /////////
+               let tempTechnologyLevelArray = []
+
+               TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
+                  tempTechnologyLevelArray.push({
+                     TechnologyId: item.TechnologyId,
+                     LevelId: item.LevelId
+                  })
+               })
+
+               let technologyLevelFormData = {
+                  UserId: res.data.id,
+                  TechnologyLevels: tempTechnologyLevelArray
+               }
+
+               this.props.setUserTechnologyLevelForCosting(technologyLevelFormData, (res) => {
+                  if (res && res.data && res.data.Result) {
+                     //toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+                  }
+                  this.setState({ TechnologyLevelGrid: [] })
+               })
+               //////////////////  TECHNOLOGY LEVEL END /////////
+
+
+
+
                let data = {
                   Id: '',
                   PageSize: 0,
@@ -735,6 +850,7 @@ class UserRegistration extends Component {
                   Expression: {}
                }
                this.props.getAllUserDataAPI(data, res => { });
+
             }
          })
 
@@ -938,12 +1054,12 @@ class UserRegistration extends Component {
                                     <Field
                                        name="CityId"
                                        type="text"
-                                       //onKeyUp={(e) => this.changeItemDesc(e)}
                                        label="City"
                                        component={searchableSelect}
                                        placeholder={'Select city'}
-                                       //validate={[required]}
                                        options={this.searchableSelectType('city')}
+                                       //onKeyUp={(e) => this.changeItemDesc(e)}
+                                       //validate={[required]}
                                        //required={true}
                                        handleChangeDescription={this.cityHandler}
                                        valueDescription={this.state.city}
@@ -959,7 +1075,7 @@ class UserRegistration extends Component {
                                           validate={[number]}
                                           component={renderText}
                                           //required={true}
-                                          maxLength={26}
+                                          maxLength={12}
                                        />
                                     </div>
                                     <div className="dash phoneNumber col-md-1 input-withouticon">
@@ -974,22 +1090,10 @@ class UserRegistration extends Component {
                                           validate={[number]}
                                           component={renderText}
                                           //required={true}
-                                          maxLength={26}
+                                          maxLength={5}
                                        />
                                     </div>
                                  </div>
-                                 {/* <div className="input-group  col-md-4 input-withouticon">
-                           <Field
-                              label="Extension"
-                              name={"Extension"}
-                              type="text"
-                              placeholder={'Ext'}
-                              validate={[number]}
-                              component={renderText}
-                              //required={true}
-                              maxLength={26}
-                           />
-                        </div> */}
                               </div>
 
 
@@ -1155,11 +1259,11 @@ class UserRegistration extends Component {
                                              this.state.TechnologyLevelGrid.map((item, index) => {
                                                 return (
                                                    <tr key={index}>
-                                                      <td>{item.technologName}</td>
-                                                      <td>{item.levelName}</td>
+                                                      <td>{item.Technology}</td>
+                                                      <td>{item.Level}</td>
                                                       <td>
-                                                         <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                         <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
+                                                         <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index)}><i className="fas fa-pencil-alt"></i></Button>
+                                                         <Button className="btn btn-danger" onClick={() => this.deleteItem(index)}><i className="far fa-trash-alt"></i></Button>
                                                       </td>
                                                    </tr>
                                                 )
@@ -1291,6 +1395,11 @@ export default connect(mapStateToProps, {
    getRoleDataAPI,
    getAllTechnologyAPI,
    getAllLevelAPI,
+   getPermissionByUser,
+   getUsersTechnologyLevelAPI,
+   setUserAdditionalPermission,
+   setUserTechnologyLevelForCosting,
+   updateUserTechnologyLevelForCosting,
 })(reduxForm({
    validate,
    form: 'Signup',

@@ -290,7 +290,7 @@ export function getAllUserDataAPI(requestData, callback) {
 
 /**
 * @method getUserDataAPI
-* @description get all role's
+* @description get User's data
 */
 export function getUserDataAPI(UserId, callback) {
     return (dispatch) => {
@@ -369,6 +369,64 @@ export function setEmptyUserDataAPI(UserId, callback) {
     }
 };
 
+/**
+* @method getUsersTechnologyLevelAPI
+* @description get User's technology level
+*/
+export function getUsersTechnologyLevelAPI(UserId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserTechnologyLevelForCosting}?userId=${UserId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method setUserTechnologyLevelForCosting
+ * @description set user technology level for costing
+ */
+export function setUserTechnologyLevelForCosting(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.setUserTechnologyLevelForCosting, requestData, { headers })
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method updateUserTechnologyLevelForCosting
+ * @description update User Technology Level For Costing
+ */
+export function updateUserTechnologyLevelForCosting(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateUserTechnologyLevelForCosting, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                //callback(error);
+            });
+    };
+}
 /**
  * @method addRoleAPI
  * @description add Role API 

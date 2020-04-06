@@ -323,6 +323,9 @@ export const API = {
   getUserDataAPI: `${BASE_URL}/user/get-by-id`,
   deleteUserAPI: `${BASE_URL}/user/delete`,
   updateUserAPI: `${BASE_URL}/user/update`,
+  setUserTechnologyLevelForCosting: `${BASE_URL}/user-level/assign-user-technology-levels-for-costing`,
+  getUserTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-technology-levels`,
+  updateUserTechnologyLevelForCosting: `${BASE_URL}/user-level/update-user-technology-levels`,
 
   //Role's API
   addRoleAPI: `${BASE_URL}/user-role/create`,

@@ -364,31 +364,38 @@ class AddPlant extends Component {
                                                 className=" withoutBorder"
                                             />
                                         </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Phone Number"
-                                                name={"PhoneNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required, number, maxLength10]}
-                                                component={renderText}
-                                                required={true}
-                                                //maxLength={26}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Extension"
-                                                name={"Extension"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required, number, maxLength6]}
-                                                component={renderText}
-                                                required={true}
-                                                //maxLength={26}
-                                                className=" withoutBorder"
-                                            />
+                                        <Col md="6" >
+                                            <Row>
+                                                <Col className="Phone phoneNumber" md="8">
+                                                    <Field
+                                                        label="Phone Number"
+                                                        name={"PhoneNumber"}
+                                                        type="text"
+                                                        placeholder={''}
+                                                        validate={[required, number]}
+                                                        component={renderText}
+                                                        required={true}
+                                                        maxLength={12}
+                                                        className=" withoutBorder"
+                                                    />
+                                                </Col>
+                                                <Col className="dash phoneNumber col-md-1">
+                                                    {'-'}
+                                                </Col>
+                                                <Col className="Ext phoneNumber" md="3">
+                                                    <Field
+                                                        label="Extension"
+                                                        name={"Extension"}
+                                                        type="text"
+                                                        placeholder={''}
+                                                        validate={[required]}
+                                                        component={renderText}
+                                                        required={true}
+                                                        maxLength={5}
+                                                        className=" withoutBorder"
+                                                    />
+                                                </Col>
+                                            </Row>
                                         </Col>
                                     </Row>
                                     {isEditFlag &&
