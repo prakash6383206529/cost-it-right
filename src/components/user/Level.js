@@ -21,6 +21,7 @@ class Level extends Component {
             isSubmitted: false,
             isEditFlag: false,
             LevelId: '',
+            isShowForm: false,
         };
     }
 
@@ -107,33 +108,40 @@ class Level extends Component {
 
     render() {
         const { handleSubmit, pristine, reset, submitting } = this.props;
-        const { isLoader, isSubmitted } = this.state;
+        const { isLoader, isSubmitted, isEditFlag } = this.state;
 
         return (
             <div>
                 {isLoader && <Loader />}
                 <div className="login-container  signup-form">
-                    <div className="shadow-lg login-form">
-                        <div className="form-heading">
-                            <h2>
-                                Add Level
-                            </h2>
+                    <div className="row">
+                        <div className="col-md-12" >
+                            <button
+                                type="button"
+                                className={'btn btn-primary user-btn'}
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
                         </div>
-                        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                            <div className=" row form-group">
-                                <div className="input-group col-md-4 input-withouticon" >
-                                    <Field
-                                        label="Level Name"
-                                        name={"LevelName"}
-                                        type="text"
-                                        placeholder={''}
-                                        validate={[required]}
-                                        component={renderText}
-                                        required={true}
-                                        maxLength={26}
-                                    />
-                                </div>
-                                {/* <div className="input-group  col-md-4 input-withouticon">
+                        {this.state.isShowForm &&
+                            <div className="col-md-12">
+                                <div className="shadow-lg login-form">
+                                    <div className="form-heading">
+                                        <h2>{isEditFlag ? 'Update Level' : 'Add Level'}</h2>
+                                    </div>
+                                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                                        <div className=" row form-group">
+                                            <div className="input-group col-md-4 input-withouticon" >
+                                                <Field
+                                                    label="Level Name"
+                                                    name={"LevelName"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    maxLength={26}
+                                                />
+                                            </div>
+                                            {/* <div className="input-group  col-md-4 input-withouticon">
                                     <Field
                                         label="Description"
                                         name={"Description"}
@@ -145,37 +153,39 @@ class Level extends Component {
                                         maxLength={100}
                                     />
                                 </div> */}
-                                <div className="input-group  col-md-4 input-withouticon">
-                                    <Field
-                                        label="Sequence"
-                                        name={"Sequence"}
-                                        type="text"
-                                        placeholder={''}
-                                        validate={[number]}
-                                        component={renderText}
-                                        required={false}
-                                        maxLength={26}
-                                    />
+                                            <div className="input-group  col-md-4 input-withouticon">
+                                                <Field
+                                                    label="Sequence"
+                                                    name={"Sequence"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[number]}
+                                                    component={renderText}
+                                                    required={false}
+                                                    maxLength={26}
+                                                />
+                                            </div>
+
+                                        </div>
+
+                                        <div className="text-center ">
+                                            <input
+                                                disabled={isSubmitted ? true : false}
+                                                type="submit"
+                                                value={this.state.isEditFlag ? 'Update' : 'Save'}
+                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                            />
+                                            <input
+                                                disabled={pristine || submitting}
+                                                onClick={this.cancel}
+                                                type="submit"
+                                                value="Reset"
+                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                            />
+                                        </div>
+                                    </form>
                                 </div>
-
-                            </div>
-
-                            <div className="text-center ">
-                                <input
-                                    disabled={isSubmitted ? true : false}
-                                    type="submit"
-                                    value={this.state.isEditFlag ? 'Update' : 'Save'}
-                                    className="btn  login-btn w-10 dark-pinkbtn"
-                                />
-                                <input
-                                    disabled={pristine || submitting}
-                                    onClick={this.cancel}
-                                    type="submit"
-                                    value="Reset"
-                                    className="btn  login-btn w-10 dark-pinkbtn"
-                                />
-                            </div>
-                        </form>
+                            </div>}
                     </div>
                 </div>
                 <LevelsListing

@@ -631,8 +631,8 @@ class UserRegistration extends Component {
       this.setState({
          technologyLevelEditIndex: index,
          isEditIndex: true,
-         technology: { label: tempData.technologName, value: tempData.technologValue },
-         level: { label: tempData.levelName, value: tempData.levelValue },
+         technology: { label: tempData.Technology, value: tempData.TechnologyId },
+         level: { label: tempData.Level, value: tempData.LevelId },
       })
    }
 
@@ -730,7 +730,11 @@ class UserRegistration extends Component {
             if (res.data.Result) {
                toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
             }
-            this.setState({ isLoader: false, isEditFlag: false })
+            this.setState({
+               isLoader: false,
+               isEditFlag: false,
+               isSubmitted: false,
+            })
 
             //////////////////  ADDITIONAL PERMISSION START /////////
             let formData = {
@@ -742,7 +746,10 @@ class UserRegistration extends Component {
                if (res && res.data && res.data.Result) {
                   toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
                }
-               this.setState({ Modules: [] })
+               this.setState({
+                  Modules: [],
+                  IsShowAdditionalPermission: false,
+               })
             })
             //////////////////  ADDITIONAL PERMISSION END /////////
 
@@ -759,7 +766,7 @@ class UserRegistration extends Component {
             })
 
             let technologyLevelFormData = {
-               UserId: res.data.id,
+               UserId: UserId,
                TechnologyLevels: tempTechnologyLevelArray
             }
 
@@ -831,7 +838,10 @@ class UserRegistration extends Component {
                   if (res && res.data && res.data.Result) {
                      toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
                   }
-                  this.setState({ Modules: [] })
+                  this.setState({
+                     Modules: [],
+                     IsShowAdditionalPermission: false,
+                  })
                })
                //////////////////  ADDITIONAL PERMISSION END /////////
 

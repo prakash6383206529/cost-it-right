@@ -21,6 +21,7 @@ class Department extends Component {
             isSubmitted: false,
             isEditFlag: false,
             DepartmentId: '',
+            isShowForm: false,
         };
     }
 
@@ -106,33 +107,40 @@ class Department extends Component {
 
     render() {
         const { handleSubmit, pristine, reset, submitting } = this.props;
-        const { isLoader, isSubmitted } = this.state;
+        const { isLoader, isSubmitted, isEditFlag } = this.state;
 
         return (
             <div>
                 {isLoader && <Loader />}
                 <div className="login-container  signup-form">
-                    <div className="shadow-lg login-form">
-                        <div className="form-heading">
-                            <h2>
-                                Add Department
-                            </h2>
+                    <div className="row">
+                        <div className="col-md-12" >
+                            <button
+                                type="button"
+                                className={'btn btn-primary user-btn'}
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
                         </div>
-                        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                            <div className=" row form-group">
-                                <div className="input-group col-md-6 input-withouticon" >
-                                    <Field
-                                        label="Department Name"
-                                        name={"DepartmentName"}
-                                        type="text"
-                                        placeholder={''}
-                                        validate={[required, alphabetsOnlyForName]}
-                                        component={renderText}
-                                        required={true}
-                                        maxLength={26}
-                                    />
-                                </div>
-                                {/* <div className="input-group  col-md-6 input-withouticon">
+                        {this.state.isShowForm &&
+                            <div className="col-md-12">
+                                <div className="shadow-lg login-form">
+                                    <div className="form-heading">
+                                        <h2>{isEditFlag ? 'Update Department' : 'Add Department'}</h2>
+                                    </div>
+                                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                                        <div className=" row form-group">
+                                            <div className="input-group col-md-6 input-withouticon" >
+                                                <Field
+                                                    label="Department Name"
+                                                    name={"DepartmentName"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required, alphabetsOnlyForName]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    maxLength={26}
+                                                />
+                                            </div>
+                                            {/* <div className="input-group  col-md-6 input-withouticon">
                                     <Field
                                         label="Description"
                                         name={"Description"}
@@ -145,24 +153,26 @@ class Department extends Component {
                                     />
                                 </div> */}
 
-                            </div>
+                                        </div>
 
-                            <div className="text-center ">
-                                <input
-                                    disabled={isSubmitted ? true : false}
-                                    type="submit"
-                                    value={this.state.isEditFlag ? 'Update' : 'Save'}
-                                    className="btn  login-btn w-10 dark-pinkbtn"
-                                />
-                                <input
-                                    disabled={pristine || submitting}
-                                    onClick={this.cancel}
-                                    type="submit"
-                                    value="Reset"
-                                    className="btn  login-btn w-10 dark-pinkbtn"
-                                />
-                            </div>
-                        </form>
+                                        <div className="text-center ">
+                                            <input
+                                                disabled={isSubmitted ? true : false}
+                                                type="submit"
+                                                value={this.state.isEditFlag ? 'Update' : 'Save'}
+                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                            />
+                                            <input
+                                                disabled={pristine || submitting}
+                                                onClick={this.cancel}
+                                                type="submit"
+                                                value="Reset"
+                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                            />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>}
                     </div>
                 </div>
                 <DepartmentsListing

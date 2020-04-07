@@ -78,7 +78,7 @@ class LevelsListing extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <Table className="table table-striped" bordered>
+                        <Table className="table table-striped" size="sm" bordered>
                             {this.props.levelList && this.props.levelList.length > 0 &&
                                 <thead>
                                     <tr>
