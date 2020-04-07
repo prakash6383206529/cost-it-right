@@ -376,7 +376,7 @@ export function setEmptyUserDataAPI(UserId, callback) {
 export function getUsersTechnologyLevelAPI(UserId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserTechnologyLevelForCosting}?userId=${UserId}`, headers);
+        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);

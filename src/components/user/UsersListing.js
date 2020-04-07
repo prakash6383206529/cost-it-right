@@ -145,7 +145,7 @@ class UsersListing extends Component {
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
-                        <h3>{`List of Roles`}</h3>
+                        <h3>{`List of Users`}</h3>
                     </Col>
                 </Row>
                 <hr />

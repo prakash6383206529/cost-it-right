@@ -53,6 +53,7 @@ class UserRegistration extends Component {
          city: [],
          isEditFlag: false,
          isShowForm: false,
+         UserId: '',
 
          IsShowAdditionalPermission: false,
          Modules: [],
@@ -270,7 +271,8 @@ class UserRegistration extends Component {
          this.setState({
             isLoader: true,
             isShowForm: true,
-            IsShowAdditionalPermission: true
+            IsShowAdditionalPermission: true,
+            UserId: data.UserId,
          })
          $('html, body').animate({ scrollTop: 0 }, 'slow');
          this.props.getUserDataAPI(data.UserId, (res) => {
@@ -520,7 +522,7 @@ class UserRegistration extends Component {
                })
 
                this.setState({
-                  isEditFlag: true,
+                  //isEditFlag: true,
                   RoleId: role.value,
                   Modules: Modules,
                   moduleCheckedAll: moduleCheckedArray,
@@ -679,14 +681,16 @@ class UserRegistration extends Component {
    onSubmit(values) {
       console.log("signup values", values)
       const { reset, registerUserData } = this.props;
-      const { department, role, city, isEditFlag, Modules, TechnologyLevelGrid } = this.state;
+      const { department, role, city, isEditFlag, Modules, TechnologyLevelGrid,
+         UserId } = this.state;
       const userDetails = reactLocalStorage.getObject("userDetail")
 
       this.setState({ isSubmitted: true })
 
       if (isEditFlag) {
          let updatedData = {
-            FullName: `${values.FirstName} ${values.MiddleName}`,
+            UserId: UserId,
+            FullName: `${values.FirstName} ${values.LastName}`,
             LevelId: registerUserData.LevelId,
             LevelName: registerUserData.LevelName,
             DepartmentName: department.label,
@@ -718,6 +722,7 @@ class UserRegistration extends Component {
             PhoneNumber: values.PhoneNumber,
             Extension: values.Extension,
             CityId: city.value,
+
          }
 
          reset();
@@ -726,6 +731,20 @@ class UserRegistration extends Component {
                toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
             }
             this.setState({ isLoader: false, isEditFlag: false })
+
+            //////////////////  ADDITIONAL PERMISSION START /////////
+            let formData = {
+               UserId: UserId,
+               Modules: Modules,
+            }
+
+            this.props.setUserAdditionalPermission(formData, (res) => {
+               if (res && res.data && res.data.Result) {
+                  toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+               }
+               this.setState({ Modules: [] })
+            })
+            //////////////////  ADDITIONAL PERMISSION END /////////
 
             //////////////////  TECHNOLOGY LEVEL START /////////
             let tempTechnologyLevelArray = []
@@ -788,6 +807,7 @@ class UserRegistration extends Component {
          this.props.registerUserAPI(userData, res => {
 
             if (res && res.data && res.data.Result) {
+               const newUserId = res.data.Identity;
                toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
                reset();
                this.setState({
@@ -803,7 +823,7 @@ class UserRegistration extends Component {
 
                //////////////////  ADDITIONAL PERMISSION START /////////
                let formData = {
-                  UserId: res.data.id,
+                  UserId: newUserId,
                   Modules: Modules,
                }
 
@@ -828,7 +848,7 @@ class UserRegistration extends Component {
                })
 
                let technologyLevelFormData = {
-                  UserId: res.data.id,
+                  UserId: newUserId,
                   TechnologyLevels: tempTechnologyLevelArray
                }
 
