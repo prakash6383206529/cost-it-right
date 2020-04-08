@@ -33,6 +33,7 @@ import $ from 'jquery';
 class UserRegistration extends Component {
    constructor(props) {
       super(props);
+      this.child = React.createRef();
       this.state = {
          token: '',
          maxLength: maxLength11,
@@ -294,6 +295,7 @@ class UserRegistration extends Component {
                })
                this.getUserPermission(data.UserId)
                this.getUsersTechnologyLevelData(data.UserId)
+
             }
          })
       }
@@ -786,6 +788,7 @@ class UserRegistration extends Component {
             }
             this.props.getAllUserDataAPI(data, res => { });
             this.props.setEmptyUserDataAPI('', () => { })
+            this.child.getAlert();
          })
 
       } else {
@@ -887,11 +890,9 @@ class UserRegistration extends Component {
       }
    }
 
-
    render() {
       const { handleSubmit, pristine, submitting, reset, actionSelectList } = this.props;
       const { isLoader, isSubmitted } = this.state;
-
       return (
          <div>
             {isLoader && <Loader />}
@@ -1334,7 +1335,9 @@ class UserRegistration extends Component {
                      </div>}
                </div>
             </div>
-            <UsersListing getUserDetail={this.getUserDetail} />
+            <UsersListing
+               onRef={ref => (this.child = ref)}
+               getUserDetail={this.getUserDetail} />
          </div>
       );
    }

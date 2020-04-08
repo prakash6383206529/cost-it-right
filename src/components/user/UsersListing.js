@@ -3,69 +3,20 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
-import { getAllUserDataAPI, deleteUser } from '../../actions/auth/AuthActions';
+import {
+    getAllUserDataAPI, deleteUser, getAllDepartmentAPI,
+    getAllRoleAPI
+} from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
-import ReactTable from 'react-table';
-//import 'react-table/react-table.css';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-
-const columnOrder = [{
-    Header: 'Name',
-    accessor: 'name', // String-based value accessors!
-    // Cell: ((row) => {
-    //     return 'Arpit';
-    // })
-}, {
-    Header: 'Role',
-    width: 100,
-    accessor: 'age',
-    // Cell: ((row) => {
-    //     return 'Arpit';
-    // })
-},
-    // {
-    //     Header: props => <span>Action</span>, // Custom header components!
-    //     accessor: 'friend.age',
-    //     Cell: (row) => (
-    //         <div style={{ padding: 5 }}>
-    //             <Button className='btn-rp-primary table-action-btn' style={{
-    //                 height: 25,
-    //                 marginRight: 10,
-    //             }} >Edit</Button>
-    //             <Button className='btn-rp-secondary table-action-btn' style={{
-    //                 height: 25,
-    //             }} onClick={() => {
-    //                 this.setState({ showConfirmModal: true, deletedItem: row.original })
-    //             }}>Delete</Button>
-
-    //         </div >
-    //     ),
-    // }
-];
-
-const data = [{
-    name: 'Ayaan',
-    age: 26
-}, {
-    name: 'Ahana',
-    age: 22
-}, {
-    name: 'Peter',
-    age: 40
-}, {
-    name: 'Virat',
-    age: 30
-}, {
-    name: 'Rohit',
-    age: 32
-}, {
-    name: 'Dhoni',
-    age: 37
-}]
+function enumFormatter(cell, row, enumObject) {
+    return enumObject[cell];
+}
 
 class UsersListing extends Component {
     constructor(props) {
@@ -73,17 +24,61 @@ class UsersListing extends Component {
         this.state = {
             isEditFlag: false,
             RoleId: '',
+            userData: [],
+            departmentType: {},
+            roleType: {},
         }
     }
 
     componentDidMount() {
+        this.getUsersListData();
+        this.props.getAllDepartmentAPI((res) => {
+            if (res && res.data && res.data.DataList) {
+                const { departmentType } = this.state;
+                let Data = res.data.DataList;
+                let obj = {}
+                Data && Data.map((el, i) => {
+                    obj[el.DepartmentId] = el.DepartmentName
+                })
+                this.setState({
+                    departmentType: obj,
+                })
+            }
+        })
+        this.props.getAllRoleAPI((res) => {
+            if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                let obj = {}
+                Data && Data.map((el, i) => {
+                    obj[el.RoleId] = el.RoleName
+                })
+                this.setState({
+                    roleType: obj,
+                })
+            }
+        })
+        this.props.onRef(this)
+    }
+
+    getAlert = () => {
+        this.getUsersListData()
+    }
+
+    getUsersListData = () => {
         let data = {
             Id: '',
             PageSize: 0,
             LastIndex: 0,
             Expression: {}
         }
-        this.props.getAllUserDataAPI(data, res => { });
+        this.props.getAllUserDataAPI(data, res => {
+            if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                this.setState({
+                    userData: Data,
+                })
+            }
+        });
     }
 
     /**
@@ -126,9 +121,35 @@ class UsersListing extends Component {
                     LastIndex: 0,
                     Expression: {}
                 }
-                this.props.getAllUserDataAPI(data, res => { });
+                this.props.getAllUserDataAPI(data, res => {
+                    if (res && res.data && res.data.DataList) {
+                        let Data = res.data.DataList;
+                        this.setState({
+                            userData: Data,
+                        })
+                    }
+                });
             }
         });
+    }
+
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
+    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <Button className="btn btn-secondary" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button>
+                <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button>
+            </>
+        )
+    }
+
+    onExportToCSV = (row) => {
+        console.log('row', row)
+        // ...
+        return this.state.userData; // must return the data which you want to be exported
     }
 
     /**
@@ -136,13 +157,17 @@ class UsersListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, PartId } = this.state;
-
-
+        const { isOpen, isEditFlag, editIndex, PartId, departmentType, roleType } = this.state;
+        const options = {
+            clearSearch: true,
+            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            exportCSVText: 'Download Excel',
+            onExportToCSV: this.onExportToCSV,
+        };
 
         return (
             <>
-                {this.props.loading && <Loader />}
+                {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col>
                         <h3>{`List of Users`}</h3>
@@ -151,13 +176,33 @@ class UsersListing extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        {/* <ReactTable
-                            data={data}
-                            columns={columnOrder}
-                        /> */}
+                        <BootstrapTable
+                            data={this.state.userData}
+                            striped={true}
+                            hover={true}
+                            options={options}
+                            onRef={ref => (this.table = ref)}
+                            search
+                            exportCSV
+                            pagination>
+                            <TableHeaderColumn dataField="FullName" csvHeader='Full-Name' isKey={true} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
+                            <TableHeaderColumn dataField="UserName" dataSort={true}>User name</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Email" dataSort={true}>Email Id</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Mobile" dataSort={false}>Mobile No</TableHeaderColumn>
+                            <TableHeaderColumn dataField="PhoneNumber" dataSort={false}>Phone Number</TableHeaderColumn>
+
+                            <TableHeaderColumn dataField='DepartmentName' export hidden>Product Name</TableHeaderColumn>
+                            <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
+                                filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn>
+                            <TableHeaderColumn dataField='RoleName' export hidden>Role Name</TableHeaderColumn>
+                            <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
+                                filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn>
+                            <TableHeaderColumn dataField="UserId" export={false} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+
+                        </BootstrapTable>
                     </Col>
                 </Row>
-                <Row>
+                {/* <Row>
                     <Col>
                         <Table className="table table-striped" size="sm" hover bordered>
                             {this.props.userDataList && this.props.userDataList.length > 0 &&
@@ -192,7 +237,7 @@ class UsersListing extends Component {
                             </tbody>
                         </Table>
                     </Col>
-                </Row>
+                </Row> */}
             </ >
         );
     }
@@ -209,10 +254,11 @@ function mapStateToProps({ auth }) {
     return { userDataList, loading };
 }
 
-
 export default connect(mapStateToProps,
     {
         getAllUserDataAPI,
         deleteUser,
+        getAllDepartmentAPI,
+        getAllRoleAPI,
     })(UsersListing);
 
