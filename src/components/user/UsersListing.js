@@ -60,7 +60,7 @@ class UsersListing extends Component {
         this.props.onRef(this)
     }
 
-    getAlert = () => {
+    getUpdatedData = () => {
         this.getUsersListData()
     }
 
@@ -115,20 +115,7 @@ class UsersListing extends Component {
         this.props.deleteUser(UserId, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
-                let data = {
-                    Id: '',
-                    PageSize: 0,
-                    LastIndex: 0,
-                    Expression: {}
-                }
-                this.props.getAllUserDataAPI(data, res => {
-                    if (res && res.data && res.data.DataList) {
-                        let Data = res.data.DataList;
-                        this.setState({
-                            userData: Data,
-                        })
-                    }
-                });
+                this.getUsersListData();
             }
         });
     }

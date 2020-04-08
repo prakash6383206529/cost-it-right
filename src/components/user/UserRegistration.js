@@ -788,7 +788,7 @@ class UserRegistration extends Component {
             }
             this.props.getAllUserDataAPI(data, res => { });
             this.props.setEmptyUserDataAPI('', () => { })
-            this.child.getAlert();
+            this.child.getUpdatedData();
          })
 
       } else {
@@ -883,7 +883,7 @@ class UserRegistration extends Component {
                   Expression: {}
                }
                this.props.getAllUserDataAPI(data, res => { });
-
+               this.child.getUpdatedData();
             }
          })
 

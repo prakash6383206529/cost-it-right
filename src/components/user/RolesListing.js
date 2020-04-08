@@ -9,6 +9,7 @@ import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 class RolesListing extends Component {
     constructor(props) {
@@ -16,18 +17,39 @@ class RolesListing extends Component {
         this.state = {
             isEditFlag: false,
             RoleId: '',
+            tableData: [],
         }
     }
 
     componentDidMount() {
-        this.props.getAllRoleAPI(res => { });
+        this.getRolesListData()
+        this.props.onRef(this)
+    }
+
+    getRolesListData = () => {
+        this.props.getAllRoleAPI(res => {
+            if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                this.setState({
+                    tableData: Data,
+                })
+            }
+        });
+    }
+
+    /**
+    * @method getUpdatedData
+    * @description get updated data after updatesuccess
+    */
+    getUpdatedData = () => {
+        this.getRolesListData()
     }
 
     /**
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (index, Id) => {
+    editItemDetails = (Id) => {
         let requestData = {
             isEditFlag: true,
             RoleId: Id,
@@ -39,7 +61,7 @@ class RolesListing extends Component {
     * @method deleteItem
     * @description confirm delete part
     */
-    deleteItem = (index, Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -57,9 +79,22 @@ class RolesListing extends Component {
         this.props.deleteRoleAPI(RoleId, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_ROLE_SUCCESSFULLY);
-                this.props.getAllRoleAPI(res => { });
+                this.getRolesListData();
             }
         });
+    }
+
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
+    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <Button className="btn btn-secondary" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button>
+                <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button>
+            </>
+        )
     }
 
     /**
@@ -68,6 +103,10 @@ class RolesListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, editIndex, PartId } = this.state;
+        const options = {
+            clearSearch: true,
+            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        };
         return (
             <>
                 {this.props.loading && <Loader />}
@@ -79,12 +118,27 @@ class RolesListing extends Component {
                 <hr />
                 <Row>
                     <Col>
+                        <BootstrapTable
+                            data={this.state.tableData}
+                            striped={true}
+                            hover={true}
+                            options={options}
+                            onRef={ref => (this.table = ref)}
+                            search
+                            pagination>
+                            <TableHeaderColumn dataField="RoleName" isKey={true} dataAlign="center" dataSort={true}>Role</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RoleId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+
+                        </BootstrapTable>
+                    </Col>
+                </Row>
+                {/* <Row>
+                    <Col>
                         <Table className="table table-striped" size="sm" bordered>
                             {this.props.roleList && this.props.roleList.length > 0 &&
                                 <thead>
                                     <tr>
                                         <th>{`Role`}</th>
-                                        {/* <th>{`Description`}</th> */}
                                         <th>{''}</th>
                                     </tr>
                                 </thead>}
@@ -94,7 +148,6 @@ class RolesListing extends Component {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.RoleName}</td>
-                                                {/* <td>{item.Description}</td> */}
                                                 <td>
                                                     <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.RoleId)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.RoleId)}><i className="far fa-trash-alt"></i></Button>
@@ -106,7 +159,7 @@ class RolesListing extends Component {
                             </tbody>
                         </Table>
                     </Col>
-                </Row>
+                </Row> */}
             </ >
         );
     }

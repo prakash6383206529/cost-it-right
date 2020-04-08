@@ -20,6 +20,7 @@ import { userDetails, loggedInUserId } from "../../helper/auth";
 class Role extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         this.state = {
             isLoader: false,
             isSubmitted: false,
@@ -99,6 +100,7 @@ class Role extends Component {
                         Modules: Modules,
                         moduleCheckedAll: moduleCheckedArray,
                         isLoader: false,
+                        isShowForm: true,
                     })
                     if (Modules.length == 0) this.getRolePermission();
                 }
@@ -398,10 +400,16 @@ class Role extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
                 }
-                this.setState({ isLoader: false, isEditFlag: false, Modules: [] })
+                this.setState({
+                    isLoader: false,
+                    isEditFlag: false,
+                    Modules: [],
+                    isShowForm: false,
+                })
                 this.props.getAllRoleAPI(res => { })
                 this.getRolePermission()
                 this.props.setEmptyRoleDataAPI('', () => { })
+                this.child.getUpdatedData();
             })
         } else {
             // Add new role
@@ -412,6 +420,7 @@ class Role extends Component {
                 reset();
                 this.props.getAllRoleAPI(res => { })
                 this.getRolePermission()
+                this.child.getUpdatedData();
                 this.setState({ isLoader: false, Modules: [] })
             })
         }
@@ -553,6 +562,7 @@ class Role extends Component {
                     </div>
                 </div>
                 <RolesListing
+                    onRef={ref => (this.child = ref)}
                     getRoleDetail={this.getRoleDetail}
                 />
             </div>
