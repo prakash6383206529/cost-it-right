@@ -9,6 +9,7 @@ import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 class DepartmentsListing extends Component {
     constructor(props) {
@@ -16,18 +17,39 @@ class DepartmentsListing extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            tableData: [],
         }
     }
 
     componentDidMount() {
-        this.props.getAllDepartmentAPI(res => { });
+        this.getDepartmentListData();
+        this.props.onRef(this)
+    }
+
+    getDepartmentListData = () => {
+        this.props.getAllDepartmentAPI(res => {
+            if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                this.setState({
+                    tableData: Data,
+                })
+            }
+        });
+    }
+
+    /**
+    * @method getUpdatedData
+    * @description get updated data after updatesuccess
+    */
+    getUpdatedData = () => {
+        this.getDepartmentListData()
     }
 
     /**
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (index, Id) => {
+    editItemDetails = (Id) => {
         let requestData = {
             isEditFlag: true,
             DepartmentId: Id,
@@ -39,7 +61,7 @@ class DepartmentsListing extends Component {
     * @method deleteItem
     * @description confirm delete Department
     */
-    deleteItem = (index, Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -57,9 +79,22 @@ class DepartmentsListing extends Component {
         this.props.deleteDepartmentAPI(DepartmentId, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
-                this.props.getAllDepartmentAPI(res => { });
+                this.getDepartmentListData();
             }
         });
+    }
+
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
+    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <Button className="btn btn-secondary" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button>
+                <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button>
+            </>
+        )
     }
 
     /**
@@ -68,6 +103,10 @@ class DepartmentsListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, editIndex, PartId } = this.state;
+        const options = {
+            clearSearch: true,
+            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        };
         return (
             <>
                 {this.props.loading && <Loader />}
@@ -79,12 +118,25 @@ class DepartmentsListing extends Component {
                 <hr />
                 <Row>
                     <Col>
+                        <BootstrapTable
+                            data={this.state.tableData}
+                            striped={true}
+                            hover={true}
+                            options={options}
+                            search
+                            pagination>
+                            <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="center" dataSort={true}>Department</TableHeaderColumn>
+                            <TableHeaderColumn dataField="DepartmentId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        </BootstrapTable>
+                    </Col>
+                </Row>
+                {/* <Row>
+                    <Col>
                         <Table className="table table-striped" bordered>
                             {this.props.departmentList && this.props.departmentList.length > 0 &&
                                 <thead>
                                     <tr>
                                         <th>{`Department`}</th>
-                                        {/* <th>{`Description`}</th> */}
                                         <th>{''}</th>
                                     </tr>
                                 </thead>}
@@ -94,7 +146,6 @@ class DepartmentsListing extends Component {
                                         return (
                                             <tr key={index}>
                                                 <td >{item.DepartmentName}</td>
-                                                {/* <td>{item.Description}</td> */}
                                                 <div>
                                                     <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.DepartmentId)}><i className="fas fa-pencil-alt"></i></Button>
                                                     <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.DepartmentId)}><i className="far fa-trash-alt"></i></Button>
@@ -106,7 +157,7 @@ class DepartmentsListing extends Component {
                             </tbody>
                         </Table>
                     </Col>
-                </Row>
+                </Row> */}
             </ >
         );
     }

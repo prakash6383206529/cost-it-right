@@ -16,6 +16,7 @@ import DepartmentsListing from './DepartmentsListing';
 class Department extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         this.state = {
             isLoader: false,
             isSubmitted: false,
@@ -41,6 +42,7 @@ class Department extends Component {
                 this.setState({
                     isEditFlag: true,
                     DepartmentId: data.DepartmentId,
+                    isShowForm: true,
                 })
             })
         }
@@ -83,8 +85,13 @@ class Department extends Component {
                     toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
                 }
                 this.props.getAllDepartmentAPI(res => { });
+                this.child.getUpdatedData();
                 reset();
-                this.setState({ isLoader: false, isEditFlag: false })
+                this.setState({
+                    isLoader: false,
+                    isEditFlag: false,
+                    isShowForm: false,
+                })
                 this.props.setEmptyDepartmentAPI('', () => { })
             })
 
@@ -96,8 +103,9 @@ class Department extends Component {
                     toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
                 }
                 this.props.getAllDepartmentAPI(res => { });
+                this.child.getUpdatedData();
                 reset();
-                this.setState({ isLoader: false })
+                this.setState({ isLoader: false, isShowForm: false, })
             })
 
         }
@@ -176,6 +184,7 @@ class Department extends Component {
                     </div>
                 </div>
                 <DepartmentsListing
+                    onRef={ref => (this.child = ref)}
                     getDepartmentDetail={this.getDepartmentDetail} />
             </div>
         );

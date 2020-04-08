@@ -123,7 +123,6 @@ class RolesListing extends Component {
                             striped={true}
                             hover={true}
                             options={options}
-                            onRef={ref => (this.table = ref)}
                             search
                             pagination>
                             <TableHeaderColumn dataField="RoleName" isKey={true} dataAlign="center" dataSort={true}>Role</TableHeaderColumn>
