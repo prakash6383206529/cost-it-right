@@ -124,6 +124,7 @@ class DepartmentsListing extends Component {
                             hover={true}
                             options={options}
                             search
+                            ignoreSinglePage
                             pagination>
                             <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="center" dataSort={true}>Department</TableHeaderColumn>
                             <TableHeaderColumn dataField="DepartmentId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

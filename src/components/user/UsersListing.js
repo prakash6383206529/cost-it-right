@@ -171,6 +171,7 @@ class UsersListing extends Component {
                             onRef={ref => (this.table = ref)}
                             search
                             exportCSV
+                            ignoreSinglePage
                             pagination>
                             <TableHeaderColumn dataField="FullName" csvHeader='Full-Name' isKey={true} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
                             <TableHeaderColumn dataField="UserName" dataSort={true}>User name</TableHeaderColumn>

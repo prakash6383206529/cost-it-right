@@ -124,6 +124,7 @@ class RolesListing extends Component {
                             hover={true}
                             options={options}
                             search
+                            ignoreSinglePage
                             pagination>
                             <TableHeaderColumn dataField="RoleName" isKey={true} dataAlign="center" dataSort={true}>Role</TableHeaderColumn>
                             <TableHeaderColumn dataField="RoleId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

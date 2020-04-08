@@ -16,6 +16,7 @@ import LevelsListing from './LevelsListing';
 class Level extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         this.state = {
             isLoader: false,
             isSubmitted: false,
@@ -54,6 +55,7 @@ class Level extends Component {
                 this.setState({
                     isEditFlag: true,
                     LevelId: data.LevelId,
+                    isShowForm: true,
                 })
             })
         }
@@ -89,7 +91,12 @@ class Level extends Component {
                 this.props.getAllLevelAPI(res => { })
                 this.props.setEmptyLevelAPI('', () => { })
                 reset();
-                this.setState({ isLoader: false, isEditFlag: false })
+                this.setState({
+                    isLoader: false,
+                    isEditFlag: false,
+                    isShowForm: false,
+                })
+                this.child.getUpdatedData();
             })
         } else {
             // Add new level
@@ -98,8 +105,9 @@ class Level extends Component {
                     toastr.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
                 }
                 this.props.getAllLevelAPI(res => { })
+                this.child.getUpdatedData();
                 reset();
-                this.setState({ isLoader: false })
+                this.setState({ isLoader: false, isShowForm: false, })
             })
         }
 
@@ -189,6 +197,7 @@ class Level extends Component {
                     </div>
                 </div>
                 <LevelsListing
+                    onRef={ref => (this.child = ref)}
                     getLevelDetail={this.getLevelDetail} />
             </div>
         );
