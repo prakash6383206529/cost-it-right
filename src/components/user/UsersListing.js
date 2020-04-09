@@ -168,7 +168,6 @@ class UsersListing extends Component {
                             striped={true}
                             hover={true}
                             options={options}
-                            onRef={ref => (this.table = ref)}
                             search
                             exportCSV
                             ignoreSinglePage

@@ -86,12 +86,12 @@ class User extends Component {
                             <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                 Level User's
                                 </NavLink>
-                        </NavItem>
+                        </NavItem> */}
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                 Level Technology
-                                </NavLink>
-                        </NavItem> */}
+                            </NavLink>
+                        </NavItem>
                         <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
                                 User Wise Permissions
@@ -118,11 +118,11 @@ class User extends Component {
                         {/* {this.state.activeTab === '5' && <TabPane tabId="5">
                             <LevelUser
                                 toggle={this.toggle} />
-                        </TabPane>}
+                        </TabPane>} */}
                         {this.state.activeTab === '6' && <TabPane tabId="6">
                             <LevelTechnology
                                 toggle={this.toggle} />
-                        </TabPane>} */}
+                        </TabPane>}
                         {this.state.activeTab === '7' && <TabPane tabId="7">
                             <PermissionsUserWise
                                 toggle={this.toggle} />

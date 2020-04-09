@@ -285,12 +285,12 @@ class UserRegistration extends Component {
                const RoleObj = roleList.find(item => item.RoleId == Data.RoleId)
                const DepartmentObj = departmentList.find(item => item.DepartmentId == Data.DepartmentId)
                const CityObj = cityList.find(item => item.Value == Data.CityId)
-
+               console.log('RoleObj', RoleObj)
                this.setState({
                   isEditFlag: true,
                   isLoader: false,
-                  department: { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId },
-                  role: { label: RoleObj.RoleName, value: RoleObj.RoleId },
+                  department: DepartmentObj != undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
+                  role: RoleObj != undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
                   city: { label: CityObj.Text, value: CityObj.Value },
                })
                this.getUserPermission(data.UserId)
@@ -736,6 +736,10 @@ class UserRegistration extends Component {
                isLoader: false,
                isEditFlag: false,
                isSubmitted: false,
+               isShowForm: false,
+               department: [],
+               role: [],
+               city: [],
             })
 
             //////////////////  ADDITIONAL PERMISSION START /////////
@@ -823,13 +827,11 @@ class UserRegistration extends Component {
                this.setState({
                   isLoader: false,
                   isSubmitted: false,
+                  isShowForm: false,
                   department: [],
                   role: [],
                   city: [],
                })
-
-
-
 
                //////////////////  ADDITIONAL PERMISSION START /////////
                let formData = {
@@ -847,8 +849,6 @@ class UserRegistration extends Component {
                   })
                })
                //////////////////  ADDITIONAL PERMISSION END /////////
-
-
 
                //////////////////  TECHNOLOGY LEVEL START /////////
                let tempTechnologyLevelArray = []
@@ -872,9 +872,6 @@ class UserRegistration extends Component {
                   this.setState({ TechnologyLevelGrid: [] })
                })
                //////////////////  TECHNOLOGY LEVEL END /////////
-
-
-
 
                let data = {
                   Id: '',
@@ -916,7 +913,7 @@ class UserRegistration extends Component {
 
 
                               <div className=" row form-group">
-                                 <div className="input-group col-md-4 input-withouticon" >
+                                 <div className="input-group col-md-6 input-withouticon" >
                                     <Field
                                        label="First Name"
                                        name={"FirstName"}
@@ -928,7 +925,7 @@ class UserRegistration extends Component {
                                        maxLength={26}
                                     />
                                  </div>
-                                 <div className="input-group  col-md-4 input-withouticon">
+                                 {/* <div className="input-group  col-md-4 input-withouticon">
                                     <Field
                                        label="Middle Name"
                                        name={"MiddleName"}
@@ -939,8 +936,8 @@ class UserRegistration extends Component {
                                        required={false}
                                        maxLength={26}
                                     />
-                                 </div>
-                                 <div className="input-group  col-md-4 input-withouticon">
+                                 </div> */}
+                                 <div className="input-group  col-md-6 input-withouticon">
                                     <Field
                                        label="Last Name"
                                        name={"LastName"}
@@ -968,51 +965,17 @@ class UserRegistration extends Component {
                                  </div>
                                  <div className="input-group col-md-6">
                                     <Field
-                                       name="Mobile"
-                                       label="Mobile"
+                                       name="Username"
+                                       label="Username"
                                        type="text"
                                        placeholder={''}
                                        component={renderText}
                                        isDisabled={false}
-                                       validate={[required, number, minLength7]}
+                                       validate={[required, minLength7]}
                                        required={true}
                                        maxLength={70}
                                     />
                                  </div>
-                              </div>
-
-                              <div className="row form-group">
-                                 <div className="col-md-4">
-                                    <Field
-                                       name="DepartmentId"
-                                       type="text"
-                                       //onKeyUp={(e) => this.changeItemDesc(e)}
-                                       label="Department"
-                                       component={searchableSelect}
-                                       placeholder={'Select department'}
-                                       //validate={[required]}
-                                       options={this.searchableSelectType('department')}
-                                       //required={true}
-                                       handleChangeDescription={this.departmentHandler}
-                                       valueDescription={this.state.department}
-                                    />
-                                 </div>
-                                 <div className="col-md-4">
-                                    <Field
-                                       name="RoleId"
-                                       type="text"
-                                       //onKeyUp={(e) => this.changeItemDesc(e)}
-                                       label="Role"
-                                       component={searchableSelect}
-                                       placeholder={'Select role'}
-                                       //validate={[required]}
-                                       options={this.searchableSelectType('role')}
-                                       //required={true}
-                                       handleChangeDescription={this.roleHandler}
-                                       valueDescription={this.state.role}
-                                    />
-                                 </div>
-
                               </div>
 
                               <div className="row form-group">
@@ -1045,7 +1008,57 @@ class UserRegistration extends Component {
                                        isEyeIcon={true}
                                     />
                                  </div>
-                                 <div className="input-group  col-md-4 input-withouticon">
+                              </div>
+
+                              <div className="row form-group">
+                                 <div className="input-group col-md-6">
+                                    <Field
+                                       name="Mobile"
+                                       label="Mobile"
+                                       type="text"
+                                       placeholder={''}
+                                       component={renderText}
+                                       isDisabled={false}
+                                       validate={[required, number, minLength7]}
+                                       required={true}
+                                       maxLength={70}
+                                    />
+                                 </div>
+                                 <div className="input-group  col-md-6 input-withouticon">
+                                    <div className="row form-group">
+                                       <div className="Phone phoneNumber col-md-8 input-withouticon">
+                                          <Field
+                                             label="Phone Number"
+                                             name={"PhoneNumber"}
+                                             type="text"
+                                             placeholder={''}
+                                             validate={[number]}
+                                             component={renderText}
+                                             //required={true}
+                                             maxLength={12}
+                                          />
+                                       </div>
+                                       <div className="dash phoneNumber col-md-1 input-withouticon">
+                                          {'-'}
+                                       </div>
+                                       <div className="Ext phoneNumber col-md-3 input-withouticon">
+                                          <Field
+                                             label="Extension"
+                                             name={"Extension"}
+                                             type="text"
+                                             placeholder={'Ext'}
+                                             validate={[number]}
+                                             component={renderText}
+                                             //required={true}
+                                             maxLength={5}
+                                          />
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div className="row form-group">
+                                 <div className="input-group  col-md-6 input-withouticon">
                                     <Field
                                        label="Address 1"
                                        name={"AddressLine1"}
@@ -1057,7 +1070,7 @@ class UserRegistration extends Component {
                                        maxLength={26}
                                     />
                                  </div>
-                                 <div className="input-group  col-md-4 input-withouticon">
+                                 <div className="input-group  col-md-6 input-withouticon">
                                     <Field
                                        label="Address 2"
                                        name={"AddressLine2"}
@@ -1069,19 +1082,10 @@ class UserRegistration extends Component {
                                        maxLength={26}
                                     />
                                  </div>
-                                 <div className="input-group  col-md-4 input-withouticon">
-                                    <Field
-                                       label="ZipCode"
-                                       name={"ZipCode"}
-                                       type="text"
-                                       placeholder={''}
-                                       validate={[required, number]}
-                                       component={renderText}
-                                       required={true}
-                                       maxLength={26}
-                                    />
-                                 </div>
-                                 <div className="col-md-4">
+                              </div>
+
+                              <div className="row form-group">
+                                 <div className="col-md-6">
                                     <Field
                                        name="CityId"
                                        type="text"
@@ -1096,36 +1100,54 @@ class UserRegistration extends Component {
                                        valueDescription={this.state.city}
                                     />
                                  </div>
-                                 <div className="input-group  col-md-4 input-withouticon">
-                                    <div className="Phone phoneNumber col-md-8 input-withouticon">
-                                       <Field
-                                          label="Phone Number"
-                                          name={"PhoneNumber"}
-                                          type="text"
-                                          placeholder={''}
-                                          validate={[number]}
-                                          component={renderText}
-                                          //required={true}
-                                          maxLength={12}
-                                       />
-                                    </div>
-                                    <div className="dash phoneNumber col-md-1 input-withouticon">
-                                       {'-'}
-                                    </div>
-                                    <div className="Ext phoneNumber col-md-3 input-withouticon">
-                                       <Field
-                                          label="Extension"
-                                          name={"Extension"}
-                                          type="text"
-                                          placeholder={'Ext'}
-                                          validate={[number]}
-                                          component={renderText}
-                                          //required={true}
-                                          maxLength={5}
-                                       />
-                                    </div>
+                                 <div className="input-group  col-md-6 input-withouticon">
+                                    <Field
+                                       label="ZipCode"
+                                       name={"ZipCode"}
+                                       type="text"
+                                       placeholder={''}
+                                       validate={[required, number]}
+                                       component={renderText}
+                                       required={true}
+                                       maxLength={26}
+                                    />
                                  </div>
                               </div>
+
+                              <div className="row form-group">
+                                 <div className="col-md-6">
+                                    <Field
+                                       name="DepartmentId"
+                                       type="text"
+                                       label="Department"
+                                       component={searchableSelect}
+                                       placeholder={'Select department'}
+                                       options={this.searchableSelectType('department')}
+                                       //onKeyUp={(e) => this.changeItemDesc(e)}
+                                       //validate={[required]}
+                                       //required={true}
+                                       handleChangeDescription={this.departmentHandler}
+                                       valueDescription={this.state.department}
+                                    />
+                                 </div>
+                                 <div className="col-md-6">
+                                    <Field
+                                       name="RoleId"
+                                       type="text"
+                                       label="Role"
+                                       component={searchableSelect}
+                                       placeholder={'Select role'}
+                                       options={this.searchableSelectType('role')}
+                                       //onKeyUp={(e) => this.changeItemDesc(e)}
+                                       //validate={[required]}
+                                       //required={true}
+                                       handleChangeDescription={this.roleHandler}
+                                       valueDescription={this.state.role}
+                                    />
+                                 </div>
+                              </div>
+
+
 
 
 
@@ -1139,7 +1161,7 @@ class UserRegistration extends Component {
 
 
                               <div className=" row form-group">
-                                 <div className={'col-md-4'}>
+                                 <div className={'col-md-6'}>
                                     <label
                                        className="custom-checkbox"
                                        onChange={this.onPressUserPermission}
