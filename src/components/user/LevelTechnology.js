@@ -89,11 +89,6 @@ class LevelTechnology extends Component {
      */
     onSubmit(values) {
         const { technology, level } = this.state;
-        console.log("level values", values)
-
-        // if (technology.length == 0 || level.length == 0 || user.length == 0) {
-        //     return false;
-        // }
         this.setState({ isLoader: true })
 
         let formData = {

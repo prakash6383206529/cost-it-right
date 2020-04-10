@@ -5,24 +5,33 @@ import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
-import { renderText } from "../layout/FormInputs";
+import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI, setEmptyLevelAPI } from "../../actions/auth/AuthActions";
+import {
+    addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI,
+    setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI
+} from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import LevelsListing from './LevelsListing';
+import LevelTechnologyListing from "./LevelTechnologyListing";
 
 class Level extends Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
+        this.childMapping = React.createRef();
         this.state = {
             isLoader: false,
             isSubmitted: false,
             isEditFlag: false,
+            isEditMappingFlag: false,
             LevelId: '',
             isShowForm: false,
+            isShowTechnologyForm: false,
+            technology: [],
+            level: [],
         };
     }
 
@@ -31,8 +40,57 @@ class Level extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
+        this.props.getAllTechnologyAPI(() => { })
+        this.props.getAllLevelAPI(() => { })
+    }
+
+    /**
+    * @method selectType
+    * @description Used show listing of unit of measurement
+    */
+    searchableSelectType = (label) => {
+        const { technologyList, levelList } = this.props;
+        const temp = [];
+
+        if (label === 'technology') {
+            technologyList && technologyList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+
+        if (label === 'level') {
+            levelList && levelList.map(item =>
+                temp.push({ label: item.LevelName, value: item.LevelId })
+            );
+            return temp;
+        }
 
     }
+
+    /**
+        * @method technologyHandler
+        * @description Used to handle 
+        */
+    technologyHandler = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ technology: newValue });
+        } else {
+            this.setState({ technology: [] });
+        }
+    };
+
+    /**
+    * @method levelHandler
+    * @description Used to handle 
+    */
+    levelHandler = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ level: newValue });
+        } else {
+            this.setState({ level: [] });
+        }
+    };
 
     /**
     * @method cancel
@@ -59,6 +117,49 @@ class Level extends Component {
                 })
             })
         }
+    }
+
+    /**
+    * @method getLevelMappingDetail
+    * @description used to get level detail
+    */
+    getLevelMappingDetail = (data) => {
+        if (data && data.isEditMappingFlag) {
+            this.props.getUserLevelAPI(data.LevelId, () => {
+                this.setState({
+                    isEditMappingFlag: true,
+                    LevelId: data.LevelId,
+                    isShowTechnologyForm: true,
+                })
+            })
+        }
+    }
+
+    submitLevelTechnology = () => {
+        const { technology, level, isEditMappingFlag } = this.state;
+        this.setState({ isLoader: true })
+
+        if (isEditMappingFlag) {
+
+        } else {
+            let formData = {
+                LevelId: level.value,
+                TechnologyId: technology.value,
+            }
+            this.props.setApprovalLevelForTechnology(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+                }
+                this.props.reset();
+                this.setState({
+                    isLoader: false,
+                    technology: [],
+                    level: [],
+                })
+                this.childMapping.getUpdatedData();
+            })
+        }
+
     }
 
     /**
@@ -126,11 +227,19 @@ class Level extends Component {
                         <div className="col-md-12" >
                             <button
                                 type="button"
-                                className={'btn btn-primary user-btn'}
+                                className={'btn btn-primary user-btn mr20'}
+                                onClick={() => this.setState({ isShowTechnologyForm: !this.state.isShowTechnologyForm })}>Level Mapping</button>
+                            <button
+                                type="button"
+                                className={'btn btn-primary user-btn mr20'}
                                 onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
                         </div>
+
+
+
+
                         {this.state.isShowForm &&
-                            <div className="col-md-12">
+                            <div className="col-md-12 mb20">
                                 <div className="shadow-lg login-form">
                                     <div className="form-heading">
                                         <h2>{isEditFlag ? 'Update Level' : 'Add Level'}</h2>
@@ -149,18 +258,6 @@ class Level extends Component {
                                                     maxLength={26}
                                                 />
                                             </div>
-                                            {/* <div className="input-group  col-md-4 input-withouticon">
-                                    <Field
-                                        label="Description"
-                                        name={"Description"}
-                                        type="text"
-                                        placeholder={''}
-                                        validate={[]}
-                                        component={renderText}
-                                        required={false}
-                                        maxLength={100}
-                                    />
-                                </div> */}
                                             <div className="input-group  col-md-4 input-withouticon">
                                                 <Field
                                                     label="Sequence"
@@ -173,7 +270,6 @@ class Level extends Component {
                                                     maxLength={26}
                                                 />
                                             </div>
-
                                         </div>
 
                                         <div className="text-center ">
@@ -194,11 +290,77 @@ class Level extends Component {
                                     </form>
                                 </div>
                             </div>}
+
+
+
+                        {this.state.isShowTechnologyForm &&
+                            <div className="col-md-12">
+                                <div className="shadow-lg login-form">
+                                    <div className="form-heading">
+                                        <h2>{isEditFlag ? 'Update Level Mapping' : 'Add Level Mapping'}</h2>
+                                    </div>
+                                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                                        <div className="row form-group">
+                                            <div className="col-md-6">
+                                                <Field
+                                                    name="TechnologyId"
+                                                    type="text"
+                                                    label="Technology"
+                                                    component={searchableSelect}
+                                                    options={this.searchableSelectType('technology')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    //validate={[required, maxLength50]}
+                                                    //required={true}
+                                                    handleChangeDescription={this.technologyHandler}
+                                                    valueDescription={this.state.technology}
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Field
+                                                    name="LevelId"
+                                                    type="text"
+                                                    label="Level"
+                                                    component={searchableSelect}
+                                                    options={this.searchableSelectType('level')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    //validate={[required, maxLength50]}
+                                                    //required={true}
+                                                    handleChangeDescription={this.levelHandler}
+                                                    valueDescription={this.state.level}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="text-center ">
+                                            <input
+                                                disabled={isSubmitted ? true : false}
+                                                type="button"
+                                                onClick={this.submitLevelTechnology}
+                                                value="Save"
+                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                            />
+                                            <input
+                                                disabled={pristine || submitting}
+                                                onClick={reset}
+                                                type="submit"
+                                                value="Reset"
+                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                            />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>}
+
                     </div>
                 </div>
                 <LevelsListing
                     onRef={ref => (this.child = ref)}
                     getLevelDetail={this.getLevelDetail} />
+
+                <LevelTechnologyListing
+                    onRef={ref => (this.childMapping = ref)}
+                    getLevelMappingDetail={this.getLevelMappingDetail}
+                />
             </div>
         );
     }
@@ -211,7 +373,7 @@ class Level extends Component {
 * @param {*} state
 */
 const mapStateToProps = ({ auth }) => {
-    const { levelDetail } = auth;
+    const { levelDetail, technologyList, levelList } = auth;
     let initialValues = {};
 
     if (levelDetail && levelDetail != undefined) {
@@ -222,7 +384,7 @@ const mapStateToProps = ({ auth }) => {
         }
     }
 
-    return { levelDetail, initialValues };
+    return { levelDetail, technologyList, levelList, initialValues };
 };
 
 /**
@@ -237,6 +399,8 @@ export default connect(mapStateToProps, {
     getAllLevelAPI,
     updateUserLevelAPI,
     setEmptyLevelAPI,
+    getAllTechnologyAPI,
+    setApprovalLevelForTechnology,
 })(reduxForm({
     form: 'Level',
     enableReinitialize: true,

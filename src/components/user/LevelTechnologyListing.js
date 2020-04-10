@@ -11,7 +11,7 @@ import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-class LevelsListing extends Component {
+class LevelTechnologyListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -50,10 +50,10 @@ class LevelsListing extends Component {
      */
     editItemDetails = (Id) => {
         let requestData = {
-            isEditFlag: true,
+            isEditMappingFlag: true,
             LevelId: Id,
         }
-        this.props.getLevelDetail(requestData)
+        this.props.getLevelMappingDetail(requestData)
     }
 
     /**
@@ -117,7 +117,7 @@ class LevelsListing extends Component {
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
-                        <h3>{`List of Levels`}</h3>
+                        <h3>{`Level Mapping Listing`}</h3>
                     </Col>
                 </Row>
                 <hr />
@@ -137,36 +137,6 @@ class LevelsListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
-                {/* <Row>
-                    <Col>
-                        <Table className="table table-striped" size="sm" bordered>
-                            {this.props.levelList && this.props.levelList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`Level`}</th>
-                                        <th>{'Sequence'}</th>
-                                        <th>{''}</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.levelList && this.props.levelList.length > 0 &&
-                                    this.props.levelList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.LevelName}</td>
-                                                <td>{item.Sequence}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.LevelId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.LevelId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.levelList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row> */}
             </Container >
         );
     }
@@ -188,5 +158,5 @@ export default connect(mapStateToProps,
     {
         getAllLevelAPI,
         deleteUserLevelAPI,
-    })(LevelsListing);
+    })(LevelTechnologyListing);
 
