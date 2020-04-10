@@ -13,6 +13,7 @@ import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import Switch from "react-switch";
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -133,6 +134,30 @@ class UsersListing extends Component {
         )
     }
 
+    handleChange = (cell, row, enumObject, rowIndex) => {
+        console.log('sssss', cell, row.UserId, rowIndex)
+        //this.setState({ checked });
+    }
+
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
+    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <label htmlFor="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+                        checked={cell}
+                        id="normal-switch"
+                    />
+                </label>
+            </>
+        )
+    }
+
     onExportToCSV = (row) => {
         console.log('row', row)
         // ...
@@ -184,6 +209,7 @@ class UsersListing extends Component {
                             <TableHeaderColumn dataField='RoleName' export hidden>Role Name</TableHeaderColumn>
                             <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
                                 filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                             <TableHeaderColumn dataField="UserId" export={false} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
