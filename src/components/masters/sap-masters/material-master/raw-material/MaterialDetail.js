@@ -23,14 +23,14 @@ class MaterialDetail extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        const data = {
+        const filterData = {
             PageSize: 0,
             LastIndex: 0,
             TechnologyId: '',
             DestinationSupplierId: '',
             PlantId: '',
         }
-        this.props.getMaterialDetailAPI(data, res => { });
+        this.props.getMaterialDetailAPI(filterData, res => { });
     }
 
     /**
@@ -63,7 +63,14 @@ class MaterialDetail extends Component {
         this.props.deleteRawMaterialDetailAPI(ID, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-                this.props.getMaterialDetailAPI(res => { });
+                const filterData = {
+                    PageSize: 0,
+                    LastIndex: 0,
+                    TechnologyId: '',
+                    DestinationSupplierId: '',
+                    PlantId: '',
+                }
+                this.props.getMaterialDetailAPI(filterData, res => { });
             }
         });
     }

@@ -21,7 +21,14 @@ class MaterialTypeDetail extends Component {
    * @description Called after rendering the component
    */
     componentDidMount() {
-        this.props.getMaterialDetailAPI(res => { });
+        const filterData = {
+            PageSize: 0,
+            LastIndex: 0,
+            TechnologyId: '',
+            DestinationSupplierId: '',
+            PlantId: '',
+        }
+        this.props.getMaterialDetailAPI(filterData, res => { });
     }
 
     /**

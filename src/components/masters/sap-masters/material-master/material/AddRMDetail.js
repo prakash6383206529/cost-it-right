@@ -125,7 +125,14 @@ class AddRMDetail extends Component {
         this.props.createRMDetailAPI(formData, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-                this.props.getMaterialDetailAPI(res => { });
+                const filterData = {
+                    PageSize: 0,
+                    LastIndex: 0,
+                    TechnologyId: '',
+                    DestinationSupplierId: '',
+                    PlantId: '',
+                }
+                this.props.getMaterialDetailAPI(filterData, res => { });
                 this.toggleModel();
             } else {
                 toastr.error(res.data.Message);

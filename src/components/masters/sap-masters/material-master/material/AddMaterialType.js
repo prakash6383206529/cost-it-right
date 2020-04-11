@@ -44,7 +44,14 @@ class AddMaterialType extends Component {
         this.props.createMaterialTypeAPI(values, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-                this.props.getMaterialDetailAPI(res => { });
+                const filterData = {
+                    PageSize: 0,
+                    LastIndex: 0,
+                    TechnologyId: '',
+                    DestinationSupplierId: '',
+                    PlantId: '',
+                }
+                this.props.getMaterialDetailAPI(filterData, res => { });
                 this.toggleModel()
             } else {
                 toastr.error(res.data.Message);
