@@ -202,7 +202,7 @@ class Level extends Component {
         } else {
             // Add new level
             this.props.addUserLevelAPI(values, (res) => {
-                if (res.data.Result) {
+                if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
                 }
                 this.props.getAllLevelAPI(res => { })

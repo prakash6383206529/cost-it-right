@@ -671,7 +671,7 @@ export function deleteDepartmentAPI(Id, callback) {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
             }).catch((error) => {
-                callback(error.response);
+                //callback(error.response);
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });

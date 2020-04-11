@@ -77,13 +77,12 @@ class DepartmentsListing extends Component {
     */
     confirmDeleteItem = (DepartmentId) => {
         this.props.deleteDepartmentAPI(DepartmentId, (res) => {
-            if (res.data.Result === true) {
+            if (res && res.data && res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
                 this.getDepartmentListData();
+            } else if (res.data.Result === false && res.statusText == "Found") {
+                toastr.warning(res.data.Message)
             }
-            //  else if (res.data.Result === false && res.statusText == "Found") {
-            //     toastr.warning(res.data.Message)
-            // }
         });
     }
 

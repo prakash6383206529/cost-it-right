@@ -99,7 +99,7 @@ class Department extends Component {
 
             // Add new department
             this.props.addDepartmentAPI(values, (res) => {
-                if (res.data.Result) {
+                if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
                 }
                 this.props.getAllDepartmentAPI(res => { });
