@@ -213,5 +213,8 @@ export const MESSAGES = {
   //COPY COSTING
   COPY_COSTING_SUCCESS: 'Costing successfully copied.',
 
+  //DEPARATMENT EMPTY
+  DEPARTMENT_EMPTY_ALERT: 'Permission should not be empty.',
+
 };
 

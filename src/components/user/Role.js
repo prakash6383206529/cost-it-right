@@ -375,8 +375,16 @@ class Role extends Component {
     onSubmit(values) {
         const { isEditFlag, Modules, RoleId } = this.state;
         const { reset } = this.props;
-        this.setState({ isLoader: true })
 
+        //Validation for atleast 1 permission should be allowed for role, 
+        //Should not be empty
+        const checkedModules = Modules.filter(item => item.IsChecked == true)
+        if (checkedModules.length == 0) {
+            toastr.warning(MESSAGES.DEPARTMENT_EMPTY_ALERT)
+            return false;
+        }
+
+        this.setState({ isLoader: true })
         values.Modules = Modules;
 
         let userDetail = userDetails()
