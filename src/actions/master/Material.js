@@ -659,10 +659,10 @@ export function deleteRawMaterialDetailAPI(RawMaterialDetailsId, callback) {
  * @method getMaterialDetailAPI
  * @description get row material list
  */
-export function getMaterialDetailAPI() {
+export function getMaterialDetailAPI(filterData) {
     return (dispatch) => {
         const API1 = axios.get(API.getMaterialTypeDataList, headers);
-        const API2 = axios.get(API.getMaterial, headers);
+        const API2 = axios.post(API.getMaterial, filterData, headers);
         Promise.all([API1, API2])
             .then((response) => {
                 dispatch({
