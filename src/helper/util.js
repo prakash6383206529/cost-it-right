@@ -18,7 +18,9 @@ export const apiErrors = (res) => {
     } else if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
     } else if (response) {
-        if (response.status && response.status === 400) {
+        if (response.status && response.status === 302) {
+            toastr.warning(response.data.Message);                      //used for not able to delete associated ID's 
+        } else if (response.status && response.status === 400) {
             toastr.error('Something went wrong please try again.');
         } else if (response.status && response.status === 401) {
             toastr.error('Your session has been expired. Please login again');

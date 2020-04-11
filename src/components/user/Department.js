@@ -148,19 +148,6 @@ class Department extends Component {
                                                     maxLength={26}
                                                 />
                                             </div>
-                                            {/* <div className="input-group  col-md-6 input-withouticon">
-                                    <Field
-                                        label="Description"
-                                        name={"Description"}
-                                        type="text"
-                                        placeholder={''}
-                                        validate={[]}
-                                        component={renderText}
-                                        required={false}
-                                        maxLength={100}
-                                    />
-                                </div> */}
-
                                         </div>
 
                                         <div className="text-center ">
@@ -170,13 +157,14 @@ class Department extends Component {
                                                 value={this.state.isEditFlag ? 'Update' : 'Save'}
                                                 className="btn  login-btn w-10 dark-pinkbtn"
                                             />
-                                            <input
-                                                disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="submit"
-                                                value="Reset"
-                                                className="btn  login-btn w-10 dark-pinkbtn"
-                                            />
+                                            {!this.state.isEditFlag &&
+                                                <input
+                                                    disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="submit"
+                                                    value="Reset"
+                                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                                />}
                                         </div>
                                     </form>
                                 </div>

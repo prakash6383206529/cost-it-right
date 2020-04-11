@@ -548,13 +548,14 @@ class Role extends Component {
                                                 value={isEditFlag ? 'Update' : 'Save'}
                                                 className="btn  login-btn w-10 dark-pinkbtn"
                                             />
-                                            <input
-                                                disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Reset"
-                                                className="btn  login-btn w-10 dark-pinkbtn"
-                                            />
+                                            {!isEditFlag &&
+                                                <input
+                                                    disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="button"
+                                                    value="Reset"
+                                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                                />}
                                         </div>
                                     </form>
                                 </div>

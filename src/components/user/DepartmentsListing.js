@@ -81,6 +81,9 @@ class DepartmentsListing extends Component {
                 toastr.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
                 this.getDepartmentListData();
             }
+            //  else if (res.data.Result === false && res.statusText == "Found") {
+            //     toastr.warning(res.data.Message)
+            // }
         });
     }
 
@@ -102,7 +105,7 @@ class DepartmentsListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, PartId } = this.state;
+        const { } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -131,6 +134,7 @@ class DepartmentsListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
+
                 {/* <Row>
                     <Col>
                         <Table className="table table-striped" bordered>
@@ -159,6 +163,7 @@ class DepartmentsListing extends Component {
                         </Table>
                     </Col>
                 </Row> */}
+
             </ >
         );
     }

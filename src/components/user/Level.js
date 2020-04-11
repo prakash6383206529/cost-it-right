@@ -279,13 +279,14 @@ class Level extends Component {
                                                 value={this.state.isEditFlag ? 'Update' : 'Save'}
                                                 className="btn  login-btn w-10 dark-pinkbtn"
                                             />
-                                            <input
-                                                disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="submit"
-                                                value="Reset"
-                                                className="btn  login-btn w-10 dark-pinkbtn"
-                                            />
+                                            {!this.state.isEditFlag &&
+                                                <input
+                                                    disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="submit"
+                                                    value="Reset"
+                                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                                />}
                                         </div>
                                     </form>
                                 </div>

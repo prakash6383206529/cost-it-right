@@ -87,16 +87,16 @@ class User extends Component {
                                 Level User's
                                 </NavLink>
                         </NavItem> */}
-                        <NavItem>
+                        {/* <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                 Level Technology
                             </NavLink>
-                        </NavItem>
-                        <NavItem>
+                        </NavItem> */}
+                        {/* <NavItem>
                             <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
                                 User Wise Permissions
                                 </NavLink>
-                        </NavItem>
+                        </NavItem> */}
                     </Nav>
                     <TabContent activeTab={this.state.activeTab}>
                         {this.state.activeTab === '1' && <TabPane tabId="1">
@@ -119,14 +119,14 @@ class User extends Component {
                             <LevelUser
                                 toggle={this.toggle} />
                         </TabPane>} */}
-                        {this.state.activeTab === '6' && <TabPane tabId="6">
+                        {/* {this.state.activeTab === '6' && <TabPane tabId="6">
                             <LevelTechnology
                                 toggle={this.toggle} />
-                        </TabPane>}
-                        {this.state.activeTab === '7' && <TabPane tabId="7">
+                        </TabPane>} */}
+                        {/* {this.state.activeTab === '7' && <TabPane tabId="7">
                             <PermissionsUserWise
                                 toggle={this.toggle} />
-                        </TabPane>}
+                        </TabPane>} */}
                     </TabContent>
                 </div>
             </Container >
