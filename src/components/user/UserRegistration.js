@@ -250,7 +250,23 @@ class UserRegistration extends Component {
      * @description Used to handle 
      */
    roleHandler = (newValue, actionMeta) => {
-      this.setState({ role: newValue });
+      if (newValue && newValue != '') {
+
+         this.setState({ Modules: [], IsShowAdditionalPermission: false, }, () => {
+            this.setState({
+               role: newValue,
+            });
+         });
+
+      } else {
+
+         this.setState({
+            role: [],
+            Modules: [],
+            IsShowAdditionalPermission: false,
+         });
+
+      }
    };
 
    /**
@@ -961,6 +977,7 @@ class UserRegistration extends Component {
                                        validate={[required, email, minLength7, maxLength70]}
                                        required={true}
                                        maxLength={70}
+                                       isDisabled={this.state.isEditFlag ? true : false}
                                     />
                                  </div>
                                  <div className="input-group col-md-6">
@@ -974,6 +991,7 @@ class UserRegistration extends Component {
                                        validate={[required, minLength7]}
                                        required={true}
                                        maxLength={70}
+                                       disabled={this.state.isEditFlag ? true : false}
                                     />
                                  </div>
                               </div>
@@ -1420,6 +1438,7 @@ const mapStateToProps = ({ auth, comman }) => {
          MiddleName: registerUserData.MiddleName,
          LastName: registerUserData.LastName,
          email: registerUserData.Email,
+         Username: registerUserData.UserName,
          Mobile: registerUserData.Mobile,
          Password: registerUserData.Password,
          passwordConfirm: registerUserData.Password,

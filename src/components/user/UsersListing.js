@@ -164,6 +164,14 @@ class UsersListing extends Component {
         return this.state.userData; // must return the data which you want to be exported
     }
 
+    renderPaginationShowsTotal(start, to, total) {
+        return (
+            <p style={{ color: 'blue' }}>
+                Showing {start} of {to} entries.
+          </p>
+        );
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -175,6 +183,9 @@ class UsersListing extends Component {
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             exportCSVText: 'Download Excel',
             onExportToCSV: this.onExportToCSV,
+            //paginationShowsTotal: true,
+            paginationShowsTotal: this.renderPaginationShowsTotal,
+            paginationSize: 2,
         };
 
         return (
