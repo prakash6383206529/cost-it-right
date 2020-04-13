@@ -322,6 +322,7 @@ export const API = {
   getAllUserDataAPI: `${BASE_URL}/user/get-all`,
   getUserDataAPI: `${BASE_URL}/user/get-by-id`,
   deleteUserAPI: `${BASE_URL}/user/delete`,
+  activeInactiveUser: `${BASE_URL}/user/active-inactive-user`,
   updateUserAPI: `${BASE_URL}/user/update`,
   setUserTechnologyLevelForCosting: `${BASE_URL}/user-level/assign-user-technology-levels-for-costing`,
   getUserTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-technology-levels`,

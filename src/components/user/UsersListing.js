@@ -5,7 +5,7 @@ import {
 } from 'reactstrap';
 import {
     getAllUserDataAPI, deleteUser, getAllDepartmentAPI,
-    getAllRoleAPI
+    getAllRoleAPI, activeInactiveUser,
 } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
@@ -14,6 +14,7 @@ import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
+import { loggedInUserId } from '../../helper/auth';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -33,6 +34,8 @@ class UsersListing extends Component {
 
     componentDidMount() {
         this.getUsersListData();
+
+        // Get department listing
         this.props.getAllDepartmentAPI((res) => {
             if (res && res.data && res.data.DataList) {
                 const { departmentType } = this.state;
@@ -46,6 +49,8 @@ class UsersListing extends Component {
                 })
             }
         })
+
+        // Get roles listing
         this.props.getAllRoleAPI((res) => {
             if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -61,10 +66,15 @@ class UsersListing extends Component {
         this.props.onRef(this)
     }
 
+    // Get updated user list after any action performed.
     getUpdatedData = () => {
         this.getUsersListData()
     }
 
+    /**
+    * @method getUsersListData
+    * @description Get user list data
+    */
     getUsersListData = () => {
         let data = {
             Id: '',
@@ -136,6 +146,21 @@ class UsersListing extends Component {
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         console.log('sssss', cell, row.UserId, rowIndex)
+        let data = {
+            Id: row.UserId,
+            ModifiedBy: loggedInUserId(),
+            IsActive: cell
+        }
+        this.props.activeInactiveUser(data, res => {
+            if (res && res.data && res.data.Result) {
+                if (cell == true) {
+                    toastr.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
+                } else {
+                    toastr.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
+                }
+                this.getUsersListData()
+            }
+        })
         //this.setState({ checked });
     }
 
@@ -284,5 +309,6 @@ export default connect(mapStateToProps,
         deleteUser,
         getAllDepartmentAPI,
         getAllRoleAPI,
+        activeInactiveUser,
     })(UsersListing);
 
