@@ -145,11 +145,10 @@ class UsersListing extends Component {
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
-        console.log('sssss', cell, row.UserId, rowIndex)
         let data = {
             Id: row.UserId,
             ModifiedBy: loggedInUserId(),
-            IsActive: cell
+            IsActive: !cell, //Status of the user.
         }
         this.props.activeInactiveUser(data, res => {
             if (res && res.data && res.data.Result) {
@@ -161,7 +160,6 @@ class UsersListing extends Component {
                 this.getUsersListData()
             }
         })
-        //this.setState({ checked });
     }
 
     /**
@@ -181,6 +179,22 @@ class UsersListing extends Component {
                 </label>
             </>
         )
+    }
+
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
+    indexFormatter = (cell, row, enumObject, rowIndex) => {
+        let currentPage = this.refs.table.state.currPage;
+        let sizePerPage = this.refs.table.state.sizePerPage;
+        let serialNumber = '';
+        if (currentPage == 1) {
+            serialNumber = rowIndex + 1;
+        } else {
+            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+        }
+        return serialNumber;
     }
 
     onExportToCSV = (row) => {
@@ -232,8 +246,10 @@ class UsersListing extends Component {
                             search
                             exportCSV
                             ignoreSinglePage
+                            ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="FullName" csvHeader='Full-Name' isKey={true} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
+                            <TableHeaderColumn dataField="" csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                            <TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
                             <TableHeaderColumn dataField="UserName" dataSort={true}>User name</TableHeaderColumn>
                             <TableHeaderColumn dataField="Email" dataSort={true}>Email Id</TableHeaderColumn>
                             <TableHeaderColumn dataField="Mobile" dataSort={false}>Mobile No</TableHeaderColumn>
@@ -246,7 +262,7 @@ class UsersListing extends Component {
                             <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
                                 filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn>
                             <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField="UserId" export={false} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="UserId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>

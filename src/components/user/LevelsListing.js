@@ -113,7 +113,7 @@ class LevelsListing extends Component {
             afterSearch: this.afterSearch,
         };
         return (
-            <Container className="listing">
+            <>
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
@@ -167,7 +167,7 @@ class LevelsListing extends Component {
                         </Table>
                     </Col>
                 </Row> */}
-            </Container >
+            </ >
         );
     }
 }

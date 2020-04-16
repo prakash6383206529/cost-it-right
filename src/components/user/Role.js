@@ -37,6 +37,7 @@ class Role extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
+        this.props.setEmptyRoleDataAPI('', () => { })
         this.props.getActionHeadsSelectList(() => {
             this.getRolePermission()
         })
@@ -367,6 +368,23 @@ class Role extends Component {
     }
 
     /**
+     * @method resetForm
+     * @description used to Reset form
+     */
+    resetForm = () => {
+        const { reset } = this.props;
+        reset();
+        this.props.setEmptyRoleDataAPI('', () => { })
+        this.setState({
+            Modules: [],
+            RoleId: '',
+        })
+        this.getRolePermission()
+    }
+
+
+
+    /**
      * @name onSubmit
      * @param values
      * @desc Submit the signup form values.
@@ -559,9 +577,17 @@ class Role extends Component {
                                             {!isEditFlag &&
                                                 <input
                                                     disabled={pristine || submitting}
-                                                    onClick={this.cancel}
+                                                    onClick={this.resetForm}
                                                     type="button"
                                                     value="Reset"
+                                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                                />}
+                                            {isEditFlag &&
+                                                <input
+                                                    //disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="button"
+                                                    value="Cancel"
                                                     className="btn  login-btn w-10 dark-pinkbtn"
                                                 />}
                                         </div>

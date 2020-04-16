@@ -618,7 +618,7 @@ export const searchableSelect = ({ input, label, required, disabled, handleChang
         isDisabled={isDisable}
         placeholder={placeholder}
       />
-      {/* <FormHelperText>{touched && error}</FormHelperText> */}
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   )
 }

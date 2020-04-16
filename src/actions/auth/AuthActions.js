@@ -34,6 +34,7 @@ import {
     GET_PAGES_SELECTLIST_SUCCESS,
     GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS,
+    GET_LEVEL_MAPPING_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -856,6 +857,67 @@ export function setApprovalLevelForTechnology(requestData, callback) {
                 apiErrors(error);
                 callback(error);
             });
+    };
+}
+
+/**
+ * @method getLevelMappingAPI
+ * @description get Level mapping 
+ */
+export function getLevelMappingAPI(LevelId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getLevelMappingAPI}/${LevelId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method updateLevelMappingAPI
+ * @description update Level Mapping
+ */
+export function updateLevelMappingAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateLevelMappingAPI, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getAllLevelMappingAPI
+ * @description get all level Mapping
+ */
+export function getAllLevelMappingAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllLevelMappingAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
 

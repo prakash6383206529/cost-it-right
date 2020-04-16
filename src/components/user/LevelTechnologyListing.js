@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, Table
 } from 'reactstrap';
-import { getAllLevelAPI, deleteUserLevelAPI } from '../../actions/auth/AuthActions';
+import { getAllLevelMappingAPI, deleteUserLevelAPI } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
@@ -26,7 +26,7 @@ class LevelTechnologyListing extends Component {
     }
 
     getLevelsListData = () => {
-        this.props.getAllLevelAPI(res => {
+        this.props.getAllLevelMappingAPI(res => {
             if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({
@@ -113,7 +113,7 @@ class LevelTechnologyListing extends Component {
             afterSearch: this.afterSearch,
         };
         return (
-            <Container className="listing">
+            <>
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
@@ -131,13 +131,13 @@ class LevelTechnologyListing extends Component {
                             search
                             ignoreSinglePage
                             pagination>
-                            <TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Technology" isKey={true} dataAlign="center" dataSort={true}>Technology</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Level" dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
                             <TableHeaderColumn dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>
-            </Container >
+            </ >
         );
     }
 }
@@ -148,15 +148,15 @@ class LevelTechnologyListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-    const { levelList, loading } = auth;
+    const { loading } = auth;
 
-    return { levelList, loading };
+    return { loading };
 }
 
 
 export default connect(mapStateToProps,
     {
-        getAllLevelAPI,
+        getAllLevelMappingAPI,
         deleteUserLevelAPI,
     })(LevelTechnologyListing);
 

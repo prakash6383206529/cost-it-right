@@ -160,6 +160,7 @@ export const MESSAGES = {
   USER_INACTIVE_SUCCESSFULLY: 'User has been inactive successfully.',
   USER_DELETE_ALERT: 'Are you sure you want to delete User?',
   UPDATE_USER_SUCCESSFULLY: 'User has been updated successfully.',
+  COSTING_DELETE_ALERT: 'All Costing which are pending for approval and whose approval are awaited will get rejected. Do you wish to proceed further?',
 
   //ROLE
   ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully.',
@@ -182,6 +183,7 @@ export const MESSAGES = {
 
   //LEVEL FOR TECHNOLOGY
   ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY: 'Level of technology added successfully.',
+  UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY: 'Level of technology updated successfully.',
 
   //ADDITIONAL FREIGHT
   ADDITIONAL_FREIGHT_ADD_SUCCESS: 'Packaging has been added successfully.',

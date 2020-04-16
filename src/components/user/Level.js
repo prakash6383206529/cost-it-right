@@ -9,13 +9,16 @@ import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
     addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI,
-    setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI
+    setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI,
+    getLevelMappingAPI, updateLevelMappingAPI,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import LevelsListing from './LevelsListing';
 import LevelTechnologyListing from "./LevelTechnologyListing";
+import { loggedInUserId } from "../../helper/auth";
+import $ from 'jquery';
 
 class Level extends Component {
     constructor(props) {
@@ -40,6 +43,7 @@ class Level extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
+        this.props.setEmptyLevelAPI('', () => { })
         this.props.getAllTechnologyAPI(() => { })
         this.props.getAllLevelAPI(() => { })
     }
@@ -99,8 +103,38 @@ class Level extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.setState({ isEditFlag: false })
+        this.setState({
+            isEditFlag: false,
+            isEditMappingFlag: false,
+            isShowForm: false,
+            isShowTechnologyForm: false,
+            technology: [],
+            level: [],
+        })
         this.props.setEmptyLevelAPI('', () => { })
+    }
+
+    /**
+     * @method resetForm
+     * @description used to Reset form
+     */
+    resetForm = () => {
+        const { reset } = this.props;
+        reset();
+        this.props.setEmptyLevelAPI('', () => { })
+    }
+
+    /**
+     * @method resetMappingForm
+     * @description used to Reset Mapping form
+     */
+    resetMappingForm = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            technology: [],
+            level: [],
+        })
     }
 
     /**
@@ -109,6 +143,7 @@ class Level extends Component {
     */
     getLevelDetail = (data) => {
         if (data && data.isEditFlag) {
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
             this.props.getUserLevelAPI(data.LevelId, () => {
                 this.setState({
                     isEditFlag: true,
@@ -125,23 +160,64 @@ class Level extends Component {
     */
     getLevelMappingDetail = (data) => {
         if (data && data.isEditMappingFlag) {
-            this.props.getUserLevelAPI(data.LevelId, () => {
-                this.setState({
-                    isEditMappingFlag: true,
-                    LevelId: data.LevelId,
-                    isShowTechnologyForm: true,
-                })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getLevelMappingAPI(data.LevelId, (res) => {
+                const { technologyList, levelList } = this.props;
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+
+                    setTimeout(() => {
+
+                        let technologyObj = technologyList && technologyList.filter(item => item.Value == Data.TechnologyId)
+                        let levelObj = levelList && levelList.filter(item => item.LevelId == Data.LevelId)
+                        console.log('technologyObj', technologyObj)
+                        console.log('levelObj', levelObj)
+
+                        this.setState({
+                            isEditMappingFlag: true,
+                            LevelId: data.LevelId,
+                            isShowTechnologyForm: true,
+                            technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
+                            level: { label: levelObj[0].LevelName, value: levelObj[0].LevelId },
+                        })
+                    }, 500)
+                }
             })
         }
     }
 
     submitLevelTechnology = () => {
         const { technology, level, isEditMappingFlag } = this.state;
+        const { reset } = this.props;
         this.setState({ isLoader: true })
 
         if (isEditMappingFlag) {
+            // Update existing level
 
+            let formReq = {
+                TechnologyId: technology.value,
+                LevelId: level.value,
+                Technology: technology.value,
+                Level: level.label,
+                ModifiedBy: loggedInUserId()
+            }
+
+            this.props.updateLevelMappingAPI(formReq, (res) => {
+                if (res && res.data && res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+                    reset();
+                    this.setState({
+                        isLoader: false,
+                        isEditMappingFlag: false,
+                        isShowTechnologyForm: false,
+                        technology: [],
+                        level: [],
+                    })
+                    this.childMapping.getUpdatedData();
+                }
+            })
         } else {
+
             let formData = {
                 LevelId: level.value,
                 TechnologyId: technology.value,
@@ -282,9 +358,17 @@ class Level extends Component {
                                             {!this.state.isEditFlag &&
                                                 <input
                                                     disabled={pristine || submitting}
-                                                    onClick={this.cancel}
+                                                    onClick={this.resetForm}
                                                     type="submit"
                                                     value="Reset"
+                                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                                />}
+                                            {isEditFlag &&
+                                                <input
+                                                    //disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="button"
+                                                    value="Cancel"
                                                     className="btn  login-btn w-10 dark-pinkbtn"
                                                 />}
                                         </div>
@@ -298,7 +382,7 @@ class Level extends Component {
                             <div className="col-md-12">
                                 <div className="shadow-lg login-form">
                                     <div className="form-heading">
-                                        <h2>{isEditFlag ? 'Update Level Mapping' : 'Add Level Mapping'}</h2>
+                                        <h2>{this.state.isEditMappingFlag ? 'Update Level Mapping' : 'Add Level Mapping'}</h2>
                                     </div>
                                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                                         <div className="row form-group">
@@ -340,13 +424,22 @@ class Level extends Component {
                                                 value="Save"
                                                 className="btn  login-btn w-10 dark-pinkbtn"
                                             />
-                                            <input
-                                                disabled={pristine || submitting}
-                                                onClick={reset}
-                                                type="submit"
-                                                value="Reset"
-                                                className="btn  login-btn w-10 dark-pinkbtn"
-                                            />
+                                            {!this.state.isEditMappingFlag &&
+                                                <input
+                                                    disabled={pristine || submitting}
+                                                    onClick={this.resetMappingForm}
+                                                    type="submit"
+                                                    value={this.state.isEditMappingFlag ? 'Update' : 'Save'}
+                                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                                />}
+                                            {this.state.isEditMappingFlag &&
+                                                <input
+                                                    //disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="button"
+                                                    value="Cancel"
+                                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                                />}
                                         </div>
                                     </form>
                                 </div>
@@ -402,6 +495,8 @@ export default connect(mapStateToProps, {
     setEmptyLevelAPI,
     getAllTechnologyAPI,
     setApprovalLevelForTechnology,
+    getLevelMappingAPI,
+    updateLevelMappingAPI,
 })(reduxForm({
     form: 'Level',
     enableReinitialize: true,

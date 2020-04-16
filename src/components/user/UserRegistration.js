@@ -58,10 +58,12 @@ class UserRegistration extends Component {
 
          IsShowAdditionalPermission: false,
          Modules: [],
+         oldModules: [],
 
          technology: [],
          level: [],
          TechnologyLevelGrid: [],
+         oldTechnologyLevelGrid: [],
          technologyLevelEditIndex: '',
          isEditIndex: false,
       };
@@ -340,6 +342,7 @@ class UserRegistration extends Component {
             this.setState({
                actionData: Data,
                Modules: Modules,
+               oldModules: Modules,
                moduleCheckedAll: moduleCheckedArray,
             })
          }
@@ -359,6 +362,7 @@ class UserRegistration extends Component {
 
             this.setState({
                TechnologyLevelGrid: TechnologyLevels,
+               oldTechnologyLevelGrid: TechnologyLevels,
             })
          }
       })
@@ -687,6 +691,71 @@ class UserRegistration extends Component {
          department: [],
          role: [],
          city: [],
+         Modules: [],
+         IsShowAdditionalPermission: false,
+         TechnologyLevelGrid: [],
+      })
+   }
+
+   /**
+   * @method resetForm
+   * @description used to Reset form
+   */
+   resetForm = () => {
+      const { reset } = this.props;
+      reset();
+      this.props.setEmptyUserDataAPI('', () => { })
+      this.setState({
+         isEditFlag: false,
+         isShowForm: false,
+         department: [],
+         role: [],
+         city: [],
+         Modules: [],
+         IsShowAdditionalPermission: false,
+         TechnologyLevelGrid: [],
+      })
+   }
+
+   /**
+   * @method confirmUpdateUser
+   * @description confirm Update User
+   */
+   confirmUpdateUser = (updatedData, RemoveCostingFlag) => {
+
+      const { reset, registerUserData } = this.props;
+      const { department, role, city, isEditFlag, Modules, oldModules,
+         TechnologyLevelGrid, oldTechnologyLevelGrid, UserId } = this.state;
+      const userDetails = reactLocalStorage.getObject("userDetail")
+
+      reset();
+      updatedData.IsRemoveCosting = RemoveCostingFlag;
+      this.props.updateUserAPI(updatedData, (res) => {
+         if (res.data.Result) {
+            toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+         }
+         this.setState({
+            isLoader: false,
+            isEditFlag: false,
+            isSubmitted: false,
+            isShowForm: false,
+            department: [],
+            role: [],
+            city: [],
+            IsShowAdditionalPermission: false,
+            Modules: [],
+            TechnologyLevelGrid: [],
+         })
+
+         let data = {
+            Id: '',
+            PageSize: 0,
+            LastIndex: 0,
+            Expression: {}
+         }
+         this.props.getAllUserDataAPI(data, res => { });
+         this.props.setEmptyUserDataAPI('', () => { })
+         this.child.getUpdatedData();
       })
    }
 
@@ -697,13 +766,28 @@ class UserRegistration extends Component {
     * @returns {{}}
     */
    onSubmit(values) {
-      console.log("signup values", values)
+      //console.log("signup values", values)
       const { reset, registerUserData } = this.props;
-      const { department, role, city, isEditFlag, Modules, TechnologyLevelGrid,
-         UserId } = this.state;
+      const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
+         oldTechnologyLevelGrid, UserId } = this.state;
       const userDetails = reactLocalStorage.getObject("userDetail")
 
-      this.setState({ isSubmitted: true })
+      if (TechnologyLevelGrid && TechnologyLevelGrid.length == 0) {
+         toastr.warning('Users technology level should not be empty.')
+         return false;
+      }
+      //this.setState({ isSubmitted: true })
+
+      let tempTechnologyLevelArray = []
+
+      TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
+         tempTechnologyLevelArray.push({
+            Technology: item.Technology,
+            Level: item.Level,
+            TechnologyId: item.TechnologyId,
+            LevelId: item.LevelId
+         })
+      })
 
       if (isEditFlag) {
          let updatedData = {
@@ -740,77 +824,114 @@ class UserRegistration extends Component {
             PhoneNumber: values.PhoneNumber,
             Extension: values.Extension,
             CityId: city.value,
-
+            Modules: Modules,
+            TechnologyLevels: tempTechnologyLevelArray,
+            IsRemoveCosting: false,
+            CostingCount: registerUserData.CostingCount,
          }
 
-         reset();
-         this.props.updateUserAPI(updatedData, (res) => {
-            if (res.data.Result) {
-               toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
-            }
-            this.setState({
-               isLoader: false,
-               isEditFlag: false,
-               isSubmitted: false,
-               isShowForm: false,
-               department: [],
-               role: [],
-               city: [],
-            })
+         const isDepartmentUpdate = (registerUserData.DepartmentId != department.value) ? true : false;
+         const isRoleUpdate = (registerUserData.RoleId != role.value) ? true : false;
+         let isPermissionUpdate = false;
+         let isTechnologyUpdate = false;
 
-            //////////////////  ADDITIONAL PERMISSION START /////////
-            let formData = {
-               UserId: UserId,
-               Modules: Modules,
-            }
+         if (JSON.stringify(Modules) == JSON.stringify(oldModules)) {
+            isPermissionUpdate = false;
+         } else {
+            isPermissionUpdate = true;
+         }
 
-            this.props.setUserAdditionalPermission(formData, (res) => {
-               if (res && res.data && res.data.Result) {
-                  toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+         if (JSON.stringify(TechnologyLevelGrid) == JSON.stringify(oldTechnologyLevelGrid)) {
+            isTechnologyUpdate = false;
+         } else {
+            isTechnologyUpdate = true;
+         }
+
+         console.log('checks', isDepartmentUpdate, isRoleUpdate, isPermissionUpdate, isTechnologyUpdate);
+
+         if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
+            const toastrConfirmOptions = {
+               onOk: () => {
+                  this.confirmUpdateUser(updatedData, true)
+               },
+               onCancel: () => {
+                  this.confirmUpdateUser(updatedData, false)
+               }
+            };
+            return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
+         } else {
+
+            reset();
+            this.props.updateUserAPI(updatedData, (res) => {
+               if (res.data.Result) {
+                  toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
                }
                this.setState({
+                  isLoader: false,
+                  isEditFlag: false,
+                  isSubmitted: false,
+                  isShowForm: false,
+                  department: [],
+                  role: [],
+                  city: [],
                   Modules: [],
                   IsShowAdditionalPermission: false,
+                  TechnologyLevelGrid: [],
                })
-            })
-            //////////////////  ADDITIONAL PERMISSION END /////////
 
-            //////////////////  TECHNOLOGY LEVEL START /////////
-            let tempTechnologyLevelArray = []
+               //////////////////  ADDITIONAL PERMISSION START /////////
+               // let formData = {
+               //    UserId: UserId,
+               //    Modules: Modules,
+               // }
 
-            TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
-               tempTechnologyLevelArray.push({
-                  Technology: item.Technology,
-                  Level: item.Level,
-                  TechnologyId: item.TechnologyId,
-                  LevelId: item.LevelId
-               })
-            })
+               // this.props.setUserAdditionalPermission(formData, (res) => {
+               //    if (res && res.data && res.data.Result) {
+               //       toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+               //    }
+               //    this.setState({
+               //       Modules: [],
+               //       IsShowAdditionalPermission: false,
+               //    })
+               // })
+               //////////////////  ADDITIONAL PERMISSION END /////////
 
-            let technologyLevelFormData = {
-               UserId: UserId,
-               TechnologyLevels: tempTechnologyLevelArray
-            }
+               //////////////////  TECHNOLOGY LEVEL START /////////
+               // let tempTechnologyLevelArray = []
 
-            this.props.updateUserTechnologyLevelForCosting(technologyLevelFormData, (res) => {
-               if (res && res.data && res.data.Result) {
-                  //toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+               // TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
+               //    tempTechnologyLevelArray.push({
+               //       Technology: item.Technology,
+               //       Level: item.Level,
+               //       TechnologyId: item.TechnologyId,
+               //       LevelId: item.LevelId
+               //    })
+               // })
+
+               // let technologyLevelFormData = {
+               //    UserId: UserId,
+               //    TechnologyLevels: tempTechnologyLevelArray
+               // }
+
+               // this.props.updateUserTechnologyLevelForCosting(technologyLevelFormData, (res) => {
+               //    if (res && res.data && res.data.Result) {
+               //       //toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+               //    }
+               //    this.setState({ TechnologyLevelGrid: [] })
+               // })
+               //////////////////  TECHNOLOGY LEVEL END /////////
+
+               let data = {
+                  Id: '',
+                  PageSize: 0,
+                  LastIndex: 0,
+                  Expression: {}
                }
-               this.setState({ TechnologyLevelGrid: [] })
+               this.props.getAllUserDataAPI(data, res => { });
+               this.props.setEmptyUserDataAPI('', () => { })
+               this.child.getUpdatedData();
             })
-            //////////////////  TECHNOLOGY LEVEL END /////////
-
-            let data = {
-               Id: '',
-               PageSize: 0,
-               LastIndex: 0,
-               Expression: {}
-            }
-            this.props.getAllUserDataAPI(data, res => { });
-            this.props.setEmptyUserDataAPI('', () => { })
-            this.child.getUpdatedData();
-         })
-
+         }
       } else {
 
          let userData = {
@@ -835,6 +956,7 @@ class UserRegistration extends Component {
             CityId: city.value,
          }
          this.props.registerUserAPI(userData, res => {
+            this.setState({ isSubmitted: false, })
 
             if (res && res.data && res.data.Result) {
                const newUserId = res.data.Identity;
@@ -1142,8 +1264,8 @@ class UserRegistration extends Component {
                                        placeholder={'Select department'}
                                        options={this.searchableSelectType('department')}
                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                       //validate={[required]}
-                                       //required={true}
+                                       validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
+                                       required={true}
                                        handleChangeDescription={this.departmentHandler}
                                        valueDescription={this.state.department}
                                     />
@@ -1157,8 +1279,8 @@ class UserRegistration extends Component {
                                        placeholder={'Select role'}
                                        options={this.searchableSelectType('role')}
                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                       //validate={[required]}
-                                       //required={true}
+                                       validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
+                                       required={true}
                                        handleChangeDescription={this.roleHandler}
                                        valueDescription={this.state.role}
                                     />
@@ -1270,7 +1392,7 @@ class UserRegistration extends Component {
                                        component={searchableSelect}
                                        options={this.searchableSelectType('technology')}
                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                       //validate={[required, maxLength50]}
+                                       //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
                                        //required={true}
                                        handleChangeDescription={this.technologyHandler}
                                        valueDescription={this.state.technology}
@@ -1284,7 +1406,7 @@ class UserRegistration extends Component {
                                        component={searchableSelect}
                                        options={this.searchableSelectType('level')}
                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                       //validate={[required, maxLength50]}
+                                       //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
                                        //required={true}
                                        handleChangeDescription={this.levelHandler}
                                        valueDescription={this.state.level}
@@ -1364,7 +1486,7 @@ class UserRegistration extends Component {
                                  {!this.state.isEditFlag &&
                                     <input
                                        disabled={pristine || submitting}
-                                       onClick={reset}
+                                       onClick={this.resetForm}
                                        type="submit"
                                        value="Reset"
                                        className="btn  login-btn w-10 dark-pinkbtn"
@@ -1487,7 +1609,7 @@ export default connect(mapStateToProps, {
    validate,
    form: 'Signup',
    onSubmitFail: errors => {
-      console.log('Register errors', errors)
+      //console.log('Register errors', errors)
       focusOnError(errors);
    },
    enableReinitialize: true,

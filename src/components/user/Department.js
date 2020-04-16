@@ -30,7 +30,9 @@ class Department extends Component {
     * @method componentDidMount
     * @description used to called after mounting component
     */
-    componentDidMount() { }
+    componentDidMount() {
+        this.props.setEmptyDepartmentAPI('', () => { })
+    }
 
     /**
     * @method getDepartmentDetail
@@ -56,6 +58,16 @@ class Department extends Component {
         const { reset } = this.props;
         reset();
         this.setState({ isEditFlag: false })
+        this.props.setEmptyDepartmentAPI('', () => { })
+    }
+
+    /**
+     * @method resetForm
+     * @description used to Reset form
+     */
+    resetForm = () => {
+        const { reset } = this.props;
+        reset();
         this.props.setEmptyDepartmentAPI('', () => { })
     }
 
@@ -160,9 +172,17 @@ class Department extends Component {
                                             {!this.state.isEditFlag &&
                                                 <input
                                                     disabled={pristine || submitting}
-                                                    onClick={this.cancel}
+                                                    onClick={this.resetForm}
                                                     type="submit"
                                                     value="Reset"
+                                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                                />}
+                                            {isEditFlag &&
+                                                <input
+                                                    //disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="button"
+                                                    value="Cancel"
                                                     className="btn  login-btn w-10 dark-pinkbtn"
                                                 />}
                                         </div>

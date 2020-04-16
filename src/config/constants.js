@@ -352,7 +352,10 @@ export const API = {
   deleteUserLevelAPI: `${BASE_URL}/user-level/delete`,
 
   //SET LEVEL FOR TECHNOLOGY
-  setApprovalLevelForTechnology: `${BASE_URL}/costing/set-approval-level-for-technology`,
+  setApprovalLevelForTechnology: `${BASE_URL}/costing/approval-level-for-technology/create`,
+  getLevelMappingAPI: `${BASE_URL}/costing/approval-level-for-technology/get`,
+  getAllLevelMappingAPI: `${BASE_URL}/costing/approval-level-for-technology/get-all`,
+  updateLevelMappingAPI: `${BASE_URL}/costing/approval-level-for-technology/update`,
 
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-supplier`,
