@@ -66,6 +66,7 @@ class UserRegistration extends Component {
          oldTechnologyLevelGrid: [],
          technologyLevelEditIndex: '',
          isEditIndex: false,
+         isShowPwdField: false,
       };
    }
 
@@ -804,7 +805,7 @@ class UserRegistration extends Component {
             CityName: department.label,
             UserProfileId: registerUserData.UserProfileId,
             UserName: values.email,
-            Password: registerUserData.Password,
+            Password: values.Password,
             RoleId: role.value,
             PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
             DepartmentId: department.value,
@@ -1036,17 +1037,23 @@ class UserRegistration extends Component {
                   <div className="col-md-12" >
                      <button
                         type="button"
-                        className={'btn btn-primary user-btn'}
+                        className={'btn btn-primary user-btn mb15'}
                         onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
                   </div>
 
                   {this.state.isShowForm &&
                      <div className="col-md-12">
                         <div className="shadow-lg login-form">
-                           <div className="form-heading">
-                              <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
+                           <div className="row">
+                              <div className="col-md-6">
+                                 <div className="form-heading">
+                                    <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
+                                 </div>
+                              </div>
+                              <div className="col-md-6">
+                                 {this.state.isEditFlag ? <a href="javascript:void(0)" className={'linkButton'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</a> : ''}
+                              </div>
                            </div>
-
                            <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 
 
@@ -1118,37 +1125,38 @@ class UserRegistration extends Component {
                                  </div>
                               </div>
 
-                              <div className="row form-group">
-                                 <div className="input-group col-md-6">
-                                    <Field
-                                       name="Password"
-                                       label="Password"
-                                       placeholder="Must have atleast 6 characters"
-                                       component={renderPasswordInputField}
-                                       onChange={this.passwordPatternHandler}
-                                       validate={[required, minLength6, maxLength25]}
-                                       isShowHide={this.state.isShowHidePassword}
-                                       showHide={this.showHidePasswordHandler}
-                                       required={true}
-                                       maxLength={26}
-                                       isEyeIcon={true}
-                                    />
-                                 </div>
-                                 <div className="input-group col-md-6">
-                                    <Field
-                                       name="passwordConfirm"
-                                       label="Confirm Password"
-                                       placeholder={''}
-                                       component={renderPasswordInputField}
-                                       validate={[required, minLength6, maxLength25]}
-                                       required={true}
-                                       maxLength={26}
-                                       isShowHide={this.state.isShowHide}
-                                       showHide={this.showHideHandler}
-                                       isEyeIcon={true}
-                                    />
-                                 </div>
-                              </div>
+                              {this.state.isShowPwdField &&
+                                 <div className="row form-group">
+                                    <div className="input-group col-md-6">
+                                       <Field
+                                          name="Password"
+                                          label="Password"
+                                          placeholder="Must have atleast 6 characters"
+                                          component={renderPasswordInputField}
+                                          onChange={this.passwordPatternHandler}
+                                          validate={[required, minLength6, maxLength25]}
+                                          isShowHide={this.state.isShowHidePassword}
+                                          showHide={this.showHidePasswordHandler}
+                                          required={true}
+                                          maxLength={26}
+                                          isEyeIcon={true}
+                                       />
+                                    </div>
+                                    <div className="input-group col-md-6">
+                                       <Field
+                                          name="passwordConfirm"
+                                          label="Confirm Password"
+                                          placeholder={''}
+                                          component={renderPasswordInputField}
+                                          validate={[required, minLength6, maxLength25]}
+                                          required={true}
+                                          maxLength={26}
+                                          isShowHide={this.state.isShowHide}
+                                          showHide={this.showHideHandler}
+                                          isEyeIcon={true}
+                                       />
+                                    </div>
+                                 </div>}
 
                               <div className="row form-group">
                                  <div className="input-group col-md-6">
