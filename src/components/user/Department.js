@@ -132,7 +132,7 @@ class Department extends Component {
         return (
             <div>
                 {isLoader && <Loader />}
-                <div className="login-container  signup-form">
+                <div className="login-container signup-form mt15">
                     <div className="row">
                         <div className="col-md-12" >
                             <button
@@ -147,7 +147,7 @@ class Department extends Component {
                                         <h2>{isEditFlag ? 'Update Department' : 'Add Department'}</h2>
                                     </div>
                                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                                        <div className=" row form-group">
+                                        <div className="row form-group">
                                             <div className="input-group col-md-6 input-withouticon" >
                                                 <Field
                                                     label="Department Name"
@@ -160,31 +160,33 @@ class Department extends Component {
                                                     maxLength={26}
                                                 />
                                             </div>
-                                        </div>
 
-                                        <div className="text-center ">
-                                            <input
-                                                disabled={isSubmitted ? true : false}
-                                                type="submit"
-                                                value={this.state.isEditFlag ? 'Update' : 'Save'}
-                                                className="btn  login-btn w-10 dark-pinkbtn"
-                                            />
-                                            {!this.state.isEditFlag &&
-                                                <input
-                                                    disabled={pristine || submitting}
-                                                    onClick={this.resetForm}
-                                                    type="submit"
-                                                    value="Reset"
-                                                    className="btn  login-btn w-10 dark-pinkbtn"
-                                                />}
-                                            {isEditFlag &&
-                                                <input
-                                                    //disabled={pristine || submitting}
-                                                    onClick={this.cancel}
-                                                    type="button"
-                                                    value="Cancel"
-                                                    className="btn  login-btn w-10 dark-pinkbtn"
-                                                />}
+                                            <div className="col-md-6">
+                                                <div className="text-center ">
+                                                    <input
+                                                        disabled={isSubmitted ? true : false}
+                                                        type="submit"
+                                                        value={this.state.isEditFlag ? 'Update' : 'Save'}
+                                                        className="btn login-btn w-10 dark-pinkbtn mr15"
+                                                    />
+                                                    {!this.state.isEditFlag &&
+                                                        <input
+                                                            disabled={pristine || submitting}
+                                                            onClick={this.resetForm}
+                                                            type="submit"
+                                                            value="Reset"
+                                                            className="btn  login-btn w-10 dark-pinkbtn"
+                                                        />}
+                                                    {isEditFlag &&
+                                                        <input
+                                                            //disabled={pristine || submitting}
+                                                            onClick={this.cancel}
+                                                            type="button"
+                                                            value="Cancel"
+                                                            className="btn login-btn w-10 dark-pinkbtn"
+                                                        />}
+                                                </div>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
