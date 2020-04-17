@@ -572,7 +572,7 @@ class Role extends Component {
                                                 disabled={isSubmitted ? true : false}
                                                 type="submit"
                                                 value={isEditFlag ? 'Update' : 'Save'}
-                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                                className="btn login-btn w-10 dark-pinkbtn mr15"
                                             />
                                             {!isEditFlag &&
                                                 <input

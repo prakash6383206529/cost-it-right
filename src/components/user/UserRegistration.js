@@ -75,6 +75,7 @@ class UserRegistration extends Component {
    * @description used to called after mounting component
    */
    componentDidMount() {
+      this.props.setEmptyUserDataAPI('', () => { })
       this.props.getAllRoleAPI(() => { })
       this.props.getAllDepartmentAPI(() => { })
       this.props.fetchSupplierCityDataAPI(() => { })
@@ -955,6 +956,8 @@ class UserRegistration extends Component {
             PhoneNumber: values.PhoneNumber,
             Extension: values.Extension,
             CityId: city.value,
+            Modules: Modules,
+            TechnologyLevels: tempTechnologyLevelArray,
          }
          this.props.registerUserAPI(userData, res => {
             this.setState({ isSubmitted: false, })
@@ -1487,7 +1490,7 @@ class UserRegistration extends Component {
                                  <button
                                     type="submit"
                                     disabled={isSubmitted ? true : false}
-                                    className="btn  login-btn w-10 dark-pinkbtn"
+                                    className="btn  login-btn w-10 dark-pinkbtn mr15"
                                  >
                                     {this.state.isEditFlag ? 'Update' : 'Save'}
                                  </button>

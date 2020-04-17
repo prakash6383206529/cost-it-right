@@ -160,7 +160,7 @@ class Level extends Component {
     */
     getLevelMappingDetail = (data) => {
         if (data && data.isEditMappingFlag) {
-            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            $('html, body').animate({ scrollTop: 200 }, 'slow');
             this.props.getLevelMappingAPI(data.LevelId, (res) => {
                 const { technologyList, levelList } = this.props;
                 if (res && res.data && res.data.Data) {
@@ -353,7 +353,7 @@ class Level extends Component {
                                                 disabled={isSubmitted ? true : false}
                                                 type="submit"
                                                 value={this.state.isEditFlag ? 'Update' : 'Save'}
-                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                                className="btn login-btn w-10 dark-pinkbtn mr15"
                                             />
                                             {!this.state.isEditFlag &&
                                                 <input
@@ -380,7 +380,7 @@ class Level extends Component {
 
                         {this.state.isShowTechnologyForm &&
                             <div className="col-md-12">
-                                <div className="shadow-lg login-form">
+                                <div className="shadow-lg login-form level-mapping">
                                     <div className="form-heading">
                                         <h2>{this.state.isEditMappingFlag ? 'Update Level Mapping' : 'Add Level Mapping'}</h2>
                                     </div>
@@ -422,7 +422,7 @@ class Level extends Component {
                                                 type="button"
                                                 onClick={this.submitLevelTechnology}
                                                 value="Save"
-                                                className="btn  login-btn w-10 dark-pinkbtn"
+                                                className="btn login-btn w-10 dark-pinkbtn mr15"
                                             />
                                             {!this.state.isEditMappingFlag &&
                                                 <input
