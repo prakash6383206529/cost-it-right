@@ -66,7 +66,7 @@ class UserRegistration extends Component {
          oldTechnologyLevelGrid: [],
          technologyLevelEditIndex: '',
          isEditIndex: false,
-         isShowPwdField: false,
+         isShowPwdField: true,
       };
    }
 
@@ -293,6 +293,7 @@ class UserRegistration extends Component {
             isLoader: true,
             isShowForm: true,
             IsShowAdditionalPermission: true,
+            isShowPwdField: false,
             UserId: data.UserId,
          })
          $('html, body').animate({ scrollTop: 0 }, 'slow');
@@ -976,43 +977,43 @@ class UserRegistration extends Component {
                })
 
                //////////////////  ADDITIONAL PERMISSION START /////////
-               let formData = {
-                  UserId: newUserId,
-                  Modules: Modules,
-               }
+               // let formData = {
+               //    UserId: newUserId,
+               //    Modules: Modules,
+               // }
 
-               this.props.setUserAdditionalPermission(formData, (res) => {
-                  if (res && res.data && res.data.Result) {
-                     toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
-                  }
-                  this.setState({
-                     Modules: [],
-                     IsShowAdditionalPermission: false,
-                  })
-               })
+               // this.props.setUserAdditionalPermission(formData, (res) => {
+               //    if (res && res.data && res.data.Result) {
+               //       toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+               //    }
+               //    this.setState({
+               //       Modules: [],
+               //       IsShowAdditionalPermission: false,
+               //    })
+               // })
                //////////////////  ADDITIONAL PERMISSION END /////////
 
                //////////////////  TECHNOLOGY LEVEL START /////////
-               let tempTechnologyLevelArray = []
+               // let tempTechnologyLevelArray = []
 
-               TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
-                  tempTechnologyLevelArray.push({
-                     TechnologyId: item.TechnologyId,
-                     LevelId: item.LevelId
-                  })
-               })
+               // TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
+               //    tempTechnologyLevelArray.push({
+               //       TechnologyId: item.TechnologyId,
+               //       LevelId: item.LevelId
+               //    })
+               // })
 
-               let technologyLevelFormData = {
-                  UserId: newUserId,
-                  TechnologyLevels: tempTechnologyLevelArray
-               }
+               // let technologyLevelFormData = {
+               //    UserId: newUserId,
+               //    TechnologyLevels: tempTechnologyLevelArray
+               // }
 
-               this.props.setUserTechnologyLevelForCosting(technologyLevelFormData, (res) => {
-                  if (res && res.data && res.data.Result) {
-                     //toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
-                  }
-                  this.setState({ TechnologyLevelGrid: [] })
-               })
+               // this.props.setUserTechnologyLevelForCosting(technologyLevelFormData, (res) => {
+               //    if (res && res.data && res.data.Result) {
+               //       //toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+               //    }
+               //    this.setState({ TechnologyLevelGrid: [] })
+               // })
                //////////////////  TECHNOLOGY LEVEL END /////////
 
                let data = {
@@ -1053,9 +1054,9 @@ class UserRegistration extends Component {
                                     <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
                                  </div>
                               </div>
-                              <div className="col-md-6">
-                                 {this.state.isEditFlag ? <a href="javascript:void(0)" className={'linkButton'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</a> : ''}
-                              </div>
+                              {this.state.isEditFlag && <div className="col-md-6">
+                                 <a href="javascript:void(0)" className={'linkButton'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</a>
+                              </div>}
                            </div>
                            <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 
