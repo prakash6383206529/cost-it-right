@@ -85,7 +85,12 @@ class MaterialDetail extends Component {
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
-                        {/* <hr /> */}
+                        <h3>{`Raw Material Listing`}</h3>
+                    </Col>
+                </Row>
+                <hr />
+                <Row>
+                    <Col>
                         <Table className="table table-striped" size={'sm'} hover bordered>
                             {this.props.rmDetail && this.props.rmDetail.length > 0 &&
                                 <thead>

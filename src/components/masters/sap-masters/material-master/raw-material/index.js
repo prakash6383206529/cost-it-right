@@ -216,6 +216,16 @@ class RowMaterialMaster extends Component {
                         <div>
                             <Nav tabs className="subtabs">
                                 <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
+                                        Raw Material Details
+                                </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        Raw Material
+                                </NavLink>
+                                </NavItem>
+                                <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Material Type
                                 </NavLink>
@@ -235,18 +245,22 @@ class RowMaterialMaster extends Component {
                                         Specification Detail
                                 </NavLink>
                                 </NavItem>
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                        Raw Material
-                                </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
-                                        Raw Material Details
-                                </NavLink>
-                                </NavItem>
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
+                                {this.state.activeTab == 6 && <TabPane tabId="6">
+                                    {/* {isRMOpen && ( */}
+                                    <AddRMDetail
+                                        isOpen={isRMOpen}
+                                        onCancel={this.onCancel}
+                                        RawMaterialDetailsId={this.state.Id}
+                                        isEditFlag={this.state.isEditFlag}
+                                    />
+                                    {/* )} */}
+                                    {/* <MaterialDetail editRawMaterialDetailsHandler={this.editRawMaterialDetailsHandler} /> */}
+                                </TabPane>}
+                                {this.state.activeTab == 2 && <TabPane tabId="2">
+                                    <RMDetail editRawMaterialHandler={this.editRawMaterialHandler} />
+                                </TabPane>}
                                 {this.state.activeTab == 1 && <TabPane tabId="1">
                                     <MaterialTypeDetail editMaterialTypeHandler={this.editMaterialTypeHandler} />
                                 </TabPane>}
@@ -258,12 +272,6 @@ class RowMaterialMaster extends Component {
                                 </TabPane>}
                                 {this.state.activeTab == 5 && <TabPane tabId="5">
                                     <RMSpecificationDetail editRMSpecificationHandler={this.editRMSpecificationHandler} />
-                                </TabPane>}
-                                {this.state.activeTab == 2 && <TabPane tabId="2">
-                                    <RMDetail editRawMaterialHandler={this.editRawMaterialHandler} />
-                                </TabPane>}
-                                {this.state.activeTab == 6 && <TabPane tabId="6">
-                                    <MaterialDetail editRawMaterialDetailsHandler={this.editRawMaterialDetailsHandler} />
                                 </TabPane>}
                             </TabContent>
                         </div>
@@ -309,14 +317,14 @@ class RowMaterialMaster extends Component {
                         isEditFlag={this.state.isEditFlag}
                     />
                 }
-                {isRMOpen && (
+                {/* {isRMOpen && (
                     <AddRMDetail
                         isOpen={isRMOpen}
                         onCancel={this.onCancel}
                         RawMaterialDetailsId={this.state.Id}
                         isEditFlag={this.state.isEditFlag}
                     />
-                )}
+                )} */}
             </Container >
         );
     }
