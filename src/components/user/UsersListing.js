@@ -77,10 +77,10 @@ class UsersListing extends Component {
     */
     getUsersListData = () => {
         let data = {
-            Id: '',
-            PageSize: 0,
-            LastIndex: 0,
-            Expression: {}
+            id: '',
+            pageSize: 0,
+            lastIndex: 0,
+            expression: {}
         }
         this.props.getAllUserDataAPI(data, res => {
             if (res && res.data && res.data.DataList) {
