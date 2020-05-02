@@ -270,7 +270,7 @@ export function getAllUserAPI(callback) {
 export function getAllUserDataAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getAllUserDataAPI, requestData, { headers })
+        axios.post(API.getAllUserDataAPI, requestData, { headers })
             .then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -279,7 +279,8 @@ export function getAllUserDataAPI(requestData, callback) {
                     });
                     callback(response);
                 } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
+                    callback(response);
+                    //toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });

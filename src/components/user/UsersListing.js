@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Field, reduxForm } from "redux-form";
+import { Container, Row, Col, Button, Table } from 'reactstrap';
 import {
-    Container, Row, Col, Button, Table
-} from 'reactstrap';
-import {
-    getAllUserDataAPI, deleteUser, getAllDepartmentAPI,
-    getAllRoleAPI, activeInactiveUser,
+    getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI,
+    activeInactiveUser,
 } from '../../actions/auth/AuthActions';
+import { focusOnError, searchableSelect } from "../layout/FormInputs";
+import { required } from "../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
@@ -29,11 +30,13 @@ class UsersListing extends Component {
             userData: [],
             departmentType: {},
             roleType: {},
+            department: [],
+            role: [],
         }
     }
 
     componentDidMount() {
-        this.getUsersListData();
+        this.getUsersListData('', '');
 
         // Get department listing
         this.props.getAllDepartmentAPI((res) => {
@@ -68,29 +71,74 @@ class UsersListing extends Component {
 
     // Get updated user list after any action performed.
     getUpdatedData = () => {
-        this.getUsersListData()
+        this.getUsersListData('', '')
     }
 
     /**
     * @method getUsersListData
     * @description Get user list data
     */
-    getUsersListData = () => {
+    getUsersListData = (departmentId = '', roleId = '') => {
         let data = {
-            id: '',
-            pageSize: 0,
-            lastIndex: 0,
-            expression: {}
+            UserId: loggedInUserId(),
+            PageSize: 0,
+            LastIndex: 0,
+            DepartmentId: departmentId,
+            RoleId: roleId,
         }
         this.props.getAllUserDataAPI(data, res => {
-            if (res && res.data && res.data.DataList) {
+            console.log('userrrr list', res.status, res.data)
+            if (res.status == 204 && res.data == '') {
+                this.setState({ userData: [], })
+            } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({
                     userData: Data,
                 })
+            } else {
+
             }
         });
     }
+
+    /**
+   * @method selectType
+   * @description Used show listing of unit of measurement
+   */
+    searchableSelectType = (label) => {
+        const { roleList, departmentList } = this.props;
+        const temp = [];
+
+        if (label == 'role') {
+            roleList && roleList.map(item =>
+                temp.push({ label: item.RoleName, value: item.RoleId })
+            );
+            return temp;
+        }
+
+        if (label == 'department') {
+            departmentList && departmentList.map(item =>
+                temp.push({ label: item.DepartmentName, value: item.DepartmentId })
+            );
+            return temp;
+        }
+
+    }
+
+    /**
+     * @method departmentHandler
+     * @description Used to handle 
+     */
+    departmentHandler = (newValue, actionMeta) => {
+        this.setState({ department: newValue });
+    };
+    /**
+       * @method roleHandler
+       * @description Used to handle 
+       */
+    roleHandler = (newValue, actionMeta) => {
+        this.setState({ role: newValue });
+    };
 
     /**
     * @method editItemDetails
@@ -126,7 +174,7 @@ class UsersListing extends Component {
         this.props.deleteUser(UserId, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
-                this.getUsersListData();
+                this.getUsersListData('', '');
             }
         });
     }
@@ -157,7 +205,7 @@ class UsersListing extends Component {
                 } else {
                     toastr.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
                 }
-                this.getUsersListData()
+                this.getUsersListData('', '')
             }
         })
     }
@@ -207,21 +255,57 @@ class UsersListing extends Component {
         return (
             <p style={{ color: 'blue' }}>
                 Showing {start} of {to} entries.
-          </p>
+            </p>
         );
     }
 
+    /**
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
+    filterList = () => {
+        const { role, department } = this.state;
+        const filterDepartment = department ? department.value : '';
+        const filterRole = role ? role.value : '';
+        this.getUsersListData(filterDepartment, filterRole)
+    }
+
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
+    resetFilter = () => {
+        this.setState({
+            role: [],
+            department: []
+        }, () => {
+            const { role, department } = this.state;
+            const filterDepartment = department ? department.value : '';
+            const filterRole = role ? role.value : '';
+            this.getUsersListData(filterDepartment, filterRole)
+        })
+    }
+
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
+    onSubmit(values) {
+    }
     /**
     * @method render
     * @description Renders the component
     */
     render() {
+        const { handleSubmit, pristine, submitting, } = this.props;
         const { isOpen, isEditFlag, editIndex, PartId, departmentType, roleType } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            exportCSVText: 'Download Excel',
-            onExportToCSV: this.onExportToCSV,
+            //exportCSVText: 'Download Excel',
+            //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             paginationSize: 2,
@@ -230,11 +314,63 @@ class UsersListing extends Component {
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
-                <Row>
-                    <Col>
-                        <h3>{`List of Users`}</h3>
-                    </Col>
-                </Row>
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                    <Row>
+                        <Col md="2" className="mt25">
+                            <h4>{`Filter By:`}</h4>
+                        </Col>
+                        <Col md="3">
+                            <Field
+                                name="DepartmentId"
+                                type="text"
+                                label="Department"
+                                component={searchableSelect}
+                                placeholder={'Select department'}
+                                options={this.searchableSelectType('department')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
+                                //required={true}
+                                handleChangeDescription={this.departmentHandler}
+                                valueDescription={this.state.department}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <Field
+                                name="RoleId"
+                                type="text"
+                                label="Role"
+                                component={searchableSelect}
+                                placeholder={'Select role'}
+                                options={this.searchableSelectType('role')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
+                                //required={true}
+                                handleChangeDescription={this.roleHandler}
+                                valueDescription={this.state.role}
+                            />
+                        </Col>
+                        <Col md="1">
+                            <button
+                                type="button"
+                                //disabled={pristine || submitting}
+                                onClick={this.resetFilter}
+                                className="btn btn-secondary mr15 mt25"
+                            >
+                                {'Reset'}
+                            </button>
+                        </Col>
+                        <Col md="1">
+                            <button
+                                type="button"
+                                //disabled={pristine || submitting}
+                                onClick={this.filterList}
+                                className="btn btn-primary mr15 mt25"
+                            >
+                                {'Apply'}
+                            </button>
+                        </Col>
+                    </Row>
+                </form>
                 <hr />
                 <Row>
                     <Col>
@@ -244,7 +380,7 @@ class UsersListing extends Component {
                             hover={true}
                             options={options}
                             search
-                            exportCSV
+                            // exportCSV
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
@@ -252,15 +388,17 @@ class UsersListing extends Component {
                             <TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
                             <TableHeaderColumn dataField="UserName" dataSort={true}>User name</TableHeaderColumn>
                             <TableHeaderColumn dataField="Email" dataSort={true}>Email Id</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Mobile" dataSort={false}>Mobile No</TableHeaderColumn>
-                            <TableHeaderColumn dataField="PhoneNumber" dataSort={false}>Phone Number</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Mobile" dataSort={false}>Mobile No.</TableHeaderColumn>
+                            <TableHeaderColumn dataField="PhoneNumber" dataSort={false}>Phone No.</TableHeaderColumn>
 
                             <TableHeaderColumn dataField='DepartmentName' export hidden>Product Name</TableHeaderColumn>
-                            <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
-                                filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
+                                filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
+                            <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn>
                             <TableHeaderColumn dataField='RoleName' export hidden>Role Name</TableHeaderColumn>
-                            <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
-                                filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
+                                filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn> */}
+                            <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn>
                             <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                             <TableHeaderColumn dataField="UserId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
@@ -314,17 +452,30 @@ class UsersListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-    const { userDataList, loading } = auth;
+    const { userDataList, roleList, departmentList, loading } = auth;
 
-    return { userDataList, loading };
+    return { userDataList, roleList, departmentList, loading };
 }
 
-export default connect(mapStateToProps,
-    {
-        getAllUserDataAPI,
-        deleteUser,
-        getAllDepartmentAPI,
-        getAllRoleAPI,
-        activeInactiveUser,
-    })(UsersListing);
 
+/**
+* @method connect
+* @description connect with redux
+* @param {function} mapStateToProps
+* @param {function} mapDispatchToProps
+*/
+
+export default connect(mapStateToProps, {
+    getAllUserDataAPI,
+    deleteUser,
+    getAllDepartmentAPI,
+    getAllRoleAPI,
+    activeInactiveUser,
+})(reduxForm({
+    form: 'UsersListing',
+    onSubmitFail: errors => {
+        //console.log('Register errors', errors)
+        focusOnError(errors);
+    },
+    enableReinitialize: true,
+})(UsersListing));

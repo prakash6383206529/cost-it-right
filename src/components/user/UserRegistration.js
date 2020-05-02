@@ -751,10 +751,11 @@ class UserRegistration extends Component {
          })
 
          let data = {
-            Id: '',
+            UserId: loggedInUserId(),
             PageSize: 0,
             LastIndex: 0,
-            Expression: {}
+            DepartmentId: '',
+            RoleId: '',
          }
          this.props.getAllUserDataAPI(data, res => { });
          this.props.setEmptyUserDataAPI('', () => { })
@@ -925,10 +926,11 @@ class UserRegistration extends Component {
                //////////////////  TECHNOLOGY LEVEL END /////////
 
                let data = {
-                  Id: '',
+                  UserId: loggedInUserId(),
                   PageSize: 0,
                   LastIndex: 0,
-                  Expression: {}
+                  DepartmentId: '',
+                  RoleId: '',
                }
                this.props.getAllUserDataAPI(data, res => { });
                this.props.setEmptyUserDataAPI('', () => { })
@@ -1017,10 +1019,11 @@ class UserRegistration extends Component {
                //////////////////  TECHNOLOGY LEVEL END /////////
 
                let data = {
-                  Id: '',
+                  UserId: loggedInUserId(),
                   PageSize: 0,
                   LastIndex: 0,
-                  Expression: {}
+                  DepartmentId: '',
+                  RoleId: '',
                }
                this.props.getAllUserDataAPI(data, res => { });
                this.child.getUpdatedData();
