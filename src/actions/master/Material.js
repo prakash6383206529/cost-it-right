@@ -19,6 +19,7 @@ import {
     GET_RAW_MATERIAL_DATA_SUCCESS,
     GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
     GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
+    GET_RM_TYPE_DATALIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -679,6 +680,30 @@ export function getMaterialDetailAPI(filterData) {
                 });
                 apiErrors(error);
             });
+    };
+}
+
+
+/**
+ * @method getMaterialTypeDataListAPI
+ * @description get row material list
+ */
+export function getMaterialTypeDataListAPI(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getMaterialTypeDataList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_RM_TYPE_DATALIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
 

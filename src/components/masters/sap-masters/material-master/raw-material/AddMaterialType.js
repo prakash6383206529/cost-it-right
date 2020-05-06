@@ -9,13 +9,14 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { loggedInUserId } from "../../../../../helper/auth";
+import RMDetail from "./RMDetail";
 
 class AddMaterialType extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            typeOfListing: [],
-            isEditFlag: false
+            isEditFlag: false,
+            isShowForm: false,
         }
     }
 
@@ -41,12 +42,15 @@ class AddMaterialType extends Component {
     }
 
     /**
-    * @method handleTypeOfListingChange
-    * @description  used to handle type of listing selection
-    */
-    handleTypeOfListingChange = (e) => {
+   * @method cancel
+   * @description used to Reset form
+   */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
         this.setState({
-            typeOfListing: e
+            isEditFlag: false,
+            isShowForm: false,
         })
     }
 
@@ -59,7 +63,7 @@ class AddMaterialType extends Component {
         values.CreatedBy = loggedInUserId();
 
         if (isEditFlag) {
-            let formData = {
+            let updateData = {
                 MaterialTypeId: MaterialTypeId,
                 ModifiedBy: loggedInUserId(),
                 CreatedDate: '',
@@ -68,11 +72,18 @@ class AddMaterialType extends Component {
                 CalculatedDensityValue: values.CalculatedDensityValue,
                 IsActive: true
             }
-            this.props.updateMaterialtypeAPI(formData, () => {
+            this.props.updateMaterialtypeAPI(updateData, () => {
                 this.toggleModel()
             })
         } else {
-            this.props.createMaterialTypeAPI(values, (res) => {
+            let formData = {
+                MaterialType: values.MaterialType,
+                Description: '',
+                CalculatedDensityValue: values.CalculatedDensityValue,
+                CreatedBy: loggedInUserId(),
+                IsActive: true
+            }
+            this.props.createMaterialTypeAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
                     const filterData = {
@@ -98,72 +109,77 @@ class AddMaterialType extends Component {
     render() {
         const { handleSubmit, isEditFlag } = this.props;
         return (
-            <Container className="top-margin">
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Material Type' : 'Add Material Type'}</ModalHeader>
-                    <ModalBody>
-                        <Row>
-                            <Container>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Material Type`}
-                                                name={"MaterialType"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="5">
-                                            <Field
-                                                label={`Density`}
-                                                name={"CalculatedDensityValue"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required, decimalLengthFour]}
-                                                component={renderNumberInputField}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            //customClassName=" withoutBorderBottom"
-                                            />
-                                        </Col>
-                                        <Col md="1">
-                                            <label>(kg/m3)</label>
-                                        </Col>
-                                        {/* <Col md="6">
-                                            <Field
-                                                label={`Description`}
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col> */}
-                                    </Row>
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-center">
-                                            <button type="submit" className="btn dark-pinkbtn" >
-                                                {isEditFlag ? 'Update' : 'Save'}
-                                            </button>
-                                        </div>
-                                    </Row>
-                                </form>
-                            </Container>
-                        </Row>
-                    </ModalBody>
-                </Modal>
-            </Container >
+            <div>
+                <div className="login-container signup-form">
+                    <div className="row">
+                        <div className="col-md-12" >
+                            <button
+                                type="button"
+                                className={'btn btn-primary user-btn mb15'}
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
+                        </div>
+                        {this.state.isShowForm &&
+                            <div className="col-md-12">
+                                <div className="shadow-lg login-form">
+                                    <form
+                                        noValidate
+                                        className="form"
+                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                    >
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Material`}
+                                                    name={"MaterialType"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="5">
+                                                <Field
+                                                    label={`Density (g/cm3)`}
+                                                    name={"CalculatedDensityValue"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required, decimalLengthFour]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    className=" withoutBorder"
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="1">
+                                                <label>(kg/m3)</label>
+                                            </Col>
+                                        </Row>
+
+                                        <Row className="sf-btn-footer no-gutters justify-content-between">
+                                            <div className="col-sm-3 text-center">
+                                                <button
+                                                    type="submit"
+                                                    onClick={this.cancel}
+                                                    className="btn btn-danger mr15" >
+                                                    {'CANCEL'}
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    className="btn dark-pinkbtn" >
+                                                    {isEditFlag ? 'UPDATE' : 'SAVE'}
+                                                </button>
+                                            </div>
+                                        </Row>
+                                    </form>
+                                </div>
+                            </div>}
+                    </div>
+                </div>
+                <RMDetail editRawMaterialHandler={this.editRawMaterialHandler} />
+            </div>
         );
     }
 }

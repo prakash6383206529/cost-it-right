@@ -17,6 +17,7 @@ import {
     GET_RAW_MATERIAL_DATA_SUCCESS,
     GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
     GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
+    GET_RM_TYPE_DATALIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -144,6 +145,13 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 rawMaterialDetailsData: action.payload
+            };
+        case GET_RM_TYPE_DATALIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rawMaterialTypeDataList: action.payload
             };
         default:
             return state;

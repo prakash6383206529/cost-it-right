@@ -276,7 +276,13 @@ class RowMaterialMaster extends Component {
                                     <RMCategoryDetail editCategoryHandler={this.editCategoryHandler} />
                                 </TabPane>}
                                 {this.state.activeTab == 2 && <TabPane tabId="2">
-                                    <RMDetail editRawMaterialHandler={this.editRawMaterialHandler} />
+                                    <AddMaterialType
+                                        isOpen={isOpenMaterialType}
+                                        MaterialTypeId={this.state.Id}
+                                        isEditFlag={this.state.isEditFlag}
+                                        onCancel={this.onCancel}
+                                    />
+                                    {/* <RMDetail editRawMaterialHandler={this.editRawMaterialHandler} /> */}
                                 </TabPane>}
                                 {this.state.activeTab == 1 && <TabPane tabId="1">
                                     <MaterialTypeDetail editMaterialTypeHandler={this.editMaterialTypeHandler} />
@@ -291,14 +297,14 @@ class RowMaterialMaster extends Component {
                         </div>
                     </Col>
                 </Row>
-                {isOpenMaterialType && (
+                {/* {isOpenMaterialType && (
                     <AddMaterialType
                         isOpen={isOpenMaterialType}
                         MaterialTypeId={this.state.Id}
                         isEditFlag={this.state.isEditFlag}
                         onCancel={this.onCancel}
                     />
-                )}
+                )} */}
                 {isOpen && (
                     <AddRowMaterial
                         isOpen={isOpen}
