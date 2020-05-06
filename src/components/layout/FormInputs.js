@@ -221,7 +221,8 @@ export function renderPasswordInputField(field) {
 */
 export function renderMultiSelectField(field) {
   const { isTouched, meta: { touched, error, active } } = field;
-  const inputbox = `inputbox ${active ? "active" : ""}`;
+  //const inputbox = `inputbox ${active ? "active" : ""}`;
+  const inputbox = ` ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `basic-multi-select ${field.className ? field.className : ""}`;
   const optionValue = field.optionValue;
@@ -240,7 +241,7 @@ export function renderMultiSelectField(field) {
           getOptionValue={optionValue}
           value={field.selection}
           isMulti
-          //  isDisabled={field.options}
+          isDisabled={field.disabled}
           options={field.options}
           classNamePrefix="select"
           closeMenuOnSelect="false"
@@ -412,10 +413,11 @@ export function renderSelectField(field) {
 */
 export function renderNumberInputField(field) {
   const { input, disabled, meta: { touched, error }, ...others } = field;
-  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const customClassName = `${field.customClassName ? field.customClassName : ""}`;
+  const InputClassName = `form-control ${field.customClassName ? field.customClassName : ""} ${field.className ? field.className : ""}`;
   const disabledLabel = disabled ? true : false;
   return (
-    <div className="form-group inputbox ">
+    <div className={`form-group inputbox ${customClassName}`} >
       <label>
         {field.label}
         {field.required && field.required === true ? (
@@ -451,10 +453,11 @@ export function renderNumberInputField(field) {
 */
 export function renderTextAreaField(field) {
   const { input, disabled, meta: { touched, error } } = field;
+  const customClass = `${field.customClassName ? field.customClassName : ""}`;
   const disabledLabel = disabled ? true : false;
   const placeholder = field.placeholder ? field.placeholder : "";
   return (
-    <div className="form-group">
+    <div className={`form-group ${customClass}`}>
       <label>{field.label}
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>

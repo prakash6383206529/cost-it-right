@@ -640,3 +640,34 @@ button.add-btn {
 .login-container {
     display: block !important;
 }
+.multiselect-with-border {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+.left-border {
+  border-left: 4px solid #ccc;
+  padding: 5px;
+  margin-bottom: 15px;
+}
+.withBorder input.form-control {
+  border: 1px solid #ccc;
+}
+.form-group.inputbox.withBorder {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+.textAreaWithBorder .inputbox {
+  border: none;
+}
+.textAreaWithBorder textarea.form-control {
+  border: 1px solid #ccc;
+  padding: 5px;
+}
+.switch .left-title {
+  display: inline-block;
+  margin-right: 10px;
+}
+.switch .right-title {
+  display: inline-block;
+  margin-left: 10px;
+}
