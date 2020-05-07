@@ -20,6 +20,8 @@ import {
     GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
     GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
     GET_RM_TYPE_DATALIST_SUCCESS,
+    GET_RMTYPE_SELECTLIST_SUCCESS,
+    GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -316,26 +318,14 @@ export function deleteRMGradeAPI(ID, callback) {
  */
 export function createRMSpecificationAPI(data, callback) {
     return (dispatch) => {
-        // dispatch({
-        //     type:  API_REQUEST,
-        // });
         const request = axios.post(API.createRMSpecificationAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: CREATE_MATERIAL_SUCCESS,
-                });
+                dispatch({ type: CREATE_MATERIAL_SUCCESS, });
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_MATERIAL_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
@@ -366,6 +356,31 @@ export function getRMSpecificationDataAPI(SpecificationId, callback) {
             });
             callback()
         }
+    };
+}
+
+
+/**
+ * @method getAllRMSpecificationList
+ * @description Used to get RM Specification Datalist
+ */
+export function getAllRMSpecificationList(data, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.post(`${API.getRMSpecificationAPI}`, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_RM_SPECIFICATION_LIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
 
@@ -400,6 +415,55 @@ export function deleteRMSpecificationAPI(ID, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+
+/**
+ * @method getRMTypeSelectListAPI
+ * @description Used to RM type select list
+ */
+export function getRMTypeSelectListAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRMTypeSelectListAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_RMTYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getGradeByRMTypeSelectListAPI
+ * @description Used to RM type select list
+ */
+export function getGradeByRMTypeSelectListAPI(ID, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getGradeByRMTypeSelectListAPI}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
 

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
-import { renderText, renderSelectField } from "../../../../layout/FormInputs";
+import { renderText, renderSelectField, searchableSelect } from "../../../../layout/FormInputs";
 import {
     createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
     getRowMaterialDataAPI,
@@ -14,13 +14,17 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { loggedInUserId } from "../../../../../helper/auth";
+import RMSpecificationDetail from './RMSpecificationDetail';
+import $ from 'jquery';
 
 class AddSpecification extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         this.state = {
             GradeId: '',
-            isEditFlag: false
+            isEditFlag: false,
+            RawMaterial: [],
         }
     }
 
@@ -63,23 +67,34 @@ class AddSpecification extends Component {
     * @method handleMaterialChange
     * @description  used to material change and get grade's
     */
-    handleMaterialChange = (e) => {
-        this.props.fetchRMGradeAPI(e.target.value, res => { })
+    handleMaterialChange = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ RawMaterial: newValue }, () => {
+                const { RawMaterial } = this.state;
+                this.props.fetchRMGradeAPI(RawMaterial.value, res => { });
+            });
+        } else {
+            this.setState({ RawMaterial: [], RMGrade: [] });
+        }
     }
 
     /**
     * @method handleGrade
     * @description  used to handle type of listing change
     */
-    handleGrade = (e) => {
-        this.setState({ GradeId: e })
+    handleGrade = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ RMGrade: newValue });
+        } else {
+            this.setState({ RMGrade: [], });
+        }
     }
 
     /**
-    * @method renderTypeOfListing
+    * @method renderListing
     * @description Used show listing of row material
     */
-    renderTypeOfListing = (label) => {
+    renderListing = (label) => {
         const { rowMaterialList, rmGradeList, MaterialSelectList } = this.props;
         const temp = [];
         if (label === 'rmList') {
@@ -89,20 +104,57 @@ class AddSpecification extends Component {
             return temp;
         }
 
-        if (label === 'rmGrade') {
+        if (label === 'RMGrade') {
             rmGradeList && rmGradeList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
 
         if (label === 'material') {
             MaterialSelectList && MaterialSelectList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
 
+    }
+
+    /**
+   * @method getDetails
+   * @description used to get details
+   */
+    getDetails = (data) => {
+        if (data && data.isEditFlag) {
+            this.setState({
+                isLoader: true,
+                isShowForm: true,
+                isEditFlag: true,
+                MaterialTypeId: data.ID,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            // this.props.getMaterialTypeDataAPI(data.ID, (res) => {
+            //     if (res && res.data && res.data.Data) {
+
+
+            //     }
+            // })
+        }
+    }
+
+    /**
+   * @method cancel
+   * @description used to Reset form
+   */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            isEditFlag: false,
+            isShowForm: false,
+            RawMaterial: [],
+            RMGrade: [],
+        })
     }
 
     /**
@@ -130,8 +182,7 @@ class AddSpecification extends Component {
             this.props.updateRMSpecificationAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
-                    this.toggleModel();
-                    this.props.getRowMaterialDataAPI(res => { });
+                    this.child.getUpdatedData();
                 }
             })
         } else {
@@ -139,7 +190,7 @@ class AddSpecification extends Component {
             this.props.createRMSpecificationAPI(values, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
-                    this.toggleModel();
+                    this.child.getUpdatedData();
                 }
             });
         }
@@ -152,91 +203,109 @@ class AddSpecification extends Component {
     render() {
         const { handleSubmit, isEditFlag } = this.props;
         return (
-            <Container className="top-margin">
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Specification' : 'Add Specification'}</ModalHeader>
-                    <ModalBody>
-                        <Row>
-                            <Container>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={'Material Type'}
-                                                name={"MaterialTypeId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                maxLength={26}
-                                                options={this.renderTypeOfListing('material')}
-                                                onChange={(Value) => this.handleMaterialChange(Value)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.GRADE}`}
-                                                name={"GradeId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                maxLength={26}
-                                                options={this.renderTypeOfListing('rmGrade')}
-                                                onChange={this.handleGrade}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.SPECIFICATION}`}
-                                                name={"Specification"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        {/* <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.DESCRIPTION}`}
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col> */}
+            <div>
+                <div className="login-container signup-form">
+                    <div className="row">
+                        <div className="col-md-12" >
+                            <button
+                                type="button"
+                                className={'btn btn-primary user-btn mb15'}
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
+                        </div>
+                        {this.state.isShowForm &&
+                            <div className="col-md-12">
+                                <div className="shadow-lg login-form">
+                                    <form
+                                        noValidate
+                                        className="form"
+                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                    >
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Raw Material Name`}
+                                                    name={"RawMaterialName"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    name="MaterialTypeId"
+                                                    type="text"
+                                                    label="Raw Material"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select Raw Material'}
+                                                    options={this.renderListing('material')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleMaterialChange}
+                                                    valueDescription={this.state.RawMaterial}
+                                                />
+                                            </Col>
+                                        </Row>
 
-                                    </Row>
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-center">
-                                            <button type="submit" className="btn dark-pinkbtn" >
-                                                {isEditFlag ? 'Update' : 'Add'}
-                                            </button>
-                                        </div>
-                                    </Row>
-                                </form>
-                            </Container>
-                        </Row>
-                    </ModalBody>
-                </Modal>
-            </Container >
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    name="GradeId"
+                                                    type="text"
+                                                    label="RM Grade"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select RM Grade'}
+                                                    options={this.renderListing('RMGrade')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleGrade}
+                                                    valueDescription={this.state.RMGrade}
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`${CONSTANT.SPECIFICATION}`}
+                                                    name={"Specification"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                        </Row>
+
+                                        <Row className="sf-btn-footer no-gutters justify-content-between">
+                                            <div className="col-sm-3 text-center">
+                                                <button
+                                                    type="submit"
+                                                    onClick={this.cancel}
+                                                    className="btn btn-danger mr15" >
+                                                    {'CANCEL'}
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    className="btn dark-pinkbtn" >
+                                                    {isEditFlag ? 'UPDATE' : 'SAVE'}
+                                                </button>
+                                            </div>
+                                        </Row>
+                                    </form>
+                                </div>
+                            </div>}
+                    </div>
+                </div>
+                <RMSpecificationDetail
+                    onRef={ref => (this.child = ref)}
+                    getDetails={this.getDetails} />
+            </div>
         );
     }
 }

@@ -18,6 +18,8 @@ import {
     GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
     GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
     GET_RM_TYPE_DATALIST_SUCCESS,
+    GET_RMTYPE_SELECTLIST_SUCCESS,
+    GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -152,6 +154,20 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 rawMaterialTypeDataList: action.payload
+            };
+        case GET_RMTYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rawMaterialTypeSelectList: action.payload
+            };
+        case GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                gradeByRMTypeSelectList: action.payload
             };
         default:
             return state;

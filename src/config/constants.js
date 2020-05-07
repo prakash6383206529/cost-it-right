@@ -156,6 +156,8 @@ export const API = {
   updateRMSpecificationAPI: `${BASE_URL}/masters-raw-material/update-material-specification`,
   deleteRMSpecificationAPI: `${BASE_URL}/masters-raw-material/delete-material-specification`,
   getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
+  getRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-material-type`,
+  getGradeByRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
 
   //Api for plant master
   //createPlantAPI: `${BASE_URL}/plant/create`,
@@ -530,6 +532,8 @@ export const GET_RM_GRADE_LIST_SUCCESS = 'GET_RM_GRADE_LIST_SUCCESS';
 //RM SPECIFICATION
 export const GET_RM_SPECIFICATION_LIST_SUCCESS = 'GET_RM_SPECIFICATION_LIST_SUCCESS';
 export const GET_SPECIFICATION_DATA_SUCCESS = 'GET_SPECIFICATION_DATA_SUCCESS';
+export const GET_RMTYPE_SELECTLIST_SUCCESS = 'GET_RMTYPE_SELECTLIST_SUCCESS';
+export const GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS = 'GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS';
 
 export const GET_RM_LIST_SUCCESS = 'GET_RM_LIST_SUCCESS';
 export const GET_RM_CATEGORY_LIST_SUCCESS = 'GET_RM_CATEGORY_LIST_SUCCESS';

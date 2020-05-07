@@ -10,13 +10,16 @@ import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { loggedInUserId } from "../../../../../helper/auth";
 import RMDetail from "./RMDetail";
+import $ from 'jquery';
 
 class AddMaterialType extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         this.state = {
             isEditFlag: false,
             isShowForm: false,
+            MaterialTypeId: '',
         }
     }
 
@@ -26,11 +29,11 @@ class AddMaterialType extends Component {
     */
     componentDidMount() {
         const { MaterialTypeId, isEditFlag } = this.props;
-        if (isEditFlag) {
-            this.props.getMaterialTypeDataAPI(MaterialTypeId, res => { });
-        } else {
-            this.props.getMaterialTypeDataAPI('', res => { });
-        }
+        // if (isEditFlag) {
+        //     this.props.getMaterialTypeDataAPI(MaterialTypeId, res => { });
+        // } else {
+        //     this.props.getMaterialTypeDataAPI('', res => { });
+        // }
     }
 
     /**
@@ -55,14 +58,37 @@ class AddMaterialType extends Component {
     }
 
     /**
+   * @method getDetails
+   * @description used to get details
+   */
+    getDetails = (data) => {
+        if (data && data.isEditFlag) {
+            this.setState({
+                isLoader: true,
+                isShowForm: true,
+                isEditFlag: true,
+                MaterialTypeId: data.ID,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getMaterialTypeDataAPI(data.ID, (res) => {
+                if (res && res.data && res.data.Data) {
+
+
+                }
+            })
+        }
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { MaterialTypeId, isEditFlag } = this.props;
+        const { isEditFlag, MaterialTypeId } = this.state;
         values.CreatedBy = loggedInUserId();
 
         if (isEditFlag) {
+            console.log('this.child', this.child)
             let updateData = {
                 MaterialTypeId: MaterialTypeId,
                 ModifiedBy: loggedInUserId(),
@@ -73,9 +99,16 @@ class AddMaterialType extends Component {
                 IsActive: true
             }
             this.props.updateMaterialtypeAPI(updateData, () => {
-                this.toggleModel()
+                this.child.getUpdatedData();
+                this.props.getMaterialTypeDataAPI('', res => { });
+                this.setState({
+                    isShowForm: false,
+                    isEditFlag: false,
+                })
             })
+
         } else {
+
             let formData = {
                 MaterialType: values.MaterialType,
                 Description: '',
@@ -94,12 +127,14 @@ class AddMaterialType extends Component {
                         PlantId: '',
                     }
                     this.props.getMaterialDetailAPI(filterData, res => { });
-                    this.toggleModel()
+                    this.props.getMaterialTypeDataAPI('', res => { });
+                    this.child.getUpdatedData();
                 } else {
                     toastr.error(res.data.Message);
                 }
             });
         }
+
     }
 
     /**
@@ -178,7 +213,9 @@ class AddMaterialType extends Component {
                             </div>}
                     </div>
                 </div>
-                <RMDetail editRawMaterialHandler={this.editRawMaterialHandler} />
+                <RMDetail
+                    onRef={ref => (this.child = ref)}
+                    getDetails={this.getDetails} />
             </div>
         );
     }

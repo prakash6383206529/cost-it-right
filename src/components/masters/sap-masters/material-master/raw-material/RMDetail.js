@@ -24,6 +24,20 @@ class RMDetail extends Component {
    * @description Called after rendering the component
    */
     componentDidMount() {
+        this.getListData();
+        this.props.onRef(this)
+    }
+
+    // Get updated user list after any action performed.
+    getUpdatedData = () => {
+        this.getListData()
+    }
+
+    /**
+    * @method getListData
+    * @description Get list data
+    */
+    getListData = () => {
         this.props.getMaterialTypeDataListAPI(res => { });
     }
 
@@ -32,7 +46,11 @@ class RMDetail extends Component {
     * @description edit Raw Material
     */
     editItemDetails = (Id) => {
-        this.props.editRawMaterialHandler(Id);
+        let requestData = {
+            isEditFlag: true,
+            ID: Id,
+        }
+        this.props.getDetails(requestData);
     }
 
     /**
@@ -123,32 +141,6 @@ class RMDetail extends Component {
                 <Row>
                     <Col>
                         {/* <hr /> */}
-                        {/* <Table className="table table-striped" size={'sm'} hover bordered>
-                            {this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`Material`}</th>
-                                        <th>{`Density`}</th>
-                                        <th>{``}</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList.length > 0 &&
-                                    this.props.rawMaterialTypeDataList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.MaterialType}</td>
-                                                <td >{item.Density}</td>
-                                                <td>
-                                                    <Button className="black-btn" onClick={() => this.editItemDetails(item.RawMaterialId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="black-btn" onClick={() => this.deleteItem(item.RawMaterialId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.rawMaterialTypeDataList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table> */}
                         <BootstrapTable
                             data={this.props.rawMaterialTypeDataList}
                             striped={true}
