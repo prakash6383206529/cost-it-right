@@ -466,8 +466,8 @@ class Role extends Component {
                         <div className="col-md-12" >
                             <button
                                 type="button"
-                                className={'btn btn-primary user-btn'}
-                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
+                                className={'user-btn'}
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>ADD</button>
                         </div>
                         {this.state.isShowForm &&
                             <div className="col-md-12">

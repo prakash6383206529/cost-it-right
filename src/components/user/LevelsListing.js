@@ -90,8 +90,8 @@ class LevelsListing extends Component {
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <Button className="btn btn-secondary mr5" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button>
-                <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button>
+                <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />
+                <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />
             </>
         )
     }
@@ -130,6 +130,8 @@ class LevelsListing extends Component {
                             options={options}
                             search
                             ignoreSinglePage
+                            trClassName={'userlisting-row'}
+                            tableHeaderClass='my-custom-class'
                             pagination>
                             <TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
                             <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>

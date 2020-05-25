@@ -398,7 +398,7 @@ export function getUsersTechnologyLevelAPI(UserId, callback) {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response && response.data && response.data.Result) {
                 callback(response);
             }
         }).catch((error) => {

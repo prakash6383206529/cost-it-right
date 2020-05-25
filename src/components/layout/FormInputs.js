@@ -163,7 +163,7 @@ export function renderPasswordInputField(field) {
     meta: { touched, error, active }
   } = field;
   const inputbox = `inputbox input-group ${active ? "active" : ""}`;
-  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `form-control ${
     field.className ? field.className : ""
     }`;
@@ -276,7 +276,7 @@ export function renderEmailInputField(field) {
   } = field;
   const disabled = isDisabled === true ? true : false;
   const inputbox = `inputbox input-group ${active ? "active" : ""}`;
-  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `form-control ${
     disabled ? "disabled-control " : " "
     } ${field.className ? field.className : ""}`;
@@ -620,6 +620,7 @@ export const searchableSelect = ({ input, label, required, disabled, handleChang
         value={valueDescription}
         isDisabled={isDisable}
         placeholder={placeholder}
+        className={'searchable'}
       />
       <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>

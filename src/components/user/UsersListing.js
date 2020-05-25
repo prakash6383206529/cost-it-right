@@ -16,6 +16,7 @@ import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../helper/auth';
+import ViewUserDetails from './ViewUserDetails';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -32,6 +33,8 @@ class UsersListing extends Component {
             roleType: {},
             department: [],
             role: [],
+            UserId: '',
+            isOpen: false,
         }
     }
 
@@ -186,7 +189,8 @@ class UsersListing extends Component {
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <Button className="btn btn-secondary" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button>
+                {/* <Button className="btn btn-secondary" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button> */}
+                <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell)} />
                 {/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
             </>
         )
@@ -227,6 +231,35 @@ class UsersListing extends Component {
                 </label>
             </>
         )
+    }
+
+    /**
+    * @method linkableFormatter
+    * @description Renders Name link
+    */
+    linkableFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <div
+                    onClick={() => this.viewDetails(row.UserId)}
+                    className={'link'}
+                >{cell}</div>
+            </>
+        )
+    }
+
+    viewDetails = (UserId) => {
+        this.setState({
+            UserId: UserId,
+            isOpen: true,
+        })
+    }
+
+    closeUserDetails = () => {
+        this.setState({
+            UserId: '',
+            isOpen: false,
+        })
     }
 
     /**
@@ -349,22 +382,22 @@ class UsersListing extends Component {
                                 valueDescription={this.state.role}
                             />
                         </Col>
-                        <Col md="1">
+                        <Col md="3">
                             <button
                                 type="button"
                                 //disabled={pristine || submitting}
                                 onClick={this.resetFilter}
-                                className="btn btn-secondary mr15 mt25"
+                                className="reset mr5 mt25"
                             >
                                 {'Reset'}
                             </button>
-                        </Col>
-                        <Col md="1">
+                            {/* </Col>
+                        <Col md="2"> */}
                             <button
                                 type="button"
                                 //disabled={pristine || submitting}
                                 onClick={this.filterList}
-                                className="btn btn-primary mr15 mt25"
+                                className="apply mr5 mt25"
                             >
                                 {'Apply'}
                             </button>
@@ -383,9 +416,11 @@ class UsersListing extends Component {
                             // exportCSV
                             ignoreSinglePage
                             ref={'table'}
+                            trClassName={'userlisting-row'}
+                            tableHeaderClass='my-custom-class'
                             pagination>
                             <TableHeaderColumn dataField="" csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
-                            <TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
+                            <TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
                             <TableHeaderColumn dataField="UserName" dataSort={true}>User name</TableHeaderColumn>
                             <TableHeaderColumn dataField="Email" dataSort={true}>Email Id</TableHeaderColumn>
                             <TableHeaderColumn dataField="Mobile" dataSort={false}>Mobile No.</TableHeaderColumn>
@@ -405,42 +440,12 @@ class UsersListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
-                {/* <Row>
-                    <Col>
-                        <Table className="table table-striped" size="sm" hover bordered>
-                            {this.props.userDataList && this.props.userDataList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`Name`}</th>
-                                        <th>{`Username`}</th>
-                                        <th>{`Role`}</th>
-                                        <th>{`Department`}</th>
-                                        <th>{`Level`}</th>
-                                        <th>{''}</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.userDataList && this.props.userDataList.length > 0 &&
-                                    this.props.userDataList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.FullName}</td>
-                                                <td >{item.UserName}</td>
-                                                <td >{item.RoleName}</td>
-                                                <td>{item.DepartmentName}</td>
-                                                <td>{item.LevelName}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(item.UserId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(item.UserId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.userDataList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row> */}
+                {this.state.isOpen &&
+                    <ViewUserDetails
+                        UserId={this.state.UserId}
+                        isOpen={this.state.isOpen}
+                        closeUserDetails={this.closeUserDetails}
+                    />}
             </ >
         );
     }

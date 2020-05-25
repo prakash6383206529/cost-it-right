@@ -137,7 +137,7 @@ class Department extends Component {
                         <div className="col-md-12" >
                             <button
                                 type="button"
-                                className={'btn btn-primary user-btn'}
+                                className={'user-btn'}
                                 onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
                         </div>
                         {this.state.isShowForm &&
