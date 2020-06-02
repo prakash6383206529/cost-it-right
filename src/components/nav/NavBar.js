@@ -303,28 +303,102 @@ class SideBar extends Component {
     const isLoggedIn = isUserLoggedIn();
     return (
       <nav>
-        <div className="flex-conatiner sign-social before-login">
+        <div className="flex-conatiner sign-social ">
           <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
         </div>
+        <div>
+          <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
+            <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
+              <img src={require('../../assests/images/logo.png')} alt='Cost It Rights' height="30" />
+            </a>
+            <button className="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div className="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+              <ul className="navbar-nav ml-auto">
+                <li className="nav-item active d-xl-inline-block">
+                  <div className="dropdown">
+                    <a className="dropdown-toggle nav-link bell" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i className="fa fa-bell" aria-hidden="true"></i>
+                      <span className="count">2</span>
+                    </a>
+                    <div className="dropdown-menu preview-list" aria-labelledby="dropdownMenuLink">
+                      <a className="dropdown-item py-3">
+                        <p className="mb-0 font-weight-medium float-left">You have 7 unread mails </p>
+                        <span className="badge badge-pill badge-primary float-right">View all</span>
+                      </a>
+                      <a className="dropdown-item preview-item">
+                        <div className="preview-thumbnail">
+                          <img src="../../assests/images/user-pic.png" alt="image" className="img-sm profile-pic" /> </div>
+                        <div className="preview-item-content flex-grow py-2">
+                          <p className="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
+                          <p className="font-weight-light small-text"> The meeting is cancelled </p>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </li>
+                <li className="nav-item d-xl-inline-block">
+                  <a className="nav-link" href="#"><i className="fa fa-cog" aria-hidden="true"></i></a>
+                </li>
+                <li className="nav-item d-xl-inline-block">
+                  <a className="nav-link" href="#"><i className="fa fa-question-circle" aria-hidden="true"></i>
+                  </a>
+                </li>
+                <li className="nav-item d-xl-inline-block">
+                  <div className="nav-link-user">
+                    <Nav className="ml-auto top-menu logout d-inline-flex">
+                      <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+                        <DropdownToggle caret>
+                          <img className="img-xs rounded-circle" src={require('../../assests/images/user-pic.png')} alt='Cost It Rights' />
+                          {isLoggedIn ? userData.Name : 'Login'}
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          {!isLoggedIn && <DropdownItem header>
+                            <Link className="bell-notifcation-icon" to="/login">
+                              Login
+                          </Link>
+                          </DropdownItem>}
+                          {isLoggedIn && <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>}
+                        </DropdownMenu>
+                      </Dropdown>
+                      <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
+                    </Nav>
+                  </div>
 
-        <Nav className="ml-auto top-menu logout">
-          <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-            <DropdownToggle caret>
-              {isLoggedIn ? userData.Name : 'Login'}
-            </DropdownToggle>
-            <DropdownMenu>
-              {!isLoggedIn && <DropdownItem header>
-                <Link className="bell-notifcation-icon" to="/login">
-                  Login
-                </Link>
-              </DropdownItem>}
+                </li>
 
-              {isLoggedIn && <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>}
-            </DropdownMenu>
-          </Dropdown>
-          <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
-        </Nav>
-        <Navbar className="menu-bottom-list " expand="md">
+              </ul>
+
+            </div>
+          </nav>
+          <div className="nav-scroller bg-white shadow-sm header-secondry">
+            <nav className="nav nav-underline">
+              <a className="nav-link active" href="#">
+                <img className="" src={require('../../assests/images/sydney-opera-house.svg')} alt='sydney-opera-house' /><span>Dashboard</span></a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
+              </a>
+              <a className="nav-link additional-masters" href="#">
+                <img className="" src={require('../../assests/images/list-add.png')} alt='List' /><span>Additional Masters</span></a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/chart.svg')} alt='chart' />
+                <span>Report</span>
+              </a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/imac.svg')} alt='imac' />
+                <span>Simulation</span></a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/html.svg')} alt='html' />
+                <span>Technology</span></a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/men.svg')} alt='men' />
+                <span>Users</span></a>
+            </nav>
+          </div>
+        </div>
+
+        <Navbar className="menu-bottom-list " expand="md" style={{ display: "none" }}>
 
           {isLoggedIn &&
             <Collapse isOpen={this.state.isOpen} navbar>
@@ -335,11 +409,9 @@ class SideBar extends Component {
                     this.renderMenus(item.Text)
                   )
                 })}
-
                 <li className="nav-item dropdown">
                   <a className="nav-link " href="/mass-upload" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mass Upload</a>
                 </li>
-
               </Nav>
             </Collapse>}
         </Navbar>

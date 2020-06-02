@@ -39,6 +39,8 @@ import MachineMaster from './masters/sap-masters/machine-master';
 import PowerMaster from './masters/sap-masters/power-master';
 import ReasonMaster from './masters/sap-masters/reason-master';
 import MassUpload from './massUpload';
+import LeftMenu from './nav/Leftsidemenu';
+import Breadcrumb from './nav/Breadcrumb';
 
 import Costing from './costing';
 import { showUserData } from '../actions';
@@ -50,6 +52,9 @@ import termCondition from "./about/term&condition";
 import privacyandpolicy from "./about/privacyandpolicy";
 import aboutus from "./about/aboutus";
 
+
+
+
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -57,6 +62,7 @@ class Main extends Component {
       visibelPageNotFound: false
     };
   }
+
 
   /**
    * @method handlePageNotFound
@@ -84,18 +90,9 @@ class Main extends Component {
           {!this.state.visibelPageNotFound &&
             <div className="sf-mainwrapper">
               <div className=" sf-mainheader">
-                <div className="container header-menu">
-                  <div className="row ss-menu">
-                    <div className="logo-section col-md-2 col-4">
-                      <div className="inner-header">
-                        <div className="main-logo">
-                          <a href="javaScript:Void(0);"><img src={require('../assests/images/cir-logo.png')} alt='Cost It Rights' />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="col-md-10 col-8">
+                <div className="container-fluild header-menu">
+                  <div className="row">
+                    <div className="col-md-12">
                       <div className="inner-header main-menu">
                         <Route
                           path="/"
@@ -114,86 +111,91 @@ class Main extends Component {
                 </div>
               </div>
             </div>}
-          <div className=" middleContainer">
-            <Switch>
+          <Breadcrumb />
+          <LeftMenu />
+          <div className="content-page">
+            <h1>hello alll</h1>
+            <div className=" middleContainer">
+              <Switch>
 
-              {/* <Route exact path="/" component={Homepage} /> */}
-              <Route exact path="/" component={AuthMiddleware(Dashboard)} />
+                {/* <Route exact path="/" component={Homepage} /> */}
+                <Route exact path="/" component={AuthMiddleware(Dashboard)} />
 
-              <Route path="/login" render={(props) =>
-                <Login
-                  {...props}
-                  isUserLoggedIn={this.props.isUserLoggedIn}
-                  logUserIn={this.props.logUserIn}
+                <Route path="/login" render={(props) =>
+                  <Login
+                    {...props}
+                    isUserLoggedIn={this.props.isUserLoggedIn}
+                    logUserIn={this.props.logUserIn}
+                  />
+                } />
+
+                <Route path="/user" component={AuthMiddleware(User)} />
+
+                <Route path="/privilege" component={AuthMiddleware(Privilege)} />
+
+                <Route path="/dashboard" component={AuthMiddleware(Dashboard)} />
+
+                {/* <Route path="/PartMasterOld" component={AuthMiddleware(PartMaster)} /> */}
+
+                <Route path="/PartMaster" component={AuthMiddleware(PartMaster)} />
+
+                <Route path="/UOMMaster" component={AuthMiddleware(UOMMaster)} />
+
+                <Route path="/category-master" component={AuthMiddleware(CategoryMaster)} />
+
+                <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster)} />
+
+                <Route path="/plant-master" component={AuthMiddleware(PlantMaster)} />
+
+                <Route path="/supplier-master" component={AuthMiddleware(SupplierMaster)} />
+
+                <Route path="/bom-master" component={AuthMiddleware(BOMMaster)} />
+
+                <Route path="/bop-master" component={AuthMiddleware(BOPMaster)} />
+
+                <Route path="/process-master" component={AuthMiddleware(ProcessMaster)} />
+
+                <Route path="/other-operation" component={AuthMiddleware(OtherOperationMaster)} />
+
+                <Route path="/fuel-master" component={AuthMiddleware(FuelMaster)} />
+
+                <Route path="/ced-other-operation" component={AuthMiddleware(CEDoperationMaster)} />
+
+                <Route path="/mhr-master" component={AuthMiddleware(MHRMaster)} />
+
+                <Route path="/machine-type-master" component={AuthMiddleware(MachineTypeMaster)} />
+
+                <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
+
+                <Route path="/power-master" component={AuthMiddleware(PowerMaster)} />
+
+                <Route path="/operation-master" component={AuthMiddleware(OperationMaster)} />
+
+                <Route path="/material-master" component={AuthMiddleware(MaterialMaster)} />
+
+                <Route path="/freight-master" component={AuthMiddleware(FreightMaster)} />
+
+                <Route path="/labour-master" component={AuthMiddleware(LabourMaster)} />
+
+                <Route path="/overhead-profit-master" component={AuthMiddleware(OverheadProfit)} />
+
+                <Route path="/depreciation-master" component={AuthMiddleware(DepreciationMaster)} />
+
+                <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate)} />
+
+                <Route path="/costing" component={AuthMiddleware(Costing)} />
+
+                <Route path="/part-bom-register" component={AuthMiddleware(PartBOMRegister)} />
+
+                <Route path="/mass-upload" component={AuthMiddleware(MassUpload)} />
+
+                <Route path="/reason-master" component={AuthMiddleware(ReasonMaster)} />
+
+                <Route
+                  render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}
                 />
-              } />
-
-              <Route path="/user" component={AuthMiddleware(User)} />
-
-              <Route path="/privilege" component={AuthMiddleware(Privilege)} />
-
-              <Route path="/dashboard" component={AuthMiddleware(Dashboard)} />
-
-              {/* <Route path="/PartMasterOld" component={AuthMiddleware(PartMaster)} /> */}
-
-              <Route path="/PartMaster" component={AuthMiddleware(PartMaster)} />
-
-              <Route path="/UOMMaster" component={AuthMiddleware(UOMMaster)} />
-
-              <Route path="/category-master" component={AuthMiddleware(CategoryMaster)} />
-
-              <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster)} />
-
-              <Route path="/plant-master" component={AuthMiddleware(PlantMaster)} />
-
-              <Route path="/supplier-master" component={AuthMiddleware(SupplierMaster)} />
-
-              <Route path="/bom-master" component={AuthMiddleware(BOMMaster)} />
-
-              <Route path="/bop-master" component={AuthMiddleware(BOPMaster)} />
-
-              <Route path="/process-master" component={AuthMiddleware(ProcessMaster)} />
-
-              <Route path="/other-operation" component={AuthMiddleware(OtherOperationMaster)} />
-
-              <Route path="/fuel-master" component={AuthMiddleware(FuelMaster)} />
-
-              <Route path="/ced-other-operation" component={AuthMiddleware(CEDoperationMaster)} />
-
-              <Route path="/mhr-master" component={AuthMiddleware(MHRMaster)} />
-
-              <Route path="/machine-type-master" component={AuthMiddleware(MachineTypeMaster)} />
-
-              <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
-
-              <Route path="/power-master" component={AuthMiddleware(PowerMaster)} />
-
-              <Route path="/operation-master" component={AuthMiddleware(OperationMaster)} />
-
-              <Route path="/material-master" component={AuthMiddleware(MaterialMaster)} />
-
-              <Route path="/freight-master" component={AuthMiddleware(FreightMaster)} />
-
-              <Route path="/labour-master" component={AuthMiddleware(LabourMaster)} />
-
-              <Route path="/overhead-profit-master" component={AuthMiddleware(OverheadProfit)} />
-
-              <Route path="/depreciation-master" component={AuthMiddleware(DepreciationMaster)} />
-
-              <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate)} />
-
-              <Route path="/costing" component={AuthMiddleware(Costing)} />
-
-              <Route path="/part-bom-register" component={AuthMiddleware(PartBOMRegister)} />
-
-              <Route path="/mass-upload" component={AuthMiddleware(MassUpload)} />
-
-              <Route path="/reason-master" component={AuthMiddleware(ReasonMaster)} />
-
-              <Route
-                render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}
-              />
-            </Switch>
+              </Switch>
+            </div>
           </div>
           {!this.state.visibelPageNotFound &&
             <div>
@@ -209,6 +211,7 @@ class Main extends Component {
             progressBar
           />
           {this.handleUserData()}
+
         </div>
       </Suspense>
     )
