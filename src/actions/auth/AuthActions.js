@@ -713,13 +713,11 @@ export function getAllLevelAPI(callback) {
                     payload: response.data.DataList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
-            apiErrors(error);
+            //apiErrors(error);
         });
     };
 }
@@ -911,8 +909,6 @@ export function getAllLevelMappingAPI(callback) {
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -1258,7 +1254,7 @@ export function getMenuByUser(UserId, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            apiErrors(error);
+            //apiErrors(error);
         });
     };
 }

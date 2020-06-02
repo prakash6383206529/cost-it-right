@@ -1064,7 +1064,7 @@ class UserRegistration extends Component {
       const { isLoader, isSubmitted } = this.state;
       return (
          <div>
-            {isLoader && <Loader />}
+            {/* {isLoader && <Loader />} */}
             <div className="login-container signup-form">
                <div className="row">
                   {!this.state.isShowForm && <div className="col-md-12" >
@@ -1148,7 +1148,7 @@ class UserRegistration extends Component {
                                  </div>
                                  <div className="input-group col-md-3 input-withouticon">
                                     <div className="row form-group">
-                                       <div className="Phone phoneNumber col-md-8 input-withouticon">
+                                       <div className="Phone phoneNumber col-md-9 input-withouticon">
                                           <Field
                                              label="Phone Number"
                                              name={"PhoneNumber"}
@@ -1161,9 +1161,9 @@ class UserRegistration extends Component {
                                              customClassName={'withBorder'}
                                           />
                                        </div>
-                                       <div className="dash phoneNumber col-md-1 input-withouticon">
+                                       {/* <div className="dash phoneNumber col-md-1 input-withouticon">
                                           {''}
-                                       </div>
+                                       </div> */}
                                        <div className="Ext phoneNumber col-md-3 input-withouticon">
                                           <Field
                                              label="Extension"

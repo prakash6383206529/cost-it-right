@@ -90,7 +90,6 @@ class UsersListing extends Component {
             RoleId: roleId,
         }
         this.props.getAllUserDataAPI(data, res => {
-            console.log('userrrr list', res.status, res.data)
             if (res.status == 204 && res.data == '') {
                 this.setState({ userData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -152,6 +151,7 @@ class UsersListing extends Component {
             isEditFlag: true,
             UserId: Id,
         }
+        this.closeUserDetails()
         this.props.getUserDetail(requestData)
     }
 
@@ -444,7 +444,9 @@ class UsersListing extends Component {
                     <ViewUserDetails
                         UserId={this.state.UserId}
                         isOpen={this.state.isOpen}
+                        editItemDetails={this.editItemDetails}
                         closeUserDetails={this.closeUserDetails}
+                        anchor={'right'}
                     />}
             </ >
         );

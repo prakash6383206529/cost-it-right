@@ -851,3 +851,83 @@ float: left;
   width: 150px;
   float: right;
 }
+.left-details {
+  width: 40%;
+  text-align: left;
+  font-size: 16px;
+  //font: Regular 16px/19px Roboto;
+  letter-spacing: 0px;
+  color: #A4ABC5;
+  text-transform: capitalize;
+  opacity: 1;
+}
+.right-details {
+  width: 60%;
+  text-align: left;
+  font-size: 16px;
+  //font: Regular 16px/19px Roboto;
+  letter-spacing: 0px;
+  color: #3D4465;
+  text-transform: capitalize;
+  opacity: 1;
+}
+.left-details, .right-details {
+  padding: 10px 0;
+  text-align: left;
+  float: left;
+}
+.plus-icon {
+  width: 22px;
+  height: 22px;
+  background: transparent url('../../assests/images/Group 10491.svg') 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
+.minus-icon {
+  width: 22px;
+  height: 22px;
+  background: transparent url('../../assests/images/Group 10490.svg') 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
+.Add-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url('../../assests/images/Group 10401.svg') 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.Edit-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url('../../assests/images/Group 10396.svg') 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.Delete-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url('../../assests/images/Group 10398.svg') 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.View-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url('../../assests/images/Group 10399.svg') 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.Download-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url('../../assests/images/Group 10400.svg') 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.Module-Name {
+text-align: left;
+font-size: 16px;
+//font: Regular 16px/19px Roboto;
+letter-spacing: 0px;
+color: #8A91AC;
+opacity: 1;
+}
