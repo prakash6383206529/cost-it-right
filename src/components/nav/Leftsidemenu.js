@@ -1,5 +1,5 @@
 import React from "react";
-import MetisMenu from 'react-metismenu';
+import MetisMenu from "react-metismenu";
 import "./LeftMenu.scss";
 
 function Leftmenu() {
