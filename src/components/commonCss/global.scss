@@ -1,12 +1,23 @@
 @import "./cssVariable.scss";
 @import "./style.scss";
-@import url("https://fonts.googleapis.com/css?family=Titillium+Web:300,400,600,700");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;1,400&display=swap");
 
 body {
-  font-family: "Titillium Web", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
   position: relative;
 }
-
+ul,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 button:focus {
   outline: 0;
 }
@@ -345,6 +356,16 @@ p {
   }
 }
 
+/*Right Content Css*/
+.content-page {
+  margin-left: 240px;
+  overflow: hidden;
+  padding: 0 15px 65px 15px;
+  min-height: 80vh;
+  margin-top: 70px;
+}
+/*Footer Content Css*/
+
 // common modal design
 .modal {
   .modal-content {
@@ -441,7 +462,7 @@ button .fas {
 }
 
 .rrt-confirm-holder .rrt-confirm .rrt-message {
-  font-family: "Titillium Web", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
 }
 
 .banner-section {
@@ -481,13 +502,15 @@ button .fas {
 }
 
 footer {
-  background: rgb(58, 53, 53);
-  padding: 15px 0;
-  color: #fff;
-  margin-top: 25px;
-
+  bottom: 0;
+  padding: 19px 15px 20px;
+  position: absolute;
+  right: 0;
+  color: #98a6ad;
+  left: 240px;
+  background-color: #eeeff3;
   a.nav-link {
-    color: #fff;
+    color: $colorPrimary;
     font-size: 0.9rem;
   }
 }
@@ -532,7 +555,7 @@ label {
 
 form .form-control {
   font-size: 1rem;
-  font-family: "Titillium Web", sans-serif;
+  font-family: "Roboto", sans-serif !important;
   padding: 0;
 }
 
@@ -934,5 +957,5 @@ body {
 }
 
 .Ext.phoneNumber.col-md-3 {
-    float: left;
+  float: left;
 }

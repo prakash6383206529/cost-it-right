@@ -303,28 +303,102 @@ class SideBar extends Component {
     const isLoggedIn = isUserLoggedIn();
     return (
       <nav>
-        <div className="flex-conatiner sign-social before-login">
+        <div className="flex-conatiner sign-social ">
           <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
         </div>
+        <div>
+          <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
+            <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
+              <img src={require('../../assests/images/logo.png')} alt='Cost It Rights' height="30" />
+            </a>
+            <button className="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div className="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+              <ul className="navbar-nav ml-auto">
+                <li className="nav-item active d-xl-inline-block">
+                  <div className="dropdown">
+                    <a className="dropdown-toggle nav-link bell" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i className="fa fa-bell" aria-hidden="true"></i>
+                      <span className="count">2</span>
+                    </a>
+                    <div className="dropdown-menu preview-list" aria-labelledby="dropdownMenuLink">
+                      <a className="dropdown-item py-3">
+                        <p className="mb-0 font-weight-medium float-left">You have 7 unread mails </p>
+                        <span className="badge badge-pill badge-primary float-right">View all</span>
+                      </a>
+                      <a className="dropdown-item preview-item">
+                        <div className="preview-thumbnail">
+                          <img src="../../assests/images/user-pic.png" alt="image" className="img-sm profile-pic" /> </div>
+                        <div className="preview-item-content flex-grow py-2">
+                          <p className="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
+                          <p className="font-weight-light small-text"> The meeting is cancelled </p>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </li>
+                <li className="nav-item d-xl-inline-block">
+                  <a className="nav-link" href="#"><i className="fa fa-cog" aria-hidden="true"></i></a>
+                </li>
+                <li className="nav-item d-xl-inline-block">
+                  <a className="nav-link" href="#"><i className="fa fa-question-circle" aria-hidden="true"></i>
+                  </a>
+                </li>
+                <li className="nav-item d-xl-inline-block">
+                  <div className="nav-link-user">
+                    <Nav className="ml-auto top-menu logout d-inline-flex">
+                      <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+                        <DropdownToggle caret>
+                          <img className="img-xs rounded-circle" src={require('../../assests/images/user-pic.png')} alt='Cost It Rights' />
+                          {isLoggedIn ? userData.Name : 'Login'}
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          {!isLoggedIn && <DropdownItem header>
+                            <Link className="bell-notifcation-icon" to="/login">
+                              Login
+                          </Link>
+                          </DropdownItem>}
+                          {isLoggedIn && <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>}
+                        </DropdownMenu>
+                      </Dropdown>
+                      <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
+                    </Nav>
+                  </div>
 
-        <Nav className="ml-auto top-menu logout">
-          <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-            <DropdownToggle caret>
-              {isLoggedIn ? userData.Name : 'Login'}
-            </DropdownToggle>
-            <DropdownMenu>
-              {!isLoggedIn && <DropdownItem header>
-                <Link className="bell-notifcation-icon" to="/login">
-                  Login
-                </Link>
-              </DropdownItem>}
+                </li>
 
-              {isLoggedIn && <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>}
-            </DropdownMenu>
-          </Dropdown>
-          <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
-        </Nav>
-        <Navbar className="menu-bottom-list " expand="md">
+              </ul>
+
+            </div>
+          </nav>
+          <div className="nav-scroller bg-white shadow-sm header-secondry">
+            <nav className="nav nav-underline">
+              <a className="nav-link active" href="#">
+                <img className="" src={require('../../assests/images/sydney-opera-house.svg')} alt='sydney-opera-house' /><span>Dashboard</span></a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
+              </a>
+              <a className="nav-link additional-masters" href="#">
+                <img className="" src={require('../../assests/images/list-add.png')} alt='List' /><span>Additional Masters</span></a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/chart.svg')} alt='chart' />
+                <span>Report</span>
+              </a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/imac.svg')} alt='imac' />
+                <span>Simulation</span></a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/html.svg')} alt='html' />
+                <span>Technology</span></a>
+              <a className="nav-link" href="#">
+                <img className="" src={require('../../assests/images/men.svg')} alt='men' />
+                <span>Users</span></a>
+            </nav>
+          </div>
+        </div>
+
+        <Navbar className="menu-bottom-list " expand="md" style={{ display: "none" }}>
 
           {isLoggedIn &&
             <Collapse isOpen={this.state.isOpen} navbar>
@@ -335,88 +409,9 @@ class SideBar extends Component {
                     this.renderMenus(item.Text)
                   )
                 })}
-
-
-                {/* <NavItem>
-                  <NavLink href="/">Dashboard</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink href="/mass-upload">Mass Upload</NavLink>
-                </NavItem> 
-                <NavItem>
-                  <NavLink href="/part-bom-register">Part & BOM Register</NavLink>
-                </NavItem> */}
-
-                {/* <li className="nav-item dropdown">
-                  <a className="nav-link " href="/" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dashboard</a>
-                </li> */}
-
-                {/* <li className="nav-item dropdown">
-                  <a className="nav-link " href="/mass-upload" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mass Upload</a>
-                </li> */}
-
-                {/* <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href="/plant-master">Plant Master</a>
-                    <a className="dropdown-item" href="/supplier-master">Supplier Master</a>
-                    <a className="dropdown-item" href="/raw-material-master">Raw Material Master</a>
-                    <a className="dropdown-item" href="/PartMaster">Part Master</a>
-                    <a className="dropdown-item" href="/bom-master">BOM Master Old</a>
-                    <a className="dropdown-item" href="/part-bom-register">BOM Master</a>
-                    <a className="dropdown-item" href="/bop-master">BOP Master</a>
-                    <a className="dropdown-item" href="/other-operation">Other Operation</a>
-                    <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
-                    <a className="dropdown-item" href="/mhr-master">Machine Rate Master</a>
-                    <a className="dropdown-item" href="/machine-type-master">Machine Type Master</a>
-                    <a className="dropdown-item" href="/machine-master">Machine Master</a>
-                    <a className="dropdown-item" href="/power-master">Power Master</a>
-                  </div>
-                </li> */}
-
-                {/* <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Additional Masters</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown1">
-                    <a className="dropdown-item" href="/operation-master">Process Operation</a>
-                    <a className="dropdown-item" href='/UOMMaster'>UOM Master</a>
-                    <a className="dropdown-item" href='/category-master'>Category Master</a>
-                    <a className="dropdown-item" href="/freight-master">Freight Master</a>
-                    <a className="dropdown-item" href="/labour-master">Labour Master</a>
-                    <a className="dropdown-item" href="/overhead-profit-master">Overhead and Profit</a>
-                    <a className="dropdown-item" href="/depreciation-master">Depreciation Master</a>
-                    <a className="dropdown-item" href="/process-master">Process MHR Master</a>
-                    <a className="dropdown-item" href="/interest-rate-master">Interest Rate Master</a>
-                    <a className="dropdown-item" href="/fuel-master">Fuel Master</a>
-                    <a className="dropdown-item" href="/reason-master">Reason Master</a>
-                  </div>
-                </li> */}
-
-                {/* <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Report</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href='#'>Contribution Report</a>
-                  </div>
-                </li> */}
-
-                {/* <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Technology</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href='/costing'>Sheet metal</a>
-                  </div>
-                </li> */}
-
                 <li className="nav-item dropdown">
                   <a className="nav-link " href="/mass-upload" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mass Upload</a>
                 </li>
-
-                {/* <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Profile</a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href='/user'>User</a>
-                    <a className="dropdown-item" href='/privilege'>Privilege</a>
-                  </div>
-                </li> */}
-
               </Nav>
             </Collapse>}
         </Navbar>
