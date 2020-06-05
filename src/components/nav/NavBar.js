@@ -97,10 +97,12 @@ class SideBar extends Component {
         return this.renderReportAnalytics(module);
       case 'Technology':
         return this.renderTechnology(module);
+      case 'Simulation':
+        return this.renderSimulation(module);
       case 'Users':
         return this.renderUser(module);
-      case 'Privilege Permission':
-        return this.renderPrivilege(module);
+      // case 'Privilege Permission':
+      //   return this.renderPrivilege(module);
       case 'AuditLog':
         return this.renderAuditLog(module);
       default:
@@ -118,9 +120,10 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (
-            <li className="nav-item dropdown">
-              <a className="nav-link " href="/" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dashboard</a>
-            </li>
+            <a className="nav-link active" href="/">
+              <img className="" src={require('../../assests/images/sydney-opera-house.svg')} alt='sydney-opera-house' />
+              <span>{module}</span>
+            </a>
           )
         }
         return null;
@@ -151,43 +154,14 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (<>
-            <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
-              <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a className="dropdown-item" href="/plant-master">Plant</a>
-                <a className="dropdown-item" href="/supplier-master">Supplier</a>
-                <a className="dropdown-item" href="/raw-material-master">Raw Material</a>
-                {/* <a className="dropdown-item" href="/material-master">Raw Material Detail Master</a> */}
-                {/* <a className="dropdown-item" href="/PartMasterOld">Part</a> */}
-                <a className="dropdown-item" href="/PartMaster">Part</a>
-                <a className="dropdown-item" href="/bom-master">BOM Master Old</a>
-                <a className="dropdown-item" href="/part-bom-register">Bill Of Material</a>
-                <a className="dropdown-item" href="/bop-master">Bought Out Parts</a>
-                <a className="dropdown-item" href="/other-operation">Other Operation</a>
-                <a className="dropdown-item" href="/ced-other-operation">CED Other Operation</a>
-                <a className="dropdown-item" href="/mhr-master">Machine Rate</a>
-                <a className="dropdown-item" href="/machine-type-master">Machine Type</a>
-                <a className="dropdown-item" href="/machine-master">Machine</a>
-                <a className="dropdown-item" href="/power-master">Power</a>
-              </div>
-            </li>
-
-            <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Additional Masters</a>
-              <div className="dropdown-menu" aria-labelledby="navbarDropdown1">
-                <a className="dropdown-item" href="/operation-master">Process Operation</a>
-                <a className="dropdown-item" href='/UOMMaster'>UOM</a>
-                <a className="dropdown-item" href='/category-master'>Category</a>
-                <a className="dropdown-item" href="/freight-master">Freight</a>
-                <a className="dropdown-item" href="/labour-master">Labour</a>
-                <a className="dropdown-item" href="/overhead-profit-master">Overhead and Profit</a>
-                <a className="dropdown-item" href="/depreciation-master">Depreciation</a>
-                <a className="dropdown-item" href="/process-master">Process MHR</a>
-                <a className="dropdown-item" href="/interest-rate-master">Interest Rate</a>
-                <a className="dropdown-item" href="/fuel-master">Fuel</a>
-                <a className="dropdown-item" href="/reason-master">Reason</a>
-              </div>
-            </li>
+            <a className="nav-link" href="/plant-master">
+              <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
+            </a>
+            <a className="nav-link additional-masters" href="/operation-master">
+              <img className="" src={require('../../assests/images/list-add.png')} alt='List' /><span>Additional Masters</span>
+            </a>
+            {/* <a className="dropdown-item" href="/material-master">Raw Material Detail Master</a> */}
+            {/* <a className="dropdown-item" href="/PartMasterOld">Part</a> */}
           </>)
         }
         return null;
@@ -205,12 +179,12 @@ class SideBar extends Component {
     return (
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
-          return (<li className="nav-item dropdown">
-            <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Report</a>
-            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a className="dropdown-item" href='#'>Contribution Report</a>
-            </div>
-          </li>)
+          return (
+            <a className="nav-link" href="/report-analytics">
+              <img className="" src={require('../../assests/images/chart.svg')} alt='chart' />
+              <span>Report</span>
+            </a>
+          )
         }
         return null;
       })
@@ -226,12 +200,33 @@ class SideBar extends Component {
     return (
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
-          return (<li className="nav-item dropdown">
-            <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Technology</a>
-            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a className="dropdown-item" href='/costing'>Sheet metal</a>
-            </div>
-          </li>)
+          return (
+            <a className="nav-link" href="/costing">
+              <img className="" src={require('../../assests/images/html.svg')} alt='html' />
+              <span>Costing</span>
+            </a>
+          )
+        }
+        return null;
+      })
+    )
+  }
+
+  /**
+  * @method renderSimulation
+  * @description Render Simulation.
+  */
+  renderSimulation = (module) => {
+    const { menusData } = this.props;
+    return (
+      menusData && menusData.map((el, i) => {
+        if (el.ModuleName == module) {
+          return (
+            <a className="nav-link" href="/simulation">
+              <img className="" src={require('../../assests/images/imac.svg')} alt='imac' />
+              <span>Simulation</span>
+            </a>
+          )
         }
         return null;
       })
@@ -248,9 +243,10 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (
-            <li className="nav-item dropdown">
-              <a className="nav-link " href="/user" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">User</a>
-            </li>
+            <a className="nav-link" href="/user">
+              <img className="" src={require('../../assests/images/men.svg')} alt='men' />
+              <span>Users</span>
+            </a>
           )
         }
         return null;
@@ -288,9 +284,10 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (
-            <li className="nav-item dropdown">
-              <a className="nav-link " href="/audit-log" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Audit Log</a>
-            </li>
+            <a className="nav-link" href="/auditlog">
+              <img className="" src={require('../../assests/images/men.svg')} alt='men' />
+              <span>Audit Log</span>
+            </a>
           )
         }
         return null;
@@ -367,54 +364,19 @@ class SideBar extends Component {
                   </div>
 
                 </li>
-
               </ul>
-
             </div>
           </nav>
-          <div className="nav-scroller bg-white shadow-sm header-secondry">
-            <nav className="nav nav-underline">
-              <a className="nav-link active" href="#">
-                <img className="" src={require('../../assests/images/sydney-opera-house.svg')} alt='sydney-opera-house' /><span>Dashboard</span></a>
-              <a className="nav-link" href="#">
-                <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
-              </a>
-              <a className="nav-link additional-masters" href="#">
-                <img className="" src={require('../../assests/images/list-add.png')} alt='List' /><span>Additional Masters</span></a>
-              <a className="nav-link" href="#">
-                <img className="" src={require('../../assests/images/chart.svg')} alt='chart' />
-                <span>Report</span>
-              </a>
-              <a className="nav-link" href="#">
-                <img className="" src={require('../../assests/images/imac.svg')} alt='imac' />
-                <span>Simulation</span></a>
-              <a className="nav-link" href="#">
-                <img className="" src={require('../../assests/images/html.svg')} alt='html' />
-                <span>Technology</span></a>
-              <a className="nav-link" href="#">
-                <img className="" src={require('../../assests/images/men.svg')} alt='men' />
-                <span>Users</span></a>
-            </nav>
-          </div>
-        </div>
-
-        <Navbar className="menu-bottom-list " expand="md" style={{ display: "none" }}>
 
           {isLoggedIn &&
-            <Collapse isOpen={this.state.isOpen} navbar>
-              <Nav className="ml-auto menu-list">
-
+            <div className="nav-scroller bg-white shadow-sm header-secondry">
+              <nav className="nav nav-underline">
                 {moduleSelectList && moduleSelectList.map((item, index) => {
-                  return (
-                    this.renderMenus(item.Text)
-                  )
+                  return this.renderMenus(item.Text)
                 })}
-                <li className="nav-item dropdown">
-                  <a className="nav-link " href="/mass-upload" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mass Upload</a>
-                </li>
-              </Nav>
-            </Collapse>}
-        </Navbar>
+              </nav>
+            </div>}
+        </div>
       </nav>
     );
   }

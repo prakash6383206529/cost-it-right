@@ -59,7 +59,7 @@ class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visibelPageNotFound: false
+      visibelPageNotFound: false,
     };
   }
 
@@ -83,7 +83,14 @@ class Main extends Component {
     this.props.showUserData(userData)
   }
 
+  setSidebarLinks = (linkText) => {
+    this.setState({
+      sidebarLinks: linkText
+    })
+  }
+
   render() {
+    const isLogin = reactLocalStorage.getObject("isUserLoggedIn");
     return (
       <Suspense fallback={<Loader />}>
         <div>
@@ -111,10 +118,9 @@ class Main extends Component {
                 </div>
               </div>
             </div>}
-          <Breadcrumb />
-          <LeftMenu />
+          {isLogin && <Breadcrumb />}
+          {isLogin && <LeftMenu {...this.props} />}
           <div className="content-page">
-            <h1>hello alll</h1>
             <div className=" middleContainer">
               <Switch>
 

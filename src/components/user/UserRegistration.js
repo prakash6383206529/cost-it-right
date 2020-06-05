@@ -834,7 +834,7 @@ class UserRegistration extends Component {
             CityName: department.label,
             UserProfileId: registerUserData.UserProfileId,
             UserName: values.email,
-            Password: values.Password,
+            Password: this.state.isShowPwdField ? values.Password : '',
             RoleId: role.value,
             PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
             DepartmentId: department.value,
