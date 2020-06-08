@@ -123,10 +123,8 @@ class Main extends Component {
           <div className="content-page">
             <div className=" middleContainer">
               <Switch>
-
                 {/* <Route exact path="/" component={Homepage} /> */}
                 <Route exact path="/" component={AuthMiddleware(Dashboard)} />
-
                 <Route path="/login" render={(props) =>
                   <Login
                     {...props}

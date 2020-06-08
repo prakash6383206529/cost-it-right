@@ -2,13 +2,12 @@
 @import "../commonCss/global.scss";
 
 .left-side-menu {
-    width: 240px;
+    width: 205px;
     bottom: 0;
     padding: 0;
     position: fixed;
     transition: all 0.1s ease-out;
     top: 139px;
-    border: #ff6600 1px solid;
     .h-100 {
         height: 100%;
     }

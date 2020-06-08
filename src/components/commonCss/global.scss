@@ -6,6 +6,12 @@ body {
   font-family: "Roboto", sans-serif !important;
   position: relative;
 }
+body a {
+  color: $colorPrimary;
+}
+body a:hover {
+  color: $headinlightgblack;
+}
 ul,
 li,
 h1,
@@ -21,7 +27,10 @@ h6 {
 button:focus {
   outline: 0;
 }
-
+a,
+button {
+  cursor: pointer;
+}
 a:hover {
   text-decoration: none;
   color: $text-hover;
@@ -30,7 +39,66 @@ a:hover {
 :focus {
   outline: 0;
 }
-
+::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  text-align: left;
+  font-size: $font-16;
+  letter-spacing: 0px;
+  color: #ff6600;
+  text-transform: capitalize;
+  opacity: 1;
+}
+::-moz-placeholder {
+  /* Firefox 19+ */
+  text-align: left;
+  font-size: $font-16;
+  letter-spacing: 0px;
+  color: #a4abc5;
+  text-transform: capitalize;
+  opacity: 1;
+}
+:-ms-input-placeholder {
+  /* IE 10+ */
+  text-align: left;
+  font-size: $font-16;
+  letter-spacing: 0px;
+  color: #a4abc5;
+  text-transform: capitalize;
+  opacity: 1;
+}
+:-moz-placeholder {
+  /* Firefox 18- */
+  text-align: left;
+  font-size: $font-16;
+  letter-spacing: 0px;
+  color: #a4abc5;
+  text-transform: capitalize;
+  opacity: 1;
+}
+.btn-primary {
+  padding: 0.5rem 1rem;
+  background: #256bd1 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 10px #0000000f;
+  border-radius: 4px;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+  font-size: $font-14;
+  text-decoration: none;
+  color: $white;
+  text-transform: uppercase;
+}
+.btn-primary,
+.apply,
+.save-btn,
+.btn-secondary,
+.add-button-big {
+  &:hover,
+  &:focus,
+  &:not(.disabled):active:focus {
+    background-color: #1d59af;
+  }
+}
 img {
   max-width: 100%;
 }
@@ -38,19 +106,40 @@ img {
 .mt-ten {
   margin-top: 10px;
 }
+.mt-15 {
+  margin-top: 15px;
+}
 
 .mt-twenty {
   margin-top: 20px;
 }
-
+.mb-0 {
+  margin-bottom: 0 !important;
+}
 .pt-twenty {
   padding-bottom: 20px;
 }
-
+.mr5 {
+  margin-right: 5px;
+}
+.mr10 {
+  margin-right: 10px;
+}
 .pt-5 {
   padding-top: 3rem !important;
 }
-
+.pl-0 {
+  padding-left: 0 !important;
+}
+.pr-0 {
+  padding-right: 0 !important;
+}
+.pt-20 {
+  padding-top: 20px;
+}
+.pt-30 {
+  padding-top: 30px;
+}
 .mt-4 {
   margin-top: 1.5rem !important;
 }
@@ -358,12 +447,99 @@ p {
 
 /*Right Content Css*/
 .content-page {
-  margin-left: 240px;
+  margin-left: 205px;
   overflow: hidden;
-  padding: 0 15px 65px 15px;
+  padding: 16px 0px 65px 12px;
   min-height: 80vh;
-  margin-top: 70px;
+  margin-top: 139px;
+  .nav-item {
+    margin-right: 48px;
+  }
+  h1,
+  h2 {
+    text-align: left;
+    font-size: 26px;
+    color: $headingblack;
+    opacity: 1;
+    margin-bottom: 14px;
+    font-weight: $font-medium;
+  }
+  .nav-tabs {
+    border-bottom: 1px solid #d9e2f0;
+    a.nav-link {
+      color: #7e7e7e;
+      font-size: $font-15;
+      font-weight: $font-regular;
+      padding-left: 0;
+      padding-right: 0;
+      padding-top: 0;
+      background: transparent;
+      border: none;
+      &:hover {
+        border: none;
+        background: transparent;
+        color: $highlightcolor;
+        border-bottom: $highlightcolor 2px solid;
+      }
+    }
+    .nav-link.active {
+      color: $highlightcolor;
+      background-color: transparent;
+      border: none;
+      border-bottom: $highlightcolor 2px solid;
+    }
+  }
+  .filter-block {
+    .flex-fill,
+    .flex-fills {
+      padding-right: 10px;
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+    h5 {
+      color: $headinlightgblack;
+      font-size: $font-16;
+      position: $positio-relative;
+      padding: 7px 15px 7px 10px;
+      &::before {
+        content: "";
+        position: $positio-absolute;
+        border-left: $highlightcolor 2px solid;
+        width: 2px;
+        left: 0;
+        top: 0;
+        height: 100%;
+      }
+    }
+    .css-yk16xz-control,
+    .css-1pahdxg-control {
+      border: 1px solid #c2cbe8;
+      color: #a4abc5;
+      min-height: 32px !important;
+      font-size: $font-14;
+    }
+    .css-tlfecz-indicatorContainer {
+      padding: 5px;
+    }
+    .css-1hwfws3 {
+      padding: 1px 8px;
+    }
+    button.reset,
+    button.apply {
+      font-size: $font-14;
+      text-transform: uppercase;
+      font-weight: $font-medium;
+    }
+    button.reset {
+      color: $colorPrimary;
+    }
+    button.apply {
+      color: $white;
+    }
+  }
 }
+
 /*Footer Content Css*/
 
 // common modal design
@@ -426,7 +602,7 @@ button .fas {
 .custom-checkbox {
   position: relative;
   padding-left: 27px;
-  margin-top: 4px;
+  margin-top: 0px;
 
   input[type="checkbox"] {
     opacity: 0;
@@ -439,21 +615,21 @@ button .fas {
     width: 18px;
     height: 18px;
     background-color: transparent;
-    border: 1px solid #a8b6c1;
-    top: 6px;
+    border: 1px solid #4dc771;
+    top: 3px;
     left: 0;
     border-radius: 3px;
   }
 
   input[type="checkbox"]:checked + .before-box:before {
     content: "\2714";
-    font-size: 12px;
+    font-size: 13px;
     text-align: center;
     color: #fff;
-    font-weight: 600;
-    line-height: 15px;
-    border-color: #6cb827;
-    background: #6cb827;
+    font-weight: 300;
+    line-height: 17px;
+    border-color: #4dc771;
+    background: #4dc771;
   }
 }
 
@@ -549,8 +725,10 @@ footer {
 }
 
 label {
-  margin-bottom: 1px !important;
-  color: #87939f;
+  color: $headinlightgblack;
+  font-size: $font-15;
+  font-weight: $font-regular;
+  margin-bottom: 5px !important;
 }
 
 form .form-control {

@@ -294,6 +294,7 @@ class UserRegistration extends Component {
       if (data && data.isEditFlag) {
          this.setState({
             isLoader: true,
+            isEditFlag: true,
             isShowForm: true,
             isEditFlag: true,
             IsShowAdditionalPermission: true,
@@ -385,7 +386,7 @@ class UserRegistration extends Component {
       return actionHeads && actionHeads.map((item, index) => {
          if (item.Value == 0) return false;
          return (
-            <th>
+            <th className="crud-label">
                <div className={item.Text}></div>
                {item.Text}
             </th>
@@ -466,6 +467,13 @@ class UserRegistration extends Component {
                            checked={item.IsChecked}
                            value={item.ActionId}
                            id="normal-switch"
+                           onColor="#4DC771"
+                           onHandleColor="#ffffff"
+                           offColor="#959CB6"
+                           checkedIcon={false}
+                           uncheckedIcon={false}
+                           height={18}
+                           width={40}
                         />
                      </label>
                   }
@@ -789,6 +797,11 @@ class UserRegistration extends Component {
          this.child.getUpdatedData();
       })
    }
+   formToggle = () => {
+      this.setState({
+         isShowForm: !this.state.isShowForm
+      })
+   }
 
    /**
     * @name onSubmit
@@ -1068,27 +1081,27 @@ class UserRegistration extends Component {
             {/* {isLoader && <Loader />} */}
             <div className="login-container signup-form">
                <div className="row">
-                  {!this.state.isShowForm && <div className="col-md-12" >
+                  {/* {!this.state.isShowForm && <div className="col-md-12" >
                      <button
                         type="button"
                         className={'user-btn mb15'}
                         onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}><div className={'plus'}></div>ADD USER</button>
-                  </div>}
+                  </div>} */}
 
                   {this.state.isShowForm &&
                      <div className="col-md-12">
-                        <div className="shadow-lg login-form">
+                        <div className="shadow-lgg login-formg pt-30">
                            <div className="row">
                               <div className="col-md-6">
-                                 <div className="form-heading">
+                                 <div className="form-heading mb-0">
                                     <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
                                  </div>
                               </div>
                               {this.state.isEditFlag && <div className="col-md-6">
-                                 <a href="javascript:void(0)" className={'linkButton'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</a>
+                                 <a href="javascript:void(0)" className={'linkButton btn-primary'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</a>
                               </div>}
                            </div>
-                           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser">
 
                               <HeaderTitle
                                  title={'Personal Details:'}
@@ -1149,7 +1162,7 @@ class UserRegistration extends Component {
                                  </div>
                                  <div className="input-group col-md-3 input-withouticon">
                                     <div className="row form-group">
-                                       <div className="Phone phoneNumber col-md-9 input-withouticon">
+                                       <div className="Phone phoneNumber col-md-8 input-withouticon">
                                           <Field
                                              label="Phone Number"
                                              name={"PhoneNumber"}
@@ -1165,7 +1178,7 @@ class UserRegistration extends Component {
                                        {/* <div className="dash phoneNumber col-md-1 input-withouticon">
                                           {''}
                                        </div> */}
-                                       <div className="Ext phoneNumber col-md-3 input-withouticon">
+                                       <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
                                           <Field
                                              label="Extension"
                                              name={"Extension"}
@@ -1175,7 +1188,7 @@ class UserRegistration extends Component {
                                              component={renderText}
                                              //required={true}
                                              maxLength={5}
-                                             customClassName={'withBorder'}
+                                             customClassName={'withBorder w100'}
                                           />
                                        </div>
                                     </div>
@@ -1369,7 +1382,7 @@ class UserRegistration extends Component {
                                        className="custom-checkbox"
                                        onChange={this.onPressUserPermission}
                                     >
-                                       Grant userwise permission
+                                       Grant User Wise Permission
                                                 <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
                                        <span
                                           className=" before-box"
@@ -1381,9 +1394,9 @@ class UserRegistration extends Component {
                               </div>
 
                               {this.state.IsShowAdditionalPermission &&
-                                 <div className=" row form-group">
+                                 <div className=" row form-group grant-user-grid">
                                     <div className="col-md-12">
-                                       <Table className="table" size="sm" >
+                                       <Table className="table table-bordered" size="sm" >
                                           <thead>
                                              <tr>
                                                 <th>{`Module Name`}</th>
@@ -1416,12 +1429,12 @@ class UserRegistration extends Component {
                                                       }
                                                       </td>
 
-                                                      <td >{<input
+                                                      <td className="select-all-block"> {<input
                                                          type="checkbox"
                                                          value={'All'}
                                                          className={this.isCheckAll(index, item.Actions) ? 'selected-box' : 'not-selected-box'}
                                                          checked={this.isCheckAll(index, item.Actions)}
-                                                         onClick={() => this.selectAllHandler(index, item.Actions)} />}</td>
+                                                         onClick={() => this.selectAllHandler(index, item.Actions)} />} <span>Select All</span></td>
 
                                                       {this.renderAction(item.Actions, index)}
                                                    </tr>
@@ -1501,9 +1514,9 @@ class UserRegistration extends Component {
                                        :
                                        <button
                                           type="button"
-                                          className={'add-button'}
+                                          className={'add-button add-button-big'}
                                           onClick={this.setTechnologyLevel}
-                                       ><div className={'plus'}></div>ADD</button>}
+                                       ><div className={'plus'}></div><span>ADD</span></button>}
                                  </div>
                               </div>
 
@@ -1553,12 +1566,12 @@ class UserRegistration extends Component {
                                     onClick={this.cancel}
                                     type="submit"
                                     value="CANCEL"
-                                    className="reset mr15"
+                                    className="reset mr15 cancel-btn"
                                  />
                                  <button
                                     type="submit"
                                     disabled={isSubmitted ? true : false}
-                                    className="submit-button mr5"
+                                    className="submit-button mr5 save-btn"
                                  >
                                     {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                                  </button>
@@ -1580,7 +1593,10 @@ class UserRegistration extends Component {
             </div>
             <UsersListing
                onRef={ref => (this.child = ref)}
-               getUserDetail={this.getUserDetail} />
+               getUserDetail={this.getUserDetail}
+               formToggle={this.formToggle}
+               isShowForm={this.state.isShowForm}
+            />
          </div>
       );
    }
