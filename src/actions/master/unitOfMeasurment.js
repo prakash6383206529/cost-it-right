@@ -9,7 +9,8 @@ import {
     CREATE_PART_FAILURE,
     CREATE_PART_SUCCESS,
     GET_UOM_SUCCESS,
-    GET_UOM_DATA_FAILURE
+    GET_UOM_DATA_FAILURE,
+    GET_UNIT_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -121,7 +122,7 @@ export function createUnitOfMeasurementAPI(data, callback) {
  * @method deleteUnitOfMeasurementAPI
  * @description delete UOM 
  */
-export function deleteUnitOfMeasurementAPI(index, Id, callback) {
+export function deleteUnitOfMeasurementAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteUOMAPI}/${Id}`, headers)
@@ -138,7 +139,7 @@ export function deleteUnitOfMeasurementAPI(index, Id, callback) {
  * @method updateUnitOfMeasurementAPI
  * @description update UOM
  */
-export function updateUnitOfMeasurementAPI(uomId, requestData, callback) {
+export function updateUnitOfMeasurementAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.updateUOMAPI}`, requestData, headers)
@@ -148,5 +149,30 @@ export function updateUnitOfMeasurementAPI(uomId, requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+
+/**
+ * @method getUnitTypeListAPI
+ * @description Used to fetch Unit Type list for UOM
+ */
+export function getUnitTypeListAPI(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUnitTypeListAPI}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_UNIT_TYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

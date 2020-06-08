@@ -6,11 +6,12 @@ import {
     CREATE_PART_FAILURE,
     CREATE_PART_SUCCESS,
     GET_UOM_SUCCESS,
-    GET_UOM_DATA_FAILURE
+    GET_UOM_DATA_FAILURE,
+    GET_UNIT_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
-   
+
 };
 
 export default function UOMReducer(state = initialState, action) {
@@ -33,7 +34,7 @@ export default function UOMReducer(state = initialState, action) {
         case GET_UOM_DATA_SUCCESS:
             return {
                 ...state,
-                loading: false, 
+                loading: false,
                 unitOfMeasurementList: action.payload
             };
         case GET_UOM_DATA_FAILURE:
@@ -45,10 +46,16 @@ export default function UOMReducer(state = initialState, action) {
         case GET_UOM_SUCCESS:
             return {
                 ...state,
-                loading: false, 
+                loading: false,
                 unitOfMeasurementData: action.payload
             };
-            
+        case GET_UNIT_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                unitTypeList: action.payload
+            };
+
         case CREATE_PART_SUCCESS: {
             return {
                 ...state,
@@ -62,7 +69,7 @@ export default function UOMReducer(state = initialState, action) {
                 loading: false,
                 error: true
             };
-    
+
         default:
             return state;
     }

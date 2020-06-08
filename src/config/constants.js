@@ -66,6 +66,7 @@ export const API = {
   getAllMasterUOMAPI: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
   updateUOMAPI: `${BASE_URL}/masters-unit-of-measurement/update`,
   deleteUOMAPI: `${BASE_URL}/masters-unit-of-measurement/delete`,
+  getUnitTypeListAPI: `${BASE_URL}/configuration/select-list-get-unit-type`,
 
   //Api for the part master
 
@@ -489,6 +490,7 @@ export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS';
 export const GET_UOM_DATA_FAILURE = 'GET_UOM_DATA_FAILURE';
 export const GET_UOM_SUCCESS = 'GET_UOM_SUCCESS';
 export const UNIT_OF_MEASUREMENT_API_FAILURE = 'UNIT_OF_MEASUREMENT_API_FAILURE';
+export const GET_UNIT_TYPE_SELECTLIST_SUCCESS = 'GET_UNIT_TYPE_SELECTLIST_SUCCESS';
 
 //PART MASTER
 export const CREATE_PART_REQUEST = 'CREATE_PART_REQUEST';

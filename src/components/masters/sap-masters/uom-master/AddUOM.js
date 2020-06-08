@@ -2,20 +2,22 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
-import { renderText } from "../../../layout/FormInputs";
+import { required, maxLength25, minLength3 } from "../../../../helper/validation";
+import { renderText, searchableSelect } from "../../../layout/FormInputs";
 import {
     createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI,
-    getUnitOfMeasurementAPI
+    getUnitOfMeasurementAPI, getUnitTypeListAPI
 } from '../../../../actions/master/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from "../../../../helper/auth";
+import Drawer from '@material-ui/core/Drawer';
 
 class AddUOM extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            unitTypes: []
         }
     }
 
@@ -25,9 +27,17 @@ class AddUOM extends Component {
     */
     componentDidMount() {
         const { uomId, isEditFlag } = this.props;
+        this.props.getUnitTypeListAPI(() => { })
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
-                this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
+                this.props.getOneUnitOfMeasurementAPI(uomId, true, res => {
+                    const { unitTypeList } = this.props;
+                    if (res && res.data && res.data.Data) {
+                        let Data = res.data.Data;
+                        let tempObj = unitTypeList && unitTypeList.find(item => item.Value == Data.UnitTypeId)
+                        this.setState({ unitTypes: { label: tempObj.Text, value: tempObj.Value } })
+                    }
+                })
             })
         } else {
             this.props.getOneUnitOfMeasurementAPI('', false, res => { })
@@ -42,29 +52,63 @@ class AddUOM extends Component {
         this.props.onCancel();
     }
 
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+
+        this.props.closeDrawer('')
+    };
+
+    /**
+   * @method selectType
+   * @description Used show listing of unit of measurement
+   */
+    searchableSelectType = (label) => {
+        const { unitTypeList } = this.props;
+        const temp = [];
+
+        if (label === 'UnitType') {
+            unitTypeList && unitTypeList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+    }
+
+    /**
+     * @method unitTypeHandler
+     * @description Used to handle Unit Types
+     */
+    unitTypeHandler = (newValue, actionMeta) => {
+        this.setState({ unitTypes: newValue });
+    };
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        let loginUserId = loggedInUserId();
-        values.CreatedBy = loginUserId;
+        const { unitTypes } = this.state;
+
         /** Update detail of the existing UOM  */
         if (this.props.isEditFlag) {
             const { uomId } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
-                Name: values.Name,
-                Title: values.Title,
-                //Description: values.Description,
                 Id: uomId,
+                Unit: values.Unit,
+                UnitTypeId: unitTypes.value,
                 IsActive: true,
-                ModifiedBy: loginUserId,
+                ModifiedBy: loggedInUserId(),
             }
-            this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
+            this.props.updateUnitOfMeasurementAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
-                    this.toggleModel();
+                    //this.toggleModel();
+                    this.toggleDrawer('');
                     this.props.getUnitOfMeasurementAPI(res => { });
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR);
@@ -72,10 +116,16 @@ class AddUOM extends Component {
             });
         } else {
             /** Add detail for creating new UOM  */
-            this.props.createUnitOfMeasurementAPI(values, (res) => {
+            let reqData = {
+                Unit: values.Unit,
+                UnitTypeId: unitTypes.value,
+                CreatedBy: loggedInUserId()
+            }
+            this.props.createUnitOfMeasurementAPI(reqData, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.UOM_ADD_SUCCESS);
-                    this.toggleModel();
+                    //this.toggleModel();
+                    this.toggleDrawer('');
                     this.props.getUnitOfMeasurementAPI(res => { });
                 } else {
                     toastr.error(res.data.message);
@@ -91,75 +141,71 @@ class AddUOM extends Component {
     render() {
         const { handleSubmit, isEditFlag, reset } = this.props;
         return (
-            <Container className="top-margin">
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update UOM' : 'Add UOM'}</ModalHeader>
-                    <ModalBody>
-                        <Row>
-                            <Container>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label="UOM Name"
-                                                name={"Name"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="UOM Title"
-                                                name={"Title"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-                                    {/* <Row>
-                                        <Col md="12">
-                                            <Field
-                                                label="Description"
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row> */}
+            <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                <Container className="top-margin">
+                    <div className={'drawer-wrapper'}>
+                        <form
+                            noValidate
+                            className="form"
+                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                        >
+                            <Row>
+                                <Col>
+                                    <div className={'header-wrapper left'}>
+                                        <h3>{isEditFlag ? 'UPDATE UNIT' : 'ADD UNIT'}</h3>
+                                    </div>
+                                    <div
+                                        onClick={(e) => this.toggleDrawer(e)}
+                                        className={'close-button right'}>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <div className="input-group col-md-12 input-withouticon" >
+                                    <Field
+                                        label="UOM Name"
+                                        name={"Unit"}
+                                        type="text"
+                                        placeholder={''}
+                                        validate={[required, minLength3, maxLength25]}
+                                        component={renderText}
+                                        required={true}
+                                        maxLength={26}
+                                        customClassName={'withBorder'}
+                                    />
+                                </div>
+                                <div className="col-md-12" >
+                                    <Field
+                                        name="UnitTypeId"
+                                        type="text"
+                                        label="Unit Type"
+                                        component={searchableSelect}
+                                        placeholder={'Select Unit Type'}
+                                        options={this.searchableSelectType('UnitType')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={[required]}
+                                        //required={true}
+                                        handleChangeDescription={this.unitTypeHandler}
+                                        valueDescription={this.state.unitTypes}
+                                    />
+                                </div>
 
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-center">
-                                            <button type="submit" className="btn dark-pinkbtn" >
-                                                {isEditFlag ? 'Update' : 'Save'}
-                                            </button>
-                                            {!isEditFlag &&
-                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
-                                                    {'Reset'}
-                                                </button>}
-                                        </div>
-                                    </Row>
-                                </form>
-                            </Container>
-                        </Row>
-                    </ModalBody>
-                </Modal>
-            </Container >
+                            </Row>
+                            <Row className="sf-btn-footer no-gutters justify-content-between">
+                                <div className="col-sm-12 text-center">
+                                    <button type="submit" className="btn dark-pinkbtn" >
+                                        {isEditFlag ? 'Update' : 'Save'}
+                                    </button>
+                                    {!isEditFlag &&
+                                        <button type={'button'} className="btn btn-secondary" onClick={reset} >
+                                            {'Reset'}
+                                        </button>}
+                                </div>
+                            </Row>
+                        </form>
+                    </div>
+                </Container>
+            </Drawer>
         );
     }
 }
@@ -170,17 +216,14 @@ class AddUOM extends Component {
 * @param {*} state
 */
 function mapStateToProps({ unitOfMeasrement }) {
-    const { unitOfMeasurementData, unitOfMeasurementList } = unitOfMeasrement;
+    const { unitOfMeasurementData, unitOfMeasurementList, unitTypeList } = unitOfMeasrement;
     let initialValues = {};
     if (unitOfMeasurementData && unitOfMeasurementData !== undefined) {
         initialValues = {
-            Name: unitOfMeasurementData.Name,
-            Title: unitOfMeasurementData.Title,
-            //Description: unitOfMeasurementData.Description,
-            CreatedBy: unitOfMeasurementData.CreatedBy,
+            Unit: unitOfMeasurementData.Unit,
         }
     }
-    return { unitOfMeasurementData, initialValues, unitOfMeasurementList };
+    return { unitOfMeasurementData, initialValues, unitOfMeasurementList, unitTypeList };
 }
 
 /**
@@ -191,7 +234,10 @@ function mapStateToProps({ unitOfMeasrement }) {
 */
 export default connect(mapStateToProps, {
     createUnitOfMeasurementAPI,
-    updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI, getUnitOfMeasurementAPI
+    updateUnitOfMeasurementAPI,
+    getOneUnitOfMeasurementAPI,
+    getUnitOfMeasurementAPI,
+    getUnitTypeListAPI,
 })(reduxForm({
     form: 'addUOM',
     enableReinitialize: true,

@@ -8,6 +8,7 @@ import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 class UOMMaster extends Component {
     constructor(props) {
@@ -15,6 +16,8 @@ class UOMMaster extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            uomId: '',
+            dataList: [],
         }
     }
 
@@ -23,7 +26,16 @@ class UOMMaster extends Component {
      * @description  called before rendering the component
      */
     componentDidMount() {
-        this.props.getUnitOfMeasurementAPI(res => { });
+        this.getUOMDataList()
+    }
+
+    getUOMDataList = () => {
+        this.props.getUnitOfMeasurementAPI(res => {
+            if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                this.setState({ dataList: Data })
+            }
+        });
     }
 
     /**
@@ -31,22 +43,27 @@ class UOMMaster extends Component {
      * @description  used to open filter form 
      */
     openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
+        this.setState({
+            isOpen: true,
+            isEditFlag: false
+        })
     }
 
     /**
-     * @method onCancel
+     * @method closeDrawer
      * @description  used to cancel filter form
      */
-    onCancel = () => {
-        this.setState({ isOpen: false })
+    closeDrawer = (e = '') => {
+        this.setState({ isOpen: false }, () => {
+            this.getUOMDataList()
+        })
     }
 
     /**
-    * @method editPartDetails
-    * @description confirm delete part
+    * @method editItemDetails
+    * @description confirm delete UOM
     */
-    editPartDetails = (index, Id) => {
+    editItemDetails = (Id) => {
         this.setState({
             isEditFlag: true,
             isOpen: true,
@@ -55,13 +72,13 @@ class UOMMaster extends Component {
     }
 
     /**
-    * @method deletePart
-    * @description confirm delete part
+    * @method deleteItem
+    * @description confirm delete UOM
     */
-    deletePart = (index, Id) => {
+    deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(index, Id)
+                this.confirmDeleteUOM(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
@@ -72,15 +89,26 @@ class UOMMaster extends Component {
     * @method confirmDeleteUOM
     * @description confirm delete unit of measurement
     */
-    confirmDeleteUOM = (index, Id) => {
-        this.props.deleteUnitOfMeasurementAPI(index, Id, (res) => {
+    confirmDeleteUOM = (Id) => {
+        this.props.deleteUnitOfMeasurementAPI(Id, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-                this.props.getUnitOfMeasurementAPI(res => { });
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                this.getUOMDataList()
             }
         });
+    }
+
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
+    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell)} />
+                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+            </>
+        )
     }
 
     /**
@@ -88,7 +116,16 @@ class UOMMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, editIndex, uomId } = this.state;
+        const { isOpen, isEditFlag, uomId } = this.state;
+        const options = {
+            clearSearch: true,
+            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            //exportCSVText: 'Download Excel',
+            //onExportToCSV: this.onExportToCSV,
+            //paginationShowsTotal: true,
+            //paginationShowsTotal: this.renderPaginationShowsTotal,
+            //paginationSize: 2,
+        };
         return (
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader />} */}
@@ -97,51 +134,42 @@ class UOMMaster extends Component {
                         <h3>{`Unit of Measurement Master`}</h3>
                     </Col>
                     <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} UOM`}</Button>
+                        <button
+                            type={'button'}
+                            className={'user-btn'}
+                            onClick={this.openModel}>{`ADD UOM`}</button>
                     </Col>
                 </Row>
 
                 <hr />
                 <Row>
                     <Col>
-                        <Table className="table table-striped" bordered>
-                            {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>UOM Name</th>
-                                        <th>UOM Title</th>
-                                        {/* <th>UOM Description</th> */}
-                                        <th></th>
-                                    </tr>
-                                </thead>}
-                            <tbody>
-                                {this.props.unitOfMeasurementList && this.props.unitOfMeasurementList.length > 0 &&
-                                    this.props.unitOfMeasurementList.map((item, index) => {
-                                        return (
+                        <BootstrapTable
+                            data={this.state.dataList}
+                            striped={true}
+                            hover={true}
+                            options={options}
+                            search
+                            // exportCSV
+                            ignoreSinglePage
+                            ref={'table'}
+                            trClassName={'userlisting-row'}
+                            tableHeaderClass='my-custom-class'
+                            pagination>
+                            <TableHeaderColumn dataField="Unit" csvHeader='Full-Name' dataAlign="center" dataSort={true}>Unit</TableHeaderColumn>
+                            <TableHeaderColumn dataField="UnitType" dataSort={true}>Unit Type</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Id" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
-                                            <tr key={index}>
-                                                <td >{item.Name}</td>
-                                                <td>{item.Title}</td>
-                                                {/* <td>{item.Description}</td> */}
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editPartDetails(index, item.Id)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deletePart(index, item.Id)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.unitOfMeasurementList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
+                        </BootstrapTable>
                     </Col>
                 </Row>
                 {isOpen && (
                     <AddUOM
                         isOpen={isOpen}
-                        onCancel={this.onCancel}
+                        closeDrawer={this.closeDrawer}
                         isEditFlag={isEditFlag}
-                        editIndex={editIndex}
                         uomId={uomId}
+                        anchor={'right'}
                     />
                 )}
             </Container >

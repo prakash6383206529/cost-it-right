@@ -295,6 +295,7 @@ class UserRegistration extends Component {
          this.setState({
             isLoader: true,
             isShowForm: true,
+            isEditFlag: true,
             IsShowAdditionalPermission: true,
             isShowPwdField: false,
             UserId: data.UserId,
@@ -311,7 +312,7 @@ class UserRegistration extends Component {
                const CityObj = cityList.find(item => item.Value == Data.CityId)
                console.log('RoleObj', RoleObj)
                this.setState({
-                  isEditFlag: true,
+                  isEditFlag: false,
                   isLoader: false,
                   department: DepartmentObj != undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
                   role: RoleObj != undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
