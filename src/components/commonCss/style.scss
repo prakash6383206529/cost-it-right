@@ -1,9 +1,9 @@
+@import "./cssVariable.scss";
 @font-face {
   font-family: "icomoon";
   src: url("fonts/icomoon.eot?mx6nlh");
   src: url("fonts/icomoon.eot?mx6nlh#iefix") format("embedded-opentype"),
-    url("fonts/icomoon.ttf?mx6nlh") format("truetype"),
-    url("fonts/icomoon.woff?mx6nlh") format("woff"),
+    url("fonts/icomoon.ttf?mx6nlh") format("truetype"), url("fonts/icomoon.woff?mx6nlh") format("woff"),
     url("fonts/icomoon.svg?mx6nlh#icomoon") format("svg");
   font-weight: normal;
   font-style: normal;
@@ -638,7 +638,7 @@ button.add-btn {
   color: blue;
 }
 .login-container {
-    display: block !important;
+  display: block !important;
 }
 .multiselect-with-border {
   border: 1px solid #ccc;
@@ -650,8 +650,20 @@ button.add-btn {
   margin-bottom: 15px;
 }
 .withBorder input.form-control {
-  border: 1px solid #ccc;
+  border: 1px solid #c2cbe8;
 }
+.form-control {
+  height: calc(2.85rem + 2px);
+  padding: 12px !important;
+  border-radius: 4px !important;
+}
+
+.form-control,
+.manageuser .css-yk16xz-control {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
 .form-group.inputbox.withBorder {
   margin-bottom: 0;
   border-bottom: none;
@@ -674,73 +686,85 @@ button.add-btn {
 .Add {
   width: 32px;
   height: 32px;
-  background: transparent url('../../assests/images/Group 8861.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 8861.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
 }
 
 .Edit {
   width: 32px;
   height: 32px;
-  background: transparent url('../../assests/images/Group 8860.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 8860.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
+  cursor: pointer;
 }
 .Delete {
   width: 32px;
   height: 32px;
-  background: transparent url('../../assests/images/Group 8857.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 8857.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
 .View {
   width: 32px;
   height: 32px;
-  background: transparent url('../../assests/images/Group 8858.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 8858.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
 .Download {
   width: 32px;
   height: 32px;
-  background: transparent url('../../assests/images/Group 8859.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 8859.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
+}
+.Add,
+.Edit,
+.Delete,
+.View,
+.Download {
+  margin: 0 auto;
+  color: #3d4465;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 .selected-box {
   width: 18px;
   height: 18px;
-  background: transparent url('../../assests/images/Selection Control - Checkbox - On - Disabled.svg') 0% 0% no-repeat padding-box;
+  background: #ff6600;
   opacity: 1;
 }
 .not-selected-box {
   width: 18px;
   height: 18px;
-  background: transparent url('../../assests/images/Selection Control - Checkbox - Off - Enabled.svg') 0% 0% no-repeat padding-box;
+  background: #ff0000;
   opacity: 1;
 }
 .reset {
   width: 100px;
   height: 32px;
-  box-shadow: 0px 5px 10px #0000000F;
-  border: 2px solid #256BD1;
+  box-shadow: 0px 5px 10px #0000000f;
+  border: 2px solid #256bd1;
   border-radius: 4px;
   opacity: 1;
 }
+
 .apply {
   width: 100px;
-height: 32px;
-background: #256BD1 0% 0% no-repeat padding-box;
-box-shadow: 0px 5px 10px #0000000F;
-border-radius: 4px;
-opacity: 1;
-border: none;
-cursor: pointer;
+  height: 32px;
+  background: #256bd1 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 10px #0000000f;
+  border-radius: 4px;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
 }
 .user-btn {
   width: 120px;
   height: 32px;
-  background: #256BD1 0% 0% no-repeat padding-box;
-  box-shadow: 0px 5px 10px #0000000F;
+  background: #256bd1 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 10px #0000000f;
   border-radius: 4px;
   opacity: 1;
   border: none;
@@ -749,8 +773,8 @@ cursor: pointer;
 .submit-button {
   width: 120px;
   height: 32px;
-  background: #256BD1 0% 0% no-repeat padding-box;
-  box-shadow: 0px 5px 10px #0000000F;
+  background: #256bd1 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 10px #0000000f;
   border-radius: 4px;
   opacity: 1;
   border: none;
@@ -759,38 +783,81 @@ cursor: pointer;
 .add-button {
   width: 80px;
   height: 32px;
-  background: #256BD1 0% 0% no-repeat padding-box;
-  box-shadow: 0px 5px 10px #0000000F;
+  background: #256bd1 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 10px #0000000f;
   border-radius: 4px;
   opacity: 1;
   border: none;
   cursor: pointer;
 }
+.cancel-btn {
+  background-color: #fff;
+  background: transparent url(../../assests/images/cross.svg) 9px 12px no-repeat padding-box;
+  background-size: 11px 11px;
+  padding: 0 10px 0 16px;
+  border: 1px solid #8a91ac;
+  font-weight: 400;
+  color: #8a91ac;
+  cursor: pointer;
+  /* line-height: 10px; */
+  &:hover {
+    background-color: #e8e6e6;
+  }
+}
+.save-btn,
+.cancel-btn {
+  background-size: 11px 11px !important;
+  padding: 0 10px 0 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  height: 36px;
+}
+.save-btn {
+  background: #256bd1 url(../../assests/images/check-right.png) 14px 10px no-repeat padding-box;
+  color: #fff;
+  background-size: 19px 19px !important;
+  padding: 0 10px 0 10px;
+}
+
 .plus {
   width: 12px;
   height: 12px;
-  background: transparent url('../../assests/images/Path 15286.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Path 15286.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   position: absolute;
-    top: 10px;
+  top: 10px;
+}
+.add-button-big {
+  height: 48px;
+  line-height: 48px;
+  color: #fff;
+  font-size: 14px;
+  padding-left: 15px;
+  padding-right: 15px;
+  .plus {
+    top: 18px;
+  }
+  span {
+    margin-left: 10px;
+  }
 }
 .text-right {
   text-align: right;
 }
 .link {
-  color: #256BD1;
+  color: #256bd1;
   font-size: 14px;
   cursor: pointer;
 }
 tr.userlisting-row td {
   font-size: 14px;
-  color: #8A91AC;
+  color: #8a91ac;
 }
 .my-custom-class {
   margin: 0;
 }
 .my-custom-class th {
-  color: #3D4465;
+  color: #3d4465;
   font-size: 14px;
 }
 .withBorderEmail .inputbox.input-group {
@@ -799,6 +866,13 @@ tr.userlisting-row td {
 }
 .withBorderEmail .input-group-prepend {
   margin-right: 5px;
+  display: none;
+}
+.form-group {
+  .css-yk16xz-control {
+    height: 48px;
+    border-color: #c2cbe8;
+  }
 }
 .withBorderPWD .inputbox.input-group {
   border: 1px solid #ccc;
@@ -807,127 +881,152 @@ tr.userlisting-row td {
 .withBorderPWD .input-group-prepend {
   margin-right: 5px;
 }
-.login-container label {
-  color: #3D4465;
-  font-size: 14px;
-}
+
 .drawer-wrapper {
-  width: 600px;
+  width: 700px;
+  .drawer-heading {
+    background-color: #eaf0f9;
+    border: #ced9e9 1px solid;
+    border-left-width: 0;
+    border-right-width: 0;
+    padding: 22px 16px;
+    h3 {
+      font-size: 24px;
+      font-weight: $font-medium;
+      color: $headinlightgblack;
+    }
+    .header-wrapper.left {
+      width: 50%;
+      float: left;
+    }
+    .close-button {
+      width: 15px;
+      height: 15px;
+      background: transparent url("../../assests/images/Path 15416.svg") 0% 0% no-repeat padding-box;
+      opacity: 1;
+      float: right;
+      margin-top: 5px;
+    }
+  }
+  .drawer-body {
+    padding: 27px 16px;
+    .left-details {
+      width: 40%;
+      text-align: left;
+      font-size: 16px;
+      //font: Regular 16px/19px Roboto;
+      letter-spacing: 0px;
+      color: #a4abc5;
+      text-transform: capitalize;
+      opacity: 1;
+    }
+    .right-details {
+      width: 60%;
+      text-align: left;
+      font-size: 16px;
+      //font: Regular 16px/19px Roboto;
+      letter-spacing: 0px;
+      color: $headinlightgblack;
+      text-transform: capitalize;
+      opacity: 1;
+    }
+    .left-details,
+    .right-details {
+      padding: 0px 0 9px 0;
+      text-align: left;
+      float: left;
+    }
+  }
 }
-.header-wrapper.left {
-  width: 50%;
-  float: left;
-}
-.close-button {
-  width: 15px;
-  height: 15px;
-  background: transparent url('../../assests/images/Path 15416.svg') 0% 0% no-repeat padding-box;
-  opacity: 1;
-  float: right;
-}
+
 .header-title {
   height: 30px;
-  border-left: 2px solid #D62C8C;
+  border-left: 2px solid #d62c8c;
   opacity: 1;
+  margin-bottom: 10px;
 }
 .header-title h5 {
   line-height: 30px;
   text-align: left;
   //font: Medium 18px/22px Roboto;
   letter-spacing: 0px;
-  color: #3D4465;
+  color: #3d4465;
   opacity: 1;
-  padding-left: 15px;
+  padding-left: 10px;
   font-size: 18px;
+  margin-bottom: 10px;
+}
+.ext {
+  label {
+    color: #fff !important;
+  }
 }
 .edit-icon {
   width: 16px;
-height: 16px;
-background: transparent url('../../assests/images/Union 1.svg') 0% 0% no-repeat padding-box;
-opacity: 1;
-float: left;
+  height: 16px;
+  background: transparent url("../../assests/images/Union 1.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  float: left;
+  position: $positio-relative;
+  top: 3px;
 }
 .drawer-wrapper button.user-btn {
   width: 150px;
   float: right;
 }
-.left-details {
-  width: 40%;
-  text-align: left;
-  font-size: 16px;
-  //font: Regular 16px/19px Roboto;
-  letter-spacing: 0px;
-  color: #A4ABC5;
-  text-transform: capitalize;
-  opacity: 1;
-}
-.right-details {
-  width: 60%;
-  text-align: left;
-  font-size: 16px;
-  //font: Regular 16px/19px Roboto;
-  letter-spacing: 0px;
-  color: #3D4465;
-  text-transform: capitalize;
-  opacity: 1;
-}
-.left-details, .right-details {
-  padding: 10px 0;
-  text-align: left;
-  float: left;
-}
+
 .plus-icon {
   width: 22px;
   height: 22px;
-  background: transparent url('../../assests/images/Group 10491.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 10491.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
 }
 .minus-icon {
   width: 22px;
   height: 22px;
-  background: transparent url('../../assests/images/Group 10490.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 10490.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
 }
 .Add-icon {
   width: 72px;
   height: 20px;
-  background: transparent url('../../assests/images/Group 10401.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 10401.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   font-size: 0;
 }
 .Edit-icon {
   width: 72px;
   height: 20px;
-  background: transparent url('../../assests/images/Group 10396.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 10396.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   font-size: 0;
 }
 .Delete-icon {
   width: 72px;
   height: 20px;
-  background: transparent url('../../assests/images/Group 10398.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 10398.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   font-size: 0;
 }
 .View-icon {
   width: 72px;
   height: 20px;
-  background: transparent url('../../assests/images/Group 10399.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 10399.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   font-size: 0;
 }
 .Download-icon {
   width: 72px;
   height: 20px;
-  background: transparent url('../../assests/images/Group 10400.svg') 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group 10400.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   font-size: 0;
 }
 .Module-Name {
-text-align: left;
-font-size: 16px;
-//font: Regular 16px/19px Roboto;
-letter-spacing: 0px;
-color: #8A91AC;
-opacity: 1;
+  text-align: left;
+  font-size: 16px;
+  //font: Regular 16px/19px Roboto;
+  letter-spacing: 0px;
+  color: #8a91ac;
+  opacity: 1;
 }

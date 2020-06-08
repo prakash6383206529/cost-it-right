@@ -1,6 +1,7 @@
+@import "../commonCss/cssVariable.scss";
 .signup-form {
-  padding-top: 30px;
-  padding-bottom: 30px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   .card-body {
     max-width: 725px;
     padding: 30px 20px;
@@ -54,7 +55,7 @@
 }
 
 .user-page.container {
-  margin-top: 40px;
+  margin-top: 0px;
 }
 tabs .nav-link.active {
   background-color: #f1f1f1;
@@ -62,4 +63,129 @@ tabs .nav-link.active {
 
 .signup-form .user-btn {
   float: right;
+}
+.user-btn {
+  font-size: $font-14;
+  text-transform: uppercase;
+  font-weight: $font-medium;
+  color: $white;
+  width: auto;
+  padding-left: 15px;
+  padding-right: 10px;
+}
+.react-bs-table {
+  margin-top: 15px;
+  .my-custom-header {
+    th {
+      border-top: none;
+      border-bottom-color: #b4c5e2;
+      border-bottom-width: 1px;
+      color: $headinlightgblack;
+      font-size: $font-14;
+      text-transform: uppercase;
+      font-weight: $font-medium;
+    }
+  }
+  td,
+  th {
+    vertical-align: middle;
+  }
+  td {
+    &:last-child {
+      text-align: center;
+    }
+  }
+  label {
+    margin-bottom: 0 !important;
+  }
+}
+.react-bs-table-search-form {
+  .btn-secondary {
+    color: $white;
+    background-color: #256bd1;
+    border-color: #256bd1;
+    font-size: $font-14;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+  }
+}
+
+.grant-user-grid {
+  .table-bordered {
+    border: 1px solid #c2cbe8 !important;
+  }
+  tr {
+    th {
+      vertical-align: middle;
+      border-bottom: 1px solid #b4c5e2;
+      text-align: center;
+      color: $headinlightgblack;
+      font-size: $font-16;
+    }
+    .crud-label {
+      font-size: $font-14;
+    }
+    th,
+    td {
+      padding: 11px 27px;
+      border: 0 !important;
+      border-top: 1px solid #dfe6f1 !important;
+      vertical-align: middle !important;
+    }
+    td {
+      .custom-checkbox {
+        color: #8a91ac;
+        font-size: $font-16;
+        font-weight: $font-regular;
+      }
+      .custom-checkbox .before-box {
+        padding-left: 0;
+      }
+    }
+    td.select-all-block {
+      background-color: #f1f4f7;
+      white-space: nowrap;
+      span {
+        font-size: $font-14;
+        color: $colorSecondary;
+        font-weight: $font-regular;
+      }
+      span,
+      input {
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+.drawer-table-sm {
+  tr {
+    th {
+      padding-top: 18px;
+      padding-bottom: 18px;
+      text-align: left;
+      &:last-child {
+        padding-left: 0;
+      }
+    }
+    td {
+      padding: 18px 4px;
+      &:first-child {
+        padding-left: 31px;
+      }
+      &:nth-last-child(2),
+      &:last-child {
+        background: red;
+        display: none;
+      }
+    }
+  }
+}
+
+.plus-icon,
+.minus-icon {
+  position: relative;
+  top: 2px;
 }

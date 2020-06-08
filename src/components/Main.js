@@ -114,13 +114,10 @@ class Main extends Component {
           <Breadcrumb />
           <LeftMenu />
           <div className="content-page">
-            <h1>hello alll</h1>
             <div className=" middleContainer">
               <Switch>
-
                 {/* <Route exact path="/" component={Homepage} /> */}
                 <Route exact path="/" component={AuthMiddleware(Dashboard)} />
-
                 <Route path="/login" render={(props) =>
                   <Login
                     {...props}
