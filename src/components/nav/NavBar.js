@@ -368,30 +368,6 @@ class SideBar extends Component {
                 </ul>
               </div>
             </nav>
-            <div className="nav-scroller bg-white shadow-sm header-secondry w100">
-              <nav className="nav nav-underline">
-                <a className="nav-link active" href="#">
-                  <img className="" src={require('../../assests/images/sydney-opera-house.svg')} alt='sydney-opera-house' /><span>Dashboard</span></a>
-                <a className="nav-link" href="#">
-                  <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
-                </a>
-                <a className="nav-link additional-masters" href="#">
-                  <img className="" src={require('../../assests/images/list-add.png')} alt='List' /><span>Additional Masters</span></a>
-                <a className="nav-link" href="#">
-                  <img className="" src={require('../../assests/images/chart.svg')} alt='chart' />
-                  <span>Report</span>
-                </a>
-                <a className="nav-link" href="#">
-                  <img className="" src={require('../../assests/images/imac.svg')} alt='imac' />
-                  <span>Simulation</span></a>
-                <a className="nav-link" href="#">
-                  <img className="" src={require('../../assests/images/html.svg')} alt='html' />
-                  <span>Technology</span></a>
-                <a className="nav-link" href="#">
-                  <img className="" src={require('../../assests/images/men.svg')} alt='men' />
-                  <span>Users</span></a>
-              </nav>
-            </div>
           </div>
 
           {isLoggedIn &&
