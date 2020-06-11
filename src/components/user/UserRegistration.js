@@ -260,9 +260,7 @@ class UserRegistration extends Component {
       if (newValue && newValue != '') {
 
          this.setState({ Modules: [], IsShowAdditionalPermission: false, }, () => {
-            this.setState({
-               role: newValue,
-            });
+            this.setState({ role: newValue, });
          });
 
       } else {
