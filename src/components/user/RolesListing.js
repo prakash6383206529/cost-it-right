@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    Container, Row, Col, Button, Table
+  Container, Row, Col, Button, Table
 } from 'reactstrap';
 import { getAllRoleAPI, deleteRoleAPI } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
@@ -12,129 +12,124 @@ import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 class RolesListing extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditFlag: false,
-            RoleId: '',
-            tableData: [],
-        }
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEditFlag: false,
+      RoleId: '',
+      tableData: [],
     }
+  }
 
-    componentDidMount() {
-        this.getRolesListData()
-        this.props.onRef(this)
+  componentDidMount() {
+    this.getRolesListData()
+    this.props.onRef(this)
+  }
+
+  getRolesListData = () => {
+    this.props.getAllRoleAPI(res => {
+      if (res && res.data && res.data.DataList) {
+        let Data = res.data.DataList;
+        this.setState({
+          tableData: Data,
+        })
+      }
+    });
+  }
+
+  /**
+  * @method getUpdatedData
+  * @description get updated data after updatesuccess
+  */
+  getUpdatedData = () => {
+    this.getRolesListData()
+  }
+
+  /**
+  * @method editItemDetails
+  * @description confirm edit item
+  */
+  editItemDetails = (Id) => {
+    let requestData = {
+      isEditFlag: true,
+      RoleId: Id,
     }
+    this.props.getRoleDetail(requestData)
+  }
 
-    getRolesListData = () => {
-        this.props.getAllRoleAPI(res => {
-            if (res && res.data && res.data.DataList) {
-                let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
-            }
-        });
-    }
+  /**
+  * @method deleteItem
+  * @description confirm delete part
+  */
+  deleteItem = (Id) => {
+    const toastrConfirmOptions = {
+      onOk: () => {
+        this.confirmDeleteItem(Id)
+      },
+      onCancel: () => console.log('CANCEL: clicked')
+    };
+    return toastr.confirm(`${MESSAGES.ROLE_DELETE_ALERT}`, toastrConfirmOptions);
+  }
 
-    /**
-    * @method getUpdatedData
-    * @description get updated data after updatesuccess
-    */
-    getUpdatedData = () => {
-        this.getRolesListData()
-    }
+  /**
+  * @method confirmDeleteItem
+  * @description confirm delete Role item
+  */
+  confirmDeleteItem = (RoleId) => {
+    this.props.deleteRoleAPI(RoleId, (res) => {
+      if (res.data.Result === true) {
+        toastr.success(MESSAGES.DELETE_ROLE_SUCCESSFULLY);
+        this.getRolesListData();
+      }
+    });
+  }
 
-    /**
-    * @method editItemDetails
-    * @description confirm edit item
-    */
-    editItemDetails = (Id) => {
-        let requestData = {
-            isEditFlag: true,
-            RoleId: Id,
-        }
-        this.props.getRoleDetail(requestData)
-    }
+  /**
+  * @method buttonFormatter
+  * @description Renders buttons
+  */
+  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    return (
+      <>
+        <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />
+        <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />
+      </>
+    )
+  }
 
-    /**
-    * @method deleteItem
-    * @description confirm delete part
-    */
-    deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
-        };
-        return toastr.confirm(`${MESSAGES.ROLE_DELETE_ALERT}`, toastrConfirmOptions);
-    }
-
-    /**
-    * @method confirmDeleteItem
-    * @description confirm delete Role item
-    */
-    confirmDeleteItem = (RoleId) => {
-        this.props.deleteRoleAPI(RoleId, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_ROLE_SUCCESSFULLY);
-                this.getRolesListData();
-            }
-        });
-    }
-
-    /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />
-                <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />
-            </>
-        )
-    }
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { isOpen, isEditFlag, editIndex, PartId } = this.state;
-        const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-        };
-        return (
-            <>
-                {this.props.loading && <Loader />}
-                <Row>
-                    <Col>
-                        <h3>{`List of Roles`}</h3>
-                    </Col>
-                </Row>
-                <hr />
-                <Row>
-                    <Col>
-                        <BootstrapTable
-                            data={this.state.tableData}
-                            striped={true}
-                            hover={true}
-                            options={options}
-                            search
-                            ignoreSinglePage
-                            trClassName={'userlisting-row'}
-                            tableHeaderClass='my-custom-class'
-                            pagination>
-                            <TableHeaderColumn dataField="RoleName" isKey={true} dataAlign="center" dataSort={true}>Role</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RoleId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-                        </BootstrapTable>
-                    </Col>
-                </Row>
-                {/* <Row>
+  /**
+  * @method render
+  * @description Renders the component
+  */
+  render() {
+    const { isOpen, isEditFlag, editIndex, PartId } = this.state;
+    const options = {
+      clearSearch: true,
+      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+    };
+    return (
+      <>
+        {this.props.loading && <Loader />}
+        <Row class="mt-2">
+          <Col>
+            <BootstrapTable
+              data={this.state.tableData}
+              striped={false}
+              bordered={false}
+              hover={true}
+              options={options}
+              search
+              ignoreSinglePage
+              ref={'table'}
+              trClassName={'userlisting-row'}
+              tableHeaderClass='my-custom-header'
+              pagination>
+              <TableHeaderColumn dataField="RoleName" isKey={true} dataAlign="left" dataSort={true}>Role</TableHeaderColumn>
+              <TableHeaderColumn dataField="RoleId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+            </BootstrapTable>
+          </Col>
+        </Row>
+        {/* <Row>
                     <Col>
                         <Table className="table table-striped" size="sm" bordered>
                             {this.props.roleList && this.props.roleList.length > 0 &&
@@ -162,9 +157,9 @@ class RolesListing extends Component {
                         </Table>
                     </Col>
                 </Row> */}
-            </ >
-        );
-    }
+      </ >
+    );
+  }
 }
 
 /**
@@ -173,15 +168,15 @@ class RolesListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-    const { roleList, loading } = auth;
+  const { roleList, loading } = auth;
 
-    return { roleList, loading };
+  return { roleList, loading };
 }
 
 
 export default connect(mapStateToProps,
-    {
-        getAllRoleAPI,
-        deleteRoleAPI,
-    })(RolesListing);
+  {
+    getAllRoleAPI,
+    deleteRoleAPI,
+  })(RolesListing);
 

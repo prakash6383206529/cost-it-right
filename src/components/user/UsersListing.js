@@ -230,6 +230,7 @@ class UsersListing extends Component {
                         background="#ff6600"
                         onColor="#4DC771"
                         onHandleColor="#ffffff"
+                        offColor="#FC5774"
                         id="normal-switch"
                         height={24}
                     />

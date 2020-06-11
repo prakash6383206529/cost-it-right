@@ -761,7 +761,7 @@ button.add-btn {
   cursor: pointer;
 }
 .user-btn {
-  width: 120px;
+  width: 175px;
   height: 32px;
   background: #256bd1 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 10px #0000000f;
@@ -791,8 +791,7 @@ button.add-btn {
   cursor: pointer;
 }
 .cancel-btn {
-  background-color: #fff;
-  background: transparent url(../../assests/images/cross.svg) 9px 12px no-repeat padding-box;
+  background: #fff url(../../assests/images/cross.svg) 9px 12px no-repeat padding-box;
   background-size: 11px 11px;
   padding: 0 10px 0 16px;
   border: 1px solid #8a91ac;

@@ -371,7 +371,7 @@ class SideBar extends Component {
           </div>
 
           {isLoggedIn &&
-            <div className="nav-scroller bg-white shadow-sm header-secondry">
+            <div className="nav-scroller bg-white shadow-sm header-secondry w100">
               <nav className="nav nav-underline">
                 {moduleSelectList && moduleSelectList.map((item, index) => {
                   return this.renderMenus(item.Text)

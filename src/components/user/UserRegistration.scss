@@ -54,9 +54,6 @@
   }
 }
 
-.user-page.container {
-  margin-top: 80px;
-}
 tabs .nav-link.active {
   background-color: #f1f1f1;
 }
@@ -82,7 +79,7 @@ tabs .nav-link.active {
       border-bottom-width: 1px;
       color: $headinlightgblack;
       font-size: $font-14;
-      text-transform: uppercase;
+      // text-transform: uppercase;
       font-weight: $font-medium;
     }
   }
@@ -123,18 +120,23 @@ tabs .nav-link.active {
       text-align: center;
       color: $headinlightgblack;
       font-size: $font-16;
+      &:first-child {
+        text-align: left;
+      }
     }
     .crud-label {
       font-size: $font-14;
     }
     th,
     td {
-      padding: 11px 27px;
+      padding: 8px 27px;
       border: 0 !important;
       border-top: 1px solid #dfe6f1 !important;
       vertical-align: middle !important;
     }
     td {
+      font-size: $font-16;
+      color: #8A91AC;
       .custom-checkbox {
         color: #8a91ac;
         font-size: $font-16;
@@ -160,6 +162,16 @@ tabs .nav-link.active {
     }
   }
 }
+.role-user-grid {
+  table {
+    tr {
+      th {
+        text-align: left;
+      }
+    }
+  }
+}
+
 .drawer-table-sm {
   tr {
     th {
@@ -189,3 +201,27 @@ tabs .nav-link.active {
   position: relative;
   top: 2px;
 }
+
+.role-form {
+  .form-control {
+    height: calc(1.85rem + 2px);
+    padding: 8px !important;
+    border-radius: 4px !important;
+    border: 1px solid #c2cbe8;
+  }
+  .form-group {
+    label {
+      display: none;
+    }
+  }
+}
+.technology-table{
+  border:1px solid #ccc;
+  th, td{
+    padding: .8rem;
+    vertical-align: middle;
+  }
+}
+.heading-22 h3 {
+  font-size: 22px;
+} 
