@@ -115,30 +115,28 @@ class LevelsListing extends Component {
         return (
             <>
                 {this.props.loading && <Loader />}
-                <Row>
-                    <Col>
+              
+                    <Col className="col-md-6 heading-22">
                         <h3>{`List of Levels`}</h3>
-                    </Col>
-                </Row>
-                <hr />
-                <Row>
-                    <Col>
+                    
                         <BootstrapTable
                             data={this.state.tableData}
-                            striped={true}
+                            striped={false}
+                            bordered={false}
                             hover={true}
                             options={options}
                             search
                             ignoreSinglePage
+                            ref={'table'}
                             trClassName={'userlisting-row'}
-                            tableHeaderClass='my-custom-class'
+                            tableHeaderClass='my-custom-header'
                             pagination>
-                            <TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>
-                            <TableHeaderColumn dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Sequence" dataAlign="left" dataSort={true}>Sequence</TableHeaderColumn>
+                            <TableHeaderColumn dataField="LevelId" dataFormat={this.buttonFormatter} dataAlign="right">Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
-                </Row>
+               
                 {/* <Row>
                     <Col>
                         <Table className="table table-striped" size="sm" bordered>

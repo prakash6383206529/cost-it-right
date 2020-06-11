@@ -109,7 +109,9 @@ img {
 .mt-15 {
   margin-top: 15px;
 }
-
+.mt-30 {
+  margin-top: 30px;
+}
 .mt-twenty {
   margin-top: 20px;
 }
@@ -124,6 +126,9 @@ img {
 }
 .mr10 {
   margin-right: 10px;
+}
+.mb-30 {
+  margin-bottom: 30px;
 }
 .pt-5 {
   padding-top: 3rem !important;
@@ -533,6 +538,7 @@ p {
     }
     button.reset {
       color: $colorPrimary;
+      background: #fff;
     }
     button.apply {
       color: $white;
@@ -679,18 +685,22 @@ button .fas {
 
 footer {
   bottom: 0;
+  display: none;
   padding: 19px 15px 20px;
   position: absolute;
   right: 0;
   color: #98a6ad;
   left: 240px;
-  background-color: #eeeff3;
+  background-color: #e0e9f5;
   a.nav-link {
     color: $colorPrimary;
     font-size: 0.9rem;
   }
 }
-
+.btn-block-bg {
+  background-color: #e0e9f5;
+  padding: 19px 15px 20px;
+}
 .footer-form {
   input {
     margin-right: 10px;

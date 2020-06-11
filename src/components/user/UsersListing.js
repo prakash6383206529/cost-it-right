@@ -229,6 +229,7 @@ class UsersListing extends Component {
 						background="#ff6600"
 						onColor="#4DC771"
 						onHandleColor="#ffffff"
+						offColor="#FC5774"
 						id="normal-switch"
 						height={24}
 					/>
@@ -435,7 +436,7 @@ class UsersListing extends Component {
 					tableHeaderClass='my-custom-header'
 					pagination>
 					<TableHeaderColumn dataField="Sr. No." csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
-					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
+					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="left" dataSort={true} >Name</TableHeaderColumn>
 					<TableHeaderColumn dataField="UserName" dataSort={true}>User name</TableHeaderColumn>
 					<TableHeaderColumn dataField="Email" dataSort={true}>Email Id</TableHeaderColumn>
 					<TableHeaderColumn dataField="Mobile" dataSort={false}>Mobile No.</TableHeaderColumn>

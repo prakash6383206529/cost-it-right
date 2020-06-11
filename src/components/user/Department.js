@@ -134,11 +134,11 @@ class Department extends Component {
                 {isLoader && <Loader />}
                 <div className="login-container signup-form mt15">
                     <div className="row">
-                        <div className="col-md-12" >
+                        <div className="col-md-12 my-3" >
                             <button
                                 type="button"
                                 className={'user-btn'}
-                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}><div className={'plus'}></div> Add Department</button>
                         </div>
                         {this.state.isShowForm &&
                             <div className="col-md-12">

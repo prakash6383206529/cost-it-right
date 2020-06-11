@@ -18,6 +18,9 @@ import { Redirect } from 'react-router-dom';
 import LevelsListing from './LevelsListing';
 import LevelTechnologyListing from "./LevelTechnologyListing";
 import { loggedInUserId } from "../../helper/auth";
+import {
+    Container, Row, Col, Button, Table
+} from 'reactstrap';
 import $ from 'jquery';
 
 class Level extends Component {
@@ -300,15 +303,17 @@ class Level extends Component {
                 {isLoader && <Loader />}
                 <div className="login-container  signup-form">
                     <div className="row">
-                        <div className="col-md-12" >
+                        <div className="col-md-6 my-3 text-right" >
                             <button
                                 type="button"
-                                className={'btn btn-primary user-btn1 mr20'}
-                                onClick={() => this.setState({ isShowTechnologyForm: !this.state.isShowTechnologyForm })}>Level Mapping</button>
+                                className={'btn btn-primary user-btn mr20'}
+                                onClick={() => this.setState({ isShowTechnologyForm: !this.state.isShowTechnologyForm })}><div className={'plus'}></div> Add  Mapping</button>
+                           </div> 
+                           <div className="col-md-6 my-3 text-right" >
                             <button
                                 type="button"
-                                className={'btn btn-primary user-btn1 mr20'}
-                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
+                                className={'btn btn-primary user-btn mr20'}
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}><div className={'plus'}></div> Add  Level</button>
                         </div>
 
 
@@ -447,6 +452,7 @@ class Level extends Component {
 
                     </div>
                 </div>
+                <Row>
                 <LevelsListing
                     onRef={ref => (this.child = ref)}
                     getLevelDetail={this.getLevelDetail} />
@@ -454,7 +460,7 @@ class Level extends Component {
                 <LevelTechnologyListing
                     onRef={ref => (this.childMapping = ref)}
                     getLevelMappingDetail={this.getLevelMappingDetail}
-                />
+                /></Row>
             </div>
         );
     }

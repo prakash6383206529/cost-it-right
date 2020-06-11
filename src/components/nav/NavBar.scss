@@ -146,6 +146,7 @@ li.nav-item .logo {
   .navbar {
     background-color: #fff !important;
     padding: 0.1rem 1rem;
+    border-bottom: 1px solid rgba(180, 197, 226, 0.51);
     .nav-link {
       display: block;
       padding: 4px 0.55rem 0 0.55rem;
@@ -300,10 +301,14 @@ li.nav-item .logo {
   }
 
   .img-xs {
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
     margin-right: 8px;
+    &::after{
+      content: '';
+      border-left: 1px solid #ccc;
+    }
   }
 
   .nav-link-user {
@@ -335,6 +340,16 @@ li.nav-item .logo {
         color: #8a91ac;
         box-shadow: none !important;
       }
+    }
+    position: relative;
+    &::after{
+      content: "";
+      position: absolute;
+      width: 1px;
+      height: 25px;
+      background-color: #d9e2f0;
+      left: 0;
+      top: 9px;
     }
   }
 }

@@ -115,30 +115,28 @@ class LevelTechnologyListing extends Component {
         return (
             <>
                 {this.props.loading && <Loader />}
-                <Row>
-                    <Col>
+               
+                    <Col className="col-md-6 heading-22 ">
                         <h3>{`Level Mapping Listing`}</h3>
-                    </Col>
-                </Row>
-                <hr />
-                <Row>
-                    <Col>
+                    
                         <BootstrapTable
                             data={this.state.tableData}
-                            striped={true}
+                            striped={false}
+                            bordered={false}
                             hover={true}
                             options={options}
                             search
                             ignoreSinglePage
+                            ref={'table'}
                             trClassName={'userlisting-row'}
-                            tableHeaderClass='my-custom-class'
+                            tableHeaderClass='my-custom-header'
                             pagination>
-                            <TableHeaderColumn dataField="Technology" isKey={true} dataAlign="center" dataSort={true}>Technology</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Level" dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
-                            <TableHeaderColumn dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
+                            <TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
-                </Row>
+                
             </ >
         );
     }

@@ -57,7 +57,7 @@ class User extends Component {
   render() {
     const { isOpen } = this.state;
     return (
-      <Container className="user-page">
+      <Container className="user-page p-0">
         {/* {this.props.loading && <Loader/>} */}
         <div>
           <h1>User Management</h1>
