@@ -7,11 +7,10 @@ import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addDepartmentAPI, getAllDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI } from "../../actions/auth/AuthActions";
+import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
-import { reactLocalStorage } from "reactjs-localstorage";
-import { Redirect } from 'react-router-dom';
-import DepartmentsListing from './DepartmentsListing';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
+import Drawer from '@material-ui/core/Drawer';
 
 class Department extends Component {
     constructor(props) {
@@ -21,8 +20,6 @@ class Department extends Component {
             isLoader: false,
             isSubmitted: false,
             isEditFlag: false,
-            DepartmentId: '',
-            isShowForm: false,
         };
     }
 
@@ -31,23 +28,13 @@ class Department extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
-        this.props.setEmptyDepartmentAPI('', () => { })
-    }
-
-    /**
-    * @method getDepartmentDetail
-    * @description used to get department detail
-    */
-    getDepartmentDetail = (data) => {
-        if (data && data.isEditFlag) {
-            this.props.getDepartmentAPI(data.DepartmentId, () => {
-                this.setState({
-                    isEditFlag: true,
-                    DepartmentId: data.DepartmentId,
-                    isShowForm: true,
-                })
-            })
+        const { DepartmentId, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getDepartmentAPI(DepartmentId, () => { })
+        } else {
+            this.props.setEmptyDepartmentAPI('', () => { })
         }
+
     }
 
     /**
@@ -57,8 +44,8 @@ class Department extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.setState({ isEditFlag: false })
         this.props.setEmptyDepartmentAPI('', () => { })
+        this.toggleDrawer('')
     }
 
     /**
@@ -71,6 +58,14 @@ class Department extends Component {
         this.props.setEmptyDepartmentAPI('', () => { })
     }
 
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+
+        this.props.closeDrawer('')
+    };
+
     /**
      * @name onSubmit
      * @param values
@@ -78,7 +73,7 @@ class Department extends Component {
      * @returns {{}}
      */
     onSubmit(values) {
-        const { isEditFlag, DepartmentId } = this.state;
+        const { isEditFlag, DepartmentId } = this.props;
         const { reset } = this.props;
         this.setState({ isLoader: true })
 
@@ -96,14 +91,8 @@ class Department extends Component {
                 if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
                 }
-                this.props.getAllDepartmentAPI(res => { });
-                this.child.getUpdatedData();
                 reset();
-                this.setState({
-                    isLoader: false,
-                    isEditFlag: false,
-                    isShowForm: false,
-                })
+                this.toggleDrawer('')
                 this.props.setEmptyDepartmentAPI('', () => { })
             })
 
@@ -114,88 +103,78 @@ class Department extends Component {
                 if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
                 }
-                this.props.getAllDepartmentAPI(res => { });
-                this.child.getUpdatedData();
                 reset();
-                this.setState({ isLoader: false, isShowForm: false, })
+                this.toggleDrawer('')
             })
 
         }
 
     }
 
-
     render() {
-        const { handleSubmit, pristine, reset, submitting } = this.props;
-        const { isLoader, isSubmitted, isEditFlag } = this.state;
+        const { handleSubmit, pristine, reset, submitting, isEditFlag } = this.props;
+        const { isLoader, isSubmitted } = this.state;
 
         return (
             <div>
-                {isLoader && <Loader />}
-                <div className="login-container signup-form mt15">
-                    <div className="row">
-                        <div className="col-md-12" >
-                            <button
-                                type="button"
-                                className={'user-btn'}
-                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
-                        </div>
-                        {this.state.isShowForm &&
-                            <div className="col-md-12">
-                                <div className="shadow-lg login-form">
-                                    <div className="form-heading">
-                                        <h2>{isEditFlag ? 'Update Department' : 'Add Department'}</h2>
-                                    </div>
-                                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                                        <div className="row form-group">
-                                            <div className="input-group col-md-6 input-withouticon" >
-                                                <Field
-                                                    label="Department Name"
-                                                    name={"DepartmentName"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required, alphabetsOnlyForName]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    maxLength={26}
-                                                />
-                                            </div>
+                {this.props.loading && <Loader />}
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                    <Container>
+                        <div className={'drawer-wrapper'}>
+                            <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 
-                                            <div className="col-md-6">
-                                                <div className="text-center ">
-                                                    <input
-                                                        disabled={isSubmitted ? true : false}
-                                                        type="submit"
-                                                        value={this.state.isEditFlag ? 'Update' : 'Save'}
-                                                        className="btn login-btn w-10 dark-pinkbtn mr15"
-                                                    />
-                                                    {!this.state.isEditFlag &&
-                                                        <input
-                                                            disabled={pristine || submitting}
-                                                            onClick={this.resetForm}
-                                                            type="submit"
-                                                            value="Reset"
-                                                            className="btn  login-btn w-10 dark-pinkbtn"
-                                                        />}
-                                                    {isEditFlag &&
-                                                        <input
-                                                            //disabled={pristine || submitting}
-                                                            onClick={this.cancel}
-                                                            type="button"
-                                                            value="Cancel"
-                                                            className="btn login-btn w-10 dark-pinkbtn"
-                                                        />}
-                                                </div>
-                                            </div>
+                                <Row className="drawer-heading">
+                                    <Col>
+                                        <div className={'header-wrapper left'}>
+                                            <h3>{isEditFlag ? 'Update Department' : 'Add Department'}</h3>
                                         </div>
-                                    </form>
-                                </div>
-                            </div>}
-                    </div>
-                </div>
-                <DepartmentsListing
-                    onRef={ref => (this.child = ref)}
-                    getDepartmentDetail={this.getDepartmentDetail} />
+                                        <div
+                                            onClick={(e) => this.toggleDrawer(e)}
+                                            className={'close-button right'}>
+                                        </div>
+                                    </Col>
+                                </Row>
+
+                                {/* <div className="drawer-body"> */}
+                                <Row>
+                                    <div className="input-group col-md-12 input-withouticon" >
+                                        <Field
+                                            label="Department Name"
+                                            name={"DepartmentName"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required, alphabetsOnlyForName]}
+                                            component={renderText}
+                                            required={true}
+                                            maxLength={26}
+                                            customClassName={'withBorder'}
+                                        />
+                                    </div>
+
+                                    <div className="col-md-12">
+                                        <div className="text-center ">
+                                            <input
+                                                //disabled={pristine || submitting}
+                                                onClick={this.cancel}
+                                                type="button"
+                                                value="Cancel"
+                                                className="reset mr15 cancel-btn"
+                                            />
+                                            <input
+                                                disabled={isSubmitted ? true : false}
+                                                type="submit"
+                                                value={this.state.isEditFlag ? 'Update' : 'Save'}
+                                                className="submit-button mr5 save-btn"
+                                            />
+                                        </div>
+                                    </div>
+                                </Row>
+
+                                {/* </div> */}
+                            </form>
+                        </div>
+                    </Container>
+                </Drawer>
             </div>
         );
     }
@@ -231,7 +210,6 @@ export default connect(mapStateToProps, {
     addDepartmentAPI,
     getDepartmentAPI,
     updateDepartmentAPI,
-    getAllDepartmentAPI,
     setEmptyDepartmentAPI,
 })(reduxForm({
     form: 'Department',

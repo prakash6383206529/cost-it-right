@@ -176,3 +176,20 @@ export function getUnitTypeListAPI(callback) {
         });
     };
 }
+
+/**
+ * @method activeInactiveUOM
+ * @description update UOM
+ */
+export function activeInactiveUOM(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.activeInactiveUOM}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}

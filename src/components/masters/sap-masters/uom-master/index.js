@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddUOM from './AddUOM';
-import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../../../../actions/master/unitOfMeasurment';
+import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../../../../actions/master/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import Switch from "react-switch";
+import { loggedInUserId } from '../../../../helper/auth';
 
 class UOMMaster extends Component {
     constructor(props) {
@@ -112,6 +114,47 @@ class UOMMaster extends Component {
     }
 
     /**
+	* @method statusButtonFormatter
+	* @description Renders buttons
+	*/
+    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <label htmlFor="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+                        checked={cell}
+                        background="#ff6600"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        id="normal-switch"
+                        height={24}
+                    />
+                </label>
+            </>
+        )
+    }
+
+    handleChange = (cell, row, enumObject, rowIndex) => {
+        let data = {
+            Id: row.Id,
+            LoggedInUserId: loggedInUserId(),
+            IsActive: !cell, //Status of the UOM.
+        }
+        this.props.activeInactiveUOM(data, res => {
+            if (res && res.data && res.data.Result) {
+                if (cell == true) {
+                    toastr.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
+                } else {
+                    toastr.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
+                }
+                this.getUOMDataList()
+            }
+        })
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
@@ -137,7 +180,8 @@ class UOMMaster extends Component {
                         <button
                             type={'button'}
                             className={'user-btn'}
-                            onClick={this.openModel}>{`ADD UOM`}</button>
+                            onClick={this.openModel}>
+                            <div className={'plus'}></div>{`ADD UOM`}</button>
                     </Col>
                 </Row>
 
@@ -158,6 +202,7 @@ class UOMMaster extends Component {
                             pagination>
                             <TableHeaderColumn dataField="Unit" csvHeader='Full-Name' dataAlign="center" dataSort={true}>Unit</TableHeaderColumn>
                             <TableHeaderColumn dataField="UnitType" dataSort={true}>Unit Type</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                             <TableHeaderColumn dataField="Id" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
@@ -188,6 +233,10 @@ function mapStateToProps({ unitOfMeasrement }) {
 }
 
 export default connect(
-    mapStateToProps, { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI }
+    mapStateToProps, {
+    getUnitOfMeasurementAPI,
+    deleteUnitOfMeasurementAPI,
+    activeInactiveUOM,
+}
 )(UOMMaster);
 

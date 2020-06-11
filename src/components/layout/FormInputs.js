@@ -164,9 +164,7 @@ export function renderPasswordInputField(field) {
   } = field;
   const inputbox = `inputbox input-group ${active ? "active" : ""}`;
   const className = `form-group ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
-    }`;
+  const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const placeholder = field.placeholder ? field.placeholder : "";
   const isPwdVisible = field.isShowHide === true ? 'text' : 'password';
   const eyeIcon = field.isShowHide === true ? 'fa-eye' : 'fa-eye-slash';
@@ -186,6 +184,7 @@ export function renderPasswordInputField(field) {
           type={isPwdVisible}
           className={InputClassName}
           {...input}
+          id={'password'}
           placeholder={placeholder}
         />
         {field.isEyeIcon === true &&

@@ -24,6 +24,10 @@ export const MESSAGES = {
   DELETE_BOM_SUCCESS: 'Assembly Part deleted successfully',
   UPDATE_BOM_SUCCESS: 'Assembly Part updated successfully',
 
+  //UOM
+  UOM_ACTIVE_SUCCESSFULLY: 'UOM has been active successfully.',
+  UOM_INACTIVE_SUCCESSFULLY: 'UOM has been inactive successfully.',
+
   //CATEGORY MASTER
   CATEGORY_TYPE_ADDED_SUCCESS: 'Category type added successfully',
   CATEGORY_TYPE_UPDATE_SUCCESS: 'Category type has been updated successfully.',

@@ -67,6 +67,7 @@ export const API = {
   updateUOMAPI: `${BASE_URL}/masters-unit-of-measurement/update`,
   deleteUOMAPI: `${BASE_URL}/masters-unit-of-measurement/delete`,
   getUnitTypeListAPI: `${BASE_URL}/configuration/select-list-get-unit-type`,
+  activeInactiveUOM: `${BASE_URL}/masters-unit-of-measurement/active`,
 
   //Api for the part master
 

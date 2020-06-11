@@ -87,6 +87,19 @@ class AddUOM extends Component {
     };
 
     /**
+   * @method cancel
+   * @description used to Reset form
+   */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            unitTypes: [],
+        })
+        this.toggleDrawer('')
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
@@ -142,14 +155,14 @@ class AddUOM extends Component {
         const { handleSubmit, isEditFlag, reset } = this.props;
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                <Container className="top-margin">
+                <Container>
                     <div className={'drawer-wrapper'}>
                         <form
                             noValidate
                             className="form"
                             onSubmit={handleSubmit(this.onSubmit.bind(this))}
                         >
-                            <Row>
+                            <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
                                         <h3>{isEditFlag ? 'UPDATE UNIT' : 'ADD UNIT'}</h3>
@@ -160,6 +173,7 @@ class AddUOM extends Component {
                                     </div>
                                 </Col>
                             </Row>
+
                             <Row>
                                 <div className="input-group col-md-12 input-withouticon" >
                                     <Field
@@ -183,8 +197,8 @@ class AddUOM extends Component {
                                         placeholder={'Select Unit Type'}
                                         options={this.searchableSelectType('UnitType')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={[required]}
-                                        //required={true}
+                                        validate={(this.state.unitTypes == null || this.state.unitTypes.length == 0) ? [required] : []}
+                                        required={true}
                                         handleChangeDescription={this.unitTypeHandler}
                                         valueDescription={this.state.unitTypes}
                                     />
@@ -193,13 +207,18 @@ class AddUOM extends Component {
                             </Row>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-sm-12 text-center">
-                                    <button type="submit" className="btn dark-pinkbtn" >
+                                    <button
+                                        type="submit"
+                                        className="submit-button mr5 save-btn" >
                                         {isEditFlag ? 'Update' : 'Save'}
                                     </button>
-                                    {!isEditFlag &&
-                                        <button type={'button'} className="btn btn-secondary" onClick={reset} >
-                                            {'Reset'}
-                                        </button>}
+
+                                    <button
+                                        type={'button'}
+                                        className="reset mr15 cancel-btn"
+                                        onClick={this.cancel} >
+                                        {'Cancel'}
+                                    </button>
                                 </div>
                             </Row>
                         </form>

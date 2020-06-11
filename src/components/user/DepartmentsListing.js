@@ -10,6 +10,7 @@ import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import Department from './Department';
 
 class DepartmentsListing extends Component {
     constructor(props) {
@@ -23,7 +24,7 @@ class DepartmentsListing extends Component {
 
     componentDidMount() {
         this.getDepartmentListData();
-        this.props.onRef(this)
+        //this.props.onRef(this)
     }
 
     getDepartmentListData = () => {
@@ -46,15 +47,36 @@ class DepartmentsListing extends Component {
     }
 
     /**
+     * @method closeDrawer
+     * @description  used to cancel filter form
+     */
+    closeDrawer = (e = '') => {
+        this.setState({ isOpen: false }, () => {
+            this.getDepartmentListData()
+        })
+    }
+
+    /**
+     * @method openModel
+     * @description  used to open filter form 
+     */
+    openModel = () => {
+        this.setState({
+            isOpen: true,
+            isEditFlag: false
+        })
+    }
+
+    /**
     * @method editItemDetails
     * @description confirm edit item
     */
     editItemDetails = (Id) => {
-        let requestData = {
+        this.setState({
             isEditFlag: true,
+            isOpen: true,
             DepartmentId: Id,
-        }
-        this.props.getDepartmentDetail(requestData)
+        })
     }
 
     /**
@@ -104,7 +126,7 @@ class DepartmentsListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { } = this.state;
+        const { isOpen, isEditFlag, DepartmentId } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -114,7 +136,11 @@ class DepartmentsListing extends Component {
                 {this.props.loading && <Loader />}
                 <Row>
                     <Col>
-                        <h3>{`List of Departments`}</h3>
+                        <button
+                            type={'button'}
+                            className={'user-btn'}
+                            onClick={this.openModel}>
+                            <div className={'plus'}></div>{`ADD`}</button>
                     </Col>
                 </Row>
                 <hr />
@@ -135,36 +161,15 @@ class DepartmentsListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
-
-                {/* <Row>
-                    <Col>
-                        <Table className="table table-striped" bordered>
-                            {this.props.departmentList && this.props.departmentList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`Department`}</th>
-                                        <th>{''}</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.departmentList && this.props.departmentList.length > 0 &&
-                                    this.props.departmentList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.DepartmentName}</td>
-                                                <div>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.DepartmentId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.DepartmentId)}><i className="far fa-trash-alt"></i></Button>
-                                                </div>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.departmentList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row> */}
-
+                {isOpen && (
+                    <Department
+                        isOpen={isOpen}
+                        closeDrawer={this.closeDrawer}
+                        isEditFlag={isEditFlag}
+                        DepartmentId={DepartmentId}
+                        anchor={'right'}
+                    />
+                )}
             </ >
         );
     }

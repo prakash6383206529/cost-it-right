@@ -10,19 +10,24 @@ import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import LevelTechnologyListing from './LevelTechnologyListing';
+import Level from './Level';
 
 class LevelsListing extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         this.state = {
             isEditFlag: false,
             tableData: [],
+            isShowForm: false,
+            isShowMappingForm: false,
         }
     }
 
     componentDidMount() {
         this.getLevelsListData();
-        this.props.onRef(this);
+        //this.props.onRef(this);
     }
 
     getLevelsListData = () => {
@@ -44,16 +49,64 @@ class LevelsListing extends Component {
         this.getLevelsListData()
     }
 
+    mappingToggler = () => {
+        this.setState({
+            isShowMappingForm: true,
+            isOpen: true,
+            isShowForm: false,
+        })
+    }
+
+    levelToggler = () => {
+        this.setState({
+            isShowForm: true,
+            isOpen: true,
+            isShowMappingForm: false,
+        })
+    }
+
+    /**
+     * @method closeDrawer
+     * @description  used to cancel filter form
+     */
+    closeDrawer = (e = '') => {
+        this.setState({
+            isOpen: false,
+            isShowMappingForm: false,
+            isShowForm: false,
+            isEditFlag: false,
+        }, () => {
+            this.getUpdatedData()
+            this.child.getUpdatedData();
+        })
+    }
+
+    /**
+     * @method getLevelMappingDetail
+     * @description confirm edit item
+     */
+    getLevelMappingDetail = (Id) => {
+        this.setState({
+            isEditFlag: true,
+            LevelId: Id,
+            isOpen: true,
+            isShowForm: false,
+            isShowMappingForm: true,
+        })
+    }
+
     /**
      * @method editItemDetails
      * @description confirm edit item
      */
     editItemDetails = (Id) => {
-        let requestData = {
+        this.setState({
             isEditFlag: true,
             LevelId: Id,
-        }
-        this.props.getLevelDetail(requestData)
+            isOpen: true,
+            isShowForm: true,
+            isShowMappingForm: false,
+        })
     }
 
     /**
@@ -106,9 +159,9 @@ class LevelsListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isEditFlag } = this.state;
+        const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId } = this.state;
         const options = {
-            clearSearch: true,
+            //clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             afterSearch: this.afterSearch,
         };
@@ -116,60 +169,62 @@ class LevelsListing extends Component {
             <>
                 {this.props.loading && <Loader />}
                 <Row>
-                    <Col>
-                        <h3>{`List of Levels`}</h3>
+                    <Col md="6">
+                        <Row>
+                            <Col md="6">
+                                <h3>{`Levels`}</h3>
+                            </Col>
+                            <Col md="6">
+                                <button
+                                    type="button"
+                                    className={'user-btn'}
+                                    onClick={this.levelToggler}>
+                                    <div className={'plus'}></div>{'Add Level'}</button>
+                            </Col>
+
+
+                            <Col>
+                                <BootstrapTable
+                                    data={this.state.tableData}
+                                    striped={true}
+                                    hover={true}
+                                    options={options}
+                                    //search
+                                    ignoreSinglePage
+                                    trClassName={'userlisting-row'}
+                                    tableHeaderClass='my-custom-class'
+                                    pagination>
+                                    <TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
+                                    <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>
+                                    <TableHeaderColumn dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                                </BootstrapTable>
+                            </Col>
+                        </Row>
+                    </Col>
+
+                    <Col md="6">
+                        <Row>
+                            <LevelTechnologyListing
+                                onRef={ref => (this.child = ref)}
+                                mappingToggler={this.mappingToggler}
+                                getLevelMappingDetail={this.getLevelMappingDetail}
+                            />
+                        </Row>
                     </Col>
                 </Row>
-                <hr />
-                <Row>
-                    <Col>
-                        <BootstrapTable
-                            data={this.state.tableData}
-                            striped={true}
-                            hover={true}
-                            options={options}
-                            search
-                            ignoreSinglePage
-                            trClassName={'userlisting-row'}
-                            tableHeaderClass='my-custom-class'
-                            pagination>
-                            <TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>
-                            <TableHeaderColumn dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
-                    </Col>
-                </Row>
-                {/* <Row>
-                    <Col>
-                        <Table className="table table-striped" size="sm" bordered>
-                            {this.props.levelList && this.props.levelList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`Level`}</th>
-                                        <th>{'Sequence'}</th>
-                                        <th>{''}</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.levelList && this.props.levelList.length > 0 &&
-                                    this.props.levelList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.LevelName}</td>
-                                                <td>{item.Sequence}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.LevelId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.LevelId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.levelList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row> */}
-            </ >
+
+                {isOpen && (
+                    <Level
+                        isOpen={isOpen}
+                        isShowForm={isShowForm}
+                        isShowMappingForm={isShowMappingForm}
+                        closeDrawer={this.closeDrawer}
+                        isEditFlag={isEditFlag}
+                        LevelId={LevelId}
+                        anchor={'right'}
+                    />
+                )}
+            </>
         );
     }
 }

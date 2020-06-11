@@ -137,8 +137,12 @@ class ViewUserDetails extends Component {
 	* @description Renders the component
 	*/
   render() {
-    const { UserId } = this.props;
+    const { UserId, registerUserData } = this.props;
     const { isPermissionOpen, isTechnologyOpen } = this.state;
+
+    const address = `${registerUserData.AddressLine1}, ${registerUserData.AddressLine2}, 
+    ${registerUserData.CityName},  ${registerUserData.ZipCode}`;
+
     return (
       <>
         {this.props.loading && <Loader />}
@@ -166,20 +170,20 @@ class ViewUserDetails extends Component {
                   <Col md="6">
                     <button
                       className={'user-btn'}
-                      onClick={() => this.props.editItemDetails(UserId)}
+                      onClick={() => this.props.editItemDetails(UserId, false)}
                       type="button"><div className={'edit-icon'}></div>EDIT DETAILS</button>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Name</div>
-                    <div className={'right-details'}>Dheeraj Solanki</div>
+                    <div className={'right-details'}>{registerUserData.FullName}</div>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Mobile No.</div>
-                    <div className={'right-details'}>8888899999</div>
+                    <div className={'right-details'}>{registerUserData.Mobile}</div>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Phone No.-Ext:</div>
-                    <div className={'right-details'}>0731 257 8888-89</div>
+                    <div className={'right-details'}>{registerUserData.PhoneNumber}-{registerUserData.Extension}</div>
                   </Col>
                 </Row>
                 <Row className="mt-15">
@@ -190,15 +194,19 @@ class ViewUserDetails extends Component {
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Email ID:</div>
-                    <div className={'right-details'}>dheeraj.solanki@gmail.com</div>
+                    <div className={'right-details'}>{registerUserData.EmailAddress}</div>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>User Name</div>
-                    <div className={'right-details'}>dheeraj.solanki</div>
+                    <div className={'right-details'}>{registerUserData.UserName}</div>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Password</div>
-                    <div className={'right-details'}><a href="javascript:void(0)">Change Password</a></div>
+                    <div className={'right-details'}>
+                      <a
+                        href="javascript:void(0)"
+                        onClick={() => this.props.editItemDetails(UserId, true)}
+                      >Change Password</a></div>
                   </Col>
                 </Row>
                 <Row className="mt-15">
@@ -208,10 +216,7 @@ class ViewUserDetails extends Component {
                         title={'Address:'}
                         customClass={'Header-address'} />
                     </div>
-                    <div className={'right-details'}>
-                      {`206-207, Bansi Trade Centre, Mahatma Gandhi road, Indore, 
-                                        Madhya Pradesh ,452015`}
-                    </div>
+                    <div className={'right-details'}>{address}</div>
                   </Col>
                 </Row>
                 <Row className="mt-15 grant-user-grid drawer-table-sm">

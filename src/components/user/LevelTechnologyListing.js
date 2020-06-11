@@ -49,11 +49,7 @@ class LevelTechnologyListing extends Component {
      * @description confirm edit item
      */
     editItemDetails = (Id) => {
-        let requestData = {
-            isEditMappingFlag: true,
-            LevelId: Id,
-        }
-        this.props.getLevelMappingDetail(requestData)
+        this.props.getLevelMappingDetail(Id)
     }
 
     /**
@@ -78,7 +74,7 @@ class LevelTechnologyListing extends Component {
         this.props.deleteUserLevelAPI(LevelId, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_LEVEL_SUCCESSFULLY);
-                this.getLevelsListData()
+                this.getUpdatedData()
             }
         });
     }
@@ -108,7 +104,7 @@ class LevelTechnologyListing extends Component {
     render() {
         const { isEditFlag } = this.state;
         const options = {
-            clearSearch: true,
+            //clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             afterSearch: this.afterSearch,
         };
@@ -116,19 +112,24 @@ class LevelTechnologyListing extends Component {
             <>
                 {this.props.loading && <Loader />}
                 <Row>
-                    <Col>
-                        <h3>{`Level Mapping Listing`}</h3>
+                    <Col md="6">
+                        <h3>{`Level Mapping`}</h3>
                     </Col>
-                </Row>
-                <hr />
-                <Row>
+                    <Col md="6">
+                        <button
+                            type="button"
+                            className={'user-btn'}
+                            onClick={this.props.mappingToggler}>
+                            <div className={'plus'}></div>{'Add Mapping'}</button>
+                    </Col>
+
                     <Col>
                         <BootstrapTable
                             data={this.state.tableData}
                             striped={true}
                             hover={true}
                             options={options}
-                            search
+                            //search
                             ignoreSinglePage
                             trClassName={'userlisting-row'}
                             tableHeaderClass='my-custom-class'
@@ -139,7 +140,7 @@ class LevelTechnologyListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
-            </ >
+            </>
         );
     }
 }

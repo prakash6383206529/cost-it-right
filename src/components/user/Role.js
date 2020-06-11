@@ -16,6 +16,7 @@ import { Table } from 'reactstrap';
 import NoContentFound from "../common/NoContentFound";
 import { CONSTANT } from "../../helper/AllConastant";
 import { userDetails, loggedInUserId } from "../../helper/auth";
+import Switch from "react-switch";
 
 class Role extends Component {
     constructor(props) {
@@ -221,7 +222,10 @@ class Role extends Component {
         return actionHeads && actionHeads.map((item, index) => {
             if (item.Value == 0) return false;
             return (
-                <th >{item.Text}</th>
+                <th className="crud-label">
+                    <div className={item.Text}></div>
+                    {item.Text}
+                </th>
             )
         })
     }
@@ -317,12 +321,30 @@ class Role extends Component {
                 if (el.Text != item.ActionName) return false;
                 return (
                     <td>
-                        {<input
+                        {/* {<input
                             type="checkbox"
                             value={item.ActionId}
                             onChange={() => this.actionCheckHandler(parentIndex, index)}
                             checked={item.IsChecked}
-                        />}
+                        />} */}
+                        {
+                            <label htmlFor="normal-switch">
+                                {/* <span>Switch with default style</span> */}
+                                <Switch
+                                    onChange={() => this.actionCheckHandler(parentIndex, index)}
+                                    checked={item.IsChecked}
+                                    value={item.ActionId}
+                                    id="normal-switch"
+                                    onColor="#4DC771"
+                                    onHandleColor="#ffffff"
+                                    offColor="#959CB6"
+                                    checkedIcon={false}
+                                    uncheckedIcon={false}
+                                    height={18}
+                                    width={40}
+                                />
+                            </label>
+                        }
                     </td>
                 )
             })
@@ -338,8 +360,6 @@ class Role extends Component {
 
         let checkedActions = Modules[parentIndex].Actions.filter(item => item.IsChecked == true)
 
-        let isCheckedSelectAll = (checkedActions.length - 1 != 0) ? true : false;
-
         let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
         let actionArray = actionRow && actionRow.map((el, index) => {
             if (childIndex == index) {
@@ -347,8 +367,15 @@ class Role extends Component {
             }
             return el;
         })
-        let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: isCheckedSelectAll, Actions: actionArray }) })
-        this.setState({ Modules: tempArray })
+        let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
+        this.setState({ Modules: tempArray }, () => {
+            const { Modules } = this.state;
+            let aa = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
+            let checkedActions = aa.filter(item => item.IsChecked == true)
+            let abcd = checkedActions && checkedActions.length != 0 ? true : false;
+            let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
+            this.setState({ Modules: tempArray1 })
+        })
     }
 
     /**
@@ -467,7 +494,9 @@ class Role extends Component {
                             <button
                                 type="button"
                                 className={'user-btn'}
-                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>ADD</button>
+                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>
+                                <div className={'plus'}></div>{'ADD'}
+                            </button>
                         </div>
                         {this.state.isShowForm &&
                             <div className="col-md-12">
@@ -520,13 +549,13 @@ class Role extends Component {
 
                                         </div>
 
-                                        <div className=" row form-group">
+                                        <div className="row form-group grant-user-grid">
                                             <div className="col-md-12">
-                                                <Table className="table table-striped" size="sm" bordered dark striped >
+                                                <Table className="table table-striped" size="sm" >
                                                     <thead>
                                                         <tr>
                                                             <th>{`Module`}</th>
-                                                            <th>{`Select All`}</th>
+                                                            <th>{``}</th>
                                                             {this.renderActionHeads(actionSelectList)}
                                                         </tr>
                                                     </thead>
@@ -551,11 +580,14 @@ class Role extends Component {
                                                                     }
                                                                     </td>
 
-                                                                    <td >{<input
+                                                                    <td className="select-all-block"> {<input
                                                                         type="checkbox"
                                                                         value={'All'}
+                                                                        className={this.isCheckAll(index, item.Actions) ? 'selected-box' : 'not-selected-box'}
                                                                         checked={this.isCheckAll(index, item.Actions)}
-                                                                        onClick={() => this.selectAllHandler(index, item.Actions)} />}</td>
+                                                                        onClick={() => this.selectAllHandler(index, item.Actions)} />}
+                                                                        <span>Select All</span>
+                                                                    </td>
 
                                                                     {this.renderAction(item.Actions, index)}
                                                                 </tr>

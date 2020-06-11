@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
    minLength3, minLength5, minLength6, maxLength25, maxLength11, maxLength12, required, email,
-   minLength7, maxLength70, alphabetsOnlyForName, number
+   minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18
 } from "../../helper/validation";
 import {
    renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
@@ -294,14 +294,16 @@ class UserRegistration extends Component {
       if (data && data.isEditFlag) {
          this.setState({
             isLoader: true,
-            isEditFlag: true,
+            isEditFlag: false,
             isShowForm: true,
-            isEditFlag: true,
             IsShowAdditionalPermission: true,
-            isShowPwdField: false,
+            isShowPwdField: data.passwordFlag ? true : false,
             UserId: data.UserId,
          })
-         $('html, body').animate({ scrollTop: 0 }, 'slow');
+         if (data.passwordFlag == false) {
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+         }
+
          this.props.getUserDataAPI(data.UserId, (res) => {
             if (res && res.data && res.data.Data) {
 
@@ -311,9 +313,9 @@ class UserRegistration extends Component {
                const RoleObj = roleList.find(item => item.RoleId == Data.RoleId)
                const DepartmentObj = departmentList.find(item => item.DepartmentId == Data.DepartmentId)
                const CityObj = cityList.find(item => item.Value == Data.CityId)
-               console.log('RoleObj', RoleObj)
+
                this.setState({
-                  isEditFlag: false,
+                  isEditFlag: true,
                   isLoader: false,
                   department: DepartmentObj != undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
                   role: RoleObj != undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
@@ -322,6 +324,9 @@ class UserRegistration extends Component {
                this.getUserPermission(data.UserId)
                this.getUsersTechnologyLevelData(data.UserId)
 
+               if (data.passwordFlag) {
+                  $('input[type="password"]').get(0).focus()
+               }
             }
          })
       }
@@ -797,6 +802,7 @@ class UserRegistration extends Component {
          this.child.getUpdatedData();
       })
    }
+
    formToggle = () => {
       this.setState({
          isShowForm: !this.state.isShowForm
@@ -847,14 +853,14 @@ class UserRegistration extends Component {
             AdditionalPermission: registerUserData.AdditionalPermission,
             CityName: department.label,
             UserProfileId: registerUserData.UserProfileId,
-            UserName: values.email,
+            UserName: values.UserName,
             Password: this.state.isShowPwdField ? values.Password : '',
             RoleId: role.value,
             PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
             DepartmentId: department.value,
             loggedInUserId: loggedInUserId(),
             CompanyId: userDetails.CompanyId,
-            Email: values.email,
+            EmailAddress: values.EmailAddress,
             Mobile: values.Mobile,
             FirstName: values.FirstName,
             MiddleName: values.MiddleName,
@@ -980,14 +986,14 @@ class UserRegistration extends Component {
       } else {
 
          let userData = {
-            UserName: values.email,
+            UserName: values.UserName,
             Password: values.Password,
             RoleId: role.value,
             PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
             DepartmentId: department.value,
             loggedInUserId: loggedInUserId(),
             CompanyId: userDetails.CompanyId,
-            Email: values.email,
+            EmailAddress: values.EmailAddress,
             Mobile: values.Mobile,
             FirstName: values.FirstName,
             MiddleName: values.MiddleName,
@@ -1202,7 +1208,7 @@ class UserRegistration extends Component {
                               <div className="row form-group">
                                  <div className="input-group col-md-3">
                                     <Field
-                                       name="email"
+                                       name="EmailAddress"
                                        label="Email ID"
                                        component={renderEmailInputField}
                                        isDisabled={false}
@@ -1216,7 +1222,7 @@ class UserRegistration extends Component {
                                  </div>
                                  <div className="input-group col-md-3">
                                     <Field
-                                       name="Username"
+                                       name="UserName"
                                        label="User name"
                                        type="text"
                                        placeholder={'Enter'}
@@ -1231,14 +1237,14 @@ class UserRegistration extends Component {
                                  </div>
                                  {this.state.isShowPwdField &&
                                     <>
-                                       <div className="input-group col-md-3">
+                                       <div id="password" className="input-group password col-md-3">
                                           <Field
                                              name="Password"
                                              label="Password"
                                              placeholder="Enter"
                                              component={renderPasswordInputField}
                                              onChange={this.passwordPatternHandler}
-                                             validate={[required, minLength6, maxLength25]}
+                                             validate={[required, minLength6, maxLength18]}
                                              isShowHide={this.state.isShowHidePassword}
                                              showHide={this.showHidePasswordHandler}
                                              required={true}
@@ -1253,7 +1259,7 @@ class UserRegistration extends Component {
                                              label="Confirm Password"
                                              placeholder={'Enter'}
                                              component={renderPasswordInputField}
-                                             validate={[required, minLength6, maxLength25]}
+                                             validate={[required, minLength6, maxLength18]}
                                              required={true}
                                              maxLength={26}
                                              isShowHide={this.state.isShowHide}
@@ -1647,11 +1653,11 @@ const mapStateToProps = ({ auth, comman }) => {
          FirstName: registerUserData.FirstName,
          MiddleName: registerUserData.MiddleName,
          LastName: registerUserData.LastName,
-         email: registerUserData.Email,
-         Username: registerUserData.UserName,
+         EmailAddress: registerUserData.EmailAddress,
+         UserName: registerUserData.UserName,
          Mobile: registerUserData.Mobile,
-         Password: registerUserData.Password,
-         passwordConfirm: registerUserData.Password,
+         Password: registerUserData.Password == null ? '' : '',
+         passwordConfirm: registerUserData.Password == null ? '' : '',
          AddressLine1: registerUserData.AddressLine1,
          AddressLine2: registerUserData.AddressLine2,
          ZipCode: registerUserData.ZipCode,

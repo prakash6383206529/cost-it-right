@@ -11,6 +11,8 @@ import PermissionsUserWise from './PermissionsUserWise';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import classnames from 'classnames';
+import DepartmentsListing from './DepartmentsListing';
+import LevelsListing from './LevelsListing';
 
 
 class User extends Component {
@@ -108,11 +110,11 @@ class User extends Component {
                 toggle={this.toggle} />
             </TabPane>}
             {this.state.activeTab === '3' && <TabPane tabId="3">
-              <Department
+              <DepartmentsListing
                 toggle={this.toggle} />
             </TabPane>}
             {this.state.activeTab === '4' && <TabPane tabId="4">
-              <Level
+              <LevelsListing
                 toggle={this.toggle} />
             </TabPane>}
             {/* {this.state.activeTab === '5' && <TabPane tabId="5">
