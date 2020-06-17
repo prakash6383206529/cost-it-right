@@ -135,7 +135,7 @@ class DepartmentsListing extends Component {
       <>
         {this.props.loading && <Loader />}
         <Row>
-          <Col>
+          <Col className="text-right">
             <button
               type={'button'}
               className={'user-btn'}
@@ -148,16 +148,18 @@ class DepartmentsListing extends Component {
           <Col>
             <BootstrapTable
               data={this.state.tableData}
-              striped={true}
+              striped={false}
+              bordered={false}
               hover={true}
               options={options}
               search
               ignoreSinglePage
+              ref={'table'}
               trClassName={'userlisting-row'}
-              tableHeaderClass='my-custom-class'
+              tableHeaderClass='my-custom-header'
               pagination>
-              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="center" dataSort={true}>Department</TableHeaderColumn>
-              <TableHeaderColumn dataField="DepartmentId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>Department</TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>
         </Row>
@@ -168,6 +170,7 @@ class DepartmentsListing extends Component {
             isEditFlag={isEditFlag}
             DepartmentId={DepartmentId}
             anchor={'right'}
+            className={"test-rahul"}
           />
         )}
       </ >

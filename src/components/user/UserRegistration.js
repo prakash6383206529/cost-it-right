@@ -1520,7 +1520,7 @@ class UserRegistration extends Component {
                             type="button"
                             className={'add-button add-button-big'}
                             onClick={this.setTechnologyLevel}
-                          ><div className={'plus'}></div><span>ADD</span></button>}
+                          ><div className={'plus'}></div>ADD</button>}
                       </div>
                     </div>
 
@@ -1563,22 +1563,31 @@ class UserRegistration extends Component {
                               ///////////////////////////////////////////////// */}
 
 
-                    <div className="text-right">
+                    <div className="text-right btn-blue-block">
 
-                      <input
+                      {/* <input
                         //disabled={pristine || submitting}
                         onClick={this.cancel}
                         type="submit"
                         value="CANCEL"
                         className="reset mr15 cancel-btn"
-                      />
+                      /> */}
+                      <button
+                        onClick={this.cancel}
+                        type="submit"
+                        value="CANCEL"
+                        className="reset mr15 cancel-btn">
+
+                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>CANCEL</button>
                       <button
                         type="submit"
                         disabled={isSubmitted ? true : false}
-                        className="submit-button mr5 save-btn"
-                      >
+                        className="btn-primary save-btn"
+                      >	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                        </div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
+
                       {/* {!this.state.isEditFlag &&
                                     <input
                                        disabled={pristine || submitting}

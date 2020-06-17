@@ -59,7 +59,7 @@ class User extends Component {
   render() {
     const { isOpen } = this.state;
     return (
-      <Container className="user-page p-0">
+      <Container className="user-page">
         {/* {this.props.loading && <Loader/>} */}
         <div>
           <h1>User Management</h1>
@@ -105,15 +105,15 @@ class User extends Component {
               <UserRegistration
                 toggle={this.toggle} />
             </TabPane>}
-            {this.state.activeTab === '2' && <TabPane tabId="2">
+            {this.state.activeTab === '2' && <TabPane tabId="2" className="role-permission mt-30">
               <Role
                 toggle={this.toggle} />
             </TabPane>}
-            {this.state.activeTab === '3' && <TabPane tabId="3">
+            {this.state.activeTab === '3' && <TabPane tabId="3" className="manage-department mt-30">
               <DepartmentsListing
                 toggle={this.toggle} />
             </TabPane>}
-            {this.state.activeTab === '4' && <TabPane tabId="4">
+            {this.state.activeTab === '4' && <TabPane tabId="4" className="manage-levels mt-30">
               <LevelsListing
                 toggle={this.toggle} />
             </TabPane>}
