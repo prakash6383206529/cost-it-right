@@ -17,7 +17,6 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
-
 function enumFormatter(cell, row, enumObject) {
 	return enumObject[cell];
 }
@@ -436,7 +435,7 @@ class UsersListing extends Component {
 					trClassName={'userlisting-row'}
 					tableHeaderClass='my-custom-header'
 					pagination>
-					<TableHeaderColumn dataField="Sr. No." csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+					<TableHeaderColumn dataField="Sr. No." csvHeader='Full-Name' dataFormat={this.indexFormatter} columnTitle="Put your old price here">Sr. No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
 					<TableHeaderColumn dataField="UserName" dataSort={true}>User name</TableHeaderColumn>
 					<TableHeaderColumn dataField="EmailAddress" dataSort={true}>Email Id</TableHeaderColumn>

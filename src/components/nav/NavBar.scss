@@ -142,16 +142,19 @@ li.nav-item .logo {
   position: relative;
   z-index: 9;
 }
+
 .sf-mainheader {
   .navbar {
     background-color: #fff !important;
     padding: 0.1rem 1rem;
     border-bottom: 1px solid rgba(180, 197, 226, 0.51);
+
     .nav-link {
       display: block;
       padding: 4px 0.55rem 0 0.55rem;
     }
   }
+
   .nav-scroller {
     position: fixed;
     z-index: 2;
@@ -173,15 +176,18 @@ li.nav-item .logo {
       font-weight: 400;
       opacity: 1;
       margin-right: 25px;
+
       img,
       span {
         display: inline-block;
         vertical-align: middle;
       }
+
       img {
         margin-right: 12px;
         height: 19px;
       }
+
       &:first-child {
         padding-left: 0;
       }
@@ -305,7 +311,8 @@ li.nav-item .logo {
     min-width: 30px;
     height: 30px;
     margin-right: 8px;
-    &::after{
+
+    &::after {
       content: '';
       border-left: 1px solid #ccc;
     }
@@ -320,6 +327,7 @@ li.nav-item .logo {
       font-size: 14px;
       font-weight: 300;
     }
+
     button {
       text-align: left;
       letter-spacing: 0px;
@@ -331,6 +339,7 @@ li.nav-item .logo {
       padding-right: 0;
       background: $white !important;
       border: $white 1px solid !important;
+
       &:hover,
       &:focus,
       &:active,
@@ -341,8 +350,10 @@ li.nav-item .logo {
         box-shadow: none !important;
       }
     }
+
     position: relative;
-    &::after{
+
+    &::after {
       content: "";
       position: absolute;
       width: 1px;
@@ -358,26 +369,23 @@ li.nav-item .logo {
   .logout {
     .dropdown-menu {
       padding: 0;
-      background-color: #000;
-      border-color: rgba(255, 255, 255, 0.14);
+      background-color: #f5f5f5;
+      border-color: 1px solid rgba(0, 0, 0, .15);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
       top: 10px !important;
       z-index: 10025;
 
       .dropdown-item {
-        color: #fff;
+        color: $colorPrimary;
         cursor: pointer;
         font-size: 0.9rem;
         padding: 7px 15px;
         border-bottom: 1px solid #333;
 
-        &:hover {
-          color: $text-hover;
-          background-color: rgba(36, 36, 36, 0.8);
-        }
-
+        &:hover,
         &:focus {
-          color: $text-hover;
-          background-color: rgba(36, 36, 36, 0.8);
+          color: $white !important;
+          background-color: rgba(61, 68, 101, 0.9);
         }
       }
     }

@@ -212,6 +212,8 @@ class Main extends Component {
             position="top-right"
             transitionIn="fadeIn"
             transitionOut="fadeOut"
+            // transitionIn="bounceIn"
+            // transitionOut="bounceOut"
             progressBar
           />
           {this.handleUserData()}

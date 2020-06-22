@@ -1,9 +1,11 @@
 @import "./cssVariable.scss";
 @import "./style.scss";
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;1,400&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;1,400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,500;1,700&display=swap');
 
 body {
-  font-family: "Roboto", sans-serif !important;
+  // font-family: "Roboto", sans-serif !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
   position: relative;
 }
 
@@ -11,8 +13,14 @@ body a {
   color: $colorPrimary;
 }
 
+body a,
+body button {
+  cursor: pointer !important;
+}
+
 body a:hover {
-  color: $headinlightgblack;
+  color: $colorgraylighter !important;
+
 }
 
 ul,
@@ -342,6 +350,27 @@ a:hover {
 .react-bs-table-container {
   .react-bs-table {
     margin-top: 15px;
+
+    .sort-column {
+
+      .dropdown,
+      .dropup {
+        .caret {
+          background: transparent url("../../assests/images/up-sorting-arrow.png") 0 0;
+          width: 11px;
+          height: 11px;
+          background-size: 11px 11px !important;
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
+
+      .dropup {
+        .caret {
+          background: transparent url("../../assests/images/down-sorting-arrow.png") 11px 11px;
+        }
+      }
+    }
 
     .my-custom-header {
       th {
@@ -1041,6 +1070,24 @@ p {
     font-weight: $font-medium;
   }
 
+  .error-block {
+    h1 {
+      font-size: 32px;
+    }
+
+    h5 {
+      font-size: $font-20;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    p {
+      font-size: $font-16;
+      color: #afadad;
+      margin-bottom: 15px;
+    }
+  }
+
   .tab-pane {
     h2 {
       font-size: 23px;
@@ -1225,7 +1272,7 @@ button .fas {
 }
 
 .rrt-confirm-holder .rrt-confirm .rrt-message {
-  font-family: "Roboto", sans-serif !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
 }
 
 .banner-section {
@@ -1328,7 +1375,7 @@ label {
 
 form .form-control {
   font-size: 1rem;
-  font-family: "Roboto", sans-serif !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
   padding: 0;
 }
 
