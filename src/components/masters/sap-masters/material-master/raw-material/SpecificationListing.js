@@ -16,13 +16,15 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import AddSpecification from './AddSpecification';
 
-class RMSpecificationDetail extends Component {
+class SpecificationListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            ID: '',
             specificationData: [],
             RawMaterial: [],
             RMGrade: [],
@@ -36,12 +38,6 @@ class RMSpecificationDetail extends Component {
     componentDidMount() {
         this.props.getRMTypeSelectListAPI(() => { });
         this.props.getMaterialTypeSelectList(() => { })
-        this.getSpecificationListData('', '');
-        this.props.onRef(this)
-    }
-
-    // Get updated user list after any action performed.
-    getUpdatedData = () => {
         this.getSpecificationListData('', '');
     }
 
@@ -61,13 +57,19 @@ class RMSpecificationDetail extends Component {
                 this.setState({ specificationData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    specificationData: Data,
-                })
-            } else {
-
+                this.setState({ specificationData: Data, })
             }
         });
+    }
+
+    /**
+    * @method closeDrawer
+    * @description  used to cancel filter form
+    */
+    closeDrawer = (e = '') => {
+        this.setState({ isOpen: false }, () => {
+            this.getSpecificationListData('', '');
+        })
     }
 
     /**
@@ -96,9 +98,9 @@ class RMSpecificationDetail extends Component {
     }
 
     /**
-        * @method handleGrade
-        * @description  used to handle type of listing change
-        */
+    * @method handleGrade
+    * @description  used to handle type of listing change
+    */
     handleGrade = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
             this.setState({ RMGrade: newValue });
@@ -108,9 +110,9 @@ class RMSpecificationDetail extends Component {
     }
 
     /**
-        * @method handleMaterialChange
-        * @description  used to material change and get grade's
-        */
+    * @method handleMaterialChange
+    * @description  used to material change and get grade's
+    */
     handleMaterialChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
             this.setState({ RawMaterial: newValue }, () => {
@@ -129,7 +131,22 @@ class RMSpecificationDetail extends Component {
     * @description edit RM Specification
     */
     editItemDetails = (Id) => {
-        this.props.editRMSpecificationHandler(Id);
+        this.setState({
+            isEditFlag: true,
+            isOpen: true,
+            ID: Id,
+        })
+    }
+
+    /**
+    * @method openModel
+    * @description  used to open filter form 
+    */
+    openModel = () => {
+        this.setState({
+            isOpen: true,
+            isEditFlag: false
+        })
     }
 
     /**
@@ -172,22 +189,22 @@ class RMSpecificationDetail extends Component {
     }
 
     /**
-        * @method buttonFormatter
-        * @description Renders buttons
-        */
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <Button className="btn btn-secondary mr5" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button>
-                <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button>
+                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
+                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
             </>
         )
     }
 
     /**
-        * @method indexFormatter
-        * @description Renders serial number
-        */
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         const { table } = this.refs;
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
@@ -242,6 +259,7 @@ class RMSpecificationDetail extends Component {
     * @description Renders the component
     */
     render() {
+        const { isOpen, isEditFlag, ID } = this.state;
         const { handleSubmit } = this.props;
 
         const options = {
@@ -255,6 +273,16 @@ class RMSpecificationDetail extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                    <Row>
+                        <Col>
+                            <button
+                                type={'button'}
+                                className={'user-btn'}
+                                onClick={this.openModel}>
+                                <div className={'plus'}></div>{`ADD SPEC`}</button>
+                        </Col>
+                    </Row>
+                    <hr />
                     <Row>
                         <Col md="2" className="mt25">
                             <h4>{`Filter By:`}</h4>
@@ -326,15 +354,22 @@ class RMSpecificationDetail extends Component {
                             ref={'table'}
                             pagination>
                             <TableHeaderColumn dataField="" dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MaterialTypeName" dataAlign="center" dataSort={true}>Raw Material Name</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MaterialTypeName" dataAlign="center" >RM Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="GradeName" dataAlign="center" >Grade</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Specification" >Specification</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>Raw Material</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMSpec" >Specification</TableHeaderColumn>
                             <TableHeaderColumn dataField="SpecificationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>
                 </Row>
+                {isOpen && <AddSpecification
+                    isOpen={isOpen}
+                    closeDrawer={this.closeDrawer}
+                    isEditFlag={isEditFlag}
+                    ID={ID}
+                    anchor={'right'}
+                />}
             </div>
         );
     }
@@ -360,6 +395,6 @@ export default connect(mapStateToProps, {
     deleteRMSpecificationAPI,
     getMaterialTypeSelectList,
 })(reduxForm({
-    form: 'RMSpecificationDetail',
+    form: 'SpecificationListing',
     enableReinitialize: true,
-})(RMSpecificationDetail));
+})(SpecificationListing));

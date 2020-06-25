@@ -213,7 +213,7 @@ class UOMMaster extends Component {
                         isOpen={isOpen}
                         closeDrawer={this.closeDrawer}
                         isEditFlag={isEditFlag}
-                        uomId={uomId}
+                        ID={uomId}
                         anchor={'right'}
                     />
                 )}

@@ -26,11 +26,11 @@ class AddUOM extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { uomId, isEditFlag } = this.props;
+        const { ID, isEditFlag } = this.props;
         this.props.getUnitTypeListAPI(() => { })
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
-                this.props.getOneUnitOfMeasurementAPI(uomId, true, res => {
+                this.props.getOneUnitOfMeasurementAPI(ID, true, res => {
                     const { unitTypeList } = this.props;
                     if (res && res.data && res.data.Data) {
                         let Data = res.data.Data;
@@ -108,10 +108,10 @@ class AddUOM extends Component {
 
         /** Update detail of the existing UOM  */
         if (this.props.isEditFlag) {
-            const { uomId } = this.props;
+            const { ID } = this.props;
             this.setState({ isSubmitted: true });
             let formData = {
-                Id: uomId,
+                Id: ID,
                 Unit: values.Unit,
                 UnitTypeId: unitTypes.value,
                 IsActive: true,

@@ -52,9 +52,6 @@ import termCondition from "./about/term&condition";
 import privacyandpolicy from "./about/privacyandpolicy";
 import aboutus from "./about/aboutus";
 
-
-
-
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -62,7 +59,6 @@ class Main extends Component {
       visibelPageNotFound: false,
     };
   }
-
 
   /**
    * @method handlePageNotFound
@@ -118,8 +114,10 @@ class Main extends Component {
                 </div>
               </div>
             </div>}
-          {isLogin && <Breadcrumb />}
-          {isLogin && <LeftMenu {...this.props} />}
+
+          {isLogin && !this.state.visibelPageNotFound && <Breadcrumb />}
+          {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} />}
+
           <div className="content-page">
             <div className=" middleContainer">
               <Switch>

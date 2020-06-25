@@ -11,6 +11,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { loggedInUserId } from "../../../../../helper/auth";
+import Drawer from '@material-ui/core/Drawer';
 
 class AddGrade extends Component {
     constructor(props) {
@@ -55,53 +56,31 @@ class AddGrade extends Component {
     }
 
     /**
-    * @method toggleModel
-    * @description Used to cancel modal
+    * @method cancel
+    * @description used to Reset form
     */
-    toggleModel = () => {
-        this.props.onCancel('3');
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.toggleDrawer('')
     }
 
-    /**
-    * @method handleTypeOfListingChange
-    * @description  used to handle type of listing selection
-    */
-    handleMaterial = (e) => {
-        this.setState({
-            MaterialId: e.target.value
-        })
-    }
-
-    /**
-    * @method renderTypeOfListing
-    * @description Used show listing of row material
-    */
-    renderTypeOfListing = (label) => {
-        const { rowMaterialList, MaterialSelectList } = this.props;
-        const temp = [];
-
-        // if (label === 'raw-material') {
-        //     rowMaterialList && rowMaterialList.map(item =>
-        //         temp.push({ Text: item.Text, Value: item.Value })
-        //     );
-        //     return temp;
-        // }
-
-        if (label === 'material') {
-            MaterialSelectList && MaterialSelectList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
         }
+        this.props.closeDrawer('')
+    };
 
-    }
+
+
 
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { GradeId, isEditFlag } = this.props;
+        const { GradeId, isEditFlag, material } = this.props;
         const { MaterialId } = this.state;
 
         values.CreatedBy = loggedInUserId();
@@ -126,10 +105,13 @@ class AddGrade extends Component {
                 }
             })
         } else {
+
+            values.MaterialId = material.value;
+
             this.props.createRMGradeAPI(values, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
-                    this.toggleModel();
+                    this.toggleDrawer('')
                 }
             });
         }
@@ -140,75 +122,67 @@ class AddGrade extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         return (
-            <Container className="top-margin">
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{`${CONSTANT.ADD} ${CONSTANT.GRADE}`}</ModalHeader>
-                    <ModalBody>
-                        <Row>
-                            <Container>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={'Material'}
-                                                name={"MaterialId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                options={this.renderTypeOfListing('material')}
-                                                onChange={this.handleMaterial}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.GRADE}`}
-                                                name={"Grade"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        {/* <Col md="4">
-                                            <Field
-                                                label={`${CONSTANT.DESCRIPTION}`}
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col> */}
-
-                                    </Row>
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-center">
-                                            <button type="submit" className="btn dark-pinkbtn" >
-                                                {CONSTANT.SAVE}
-                                            </button>
+            <>
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                    <Container>
+                        <div className={'drawer-wrapper'}>
+                            <form
+                                noValidate
+                                className="form"
+                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                            >
+                                <Row className="drawer-heading">
+                                    <Col>
+                                        <div className={'header-wrapper left'}>
+                                            <h3>{isEditFlag ? 'Update RM Grade' : 'Add RM Grade'}</h3>
                                         </div>
-                                    </Row>
-                                </form>
-                            </Container>
-                        </Row>
-                    </ModalBody>
-                </Modal>
-            </Container >
+                                        <div
+                                            onClick={(e) => this.toggleDrawer(e)}
+                                            className={'close-button right'}>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md="12">
+                                        <Field
+                                            label={`RM Grade`}
+                                            name={"Grade"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required]}
+                                            component={renderText}
+                                            required={true}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row className="sf-btn-footer no-gutters justify-content-between">
+                                    <div className="col-md-12">
+                                        <div className="text-center ">
+                                            <input
+                                                //disabled={pristine || submitting}
+                                                onClick={this.cancel}
+                                                type="button"
+                                                value="Cancel"
+                                                className="reset mr15 cancel-btn"
+                                            />
+                                            <input
+                                                //disabled={isSubmitted ? true : false}
+                                                type="submit"
+                                                value={isEditFlag ? 'Update' : 'Save'}
+                                                className="submit-button mr5 save-btn"
+                                            />
+                                        </div>
+                                    </div>
+                                </Row>
+                            </form>
+                        </div>
+                    </Container>
+                </Drawer>
+            </>
         );
     }
 }

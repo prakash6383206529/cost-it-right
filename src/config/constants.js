@@ -39,7 +39,7 @@ export const API = {
 
 
   //api's for configure location
-  getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-supplier-city`,
+  getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-vendor-city`,
   getCountry: `${BASE_URL}/configuration-location/select-list-get-country`,
   getState: `${BASE_URL}/configuration-location/select-list-get-state`,
   getCity: `${BASE_URL}/configuration-location/select-list-get-city`,
@@ -160,6 +160,11 @@ export const API = {
   getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
   getRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-material-type`,
   getGradeByRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
+
+  //RAW MATERIAL NAME
+  createRawMaterialNameChild: `${BASE_URL}/masters-raw-material/create-raw-material-name-child`,
+  getRawMaterialNameChild: `${BASE_URL}/masters-raw-material/select-list-raw-material-name-child`,
+  getGradeListByRawMaterialNameChild: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade-child`,
 
   //Api for plant master
   //createPlantAPI: `${BASE_URL}/plant/create`,
@@ -526,6 +531,8 @@ export const GET_RAW_MATERIAL_DATA_SUCCESS = 'GET_RAW_MATERIAL_DATA_SUCCESS';
 export const GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS';
 export const GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS';
 export const GET_RM_TYPE_DATALIST_SUCCESS = 'GET_RM_TYPE_DATALIST_SUCCESS';
+export const GET_RM_NAME_SELECTLIST = 'GET_RM_NAME_SELECTLIST';
+export const GET_GRADELIST_BY_RM_NAME_SELECTLIST = 'GET_GRADELIST_BY_RM_NAME_SELECTLIST';
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';

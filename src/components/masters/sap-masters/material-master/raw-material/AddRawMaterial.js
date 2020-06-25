@@ -3,19 +3,19 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
-import { renderText } from "../../../../layout/FormInputs";
-import { createRMCategoryAPI, getCategoryDataAPI, updateCategoryAPI } from '../../../../../actions/master/Material';
+import { renderText, renderSelectField } from "../../../../layout/FormInputs";
+import { createRawMaterialNameChild } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { CONSTANT } from '../../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
-class AddCategory extends Component {
+class AddRawMaterial extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            isEditFlag: false,
         }
     }
 
@@ -24,12 +24,7 @@ class AddCategory extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        const { CategoryId, isEditFlag } = this.props;
-        if (isEditFlag) {
-            this.props.getCategoryDataAPI(CategoryId, res => { });
-        } else {
-            this.props.getCategoryDataAPI('', () => { });
-        }
+
     }
 
     /**
@@ -39,7 +34,6 @@ class AddCategory extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.props.getCategoryDataAPI('', () => { });
         this.toggleDrawer('')
     }
 
@@ -50,36 +44,35 @@ class AddCategory extends Component {
         this.props.closeDrawer('')
     };
 
-
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { CategoryId, isEditFlag } = this.props;
-        let loginUserId = loggedInUserId();
-        //values.CreatedBy = loginUserId;
+        const { RawMaterialId, MaterialSelectList, isEditFlag } = this.props;
 
         if (isEditFlag) {
-            let formData = {
-                CategoryId: CategoryId,
-                IsActive: true,
-                CreatedDate: '',
-                CreatedBy: loggedInUserId(),
-                CategoryName: values.CategoryName,
-                Description: values.Description,
-            }
-            this.props.updateCategoryAPI(formData, () => {
-                this.toggleModel()
-            })
-        } else {
 
-            this.props.createRMCategoryAPI(values, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
-                    this.toggleModel();
-                } else {
-                    toastr.error(res.data.message);
+            // let formData = {
+            //     RawMaterialId: RawMaterialId,
+            //     RawMaterialName: values.RawMaterialName,
+            //     IsActive: true,
+            //     CreatedDate: '',
+            //     CreatedBy: loggedInUserId(),
+            // }
+            // this.props.updateRawMaterialAPI(formData, (res) => {
+            //     if (res.data.Result === true) {
+            //         toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
+            //         this.toggleDrawer('')
+            //     }
+            // })
+
+        } else {
+            values.LoggedInUserId = loggedInUserId();
+            this.props.createRawMaterialNameChild(values, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+                    this.toggleDrawer('')
                 }
             });
         }
@@ -92,7 +85,7 @@ class AddCategory extends Component {
     render() {
         const { handleSubmit, isEditFlag } = this.props;
         return (
-            <div>
+            <>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container>
                         <div className={'drawer-wrapper'}>
@@ -104,7 +97,7 @@ class AddCategory extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Category' : 'Add Category'}</h3>
+                                            <h3>{isEditFlag ? 'Update Raw Material' : 'Add Raw Material'}</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}
@@ -115,8 +108,8 @@ class AddCategory extends Component {
                                 <Row>
                                     <Col md="12">
                                         <Field
-                                            label={`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}
-                                            name={"CategoryName"}
+                                            label={`Raw Material Name`}
+                                            name={"RawMaterialName"}
                                             type="text"
                                             placeholder={''}
                                             validate={[required]}
@@ -148,10 +141,9 @@ class AddCategory extends Component {
                                 </Row>
                             </form>
                         </div>
-
                     </Container>
                 </Drawer>
-            </div>
+            </>
         );
     }
 }
@@ -161,29 +153,31 @@ class AddCategory extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material }) {
-    const { categoryData } = material;
+function mapStateToProps({ comman, costWorking, material }) {
+    const { plantList, rmGradeList, rmSpecification } = comman;
+    const { MaterialSelectList } = costWorking;
+    const { rawMaterialData } = material;
+
     let initialValues = {};
-    if (categoryData && categoryData != undefined) {
+    if (rawMaterialData && rawMaterialData != undefined) {
         initialValues = {
-            CategoryName: categoryData.CategoryName,
-            Description: categoryData.Description,
+            RawMaterialName: rawMaterialData.RawMaterialName,
         }
     }
-    return { categoryData, initialValues }
+
+    return { initialValues, rawMaterialData }
 }
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default connect(mapStateToProps, {
-    createRMCategoryAPI,
-    getCategoryDataAPI,
-    updateCategoryAPI,
-})(reduxForm({
-    form: 'AddCategory',
-    enableReinitialize: true,
-})(AddCategory));
+export default connect(mapStateToProps,
+    {
+        createRawMaterialNameChild,
+    })(reduxForm({
+        form: 'AddRawMaterial',
+        enableReinitialize: true,
+    })(AddRawMaterial));

@@ -81,6 +81,7 @@ export const MESSAGES = {
 
   //RAW MATERIAL
   MATERIAL_ADDED_SUCCESS: 'Raw Material added successfully',
+  MATERIAL_UPDATE_SUCCESS: 'Raw Material updated successfully',
   MATERIAL_DELETE_ALERT: 'Are you sure you want to delete Raw Material?',
   DELETE_MATERIAL_SUCCESS: 'Raw Material has been deleted successfully.',
   MATERIAL_UPDATE_SUCCESS: 'Raw Material has been updated successfully',

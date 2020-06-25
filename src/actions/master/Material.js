@@ -22,6 +22,8 @@ import {
     GET_RM_TYPE_DATALIST_SUCCESS,
     GET_RMTYPE_SELECTLIST_SUCCESS,
     GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
+    GET_RM_NAME_SELECTLIST,
+    GET_GRADELIST_BY_RM_NAME_SELECTLIST,
 } from '../../config/constants';
 import {
     apiErrors
@@ -797,6 +799,70 @@ export function getAllRawMaterialList(callback) {
                 dispatch({
                     type: GET_RM_LIST_SUCCESS,
                     payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method createRawMaterialNameChild
+ * @description create material master
+ */
+export function createRawMaterialNameChild(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createRawMaterialNameChild, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getRawMaterialNameChild
+ * @description get raw material name child
+ */
+export function getRawMaterialNameChild(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getRawMaterialNameChild}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_RM_NAME_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getRawMaterialNameChild
+ * @description get grade list by raw material name child
+ */
+export function getGradeListByRawMaterialNameChild(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getGradeListByRawMaterialNameChild}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_GRADELIST_BY_RM_NAME_SELECTLIST,
+                    payload: response.data.SelectList,
                 });
                 callback(response);
             }
