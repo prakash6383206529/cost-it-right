@@ -103,8 +103,14 @@ export const MESSAGES = {
 
   DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
   DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
+
+  //PLANT
   DELETE_PLANT_SUCCESS: 'Plant deleted successfully',
   UPDATE_PLANT_SUCESS: 'Plant updated successfully',
+  PLANT_DELETE_ALERT: 'Are you sure you want to delete Plant?',
+  PLANT_ACTIVE_SUCCESSFULLY: 'Plant has been active successfully.',
+  PLANT_INACTIVE_SUCCESSFULLY: 'Plant has been inactive successfully.',
+
   DELETE_PROCESS_SUCCESS: 'Process deleted successfully',
   UPDATE_PROCESS_SUCCESS: 'Process updated successfully',
   PROCESS_ADD_SUCCESS: 'Process added successfully',

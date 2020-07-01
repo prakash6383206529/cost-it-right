@@ -9,6 +9,7 @@ import {
     GET_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATA_SUCCESS,
     GET_RADIO_SUPPLIER_TYPE_SUCCESS,
+    GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -157,9 +158,26 @@ export function getRadioButtonSupplierType() {
             });
 
         }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorTypesSelectList
+ * @description get radio button supplier type
+ */
+export function getVendorTypesSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorTypesSelectList, headers);
+        request.then((response) => {
             dispatch({
-                type: API_FAILURE
+                type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
             });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };

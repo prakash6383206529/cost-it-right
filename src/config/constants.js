@@ -14,8 +14,8 @@ export const API = {
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
   getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
   getTechnology: `${BASE_URL}/configuration/select-list-get-technology`,
-  getSupplier: `${BASE_URL}/configuration/select-list-get-supplier`,
-  getSupplierCode: `${BASE_URL}/configuration/select-list-get-supplier-code`,
+  getSupplier: `${BASE_URL}/configuration/select-list-get-vendor`,
+  getSupplierCode: `${BASE_URL}/configuration/select-list-get-vendor-code`,
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
   getCategory: `${BASE_URL}/configuration/select-list-get-category`,
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
@@ -173,14 +173,17 @@ export const API = {
   getAllPlantAPI: `${BASE_URL}/masters-plant/get-all`,
   updatePlantAPI: `${BASE_URL}/masters-plant/update`,
   deletePlantAPI: `${BASE_URL}/masters-plant/delete`,
+  activeInactiveStatus: `${BASE_URL}/masters-plant/active`,
+  getFilteredPlantList: `${BASE_URL}/masters-plant/get-all-by-filter`,
 
   //Api for supplier master
-  createSupplierAPI: `${BASE_URL}/supplier/create`,
+  createSupplierAPI: `${BASE_URL}/vendor/create-vendor`,
   getSupplierAPI: `${BASE_URL}/supplier/get`,
   getAllSupplierAPI: `${BASE_URL}/supplier/get-all`,
   updateSupplierAPI: `${BASE_URL}/supplier/update`,
   deleteSupplierAPI: `${BASE_URL}/supplier/delete`,
   getRadioButtonSupplierType: `${BASE_URL}/configuration/radio-button-list-get-supplier-type`,
+  getVendorTypesSelectList: `${BASE_URL}/vendor/vendor-types-select-list`,
 
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
@@ -565,6 +568,7 @@ export const CREATE_SUPPLIER_FAILURE = 'CREATE_SUPPLIER_FAILURE';
 export const GET_SUPPLIER_FAILURE = 'GET_SUPPLIER_FAILURE';
 export const GET_SUPPLIER_DATA_SUCCESS = 'GET_SUPPLIER_DATA_SUCCESS';
 export const GET_RADIO_SUPPLIER_TYPE_SUCCESS = 'GET_RADIO_SUPPLIER_TYPE_SUCCESS';
+export const GET_VENDOR_TYPE_SELECTLIST_SUCCESS = 'GET_VENDOR_TYPE_SELECTLIST_SUCCESS';
 
 //BOM MASTER
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';

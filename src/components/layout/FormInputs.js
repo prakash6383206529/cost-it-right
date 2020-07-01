@@ -3,7 +3,6 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import Dropzone from 'react-dropzone';
 import "./formInputs.css";
 
 /*

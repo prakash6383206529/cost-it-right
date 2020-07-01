@@ -24,21 +24,6 @@ class User extends Component {
     }
   }
 
-  /**
-   * @method openModel
-   * @description  used to open filter form 
-   */
-  openModel = () => {
-    this.setState({ isOpen: true })
-  }
-
-  /**
-   * @method onCancel
-   * @description  used to cancel filter form
-   */
-  onCancel = () => {
-    this.setState({ isOpen: false })
-  }
 
   /**
  * @method toggle

@@ -26,6 +26,7 @@ import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
 import AddCategory from './AddCategory';
 import AddUOM from '../../uom-master/AddUOM';
+import AddVendorDrawer from '../../supplier-master/AddVendorDrawer';
 const selector = formValueSelector('AddRMDetail');
 
 class AddRMDetail extends Component {
@@ -648,7 +649,7 @@ class AddRMDetail extends Component {
     render() {
         const { handleSubmit, isEditFlag, pristine, submitting, } = this.props;
         const { files, errors, isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-            isOpenCategory, isOpenUOM, } = this.state;
+            isOpenCategory, isOpenVendor, isOpenUOM, } = this.state;
 
         const previewStyle = {
             display: 'inline',
@@ -795,7 +796,6 @@ class AddRMDetail extends Component {
                                                     </div>
                                                 </Col>
                                             </Row>
-
                                             <Row>
                                                 <Col md="3">
                                                     <Field
@@ -1089,6 +1089,13 @@ class AddRMDetail extends Component {
                 {isOpenCategory && <AddCategory
                     isOpen={isOpenCategory}
                     closeDrawer={this.closeCategoryDrawer}
+                    isEditFlag={false}
+                    ID={''}
+                    anchor={'right'}
+                />}
+                {isOpenVendor && <AddVendorDrawer
+                    isOpen={isOpenVendor}
+                    closeDrawer={this.closeVendorDrawer}
                     isEditFlag={false}
                     ID={''}
                     anchor={'right'}

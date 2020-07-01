@@ -6,6 +6,7 @@ import {
     GET_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATA_SUCCESS,
     GET_RADIO_SUPPLIER_TYPE_SUCCESS,
+    GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -56,6 +57,13 @@ export default function supplierReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 radioSupplierTypeList: action.payload
+            };
+        case GET_VENDOR_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                vendorTypeList: action.payload
             };
         default:
             return state;

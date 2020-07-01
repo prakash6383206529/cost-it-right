@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import AddSupplier from './AddSupplier';
 import { getSupplierDetailAPI, deleteSupplierAPI } from '../../../../actions/master/Supplier';
@@ -20,7 +21,7 @@ class SupplierMaster extends Component {
     }
 
     componentDidMount() {
-        this.props.getSupplierDetailAPI(res => { });
+        //this.props.getSupplierDetailAPI(res => { });
     }
 
     /**
@@ -32,13 +33,13 @@ class SupplierMaster extends Component {
     }
 
     /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = () => {
+    * @method closeDrawer
+    * @description  used to cancel filter form
+    */
+    closeDrawer = (e = '') => {
         this.setState({ isOpen: false }, () => {
-            this.props.getSupplierDetailAPI(res => { });
-        });
+            //this.getSpecificationListData('', '');
+        })
     }
 
     /**
@@ -95,22 +96,44 @@ class SupplierMaster extends Component {
     }
 
     /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
+    onSubmit = (values) => {
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
     render() {
         const { isOpen, isEditFlag, supplierId } = this.state;
+        const { handleSubmit } = this.props;
         return (
-            <Container className="top-margin">
+            <Container>
                 {/* {this.props.loading && <Loader/>} */}
-                <Row>
-                    <Col>
-                        <h3>{`${CONSTANT.SUPPLIER} ${CONSTANT.MASTER}`}</h3>
-                    </Col>
-                    <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.SUPPLIER} `}</Button>
-                    </Col>
-                </Row>
+                <form onSubmit={handleSubmit(this.onSubmit)} noValidate>
+                    <Row>
+                        <Col md="6">
+                            <h3>{`Vendor`}</h3>
+                        </Col>
+                        <Col md="6">
+                            <button
+                                type={'button'}
+                                className={'user-btn'}
+                                onClick={this.openModel}>
+                                <div className={'plus'}></div>{`ADD VENDOR`}</button>
+                        </Col>
+                    </Row>
+                    <hr />
+                    <Row>
+                        <Col md="2" className="mt25">
+                            <h4>{`Filter By:`}</h4>
+                        </Col>
+                    </Row>
+                </form>
                 <hr />
                 <Row>
                     <Col>
@@ -159,9 +182,10 @@ class SupplierMaster extends Component {
                 {isOpen && (
                     <AddSupplier
                         isOpen={isOpen}
-                        onCancel={this.onCancel}
+                        closeDrawer={this.closeDrawer}
                         isEditFlag={isEditFlag}
-                        supplierId={supplierId}
+                        ID={supplierId}
+                        anchor={'right'}
                     />
                 )}
             </Container >
@@ -179,7 +203,10 @@ function mapStateToProps({ supplier }) {
     return { supplierDetail, loading }
 }
 
-export default connect(
-    mapStateToProps, { getSupplierDetailAPI, deleteSupplierAPI }
-)(SupplierMaster);
-
+export default connect(mapStateToProps, {
+    getSupplierDetailAPI,
+    deleteSupplierAPI
+})(reduxForm({
+    form: 'SupplierMaster',
+    enableReinitialize: true,
+})(SupplierMaster));

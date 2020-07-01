@@ -18,7 +18,7 @@ import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
-class AddSupplier extends Component {
+class AddVendorDrawer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -78,12 +78,8 @@ class AddSupplier extends Component {
     * @method handleVendorType
     * @description called
     */
-    handleVendorType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ selectedVendorType: newValue });
-        } else {
-            this.setState({ selectedVendorType: newValue });
-        }
+    handleVendorType = (e) => {
+        this.setState({ selectedVendorType: e });
     };
 
     /**
@@ -170,7 +166,7 @@ class AddSupplier extends Component {
         }
         if (label === 'vendorType') {
             vendorTypeList && vendorTypeList.map((item, i) => {
-                temp.push({ label: item.Text, value: item.Value })
+                temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
@@ -189,6 +185,22 @@ class AddSupplier extends Component {
             }
         });
         return temp;
+    }
+
+    /**
+    * @method checkVendorType
+    * @description Used to render listing of selected plants
+    */
+    checkVendorType = () => {
+        const { selectedVendorType } = this.state;
+        let isContent = selectedVendorType && selectedVendorType.find(item => {
+            if (item.Text == 'BOP' || item.Text == 'RAW MATERIAL') {
+                return true;
+            }
+            return false;
+        })
+        //console.log('isContent', isContent)
+        return (isContent == null || isContent == undefined) ? true : false;
     }
 
     /**
@@ -211,22 +223,26 @@ class AddSupplier extends Component {
         const { vendorTypeList } = this.props;
         let loginUserId = loggedInUserId();
 
+        let vendorArray = [];
+        selectedVendorType && selectedVendorType.map((item) => {
+            vendorArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
+            return vendorArray;
+        })
+
         /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
             const { supplierId } = this.props;
             let formData = {
                 VendorId: '',
-                VendorCode: '',
-                Email: '',
+                VendorCode: values.VendorCode,
+                Email: values.Email,
                 AddressId: '',
-                AddressLine1: '',
-                AddressLine2: '',
-                ZipCode: 0,
-                PhoneNumber: '',
+                AddressLine1: values.AddressLine1,
+                AddressLine2: values.AddressLine2,
+                ZipCode: values.ZipCode,
+                PhoneNumber: values.PhoneNumber,
                 Extension: '',
-                LoggedInUserId: '',
-                AddedFuelTypes: [],
-                RemoveFuelTypes: [],
+                LoggedInUserId: loggedInUserId(),
                 AddedPlants: [],
                 RemovePlants: [],
             }
@@ -243,19 +259,18 @@ class AddSupplier extends Component {
                 VendorCode: values.VendorCode,
                 Email: values.Email,
                 MobileNumber: values.MobileNumber,
-                VendorTypeId: selectedVendorType.value,
                 IsActive: true,
                 LoggedInUserId: loggedInUserId(),
-                VendorType: selectedVendorType.label,
-                FuelTypesIds: [],
+                VendorTypes: vendorArray,
                 UserId: loggedInUserId(),
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
-                Extension: '',
+                Extension: 11,
                 CityId: city.value,
             }
+            console.log('formData', formData)
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
@@ -272,6 +287,7 @@ class AddSupplier extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, reset } = this.props;
+        //console.log('sssssssssssss', this.checkVendorType())
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -296,17 +312,18 @@ class AddSupplier extends Component {
                                 <Row>
                                     <Col md="6">
                                         <Field
-                                            name="VendorType"
-                                            type="text"
                                             label="Vendor Type"
-                                            component={searchableSelect}
-                                            placeholder={'Select Vendor'}
+                                            name="VendorType"
+                                            placeholder="--Select Vendor--"
+                                            selection={(this.state.selectedVendorType == null || this.state.selectedVendorType.length == 0) ? [] : this.state.selectedVendorType}
                                             options={this.renderListing('vendorType')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={[required]}
-                                            //required={true}
-                                            handleChangeDescription={this.handleVendorType}
-                                            valueDescription={this.state.selectedVendorType}
+                                            selectionChanged={this.handleVendorType}
+                                            optionValue={option => option.Value}
+                                            optionLabel={option => option.Text}
+                                            component={renderMultiSelectField}
+                                            mendatory={true}
+                                            className="multiselect-with-border"
+                                            disabled={false}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -367,7 +384,7 @@ class AddSupplier extends Component {
                                     </Col>
                                     <Col md="6">
                                         <Field
-                                            name="Mobile"
+                                            name="MobileNumber"
                                             label="MobileNumber"
                                             type="text"
                                             placeholder={''}
@@ -461,7 +478,7 @@ class AddSupplier extends Component {
                                     </Col>
                                     <Col md="6">
                                         <Field
-                                            label="ZipCode"
+                                            label="Zip Code"
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={''}
@@ -474,50 +491,30 @@ class AddSupplier extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
-                                    <Col md="5">
-                                        <Field
-                                            label="Fuel Type"
-                                            name="FuelTypesIds"
-                                            placeholder="--Select Fuel--"
-                                            selection={this.state.selectedPlants}
-                                            options={this.renderSelectPlantList()}
-                                            selectionChanged={this.handlePlantSelection}
-                                            optionValue={option => option.Value}
-                                            optionLabel={option => option.Text}
-                                            component={renderMultiSelectField}
-                                            mendatory={false}
-                                            className="multiselect-with-border"
-                                        />
-                                    </Col>
-                                    <Col md="1">
-                                        <div
-                                            onClick={this.fuelToggler}
-                                            className={'plus-icon mt30 mr15 right'}>
-                                        </div>
-                                    </Col>
-                                    <Col md="5">
-                                        <Field
-                                            label="Vendor Plant"
-                                            name="SelectedPlants"
-                                            placeholder="--Select Plant--"
-                                            selection={this.state.selectedPlants}
-                                            options={this.renderSelectPlantList()}
-                                            selectionChanged={this.handlePlantSelection}
-                                            optionValue={option => option.Value}
-                                            optionLabel={option => option.Text}
-                                            component={renderMultiSelectField}
-                                            mendatory={false}
-                                            className="multiselect-with-border"
-                                        />
-                                    </Col>
-                                    <Col md="1">
-                                        <div
-                                            onClick={this.plantToggler}
-                                            className={'plus-icon mt30 mr15 right'}>
-                                        </div>
-                                    </Col>
-                                </Row>
+                                {/* {this.checkVendorType() &&
+                                    <Row>
+                                        <Col md="5">
+                                            <Field
+                                                label="Vendor Plant"
+                                                name="SelectedPlants"
+                                                placeholder="--Select Plant--"
+                                                selection={this.state.selectedPlants}
+                                                options={this.renderSelectPlantList()}
+                                                selectionChanged={this.handlePlantSelection}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={false}
+                                                className="multiselect-with-border"
+                                            />
+                                        </Col>
+                                        <Col md="1">
+                                            <div
+                                                onClick={this.plantToggler}
+                                                className={'plus-icon mt30 mr15 right'}>
+                                            </div>
+                                        </Col>
+                                    </Row>} */}
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12">
@@ -592,6 +589,6 @@ export default connect(mapStateToProps, {
     fetchCityDataAPI,
     getVendorTypesSelectList,
 })(reduxForm({
-    form: 'AddSupplier',
+    form: 'AddVendorDrawer',
     enableReinitialize: true,
-})(AddSupplier));
+})(AddVendorDrawer));
