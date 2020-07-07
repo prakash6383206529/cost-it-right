@@ -104,7 +104,7 @@ export function renderLoginPasswordInputField(field) {
 */
 export function renderCheckboxInputField(field) {
   const { input, ...others } = field;
-  const InputClassName = `float-left ${field.className ? field.className : ""}`;
+  const InputClassName = `d-flex align-items-center ${field.className ? field.className : ""}`;
   return (
     <div className={InputClassName}>
       <input

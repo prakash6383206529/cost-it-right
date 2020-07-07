@@ -101,10 +101,11 @@ input:focus {
 /* Role box style */
 
 .login-form {
-  padding: 30px;
-  // .form-group {
-  //   width: 100%;
-  // }
+  width: 100%;
+  padding-top: 100px;
+  height: 550px;
+  
+
 }
 .customs-checkbox {
   position: relative;
@@ -142,6 +143,7 @@ input:focus {
   justify-content: space-between;
   a {
     font-size: 1rem;
+    margin-top: 0;
     &:hover {
       color: #f6c413;
     }
@@ -166,7 +168,48 @@ span.input-group-text.bg-white {
 .small-screen {
   height: calc(100vh - 265px);
 }
+.login-bg{background-image: url(../../assests/images/loginbg.png);background-size: 100% 100%;height:100vh;}
+.login-box {background-image: url(../../assests/images/box.png);}
+.form-section {
+  background-color: #fff;;
+    padding: 0 30px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+   img{
+     width: 62%;
+     padding: 15px;
+   }
+ h3{
+  font-size: 18px;
+  padding: 15px 0;
+  color: #3D4465;
+  font-weight: 600;
+ }
+ p{
+  font-size: 14px;
+  color: #3D4465;
+ }
+ .inputbox {
+  border-bottom:none;
+ }
+ label.btn.btn-link.align-middle.checkbox-label { margin:0; padding: 0; font-size: 12px;margin-bottom: 0 !important;
+  padding-left: 5px;}
+ .forgotpwd-field { font-size: 12px;}
+ .asterisk-required {
+  display: none;
+}
+.input-group-prepend{display: none;}
+label{margin-bottom: 0;}
+.form-group {
+  margin-bottom: 0;
+}
+}
 
+.right-sideimg{
+img
+{width: 100%;
+  height: 100%;}}
 @media screen and (max-width: 767px) {
   .login-container {
     margin: 15px;

@@ -91,10 +91,11 @@ class Main extends Component {
 
   render() {
     const isLogin = reactLocalStorage.getObject("isUserLoggedIn");
+    console.log("isLogin", isLogin);
     return (
       <Suspense fallback={<Loader />}>
-        <div>
-          {!this.state.visibelPageNotFound &&
+        <div className="testting">
+          {!this.state.visibelPageNotFound && isLogin &&
             <div className="sf-mainwrapper">
               <div className=" sf-mainheader">
                 <div className="container-fluild header-menu">
@@ -120,7 +121,7 @@ class Main extends Component {
             </div>}
           {isLogin && <Breadcrumb />}
           {isLogin && <LeftMenu {...this.props} />}
-          <div className="content-page">
+          <div className={isLogin ? "content-page" : ""}>
             <div className=" middleContainer">
               <Switch>
                 {/* <Route exact path="/" component={Homepage} /> */}

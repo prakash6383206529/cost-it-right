@@ -69,17 +69,20 @@ class Login extends Component {
     }
 
     return (
-      <div>
+      <div className="login-bg">
         {isLoader && <Loader />}
-        <div className="login-container ">
-          <div className="card-body shadow-lg login-form">
-            {/* <div className="main-logo">
-              <a href="javaScript:Void(0);"><img src={require('../../assests/images/cir-logo.png')} alt='Cost It Rights' />
+        <div className="container ">
+          <div className="login-form">
+            
+            <div className="row shadow-lg">
+              <div className="col-md-4 form-section">
+            
+             <div className="text-center">
+              <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
               </a>
-            </div> */}
-            <div className="form-heading">
-              <h2>Login</h2>
-            </div>
+           </div>
+             <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.</h3>
+             <p>Welcome Back, Please login to your account</p>
             <form
               noValidate
               className="form"
@@ -88,7 +91,7 @@ class Login extends Component {
               <div className="input-group ">
                 <Field
                   name="UserName"
-                  label="UserName"
+                  // label="UserName"
                   component={renderEmailInputField}
                   isDisabled={false}
                   placeholder={"email@domain.coms"}
@@ -100,7 +103,7 @@ class Login extends Component {
               <div className="input-group ">
                 <Field
                   name="Password"
-                  label="Password"
+                  // label="Password"
                   placeholder="Must have atleast 5 characters"
                   component={renderPasswordInputField}
                   validate={[required, minLength5, maxLength25]}
@@ -108,7 +111,16 @@ class Login extends Component {
                   maxLength={26}
                 />
               </div>
-              <div className="form-group forgot-link">
+              
+              <div className="text-center ">
+                <input
+                  type="submit"
+                  disabled={isSubmitted ? true : false}
+                  value="Login"
+                  className="btn login-btn w-100 dark-pinkbtn"
+                />
+              </div>
+              <div className="form-group forgot-link d-flex pt-2 ">
                 {/* <div className="checkboxWrap ">
                           <label className="customs-checkbox">
                           Remember me
@@ -117,19 +129,17 @@ class Login extends Component {
                           </label>
                         </div> */}
                 <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
-                <Link to="/forgot-password" className="" target='_blank'>
+                <Link to="/forgot-password" className="forgotpwd-field" target='_blank'>
                   Forgot Password?
                         </Link>
               </div>
-              <div className="text-center ">
-                <input
-                  type="submit"
-                  disabled={isSubmitted ? true : false}
-                  value="Login"
-                  className="btn login-btn w-50 dark-pinkbtn"
-                />
-              </div>
+              
             </form>
+            </div>
+            <div className="col-md-8 p-0 right-sideimg">
+            <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
+            </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,11 +1,11 @@
 @import "./cssVariable.scss";
 @import "./style.scss";
 // @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;1,400&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,500;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,500;1,700&display=swap");
 
 body {
   // font-family: "Roboto", sans-serif !important;
-  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-family: "IBM Plex Sans", sans-serif !important;
   position: relative;
 }
 
@@ -20,7 +20,6 @@ body button {
 
 body a:hover {
   color: $colorgraylighter !important;
-
 }
 
 ul,
@@ -89,8 +88,6 @@ a:hover {
 .w-100 {
   width: 100%;
 }
-
-
 
 ::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
@@ -161,7 +158,6 @@ a:hover {
 .add-button-big,
 .btn-primary-add,
 .user-btn {
-
   &:hover,
   &:focus,
   &:not(.disabled):active:focus {
@@ -184,7 +180,6 @@ a:hover {
 }
 
 .reset {
-
   &:hover,
   &:focus,
   &:not(.disabled):active:focus {
@@ -352,7 +347,6 @@ a:hover {
     margin-top: 15px;
 
     .sort-column {
-
       .dropdown,
       .dropup {
         .caret {
@@ -423,15 +417,15 @@ a:hover {
           .page-link {
             position: relative;
             display: block;
-            padding: .5rem .75rem;
+            padding: 0.5rem 0.75rem;
             margin-left: -1px;
             line-height: 1.25;
-            color: #959CB6;
+            color: #959cb6;
             font-size: $font-14;
             background-color: $white;
 
             &:focus {
-              box-shadow: 0 0 0 0.0rem rgba(0, 123, 255, .25);
+              box-shadow: 0 0 0 0rem rgba(0, 123, 255, 0.25);
             }
           }
 
@@ -454,7 +448,7 @@ a:hover {
 
     p {
       font-size: $font-14;
-      color: #95A5BA !important;
+      color: #95a5ba !important;
       order: 2;
       align-self: center;
     }
@@ -481,7 +475,7 @@ a:hover {
           background-color: transparent;
           border: none;
           color: #256bd1;
-          box-shadow: 0 0 0 0.0rem rgba(130, 138, 145, .5)
+          box-shadow: 0 0 0 0rem rgba(130, 138, 145, 0.5);
         }
 
         &:after {
@@ -499,7 +493,6 @@ a:hover {
     }
   }
 }
-
 
 .react-bs-table-search-form {
   .btn-secondary {
@@ -951,8 +944,8 @@ p {
   }
 }
 
-.nav-tabs.subtabs>li a.active,
-.nav-tabs.subtabs>li a:hover {
+.nav-tabs.subtabs > li a.active,
+.nav-tabs.subtabs > li a:hover {
   // border-left-color: $white;
   // border-bottom: 2px solid #f6c413;
   // border-right-color: $white;
@@ -1001,12 +994,14 @@ p {
       visibility: hidden;
     }
 
-    &:hover::after {}
+    &:hover::after {
+    }
 
     &:active {
       outline: 0;
 
-      &::after {}
+      &::after {
+      }
     }
   }
 }
@@ -1124,7 +1119,6 @@ p {
   }
 
   .filter-block {
-
     .flex-fill,
     .flex-fills {
       padding-right: 10px;
@@ -1255,7 +1249,7 @@ button .fas {
     border-radius: 3px;
   }
 
-  input[type="checkbox"]:checked+.before-box:before {
+  input[type="checkbox"]:checked + .before-box:before {
     content: "\2714";
     font-size: 13px;
     text-align: center;
@@ -1272,7 +1266,7 @@ button .fas {
 }
 
 .rrt-confirm-holder .rrt-confirm .rrt-message {
-  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-family: "IBM Plex Sans", sans-serif !important;
 }
 
 .banner-section {
@@ -1351,7 +1345,6 @@ footer {
 }
 
 .input-withouticon {
-
   // .input-group-prepend {   position: absolute;
   // right                            : 17px;
   // bottom                           : 21px;
@@ -1375,7 +1368,7 @@ label {
 
 form .form-control {
   font-size: 1rem;
-  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-family: "IBM Plex Sans", sans-serif !important;
   padding: 0;
 }
 
@@ -1616,8 +1609,8 @@ textarea.form-control {
   }
 }
 
-.follow-follwer-list .nav-tabs.subtabs>li a.active,
-.follow-follwer-list .nav-tabs.subtabs>li a:hover {
+.follow-follwer-list .nav-tabs.subtabs > li a.active,
+.follow-follwer-list .nav-tabs.subtabs > li a:hover {
   padding-bottom: 9px;
   margin-bottom: 0;
   color: #f6c413;
