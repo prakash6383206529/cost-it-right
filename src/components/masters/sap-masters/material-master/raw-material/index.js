@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import AddRMDetail from './AddRMDetail';
+import AddRMDomestic from './AddRMDomestic';
 import RMListing from './RMListing';
 import SpecificationListing from './SpecificationListing';
 
@@ -116,7 +116,7 @@ class RowMaterialMaster extends Component {
 
                                 {this.state.activeTab == 1 &&
                                     <TabPane tabId="1">
-                                        <AddRMDetail
+                                        <AddRMDomestic
                                             isOpen={isRMOpen}
                                             onCancel={this.onCancel}
                                             RawMaterialDetailsId={this.state.Id}

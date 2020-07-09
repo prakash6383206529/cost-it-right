@@ -17,7 +17,7 @@ import UOMMaster from './masters/sap-masters/uom-master';
 import CategoryMaster from './masters/sap-masters/category-master';
 import RowMaterialMaster from './masters/sap-masters/material-master/raw-material';
 import PlantMaster from './masters/sap-masters/plant-master/index';
-import SupplierMaster from './masters/sap-masters/supplier-master';
+import SupplierMaster from './masters/sap-masters/supplier-master/AddSupplier';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
 import OtherOperationMaster from './masters/sap-masters/other-operation';

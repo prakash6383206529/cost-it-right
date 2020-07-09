@@ -11,7 +11,7 @@ import {
     createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType,
     getVendorTypesSelectList,
 } from '../../../../actions/master/Supplier';
-import { fetchMasterDataAPI, fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -40,7 +40,6 @@ class AddVendorDrawer extends Component {
     * @description called before render the component
     */
     componentWillMount() {
-        this.props.fetchMasterDataAPI(res => { });
         this.props.getVendorTypesSelectList()
         this.props.fetchCountryDataAPI(() => { })
     }
@@ -98,12 +97,12 @@ class AddVendorDrawer extends Component {
     */
     countryHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ country: newValue }, () => {
+            this.setState({ country: newValue, state: [], city: [], }, () => {
                 const { country } = this.state;
                 this.props.fetchStateDataAPI(country.value, () => { })
             });
         } else {
-            this.setState({ country: [] })
+            this.setState({ country: [], state: [], city: [], })
         }
     };
 
@@ -113,12 +112,12 @@ class AddVendorDrawer extends Component {
     */
     stateHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ state: newValue }, () => {
+            this.setState({ state: newValue, city: [], }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
             });
         } else {
-            this.setState({ state: newValue });
+            this.setState({ state: [], city: [], });
         }
 
     };
@@ -128,7 +127,11 @@ class AddVendorDrawer extends Component {
     * @description Used to handle city
     */
     cityHandler = (newValue, actionMeta) => {
-        this.setState({ city: newValue });
+        if (newValue && newValue != '') {
+            this.setState({ city: newValue });
+        } else {
+            this.setState({ city: [] });
+        }
     };
 
     fuelToggler = () => {
@@ -267,7 +270,7 @@ class AddVendorDrawer extends Component {
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
-                Extension: 11,
+                Extension: values.Extension,
                 CityId: city.value,
             }
             console.log('formData', formData)
@@ -347,9 +350,9 @@ class AddVendorDrawer extends Component {
                                             name={"VendorCode"}
                                             type="text"
                                             placeholder={''}
-                                            //validate={[required]}
+                                            validate={[required]}
                                             component={renderText}
-                                            //required={true}
+                                            required={true}
                                             normalize={upper}
                                             className=" "
                                             customClassName=" withBorder"
@@ -370,17 +373,34 @@ class AddVendorDrawer extends Component {
                                 </Row>
                                 <Row>
                                     <Col md="6">
-                                        <Field
-                                            label="Phone Number"
-                                            name={"PhoneNumber"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[number]}
-                                            component={renderText}
-                                            //required={true}
-                                            maxLength={12}
-                                            customClassName={'withBorder'}
-                                        />
+                                        <Row>
+                                            <Col md="9">
+                                                <Field
+                                                    label="Phone Number"
+                                                    name={"PhoneNumber"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[number]}
+                                                    component={renderText}
+                                                    //required={true}
+                                                    maxLength={12}
+                                                    customClassName={'withBorder'}
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label="Extension"
+                                                    name={"Extension"}
+                                                    type="text"
+                                                    placeholder={'Ext'}
+                                                    validate={[number]}
+                                                    component={renderText}
+                                                    //required={true}
+                                                    maxLength={5}
+                                                    customClassName={'withBorder w100'}
+                                                />
+                                            </Col>
+                                        </Row>
                                     </Col>
                                     <Col md="6">
                                         <Field
@@ -390,8 +410,8 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[required, number, minLength7]}
-                                            required={true}
+                                            validate={[number, minLength7]}
+                                            //required={true}
                                             maxLength={70}
                                             customClassName={'withBorder'}
                                         />
@@ -407,8 +427,8 @@ class AddVendorDrawer extends Component {
                                             placeholder={'Select Country'}
                                             options={this.renderListing('country')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={[required]}
-                                            //required={true}
+                                            validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                                            required={true}
                                             handleChangeDescription={this.countryHandler}
                                             valueDescription={this.state.country}
                                         />
@@ -422,8 +442,8 @@ class AddVendorDrawer extends Component {
                                             placeholder={'Select State'}
                                             options={this.renderListing('state')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={[required]}
-                                            //required={true}
+                                            validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                            required={true}
                                             handleChangeDescription={this.stateHandler}
                                             valueDescription={this.state.state}
                                         />
@@ -439,8 +459,8 @@ class AddVendorDrawer extends Component {
                                             placeholder={'Select city'}
                                             options={this.renderListing('city')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={[required]}
-                                            //required={true}
+                                            validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                            required={true}
                                             handleChangeDescription={this.cityHandler}
                                             valueDescription={this.state.city}
                                         />
@@ -555,17 +575,14 @@ function mapStateToProps({ comman, supplier }) {
     let initialValues = {};
     if (supplierData && supplierData !== undefined) {
         initialValues = {
-            SupplierName: supplierData.SupplierName,
-            SupplierCode: supplierData.SupplierCode,
-            SupplierEmail: supplierData.SupplierEmail,
-            Description: supplierData.Description,
-            CityId: supplierData.CityId,
-            SupplierType: supplierData.SupplierType,
-            SupplierTypeId: supplierData.SupplierTypeId,
+            VendorName: supplierData.VendorName,
+            VendorCode: supplierData.VendorCode,
+            Email: supplierData.Email,
             AddressLine1: supplierData.AddressLine1,
             AddressLine2: supplierData.AddressLine2,
             ZipCode: supplierData.ZipCode,
             PhoneNumber: supplierData.PhoneNumber,
+            MobileNumber: supplierData.MobileNumber,
             Extension: supplierData.Extension,
         }
     }
@@ -573,8 +590,8 @@ function mapStateToProps({ comman, supplier }) {
 }
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
@@ -582,7 +599,6 @@ export default connect(mapStateToProps, {
     createSupplierAPI,
     updateSupplierAPI,
     getSupplierByIdAPI,
-    fetchMasterDataAPI,
     getRadioButtonSupplierType,
     fetchCountryDataAPI,
     fetchStateDataAPI,

@@ -330,7 +330,7 @@ class AddSpecification extends Component {
                                             type="text"
                                             label="Material"
                                             component={searchableSelect}
-                                            placeholder={'Select Raw Material'}
+                                            placeholder={'Select Material'}
                                             options={this.renderListing('material')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                             validate={(this.state.material == null || this.state.material.length == 0) ? [required] : []}

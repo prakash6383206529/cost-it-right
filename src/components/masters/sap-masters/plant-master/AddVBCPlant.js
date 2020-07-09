@@ -6,7 +6,7 @@ import { required, number, maxLength6, maxLength10 } from "../../../../helper/va
 import { userDetails, loggedInUserId } from "../../../../helper/auth";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, fetchSupplierDataAPI } from '../../../../actions/master/Comman';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -32,7 +32,7 @@ class AddVBCPlant extends Component {
     componentDidMount() {
         const { PlantId, isEditFlag } = this.props;
         this.props.fetchCountryDataAPI(() => { })
-        this.props.fetchSupplierDataAPI(() => { })
+        this.props.getSupplierList(() => { })
         if (isEditFlag) {
             this.setState({ isEditFlag }, () => {
                 this.props.getPlantUnitAPI(PlantId, true, res => {
@@ -57,11 +57,11 @@ class AddVBCPlant extends Component {
     * @description Used show listing of unit of measurement
     */
     selectType = (label) => {
-        const { countryList, stateList, cityList, supplierList } = this.props;
+        const { countryList, stateList, cityList, supplierSelectList } = this.props;
         const temp = [];
 
         if (label === 'vendors') {
-            supplierList && supplierList.map(item =>
+            supplierSelectList && supplierSelectList.map(item =>
                 temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
@@ -475,7 +475,7 @@ class AddVBCPlant extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, plant }) {
-    const { countryList, stateList, cityList, supplierList } = comman;
+    const { countryList, stateList, cityList, supplierSelectList } = comman;
     const { plantUnitDetail } = plant;
     let initialValues = {};
     if (plantUnitDetail && plantUnitDetail !== undefined) {
@@ -493,7 +493,7 @@ function mapStateToProps({ comman, plant }) {
             //StateId: plantUnitDetail.CreatedBy,
         }
     }
-    return { countryList, stateList, cityList, initialValues, plantUnitDetail, supplierList }
+    return { countryList, stateList, cityList, initialValues, plantUnitDetail, supplierSelectList }
 }
 
 /**
@@ -510,7 +510,7 @@ export default connect(mapStateToProps, {
     getPlantUnitAPI,
     fetchSupplierCityDataAPI,
     updatePlantAPI,
-    fetchSupplierDataAPI,
+    getSupplierList,
 })(reduxForm({
     form: 'AddVBCPlant',
     enableReinitialize: true,

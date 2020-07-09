@@ -3,6 +3,7 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
+    API_SUCCESS,
     CREATE_SUPPLIER_SUCCESS,
     CREATE_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATALIST_SUCCESS,
@@ -55,10 +56,10 @@ export function createSupplierAPI(data, callback) {
 }
 
 /**
- * @method getSupplierDetailAPI
- * @description get process list
+ * @method getSupplierDataList
+ * @description get Supplier's DataList 
  */
-export function getSupplierDetailAPI() {
+export function getSupplierDataList(callback) {
     return (dispatch) => {
         const request = axios.get(API.getAllSupplierAPI, headers);
         request.then((response) => {
@@ -66,7 +67,7 @@ export function getSupplierDetailAPI() {
                 type: GET_SUPPLIER_DATALIST_SUCCESS,
                 payload: response.data.DataList,
             });
-
+            callback(response)
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE
@@ -180,5 +181,24 @@ export function getVendorTypesSelectList() {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
+    };
+}
+
+
+/**
+ * @method activeInactiveVendorStatus
+ * @description active Inactive Status
+ */
+export function activeInactiveVendorStatus(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.activeInactiveVendorStatus}`, requestData, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }

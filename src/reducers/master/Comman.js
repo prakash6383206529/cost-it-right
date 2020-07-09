@@ -44,6 +44,7 @@ import {
     GET_SHIFT_TYPE_SELECTLIST_SUCCESS,
     GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
     GET_PLANTS_BY_SUPPLIER_AND_CITY,
+    GET_SUPPLIER_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -103,6 +104,13 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 supplierList: action.payload
+            };
+        case GET_SUPPLIER_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                supplierSelectList: action.payload
             };
         case GET_COUNTRY_SUCCESS:
             return {

@@ -9,14 +9,14 @@ import {
 } from "../../../../layout/FormInputs";
 import {
     fetchMaterialComboAPI, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
-    getPlantByCityAndSupplier, fetchRMGradeAPI,
+    getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
 } from '../../../../../actions/master/Comman';
 import {
-    createRMDetailAPI, getMaterialDetailAPI, getRawMaterialDataAPI, getRawMaterialDetailsAPI,
-    getRawMaterialDetailsDataAPI, updateRawMaterialDetailsAPI, getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild,
+    createRMDomestic, getRawMaterialDataAPI, getRawMaterialDetailsAPI,
+    updateRMDomesticAPI, getRawMaterialNameChild,
+    getGradeListByRawMaterialNameChild, getVendorListByVendorType, fileUploadRMDomestic,
 } from '../../../../../actions/master/Material';
-import MaterialDetail from './MaterialDetail';
+import RMDomesticListing from './RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
@@ -27,40 +27,34 @@ import AddGrade from './AddGrade';
 import AddCategory from './AddCategory';
 import AddUOM from '../../uom-master/AddUOM';
 import AddVendorDrawer from '../../supplier-master/AddVendorDrawer';
-const selector = formValueSelector('AddRMDetail');
+import 'react-dropzone-uploader/dist/styles.css'
+import Dropzone from 'react-dropzone-uploader';
+import $ from 'jquery';
+const selector = formValueSelector('AddRMDomestic');
 
-class AddRMDetail extends Component {
+class AddRMDomestic extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         this.state = {
-            typeOfListing: [],
             isEditFlag: false,
-            selectedParts: [],
-            basicRate: 0,
-            Quantity: 0,
-            NetLandedCost: 10,
-            RawMaterialId: '',
-            GradeId: '',
-            SpecificationId: '',
+            RawMaterialID: '',
 
             RawMaterial: [],
             RMGrade: [],
             RMSpec: [],
             Category: [],
+            selectedPlants: [],
+
+            vendorName: [],
             selectedVendorPlants: [],
+            vendorLocation: [],
+
             HasDifferentSource: false,
+            sourceLocation: [],
+
             UOM: [],
             remarks: '',
-
-            sourceLocation: [],
-            SourceSupplier: '',
-            SourceSupplierCityArray: [],
-            SourcePlantArray: [],
-
-            vendorSupplier: [],
-            vendorLocation: [],
-            vendorPlant: [],
-            DestinationSupplierCityArray: [],
 
             isShowForm: false,
             IsVendor: false,
@@ -74,7 +68,6 @@ class AddRMDetail extends Component {
             isOpenVendor: false,
             isOpenUOM: false,
 
-            GSTAttachment: [],
         }
     }
 
@@ -84,6 +77,9 @@ class AddRMDetail extends Component {
     */
     componentWillMount() {
         this.props.getRawMaterialNameChild(() => { })
+        this.props.getUOMSelectList(() => { })
+        this.props.getSupplierList(() => { })
+
     }
 
 
@@ -92,83 +88,19 @@ class AddRMDetail extends Component {
      * @description Called after rendering the component
      */
     componentDidMount() {
+        this.props.change('NetLandedCost', 0)
         const { RawMaterialDetailsId, isEditFlag } = this.props;
         this.props.fetchMaterialComboAPI(res => { });
+        this.props.getVendorListByVendorType(false, () => { })
 
         if (isEditFlag) {
-            this.props.getRawMaterialDetailsDataAPI(RawMaterialDetailsId, res => {
-                if (res && res.data && res.data.Data) {
-                    let Data = res.data.Data;
 
-                    setTimeout(() => { this.getData(Data) }, 500)
-
-                }
-            });
         } else {
-            this.props.getRawMaterialDetailsDataAPI('', res => { });
+
         }
 
     }
 
-    getData = (Data) => {
-        this.props.getCityBySupplier(Data.SourceSupplierId, (res) => {
-            if (res && res.data && res.data.SelectList) {
-                let Data = res.data.SelectList;
-                this.setState({ SourceSupplierCityArray: Data })
-            }
-        })
-
-        this.props.getPlantByCityAndSupplier(Data.SourceSupplierId, Data.SourceSupplierCityId, (res) => {
-            if (res && res.data && res.data.SelectList) {
-                let Data = res.data.SelectList;
-                this.setState({ SourcePlantArray: Data })
-            }
-        })
-
-        // this.props.getPlantByCity(Data.SourceSupplierCityId, (res) => {
-        //     if (res && res.data && res.data.SelectList) {
-        //         let Data = res.data.SelectList;
-        //         console.log('Data 11', Data)
-        //         this.setState({ SourcePlantArray: Data })
-        //     }
-        // })
-
-        this.props.getCityBySupplier(Data.DestinationSupplierId, (res) => {
-            if (res && res.data && res.data.SelectList) {
-                let Data = res.data.SelectList;
-                this.setState({ DestinationSupplierCityArray: Data })
-            }
-        })
-
-        this.props.getPlantByCityAndSupplier(Data.DestinationSupplierId, Data.DestinationSupplierCityId, (res) => {
-            if (res && res.data && res.data.SelectList) {
-                let Data = res.data.SelectList;
-                this.setState({ vendorPlant: Data })
-            }
-        })
-
-        // this.props.getPlantByCity(Data.DestinationSupplierCityId, (res) => {
-        //     if (res && res.data && res.data.SelectList) {
-        //         let Data = res.data.SelectList;
-        //         console.log('Data 22', Data)
-        //         this.setState({ DestinationPlantArray: Data })
-        //     }
-        // })
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.fieldsObj != this.props.fieldsObj) {
-            this.netLandedCalculation()
-        }
-    }
-
-    /**
-    * @method toggleModel
-    * @description Used to cancel modal
-    */
-    toggleModel = () => {
-        this.props.onCancel('6');
-    }
 
     /**
     * @method handleRMChange
@@ -245,7 +177,7 @@ class AddRMDetail extends Component {
     * @description Used handle vendor plants
     */
     handleSourceSupplierPlant = (e) => {
-        this.setState({ selectedVendorPlants: e })
+        this.setState({ selectedPlants: e })
     }
 
     /**
@@ -261,7 +193,35 @@ class AddRMDetail extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
+                const { vendorName } = this.state;
+                this.props.getPlantBySupplier(vendorName.value, () => { })
+                this.props.getCityBySupplier(vendorName.value, () => { })
+            });
+        } else {
+            this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+        }
+    };
 
+    /**
+    * @method handleVendorPlant
+    * @description called
+    */
+    handleVendorPlant = (e) => {
+        this.setState({ selectedVendorPlants: e })
+    };
+
+    /**
+        * @method handleVendorLocation
+        * @description called
+        */
+    handleVendorLocation = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ vendorLocation: newValue, });
+        } else {
+            this.setState({ vendorLocation: [], })
+        }
     };
 
     /**
@@ -273,30 +233,6 @@ class AddRMDetail extends Component {
             this.setState({ sourceLocation: newValue, });
         } else {
             this.setState({ sourceLocation: [], })
-        }
-    };
-
-    /**
-    * @method handleVendorLocation
-    * @description called
-    */
-    handleVendorLocation = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ vendorLocation: newValue, });
-        } else {
-            this.setState({ vendorLocation: [], })
-        }
-    };
-
-    /**
-    * @method handleVendorPlant
-    * @description called
-    */
-    handleVendorPlant = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ vendorPlant: newValue, })
-        } else {
-            this.setState({ vendorPlant: [], })
         }
     };
 
@@ -313,6 +249,14 @@ class AddRMDetail extends Component {
     };
 
     /**
+    * @method handleBasicRate
+    * @description Set value in NetLandedCost
+    */
+    handleBasicRate = (e) => {
+        this.props.change('NetLandedCost', e.target.value)
+    }
+
+    /**
     * @method handleMessageChange
     * @description used remarks handler
     */
@@ -323,15 +267,81 @@ class AddRMDetail extends Component {
     }
 
     /**
-     * @method editRawMaterialDetailsHandler
-     * @description  used to open RM Detail form 
-     */
-    editRawMaterialDetailsHandler = (Id) => {
-        this.setState({
-            isRMOpen: true,
-            Id: Id,
-            isEditFlag: true,
-        })
+    * @method getDetails
+    * @description Used to cancel modal
+    */
+    getDetails = (data) => {
+        if (data && data.isEditFlag) {
+            this.setState({
+                isEditFlag: false,
+                isLoader: true,
+                isShowForm: true,
+                RawMaterialID: data.Id,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getRawMaterialDetailsAPI(data, true, res => {
+                if (res && res.data && res.data.Result) {
+
+                    const Data = res.data.Data;
+
+                    this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+                    this.props.getGradeListByRawMaterialNameChild(Data.RawMaterial, res => { })
+                    this.props.fetchSpecificationDataAPI(Data.RMGrade, res => { });
+                    this.props.getPlantBySupplier(Data.Vendor, () => { })
+                    this.props.getCityBySupplier(Data.Vendor, () => { })
+
+                    setTimeout(() => {
+                        const { gradeSelectListByRMID, rmSpecification, cityList, categoryList,
+                            filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
+                            vendorListByVendorType } = this.props;
+
+                        const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
+                        const gradeObj = gradeSelectListByRMID && gradeSelectListByRMID.find(item => item.Value == Data.RMGrade)
+                        const specObj = rmSpecification && rmSpecification.find(item => item.Value == Data.RMSpec)
+                        const categoryObj = categoryList && categoryList.find(item => item.Value == Data.Category)
+
+                        let plantArray = [];
+                        Data && Data.Plant.map((item) => {
+                            plantArray.push({ Text: item.Text, Value: item.Value })
+                            return plantArray;
+                        })
+
+                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value == Data.Vendor)
+
+                        let vendorPlantArray = [];
+                        Data && Data.VendorPlant.map((item) => {
+                            vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
+                            return vendorPlantArray;
+                        })
+
+                        const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
+                        //const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
+                        const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value == Data.UOM)
+
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            isShowForm: true,
+                            IsVendor: Data.IsVendor,
+                            RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value },
+                            RMGrade: { label: gradeObj.Text, value: gradeObj.Value },
+                            RMSpec: { label: specObj.Text, value: specObj.Value },
+                            Category: { label: categoryObj.Text, value: categoryObj.Value },
+                            selectedPlants: plantArray,
+                            vendorName: { label: vendorObj.Text, value: vendorObj.Value },
+                            selectedVendorPlants: vendorPlantArray,
+                            vendorLocation: { label: vendorLocationObj.Text, value: vendorLocationObj.Value },
+                            HasDifferentSource: Data.HasDifferentSource,
+                            //sourceLocation: { label: sourceLocationObj.Text, value: sourceLocationObj.Value },
+                            UOM: { label: UOMObj.Text, value: UOMObj.Value },
+                            remarks: Data.Remark,
+                        })
+                    }, 500)
+                }
+            })
+        } else {
+            this.props.getRawMaterialDetailsAPI('', false, res => { })
+        }
     }
 
     /**
@@ -339,7 +349,15 @@ class AddRMDetail extends Component {
     * @description Used for Vendor checked
     */
     onPressVendor = () => {
-        this.setState({ IsVendor: !this.state.IsVendor });
+        this.setState({
+            IsVendor: !this.state.IsVendor,
+            vendorName: [],
+            selectedVendorPlants: [],
+            vendorLocation: [],
+        }, () => {
+            const { IsVendor } = this.state;
+            this.props.getVendorListByVendorType(IsVendor, () => { })
+        });
     }
 
     /**
@@ -411,103 +429,120 @@ class AddRMDetail extends Component {
     */
     renderListing = (label) => {
         const { uniOfMeasurementList, rowMaterialList, gradeSelectListByRMID, rmSpecification, plantList,
-            supplierList, cityList, technologyList, categoryList, filterPlantListByCity,
-            filterCityListBySupplier, rawMaterialNameSelectList } = this.props;
-        const { SourceSupplierCityArray, DestinationSupplierCityArray, SourcePlantArray, vendorPlant } = this.state;
+            supplierSelectList, filterPlantList, cityList, technologyList, categoryList, filterPlantListByCity,
+            filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
+            vendorListByVendorType } = this.props;
         const temp = [];
         if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item =>
+            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'grade') {
-            gradeSelectListByRMID && gradeSelectListByRMID.map(item =>
+            gradeSelectListByRMID && gradeSelectListByRMID.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'specification') {
-            rmSpecification && rmSpecification.map(item =>
+            rmSpecification && rmSpecification.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'uom') {
-            uniOfMeasurementList && uniOfMeasurementList.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'plant') {
-            plantList && plantList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'supplier') {
-            supplierList && supplierList.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'city') {
-            filterCityListBySupplier && filterCityListBySupplier.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'SourceCity') {
-            cityList && cityList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'DestinationCity') {
-            DestinationSupplierCityArray && DestinationSupplierCityArray.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label === 'technology') {
-            technologyList && technologyList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'category') {
-            categoryList && categoryList.map(item =>
+            categoryList && categoryList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
-        if (label === 'SourceSupplierPlant') {
-            plantList && plantList.map(item =>
+        if (label === 'plant') {
+            plantList && plantList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ Text: item.Text, Value: item.Value })
-            );
+            });
             return temp;
         }
-        if (label === 'DestinationSupplierPlant') {
-            vendorPlant && vendorPlant.map(item =>
+        if (label === 'VendorNameList') {
+            vendorListByVendorType && vendorListByVendorType.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'VendorPlant') {
+            filterPlantList && filterPlantList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ Text: item.Text, Value: item.Value })
-            );
+            });
+            return temp;
+        }
+        if (label === 'VendorLocation') {
+            filterCityListBySupplier && filterCityListBySupplier.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'SourceLocation') {
+            cityList && cityList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'uom') {
+            UOMSelectList && UOMSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'city') {
+            filterCityListBySupplier && filterCityListBySupplier.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
             return temp;
         }
 
     }
 
-    basicRateHandler = (e) => {
-        this.setState({ basicRate: e.target.value }, () => this.netLandedCalculation())
+    formToggle = () => {
+        this.setState({
+            isShowForm: !this.state.isShowForm
+        })
     }
 
-    QuantityHandler = (e) => {
-        this.setState({ Quantity: e.target.value }, () => this.netLandedCalculation())
-    }
-
-    netLandedCalculation = () => {
-        const { fieldsObj } = this.props;
-        const netLandedCost = fieldsObj.BasicRate * fieldsObj.Quantity;
-        this.props.change('NetLandedCost', checkForNull(netLandedCost))
+    /**
+    * @method cancel
+    * @description used to Reset form
+    */
+    clearForm = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            RawMaterial: [],
+            RMGrade: [],
+            RMSpec: [],
+            Category: [],
+            selectedPlants: [],
+            vendorName: [],
+            selectedVendorPlants: [],
+            vendorLocation: [],
+            HasDifferentSource: false,
+            sourceLocation: [],
+            UOM: [],
+            remarks: '',
+            isShowForm: false,
+            IsVendor: false,
+        })
+        this.props.getRawMaterialDetailsAPI('', false, res => { })
     }
 
     /**
@@ -515,12 +550,7 @@ class AddRMDetail extends Component {
     * @description used to Reset form
     */
     cancel = () => {
-        const { reset } = this.props;
-        reset();
-        this.setState({
-            isEditFlag: false,
-            isShowForm: false,
-        })
+        this.clearForm()
     }
 
     /**
@@ -528,12 +558,54 @@ class AddRMDetail extends Component {
     * @description used to Reset form
     */
     resetForm = () => {
-        const { reset } = this.props;
-        reset();
-        this.setState({
-            isEditFlag: false,
-            isShowForm: false,
-        })
+        this.clearForm()
+    }
+
+    // specify upload params and url for your files
+    getUploadParams = ({ file, meta }) => {
+        //console.log('body', file, meta)
+        return { url: 'https://httpbin.org/post', }
+    }
+
+    // called every time a file's `status` changes
+    handleChangeStatus = ({ meta, file }, status) => {
+
+        //console.log('handleChangeStatus', status, meta, file)
+
+        if (status == 'removed') {
+            // const { files } = this.state;
+            // const id = meta.id;
+            // let tempArr = files.filter(item => item.id != id)
+            // //console.log('tempArr', tempArr)
+            console.log('remove >>>>', status, meta, file)
+            // this.setState({ files: tempArr })
+        }
+
+        if (status == 'done') {
+
+            let data = new FormData()
+            data.append('file', file)
+            console.log('before >>>', data)
+            const { files } = this.state;
+            this.setState({ files: file })
+            console.log('before >>>', data)
+
+            this.props.fileUploadRMDomestic(data, (res) => {
+                let Data = res.data[0]
+                console.log('after success >>>', Data)
+            })
+
+        }
+
+        if (status == 'rejected_file_type') {
+            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        }
+    }
+
+    // receives array of files that are done uploading when submit button is clicked
+    handleSubmit = (files, allFiles) => {
+        console.log('handleSubmit', files.map(f => f.meta))
+        allFiles.forEach(f => f.remove())
     }
 
     /**
@@ -541,102 +613,80 @@ class AddRMDetail extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { GradeId, SpecificationId, RawMaterialId } = this.state;
-        const { RawMaterialDetailsId, isEditFlag } = this.props;
-        let loginUserId = loggedInUserId();
-        //values.CreatedBy = loginUserId;
+        const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName,
+            selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, remarks,
+            RawMaterialID, isEditFlag, } = this.state;
+        const { reset } = this.props;
+
+        let plantArray = [];
+        selectedPlants && selectedPlants.map((item) => {
+            plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
+            return plantArray;
+        })
+
+        let vendorPlantArray = [];
+        selectedVendorPlants && selectedVendorPlants.map((item) => {
+            vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
+            return vendorPlantArray;
+        })
 
         if (isEditFlag) {
             let requestData = {
-                BasicRate: values.BasicRate,
-                Quantity: values.Quantity,
+                RawMaterialId: RawMaterialID,
+                IsVendor: IsVendor,
+                HasDifferentSource: HasDifferentSource,
+                Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
+                SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
+                Remark: remarks,
+                BasicRatePerUOM: values.BasicRate,
                 ScrapRate: values.ScrapRate,
                 NetLandedCost: values.NetLandedCost,
-                Remark: values.Remark,
-                TechnologyId: values.TechnologyId,
-                RawMaterialId: values.RawMaterialId,
-                CategoryId: values.CategoryId,
-                SourceSupplierPlantId: values.SourceSupplierPlantId,
-                SourceSupplierPlantName: values.SourceSupplierPlantName,
-                SourceSupplierCityId: values.SourceSupplierCityId,
-                SourceSupplierId: values.SourceSupplierId,
-                DestinationSupplierPlantId: values.DestinationSupplierPlantId,
-                DestinationSupplierPlantName: values.DestinationSupplierPlantName,
-                DestinationSupplierCityId: values.DestinationSupplierCityId,
-                DestinationSupplierId: values.DestinationSupplierId,
-                UnitOfMeasurementId: values.UnitOfMeasurementId,
-                IsAssembly: true,
-                MaterialId: '',
-                GradeId: GradeId,
-                SpecificationId: GradeId,
-                RawMaterialDetailsId: RawMaterialDetailsId,
-                IsActive: true,
-                CreatedDate: '',
-                CreatedBy: loggedInUserId(),
-                TechnologyName: '',
-                RawMaterialName: '',
-                MaterialName: '',
-                Density: 0,
-                RawMaterialGradeName: '',
-                RawMaterialSpecificationName: '',
-                CategoryName: '',
-                SourceSupplierLocation: '',
-                SourceSupplierName: '',
-                DestinationSupplierLocation: '',
-                DestinationSupplierName: '',
-                UnitOfMeasurementName: ''
+                LoggedInUserId: loggedInUserId(),
             }
-            this.props.updateRawMaterialDetailsAPI(requestData, (res) => {
+            this.props.updateRMDomesticAPI(requestData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-                    const filterData = {
-                        PageSize: 0,
-                        LastIndex: 0,
-                        TechnologyId: '',
-                        DestinationSupplierId: '',
-                        PlantId: '',
-                    }
-                    this.props.getMaterialDetailAPI(filterData, res => { });
-                    this.toggleModel();
+                    this.child.getUpdatedData();
                 }
             })
 
         } else {
 
             const formData = {
-                BasicRate: values.BasicRate,
-                Quantity: values.Quantity,
+                IsVendor: IsVendor,
+                RawMaterial: RawMaterial.value,
+                RMGrade: RMGrade.value,
+                RMSpec: RMSpec.value,
+                Category: Category.value,
+                Vendor: vendorName.value,
+                VendorLocation: vendorLocation.value,
+                HasDifferentSource: HasDifferentSource,
+                Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
+                SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
+                UOM: UOM.value,
+                BasicRatePerUOM: values.BasicRate,
                 ScrapRate: values.ScrapRate,
                 NetLandedCost: values.NetLandedCost,
-                Remark: values.Remark,
-                TechnologyId: values.TechnologyId,
-                RawMaterialId: values.RawMaterialId,
-                GradeId: GradeId,
-                SpecificationId: SpecificationId,
-                CategoryId: values.CategoryId,
-                SourceSupplierPlantId: values.SourceSupplierPlantId,
-                SourceSupplierCityId: values.SourceSupplierCityId,
-                SourceSupplierId: values.SourceSupplierId,
-                DestinationSupplierPlantId: values.DestinationSupplierPlantId,
-                DestinationSupplierCityId: values.DestinationSupplierCityId,
-                DestinationSupplierId: values.DestinationSupplierId,
-                UnitOfMeasurementId: values.UnitOfMeasurementId,
-                RawMaterialSupplierId: '', //Provision
-                //PlantId: '',
-                IsAssembly: true,
+                Remark: remarks,
+                LoggedInUserId: loggedInUserId(),
+                Plant: IsVendor == false ? plantArray : [],
+                VendorPlant: IsVendor == false ? [] : vendorPlantArray,
+                Attachements: [],
             }
-            this.props.createRMDetailAPI(formData, (res) => {
+
+            // let data = new FormData()
+            // data.append('file', this.state.files)
+            // console.log('file upload >>>', data)
+            // this.props.fileUploadRMDomestic(data, (res) => {
+            //     console.log('file upload >>>', res)
+            // })
+
+            //console.log('formData >>>', formData)
+            this.props.createRMDomestic(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-                    const filterData = {
-                        PageSize: 0,
-                        LastIndex: 0,
-                        TechnologyId: '',
-                        DestinationSupplierId: '',
-                        PlantId: '',
-                    }
-                    this.props.getMaterialDetailAPI(filterData, res => { });
-                    this.toggleModel();
+                    this.clearForm();
+                    this.child.getUpdatedData();
                 }
             });
         }
@@ -647,9 +697,9 @@ class AddRMDetail extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, pristine, submitting, } = this.props;
+        const { handleSubmit, pristine, submitting, } = this.props;
         const { files, errors, isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-            isOpenCategory, isOpenVendor, isOpenUOM, } = this.state;
+            isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
         const previewStyle = {
             display: 'inline',
@@ -662,12 +712,6 @@ class AddRMDetail extends Component {
                 <div>
                     <div className="login-container signup-form">
                         <div className="row">
-                            <div className="col-md-12" >
-                                <button
-                                    type="button"
-                                    className={'btn btn-primary user-btn mb15'}
-                                    onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
-                            </div>
                             {this.state.isShowForm &&
                                 <div className="col-md-12">
                                     <div className="shadow-lgg login-formg">
@@ -684,20 +728,6 @@ class AddRMDetail extends Component {
                                             onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                         >
                                             <Row>
-                                                {/* <Col md="4" className="mb15">
-                                                <label
-                                                    className="custom-checkbox"
-                                                    onChange={this.onPressVendor}
-                                                >
-                                                    Raw Material for Vendor?
-                                                <input type="checkbox" checked={this.state.IsVendor} />
-                                                    <span
-                                                        className=" before-box"
-                                                        checked={this.state.IsVendor}
-                                                        onChange={this.onPressVendor}
-                                                    />
-                                                </label>
-                                            </Col> */}
                                                 <Col md="4" className="switch mb15">
                                                     <label>
                                                         <div className={'left-title'}>Zero Based</div>
@@ -705,6 +735,7 @@ class AddRMDetail extends Component {
                                                             onChange={this.onPressVendor}
                                                             checked={this.state.IsVendor}
                                                             id="normal-switch"
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                         <div className={'right-title'}>Vendor Based</div>
                                                     </label>
@@ -724,6 +755,7 @@ class AddRMDetail extends Component {
                                                         required={true}
                                                         handleChangeDescription={this.handleRMChange}
                                                         valueDescription={this.state.RawMaterial}
+                                                        disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>
                                                 <Col md="1">
@@ -745,6 +777,7 @@ class AddRMDetail extends Component {
                                                         required={true}
                                                         handleChangeDescription={this.handleGradeChange}
                                                         valueDescription={this.state.RMGrade}
+                                                        disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>
                                                 <Col md="1">
@@ -766,6 +799,7 @@ class AddRMDetail extends Component {
                                                         required={true}
                                                         handleChangeDescription={this.handleSpecChange}
                                                         valueDescription={this.state.RMSpec}
+                                                        disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>
                                                 <Col md="1">
@@ -787,6 +821,7 @@ class AddRMDetail extends Component {
                                                         required={true}
                                                         handleChangeDescription={this.handleCategoryChange}
                                                         valueDescription={this.state.Category}
+                                                        disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>
                                                 <Col md="1">
@@ -796,24 +831,25 @@ class AddRMDetail extends Component {
                                                     </div>
                                                 </Col>
                                             </Row>
-                                            <Row>
-                                                <Col md="3">
-                                                    <Field
-                                                        label="Plant"
-                                                        name="SourceSupplierPlantId"
-                                                        placeholder="--Select--"
-                                                        selection={this.state.selectedVendorPlants}
-                                                        options={this.renderListing('SourceSupplierPlant')}
-                                                        selectionChanged={this.handleSourceSupplierPlant}
-                                                        optionValue={option => option.Value}
-                                                        optionLabel={option => option.Text}
-                                                        component={renderMultiSelectField}
-                                                        mendatory={true}
-                                                        className="multiselect-with-border"
-                                                        disabled={this.state.IsVendor ? true : false}
-                                                    />
-                                                </Col>
-                                            </Row>
+                                            {!this.state.IsVendor &&
+                                                <Row>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label="Plant"
+                                                            name="SourceSupplierPlantId"
+                                                            placeholder="--Select--"
+                                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                            options={this.renderListing('plant')}
+                                                            selectionChanged={this.handleSourceSupplierPlant}
+                                                            optionValue={option => option.Value}
+                                                            optionLabel={option => option.Text}
+                                                            component={renderMultiSelectField}
+                                                            mendatory={true}
+                                                            className="multiselect-with-border"
+                                                            disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                                                        />
+                                                    </Col>
+                                                </Row>}
 
                                             <Row>
 
@@ -830,12 +866,13 @@ class AddRMDetail extends Component {
                                                         label="Vendor Name"
                                                         component={searchableSelect}
                                                         placeholder={'--- Select Vendor ---'}
-                                                        options={this.renderListing('vendorName')}
+                                                        options={this.renderListing('VendorNameList')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorSupplier == null || this.state.vendorSupplier.length == 0) ? [required] : []}
+                                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
                                                         required={true}
                                                         handleChangeDescription={this.handleVendorName}
-                                                        valueDescription={this.state.vendorSupplier}
+                                                        valueDescription={this.state.vendorName}
+                                                        disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>
                                                 <Col md="1">
@@ -846,18 +883,18 @@ class AddRMDetail extends Component {
                                                 </Col>
                                                 <Col md="3">
                                                     <Field
-                                                        name="DestinationSupplierPlantId"
-                                                        type="text"
                                                         label="Vendor Plant"
-                                                        component={searchableSelect}
-                                                        placeholder={'--- Select Plant ---'}
-                                                        options={this.renderListing('vendorPlant')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorPlant == null || this.state.vendorPlant.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleVendorPlant}
-                                                        valueDescription={this.state.vendorPlant}
-                                                        disabled={this.state.IsVendor ? false : true}
+                                                        name="DestinationSupplierPlantId"
+                                                        placeholder="--Select--"
+                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                        options={this.renderListing('VendorPlant')}
+                                                        selectionChanged={this.handleVendorPlant}
+                                                        optionValue={option => option.Value}
+                                                        optionLabel={option => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        className="multiselect-with-border"
+                                                        disabled={isEditFlag ? true : (this.state.IsVendor ? false : true)}
                                                     />
                                                 </Col>
                                                 <Col md="3">
@@ -867,12 +904,13 @@ class AddRMDetail extends Component {
                                                         label="Vendor Location"
                                                         component={searchableSelect}
                                                         placeholder={'--- Select Location ---'}
-                                                        options={this.renderListing('vendorLocation')}
+                                                        options={this.renderListing('VendorLocation')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.vendorLocation == null || this.state.vendorLocation.length == 0) ? [required] : []}
                                                         required={true}
                                                         handleChangeDescription={this.handleVendorLocation}
                                                         valueDescription={this.state.vendorLocation}
+                                                        disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>
 
@@ -905,7 +943,7 @@ class AddRMDetail extends Component {
                                                     <Col md="3">
                                                         <Field
                                                             label={`Source`}
-                                                            name={"SourceSupplierId"}
+                                                            name={"Source"}
                                                             type="text"
                                                             placeholder={'Enter'}
                                                             validate={[required]}
@@ -923,7 +961,7 @@ class AddRMDetail extends Component {
                                                             label="Source Location"
                                                             component={searchableSelect}
                                                             placeholder={'--- Select Plant ---'}
-                                                            options={this.renderListing('SourceCity')}
+                                                            options={this.renderListing('SourceLocation')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
                                                             required={true}
@@ -952,6 +990,7 @@ class AddRMDetail extends Component {
                                                         required={true}
                                                         handleChangeDescription={this.handleUOM}
                                                         valueDescription={this.state.UOM}
+                                                        disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>
                                                 <Col md="1">
@@ -968,6 +1007,7 @@ class AddRMDetail extends Component {
                                                         placeholder={'Enter'}
                                                         validate={[required]}
                                                         component={renderNumberInputField}
+                                                        onChange={this.handleBasicRate}
                                                         required={true}
                                                         disabled={false}
                                                         className=" "
@@ -1025,36 +1065,34 @@ class AddRMDetail extends Component {
                                                     />
                                                 </Col>
                                                 <Col md="6">
-
-
-
+                                                    <Dropzone
+                                                        getUploadParams={this.getUploadParams}
+                                                        onChangeStatus={this.handleChangeStatus}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/png,xls,doc,pdf"
+                                                        maxFiles={3}
+                                                        maxSizeBytes={2000000}
+                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                                                        styles={{
+                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                                                        }}
+                                                    />
                                                 </Col>
-
                                             </Row>
                                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                                 <div className="col-sm-12 text-center">
                                                     <button
+                                                        type={'button'}
+                                                        className="reset mr15 cancel-btn"
+                                                        onClick={this.cancel} >
+                                                        {'Cancel'}
+                                                    </button>
+                                                    <button
                                                         type="submit"
-                                                        className="btn login-btn w-10 dark-pinkbtn mr15" >
+                                                        className="submit-button mr5 save-btn" >
                                                         {isEditFlag ? 'Update' : 'Save'}
                                                     </button>
-
-                                                    {!this.props.isEditFlag &&
-                                                        <input
-                                                            disabled={pristine || submitting}
-                                                            onClick={this.resetForm}
-                                                            type="submit"
-                                                            value="Reset"
-                                                            className="btn login-btn w-10 dark-pinkbtn"
-                                                        />}
-                                                    {this.props.isEditFlag &&
-                                                        <input
-                                                            //disabled={pristine || submitting}
-                                                            onClick={this.cancel}
-                                                            type="submit"
-                                                            value="Cancel"
-                                                            className="btn login-btn w-10 dark-pinkbtn"
-                                                        />}
                                                 </div>
                                             </Row>
                                         </form>
@@ -1063,8 +1101,13 @@ class AddRMDetail extends Component {
                             }
                         </div>
                     </div>
-                    <MaterialDetail editRawMaterialDetailsHandler={this.editRawMaterialDetailsHandler} />
+                    <RMDomesticListing
+                        onRef={ref => (this.child = ref)}
+                        getDetails={this.getDetails}
+                        formToggle={this.formToggle}
+                        isShowForm={this.state.isShowForm} />
                 </div>
+
                 {isRMDrawerOpen && <AddSpecification
                     isOpen={isRMDrawerOpen}
                     closeDrawer={this.closeRMDrawer}
@@ -1119,43 +1162,32 @@ class AddRMDetail extends Component {
 */
 function mapStateToProps(state) {
     const { comman, material, costWorking } = state;
-    const fieldsObj = selector(state, 'BasicRate', 'Quantity');
+    const fieldsObj = selector(state, 'BasicRate',);
 
     const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
-        supplierList, cityList, technologyList, categoryList, filterPlantListByCity,
-        filterCityListBySupplier, filterPlantListByCityAndSupplier } = comman;
+        supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
+        categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, } = comman;
 
-    const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectListByRMID } = material;
+    const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
+        gradeSelectListByRMID, vendorListByVendorType } = material;
 
     let initialValues = {};
-    if (rawMaterialDetailsData && rawMaterialDetailsData != undefined) {
+    if (rawMaterialDetails && rawMaterialDetails != undefined) {
         initialValues = {
-            RawMaterialId: rawMaterialDetailsData.RawMaterialId,
-            RawMaterialGradeName: rawMaterialDetailsData.RawMaterialGradeName,
-            RawMaterialSpecificationName: rawMaterialDetailsData.RawMaterialSpecificationName,
-            CategoryId: rawMaterialDetailsData.CategoryId,
-            BasicRate: rawMaterialDetailsData.BasicRate,
-            Quantity: rawMaterialDetailsData.Quantity,
-            ScrapRate: rawMaterialDetailsData.ScrapRate,
-            NetLandedCost: rawMaterialDetailsData.NetLandedCost,
-            Remark: rawMaterialDetailsData.Remark,
-            TechnologyId: rawMaterialDetailsData.TechnologyId,
-            SourceSupplierId: rawMaterialDetailsData.SourceSupplierId,
-            SourceSupplierCityId: rawMaterialDetailsData.SourceSupplierCityId,
-            SourceSupplierPlantId: rawMaterialDetailsData.SourceSupplierPlantId,
-            DestinationSupplierId: rawMaterialDetailsData.DestinationSupplierId,
-            DestinationSupplierCityId: rawMaterialDetailsData.DestinationSupplierCityId,
-            DestinationSupplierPlantId: rawMaterialDetailsData.DestinationSupplierPlantId,
-            UnitOfMeasurementId: rawMaterialDetailsData.UnitOfMeasurementId,
-            PlantId: rawMaterialDetailsData.PlantId,
+            Source: rawMaterialDetails.Source,
+            BasicRate: rawMaterialDetails.BasicRatePerUOM,
+            ScrapRate: rawMaterialDetails.ScrapRate,
+            NetLandedCost: rawMaterialDetails.NetLandedCost,
+            Remark: rawMaterialDetails.Remark,
         }
     }
 
     return {
         uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification,
-        plantList, supplierList, cityList, technologyList, categoryList, rawMaterialDetails,
+        plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
         filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
         fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectListByRMID,
+        filterPlantList, UOMSelectList, vendorListByVendorType,
     }
 
 }
@@ -1167,22 +1199,25 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createRMDetailAPI,
+    createRMDomestic,
     fetchMaterialComboAPI,
     fetchGradeDataAPI,
     fetchSpecificationDataAPI,
-    getMaterialDetailAPI,
     getRawMaterialDataAPI,
     getRawMaterialDetailsAPI,
-    getRawMaterialDetailsDataAPI,
     getCityBySupplier,
     getPlantByCity,
     getPlantByCityAndSupplier,
-    updateRawMaterialDetailsAPI,
+    updateRMDomesticAPI,
     fetchRMGradeAPI,
     getRawMaterialNameChild,
     getGradeListByRawMaterialNameChild,
+    getSupplierList,
+    getPlantBySupplier,
+    getUOMSelectList,
+    getVendorListByVendorType,
+    fileUploadRMDomestic,
 })(reduxForm({
-    form: 'AddRMDetail',
+    form: 'AddRMDomestic',
     enableReinitialize: true,
-})(AddRMDetail));
+})(AddRMDomestic));

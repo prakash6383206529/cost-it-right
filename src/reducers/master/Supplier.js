@@ -37,7 +37,7 @@ export default function supplierReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                supplierDetail: action.payload
+                supplierDataList: action.payload
             };
         case GET_SUPPLIER_FAILURE:
             return {

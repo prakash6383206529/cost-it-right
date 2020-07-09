@@ -119,8 +119,13 @@ export const MESSAGES = {
   UPDATE_FREIGHT_SUCESS: 'Freight updated successfully',
   DELETE_LABOUR_SUCCESS: 'Labour deleted successfully',
   UPDATE_LABOUR_SUCCESS: 'Labour updated successfully',
+
+  //SUPPLIER OR VENDOR
   DELETE_SUPPLIER_SUCCESS: 'Supplier deleted successfully',
   UPDATE_SUPPLIER_SUCESS: 'Supplier updated successfully',
+  VENDOR_ACTIVE_SUCCESSFULLY: 'Vendor has been active successfully.',
+  VENDOR_INACTIVE_SUCCESSFULLY: 'Vendor has been inactive successfully.',
+
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
   FUEL_ADD_SUCCESS: 'Fuel added successfully',

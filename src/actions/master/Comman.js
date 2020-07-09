@@ -43,6 +43,7 @@ import {
     GET_DEPRECIATION_SELECTLIST_SUCCESS,
     GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
     GET_PLANTS_BY_SUPPLIER_AND_CITY,
+    GET_SUPPLIER_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -847,22 +848,20 @@ export function fetchCostingHeadsAPI(costingHeads, callback) {
 }
 
 /**
- * @method fetchSupplierDataAPI
- * @description Used to fetch city list
- */
-export function fetchSupplierDataAPI(callback) {
+* @method getSupplierList
+* @description Used to get select list of Vendor's
+*/
+export function getSupplierList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSupplier}`, headers);
+        const request = axios.get(`${API.getSupplierLists}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_SUPPLIER_SUCCESS,
+                    type: GET_SUPPLIER_SELECTLIST_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -914,8 +913,6 @@ export function getPlantBySupplier(supplierId, callback) {
                         payload: response.data.SelectList,
                     });
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
                 dispatch({ type: FETCH_MATER_DATA_FAILURE, });
