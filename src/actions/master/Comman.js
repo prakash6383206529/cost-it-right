@@ -44,6 +44,7 @@ import {
     GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
     GET_PLANTS_BY_SUPPLIER_AND_CITY,
     GET_SUPPLIER_SELECTLIST_SUCCESS,
+    GET_CURRENCY_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -1272,5 +1273,29 @@ export function getMachineSelectListByMachineType(MachineClassId, callback) {
             });
             callback();
         }
+    };
+}
+
+
+/**
+* @method getCurrencySelectList
+* @description Used to get select list of Vendor's
+*/
+export function getCurrencySelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCurrencySelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CURRENCY_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            apiErrors(error);
+        });
     };
 }

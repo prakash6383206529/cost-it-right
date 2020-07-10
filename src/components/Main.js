@@ -27,7 +27,7 @@ import MHRMaster from './masters/sap-masters/mhr-master';
 import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationMaster from './masters/sap-masters/operation';
-import MaterialMaster from './masters/sap-masters/material-master/material';
+import MaterialMaster from './masters/sap-masters/material-master/raw-material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourMaster from './masters/sap-masters/labour-master';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';

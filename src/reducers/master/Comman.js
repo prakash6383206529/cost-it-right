@@ -45,6 +45,7 @@ import {
     GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
     GET_PLANTS_BY_SUPPLIER_AND_CITY,
     GET_SUPPLIER_SELECTLIST_SUCCESS,
+    GET_CURRENCY_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -359,6 +360,13 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 MachineByMachineTypeSelectList: action.payload
+            };
+        case GET_CURRENCY_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                currencySelectList: action.payload
             };
         default:
             return state;

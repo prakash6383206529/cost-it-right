@@ -11,6 +11,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import classnames from 'classnames';
 
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
+import AddRMImport from './AddRMImport';
 
 class RowMaterialMaster extends Component {
     constructor(props) {
@@ -124,6 +125,15 @@ class RowMaterialMaster extends Component {
                                         />
                                     </TabPane>}
 
+                                {this.state.activeTab == 2 &&
+                                    <TabPane tabId="2">
+                                        <AddRMImport
+                                            isOpen={isRMOpen}
+                                            onCancel={this.onCancel}
+                                            RawMaterialDetailsId={this.state.Id}
+                                            isEditFlag={this.state.isEditFlag}
+                                        />
+                                    </TabPane>}
 
                                 {this.state.activeTab == 3 &&
                                     <TabPane tabId="3">

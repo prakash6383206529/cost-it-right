@@ -10,12 +10,13 @@ import {
 import {
     fetchMaterialComboAPI, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
     getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
+    getCurrencySelectList,
 } from '../../../../../actions/master/Comman';
 import {
-    createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild,
+    createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
     getGradeListByRawMaterialNameChild, getVendorListByVendorType, fileUploadRMDomestic,
 } from '../../../../../actions/master/Material';
-import RMDomesticListing from './RMDomesticListing';
+import RMImportListing from './RMImportListing';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
@@ -28,10 +29,12 @@ import AddUOM from '../../uom-master/AddUOM';
 import AddVendorDrawer from '../../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
-const selector = formValueSelector('AddRMDomestic');
+const selector = formValueSelector('AddRMImport');
 
-class AddRMDomestic extends Component {
+class AddRMImport extends Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
@@ -53,6 +56,8 @@ class AddRMDomestic extends Component {
             sourceLocation: [],
 
             UOM: [],
+            currency: [],
+            effectiveDate: '',
             remarks: '',
 
             isShowForm: false,
@@ -78,7 +83,7 @@ class AddRMDomestic extends Component {
         this.props.getRawMaterialNameChild(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getSupplierList(() => { })
-
+        this.props.getCurrencySelectList(() => { })
     }
 
     /**
@@ -230,12 +235,34 @@ class AddRMDomestic extends Component {
     };
 
     /**
+    * @method handleCurrency
+    * @description called
+    */
+    handleCurrency = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ currency: newValue, })
+        } else {
+            this.setState({ currency: [] })
+        }
+    };
+
+    /**
     * @method handleBasicRate
     * @description Set value in NetLandedCost
     */
     handleBasicRate = (e) => {
         this.props.change('NetLandedCost', e.target.value)
     }
+
+    /**
+    * @method handleChange
+    * @description Handle Effective Date
+    */
+    handleEffectiveDateChange = (date) => {
+        this.setState({
+            effectiveDate: date,
+        });
+    };
 
     /**
     * @method handleMessageChange
@@ -260,7 +287,7 @@ class AddRMDomestic extends Component {
                 RawMaterialID: data.Id,
             })
             $('html, body').animate({ scrollTop: 0 }, 'slow');
-            this.props.getRawMaterialDetailsAPI(data, true, res => {
+            this.props.getRMImportDataById(data, true, res => {
                 if (res && res.data && res.data.Result) {
 
                     const Data = res.data.Data;
@@ -274,12 +301,13 @@ class AddRMDomestic extends Component {
                     setTimeout(() => {
                         const { gradeSelectListByRMID, rmSpecification, cityList, categoryList,
                             filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
-                            vendorListByVendorType } = this.props;
+                            vendorListByVendorType, currencySelectList, } = this.props;
 
                         const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
                         const gradeObj = gradeSelectListByRMID && gradeSelectListByRMID.find(item => item.Value == Data.RMGrade)
                         const specObj = rmSpecification && rmSpecification.find(item => item.Value == Data.RMSpec)
                         const categoryObj = categoryList && categoryList.find(item => item.Value == Data.Category)
+                        const currencyObj = currencySelectList && currencySelectList.find(item => item.Text == Data.Currency)
 
                         let plantArray = [];
                         Data && Data.Plant.map((item) => {
@@ -315,13 +343,15 @@ class AddRMDomestic extends Component {
                             HasDifferentSource: Data.HasDifferentSource,
                             sourceLocation: { label: sourceLocationObj.Text, value: sourceLocationObj.Value },
                             UOM: { label: UOMObj.Text, value: UOMObj.Value },
+                            effectiveDate: new Date(Data.EffectiveDate),
+                            currency: { label: currencyObj.Text, value: currencyObj.Value },
                             remarks: Data.Remark,
                         })
                     }, 200)
                 }
             })
         } else {
-            this.props.getRawMaterialDetailsAPI('', false, res => { })
+            this.props.getRMImportDataById('', false, res => { })
         }
     }
 
@@ -409,10 +439,9 @@ class AddRMDomestic extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { uniOfMeasurementList, rowMaterialList, gradeSelectListByRMID, rmSpecification, plantList,
-            supplierSelectList, filterPlantList, cityList, technologyList, categoryList, filterPlantListByCity,
-            filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
-            vendorListByVendorType } = this.props;
+        const { gradeSelectListByRMID, rmSpecification, plantList, filterPlantList,
+            cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
+            UOMSelectList, currencySelectList, vendorListByVendorType } = this.props;
         const temp = [];
         if (label === 'material') {
             rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -484,6 +513,13 @@ class AddRMDomestic extends Component {
             });
             return temp;
         }
+        if (label === 'currency') {
+            currencySelectList && currencySelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
         if (label === 'city') {
             filterCityListBySupplier && filterCityListBySupplier.map(item => {
                 if (item.Value == 0) return false;
@@ -523,7 +559,7 @@ class AddRMDomestic extends Component {
             isShowForm: false,
             IsVendor: false,
         })
-        this.props.getRawMaterialDetailsAPI('', false, res => { })
+        this.props.getRMImportDataById('', false, res => { })
     }
 
     /**
@@ -595,8 +631,8 @@ class AddRMDomestic extends Component {
     */
     onSubmit = (values) => {
         const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName,
-            selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, remarks,
-            RawMaterialID, isEditFlag, } = this.state;
+            selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, currency,
+            effectiveDate, remarks, RawMaterialID, isEditFlag, } = this.state;
         const { reset } = this.props;
 
         let plantArray = [];
@@ -624,7 +660,7 @@ class AddRMDomestic extends Component {
                 NetLandedCost: values.NetLandedCost,
                 LoggedInUserId: loggedInUserId(),
             }
-            this.props.updateRMDomesticAPI(requestData, (res) => {
+            this.props.updateRMImportAPI(requestData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
                     this.clearForm();
@@ -654,6 +690,8 @@ class AddRMDomestic extends Component {
                 Plant: IsVendor == false ? plantArray : [],
                 VendorPlant: IsVendor == false ? [] : vendorPlantArray,
                 Attachements: [],
+                Currency: currency.label,
+                EffectiveDate: effectiveDate,
             }
 
             // let data = new FormData()
@@ -664,7 +702,7 @@ class AddRMDomestic extends Component {
             // })
 
             //console.log('formData >>>', formData)
-            this.props.createRMDomestic(formData, (res) => {
+            this.props.createRMImport(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
                     this.clearForm();
@@ -983,6 +1021,22 @@ class AddRMDomestic extends Component {
                                                 </Col>
                                                 <Col md="3">
                                                     <Field
+                                                        name="Currency"
+                                                        type="text"
+                                                        label="Currency"
+                                                        component={searchableSelect}
+                                                        placeholder={'--- Select Currency ---'}
+                                                        options={this.renderListing('currency')}
+                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                        validate={(this.state.currency == null || this.state.currency.length == 0) ? [required] : []}
+                                                        required={true}
+                                                        handleChangeDescription={this.handleCurrency}
+                                                        valueDescription={this.state.currency}
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <Field
                                                         label={`Basic Rate/UOM (INR)`}
                                                         name={"BasicRate"}
                                                         type="text"
@@ -1022,6 +1076,32 @@ class AddRMDomestic extends Component {
                                                         className=" "
                                                         customClassName=" withBorder"
                                                     />
+                                                </Col>
+                                                <Col md="3">
+                                                    <div className="form-group">
+                                                        <label>
+                                                            Date To
+                                                    <span className="asterisk-required">*</span>
+                                                        </label>
+                                                        <div className="inputbox date-section">
+                                                            <DatePicker
+                                                                name="ValidDateTo"
+                                                                selected={this.state.effectiveDate}
+                                                                onChange={this.handleEffectiveDateChange}
+                                                                showMonthDropdown
+                                                                showYearDropdown
+                                                                dateFormat="dd/MM/yyyy"
+                                                                //maxDate={new Date()}
+                                                                dropdownMode="select"
+                                                                placeholderText="Select date"
+                                                                className="withBorder"
+                                                                autoComplete={'off'}
+                                                                disabledKeyboardNavigation
+                                                                onChangeRaw={(e) => e.preventDefault()}
+                                                                disabled={isEditFlag ? true : false}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </Col>
                                             </Row>
 
@@ -1083,7 +1163,7 @@ class AddRMDomestic extends Component {
                             }
                         </div>
                     </div>
-                    <RMDomesticListing
+                    <RMImportListing
                         onRef={ref => (this.child = ref)}
                         getDetails={this.getDetails}
                         formToggle={this.formToggle}
@@ -1148,7 +1228,8 @@ function mapStateToProps(state) {
 
     const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
         supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
-        categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, } = comman;
+        categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
+        currencySelectList, } = comman;
 
     const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
         gradeSelectListByRMID, vendorListByVendorType } = material;
@@ -1169,7 +1250,7 @@ function mapStateToProps(state) {
         plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
         filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
         fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectListByRMID,
-        filterPlantList, UOMSelectList, vendorListByVendorType,
+        filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList,
     }
 
 }
@@ -1181,15 +1262,15 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createRMDomestic,
+    createRMImport,
     fetchMaterialComboAPI,
     fetchGradeDataAPI,
     fetchSpecificationDataAPI,
-    getRawMaterialDetailsAPI,
+    getRMImportDataById,
     getCityBySupplier,
     getPlantByCity,
     getPlantByCityAndSupplier,
-    updateRMDomesticAPI,
+    updateRMImportAPI,
     fetchRMGradeAPI,
     getRawMaterialNameChild,
     getGradeListByRawMaterialNameChild,
@@ -1198,7 +1279,8 @@ export default connect(mapStateToProps, {
     getUOMSelectList,
     getVendorListByVendorType,
     fileUploadRMDomestic,
+    getCurrencySelectList,
 })(reduxForm({
-    form: 'AddRMDomestic',
+    form: 'AddRMImport',
     enableReinitialize: true,
-})(AddRMDomestic));
+})(AddRMImport));

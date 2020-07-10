@@ -131,21 +131,25 @@ export const API = {
   deleteRawMaterialAPI: `${BASE_URL}/masters-raw-material/delete-raw-material`,
 
   //RAW MATERIAL DETAILS
-  getRMDomesticDataById: `${BASE_URL}/masters-raw-material/get-raw-material-domestic-by-id`,
-  deleteRawMaterialDetailAPI: `${BASE_URL}/masters-raw-material/delete-raw-material-details`,
   getRawMaterialDetailsDataAPI: `${BASE_URL}/masters-raw-material/get-all-costing-raw-material-details`,
-  updateRMDomesticAPI: `${BASE_URL}/masters-raw-material/update-raw-material-domastic`,
 
   //RAW MATERIAL DOMESTIC
+  createRMDomestic: `${BASE_URL}/masters-raw-material/create-raw-material-domestic`,
+  updateRMDomesticAPI: `${BASE_URL}/masters-raw-material/update-raw-material-domestic`,
+  deleteRawMaterialDetailAPI: `${BASE_URL}/masters-raw-material/delete-raw-material-details`,
+  getRMDomesticDataById: `${BASE_URL}/masters-raw-material/get-raw-material-domestic-by-id`,
   createRawMaterialNameChild: `${BASE_URL}/masters-raw-material/create-raw-material-name-child`,
   getRawMaterialNameChild: `${BASE_URL}/masters-raw-material/select-list-raw-material-name-child`,
   getGradeListByRawMaterialNameChild: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade-child`,
   getVendorListByVendorType: `${BASE_URL}/masters-raw-material/select-list-for-raw-material-vendor-by-type`,
-  createRMDomestic: `${BASE_URL}/masters-raw-material/create-raw-material-domestic`,
   getRMDomesticDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-domestic-list`,
   fileUploadRMDomestic: `${BASE_URL}/masters-raw-material/raw-material-file-upload`,
 
   //RAW MATERIAL IMPORT
+  createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
+  updateRMImportAPI: `${BASE_URL}/masters-raw-material/update-raw-material-import`,
+  getRMImportDataById: `${BASE_URL}/masters-raw-material/get-raw-material-import-by-id`,
+  getRMImportDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-import-list`,
 
   //RAW MATERIAL CATEGORY
   getCategoryDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
@@ -471,6 +475,9 @@ export const API = {
   PowerMassUpload: `${BASE_URL}/masters-power/mass-upload-power`,
   OverheadAndProfitMassUpload: `${BASE_URL}/masters-overhead-and-profit/mass-upload-overhead-profit`,
   MHRMassUpload: `${BASE_URL}/masters-machine-hour-rate/mass-upload-machine-hour-rate`,
+
+  //EXCHANGE RATE
+  getCurrencySelectList: `${BASE_URL}/masters-exchange-rate/select-list-get-currency`,
 
 }
 
@@ -806,6 +813,9 @@ export const GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_SUPPLIER_TY
 export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS';
 export const GET_POWER_DATALIST_SUCCESS = 'GET_POWER_DATALIST_SUCCESS';
 export const GET_POWER_DATA_SUCCESS = 'GET_POWER_DATA_SUCCESS';
+
+//CURRENCY EXCHANGE
+export const GET_CURRENCY_SELECTLIST_SUCCESS = 'GET_CURRENCY_SELECTLIST_SUCCESS';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';

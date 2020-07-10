@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
 import {
-    deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild,
+    deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild,
     getGradeListByRawMaterialNameChild,
 } from '../../../../../actions/master/Material';
 import { required } from "../../../../../helper/validation";
@@ -17,9 +17,10 @@ import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import InputRange from 'react-input-range';
-import 'react-input-range/lib/css/index.css'
+import 'react-input-range/lib/css/index.css';
+import moment from 'moment';
 
-class RMDomesticListing extends Component {
+class RMImportListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -58,7 +59,7 @@ class RMDomesticListing extends Component {
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
         }
-        this.props.getRMDomesticDataList(filterData, (res) => {
+        this.props.getRMImportDataList(filterData, (res) => {
             if (res && res.status == 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -120,6 +121,14 @@ class RMDomesticListing extends Component {
                 Showing {start} of {to} entries.
             </p>
         );
+    }
+
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -453,6 +462,7 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRate" >{this.renderBasicRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" >{this.renderNetCost()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="RawMaterialId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
@@ -481,11 +491,11 @@ function mapStateToProps({ material, comman }) {
 */
 export default connect(mapStateToProps, {
     deleteRawMaterialAPI,
-    getRMDomesticDataList,
+    getRMImportDataList,
     getRawMaterialNameChild,
     getGradeListByRawMaterialNameChild,
     getSupplierList,
 })(reduxForm({
-    form: 'RMDomesticListing',
+    form: 'RMImportListing',
     enableReinitialize: true,
-})(RMDomesticListing));
+})(RMImportListing));

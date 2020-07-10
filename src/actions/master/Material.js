@@ -957,3 +957,88 @@ export function fileUploadRMDomestic(data, callback) {
         });
     };
 }
+
+
+/**
+ * @method createRMImport
+ * @description create raw material Import
+ */
+export function createRMImport(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createRMImport, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method updateRMImportAPI
+ * @description update Raw Material Import
+ */
+export function updateRMImportAPI(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateRMImportAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getRMImportDataById
+ * @description get Raw Material Import Details By Id.
+ */
+export function getRMImportDataById(data, isValid, callback) {
+    return (dispatch) => {
+        if (isValid) {
+            axios.get(`${API.getRMImportDataById}/${data.Id}/${data.IsVendor}`, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
+                        payload: response.data.Data,
+                    });
+                    callback(response)
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
+                payload: {},
+            });
+            callback()
+        }
+    };
+}
+
+
+/**
+ * @method getRMImportDataList
+ * @description Used to get RM Import Datalist
+ */
+export function getRMImportDataList(data, callback) {
+    return (dispatch) => {
+        const queryParams = `material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+    };
+}
