@@ -13,7 +13,7 @@ const masterMenu = [
 	},
 	{
 		icon: 'icon-class-name',
-		label: 'Supplier',
+		label: 'Vendor',
 		to: '/supplier-master',
 	},
 	{

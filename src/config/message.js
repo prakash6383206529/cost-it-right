@@ -108,6 +108,7 @@ export const MESSAGES = {
   DELETE_PLANT_SUCCESS: 'Plant deleted successfully',
   UPDATE_PLANT_SUCESS: 'Plant updated successfully',
   PLANT_DELETE_ALERT: 'Are you sure you want to delete Plant?',
+  PLANT_DELETE_SUCCESSFULLY: 'Plant has been deleted successfully.',
   PLANT_ACTIVE_SUCCESSFULLY: 'Plant has been active successfully.',
   PLANT_INACTIVE_SUCCESSFULLY: 'Plant has been inactive successfully.',
 

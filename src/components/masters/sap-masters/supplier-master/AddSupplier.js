@@ -524,9 +524,9 @@ class AddSupplier extends Component {
                                                     name={"AddressLine2"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required]}
+                                                    //validate={[required]}
                                                     component={renderText}
-                                                    required={true}
+                                                    //required={true}
                                                     maxLength={26}
                                                     className=" "
                                                     customClassName=" withBorder"

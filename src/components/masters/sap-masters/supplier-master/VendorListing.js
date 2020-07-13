@@ -10,7 +10,11 @@ import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI } from '../../../../actions/master/Supplier';
+import {
+    getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
+    getVendorTypesSelectList, getVendorsByVendorTypeID,
+} from '../../../../actions/master/Supplier';
+import { fetchCountryDataAPI, } from '../../../../actions/master/Comman';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
 
@@ -25,25 +29,43 @@ class VendorListing extends Component {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
+            vendorType: [],
+            vendorName: [],
+            country: [],
         }
     }
 
+    /**
+    * @method componentWillMount
+    * @description called before render the component
+    */
+    componentWillMount() {
+        this.props.getVendorTypesSelectList()
+        this.props.fetchCountryDataAPI(() => { })
+
+    }
+
     componentDidMount() {
-        this.getTableListData();
+        this.getTableListData('', '', '')
         this.props.onRef(this)
     }
 
     // Get updated Supplier's list after any action performed.
     getUpdatedData = () => {
-        this.getTableListData()
+        this.getTableListData('', '', '')
     }
 
 	/**
 	* @method getTableListData
 	* @description Get user list data
 	*/
-    getTableListData = () => {
-        this.props.getSupplierDataList(res => {
+    getTableListData = (vendorType = '', vendorName = '', country = '') => {
+        let filterData = {
+            vendor_type: vendorType,
+            vendor_name: vendorName,
+            country: country,
+        }
+        this.props.getSupplierDataList(filterData, res => {
             if (res.status == 204 && res.data == '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -62,16 +84,27 @@ class VendorListing extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        // const { roleList, departmentList } = this.props;
-        // const temp = [];
-
-        // if (label == 'role') {
-        //     roleList && roleList.map(item =>
-        //         temp.push({ label: item.RoleName, value: item.RoleId })
-        //     );
-        //     return temp;
-        // }
-
+        const { countryList, vendorTypeList } = this.props;
+        const { vendorList } = this.state;
+        const temp = [];
+        if (label === 'country') {
+            countryList && countryList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
+        if (label === 'vendorType') {
+            vendorTypeList && vendorTypeList.map((item, i) => {
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'vendorList') {
+            vendorList && vendorList.map(item =>
+                temp.push({ label: item.Text, value: item.Value })
+            );
+            return temp;
+        }
     }
 
 
@@ -117,7 +150,7 @@ class VendorListing extends Component {
         this.props.deleteSupplierAPI(ID, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
-                this.getTableListData();
+                this.getTableListData('', '', '')
             }
         });
     }
@@ -148,10 +181,56 @@ class VendorListing extends Component {
                 } else {
                     toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
-                this.getTableListData()
+                this.getTableListData('', '', '')
             }
         })
     }
+
+    /**
+    * @method handleVendorType
+    * @description Used to handle vendor type
+    */
+    handleVendorType = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ vendorType: newValue, }, () => {
+                const { vendorType } = this.state;
+                this.props.getVendorsByVendorTypeID(vendorType.value, (res) => {
+                    if (res && res.data && res.data.SelectList) {
+                        let Data = res.data.SelectList;
+                        this.setState({ vendorList: Data })
+                    }
+                })
+            });
+        } else {
+            this.setState({ vendorType: [], })
+        }
+    };
+
+    /**
+    * @method handleVendorName
+    * @description Used to handle vendor name
+    */
+    handleVendorName = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ vendorName: newValue, });
+        } else {
+            this.setState({ vendorName: [], })
+        }
+    };
+
+    /**
+    * @method countryHandler
+    * @description Used to handle country
+    */
+    countryHandler = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ country: newValue, }, () => {
+                const { country } = this.state;
+            });
+        } else {
+            this.setState({ country: [], })
+        }
+    };
 
 	/**
 	* @method statusButtonFormatter
@@ -213,7 +292,11 @@ class VendorListing extends Component {
 	* @description Filter user listing on the basis of role and department
 	*/
     filterList = () => {
-        this.getTableListData()
+        const { vendorType, vendorName, country } = this.state;
+        const vType = vendorType && vendorType != null ? vendorType.value : null;
+        const vName = vendorName && vendorName != null ? vendorName.value : null;
+        const Country = country && country != null ? country.value : null;
+        this.getTableListData(vType, vName, Country)
     }
 
 	/**
@@ -222,9 +305,11 @@ class VendorListing extends Component {
 	*/
     resetFilter = () => {
         this.setState({
-            //role: [],
+            vendorType: [],
+            vendorName: [],
+            country: [],
         }, () => {
-            this.getTableListData()
+            this.getTableListData('', '', '')
         })
     }
 
@@ -262,23 +347,59 @@ class VendorListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
-                        <Col md="8" className="filter-block">
+                        <Col md="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                {/* <div className="flex-fill"> <Field
-                                    name="DepartmentId"
-                                    type="text"
-                                    component={searchableSelect}
-                                    placeholder={'Department'}
-                                    options={this.searchableSelectType('department')}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    //validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
-                                    //required={true}
-                                    handleChangeDescription={this.departmentHandler}
-                                    valueDescription={this.state.department}
-                                /></div> */}
+                                <div className="flex-fill">
+                                    <Field
+                                        name="VendorType"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'Vendor Type'}
+                                        options={this.renderListing('vendorType')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.vendorType == null || this.state.vendorType.length == 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleVendorType}
+                                        valueDescription={this.state.vendorType}
+                                        disabled={this.state.isEditFlag ? true : false}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="Vendors"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'vendor name'}
+                                        options={this.renderListing('vendorList')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleVendorName}
+                                        valueDescription={this.state.vendorName}
+                                        disabled={this.state.isEditFlag ? true : false}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="CountryId"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'Country'}
+                                        options={this.renderListing('country')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.countryHandler}
+                                        valueDescription={this.state.country}
+                                        disabled={this.state.isEditFlag ? true : false}
+                                    />
+                                </div>
 
-                                {/* <div className="flex-fill">
+                                <div className="flex-fill">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -295,10 +416,10 @@ class VendorListing extends Component {
                                     >
                                         {'Apply'}
                                     </button>
-                                </div> */}
+                                </div>
                             </div>
                         </Col>
-                        <Col md="4" className="search-user-block">
+                        <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {!this.props.isShowForm &&
@@ -348,10 +469,11 @@ class VendorListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ supplier }) {
-    const { loading } = supplier;
+function mapStateToProps({ comman, supplier }) {
+    const { loading, vendorTypeList } = supplier;
+    const { countryList } = comman;
 
-    return { loading };
+    return { loading, vendorTypeList, countryList };
 }
 
 
@@ -366,6 +488,9 @@ export default connect(mapStateToProps, {
     getSupplierDataList,
     activeInactiveVendorStatus,
     deleteSupplierAPI,
+    getVendorTypesSelectList,
+    fetchCountryDataAPI,
+    getVendorsByVendorTypeID,
 })(reduxForm({
     form: 'VendorListing',
     onSubmitFail: errors => {

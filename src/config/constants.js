@@ -5,6 +5,7 @@
 //hosting url for api of cost-it-right
 //const BASE_URL = 'http://10.10.1.100:8081/CIRLite';
 const BASE_URL = 'http://10.10.1.100:8090/api/v1';
+export const FILE_URL = 'http://10.10.1.100:8090/';
 
 /** Export API */
 export const API = {
@@ -198,6 +199,7 @@ export const API = {
   getVendorTypesSelectList: `${BASE_URL}/vendor/vendor-types-select-list`,
   getSupplierLists: `${BASE_URL}/configuration/select-list-get-vendor`,
   activeInactiveVendorStatus: `${BASE_URL}/vendor/active-vendor`,
+  getVendorsByVendorTypeID: `${BASE_URL}/vendor/vendor-by-vendor-type-select-list`,
 
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,

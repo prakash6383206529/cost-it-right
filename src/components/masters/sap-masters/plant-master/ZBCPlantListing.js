@@ -103,7 +103,7 @@ class ZBCPlantListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deletePlantAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
+                toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 this.getTableListData();
             }
         });

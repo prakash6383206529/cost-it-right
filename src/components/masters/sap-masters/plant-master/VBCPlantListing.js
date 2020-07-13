@@ -102,7 +102,7 @@ class VBCPlantListing extends Component {
     confirmDeleteItem = (UserId) => {
         this.props.deleteUser(UserId, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
+                toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 this.getTableListData();
             }
         });

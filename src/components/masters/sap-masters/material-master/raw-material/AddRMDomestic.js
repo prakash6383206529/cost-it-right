@@ -26,9 +26,10 @@ import AddGrade from './AddGrade';
 import AddCategory from './AddCategory';
 import AddUOM from '../../uom-master/AddUOM';
 import AddVendorDrawer from '../../supplier-master/AddVendorDrawer';
-import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
+import { FILE_URL } from '../../../../../config/constants';
 const selector = formValueSelector('AddRMDomestic');
 
 class AddRMDomestic extends Component {
@@ -66,6 +67,8 @@ class AddRMDomestic extends Component {
             isOpenCategory: false,
             isOpenVendor: false,
             isOpenUOM: false,
+
+            initialFiles: [],
 
         }
     }
@@ -298,6 +301,26 @@ class AddRMDomestic extends Component {
                         const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
                         const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
                         const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value == Data.UOM)
+                        let tempArr = [];
+                        if (Data && Data.FileList) {
+                            Data.FileList.map(item => {
+                                const fileName = item.FileName;
+                                //const fileURL = item.FileURL;
+                                const fileURL = `${FILE_URL}Upload/Attachement/RawMaterial/${fileName}`;
+                                fetch(fileURL).then(res => {
+                                    res.arrayBuffer().then(buf => {
+                                        const file = new File([buf], fileName, { type: 'image/jpeg' })
+                                        tempArr.push(file)
+                                        //console.log('file >>>>', file)
+                                    })
+                                })
+                                setTimeout(() => {
+                                    this.setState({ initialFiles: tempArr })
+                                }, 2000)
+                                console.log('URL', fileURL)
+                            })
+
+                        }
 
                         this.setState({
                             isEditFlag: true,
@@ -544,7 +567,7 @@ class AddRMDomestic extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
-        //console.log('body', file, meta)
+        //console.log('getUploadParams', file, meta)
         return { url: 'https://httpbin.org/post', }
     }
 
@@ -554,26 +577,23 @@ class AddRMDomestic extends Component {
         //console.log('handleChangeStatus', status, meta, file)
 
         if (status == 'removed') {
-            // const { files } = this.state;
-            // const id = meta.id;
-            // let tempArr = files.filter(item => item.id != id)
-            // //console.log('tempArr', tempArr)
+            const { files } = this.state;
+            const removedFileName = meta.name;
+            let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
             console.log('remove >>>>', status, meta, file)
-            // this.setState({ files: tempArr })
+            this.setState({ files: tempArr })
         }
 
         if (status == 'done') {
 
             let data = new FormData()
             data.append('file', file)
-            console.log('before >>>', data)
-            const { files } = this.state;
-            this.setState({ files: file })
-            console.log('before >>>', data)
-
             this.props.fileUploadRMDomestic(data, (res) => {
                 let Data = res.data[0]
                 console.log('after success >>>', Data)
+                const { files } = this.state;
+                files.push(Data)
+                this.setState({ files: files })
             })
 
         }
@@ -589,6 +609,15 @@ class AddRMDomestic extends Component {
         allFiles.forEach(f => f.remove())
     }
 
+    Preview = ({ meta }) => {
+        const { name, percent, status } = meta
+        return (
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {name}, {Math.round(percent)}%, {status}
+            </span>
+        )
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -596,7 +625,7 @@ class AddRMDomestic extends Component {
     onSubmit = (values) => {
         const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName,
             selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, remarks,
-            RawMaterialID, isEditFlag, } = this.state;
+            RawMaterialID, isEditFlag, files, } = this.state;
         const { reset } = this.props;
 
         let plantArray = [];
@@ -653,17 +682,9 @@ class AddRMDomestic extends Component {
                 LoggedInUserId: loggedInUserId(),
                 Plant: IsVendor == false ? plantArray : [],
                 VendorPlant: IsVendor == false ? [] : vendorPlantArray,
-                Attachements: [],
+                Attachements: files,
             }
 
-            // let data = new FormData()
-            // data.append('file', this.state.files)
-            // console.log('file upload >>>', data)
-            // this.props.fileUploadRMDomestic(data, (res) => {
-            //     console.log('file upload >>>', res)
-            // })
-
-            //console.log('formData >>>', formData)
             this.props.createRMDomestic(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
@@ -1050,8 +1071,10 @@ class AddRMDomestic extends Component {
                                                     <Dropzone
                                                         getUploadParams={this.getUploadParams}
                                                         onChangeStatus={this.handleChangeStatus}
+                                                        //PreviewComponent={this.Preview}
                                                         //onSubmit={this.handleSubmit}
                                                         accept="image/jpeg,image/png,xls,doc,pdf"
+                                                        initialFiles={this.state.initialFiles}
                                                         maxFiles={3}
                                                         maxSizeBytes={2000000}
                                                         inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}

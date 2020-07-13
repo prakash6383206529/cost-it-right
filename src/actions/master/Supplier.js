@@ -59,9 +59,10 @@ export function createSupplierAPI(data, callback) {
  * @method getSupplierDataList
  * @description get Supplier's DataList 
  */
-export function getSupplierDataList(callback) {
+export function getSupplierDataList(filterData, callback) {
     return (dispatch) => {
-        const request = axios.get(API.getAllSupplierAPI, headers);
+        const QueryParams = `vendor_type=${filterData.vendor_type}&vendor_name=${filterData.vendor_name}&country=${filterData.country}`
+        const request = axios.get(`${API.getAllSupplierAPI}?${QueryParams}`, headers);
         request.then((response) => {
             dispatch({
                 type: GET_SUPPLIER_DATALIST_SUCCESS,
@@ -200,5 +201,26 @@ export function activeInactiveVendorStatus(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+
+/**
+ * @method getVendorsByVendorTypeID
+ * @description get one labour based on id
+ */
+export function getVendorsByVendorTypeID(VendorID, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getVendorsByVendorTypeID}/${VendorID}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+
     };
 }
