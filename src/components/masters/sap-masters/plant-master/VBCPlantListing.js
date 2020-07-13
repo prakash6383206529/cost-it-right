@@ -342,9 +342,9 @@ class VBCPlantListing extends Component {
                                     <Field
                                         name="CountryId"
                                         type="text"
-                                        label="Country"
+                                        label=""
                                         component={searchableSelect}
-                                        placeholder={'Select Country'}
+                                        placeholder={'Country'}
                                         options={this.selectType('country')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
@@ -357,9 +357,9 @@ class VBCPlantListing extends Component {
                                     <Field
                                         name="StateId"
                                         type="text"
-                                        label="State"
+                                        label=""
                                         component={searchableSelect}
-                                        placeholder={'Select State'}
+                                        placeholder={'State'}
                                         options={this.selectType('state')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
@@ -372,9 +372,9 @@ class VBCPlantListing extends Component {
                                     <Field
                                         name="CityId"
                                         type="text"
-                                        label="City"
+                                        label=""
                                         component={searchableSelect}
-                                        placeholder={'Select City'}
+                                        placeholder={'City'}
                                         options={this.selectType('city')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}

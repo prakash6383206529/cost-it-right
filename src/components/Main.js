@@ -120,7 +120,7 @@ class Main extends Component {
           {isLogin && !this.state.visibelPageNotFound && <Breadcrumb />}
           {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} />}
 
-          <div className="content-page">
+          <div className={isLogin ? 'content-page' : ''}>
             <div className=" middleContainer">
               <Switch>
                 {/* <Route exact path="/" component={Homepage} /> */}
