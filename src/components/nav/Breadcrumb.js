@@ -10,7 +10,7 @@ function Breadcrumb() {
 					<div className="bread-inner">
 						<ul className="bread-list d-inline-flex">
 							<li><a href="/">Home</a></li>
-							<li><a href="index.html">User</a></li>
+							<li><a href="/user">User</a></li>
 							<li className="active"><a href="#">User Management</a></li>
 						</ul>
 					</div>

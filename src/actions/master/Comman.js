@@ -43,6 +43,8 @@ import {
     GET_DEPRECIATION_SELECTLIST_SUCCESS,
     GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS,
     GET_PLANTS_BY_SUPPLIER_AND_CITY,
+    GET_SUPPLIER_SELECTLIST_SUCCESS,
+    GET_CURRENCY_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -63,12 +65,12 @@ export function fetchMasterDataAPI() {
         const API2 = axios.get(API.getMaterialType, headers);
         const API3 = axios.get(API.getPart, headers);
         const API4 = axios.get(API.getPlant, headers);
-        const API5 = axios.get(API.getSupplier, headers);
-        const API6 = axios.get(API.getSupplierCity, headers);
-        const API7 = axios.get(API.getTechnology, headers);
-        const API8 = axios.get(API.getCategoryType, headers);
-        const API9 = axios.get(API.getSupplierCity, headers)
-        Promise.all([API1, API2, API3, API4, API5, API6, API7, API8, API9])
+        //const API5 = axios.get(API.getSupplier, headers);
+        const API5 = axios.get(API.getSupplierCity, headers);
+        const API6 = axios.get(API.getTechnology, headers);
+        const API7 = axios.get(API.getCategoryType, headers);
+        const API8 = axios.get(API.getSupplierCity, headers)
+        Promise.all([API1, API2, API3, API4, API5, API6, API7, API8])
             .then((response) => {
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
@@ -92,21 +94,21 @@ export function fetchMasterDataAPI() {
                     type: GET_SUPPLIER_SUCCESS,
                     payload: response[4].data.SelectList,
                 });
+                // dispatch({
+                //     type: GET_SUPPLIER_CITY_SUCCESS,
+                //     payload: response[5].data.SelectList,
+                // });
                 dispatch({
-                    type: GET_SUPPLIER_CITY_SUCCESS,
+                    type: GET_TECHNOLOGY_SUCCESS,
                     payload: response[5].data.SelectList,
                 });
                 dispatch({
-                    type: GET_TECHNOLOGY_SUCCESS,
+                    type: GET_CATEGORY_TYPE_SUCCESS,
                     payload: response[6].data.SelectList,
                 });
                 dispatch({
-                    type: GET_CATEGORY_TYPE_SUCCESS,
-                    payload: response[7].data.SelectList,
-                });
-                dispatch({
                     type: GET_CITY_SUCCESS,
-                    payload: response[8].data.SelectList,
+                    payload: response[7].data.SelectList,
                 });
             }).catch((error) => {
                 dispatch({
@@ -847,22 +849,20 @@ export function fetchCostingHeadsAPI(costingHeads, callback) {
 }
 
 /**
- * @method fetchSupplierDataAPI
- * @description Used to fetch city list
- */
-export function fetchSupplierDataAPI(callback) {
+* @method getSupplierList
+* @description Used to get select list of Vendor's
+*/
+export function getSupplierList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSupplier}`, headers);
+        const request = axios.get(`${API.getSupplierLists}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_SUPPLIER_SUCCESS,
+                    type: GET_SUPPLIER_SELECTLIST_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -914,8 +914,6 @@ export function getPlantBySupplier(supplierId, callback) {
                         payload: response.data.SelectList,
                     });
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
                 dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -1275,5 +1273,29 @@ export function getMachineSelectListByMachineType(MachineClassId, callback) {
             });
             callback();
         }
+    };
+}
+
+
+/**
+* @method getCurrencySelectList
+* @description Used to get select list of Vendor's
+*/
+export function getCurrencySelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCurrencySelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CURRENCY_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            apiErrors(error);
+        });
     };
 }

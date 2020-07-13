@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Button, Table } from 'reactstrap';
-import AddPlant from './AddPlant';
+import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import AddPlant from './AddZBCPlant';
 import { getPlantDataAPI, deletePlantAPI } from '../../../../actions/master/Plant';
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -11,81 +11,36 @@ import { toastr } from 'react-redux-toastr';
 import NoContentFound from '../../../common/NoContentFound';
 import { getMenuByUser } from '../../../../actions/auth/AuthActions';
 import { loggedInUserId } from '../../../../helper/auth';
+import classnames from 'classnames';
+import AddZBCPlant from './AddZBCPlant';
+import AddVBCPlant from './AddVBCPlant';
 
 class PlantMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
-            isEditFlag: false,
-            PlantId: ''
+            activeTab: '1'
         }
     }
 
     componentDidMount() {
         const loginUserId = loggedInUserId();
-        this.props.getPlantDataAPI(res => { });
         if (loginUserId != null) {
             this.props.getMenuByUser(loginUserId, () => { })
         }
     }
-    /**
-     * @method openModel
-     * @description  used to open filter form 
-     */
-    openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
-    }
 
     /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = () => {
-        this.setState({ isOpen: false }, () => {
-            this.props.getPlantDataAPI(res => { });
-        })
-    }
-
-    /**
-    * @method editPartDetails
-    * @description confirm delete part
+    * @method toggle
+    * @description toggling the tabs
     */
-    editRow = (index, Id) => {
-        this.setState({
-            isEditFlag: true,
-            isOpen: true,
-            PlantId: Id,
-        })
-    }
-
-    /**
-    * @method deleteRow
-    * @description confirm delete
-    */
-    deleteRow = (index, Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(index, Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
-        };
-        return toastr.confirm(`Are you sure you want to delete this Plant?`, toastrConfirmOptions);
-    }
-
-    /**
-    * @method confirmDelete
-    * @description confirm delete unit of measurement
-    */
-    confirmDelete = (index, Id) => {
-        this.props.deletePlantAPI(index, Id, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_PLANT_SUCCESS);
-                this.props.getPlantDataAPI(res => { });
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        });
+    toggle = (tab) => {
+        if (this.state.activeTab !== tab) {
+            this.setState({
+                activeTab: tab
+            });
+        }
     }
 
     /**
@@ -94,71 +49,39 @@ class PlantMaster extends Component {
     */
     render() {
         const { isOpen, PlantId, isEditFlag } = this.state;
-        renderAction('', '', '')
         return (
-            <Container className="top-margin">
-                {this.props.loading && <Loader />}
-                <Row>
-                    <Col>
-                        <h3>{`${CONSTANT.PLANT} ${CONSTANT.MASTER}`}</h3>
-                    </Col>
-                    <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.PLANT} `}</Button>
-                    </Col>
-                </Row>
-                <hr />
-                <Row>
-                    <Col>
-                        <Table className="table table-striped" size={'sm'} bordered>
-                            {this.props.plantDetail && this.props.plantDetail.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                        <th>{`${CONSTANT.PLANT} ${CONSTANT.TITLE}`}</th>
-                                        <th>{`Unit ${CONSTANT.NUMBER}`}</th>
-                                        <th>{`${CONSTANT.ADDRESS}`}</th>
-                                        <th>{`${CONSTANT.CITY}`}</th>
-                                        <th>{`Status`}</th>
-                                        <th>{`Created Date`}</th>
-                                        <th>{``}</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.plantDetail && this.props.plantDetail.length > 0 &&
-                                    this.props.plantDetail.map((item, index) => {
-                                        const address1 = item.AddressLine1 != 'NA' ? `${item.AddressLine1}, ` : '';
-                                        const address2 = item.AddressLine2 != 'NA' ? `${item.AddressLine2}, ` : '';
-                                        const ZipCode = item.ZipCode != 0 ? item.ZipCode : '';
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.PlantName}</td>
-                                                <td>{item.PlantTitle}</td>
-                                                <td>{item.UnitNumber}</td>
-                                                <td>{`${address1} ${address2} ${ZipCode}`}</td>
-                                                <td>{item.CityName}</td>
-                                                <td>{item && item.IsActive ? 'Active' : 'Inactive'}</td>
-                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editRow(index, item.PlantId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteRow(index, item.PlantId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.plantDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>
-                {isOpen && (
-                    <AddPlant
-                        isOpen={isOpen}
-                        onCancel={this.onCancel}
-                        PlantId={PlantId}
-                        isEditFlag={isEditFlag}
-                    />
-                )}
-            </Container >
+            <>
+                <Container className="user-page p-0">
+                    {/* {this.props.loading && <Loader/>} */}
+                    <div>
+                        <h1>Plant Master</h1>
+                        <Nav tabs className="subtabs">
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                    ZBC
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                    VBC
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
+                        <TabContent activeTab={this.state.activeTab}>
+                            {this.state.activeTab === '1' &&
+                                <TabPane tabId="1">
+                                    <AddZBCPlant
+                                        toggle={this.toggle} />
+                                </TabPane>}
+                            {this.state.activeTab === '2' &&
+                                <TabPane tabId="2">
+                                    <AddVBCPlant
+                                        toggle={this.toggle} />
+                                </TabPane>}
+                        </TabContent>
+                    </div>
+                </Container >
+            </ >
         );
     }
 }

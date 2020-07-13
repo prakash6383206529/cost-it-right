@@ -3,22 +3,40 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
-import { renderText, renderSelectField, renderEmailInputField, renderMultiSelectField } from "../../../layout/FormInputs";
-import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType } from '../../../../actions/master/Supplier';
-import { fetchMasterDataAPI } from '../../../../actions/master/Comman';
+import {
+    renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
+    searchableSelect
+} from "../../../layout/FormInputs";
+import {
+    createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType,
+    getVendorTypesSelectList,
+} from '../../../../actions/master/Supplier';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
+import VendorListing from './VendorListing';
+import $ from 'jquery';
 
 class AddSupplier extends Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         this.state = {
-            supplierType: '',
-            CityId: '',
+            selectedVendorType: [],
             selectedPlants: [],
-            plantsArray: []
+            plantsArray: [],
+
+            country: [],
+            state: [],
+            city: [],
+
+            isOpenFuel: false,
+            isOpenPlant: false,
+
+            isShowForm: false,
+            VendorId: '',
         }
     }
 
@@ -27,8 +45,8 @@ class AddSupplier extends Component {
     * @description called before render the component
     */
     componentWillMount() {
-        this.props.fetchMasterDataAPI(res => { });
-        this.props.getRadioButtonSupplierType(() => { })
+        this.props.getVendorTypesSelectList()
+        this.props.fetchCountryDataAPI(() => { })
     }
 
     /**
@@ -36,101 +54,104 @@ class AddSupplier extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        const { supplierId, isEditFlag, radioSupplierTypeList } = this.props;
-
-        if (isEditFlag) {
-            this.setState({ isEditFlag }, () => {
-                this.props.getSupplierByIdAPI(supplierId, true, res => {
-                    if (res && res.data && res.data.Data) {
-                        let Data = res.data.Data;
-                        let plantArray = [];
-                        const AssociatedPlants = Data.AssociatedPlants;
-                        AssociatedPlants.map((Value, index) => {
-                            const plantObj = AssociatedPlants.find(item => item.PlantId === Value.PlantId);
-                            return plantArray.push({ Text: plantObj.PlantName, Value: plantObj.PlantId });
-                        });
-                        this.setState({
-                            supplierType: Data.SupplierTypeId,
-                            selectedPlants: plantArray,
-                            CityId: Data.CityId,
-                        });
-                    }
-                });
-            });
-        } else {
-            this.props.getSupplierByIdAPI('', false, res => { })
-        }
+        this.props.getSupplierByIdAPI('', false, () => { })
     }
+
     /**
-    * @method toggleModel
-    * @description Used to cancel modal
+    * @method handlePlantSelection
+    * @description called
     */
-    toggleModel = () => {
-        this.props.onCancel();
-    }
-
-    /**
-   * @method handlePlantSelection
-   * @description called
-   */
     handlePlantSelection = e => {
-        this.setState({
-            selectedPlants: e
-        });
+        this.setState({ selectedPlants: e });
     };
 
     /**
-    * @method handleCityChange
-    * @description  used to handle city selection
+    * @method handleVendorType
+    * @description called
     */
-    handleCityChange = (e) => {
-        this.setState({
-            CityId: e.target.value
-        });
+    handleVendorType = (e) => {
+        this.setState({ selectedVendorType: e });
+    };
+
+    /**
+    * @method countryHandler
+    * @description Used to handle country
+    */
+    countryHandler = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ country: newValue, state: [], city: [] }, () => {
+                const { country } = this.state;
+                this.props.fetchStateDataAPI(country.value, () => { })
+            });
+        } else {
+            this.setState({ country: [], state: [], city: [] })
+        }
+    };
+
+    /**
+    * @method stateHandler
+    * @description Used to handle state
+    */
+    stateHandler = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ state: newValue, city: [] }, () => {
+                const { state } = this.state;
+                this.props.fetchCityDataAPI(state.value, () => { })
+            });
+        } else {
+            this.setState({ state: [], city: [] });
+        }
+
+    };
+
+    /**
+    * @method cityHandler
+    * @description Used to handle city
+    */
+    cityHandler = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ city: newValue });
+        } else {
+            this.setState({ city: [] });
+        }
+    };
+
+    fuelToggler = () => {
+        this.setState({ isOpenFuel: true })
     }
 
-    // supplierType = (e) => {
-    //     this.setState({
-    //         supplierType: e.target.value
-    //     });
-    // }
-
-    handleSupplierType = (e) => {
-        this.setState({
-            supplierType: e.target.value
-        });
+    plantToggler = () => {
+        this.setState({ isOpenPlant: true })
     }
 
     /**
-    * @method selectType
+    * @method renderListing
     * @description Used show listing of unit of measurement
     */
-    selectType = (label) => {
-        const { countryList, stateList, cityList, radioSupplierTypeList } = this.props;
+    renderListing = (label) => {
+        const { countryList, stateList, cityList, vendorTypeList } = this.props;
         const temp = [];
         if (label === 'country') {
             countryList && countryList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
         if (label === 'state') {
             stateList && stateList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
         if (label === 'city') {
             cityList && cityList.map(item =>
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             );
             return temp;
         }
-        if (label === 'supplierType') {
-            radioSupplierTypeList && radioSupplierTypeList.map((item, i) => {
-                // if (item.Value != 0) {
+        if (label === 'vendorType') {
+            vendorTypeList && vendorTypeList.map((item, i) => {
                 temp.push({ Text: item.Text, Value: item.Value })
-                //}
             });
             return temp;
         }
@@ -151,75 +172,145 @@ class AddSupplier extends Component {
         return temp;
     }
 
+
+    /**
+    * @method getDetail
+    * @description used to get user detail
+    */
+    getDetail = (data) => {
+        if (data && data.isEditFlag) {
+            this.setState({
+                isLoader: true,
+                isEditFlag: true,
+                isShowForm: true,
+                VendorId: data.ID,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getSupplierByIdAPI(data.ID, data.isEditFlag, (res) => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    let tempArr = [];
+                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
+                    this.props.fetchCityDataAPI(Data.StateId, () => { })
+
+                    Data && Data.VendorTypes.map((item) => {
+                        tempArr.push({ Text: item.VendorType, Value: item.VendorTypeId })
+                    })
+
+                    setTimeout(() => {
+                        const { countryList, stateList, cityList } = this.props;
+
+                        const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
+                        const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
+
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            selectedVendorType: tempArr,
+                            country: { label: CountryObj.Text, value: CountryObj.Value },
+                            state: { label: StateObj.Text, value: StateObj.Value },
+                            city: { label: CityObj.Text, value: CityObj.Value },
+                        })
+                    }, 500)
+
+                }
+            })
+        }
+    }
+
+    formToggle = () => {
+        this.setState({
+            isShowForm: !this.state.isShowForm
+        })
+    }
+
+    clearForm = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            selectedVendorType: [],
+            selectedPlants: [],
+            plantsArray: [],
+            country: [],
+            state: [],
+            city: [],
+            isShowForm: false,
+            isEditFlag: false,
+        })
+    }
+
+    /**
+    * @method cancel
+    * @description used to Reset form
+    */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.clearForm();
+        this.props.getSupplierByIdAPI('', false, () => { })
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedPlants, supplierType, CityId } = this.state;
-        const { radioSupplierTypeList } = this.props;
-        let loginUserId = loggedInUserId();
-        const tempObj = radioSupplierTypeList.find(item => item.Value == supplierType)
+        const { selectedVendorType, selectedPlants, plantsArray, country, state, city, VendorId } = this.state;
+        const { reset } = this.props;
 
-        let plantArray = [];
-        selectedPlants.map((item, i) => {
-            return plantArray.push({ PlantId: item.Value, PlantName: item.Text });
-        });
+        let vendorArray = [];
+        selectedVendorType && selectedVendorType.map((item) => {
+            vendorArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
+            return vendorArray;
+        })
+
         /** Update existing detail of supplier master **/
-        if (this.props.isEditFlag) {
-            const { supplierId } = this.props;
+        if (this.state.isEditFlag) {
             let formData = {
-                SupplierName: values.SupplierName,
-                SupplierCode: values.SupplierCode,
-                SupplierEmail: values.SupplierEmail,
-                Description: values.Description,
-                CityId: CityId,
-                SupplierType: tempObj.Text,
-                SupplierTypeId: tempObj.Value,
-                SelectedPlants: plantArray,
-                AssociatedPlants: plantArray,
-                SupplierId: supplierId,
-                IsActive: true,
-                UserId: loginUserId,
+                VendorId: VendorId,
+                VendorCode: values.VendorCode,
+                Email: values.Email,
+                AddressId: '',
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
+                LoggedInUserId: loggedInUserId(),
+                VendorTypes: vendorArray,
+                VendorPlants: [],
             }
             this.setState({ isSubmitted: true });
             this.props.updateSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-                    this.toggleModel();
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
+                    this.clearForm()
+                    this.child.getUpdatedData();
                 }
             });
         } else {/** Add new detail for creating supplier master **/
             let formData = {
-                SupplierName: values.SupplierName,
-                SupplierCode: values.SupplierCode,
-                SupplierEmail: values.SupplierEmail,
-                Description: values.Description,
-                CityId: CityId,
-                SupplierType: tempObj.Text,
-                SupplierTypeId: tempObj.Value,
-                SelectedPlants: plantArray,
+                VendorName: values.VendorName,
+                VendorCode: values.VendorCode,
+                Email: values.Email,
+                MobileNumber: values.MobileNumber,
                 IsActive: true,
-                UserId: loginUserId,
+                LoggedInUserId: loggedInUserId(),
+                VendorTypes: vendorArray,
+                UserId: loggedInUserId(),
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
+                CityId: city.value,
             }
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                    this.toggleModel()
-                } else {
-                    toastr.error(res.data.Message);
+                    this.clearForm();
+                    this.child.getUpdatedData();
                 }
             });
         }
@@ -227,267 +318,290 @@ class AddSupplier extends Component {
     }
 
     /**
-    * @method supplierTypeHandler
-    * @description Used to handle selection of supplier type
-    */
-    // supplierTypeHandler = (value) => {
-    //     this.setState({
-    //         supplierType: value
-    //     })
-    // }
-
-    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, reset } = this.props;
         return (
-            <Container className="top-margin">
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Supplier detail' : 'Add Supplier Detail'}</ModalHeader>
-                    <ModalBody>
-                        <Row>
-                            <Container>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`Supplier Type`}
-                                                name={"SupplierTypeId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                //selection={this.state.cityListing}
-                                                required={true}
-                                                options={this.selectType('supplierType')}
-                                                onChange={(e) => this.handleSupplierType(e)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                        </Col>
-                                        {/* <Col className='form-group'>
-                                            <Label
-                                                className={'zbcwrapper'}
-                                                onChange={() => this.supplierTypeHandler('ZBC')}
-                                                check>
-                                                <Input
-                                                    type="radio"
-                                                    className={'ZBC'}
-                                                    checked={this.state.supplierType == 'ZBC' ? true : false}
-                                                    name="SupplierType"
-                                                    value="ZBC" />{' '}
-                                                ZBC
-                                            </Label>
-                                            {' '}
-                                            <Label
-                                                className={'vbcwrapper'}
-                                                onChange={() => this.supplierTypeHandler('VBC')}
-                                                check>
-                                                <Input
-                                                    type="radio"
-                                                    className={'VBC'}
-                                                    checked={this.state.supplierType == 'VBC' ? true : false}
-                                                    name="SupplierType"
-                                                    value="VBC" />{' '}
-                                                VBC
-                                            </Label>
-                                        </Col> */}
-                                    </Row>
-                                    {/* <hr/> */}
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}
-                                                name={"SupplierName"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.SUPPLIER} ${CONSTANT.CODE}`}
-                                                name={"SupplierCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                normalize={upper}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.SUPPLIER} ${CONSTANT.EMAIL}`}
-                                                name={"SupplierEmail"}
-                                                type="email"
-                                                //placeholder={'email@domain.com/co.us'}
-                                                validate={[required, email, minLength7, maxLength70]}
-                                                component={renderEmailInputField}
-                                                required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.SUPPLIER} ${CONSTANT.DESCRIPTION}`}
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-
-
-                                    </Row>
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label="Address 1"
-                                                name={"AddressLine1"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                maxLength={26}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Address 2"
-                                                name={"AddressLine2"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                maxLength={26}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="6" >
-                                            <Row>
-                                                <Col className="Phone phoneNumber" md="8">
-                                                    <Field
-                                                        label="Phone Number"
-                                                        name={"PhoneNumber"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        validate={[required, number]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        maxLength={12}
-                                                        className=" withoutBorder"
-                                                    />
-                                                </Col>
-                                                <Col className="dash phoneNumber col-md-1">
-                                                    {'-'}
-                                                </Col>
-                                                <Col className="Ext phoneNumber" md="3">
-                                                    <Field
-                                                        label="Extension"
-                                                        name={"Extension"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        validate={[required]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        maxLength={5}
-                                                        className=" withoutBorder"
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="ZipCode"
-                                                name={"ZipCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                maxLength={26}
-                                                className=" withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-
-                                        <Col md="6">
-                                            <Field
-                                                label={`${CONSTANT.CITY}`}
-                                                name={"CityId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                //selection={this.state.cityListing}
-                                                required={true}
-                                                options={this.selectType('city')}
-                                                onChange={(e) => this.handleCityChange(e)}
-                                                optionValue={'Value'}
-                                                optionLabel={'Text'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Plants"
-                                                name="SelectedPlants"
-                                                placeholder="--Select Plant--"
-                                                selection={this.state.selectedPlants}
-                                                options={this.renderSelectPlantList()}
-                                                selectionChanged={this.handlePlantSelection}
-                                                optionValue={option => option.Value}
-                                                optionLabel={option => option.Text}
-                                                component={renderMultiSelectField}
-                                                mendatory={false}
-                                                className="withoutBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-center">
-                                            <button type="submit" className="btn dark-pinkbtn" >
-                                                {isEditFlag ? 'Update' : 'Add'}
-                                            </button>
-                                            {!isEditFlag &&
-                                                <button type={'button'} className="btn btn-secondary" onClick={reset} >
-                                                    {'Reset'}
-                                                </button>}
+            <div>
+                {/* {isLoader && <Loader />} */}
+                <div className="login-container signup-form">
+                    <div className="row">
+                        {this.state.isShowForm &&
+                            <div className="col-md-12">
+                                <div className="shadow-lgg login-formg pt-30">
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-heading mb-0">
+                                                <h2>{this.state.isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h2>
+                                            </div>
                                         </div>
-                                    </Row>
-                                </form>
-                            </Container>
-                        </Row>
-                    </ModalBody>
-                </Modal>
-            </Container >
+                                    </div>
+                                    <form
+                                        noValidate
+                                        className="form"
+                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                    >
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    label="Vendor Type"
+                                                    name="VendorType"
+                                                    placeholder="--Select Vendor--"
+                                                    selection={(this.state.selectedVendorType == null || this.state.selectedVendorType.length == 0) ? [] : this.state.selectedVendorType}
+                                                    options={this.renderListing('vendorType')}
+                                                    selectionChanged={this.handleVendorType}
+                                                    optionValue={option => option.Value}
+                                                    optionLabel={option => option.Text}
+                                                    component={renderMultiSelectField}
+                                                    mendatory={true}
+                                                    className="multiselect-with-border"
+                                                    disabled={this.state.isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Vendor Name`}
+                                                    name={"VendorName"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                    disabled={this.state.isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Vendor Code`}
+                                                    name={"VendorCode"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    normalize={upper}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                    disabled={this.state.isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={`Email Id`}
+                                                    name={"Email"}
+                                                    type="email"
+                                                    //placeholder={'email@domain.com/co.us'}
+                                                    validate={[required, email, minLength7, maxLength70]}
+                                                    component={renderEmailInputField}
+                                                    required={true}
+                                                    customClassName={'withBorderEmail'}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col md="6">
+                                                <Row>
+                                                    <Col md="9">
+                                                        <Field
+                                                            label="Phone Number"
+                                                            name={"PhoneNumber"}
+                                                            type="text"
+                                                            placeholder={''}
+                                                            validate={[number]}
+                                                            component={renderText}
+                                                            //required={true}
+                                                            maxLength={12}
+                                                            customClassName={'withBorder'}
+                                                        />
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label="Extension"
+                                                            name={"Extension"}
+                                                            type="text"
+                                                            placeholder={'Ext'}
+                                                            validate={[number]}
+                                                            component={renderText}
+                                                            //required={true}
+                                                            maxLength={5}
+                                                            customClassName={'withBorder w100'}
+                                                        />
+                                                    </Col>
+                                                </Row>
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    name="Mobile"
+                                                    label="MobileNumber"
+                                                    type="text"
+                                                    placeholder={''}
+                                                    component={renderText}
+                                                    isDisabled={false}
+                                                    validate={[required, number, minLength7]}
+                                                    required={true}
+                                                    maxLength={70}
+                                                    customClassName={'withBorder'}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    name="CountryId"
+                                                    type="text"
+                                                    label="Country"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select Country'}
+                                                    options={this.renderListing('country')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.countryHandler}
+                                                    valueDescription={this.state.country}
+                                                    disabled={this.state.isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    name="StateId"
+                                                    type="text"
+                                                    label="State"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select State'}
+                                                    options={this.renderListing('state')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.stateHandler}
+                                                    valueDescription={this.state.state}
+                                                    disabled={this.state.isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col md="6">
+                                                <Field
+                                                    name="CityId"
+                                                    type="text"
+                                                    label="City"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select city'}
+                                                    options={this.renderListing('city')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.cityHandler}
+                                                    valueDescription={this.state.city}
+                                                    disabled={this.state.isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label="Address 1"
+                                                    name={"AddressLine1"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    maxLength={26}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+
+                                        </Row>
+                                        <Row>
+                                            <Col md="6" >
+                                                <Field
+                                                    label="Address 2"
+                                                    name={"AddressLine2"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    //validate={[required]}
+                                                    component={renderText}
+                                                    //required={true}
+                                                    maxLength={26}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label="ZipCode"
+                                                    name={"ZipCode"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required, number]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    maxLength={26}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                        </Row>
+                                        {/* <Row>
+                                            <Col md="5">
+                                                <Field
+                                                    label="Vendor Plant"
+                                                    name="SelectedPlants"
+                                                    placeholder="--Select Plant--"
+                                                    selection={this.state.selectedPlants}
+                                                    options={this.renderSelectPlantList()}
+                                                    selectionChanged={this.handlePlantSelection}
+                                                    optionValue={option => option.Value}
+                                                    optionLabel={option => option.Text}
+                                                    component={renderMultiSelectField}
+                                                    mendatory={false}
+                                                    className="multiselect-with-border"
+                                                />
+                                            </Col>
+                                            <Col md="1">
+                                                <div
+                                                    onClick={this.plantToggler}
+                                                    className={'plus-icon mt30 mr15 right'}>
+                                                </div>
+                                            </Col>
+                                        </Row> */}
+
+                                        <Row className="sf-btn-footer no-gutters justify-content-between">
+                                            <div className="col-md-12">
+                                                <div className="text-center ">
+                                                    <input
+                                                        //disabled={pristine || submitting}
+                                                        onClick={this.cancel}
+                                                        type="button"
+                                                        value="Cancel"
+                                                        className="reset mr15 cancel-btn"
+                                                    />
+                                                    <input
+                                                        //disabled={isSubmitted ? true : false}
+                                                        type="submit"
+                                                        value={this.state.isEditFlag ? 'Update' : 'Save'}
+                                                        className="submit-button mr5 save-btn"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </Row>
+                                    </form>
+                                </div>
+                            </div>}
+                    </div>
+                </div>
+                <VendorListing
+                    onRef={ref => (this.child = ref)}
+                    getDetail={this.getDetail}
+                    formToggle={this.formToggle}
+                    isShowForm={this.state.isShowForm}
+                />
+            </div>
         );
     }
 }
@@ -498,26 +612,23 @@ class AddSupplier extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, supplier }) {
-    const { cityList, plantList } = comman;
-    const { supplierData, radioSupplierTypeList } = supplier;
+    const { countryList, stateList, cityList, plantList } = comman;
+    const { supplierData, vendorTypeList } = supplier;
     let initialValues = {};
     if (supplierData && supplierData !== undefined) {
         initialValues = {
-            SupplierName: supplierData.SupplierName,
-            SupplierCode: supplierData.SupplierCode,
-            SupplierEmail: supplierData.SupplierEmail,
-            Description: supplierData.Description,
-            CityId: supplierData.CityId,
-            SupplierType: supplierData.SupplierType,
-            SupplierTypeId: supplierData.SupplierTypeId,
+            VendorName: supplierData.VendorName,
+            VendorCode: supplierData.VendorCode,
+            Email: supplierData.Email,
             AddressLine1: supplierData.AddressLine1,
             AddressLine2: supplierData.AddressLine2,
             ZipCode: supplierData.ZipCode,
             PhoneNumber: supplierData.PhoneNumber,
+            MobileNumber: supplierData.MobileNumber,
             Extension: supplierData.Extension,
         }
     }
-    return { cityList, plantList, initialValues, supplierData, radioSupplierTypeList }
+    return { countryList, stateList, cityList, plantList, initialValues, supplierData, vendorTypeList }
 }
 
 /**
@@ -530,8 +641,11 @@ export default connect(mapStateToProps, {
     createSupplierAPI,
     updateSupplierAPI,
     getSupplierByIdAPI,
-    fetchMasterDataAPI,
     getRadioButtonSupplierType,
+    fetchCountryDataAPI,
+    fetchStateDataAPI,
+    fetchCityDataAPI,
+    getVendorTypesSelectList,
 })(reduxForm({
     form: 'AddSupplier',
     enableReinitialize: true,

@@ -412,7 +412,7 @@ class UsersListing extends Component {
 									{!this.props.isShowForm &&
 										<button
 											type="button"
-											className={'user-btn btn-primary-add'}
+											className={'user-btn'}
 											onClick={this.formToggle}>
 											<div className={'plus'}></div>ADD USER</button>
 									}
@@ -435,12 +435,13 @@ class UsersListing extends Component {
 					trClassName={'userlisting-row'}
 					tableHeaderClass='my-custom-header'
 					pagination>
-					<TableHeaderColumn dataField="Sr. No." csvHeader='Full-Name' dataFormat={this.indexFormatter} columnTitle="Put your old price here">Sr. No.</TableHeaderColumn>
+					<TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
-					<TableHeaderColumn dataField="UserName" dataSort={true}>User name</TableHeaderColumn>
-					<TableHeaderColumn dataField="EmailAddress" dataSort={true}>Email Id</TableHeaderColumn>
-					<TableHeaderColumn dataField="Mobile" dataSort={false}>Mobile No.</TableHeaderColumn>
+					<TableHeaderColumn dataField="UserName" width={'150'} dataSort={true}>User name</TableHeaderColumn>
+					<TableHeaderColumn dataField="EmailAddress" columnTitle width={'150'} dataSort={true}>Email Id</TableHeaderColumn>
+					<TableHeaderColumn dataField="Mobile" width={'140'} dataSort={false}>Mobile No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="PhoneNumber" dataSort={false}>Phone No.</TableHeaderColumn>
+
 					<TableHeaderColumn dataField='DepartmentName' export hidden>Product Name</TableHeaderColumn>
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
                                 filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}

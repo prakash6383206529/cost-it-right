@@ -3,6 +3,7 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
+    API_SUCCESS,
     CREATE_PLANT_SUCCESS,
     CREATE_PLANT_FAILURE,
     GET_PLANT_SUCCESS,
@@ -56,15 +57,16 @@ export function createPlantAPI(data, callback) {
  * @method getPlantDataAPI
  * @description get process list
  */
-export function getPlantDataAPI() {
+export function getPlantDataAPI(isVe, callback) {
+    console.log('isVendor', isVe)
     return (dispatch) => {
-        const request = axios.get(API.getAllPlantAPI, headers);
+        const request = axios.get(`${API.getAllPlantAPI}?isVendor=${isVe}`, headers);
         request.then((response) => {
             dispatch({
                 type: GET_PLANT_SUCCESS,
                 payload: response.data.DataList,
             });
-
+            callback(response);
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE
@@ -78,7 +80,7 @@ export function getPlantDataAPI() {
  * @method deleteFuelDetailsAPI
  * @description delete UOM 
  */
-export function deletePlantAPI(index, Id, callback) {
+export function deletePlantAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deletePlantAPI}/${Id}`, headers)
@@ -139,5 +141,41 @@ export function updatePlantAPI(plantId, request, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method activeInactiveStatus
+ * @description active Inactive Status
+ */
+export function activeInactiveStatus(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.activeInactiveStatus}`, requestData, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getFilteredPlantList
+ * @description get process list
+ */
+export function getFilteredPlantList(filterData, callback) {
+    console.log('filterData', filterData)
+    return (dispatch) => {
+        const qParams = `country_id=${filterData.country}&state_id=${filterData.state}&city_id=${filterData.city}&is_vendor=${filterData.is_vendor}`
+        const request = axios.get(`${API.getFilteredPlantList}?${qParams}`, headers);
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

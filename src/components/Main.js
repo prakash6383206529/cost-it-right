@@ -16,8 +16,8 @@ import PartMaster from './masters/sap-masters/part-master';
 import UOMMaster from './masters/sap-masters/uom-master';
 import CategoryMaster from './masters/sap-masters/category-master';
 import RowMaterialMaster from './masters/sap-masters/material-master/raw-material';
-import PlantMaster from './masters/sap-masters/plant-master';
-import SupplierMaster from './masters/sap-masters/supplier-master';
+import PlantMaster from './masters/sap-masters/plant-master/index';
+import SupplierMaster from './masters/sap-masters/supplier-master/AddSupplier';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
 import OtherOperationMaster from './masters/sap-masters/other-operation';
@@ -27,7 +27,7 @@ import MHRMaster from './masters/sap-masters/mhr-master';
 import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationMaster from './masters/sap-masters/operation';
-import MaterialMaster from './masters/sap-masters/material-master/material';
+import MaterialMaster from './masters/sap-masters/material-master/raw-material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourMaster from './masters/sap-masters/labour-master';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
@@ -52,9 +52,6 @@ import termCondition from "./about/term&condition";
 import privacyandpolicy from "./about/privacyandpolicy";
 import aboutus from "./about/aboutus";
 
-
-
-
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -62,7 +59,6 @@ class Main extends Component {
       visibelPageNotFound: false,
     };
   }
-
 
   /**
    * @method handlePageNotFound
@@ -120,9 +116,11 @@ class Main extends Component {
                 </div>
               </div>
             </div>}
-          {isLogin && <Breadcrumb />}
-          {isLogin && <LeftMenu {...this.props} />}
-          <div className={isLogin ? "content-page" : ""}>
+
+          {isLogin && !this.state.visibelPageNotFound && <Breadcrumb />}
+          {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} />}
+
+          <div className="content-page">
             <div className=" middleContainer">
               <Switch>
                 {/* <Route exact path="/" component={Homepage} /> */}

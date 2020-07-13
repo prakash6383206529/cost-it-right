@@ -9,13 +9,11 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { loggedInUserId } from "../../../../../helper/auth";
-import RMDetail from "./RMDetail";
-import $ from 'jquery';
+import Drawer from '@material-ui/core/Drawer';
 
 class AddMaterialType extends Component {
     constructor(props) {
         super(props);
-        this.child = React.createRef();
         this.state = {
             isEditFlag: false,
             isShowForm: false,
@@ -28,90 +26,61 @@ class AddMaterialType extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        const { MaterialTypeId, isEditFlag } = this.props;
-        // if (isEditFlag) {
-        //     this.props.getMaterialTypeDataAPI(MaterialTypeId, res => { });
-        // } else {
-        //     this.props.getMaterialTypeDataAPI('', res => { });
-        // }
+        const { ID, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getMaterialTypeDataAPI(ID, res => { });
+        } else {
+            this.props.getMaterialTypeDataAPI('', res => { });
+        }
     }
 
     /**
-    * @method toggleModel
-    * @description Used to cancel modal
+    * @method cancel
+    * @description used to Reset form
     */
-    toggleModel = () => {
-        this.props.onCancel('1');
-    }
-
-    /**
-   * @method cancel
-   * @description used to Reset form
-   */
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.setState({
-            isEditFlag: false,
-            isShowForm: false,
-        })
+        this.props.getMaterialTypeDataAPI('', res => { });
+        this.toggleDrawer('')
     }
 
-    /**
-   * @method getDetails
-   * @description used to get details
-   */
-    getDetails = (data) => {
-        if (data && data.isEditFlag) {
-            this.setState({
-                isLoader: true,
-                isShowForm: true,
-                isEditFlag: true,
-                MaterialTypeId: data.ID,
-            })
-            $('html, body').animate({ scrollTop: 0 }, 'slow');
-            this.props.getMaterialTypeDataAPI(data.ID, (res) => {
-                if (res && res.data && res.data.Data) {
-
-
-                }
-            })
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
         }
-    }
+        this.props.closeDrawer('')
+    };
 
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { isEditFlag, MaterialTypeId } = this.state;
-        values.CreatedBy = loggedInUserId();
+        const { reset, ID, isEditFlag } = this.props;
 
         if (isEditFlag) {
-            console.log('this.child', this.child)
             let updateData = {
-                MaterialTypeId: MaterialTypeId,
+                MaterialTypeId: ID,
                 ModifiedBy: loggedInUserId(),
                 CreatedDate: '',
                 MaterialType: values.MaterialType,
-                Description: values.Description,
                 CalculatedDensityValue: values.CalculatedDensityValue,
                 IsActive: true
             }
-            this.props.updateMaterialtypeAPI(updateData, () => {
-                this.child.getUpdatedData();
-                this.props.getMaterialTypeDataAPI('', res => { });
-                this.setState({
-                    isShowForm: false,
-                    isEditFlag: false,
-                })
+            this.props.updateMaterialtypeAPI(updateData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
+                    this.props.getMaterialTypeDataAPI('', res => { });
+                    reset();
+                    this.toggleDrawer('')
+                }
             })
 
         } else {
 
             let formData = {
                 MaterialType: values.MaterialType,
-                Description: '',
                 CalculatedDensityValue: values.CalculatedDensityValue,
                 CreatedBy: loggedInUserId(),
                 IsActive: true
@@ -119,18 +88,9 @@ class AddMaterialType extends Component {
             this.props.createMaterialTypeAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-                    const filterData = {
-                        PageSize: 0,
-                        LastIndex: 0,
-                        TechnologyId: '',
-                        DestinationSupplierId: '',
-                        PlantId: '',
-                    }
-                    this.props.getMaterialDetailAPI(filterData, res => { });
                     this.props.getMaterialTypeDataAPI('', res => { });
-                    this.child.getUpdatedData();
-                } else {
-                    toastr.error(res.data.Message);
+                    reset();
+                    this.toggleDrawer('')
                 }
             });
         }
@@ -145,77 +105,78 @@ class AddMaterialType extends Component {
         const { handleSubmit, isEditFlag } = this.props;
         return (
             <div>
-                <div className="login-container signup-form">
-                    <div className="row">
-                        <div className="col-md-12" >
-                            <button
-                                type="button"
-                                className={'btn btn-primary user-btn mb15'}
-                                onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>Add</button>
-                        </div>
-                        {this.state.isShowForm &&
-                            <div className="col-md-12">
-                                <div className="shadow-lg login-form">
-                                    <form
-                                        noValidate
-                                        className="form"
-                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                    >
-                                        <Row>
-                                            <Col md="6">
-                                                <Field
-                                                    label={`Material`}
-                                                    name={"MaterialType"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>
-                                            <Col md="5">
-                                                <Field
-                                                    label={`Density (g/cm3)`}
-                                                    name={"CalculatedDensityValue"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required, decimalLengthFour]}
-                                                    component={renderNumberInputField}
-                                                    required={true}
-                                                    className=" withoutBorder"
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>
-                                            <Col md="1">
-                                                <label>(kg/m3)</label>
-                                            </Col>
-                                        </Row>
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                    <Container>
+                        <div className={'drawer-wrapper'}>
+                            <form
+                                noValidate
+                                className="form"
+                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                            >
+                                <Row className="drawer-heading">
+                                    <Col>
+                                        <div className={'header-wrapper left'}>
+                                            <h3>{isEditFlag ? 'Update Material' : 'Add Material'}</h3>
+                                        </div>
+                                        <div
+                                            onClick={(e) => this.toggleDrawer(e)}
+                                            className={'close-button right'}>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md="12">
+                                        <Field
+                                            label={`Material`}
+                                            name={"MaterialType"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required]}
+                                            component={renderText}
+                                            required={true}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                        />
+                                    </Col>
+                                    <Col md="12">
+                                        <Field
+                                            label={`Density (g/cm3)`}
+                                            name={"CalculatedDensityValue"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required, decimalLengthFour]}
+                                            component={renderNumberInputField}
+                                            required={true}
+                                            className=" withoutBorder"
+                                            customClassName=" withBorder"
+                                        />
+                                    </Col>
+                                </Row>
 
-                                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-sm-3 text-center">
-                                                <button
-                                                    type="submit"
-                                                    onClick={this.cancel}
-                                                    className="btn btn-danger mr15" >
-                                                    {'CANCEL'}
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="btn dark-pinkbtn" >
-                                                    {isEditFlag ? 'UPDATE' : 'SAVE'}
-                                                </button>
-                                            </div>
-                                        </Row>
-                                    </form>
-                                </div>
-                            </div>}
-                    </div>
-                </div>
-                <RMDetail
-                    onRef={ref => (this.child = ref)}
-                    getDetails={this.getDetails} />
+                                <Row className="sf-btn-footer no-gutters justify-content-between">
+                                    <div className="col-md-12">
+                                        <div className="text-center ">
+                                            <input
+                                                //disabled={pristine || submitting}
+                                                onClick={this.cancel}
+                                                type="button"
+                                                value="Cancel"
+                                                className="reset mr15 cancel-btn"
+                                            />
+                                            <input
+                                                //disabled={isSubmitted ? true : false}
+                                                type="submit"
+                                                value={isEditFlag ? 'Update' : 'Save'}
+                                                className="submit-button mr5 save-btn"
+                                            />
+                                        </div>
+                                    </div>
+                                </Row>
+                            </form>
+                        </div>
+
+                    </Container>
+                </Drawer>
             </div>
         );
     }
@@ -233,7 +194,6 @@ function mapStateToProps({ material }) {
         initialValues = {
             MaterialType: materialTypeData.MaterialType,
             CalculatedDensityValue: materialTypeData.Density,
-            Description: materialTypeData.Description,
         }
     }
     return { initialValues, materialTypeData }

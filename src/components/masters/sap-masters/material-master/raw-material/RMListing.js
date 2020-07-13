@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Table, Button } from 'reactstrap';
+import AddMaterialType from './AddMaterialType';
 import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -10,12 +11,13 @@ import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-class RMDetail extends Component {
+class RMListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            ID: '',
         }
     }
 
@@ -25,12 +27,6 @@ class RMDetail extends Component {
    */
     componentDidMount() {
         this.getListData();
-        this.props.onRef(this)
-    }
-
-    // Get updated user list after any action performed.
-    getUpdatedData = () => {
-        this.getListData()
     }
 
     /**
@@ -42,15 +38,25 @@ class RMDetail extends Component {
     }
 
     /**
+    * @method closeDrawer
+    * @description  used to cancel filter form
+    */
+    closeDrawer = (e = '') => {
+        this.setState({ isOpen: false }, () => {
+            this.getListData()
+        })
+    }
+
+    /**
     * @method editItemDetails
     * @description edit Raw Material
     */
     editItemDetails = (Id) => {
-        let requestData = {
+        this.setState({
             isEditFlag: true,
+            isOpen: true,
             ID: Id,
-        }
-        this.props.getDetails(requestData);
+        })
     }
 
     /**
@@ -75,9 +81,20 @@ class RMDetail extends Component {
         this.props.deleteMaterialTypeAPI(ID, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
-                this.props.getMaterialTypeDataListAPI(res => { });
+                this.getListData();
             }
         });
+    }
+
+    /**
+   * @method openModel
+   * @description  used to open filter form 
+   */
+    openModel = () => {
+        this.setState({
+            isOpen: true,
+            isEditFlag: false
+        })
     }
 
     /**
@@ -127,7 +144,7 @@ class RMDetail extends Component {
     * @description Renders the component
     */
     render() {
-
+        const { isOpen, isEditFlag, ID } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -138,6 +155,16 @@ class RMDetail extends Component {
         return (
             <div>
                 {this.props.loading && <Loader />}
+                <Row>
+                    <Col>
+                        <button
+                            type={'button'}
+                            className={'user-btn'}
+                            onClick={this.openModel}>
+                            <div className={'plus'}></div>{`ADD RM MATERIAL`}</button>
+                    </Col>
+                </Row>
+                <hr />
                 <Row>
                     <Col>
                         {/* <hr /> */}
@@ -153,12 +180,19 @@ class RMDetail extends Component {
                             pagination>
                             <TableHeaderColumn dataField="" dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
                             <TableHeaderColumn dataField="MaterialType" dataAlign="center" dataSort={true}>Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Density" dataSort={true}>Density</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Density" dataSort={true}>Density (g/cm3)</TableHeaderColumn>
                             <TableHeaderColumn dataField="MaterialTypeId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>
                 </Row>
+                {isOpen && <AddMaterialType
+                    isOpen={isOpen}
+                    closeDrawer={this.closeDrawer}
+                    isEditFlag={isEditFlag}
+                    ID={ID}
+                    anchor={'right'}
+                />}
             </div>
         );
     }
@@ -180,5 +214,5 @@ export default connect(
     getMaterialTypeDataListAPI,
     deleteMaterialTypeAPI,
 }
-)(RMDetail);
+)(RMListing);
 

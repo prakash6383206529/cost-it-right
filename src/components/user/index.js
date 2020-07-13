@@ -24,21 +24,6 @@ class User extends Component {
     }
   }
 
-  /**
-   * @method openModel
-   * @description  used to open filter form 
-   */
-  openModel = () => {
-    this.setState({ isOpen: true })
-  }
-
-  /**
-   * @method onCancel
-   * @description  used to cancel filter form
-   */
-  onCancel = () => {
-    this.setState({ isOpen: false })
-  }
 
   /**
  * @method toggle
@@ -84,51 +69,28 @@ class User extends Component {
                 Manage Levels
                                 </NavLink>
             </NavItem>
-            {/* <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
-                                Level User's
-                                </NavLink>
-                        </NavItem> */}
-            {/* <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
-                                Level Technology
-                            </NavLink>
-                        </NavItem> */}
-            {/* <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
-                                User Wise Permissions
-                                </NavLink>
-                        </NavItem> */}
           </Nav>
           <TabContent activeTab={this.state.activeTab}>
-            {this.state.activeTab === '1' && <TabPane tabId="1">
-              <UserRegistration
-                toggle={this.toggle} />
-            </TabPane>}
-            {this.state.activeTab === '2' && <TabPane tabId="2" className="role-permission mt-30">
-              <Role
-                toggle={this.toggle} />
-            </TabPane>}
-            {this.state.activeTab === '3' && <TabPane tabId="3" className="manage-department mt-30">
-              <DepartmentsListing
-                toggle={this.toggle} />
-            </TabPane>}
-            {this.state.activeTab === '4' && <TabPane tabId="4" className="manage-levels mt-30">
-              <LevelsListing
-                toggle={this.toggle} />
-            </TabPane>}
-            {/* {this.state.activeTab === '5' && <TabPane tabId="5">
-                            <LevelUser
-                                toggle={this.toggle} />
-                        </TabPane>} */}
-            {/* {this.state.activeTab === '6' && <TabPane tabId="6">
-                            <LevelTechnology
-                                toggle={this.toggle} />
-                        </TabPane>} */}
-            {/* {this.state.activeTab === '7' && <TabPane tabId="7">
-                            <PermissionsUserWise
-                                toggle={this.toggle} />
-                        </TabPane>} */}
+            {this.state.activeTab === '1' &&
+              <TabPane tabId="1">
+                <UserRegistration
+                  toggle={this.toggle} />
+              </TabPane>}
+            {this.state.activeTab === '2' &&
+              <TabPane tabId="2">
+                <Role
+                  toggle={this.toggle} />
+              </TabPane>}
+            {this.state.activeTab === '3' &&
+              <TabPane tabId="3">
+                <DepartmentsListing
+                  toggle={this.toggle} />
+              </TabPane>}
+            {this.state.activeTab === '4' &&
+              <TabPane tabId="4">
+                <LevelsListing
+                  toggle={this.toggle} />
+              </TabPane>}
           </TabContent>
         </div>
       </Container >

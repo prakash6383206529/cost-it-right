@@ -926,6 +926,61 @@ button.add-btn {
   float: right;
 }
 
+.plus-icon-square {
+  width: 22px;
+  height: 22px;
+  background: transparent url("../../assests/images/Group 10491.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.plus-icon {
+  width: 22px;
+  height: 22px;
+  background: transparent url("../../assests/images/Group 10491.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
+.minus-icon {
+  width: 22px;
+  height: 22px;
+  background: transparent url("../../assests/images/Group 10490.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
+.Add-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url("../../assests/images/Group 10401.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.Edit-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url("../../assests/images/Group 10396.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.Delete-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url("../../assests/images/Group 10398.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.View-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url("../../assests/images/Group 10399.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
+.Download-icon {
+  width: 72px;
+  height: 20px;
+  background: transparent url("../../assests/images/Group 10400.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  font-size: 0;
+}
 .Module-Name {
   text-align: left;
   font-size: 16px;
@@ -933,4 +988,17 @@ button.add-btn {
   letter-spacing: 0px;
   color: #8a91ac;
   opacity: 1;
+}
+
+.range-slider {
+  margin: 0 auto;
+  padding: 100px 30px 0;
+
+  @media (min-width: 800px) {
+    max-width: 60%;
+  }
+}
+
+.input-range {
+  margin-bottom: 0;
 }

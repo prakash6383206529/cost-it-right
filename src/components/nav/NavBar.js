@@ -314,51 +314,71 @@ class SideBar extends Component {
               </button>
               <div className="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                 <ul className="navbar-nav ml-auto">
-                  <li className="nav-item active d-xl-inline-block">
-                    <div className="dropdown">
-                      <a className="dropdown-toggle nav-link bell" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i className="fa fa-bell" aria-hidden="true"></i>
-                        <span className="count">2</span>
-                      </a>
-                      <div className="dropdown-menu preview-list" aria-labelledby="dropdownMenuLink">
-                        <a className="dropdown-item py-3">
-                          <p className="mb-0 font-weight-medium float-left">You have 7 unread mails </p>
-                          <span className="badge badge-pill badge-primary float-right">View all</span>
-                        </a>
-                        <a className="dropdown-item preview-item">
-                          <div className="preview-thumbnail">
-                            <img src="../../assests/images/user-pic.png" alt="image" className="img-sm profile-pic" /> </div>
-                          <div className="preview-item-content flex-grow py-2">
-                            <p className="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
-                            <p className="font-weight-light small-text"> The meeting is cancelled </p>
+
+                  {isLoggedIn &&
+                    <>
+                      <li className="nav-item active d-xl-inline-block">
+                        <div className="dropdown">
+                          <a className="dropdown-toggle nav-link bell" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i className="fa fa-bell" aria-hidden="true"></i>
+                            <span className="count">2</span>
+                          </a>
+                          <div className="dropdown-menu preview-list" aria-labelledby="dropdownMenuLink">
+                            <a className="dropdown-item py-3">
+                              <p className="mb-0 font-weight-medium float-left">You have 7 unread mails </p>
+                              <span className="badge badge-pill badge-primary float-right">View all</span>
+                            </a>
+                            <a className="dropdown-item preview-item">
+                              <div className="preview-thumbnail">
+                                <img src="../../assests/images/user-pic.png" alt="image" className="img-sm profile-pic" /> </div>
+                              <div className="preview-item-content flex-grow py-2">
+                                <p className="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
+                                <p className="font-weight-light small-text"> The meeting is cancelled </p>
+                              </div>
+                            </a>
                           </div>
+                        </div>
+                      </li>
+                      <li className="nav-item d-xl-inline-block">
+                        <a className="nav-link" href="#"><i className="fa fa-cog" aria-hidden="true"></i></a>
+                      </li>
+                      <li className="nav-item d-xl-inline-block">
+                        <a className="nav-link" href="#"><i className="fa fa-question-circle" aria-hidden="true"></i>
                         </a>
-                      </div>
-                    </div>
-                  </li>
-                  <li className="nav-item d-xl-inline-block">
-                    <a className="nav-link" href="#"><i className="fa fa-cog" aria-hidden="true"></i></a>
-                  </li>
-                  <li className="nav-item d-xl-inline-block">
-                    <a className="nav-link" href="#"><i className="fa fa-question-circle" aria-hidden="true"></i>
-                    </a>
-                  </li>
+                      </li>
+                    </>}
+
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
                         <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+
                           <DropdownToggle caret>
-                            <img className="img-xs rounded-circle" src={require('../../assests/images/user-pic.png')} alt='Cost It Rights' />
-                            {isLoggedIn ? userData.Name : 'Login'}
+
+                            {
+                              isLoggedIn ?
+                                <>
+                                  <img className="img-xs rounded-circle" src={require('../../assests/images/user-pic.png')} alt='Cost It Right' />
+                                  {userData.Name}
+                                </>
+                                :
+                                'Login'
+                            }
                           </DropdownToggle>
+
                           <DropdownMenu>
-                            {!isLoggedIn && <DropdownItem header>
-                              <Link className="bell-notifcation-icon" to="/login">
-                                Login
-                          </Link>
-                            </DropdownItem>}
-                            {isLoggedIn && <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>}
+                            {
+                              isLoggedIn ?
+                                <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>
+                                :
+                                <DropdownItem header>
+                                  <Link className="bell-notifcation-icon" to="/login">
+                                    Login
+                                  </Link>
+                                </DropdownItem>
+                            }
                           </DropdownMenu>
+
                         </Dropdown>
                         <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
                       </Nav>

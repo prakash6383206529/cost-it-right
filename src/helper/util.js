@@ -254,3 +254,22 @@ export function machineRateCalculation(Data) {
 
     return MachineRateCost;
 }
+
+/**
+ * function for get uploaded file extention
+ * @param url
+ * @returns {string}
+ */
+export function getFileExtention(url) {
+    let ext = '';
+    let fileUrl = '';
+    if (url.includes('firebasestorage')) {
+        fileUrl = url.split('?');
+        fileUrl = fileUrl[0].split('.');
+        ext = fileUrl[fileUrl.length - 1];
+    } else {
+        fileUrl = url.split('.');
+        ext = fileUrl[fileUrl.length - 1];
+    }
+    return ext.toUpperCase() + ' ';
+}

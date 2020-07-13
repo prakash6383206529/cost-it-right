@@ -81,6 +81,7 @@ export const MESSAGES = {
 
   //RAW MATERIAL
   MATERIAL_ADDED_SUCCESS: 'Raw Material added successfully',
+  MATERIAL_UPDATE_SUCCESS: 'Raw Material updated successfully',
   MATERIAL_DELETE_ALERT: 'Are you sure you want to delete Raw Material?',
   DELETE_MATERIAL_SUCCESS: 'Raw Material has been deleted successfully.',
   MATERIAL_UPDATE_SUCCESS: 'Raw Material has been updated successfully',
@@ -102,8 +103,15 @@ export const MESSAGES = {
 
   DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
   DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
+
+  //PLANT
   DELETE_PLANT_SUCCESS: 'Plant deleted successfully',
   UPDATE_PLANT_SUCESS: 'Plant updated successfully',
+  PLANT_DELETE_ALERT: 'Are you sure you want to delete Plant?',
+  PLANT_DELETE_SUCCESSFULLY: 'Plant has been deleted successfully.',
+  PLANT_ACTIVE_SUCCESSFULLY: 'Plant has been active successfully.',
+  PLANT_INACTIVE_SUCCESSFULLY: 'Plant has been inactive successfully.',
+
   DELETE_PROCESS_SUCCESS: 'Process deleted successfully',
   UPDATE_PROCESS_SUCCESS: 'Process updated successfully',
   PROCESS_ADD_SUCCESS: 'Process added successfully',
@@ -112,8 +120,13 @@ export const MESSAGES = {
   UPDATE_FREIGHT_SUCESS: 'Freight updated successfully',
   DELETE_LABOUR_SUCCESS: 'Labour deleted successfully',
   UPDATE_LABOUR_SUCCESS: 'Labour updated successfully',
+
+  //SUPPLIER OR VENDOR
   DELETE_SUPPLIER_SUCCESS: 'Supplier deleted successfully',
   UPDATE_SUPPLIER_SUCESS: 'Supplier updated successfully',
+  VENDOR_ACTIVE_SUCCESSFULLY: 'Vendor has been active successfully.',
+  VENDOR_INACTIVE_SUCCESSFULLY: 'Vendor has been inactive successfully.',
+
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
   FUEL_ADD_SUCCESS: 'Fuel added successfully',

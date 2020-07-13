@@ -2,7 +2,7 @@ import React from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import moment from 'moment';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import "./formInputs.css";
 
 /*

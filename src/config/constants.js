@@ -5,6 +5,7 @@
 //hosting url for api of cost-it-right
 //const BASE_URL = 'http://10.10.1.100:8081/CIRLite';
 const BASE_URL = 'http://10.10.1.100:8090/api/v1';
+export const FILE_URL = 'http://10.10.1.100:8090/';
 
 /** Export API */
 export const API = {
@@ -14,8 +15,7 @@ export const API = {
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
   getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
   getTechnology: `${BASE_URL}/configuration/select-list-get-technology`,
-  getSupplier: `${BASE_URL}/configuration/select-list-get-supplier`,
-  getSupplierCode: `${BASE_URL}/configuration/select-list-get-supplier-code`,
+  getSupplierCode: `${BASE_URL}/configuration/select-list-get-vendor-code`,
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
   getCategory: `${BASE_URL}/configuration/select-list-get-category`,
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
@@ -39,7 +39,7 @@ export const API = {
 
 
   //api's for configure location
-  getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-supplier-city`,
+  getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-vendor-city`,
   getCountry: `${BASE_URL}/configuration-location/select-list-get-country`,
   getState: `${BASE_URL}/configuration-location/select-list-get-state`,
   getCity: `${BASE_URL}/configuration-location/select-list-get-city`,
@@ -132,11 +132,27 @@ export const API = {
   deleteRawMaterialAPI: `${BASE_URL}/masters-raw-material/delete-raw-material`,
 
   //RAW MATERIAL DETAILS
-  getRawMaterialDetailsAPI: `${BASE_URL}/masters-raw-material/get-raw-material-details`,
-  deleteRawMaterialDetailAPI: `${BASE_URL}/masters-raw-material/delete-raw-material-details`,
   getRawMaterialDetailsDataAPI: `${BASE_URL}/masters-raw-material/get-all-costing-raw-material-details`,
-  updateRawMaterialDetailsAPI: `${BASE_URL}/masters-raw-material/update-raw-material-details`,
 
+  //RAW MATERIAL DOMESTIC
+  createRMDomestic: `${BASE_URL}/masters-raw-material/create-raw-material-domestic`,
+  updateRMDomesticAPI: `${BASE_URL}/masters-raw-material/update-raw-material-domestic`,
+  deleteRawMaterialDetailAPI: `${BASE_URL}/masters-raw-material/delete-raw-material-details`,
+  getRMDomesticDataById: `${BASE_URL}/masters-raw-material/get-raw-material-domestic-by-id`,
+  createRawMaterialNameChild: `${BASE_URL}/masters-raw-material/create-raw-material-name-child`,
+  getRawMaterialNameChild: `${BASE_URL}/masters-raw-material/select-list-raw-material-name-child`,
+  getGradeListByRawMaterialNameChild: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade-child`,
+  getVendorListByVendorType: `${BASE_URL}/masters-raw-material/select-list-for-raw-material-vendor-by-type`,
+  getRMDomesticDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-domestic-list`,
+  fileUploadRMDomestic: `${BASE_URL}/masters-raw-material/raw-material-file-upload`,
+
+  //RAW MATERIAL IMPORT
+  createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
+  updateRMImportAPI: `${BASE_URL}/masters-raw-material/update-raw-material-import`,
+  getRMImportDataById: `${BASE_URL}/masters-raw-material/get-raw-material-import-by-id`,
+  getRMImportDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-import-list`,
+
+  //RAW MATERIAL CATEGORY
   getCategoryDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
   updateCategoryAPI: `${BASE_URL}/masters-raw-material/update-material-category`,
   deleteCategoryAPI: `${BASE_URL}/masters-raw-material/delete-material-category`,
@@ -161,6 +177,8 @@ export const API = {
   getRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-material-type`,
   getGradeByRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
 
+
+
   //Api for plant master
   //createPlantAPI: `${BASE_URL}/plant/create`,
   createPlantAPI: `${BASE_URL}/masters-plant/create`,
@@ -168,14 +186,20 @@ export const API = {
   getAllPlantAPI: `${BASE_URL}/masters-plant/get-all`,
   updatePlantAPI: `${BASE_URL}/masters-plant/update`,
   deletePlantAPI: `${BASE_URL}/masters-plant/delete`,
+  activeInactiveStatus: `${BASE_URL}/masters-plant/active`,
+  getFilteredPlantList: `${BASE_URL}/masters-plant/get-all-by-filter`,
 
   //Api for supplier master
-  createSupplierAPI: `${BASE_URL}/supplier/create`,
-  getSupplierAPI: `${BASE_URL}/supplier/get`,
-  getAllSupplierAPI: `${BASE_URL}/supplier/get-all`,
-  updateSupplierAPI: `${BASE_URL}/supplier/update`,
-  deleteSupplierAPI: `${BASE_URL}/supplier/delete`,
+  createSupplierAPI: `${BASE_URL}/vendor/create-vendor`,
+  getSupplierAPI: `${BASE_URL}/vendor/get-vendor`,
+  getAllSupplierAPI: `${BASE_URL}/vendor/get-all-vendors`,
+  updateSupplierAPI: `${BASE_URL}/vendor/update`,
+  deleteSupplierAPI: `${BASE_URL}/vendor/delete`,
   getRadioButtonSupplierType: `${BASE_URL}/configuration/radio-button-list-get-supplier-type`,
+  getVendorTypesSelectList: `${BASE_URL}/vendor/vendor-types-select-list`,
+  getSupplierLists: `${BASE_URL}/configuration/select-list-get-vendor`,
+  activeInactiveVendorStatus: `${BASE_URL}/vendor/active-vendor`,
+  getVendorsByVendorTypeID: `${BASE_URL}/vendor/vendor-by-vendor-type-select-list`,
 
   //Api's for bought out parts
   createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
@@ -362,10 +386,10 @@ export const API = {
   updateLevelMappingAPI: `${BASE_URL}/costing/approval-level-for-technology/update`,
 
   //Common API for Plant by supplier
-  getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-supplier`,
+  getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-vendor`,
   getPlantByCity: `${BASE_URL}/configuration/get-plant-by-city`,
-  getCityBySupplier: `${BASE_URL}/configuration/get-city-by-supplier`,
-  getPlantByCityAndSupplier: `${BASE_URL}/configuration/get-plant-by-supplier-and-city`,
+  getCityBySupplier: `${BASE_URL}/configuration/get-city-by-vendor`,
+  getPlantByCityAndSupplier: `${BASE_URL}/configuration/get-plant-by-vendor-and-city`,
 
   //APPROVAL
   getSendForApproval: `${BASE_URL}/app-approval-system/send-for-approval-click`,
@@ -454,6 +478,9 @@ export const API = {
   OverheadAndProfitMassUpload: `${BASE_URL}/masters-overhead-and-profit/mass-upload-overhead-profit`,
   MHRMassUpload: `${BASE_URL}/masters-machine-hour-rate/mass-upload-machine-hour-rate`,
 
+  //EXCHANGE RATE
+  getCurrencySelectList: `${BASE_URL}/masters-exchange-rate/select-list-get-currency`,
+
 }
 
 //Api constants
@@ -472,6 +499,7 @@ export const GET_SUPPLIER_SUCCESS = 'GET_SUPPLIER_SUCCESS';
 export const GET_SUPPLIER_DATALIST_SUCCESS = 'GET_SUPPLIER_DATALIST_SUCCESS';
 export const GET_SUPPLIER_CITY_SUCCESS = 'GET_SUPPLIER_CITY_SUCCESS';
 export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
+export const GET_SUPPLIER_SELECTLIST_SUCCESS = 'GET_SUPPLIER_SELECTLIST_SUCCESS';
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
@@ -526,6 +554,9 @@ export const GET_RAW_MATERIAL_DATA_SUCCESS = 'GET_RAW_MATERIAL_DATA_SUCCESS';
 export const GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS';
 export const GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS';
 export const GET_RM_TYPE_DATALIST_SUCCESS = 'GET_RM_TYPE_DATALIST_SUCCESS';
+export const GET_RM_NAME_SELECTLIST = 'GET_RM_NAME_SELECTLIST';
+export const GET_GRADELIST_BY_RM_NAME_SELECTLIST = 'GET_GRADELIST_BY_RM_NAME_SELECTLIST';
+export const GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST = 'GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST';
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';
@@ -558,6 +589,7 @@ export const CREATE_SUPPLIER_FAILURE = 'CREATE_SUPPLIER_FAILURE';
 export const GET_SUPPLIER_FAILURE = 'GET_SUPPLIER_FAILURE';
 export const GET_SUPPLIER_DATA_SUCCESS = 'GET_SUPPLIER_DATA_SUCCESS';
 export const GET_RADIO_SUPPLIER_TYPE_SUCCESS = 'GET_RADIO_SUPPLIER_TYPE_SUCCESS';
+export const GET_VENDOR_TYPE_SELECTLIST_SUCCESS = 'GET_VENDOR_TYPE_SELECTLIST_SUCCESS';
 
 //BOM MASTER
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
@@ -783,6 +815,9 @@ export const GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_SUPPLIER_TY
 export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS';
 export const GET_POWER_DATALIST_SUCCESS = 'GET_POWER_DATALIST_SUCCESS';
 export const GET_POWER_DATA_SUCCESS = 'GET_POWER_DATA_SUCCESS';
+
+//CURRENCY EXCHANGE
+export const GET_CURRENCY_SELECTLIST_SUCCESS = 'GET_CURRENCY_SELECTLIST_SUCCESS';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';

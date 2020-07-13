@@ -3,12 +3,14 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
+    API_SUCCESS,
     CREATE_SUPPLIER_SUCCESS,
     CREATE_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATALIST_SUCCESS,
     GET_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATA_SUCCESS,
     GET_RADIO_SUPPLIER_TYPE_SUCCESS,
+    GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -54,18 +56,19 @@ export function createSupplierAPI(data, callback) {
 }
 
 /**
- * @method getSupplierDetailAPI
- * @description get process list
+ * @method getSupplierDataList
+ * @description get Supplier's DataList 
  */
-export function getSupplierDetailAPI() {
+export function getSupplierDataList(filterData, callback) {
     return (dispatch) => {
-        const request = axios.get(API.getAllSupplierAPI, headers);
+        const QueryParams = `vendor_type=${filterData.vendor_type}&vendor_name=${filterData.vendor_name}&country=${filterData.country}`
+        const request = axios.get(`${API.getAllSupplierAPI}?${QueryParams}`, headers);
         request.then((response) => {
             dispatch({
                 type: GET_SUPPLIER_DATALIST_SUCCESS,
                 payload: response.data.DataList,
             });
-
+            callback(response)
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE
@@ -157,10 +160,67 @@ export function getRadioButtonSupplierType() {
             });
 
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getVendorTypesSelectList
+ * @description get radio button supplier type
+ */
+export function getVendorTypesSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorTypesSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method activeInactiveVendorStatus
+ * @description active Inactive Status
+ */
+export function activeInactiveVendorStatus(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.activeInactiveVendorStatus}`, requestData, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method getVendorsByVendorTypeID
+ * @description get one labour based on id
+ */
+export function getVendorsByVendorTypeID(VendorID, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getVendorsByVendorTypeID}/${VendorID}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+
     };
 }
