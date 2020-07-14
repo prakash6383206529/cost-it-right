@@ -42,24 +42,23 @@ class VendorListing extends Component {
     componentWillMount() {
         this.props.getVendorTypesSelectList()
         this.props.fetchCountryDataAPI(() => { })
-
     }
 
     componentDidMount() {
-        this.getTableListData('', '', '')
+        this.getTableListData(null, null, null)
         this.props.onRef(this)
     }
 
     // Get updated Supplier's list after any action performed.
     getUpdatedData = () => {
-        this.getTableListData('', '', '')
+        this.getTableListData(null, null, null)
     }
 
 	/**
 	* @method getTableListData
 	* @description Get user list data
 	*/
-    getTableListData = (vendorType = '', vendorName = '', country = '') => {
+    getTableListData = (vendorType = null, vendorName = null, country = null) => {
         let filterData = {
             vendor_type: vendorType,
             vendor_name: vendorName,
@@ -88,21 +87,24 @@ class VendorListing extends Component {
         const { vendorList } = this.state;
         const temp = [];
         if (label === 'country') {
-            countryList && countryList.map(item =>
+            countryList && countryList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'vendorType') {
             vendorTypeList && vendorTypeList.map((item, i) => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'vendorList') {
-            vendorList && vendorList.map(item =>
+            vendorList && vendorList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
     }
@@ -150,7 +152,7 @@ class VendorListing extends Component {
         this.props.deleteSupplierAPI(ID, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
-                this.getTableListData('', '', '')
+                this.getTableListData(null, null, null)
             }
         });
     }
@@ -181,7 +183,7 @@ class VendorListing extends Component {
                 } else {
                     toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
-                this.getTableListData('', '', '')
+                this.getTableListData(null, null, null)
             }
         })
     }
@@ -192,7 +194,7 @@ class VendorListing extends Component {
     */
     handleVendorType = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ vendorType: newValue, }, () => {
+            this.setState({ vendorType: newValue, vendorName: [], }, () => {
                 const { vendorType } = this.state;
                 this.props.getVendorsByVendorTypeID(vendorType.value, (res) => {
                     if (res && res.data && res.data.SelectList) {
@@ -202,7 +204,7 @@ class VendorListing extends Component {
                 })
             });
         } else {
-            this.setState({ vendorType: [], })
+            this.setState({ vendorType: [], vendorName: [] })
         }
     };
 
@@ -309,7 +311,7 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
         }, () => {
-            this.getTableListData('', '', '')
+            this.getTableListData(null, null, null)
         })
     }
 
@@ -372,7 +374,7 @@ class VendorListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'vendor name'}
+                                        placeholder={'Vendor Name'}
                                         options={this.renderListing('vendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}

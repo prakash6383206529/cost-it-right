@@ -145,6 +145,8 @@ export const API = {
   getVendorListByVendorType: `${BASE_URL}/masters-raw-material/select-list-for-raw-material-vendor-by-type`,
   getRMDomesticDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-domestic-list`,
   fileUploadRMDomestic: `${BASE_URL}/masters-raw-material/raw-material-file-upload`,
+  fileUpdateRMDomestic: `${BASE_URL}/masters-raw-material/update-raw-material-file`,
+  fileDeleteRMDomestic: `${BASE_URL}/masters-raw-material/delete-raw-material-file`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,

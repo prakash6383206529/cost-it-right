@@ -14,6 +14,7 @@ import {
 import {
     createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild,
     getGradeListByRawMaterialNameChild, getVendorListByVendorType, fileUploadRMDomestic,
+    fileUpdateRMDomestic, fileDeleteRMDomestic,
 } from '../../../../../actions/master/Material';
 import RMDomesticListing from './RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
@@ -69,6 +70,7 @@ class AddRMDomestic extends Component {
             isOpenUOM: false,
 
             initialFiles: [],
+            receivedFiles: [],
 
         }
     }
@@ -301,21 +303,43 @@ class AddRMDomestic extends Component {
                         const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
                         const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
                         const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value == Data.UOM)
+
                         let tempArr = [];
+                        let tempFiles = [];
+
                         if (Data && Data.FileList) {
                             Data.FileList.map(item => {
-                                const fileName = item.FileName;
+                                const fileName = item.OriginalFileName;
                                 //const fileURL = item.FileURL;
-                                const fileURL = `${FILE_URL}Upload/Attachement/RawMaterial/${fileName}`;
-                                fetch(fileURL).then(res => {
+                                const withOutTild = item.FileURL.replace('~', '')
+                                console.log('withOutTild', withOutTild)
+                                //const fileURL = `${FILE_URL}Upload/Attachement/RawMaterial/${fileName}`;
+                                const fileURL = `${FILE_URL}${withOutTild}`;
+
+                                let fileObj = {
+                                    ContextId: item.RawMaterialId,
+                                    Exist: true,
+                                    FileExtension: item.FileExtension,
+                                    FileId: item.FileId,
+                                    FileName: item.FileName,
+                                    FilePath: item.FilePath,
+                                    FileSize: item.FileSize,
+                                    FileURL: fileURL,
+                                    MimeType: item.MimeType,
+                                    OriginalFileName: item.OriginalFileName,
+                                }
+                                tempFiles.push(fileObj)
+
+                                fetch('https://dummyimage.com/600x400/000/fff').then(res => {
                                     res.arrayBuffer().then(buf => {
-                                        const file = new File([buf], fileName, { type: 'image/jpeg' })
+                                        const file = new File([buf], fileName, { type: item.MimeType })
+                                        file.FileId = item.FileId;
                                         tempArr.push(file)
                                         //console.log('file >>>>', file)
                                     })
                                 })
                                 setTimeout(() => {
-                                    this.setState({ initialFiles: tempArr })
+                                    this.setState({ initialFiles: tempArr, receivedFiles: tempFiles })
                                 }, 2000)
                                 console.log('URL', fileURL)
                             })
@@ -567,38 +591,68 @@ class AddRMDomestic extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
-        //console.log('getUploadParams', file, meta)
+        console.log('getUploadParams', file, meta)
+        // let data = new FormData()
+        // data.append('file', file)
+        // this.props.fileUploadRMDomestic(data, (res) => {
+        //     let Data = res.data[0]
+        //     const { files } = this.state;
+        //     files.push(Data)
+        //     this.setState({ files: files })
+        // })
         return { url: 'https://httpbin.org/post', }
     }
 
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
-
-        //console.log('handleChangeStatus', status, meta, file)
+        const { isEditFlag, files, receivedFiles, initialFiles, RawMaterialID } = this.state;
+        console.log('handleChangeStatus', status, meta, file)
 
         if (status == 'removed') {
-            const { files } = this.state;
-            const removedFileName = meta.name;
-            let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
-            console.log('remove >>>>', status, meta, file)
-            this.setState({ files: tempArr })
+            // const removedFileName = file.name;
+            // let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
+            // let removdArr = receivedFiles.filter(item => item.FileId != file.FileId)
+            // //console.log('remove >>>>', status, meta, file)
+
+            // if (isEditFlag && file.FileId != null) {
+            //     let deleteData = {
+            //         Id: file.FileId,
+            //         DeletedBy: loggedInUserId(),
+            //         IsSoftDelete: true
+            //     }
+            //     this.setState({ receivedFiles: removdArr, files: tempArr })
+            //     this.props.fileDeleteRMDomestic(deleteData, (res) => {
+            //     })
+            //     return false;
+            // } else {
+            //     this.setState({ files: tempArr })
+            // }
         }
 
         if (status == 'done') {
-
-            let data = new FormData()
-            data.append('file', file)
-            this.props.fileUploadRMDomestic(data, (res) => {
-                let Data = res.data[0]
-                console.log('after success >>>', Data)
-                const { files } = this.state;
-                files.push(Data)
-                this.setState({ files: files })
-            })
-
+            //if (isEditFlag) {
+            // let updateFileData = {
+            //     RemoveFileId: '',
+            //     ContextId: RawMaterialID,
+            //     FileName: Data.FileName,
+            //     FileURL: Data.FileURL,
+            //     OriginalFileName: Data.OriginalFileName,
+            //     FileExtension: Data.FileExtension,
+            //     FileSize: Data.FileSize,
+            //     Exist: true,
+            //     FilePath: Data.FilePath,
+            //     MimeType: Data.MimeType,
+            //     LoggedInUserId: loggedInUserId(),
+            // }
+            // this.props.fileUpdateRMDomestic(updateFileData, (res) => {
+            //     toastr.success('file has been added.')
+            // })
+            //} else {
+            //}
         }
 
         if (status == 'rejected_file_type') {
+            console.log('rejected_file_type', status, meta, file)
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
@@ -751,7 +805,7 @@ class AddRMDomestic extends Component {
                                                         type="text"
                                                         label="Raw Material"
                                                         component={searchableSelect}
-                                                        placeholder={'Select Raw Material'}
+                                                        placeholder={'Raw Material'}
                                                         options={this.renderListing('material')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
@@ -773,7 +827,7 @@ class AddRMDomestic extends Component {
                                                         type="text"
                                                         label="RM Grade"
                                                         component={searchableSelect}
-                                                        placeholder={'Select RM Grade'}
+                                                        placeholder={'RM Grade'}
                                                         options={this.renderListing('grade')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
@@ -795,7 +849,7 @@ class AddRMDomestic extends Component {
                                                         type="text"
                                                         label="RM Spec"
                                                         component={searchableSelect}
-                                                        placeholder={'Select RM Spec'}
+                                                        placeholder={'RM Spec'}
                                                         options={this.renderListing('specification')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.RMSpec == null || this.state.RMSpec.length == 0) ? [required] : []}
@@ -817,7 +871,7 @@ class AddRMDomestic extends Component {
                                                         type="text"
                                                         label="Category"
                                                         component={searchableSelect}
-                                                        placeholder={'Select Category'}
+                                                        placeholder={'Category'}
                                                         options={this.renderListing('category')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
@@ -868,7 +922,7 @@ class AddRMDomestic extends Component {
                                                         type="text"
                                                         label="Vendor Name"
                                                         component={searchableSelect}
-                                                        placeholder={'--- Select Vendor ---'}
+                                                        placeholder={'Vendor'}
                                                         options={this.renderListing('VendorNameList')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
@@ -888,7 +942,7 @@ class AddRMDomestic extends Component {
                                                     <Field
                                                         label="Vendor Plant"
                                                         name="DestinationSupplierPlantId"
-                                                        placeholder="--Select--"
+                                                        placeholder="Plant"
                                                         selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
                                                         options={this.renderListing('VendorPlant')}
                                                         selectionChanged={this.handleVendorPlant}
@@ -906,7 +960,7 @@ class AddRMDomestic extends Component {
                                                         type="text"
                                                         label="Vendor Location"
                                                         component={searchableSelect}
-                                                        placeholder={'--- Select Location ---'}
+                                                        placeholder={'Location'}
                                                         options={this.renderListing('VendorLocation')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.vendorLocation == null || this.state.vendorLocation.length == 0) ? [required] : []}
@@ -963,7 +1017,7 @@ class AddRMDomestic extends Component {
                                                             type="text"
                                                             label="Source Location"
                                                             component={searchableSelect}
-                                                            placeholder={'--- Select Plant ---'}
+                                                            placeholder={'--- Plant ---'}
                                                             options={this.renderListing('SourceLocation')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
@@ -1073,8 +1127,8 @@ class AddRMDomestic extends Component {
                                                         onChangeStatus={this.handleChangeStatus}
                                                         //PreviewComponent={this.Preview}
                                                         //onSubmit={this.handleSubmit}
-                                                        accept="image/jpeg,image/png,xls,doc,pdf"
-                                                        initialFiles={this.state.initialFiles}
+                                                        accept="image/jpeg,image/jpg,image/png,xls,doc,pdf"
+                                                        //initialFiles={this.state.initialFiles}
                                                         maxFiles={3}
                                                         maxSizeBytes={2000000}
                                                         inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
@@ -1221,6 +1275,8 @@ export default connect(mapStateToProps, {
     getUOMSelectList,
     getVendorListByVendorType,
     fileUploadRMDomestic,
+    fileUpdateRMDomestic,
+    fileDeleteRMDomestic,
 })(reduxForm({
     form: 'AddRMDomestic',
     enableReinitialize: true,

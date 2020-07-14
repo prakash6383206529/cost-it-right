@@ -1042,3 +1042,42 @@ export function getRMImportDataList(data, callback) {
         });
     };
 }
+
+/**
+ * @method fileUpdateRMDomestic
+ * @description File update Raw Material Domestic
+ */
+export function fileUpdateRMDomestic(data, callback) {
+    return (dispatch) => {
+        let multipartHeaders = {
+            'Content-Type': 'multipart/form-data;'
+        };
+        const request = axios.post(API.fileUpdateRMDomestic, data, headers);
+        request.then((response) => {
+            //console.log('>>>>>>>>>>>>>>>>>', response)
+            if (response && response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fileDeleteRMDomestic
+ * @description delete Raw Material API
+ */
+export function fileDeleteRMDomestic(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.fileDeleteRMDomestic}`, data, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
