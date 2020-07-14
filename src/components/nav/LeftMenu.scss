@@ -46,6 +46,12 @@
 					color: $colorPrimary !important;
 				}
 			}
+			&.active{
+				background-color: $white;
+				a {
+					color: $colorPrimary !important;
+				}
+			}
 		}
 	}
 }

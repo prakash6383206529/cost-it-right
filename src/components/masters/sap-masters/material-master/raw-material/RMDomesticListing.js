@@ -336,7 +336,7 @@ class RMDomesticListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
-                        <Col md="11" className="filter-block">
+                        <Col md="10" className="filter-block ">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -384,7 +384,7 @@ class RMDomesticListing extends Component {
                                         valueDescription={this.state.vendorName}
                                     />
                                 </div>
-                                <div className="flex-fill">
+                                <div className="flex-fill sliderange ">
                                     <InputRange
                                         maxValue={500}
                                         minValue={0}
@@ -413,7 +413,7 @@ class RMDomesticListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="1" className="search-user-block">
+                        <Col md="2" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {!this.props.isShowForm &&

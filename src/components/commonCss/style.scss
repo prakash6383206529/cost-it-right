@@ -669,6 +669,7 @@ button.add-btn {
   color: #495057;
   background-color: #eee;
   border-color: #dee2e6 #dee2e6 #fff;
+  
 }
 
 .privilege-form.login-form {
@@ -739,7 +740,7 @@ button.add-btn {
 }
 
 .form-control {
-  height: calc(2.85rem + 2px);
+  // height: calc(2.85rem + 2px);
   padding: 12px !important;
   border-radius: 4px !important;
 }
@@ -872,7 +873,7 @@ button.add-btn {
 
 .form-group {
   .css-yk16xz-control {
-    height: 48px;
+    // height: 48px;
     border-color: #c2cbe8;
   }
 }
@@ -988,6 +989,11 @@ button.add-btn {
   letter-spacing: 0px;
   color: #8a91ac;
   opacity: 1;
+}
+.sliderange{
+  padding: 10px 17px;
+  width: 6%;
+  padding-right: 15px !important;
 }
 
 .range-slider {
