@@ -34,7 +34,8 @@
     "reactstrap": "^8.1.1",
     "redux": "^4.0.4",
     "redux-form": "^8.2.6",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "webpack": "^4.41.0"
   },
   "scripts": {
     "start": "set PORT=3005 && react-scripts start",
