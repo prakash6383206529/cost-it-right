@@ -735,7 +735,7 @@ class AddRMImport extends Component {
                             {this.state.isShowForm &&
                                 <div className="col-md-12">
                                     <div className="shadow-lgg login-formg">
-                                        <div className="row">
+                                        <div className="row mt15">
                                             <div className="col-md-6">
                                                 <div className="form-heading">
                                                     <h2>{isEditFlag ? `Update Raw Material Details` : `Add Raw Material Details`}</h2>
@@ -749,7 +749,7 @@ class AddRMImport extends Component {
                                         >
                                             <Row>
                                                 <Col md="4" className="switch mb15">
-                                                    <label>
+                                                    <label className="switch-level">
                                                         <div className={'left-title'}>Zero Based</div>
                                                         <Switch
                                                             onChange={this.onPressVendor}
@@ -762,7 +762,14 @@ class AddRMImport extends Component {
                                                 </Col>
                                             </Row>
                                             <Row>
-                                                <Col md="2">
+                                            <Col md="12" className="filter-block">
+                                                    <div className=" flex-fills mb-2">
+                                                    <h5>{'Raw Material:'}</h5>
+                                                        </div>
+                                                        </Col>
+                                                <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div  className="fullinput-icon">
                                                     <Field
                                                         name="RawMaterialId"
                                                         type="text"
@@ -777,14 +784,16 @@ class AddRMImport extends Component {
                                                         valueDescription={this.state.RawMaterial}
                                                         disabled={isEditFlag ? true : false}
                                                     />
-                                                </Col>
-                                                <Col md="1">
+                                                    </div>
                                                     <div
                                                         onClick={this.rmToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square  right'}>
+                                                    </div>
                                                     </div>
                                                 </Col>
-                                                <Col md="2">
+                                                <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div  className="fullinput-icon">
                                                     <Field
                                                         name="RawMaterialGradeId"
                                                         type="text"
@@ -799,14 +808,16 @@ class AddRMImport extends Component {
                                                         valueDescription={this.state.RMGrade}
                                                         disabled={isEditFlag ? true : false}
                                                     />
-                                                </Col>
-                                                <Col md="1">
+                                                    </div>
                                                     <div
                                                         onClick={this.gradeToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square  right'}>
+                                                    </div>
                                                     </div>
                                                 </Col>
-                                                <Col md="2">
+                                                <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div  className="fullinput-icon">
                                                     <Field
                                                         name="RawMaterialSpecificationId"
                                                         type="text"
@@ -821,14 +832,16 @@ class AddRMImport extends Component {
                                                         valueDescription={this.state.RMSpec}
                                                         disabled={isEditFlag ? true : false}
                                                     />
-                                                </Col>
-                                                <Col md="1">
+                                                    </div>
                                                     <div
                                                         onClick={this.specificationToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square  right'}>
+                                                    </div>
                                                     </div>
                                                 </Col>
-                                                <Col md="2">
+                                                <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div  className="fullinput-icon">
                                                     <Field
                                                         name="CategoryId"
                                                         type="text"
@@ -843,11 +856,11 @@ class AddRMImport extends Component {
                                                         valueDescription={this.state.Category}
                                                         disabled={isEditFlag ? true : false}
                                                     />
-                                                </Col>
-                                                <Col md="1">
+                                                   </div>
                                                     <div
                                                         onClick={this.categoryToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square  right'}>
+                                                    </div>
                                                     </div>
                                                 </Col>
                                             </Row>
@@ -874,12 +887,14 @@ class AddRMImport extends Component {
                                             <Row>
 
 
-                                                <Col md="12">
-                                                    <div className="left-border">
-                                                        {'Vendor'}
+                                            <Col md="12" className="filter-block">
+                                                    <div className=" flex-fills mb-2">
+                                                       <h5>{'Vendor'}</h5> 
                                                     </div>
                                                 </Col>
-                                                <Col md="2">
+                                                <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div  className="fullinput-icon">
                                                     <Field
                                                         name="DestinationSupplierId"
                                                         type="text"
@@ -894,11 +909,11 @@ class AddRMImport extends Component {
                                                         valueDescription={this.state.vendorName}
                                                         disabled={isEditFlag ? true : false}
                                                     />
-                                                </Col>
-                                                <Col md="1">
+                                                     </div>
                                                     <div
                                                         onClick={this.vendorToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square  right'}>
+                                                    </div>
                                                     </div>
                                                 </Col>
                                                 <Col md="3">
@@ -992,12 +1007,14 @@ class AddRMImport extends Component {
                                                 </Row>}
 
                                             <Row>
-                                                <Col md="12">
-                                                    <div className="left-border">
-                                                        {'Cost:'}
+                                            <Col md="12" className="filter-block">
+                                                    <div className=" flex-fills mb-2">
+                                                       <h5>{'Cost:'}</h5> 
                                                     </div>
                                                 </Col>
-                                                <Col md="2">
+                                                <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div  className="fullinput-icon">
                                                     <Field
                                                         name="UnitOfMeasurementId"
                                                         type="text"
@@ -1012,11 +1029,11 @@ class AddRMImport extends Component {
                                                         valueDescription={this.state.UOM}
                                                         disabled={isEditFlag ? true : false}
                                                     />
-                                                </Col>
-                                                <Col md="1">
+                                                    </div>
                                                     <div
                                                         onClick={this.uomToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square  right'}>
+                                                    </div>
                                                     </div>
                                                 </Col>
                                                 <Col md="3">
@@ -1106,9 +1123,9 @@ class AddRMImport extends Component {
                                             </Row>
 
                                             <Row>
-                                                <Col md="12">
-                                                    <div className="left-border">
-                                                        {'Remarks & Attachment'}
+                                            <Col md="12" className="filter-block">
+                                                    <div className=" flex-fills mb-2">
+                                                       <h5>{'Remarks & Attachment'}</h5> 
                                                     </div>
                                                 </Col>
                                                 <Col md="6">
@@ -1143,7 +1160,7 @@ class AddRMImport extends Component {
                                                 </Col>
                                             </Row>
                                             <Row className="sf-btn-footer no-gutters justify-content-between">
-                                                <div className="col-sm-12 text-center">
+                                                <div className="col-sm-12 text-right bluefooter-butn">
                                                     <button
                                                         type={'button'}
                                                         className="reset mr15 cancel-btn"

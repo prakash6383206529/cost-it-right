@@ -281,9 +281,9 @@ class AddSpecification extends Component {
         const { handleSubmit, isEditFlag } = this.props;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                <Drawer  anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container>
-                        <div className={'drawer-wrapper'}>
+                        <div className={'drawer-wrapper spec-drawer'}>
                             <form
                                 noValidate
                                 className="form"
@@ -300,6 +300,7 @@ class AddSpecification extends Component {
                                         </div>
                                     </Col>
                                 </Row>
+                                <div className="mr15">
                                 <Row>
                                     <Col md="11">
                                         <Field
@@ -420,6 +421,7 @@ class AddSpecification extends Component {
                                         </div>
                                     </div>
                                 </Row>
+                                </div>
                             </form>
                         </div>
                     </Container>

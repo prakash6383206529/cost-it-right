@@ -242,9 +242,9 @@ class AddVBCPlant extends Component {
                     <div className="login-container signup-form">
 
                         <Row>
-                            <Col md="12">
+                            {/* <Col md="12">
                                 <h3>{`Plant Master`}</h3>
-                            </Col>
+                            </Col> */}
                             {this.state.isShowForm &&
                                 <Col md="12">
                                     <div className="shadow-lgg login-formg pt-30">

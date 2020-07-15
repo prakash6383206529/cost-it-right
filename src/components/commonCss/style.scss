@@ -993,13 +993,27 @@ button.add-btn {
 .sliderange{
   padding: 10px 17px;
   width: 6%;
-  padding-right: 15px !important;
+  margin-right: 8px !important;
 }
-
+.switch-level{
+  display: flex;
+    align-items: center;
+}
+.fullinput-icon{
+  width: 89%; margin-right:10px;
+}
+.dzu-dropzone {overflow: auto;
+    border: 1px dashed #7fa5e6;}
+.bluefooter-butn {
+  background-color: #E0E9F5;
+  padding: 15px !important;
+}  
 .range-slider {
   margin: 0 auto;
   padding: 100px 30px 0;
-
+  .drawer-wrapper.spec-drawer{
+    width: 430px !important;
+  }
   @media (min-width: 800px) {
     max-width: 60%;
   }

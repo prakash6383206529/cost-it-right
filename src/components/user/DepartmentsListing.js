@@ -134,16 +134,16 @@ class DepartmentsListing extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
-        <Row>
+        <Row className="pt-30 mb-30">
           <Col className="text-right">
             <button
               type={'button'}
               className={'user-btn'}
               onClick={this.openModel}>
-              <div className={'plus'}></div>{`ADD`}</button>
+              <div className={'plus'}></div>{`ADD DEPARTMENT`}</button>
           </Col>
         </Row>
-        <hr />
+        
         <Row>
           <Col>
             <BootstrapTable

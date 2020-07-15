@@ -168,7 +168,7 @@ class LevelsListing extends Component {
 		return (
 			<>
 				{this.props.loading && <Loader />}
-				<Row>
+				<Row className="pt-30">
 					<Col md="6">
 						<Row>
 							<Col md="6">

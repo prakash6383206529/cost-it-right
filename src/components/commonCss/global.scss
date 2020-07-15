@@ -207,6 +207,10 @@ a:hover {
   opacity: 1;
   border: none;
   cursor: pointer;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cancel-btn {
@@ -271,7 +275,7 @@ a:hover {
 }
 
 .add-button-big {
-  height: 48px;
+  height: 40px;
   line-height: 48px;
   color: $white;
   font-size: 14px;
@@ -608,7 +612,7 @@ a:hover {
 
 /* Drawer Css */
 .drawer-wrapper {
-  width: 389px;
+  width: 430px;
 
   .drawer-heading {
     background-color: #eaf0f9;
@@ -616,15 +620,16 @@ a:hover {
     border-left-width: 0;
     border-right-width: 0;
     padding: 22px 16px;
+    margin-bottom: 15px;
 
     h3 {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: $font-medium;
       color: $headinlightgblack;
     }
 
     .header-wrapper.left {
-      width: 50%;
+      width: 95%;
       float: left;
     }
 
