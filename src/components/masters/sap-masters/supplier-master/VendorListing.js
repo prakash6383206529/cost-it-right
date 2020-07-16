@@ -346,7 +346,8 @@ class VendorListing extends Component {
             <div className="container">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="mr15">
-                    
+                <div class="col-sm-4"><h3>Vendor</h3></div>
+                <hr/>
                     <Row className="pt-30 px-15">
                         <Col md="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">

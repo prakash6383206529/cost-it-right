@@ -1153,10 +1153,11 @@ p {
 
     .css-yk16xz-control,
     .css-1pahdxg-control {
-      border: 1px solid #c2cbe8;
+      border: 1px solid #c2cbe8 !important;
       color: #a4abc5;
       min-height: 32px !important;
       font-size: $font-14;
+      border-color: #C2CBE8;
     }
 
     .css-tlfecz-indicatorContainer {
@@ -1212,8 +1213,24 @@ button .fas {
 
 .date-section {
   height: 40px;
+  border-bottom: none !important;
+  width: 100%;
+  .react-datepicker-wrapper{
+    width: 100%;
+  .react-datepicker__input-container{
+    input{
+    padding: 12px !important;
+    border-radius: 4px !important;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    height: calc(2.25rem + 2px);
+    width: 100%;  border: 1px solid #c2cbe8;
+    }
 }
-
+}
+}
 .rrt-confirm-holder .rrt-confirm {
   width: 444px;
   font-size: 1rem;
@@ -1433,9 +1450,9 @@ form .form-control {
   }
 }
 
-textarea.form-control {
-  height: calc(2.25rem + 2px);
-}
+// textarea.form-control {
+//   height: calc(2.25rem + 2px);
+// }
 
 .userInfo {
   [class^="icon-"] {
@@ -1782,4 +1799,7 @@ body {
 
 .Ext.phoneNumber.col-md-3 {
   float: left;
+}
+.css-yk16xz-control {
+  border-color: #C2CBE8 !important;
 }

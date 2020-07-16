@@ -286,7 +286,7 @@ class AddZBCPlant extends Component {
                                 <h3>{`Plant Master`}</h3>
                             </Col> */}
                             {this.state.isShowForm &&
-                                <Col md="12">
+                                <Col md="12" className="p-0">
                                     <div className="shadow-lgg login-formg pt-30">
                                         <Row>
                                             <Col md="6">
@@ -458,7 +458,7 @@ class AddZBCPlant extends Component {
                                             </Row>
 
                                             <Row className="sf-btn-footer no-gutters justify-content-between">
-                                                <div className="col-sm-12 text-center">
+                                                <div className="col-sm-12 text-right bluefooter-butn">
                                                     <button
                                                         type="submit"
                                                         className="submit-button mr5 save-btn" >

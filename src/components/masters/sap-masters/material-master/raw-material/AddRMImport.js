@@ -1111,7 +1111,7 @@ class AddRMImport extends Component {
                                                                 //maxDate={new Date()}
                                                                 dropdownMode="select"
                                                                 placeholderText="Select date"
-                                                                className="withBorder"
+                                                                className="withBorder form-control"
                                                                 autoComplete={'off'}
                                                                 disabledKeyboardNavigation
                                                                 onChangeRaw={(e) => e.preventDefault()}
@@ -1141,9 +1141,11 @@ class AddRMImport extends Component {
                                                         required={true}
                                                         component={renderTextAreaField}
                                                         maxLength="5000"
+                                                        rows="10"
                                                     />
                                                 </Col>
                                                 <Col md="6">
+                                                <label>Upload Attachment ( upload up to 3 files )</label>
                                                     <Dropzone
                                                         getUploadParams={this.getUploadParams}
                                                         onChangeStatus={this.handleChangeStatus}

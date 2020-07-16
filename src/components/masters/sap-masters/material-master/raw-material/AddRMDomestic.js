@@ -1084,13 +1084,16 @@ class AddRMDomestic extends Component {
                                                         required={true}
                                                         component={renderTextAreaField}
                                                         maxLength="5000"
+                                                        rows="6"
                                                     />
                                                 </Col>
                                                 <Col md="6">
+                                                    <label>Upload Attachment ( upload up to 3 files )</label>
+                                                   
                                                     <Dropzone
                                                         getUploadParams={this.getUploadParams}
                                                         onChangeStatus={this.handleChangeStatus}
-                                                        label={`Upload Attachment ( upload up to 3 files )`}
+                                                        
                                                         //PreviewComponent={this.Preview}
                                                         //onSubmit={this.handleSubmit}
                                                         accept="image/jpeg,image/png,xls,doc,pdf"

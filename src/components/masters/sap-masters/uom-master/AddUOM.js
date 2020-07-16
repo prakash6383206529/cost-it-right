@@ -175,7 +175,7 @@ class AddUOM extends Component {
                             </Row>
 
                             <Row>
-                                <div className="input-group col-md-12 input-withouticon" >
+                                <div className="input-group form-group col-md-12 input-withouticon" >
                                     <Field
                                         label="UOM Name"
                                         name={"Unit"}
@@ -188,7 +188,7 @@ class AddUOM extends Component {
                                         customClassName={'withBorder'}
                                     />
                                 </div>
-                                <div className="col-md-12" >
+                                <div className="col-md-12 form-group" >
                                     <Field
                                         name="UnitTypeId"
                                         type="text"
@@ -206,7 +206,7 @@ class AddUOM extends Component {
 
                             </Row>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-center">
+                                <div className="col-sm-12 text-right">
                                     <button
                                         type="submit"
                                         className="submit-button mr5 save-btn" >

@@ -107,7 +107,7 @@ class UOMMaster extends Component {
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell)} />
+                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
                 <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
             </>
         )
@@ -170,13 +170,13 @@ class UOMMaster extends Component {
             //paginationSize: 2,
         };
         return (
-            <Container className="top-margin">
+            <Container >
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
-                    <Col>
+                    <Col md={12}>
                         <h3>{`Unit of Measurement Master`}</h3>
-                    </Col>
-                    <Col>
+                    </Col> <hr />
+                    <Col md={12} className='text-right mb15'>
                         <button
                             type={'button'}
                             className={'user-btn'}
@@ -185,12 +185,13 @@ class UOMMaster extends Component {
                     </Col>
                 </Row>
 
-                <hr />
+               
                 <Row>
                     <Col>
                         <BootstrapTable
                             data={this.state.dataList}
-                            striped={true}
+                            striped={false}
+                            bordered={false}
                             hover={true}
                             options={options}
                             search
