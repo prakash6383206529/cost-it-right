@@ -26,7 +26,7 @@ import MHRMaster from './masters/sap-masters/mhr-master';
 //import OperationMaster from './masters/sap-masters/operation';
 import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
-import OperationMaster from './masters/sap-masters/operation';
+import OperationMaster from './masters/sap-masters/operation/AddOperation';
 import MaterialMaster from './masters/sap-masters/material-master/raw-material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourMaster from './masters/sap-masters/labour-master';
@@ -37,7 +37,9 @@ import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegi
 import MachineTypeMaster from './masters/sap-masters/machine-type-master';
 import MachineMaster from './masters/sap-masters/machine-master';
 import PowerMaster from './masters/sap-masters/power-master';
-import ReasonMaster from './masters/sap-masters/reason-master';
+import ReasonMaster from './masters/sap-masters/reason-master/AddReason';
+import VolumeMaster from './masters/sap-masters/volume-master/AddVolume';
+import ClientMaster from './masters/sap-masters/client-master/AddClient';
 import MassUpload from './massUpload';
 import LeftMenu from './nav/Leftsidemenu';
 import Breadcrumb from './nav/Breadcrumb';
@@ -194,6 +196,10 @@ class Main extends Component {
                 <Route path="/mass-upload" component={AuthMiddleware(MassUpload)} />
 
                 <Route path="/reason-master" component={AuthMiddleware(ReasonMaster)} />
+
+                <Route path="/volume-master" component={AuthMiddleware(VolumeMaster)} />
+
+                <Route path="/client-master" component={AuthMiddleware(ClientMaster)} />
 
                 <Route
                   render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}

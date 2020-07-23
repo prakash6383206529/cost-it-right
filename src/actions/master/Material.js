@@ -649,7 +649,6 @@ export function createRMDomestic(data, callback) {
     };
 }
 
-
 /**
  * @method getRawMaterialDetailsDataAPI
  * @description get Raw Material Details
@@ -677,7 +676,6 @@ export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
         }
     };
 }
-
 
 /**
  * @method getRawMaterialDetailsAPI
@@ -1052,7 +1050,7 @@ export function fileUpdateRMDomestic(data, callback) {
         let multipartHeaders = {
             'Content-Type': 'multipart/form-data;'
         };
-        const request = axios.post(API.fileUpdateRMDomestic, data, headers);
+        const request = axios.put(API.fileUpdateRMDomestic, data, headers);
         request.then((response) => {
             //console.log('>>>>>>>>>>>>>>>>>', response)
             if (response && response.status == 200) {
@@ -1072,12 +1070,48 @@ export function fileUpdateRMDomestic(data, callback) {
 export function fileDeleteRMDomestic(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteRMDomestic}`, data, headers)
+        axios.delete(`${API.fileDeleteRMDomestic}/${data.Id}/${data.DeletedBy}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method bulkUploadRMDomestic
+ * @description upload bulk RM Domestic
+ */
+export function bulkUploadRMDomestic(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMDomestic, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkfileUploadRM
+ * @description upload bulk RM Domestic
+ */
+export function bulkfileUploadRM(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkfileUploadRM, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

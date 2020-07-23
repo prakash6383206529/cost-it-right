@@ -21,6 +21,8 @@ export const API = {
   getCostingStatus: `${BASE_URL}/configuration/select-list-get-costing-status`,
   getCostingHeads: `${BASE_URL}/configuration/select-list-get-costing-heads`,
   getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
+  getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
+  getPlantSelectList: `${BASE_URL}/configuration/select-list-get-plant`,
 
   //Combo apis
   //configure api's
@@ -147,6 +149,8 @@ export const API = {
   fileUploadRMDomestic: `${BASE_URL}/masters-raw-material/raw-material-file-upload`,
   fileUpdateRMDomestic: `${BASE_URL}/masters-raw-material/update-raw-material-file`,
   fileDeleteRMDomestic: `${BASE_URL}/masters-raw-material/delete-raw-material-file`,
+  bulkUploadRMDomestic: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-domestic-json`,
+  bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -203,12 +207,22 @@ export const API = {
   activeInactiveVendorStatus: `${BASE_URL}/vendor/active-vendor`,
   getVendorsByVendorTypeID: `${BASE_URL}/vendor/vendor-by-vendor-type-select-list`,
 
-  //Api's for bought out parts
-  createBOPAPI: `${BASE_URL}/masters-bought-out-part/create`,
-  getBOPAPI: `${BASE_URL}/masters-bought-out-part/get`,
-  getAllBOPAPI: `${BASE_URL}/masters-bought-out-part/get-all`,
-  updateBOPAPI: `${BASE_URL}/masters-bought-out-part/update`,
+  //BOP DOMESTIC
+  createBOPDomestic: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-domestic`,
+  getBOPDomesticById: `${BASE_URL}/masters-bought-out-part/get-domestic-bought-out-part-by-id`,
+  getBOPDomesticDataList: `${BASE_URL}/masters-bought-out-part/get-all-domestic-bought-out-part-by-filter`,
+  updateBOPDomestic: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-domestic`,
   deleteBOPAPI: `${BASE_URL}/masters-bought-out-part/delete`,
+
+  //BOP IMPORT
+  createBOPImport: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-import`,
+  getBOPImportById: `${BASE_URL}/masters-bought-out-part/get-import-bought-out-part-by-id`,
+  getBOPImportDataList: `${BASE_URL}/masters-bought-out-part/get-all-import-bought-out-part-by-filter`,
+  updateBOPImport: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-import`,
+
+  //BOP Category
+  createBOPCategory: `${BASE_URL}/masters-bought-out-part/add-bought-out-part-category`,
+  getBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
 
   //Api's for process master
   createProcessAPI: `${BASE_URL}/masters-process/create`,
@@ -244,12 +258,13 @@ export const API = {
   deleteCEDotherOperationAPI: `${BASE_URL}/masters-other-operation/delete-ced-other-operation`,
   updateCEDoperationAPI: `${BASE_URL}/masters-other-operation/update-ced-other-operation`,
 
-  //API's for Operation
-  getOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-operation`,
-  createOperationAPI: `${BASE_URL}/masters-other-operation/create-operation`,
-  getOperationDataAPI: `${BASE_URL}/masters-other-operation/get-operation`,
-  updateOperationAPI: `${BASE_URL}/masters-other-operation/update-operation`,
-  deleteOperationAPI: `${BASE_URL}/masters-other-operation/delete-operation`,
+  //OPERATION MASTER
+  createOperationAPI: `${BASE_URL}/masters-operation/create-operation`,
+  updateOperationAPI: `${BASE_URL}/masters-operation/update-operation`,
+  getOperationsDataList: `${BASE_URL}/masters-operation/get-all-operation-by-filter`,
+  getOperationDataAPI: `${BASE_URL}/masters-operation/get-operation`,
+  deleteOperationAPI: `${BASE_URL}/masters-operation/delete-operation`,
+  getOperationSelectList: `${BASE_URL}/configuration/select-list-get-operation`,
 
   //Api's for fright master
   createFreightAPI: `${BASE_URL}/masters-freight/create`,
@@ -274,12 +289,19 @@ export const API = {
   deleteLabourAPI: `${BASE_URL}/masters-labour/delete`,
 
   //OVERHEAD AND PROFIT API'S
-  getOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/get-all`,
-  getOverheadProfitDataAPI: `${BASE_URL}/masters-overhead-and-profit/get`,
+  createOverhead: `${BASE_URL}/masters-overhead-and-profit/create-overhead`,
+  updateOverhead: `${BASE_URL}/masters-overhead-and-profit/update-overhead`,
+  getOverheadData: `${BASE_URL}/masters-overhead-and-profit/get`,
+  getOverheadDataList: `${BASE_URL}/masters-overhead-and-profit/get-all-overhead-by-filter`,
+  activeInactiveOverhead: `${BASE_URL}/masters-overhead-and-profit/active-inactive-overhead`,
+
+  createProfit: `${BASE_URL}/masters-overhead-and-profit/create-profit`,
+  updateProfit: `${BASE_URL}/masters-overhead-and-profit/update-profit`,
+  getProfitData: `${BASE_URL}/masters-overhead-and-profit/get-profit`,
+  getProfitDataList: `${BASE_URL}/masters-overhead-and-profit/get-all-profit-by-filter`,
+  deleteOverhead: `${BASE_URL}/masters-overhead-and-profit/delete`,
+  activeInactiveProfit: `${BASE_URL}/masters-overhead-and-profit/active-inactive-profit`,
   getOverheadProfitComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
-  createOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/create`,
-  deleteOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/delete`,
-  updateOverheadProfitAPI: `${BASE_URL}/masters-overhead-and-profit/update`,
 
   //Api's for depreciation master
   createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation-type`,
@@ -426,6 +448,7 @@ export const API = {
   getReasonAPI: `${BASE_URL}/masters-reason/get`,
   updateReasonAPI: `${BASE_URL}/masters-reason/update`,
   deleteReasonAPI: `${BASE_URL}/masters-reason/delete`,
+  activeInactiveReasonStatus: `${BASE_URL}/masters-reason/active`,
 
   //MHR
   getMHRComboDataAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
@@ -483,6 +506,20 @@ export const API = {
   //EXCHANGE RATE
   getCurrencySelectList: `${BASE_URL}/masters-exchange-rate/select-list-get-currency`,
 
+  //VOLUME MASTER
+  createVolume: `${BASE_URL}/masters-volume/create-volume`,
+  updateVolume: `${BASE_URL}/masters-volume/update`,
+  getVolumeData: `${BASE_URL}/masters-volume/get-volume-by-id`,
+  getVolumeDataList: `${BASE_URL}/masters-volume/get-all-volume-by-filter`,
+  deleteVolume: `${BASE_URL}/masters-volume/delete-volume`,
+
+  //CLIENT MASTER
+  createClient: `${BASE_URL}/client/create-client`,
+  updateClient: `${BASE_URL}/client/update-client`,
+  getClientData: `${BASE_URL}/client/get-client-detail-by-id`,
+  getClientDataList: `${BASE_URL}/client/get-all-client`,
+  deleteClient: `${BASE_URL}/client/delete`,
+
 }
 
 //Api constants
@@ -502,6 +539,8 @@ export const GET_SUPPLIER_DATALIST_SUCCESS = 'GET_SUPPLIER_DATALIST_SUCCESS';
 export const GET_SUPPLIER_CITY_SUCCESS = 'GET_SUPPLIER_CITY_SUCCESS';
 export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
 export const GET_SUPPLIER_SELECTLIST_SUCCESS = 'GET_SUPPLIER_SELECTLIST_SUCCESS';
+export const GET_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_TECHNOLOGY_SELECTLIST_SUCCESS';
+export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS';
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
@@ -607,9 +646,11 @@ export const GET_ASSEMBLY_PART_DATA_SUCCESS = 'GET_ASSEMBLY_PART_DATA_SUCCESS';
 export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';
 export const CREATE_BOP_FAILURE = 'CREATE_BOP_FAILURE';
 export const GET_BOP_SUCCESS = 'GET_BOP_SUCCESS';
-export const GET_BOP_DATA_SUCCESS = 'GET_BOP_DATA_SUCCESS';
+export const GET_BOP_DOMESTIC_DATA_SUCCESS = 'GET_BOP_DOMESTIC_DATA_SUCCESS';
+export const GET_BOP_IMPORT_DATA_SUCCESS = 'GET_BOP_IMPORT_DATA_SUCCESS';
 export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 export const UPDATE_BOP_SUCCESS = 'UPDATE_BOP_SUCCESS';
+export const GET_BOP_CATEGORY_SELECTLIST_SUCCESS = 'GET_BOP_CATEGORY_SELECTLIST_SUCCESS';
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS';
@@ -663,6 +704,7 @@ export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANT
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';
 export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS';
+export const GET_OPERATION_SELECTLIST_SUCCESS = 'GET_OPERATION_SELECTLIST_SUCCESS';
 
 //FREIGHT MASTER
 export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';
@@ -820,6 +862,12 @@ export const GET_POWER_DATA_SUCCESS = 'GET_POWER_DATA_SUCCESS';
 
 //CURRENCY EXCHANGE
 export const GET_CURRENCY_SELECTLIST_SUCCESS = 'GET_CURRENCY_SELECTLIST_SUCCESS';
+
+//VOLUME MASTER
+export const GET_VOLUME_DATA_SUCCESS = 'GET_VOLUME_DATA_SUCCESS';
+
+//CLIENT MASTER
+export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';

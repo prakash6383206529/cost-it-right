@@ -38,26 +38,6 @@ class RowMaterialMaster extends Component {
     }
 
     /**
-    * @method openRMModel
-    * @description  used to open filter form 
-    */
-    openRMModel = () => {
-        this.setState({ isRMOpen: true })
-    }
-
-    /**
-     * @method editRawMaterialDetailsHandler
-     * @description  used to open RM Detail form 
-     */
-    editRawMaterialDetailsHandler = (Id) => {
-        this.setState({
-            isRMOpen: true,
-            Id: Id,
-            isEditFlag: true,
-        })
-    }
-
-    /**
      * @method onCancel
      * @description  used to cancel filter form
      */

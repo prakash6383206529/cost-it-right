@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
     API,
     API_REQUEST,
+    API_SUCCESS,
     API_FAILURE,
     DATA_FAILURE,
     CREATE_SUCCESS,
@@ -135,6 +136,25 @@ export function deleteReasonAPI(Id, callback) {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteReasonAPI}/${Id}`, headers)
             .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method activeInactiveReasonStatus
+ * @description active Inactive Status
+ */
+export function activeInactiveReasonStatus(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.activeInactiveReasonStatus}`, requestData, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
                 callback(response);
             }).catch((error) => {
                 apiErrors(error);

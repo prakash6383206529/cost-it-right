@@ -142,14 +142,7 @@ class ReasonMaster extends Component {
                         </Table>
                     </Col>
                 </Row>
-                {isOpen && (
-                    <AddReason
-                        isOpen={isOpen}
-                        onCancel={this.onCancel}
-                        isEditFlag={isEditFlag}
-                        ReasonId={this.state.ReasonId}
-                    />
-                )}
+
             </Container >
         );
     }

@@ -13,6 +13,7 @@ import {
     GET_OPERATION_SUCCESS,
     GET_UNIT_OPERATION_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
+    GET_OPERATION_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -102,6 +103,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 cedOperationData: action.payload
+            };
+        case GET_OPERATION_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                operationSelectList: action.payload
             };
         default:
             return state;

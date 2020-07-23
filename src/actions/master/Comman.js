@@ -45,6 +45,8 @@ import {
     GET_PLANTS_BY_SUPPLIER_AND_CITY,
     GET_SUPPLIER_SELECTLIST_SUCCESS,
     GET_CURRENCY_SELECTLIST_SUCCESS,
+    GET_TECHNOLOGY_SELECTLIST_SUCCESS,
+    GET_PLANT_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -837,8 +839,6 @@ export function fetchCostingHeadsAPI(costingHeads, callback) {
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -887,8 +887,6 @@ export function fetchModelTypeAPI(modelTypeHeading, callback) {
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -1289,6 +1287,53 @@ export function getCurrencySelectList(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_CURRENCY_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+* @method getTechnologySelectList
+* @description Used to get select list of Vendor's
+*/
+export function getTechnologySelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getTechnologySelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TECHNOLOGY_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getPlantSelectList
+* @description Used to get select list of Vendor's
+*/
+export function getPlantSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlantSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PLANT_SELECTLIST_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);

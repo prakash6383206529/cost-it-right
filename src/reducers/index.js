@@ -25,6 +25,8 @@ import ApprovalReducer from './costing/Approval';
 import MachineReducer from './master/MachineMaster';
 import PowerReducer from './master/PowerMaster';
 import ReasonReducer from './master/ReasonMaster';
+import VolumeReducer from './master/Volume';
+import ClientReducer from './master/Client';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -61,6 +63,8 @@ const allReducers = combineReducers({
    machine: MachineReducer,
    power: PowerReducer,
    reason: ReasonReducer,
+   volume: VolumeReducer,
+   client: ClientReducer,
 });
 
 export default rootReducer;

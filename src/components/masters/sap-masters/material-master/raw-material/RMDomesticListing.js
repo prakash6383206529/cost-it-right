@@ -18,6 +18,8 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
+import moment from 'moment';
+import DomesticBulkUpload from './DomesticBulkUpload';
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -30,6 +32,7 @@ class RMDomesticListing extends Component {
             RMGrade: [],
             vendorName: [],
             value: { min: 10, max: 150 },
+            isBulkUpload: false,
         }
     }
 
@@ -196,6 +199,14 @@ class RMDomesticListing extends Component {
         return <>Net Landed <br />Cost(INR) </>
     }
 
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
     renderEffectiveDate = () => {
         return <>Effective <br />Date</>
     }
@@ -310,6 +321,14 @@ class RMDomesticListing extends Component {
         this.props.formToggle()
     }
 
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false })
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -324,6 +343,7 @@ class RMDomesticListing extends Component {
     */
     render() {
         const { handleSubmit } = this.props;
+        const { isBulkUpload } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -336,7 +356,7 @@ class RMDomesticListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
-                        <Col md="11" className="filter-block">
+                        <Col md="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -413,15 +433,22 @@ class RMDomesticListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="1" className="search-user-block">
+                        <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD RM</button>
+                                        <>
+                                            <button
+                                                type="button"
+                                                className={'user-btn mr5'}
+                                                onClick={this.bulkToggle}>
+                                                <div className={'plus'}></div>Bulk Upload</button>
+                                            <button
+                                                type="button"
+                                                className={'user-btn'}
+                                                onClick={this.formToggle}>
+                                                <div className={'plus'}></div>ADD</button>
+                                        </>
                                     }
                                 </div>
                             </div>
@@ -453,10 +480,18 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRate" >{this.renderBasicRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" >{this.renderNetCost()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="RawMaterialId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>
+                {isBulkUpload && <DomesticBulkUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    ID={''}
+                    anchor={'right'}
+                />}
             </div >
         );
     }

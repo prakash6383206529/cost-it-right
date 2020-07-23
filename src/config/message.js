@@ -90,10 +90,18 @@ export const MESSAGES = {
   LABOUR_ADDED_SUCCESS: 'Labour added successfully',
 
   //OVERHEAD AND PROFIT
-  OVERHEAD_PROFIT_ADDED_SUCCESS: 'Overhead profit added successfully',
-  OVERHEAD_PROFIT_DELETE_ALERT: 'Are you sure you want to delete Overhead & Profit?',
-  DELETE_OVERHEAD_PROFIT_SUCCESS: 'Overhead & Profit deleted successfully',
-  OVERHEAD_PROFIT_UPDATE_SUCCESS: 'Overhead & Profit has been updated successfully',
+  OVERHEAD_ADDED_SUCCESS: 'Overhead created successfully',
+  PROFIT_ADDED_SUCCESS: 'Profit created successfully',
+  OVERHEAD_UPDATE_SUCCESS: 'Overhead has been updated successfully',
+  PROFIT_UPDATE_SUCCESS: 'Profit has been updated successfully',
+  OVERHEAD_DELETE_ALERT: 'Are you sure you want to delete Overhead?',
+  PROFIT_DELETE_ALERT: 'Are you sure you want to delete Profit?',
+  DELETE_OVERHEAD_SUCCESS: 'Overhead deleted successfully',
+  DELETE_PROFIT_SUCCESS: 'Profit deleted successfully',
+  OVERHEAD_ACTIVE_SUCCESSFULLY: 'Overhead has been active successfully.',
+  OVERHEAD_INACTIVE_SUCCESSFULLY: 'Overhead has been inactive successfully.',
+  PROFIT_ACTIVE_SUCCESSFULLY: 'Profit has been active successfully.',
+  PROFIT_INACTIVE_SUCCESSFULLY: 'Profit has been inactive successfully.',
 
   //DEPRECIATION 
   DEPRECIATION_ADD_SUCCESS: 'Depreciation added successfully',
@@ -127,20 +135,24 @@ export const MESSAGES = {
   VENDOR_ACTIVE_SUCCESSFULLY: 'Vendor has been active successfully.',
   VENDOR_INACTIVE_SUCCESSFULLY: 'Vendor has been inactive successfully.',
 
+  //BOP MASTER
+  ADD_BOP_SUCCESS: 'BOP added successfully',
+  BOP_ADD_SUCCESS: 'BOP added successfully',
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
+  BOP_DELETE_ALERT: 'Are you sure you want to delete BOP?',
+  BOP_DELETE_SUCCESS: 'BOP has been deleted.',
+
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
   FUEL_ADD_SUCCESS: 'Fuel added successfully',
   FUEL_DELETE_ALERT: 'Are you sure you want to delete Fule?',
   FUEL_DETAIL_DELETE_ALERT: 'Are you sure you want to delete Fule Detail?',
-  ADD_BOP_SUCCESS: 'BOP added successfully',
-  BOP_ADD_SUCCESS: 'BOP added successfully',
   INTEREST_RATE_ADDED_SUCCESS: 'Suppiler interest rate added successfully',
   DELETE_INTEREST_RATE_SUCCESS: 'Supplier interest rate deleted successfully',
   UPDATE_INTEREST_RATE_SUCESS: 'Supplier interest rate updated successfully',
   ADD_PART_WITH_SUPPLIER_SUCCESS: 'Supplier has been added successfully.',
   NEW_COSTING_CREATE_SUCCESS: 'New sheetmetal costing created successfully',
-  BOM_DELETE_SUCCESS: 'BOM has been deleted.',
   WEIGHT_ADD_SUCCESS: 'Weight specification added successfully',
+  BOM_DELETE_SUCCESS: 'BOM has been deleted.',
   SAVE_OTHER_OPERATION_SUCCESS: 'Other Operation saved successfully.',
   SAVE_PROCESS_COSTING_SUCCESS: 'Process costing saved successfully.',
   SAVE_BOP_COSTING_SUCCESS: 'Bought Out Part costing saved successfully.',
@@ -169,6 +181,10 @@ export const MESSAGES = {
   //REASON MASTER
   REASON_ADD_SUCCESS: 'Reason has been added successfully.',
   UPDATE_REASON_SUCESS: 'Reason has been updated successfully.',
+  REASON_DELETE_ALERT: 'Are you sure you want to delete Reason?',
+  DELETE_REASON_SUCCESSFULLY: 'Reason has been deleted successfully.',
+  REASON_ACTIVE_SUCCESSFULLY: 'Reason has been active successfully.',
+  REASON_INACTIVE_SUCCESSFULLY: 'Reason has been inactive successfully.',
 
   //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully.',
@@ -236,6 +252,18 @@ export const MESSAGES = {
 
   //DEPARATMENT EMPTY
   DEPARTMENT_EMPTY_ALERT: 'Permission should not be empty.',
+
+  //VOLUME MASTER
+  VOLUME_ADD_SUCCESS: 'Volume added successfully',
+  VOLUME_DELETE_ALERT: 'Are you sure you want to delete Volume?',
+  DELETE_VOLUME_SUCCESS: 'Volume has been deleted successfully.',
+  VOLUME_UPDATE_SUCCESS: 'Volume has been updated successfully',
+
+  //CLIENT MASTER
+  CLIENT_ADD_SUCCESS: 'Client added successfully',
+  CLIENT_DELETE_ALERT: 'Are you sure you want to delete Client?',
+  DELETE_CLIENT_SUCCESS: 'Client has been deleted successfully.',
+  CLIENT_UPDATE_SUCCESS: 'Client has been updated successfully',
 
 };
 

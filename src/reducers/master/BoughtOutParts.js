@@ -5,8 +5,10 @@ import {
     CREATE_BOP_FAILURE,
     GET_BOP_SUCCESS,
     GET_BOP_FAILURE,
-    GET_BOP_DATA_SUCCESS,
-    UPDATE_BOP_SUCCESS
+    GET_BOP_DOMESTIC_DATA_SUCCESS,
+    GET_BOP_IMPORT_DATA_SUCCESS,
+    UPDATE_BOP_SUCCESS,
+    GET_BOP_CATEGORY_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -50,7 +52,13 @@ export default function BOPReducer(state = initialState, action) {
                 loading: false,
                 error: true
             };
-        case GET_BOP_DATA_SUCCESS:
+        case GET_BOP_DOMESTIC_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                bopData: action.payload
+            };
+        case GET_BOP_IMPORT_DATA_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -61,6 +69,12 @@ export default function BOPReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
+            };
+        case GET_BOP_CATEGORY_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                bopCategorySelectList: action.payload
             };
         default:
             return state;

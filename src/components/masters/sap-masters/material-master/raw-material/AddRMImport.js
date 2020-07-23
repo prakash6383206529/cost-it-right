@@ -1080,12 +1080,12 @@ class AddRMImport extends Component {
                                                 <Col md="3">
                                                     <div className="form-group">
                                                         <label>
-                                                            Date To
+                                                            Effective Date
                                                     <span className="asterisk-required">*</span>
                                                         </label>
                                                         <div className="inputbox date-section">
                                                             <DatePicker
-                                                                name="ValidDateTo"
+                                                                name="EffectiveDate"
                                                                 selected={this.state.effectiveDate}
                                                                 onChange={this.handleEffectiveDateChange}
                                                                 showMonthDropdown

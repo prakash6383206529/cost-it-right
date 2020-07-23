@@ -6,8 +6,10 @@ import {
     CREATE_BOM_SUCCESS,
     CREATE_BOM_FAILURE,
     GET_BOP_SUCCESS,
-    GET_BOP_DATA_SUCCESS,
-    UPDATE_BOP_SUCCESS
+    GET_BOP_DOMESTIC_DATA_SUCCESS,
+    GET_BOP_IMPORT_DATA_SUCCESS,
+    UPDATE_BOP_SUCCESS,
+    GET_BOP_CATEGORY_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -24,73 +26,93 @@ const headers = {
  * @method createBOPAPI
  * @description create baught out parts master
  */
-export function createBOPAPI(data, callback) {
+export function createBOPDomestic(data, callback) {
     return (dispatch) => {
-        // dispatch({
-        //     type:  API_REQUEST,
-        // });
-        const request = axios.post(API.createBOPAPI, data, headers);
+        const request = axios.post(API.createBOPDomestic, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: CREATE_BOM_SUCCESS,
-                });
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_BOM_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
 }
 
 /**
- * @method getAllBOMAPI
- * @description get all bill of material list
+ * @method createBOPImport
+ * @description create BOP Import
  */
-export function getAllBOPAPI(callback) {
+export function createBOPImport(data, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllBOPAPI}`, headers);
+        const request = axios.post(API.createBOPImport, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: GET_BOP_SUCCESS,
-                    payload: response.data.DataList,
-                });
                 callback(response);
-            } else {
-                //toastr.error(MESSAGES.SOME_ERROR);
-                dispatch({ type: API_FAILURE });
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getBOPDomesticDataList
+ * @description get all BOP Domestic Data list.
+ */
+export function getBOPDomesticDataList(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
+        const request = axios.get(`${API.getBOPDomesticDataList}/${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
-            apiErrors(error);
+            //apiErrors(error);
         });
     };
 }
 
 /**
- * @method getBOPByIdAPI
+ * @method getBOPImportDataList
+ * @description get all BOP Import Data list.
+ */
+export function getBOPImportDataList(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
+        const request = axios.get(`${API.getBOPImportDataList}/${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            //apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getBOPDomesticById
  * @description get one bought out part based on id
  */
-export function getBOPByIdAPI(bopId, callback) {
+export function getBOPDomesticById(bopId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (bopId != '') {
-            axios.get(`${API.getBOPAPI}/${bopId}`, headers)
+            axios.get(`${API.getBOPDomesticById}/${bopId}`, headers)
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
-                            type: GET_BOP_DATA_SUCCESS,
+                            type: GET_BOP_DOMESTIC_DATA_SUCCESS,
                             payload: response.data.Data,
                         });
                         callback(response);
@@ -101,7 +123,38 @@ export function getBOPByIdAPI(bopId, callback) {
                 });
         } else {
             dispatch({
-                type: GET_BOP_DATA_SUCCESS,
+                type: GET_BOP_DOMESTIC_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method getBOPImportById
+ * @description get one bought out part based on id
+ */
+export function getBOPImportById(bopId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if (bopId != '') {
+            axios.get(`${API.getBOPImportById}/${bopId}`, headers)
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_BOP_IMPORT_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_BOP_IMPORT_DATA_SUCCESS,
                 payload: {},
             });
             callback();
@@ -127,19 +180,78 @@ export function deleteBOPAPI(Id, callback) {
 }
 
 /**
- * @method updateBOPAPI
- * @description update BOP
+ * @method updateBOPDomestic
+ * @description update BOP Domestic
  */
-export function updateBOPAPI(requestData, callback) {
+export function updateBOPDomestic(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPAPI}`, requestData, headers)
+        axios.put(`${API.updateBOPDomestic}`, requestData, headers)
             .then((response) => {
-                dispatch({ type: UPDATE_BOP_SUCCESS });
                 callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method updateBOPImport
+ * @description update BOP Import
+ */
+export function updateBOPImport(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateBOPImport}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method createBOPCategory
+ * @description create BOP Category
+ */
+export function createBOPCategory(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createBOPCategory, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getBOPCategorySelectList
+ * @description Used to fetch BOP Category selectlist
+ */
+export function getBOPCategorySelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getBOPCategorySelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_BOP_CATEGORY_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
     };
 }

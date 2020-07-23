@@ -46,6 +46,8 @@ import {
     GET_PLANTS_BY_SUPPLIER_AND_CITY,
     GET_SUPPLIER_SELECTLIST_SUCCESS,
     GET_CURRENCY_SELECTLIST_SUCCESS,
+    GET_TECHNOLOGY_SELECTLIST_SUCCESS,
+    GET_PLANT_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -367,6 +369,20 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 currencySelectList: action.payload
+            };
+        case GET_TECHNOLOGY_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                technologySelectList: action.payload
+            };
+        case GET_PLANT_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                plantSelectList: action.payload
             };
         default:
             return state;
