@@ -5,7 +5,7 @@ import { Container, Row, Col } from 'reactstrap';
 import { required, number, maxLength6, maxLength10, maxLength100 } from "../../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../../helper/auth";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, } from "../../../layout/FormInputs";
-import { } from '../../../../actions/master/Plant';
+import { createPart, updatePart, getPartData, } from '../../../../actions/master/Part';
 import { getPlantSelectList, } from '../../../../actions/master/Comman';
 import { getRawMaterialNameChild, } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
@@ -34,8 +34,8 @@ class AddIndivisualPart extends Component {
     }
 
     /**
-    * @method toggleModel
-    * @description Used to cancel modal
+    * @method componentDidMount
+    * @description 
     */
     componentDidMount() {
         this.props.getRawMaterialNameChild(() => { })
@@ -44,47 +44,48 @@ class AddIndivisualPart extends Component {
 
     /**
     * @method getDetails
-    * @description Used to cancel modal
+    * @description 
     */
     getDetails = (data) => {
-        // if (data && data.isEditFlag) {
-        //     this.setState({
-        //         isEditFlag: false,
-        //         isLoader: true,
-        //         isShowForm: true,
-        //         PartId: data.Id,
-        //     })
-        //     if (data.passwordFlag == false) {
-        //         $('html, body').animate({ scrollTop: 0 }, 'slow');
-        //     }
-        //     this.props.getPlantUnitAPI(data.Id, true, res => {
-        //         if (res && res.data && res.data.Result) {
+        if (data && data.isEditFlag) {
+            this.setState({
+                isEditFlag: false,
+                isLoader: true,
+                isShowForm: true,
+                PartId: data.Id,
+            })
+            if (data.passwordFlag == false) {
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+            }
+            this.props.getPartData(data.Id, res => {
+                if (res && res.data && res.data.Result) {
 
-        //             const Data = res.data.Data;
+                    const Data = res.data.Data;
 
-        //             this.props.fetchStateDataAPI(Data.CountryId, () => { })
-        //             this.props.fetchCityDataAPI(Data.StateId, () => { })
+                    let plantArray = [];
+                    Data && Data.Plant.map((item) => {
+                        plantArray.push({ Text: item.PlantName, Value: item.PlantId })
+                        return plantArray;
+                    })
 
-        //             setTimeout(() => {
-        //                 const { countryList, stateList, cityList } = this.props;
+                    setTimeout(() => {
+                        const { rawMaterialNameSelectList } = this.props;
 
-        //                 const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
-        //                 const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
-        //                 const CityObj = cityList && cityList.find(item => item.Value == Data.CityIdRef)
+                        const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
 
-        //                 this.setState({
-        //                     isEditFlag: true,
-        //                     isLoader: false,
-        //                     country: { label: CountryObj.Text, value: CountryObj.Value },
-        //                     state: { label: StateObj.Text, value: StateObj.Value },
-        //                     city: { label: CityObj.Text, value: CityObj.Value },
-        //                 })
-        //             }, 500)
-        //         }
-        //     })
-        // } else {
-        //     this.props.getPlantUnitAPI('', false, res => { })
-        // }
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value },
+                            selectedPlants: plantArray,
+                            effectiveDate: new Date(Data.EffectiveDate),
+                        })
+                    }, 500)
+                }
+            })
+        } else {
+            this.props.getPartData('', res => { })
+        }
     }
 
     /**
@@ -128,14 +129,6 @@ class AddIndivisualPart extends Component {
     }
 
     /**
-    * @method toggleModel
-    * @description Used to cancel modal
-    */
-    toggleModel = () => {
-        this.props.onCancel();
-    }
-
-    /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
@@ -167,7 +160,7 @@ class AddIndivisualPart extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        //this.props.getPlantUnitAPI('', false, res => { })
+        this.props.getPartData('', res => { })
         this.setState({
             isEditFlag: false,
             isShowForm: false,
@@ -186,37 +179,72 @@ class AddIndivisualPart extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log("values", values)
-        const { country, state, city, PlantId, isEditFlag } = this.state;
+        const { PartId, selectedPlants, RawMaterial, effectiveDate, isEditFlag,
+            remarks, } = this.state;
         const { reset } = this.props;
-        const userDetail = userDetails();
+
+        let plantArray = [];
+        selectedPlants && selectedPlants.map((item) => {
+            plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
+            return plantArray;
+        })
 
         if (isEditFlag) {
-            this.setState({ isSubmitted: true });
-            let updateData = {
 
+            let updateData = {
+                LoggedInUserId: loggedInUserId(),
+                PartId: PartId,
+                PartName: values.PartName,
+                Description: values.Description,
+                ECONumber: values.ECONumber,
+                RevisionNumber: values.RevisionNumber,
+                Drawing: {},
+                DrawingNumber: values.DrawingNumber,
+                GroupCode: values.GroupCode,
+                Remark: values.Remark,
+                SelectedPlants: plantArray,
+                files: []
             }
-            // this.props.updatePlantAPI(PlantId, updateData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_PLANT_SUCESS);
-            //         reset();
-            //         this.child.getUpdatedData();
-            //     }
-            // });
+
+            this.props.updatePart(updateData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_PART_SUCESS);
+                    reset();
+                    this.cancel()
+                    this.child.getUpdatedData();
+                }
+            });
 
         } else {
 
             let formData = {
-
+                LoggedInUserId: loggedInUserId(),
+                BOMNumber: values.BOMNumber,
+                BOMLevel: 0,
+                Remark: values.Remark,
+                PartNumber: values.PartNumber,
+                PartName: values.PartName,
+                Description: values.Description,
+                ECONumber: values.ECONumber,
+                ECNNumber: values.ECNNumber,
+                EffectiveDate: effectiveDate,
+                RevisionNumber: values.RevisionNumber,
+                Drawing: {},
+                DrawingNumber: values.DrawingNumber,
+                GroupCode: values.GroupCode,
+                RawMaterialId: RawMaterial.value,
+                SelectedPlants: plantArray,
+                Attachements: []
             }
 
-            // this.props.createPlantAPI(formData, (res) => {
-            //     if (res.data.Result === true) {
-            //         toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
-            //         reset();
-            //         this.child.getUpdatedData();
-            //     }
-            // });
+            this.props.createPart(formData, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.PART_ADD_SUCCESS);
+                    reset();
+                    this.cancel()
+                    this.child.getUpdatedData();
+                }
+            });
         }
     }
 
@@ -487,16 +515,19 @@ class AddIndivisualPart extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material, comman, }) {
+function mapStateToProps({ material, comman, part }) {
     const { rawMaterialNameSelectList } = material;
     const { plantSelectList } = comman;
+    const { newPartData } = part;
+
     let initialValues = {};
-    // if (plantUnitDetail && plantUnitDetail !== undefined) {
-    //     initialValues = {
-    //         PlantName: plantUnitDetail.PlantName,
-    //     }
-    // }
-    return { rawMaterialNameSelectList, plantSelectList, initialValues }
+    if (newPartData && newPartData != undefined) {
+        initialValues = {
+            PartNumber: newPartData.PartNumber,
+        }
+    }
+
+    return { rawMaterialNameSelectList, plantSelectList, newPartData, initialValues }
 }
 
 /**
@@ -508,6 +539,9 @@ function mapStateToProps({ material, comman, }) {
 export default connect(mapStateToProps, {
     getRawMaterialNameChild,
     getPlantSelectList,
+    createPart,
+    updatePart,
+    getPartData,
 })(reduxForm({
     form: 'AddIndivisualPart',
     enableReinitialize: true,

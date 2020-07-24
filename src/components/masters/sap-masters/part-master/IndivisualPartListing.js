@@ -260,9 +260,9 @@ class IndivisualPartListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
                         <Col md="8" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                {/* <div className="flex-fill">
+                                <div className="flex-fill">
                                     <Field
                                         name="CountryId"
                                         type="text"
@@ -276,7 +276,7 @@ class IndivisualPartListing extends Component {
                                         handleChangeDescription={this.countryHandler}
                                         valueDescription={this.state.country}
                                     />
-                                </div> */}
+                                </div>
 
                                 <div className="flex-fill">
                                     <button
@@ -297,7 +297,7 @@ class IndivisualPartListing extends Component {
                                         {'Apply'}
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
                         </Col>
                         <Col md="4" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -307,7 +307,7 @@ class IndivisualPartListing extends Component {
                                             type="button"
                                             className={'user-btn'}
                                             onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>
+                                            <div className={'plus'}></div>ADD Part</button>
                                     }
                                 </div>
                             </div>
@@ -328,8 +328,17 @@ class IndivisualPartListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Sr. No." width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >RM Material</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Plant</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Effective Date</TableHeaderColumn>
+                    <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="PartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 
             </ >

@@ -421,6 +421,7 @@ class AddRMDomestic extends Component {
                             HasDifferentSource: Data.HasDifferentSource,
                             sourceLocation: { label: sourceLocationObj.Text, value: sourceLocationObj.Value },
                             UOM: { label: UOMObj.Text, value: UOMObj.Value },
+                            effectiveDate: new Date(Data.EffectiveDate),
                             remarks: Data.Remark,
                         })
                     }, 200)
