@@ -15,6 +15,7 @@ import {
     GET_CED_OTHER_OPERATION_FAILURE,
     GET_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
+    GET_OPERATION_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -247,27 +248,19 @@ export function deleteCEDotherOperationAPI(Id, callback) {
 }
 
 /**
- * @method getUnitOfMeasurementAPI
+ * @method getOperationsDataList
  * @description get all operation list
  */
-export function getOperationsMasterAPI(callback) {
+export function getOperationsDataList(filterData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getOperationsAPI, { headers })
+        console.log('filterData', filterData)
+        const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
+        axios.get(`${API.getOperationsDataList}?${QueryParams}`, { headers })
             .then((response) => {
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: GET_OPERATION_SUCCESS,
-                        payload: response.data.DataList,
-                    });
-                    callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
+                callback(response);
             }).catch((error) => {
-                dispatch({
-                    type: GET_CED_OTHER_OPERATION_FAILURE
-                });
+                dispatch({ type: GET_CED_OTHER_OPERATION_FAILURE });
                 callback(error);
                 apiErrors(error);
             });
@@ -275,36 +268,23 @@ export function getOperationsMasterAPI(callback) {
 }
 
 /**
- * @method createUnitOfMeasurementAPI
- * @description create UOM 
+ * @method createOperationsAPI
+ * @description create Operation 
  */
 export function createOperationsAPI(data, callback) {
     return (dispatch) => {
-        dispatch({
-            type: CREATE_OTHER_OPERATION_REQUEST
-        });
+        dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
         const request = axios.post(API.createOperationAPI, data, headers);
         request.then((response) => {
             if (response.data.Result === true) {
-                dispatch({
-                    type: CREATE_OTHER_OPERATION_SUCCESS,
-                });
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_OTHER_OPERATION_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: CREATE_OTHER_OPERATION_FAILURE
-            });
+            dispatch({ type: CREATE_OTHER_OPERATION_FAILURE });
             apiErrors(error);
         });
     };
 }
-
 
 /**
  * @method getOperationDataAPI
@@ -353,7 +333,6 @@ export function updateOperationAPI(requestData, callback) {
     };
 }
 
-
 /**
  * @method deleteOperationAPI
  * @description delete operation
@@ -393,5 +372,30 @@ export function getCEDOtherOperationBySupplierID(supplierId, callback) {
             dispatch({ type: API_FAILURE });
             callback(error);
         });
+    };
+}
+
+
+/**
+ * @method getOperationSelectList
+ * @description get all operation list
+ */
+export function getOperationSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.get(API.getOperationSelectList, { headers })
+            .then((response) => {
+                if (response.data.Result == true) {
+                    dispatch({
+                        type: GET_OPERATION_SELECTLIST_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: GET_CED_OTHER_OPERATION_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
     };
 }

@@ -21,6 +21,10 @@ const masterMenu = [
 		to: '/raw-material-master',
 	},
 	{
+		label: 'Client',
+		to: '/client-master',
+	},
+	{
 		label: 'Part',
 		to: '/PartMaster',
 	},
@@ -108,6 +112,10 @@ const additionalMasterMenu = [
 		label: 'Reason',
 		to: '/reason-master',
 	},
+	{
+		label: 'Volume',
+		to: '/volume-master',
+	},
 ];
 
 const costingMenu = [
@@ -154,7 +162,8 @@ class Leftmenu extends Component {
 			activeURL == '/mhr-master' ||
 			activeURL == '/machine-type-master' ||
 			activeURL == '/machine-master' ||
-			activeURL == '/power-master') {
+			activeURL == '/power-master' ||
+			activeURL == '/client-master') {
 			return true;
 		} else {
 			return false;
@@ -173,7 +182,8 @@ class Leftmenu extends Component {
 			activeURL == '/process-master' ||
 			activeURL == '/interest-rate-master' ||
 			activeURL == '/fuel-master' ||
-			activeURL == '/reason-master') {
+			activeURL == '/reason-master' ||
+			activeURL == '/volume-master') {
 			return true;
 		} else {
 			return false;

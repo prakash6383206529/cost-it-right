@@ -7,42 +7,53 @@ import {
     renderText, renderMultiSelectField, searchableSelect, renderNumberInputField, renderTextAreaField
 } from "../../../layout/FormInputs";
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
-import { createOperationsAPI, getOperationDataAPI, getOperationsMasterAPI, updateOperationAPI } from '../../../../actions/master/OtherOperation';
-import {
-    getTechnologySelectList, getPlantSelectList, getPlantBySupplier,
-    getUOMSelectList,
-} from '../../../../actions/master/Comman';
+import { createVolume, updateVolume, getVolumeData, } from '../../../../actions/master/Volume';
+import { getPlantSelectList, getPlantBySupplier, } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
-import OperationListing from './OperationListing';
+import VolumeListing from './VolumeListing';
 import Switch from "react-switch";
+import YearPicker from "react-year-picker";
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import $ from 'jquery';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-import AddUOM from '../uom-master/AddUOM';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment';
+import { monthSequence } from '../../../../config/masterData';
 
-class AddOperation extends Component {
+const initialTableData = [
+    { VolumeDetailId: 0, Month: 'April', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 1, Month: 'May', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 2, Month: 'June', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 3, Month: 'July', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 4, Month: 'August', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 5, Month: 'September', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 6, Month: 'October', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 7, Month: 'November', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 8, Month: 'December', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 9, Month: 'January', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 10, Month: 'February', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+    { VolumeDetailId: 11, Month: 'March', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+]
+class AddVolume extends Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
         this.state = {
             IsVendor: false,
-            selectedTechnology: [],
             selectedPlants: [],
-
             vendorName: [],
             selectedVendorPlants: [],
-            UOM: [],
 
-            isSurfaceTreatment: false,
-            remarks: '',
+            year: new Date('2020'),
+            tableData: initialTableData,
 
             isEditFlag: false,
             isShowForm: false,
-            isOpenVendor: false,
-            isOpenUOM: false,
-            OperationId: '',
+            VolumeId: '',
         }
     }
 
@@ -51,7 +62,7 @@ class AddOperation extends Component {
     * @description called before render the component
     */
     componentWillMount() {
-        this.props.getUOMSelectList(() => { })
+
     }
 
     /**
@@ -59,7 +70,6 @@ class AddOperation extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        this.props.getTechnologySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
     }
@@ -72,13 +82,7 @@ class AddOperation extends Component {
         const { technologySelectList, plantSelectList, vendorListByVendorType, filterPlantList,
             UOMSelectList, } = this.props;
         const temp = [];
-        if (label === 'technology') {
-            technologySelectList && technologySelectList.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ Text: item.Text, Value: item.Value })
-            });
-            return temp;
-        }
+
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value == 0) return false;
@@ -100,13 +104,7 @@ class AddOperation extends Component {
             });
             return temp;
         }
-        if (label === 'UOM') {
-            UOMSelectList && UOMSelectList.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
+
     }
 
     /**
@@ -123,14 +121,6 @@ class AddOperation extends Component {
             // const { IsVendor } = this.state;
             // this.props.getVendorListByVendorType(IsVendor, () => { })
         });
-    }
-
-    /**
-    * @method handleTechnology
-    * @description Used handle technology
-    */
-    handleTechnology = (e) => {
-        this.setState({ selectedTechnology: e })
     }
 
     /**
@@ -167,6 +157,7 @@ class AddOperation extends Component {
         })
     }
 
+
     /**
     * @method handleVendorPlant
     * @description called
@@ -175,45 +166,50 @@ class AddOperation extends Component {
         this.setState({ selectedVendorPlants: e })
     };
 
-    /**
-    * @method handleUOM
-    * @description called
-    */
-    handleUOM = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ UOM: newValue, })
-        } else {
-            this.setState({ UOM: [] })
-        }
-    };
-
-    uomToggler = () => {
-        this.setState({ isOpenUOM: true })
+    setStartDate = (date) => {
+        console.log('date', new Date(date).getFullYear())
+        this.setState({ year: date })
     }
 
-    closeUOMDrawer = (e = '') => {
-        this.setState({ isOpenUOM: false }, () => {
-            this.props.getUOMSelectList(() => { })
+    /**
+	* @method buttonFormatter
+	* @description Renders buttons
+	*/
+    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                {/* <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} /> */}
+                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell, rowIndex)} />
+            </>
+        )
+    }
+
+    editItemDetails = (ID) => {
+
+    }
+
+    deleteItem = (ID, index) => {
+        console.log('clicked', ID, index)
+        const { tableData } = this.state;
+        // let filterData = tableData.filter(item => {
+        //     if (item.Month == ID) return false;
+        //     return true;
+        // })
+        let filterData = tableData.map(item => {
+            if (item.VolumeApprovedDetailId == ID) {
+                return { ...item, BudgetedQuantity: 0, ApprovedQuantity: 0, }
+            }
+            return item;
         })
+        this.setState({ tableData: filterData })
     }
 
-    /**
-    * @method onPressSurfaceTreatment
-    * @description Used for Surface Treatment
-    */
-    onPressSurfaceTreatment = () => {
-        this.setState({ isSurfaceTreatment: !this.state.isSurfaceTreatment });
+    showFinancialYear = () => {
+        const { year } = this.state;
+        const d = new Date(year);
+        return year != '' ? `For Financial Year ${d.getFullYear()} - ${d.getFullYear() + 1}` : '';
     }
 
-    /**
-    * @method handleMessageChange
-    * @description used remarks handler
-    */
-    handleMessageChange = (e) => {
-        this.setState({
-            remarks: e.target.value
-        })
-    }
 
     /**
     * @method getDetail
@@ -225,10 +221,10 @@ class AddOperation extends Component {
                 isLoader: true,
                 isEditFlag: true,
                 isShowForm: true,
-                OperationId: data.ID,
+                VolumeId: data.ID,
             })
             $('html, body').animate({ scrollTop: 0 }, 'slow');
-            this.props.getOperationDataAPI(data.ID, (res) => {
+            this.props.getVolumeData(data.ID, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
 
@@ -238,33 +234,40 @@ class AddOperation extends Component {
                         return plantArray;
                     })
 
-                    let technologyArray = [];
-                    Data && Data.Technology.map((item) => {
-                        technologyArray.push({ Text: item.Technology, Value: item.TechnologyId })
-                        return technologyArray;
-                    })
-
                     let vendorPlantArray = [];
                     Data && Data.VendorPlant.map((item) => {
                         vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
                         return vendorPlantArray;
                     })
 
+                    let tableArray = [];
+                    Data && Data.VolumeApprovedDetails.map((item, i) => {
+                        Data.VolumeBudgetedDetails.map(el => {
+                            if (el.Month == item.Month) {
+                                tableArray.push({
+                                    VolumeApprovedDetailId: item.VolumeApprovedDetailId,
+                                    VolumeBudgetedDetailId: el.VolumeBudgetedDetailId,
+                                    Month: item.Month,
+                                    BudgetedQuantity: el.BudgetedQuantity,
+                                    ApprovedQuantity: item.ApprovedQuantity,
+                                })
+                                return tableArray.sort();
+                            }
+                        })
+                    })
+
                     setTimeout(() => {
-                        const { vendorListByVendorType, UOMSelectList } = this.props;
+                        const { vendorListByVendorType, } = this.props;
                         const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value == Data.VendorId)
-                        const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value == Data.UnitOfMeasurementId)
 
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
-                            selectedTechnology: technologyArray,
                             selectedPlants: plantArray,
-                            vendorName: { label: vendorObj.Text, value: vendorObj.Value },
                             selectedVendorPlants: vendorPlantArray,
-                            UOM: { label: UOMObj.Text, value: UOMObj.Value },
-                            isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
-                            remarks: Data.Remark,
+                            vendorName: { label: vendorObj.Text, value: vendorObj.Value },
+                            year: new Date(Data.Year),
+                            tableData: tableArray,
                         })
                     }, 500)
 
@@ -283,12 +286,9 @@ class AddOperation extends Component {
         const { reset } = this.props;
         reset();
         this.setState({
-            selectedTechnology: [],
             selectedPlants: [],
             vendorName: [],
             selectedVendorPlants: [],
-            UOM: [],
-            isSurfaceTreatment: false,
             isShowForm: false,
             isEditFlag: false,
         })
@@ -302,7 +302,7 @@ class AddOperation extends Component {
         const { reset } = this.props;
         reset();
         this.clearForm();
-        this.props.getOperationDataAPI('', () => { })
+        this.props.getVolumeData('', () => { })
     }
 
     /**
@@ -310,15 +310,9 @@ class AddOperation extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, selectedVendorPlants, selectedPlants, vendorName,
-            UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId } = this.state;
+        const { IsVendor, selectedPlants, vendorName, selectedVendorPlants, year, tableData,
+            VolumeId } = this.state;
         const { reset } = this.props;
-
-        let technologyArray = [];
-        selectedTechnology && selectedTechnology.map((item) => {
-            technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
-            return technologyArray;
-        })
 
         let plantArray = [];
         selectedPlants && selectedPlants.map((item) => {
@@ -332,21 +326,52 @@ class AddOperation extends Component {
             return vendorPlants;
         })
 
+        let budgetArray = [];
+        tableData && tableData.map((item) => {
+            budgetArray.push({ Month: item.Month, BudgetedQuantity: item.BudgetedQuantity, VolumeDetailId: item.VolumeDetailId })
+            return budgetArray;
+        })
+
+        let approvedArray = [];
+        tableData && tableData.map((item) => {
+            approvedArray.push({ Month: item.Month, ApprovedQuantity: item.ApprovedQuantity, VolumeDetailId: item.VolumeDetailId })
+            return approvedArray;
+        })
+
+        let updateBudgetArray = [];
+        tableData && tableData.map((item) => {
+            updateBudgetArray.push({
+                VolumeBudgetedDetailId: item.VolumeBudgetedDetailId,
+                Month: item.Month,
+                BudgetedQuantity: item.BudgetedQuantity,
+                Sequence: 0,
+            })
+            return updateBudgetArray;
+        })
+
+        let updateApproveArray = [];
+        tableData && tableData.map((item) => {
+            updateApproveArray.push({
+                VolumeApprovedDetailId: item.VolumeApprovedDetailId,
+                Month: item.Month,
+                ApprovedQuantity: item.ApprovedQuantity,
+                Sequence: 0,
+            })
+            return updateApproveArray;
+        })
+
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
             let updateData = {
-                OperationId: OperationId,
-                UnitOfMeasurementId: UOM.value,
-                Rate: values.Rate,
-                Technology: technologyArray,
-                Remark: remarks,
-                Attachements: [],
+                VolumeId: VolumeId,
                 LoggedInUserId: loggedInUserId(),
+                VolumeApprovedDetails: updateApproveArray,
+                VolumeBudgetedDetails: updateBudgetArray,
             }
 
-            this.props.updateOperationAPI(updateData, (res) => {
+            this.props.updateVolume(updateData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                    toastr.success(MESSAGES.VOLUME_UPDATE_SUCCESS);
                     this.clearForm()
                     this.child.getUpdatedData();
                 }
@@ -356,25 +381,21 @@ class AddOperation extends Component {
 
             let formData = {
                 IsVendor: IsVendor,
-                OperationName: values.OperationName,
-                OperationCode: values.OperationCode,
-                Description: values.Description,
                 VendorId: vendorName.value,
-                UnitOfMeasurementId: UOM.value,
-                IsSurfaceTreatmentOperation: isSurfaceTreatment,
-                SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
-                Rate: values.Rate,
-                LabourRatePerUOM: values.LabourRatePerUOM,
-                Technology: technologyArray,
-                Remark: remarks,
+                PartNumber: values.PartNumber,
+                //OldPartNumber: values.OldPartNumber,
+                PartName: values.PartName,
+                Year: new Date(year).getFullYear(),
+                VolumeApprovedDetails: approvedArray,
+                VolumeBudgetedDetails: budgetArray,
                 Plant: !IsVendor ? plantArray : [],
                 VendorPlant: vendorPlants,
-                Attachements: [],
                 LoggedInUserId: loggedInUserId(),
+                IsActive: true
             }
-            this.props.createOperationsAPI(formData, (res) => {
+            this.props.createVolume(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
+                    toastr.success(MESSAGES.VOLUME_ADD_SUCCESS);
                     this.clearForm();
                     this.child.getUpdatedData();
                 }
@@ -390,6 +411,12 @@ class AddOperation extends Component {
     render() {
         const { handleSubmit, reset } = this.props;
         const { isEditFlag, isOpenVendor, isOpenUOM } = this.state;
+
+        const cellEditProp = {
+            mode: 'click',
+            blurToSave: true
+        };
+
         return (
             <div>
                 {/* {isLoader && <Loader />} */}
@@ -401,7 +428,7 @@ class AddOperation extends Component {
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="form-heading mb-0">
-                                                <h2>{this.state.isEditFlag ? 'Update Operation' : 'Add Operation'}</h2>
+                                                <h2>{this.state.isEditFlag ? 'Update Volume' : 'Add Volume'}</h2>
                                             </div>
                                         </div>
                                     </div>
@@ -422,66 +449,6 @@ class AddOperation extends Component {
                                                     />
                                                     <div className={'right-title'}>Vendor Based</div>
                                                 </label>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md="3">
-                                                <Field
-                                                    label="Technology"
-                                                    name="technology"
-                                                    placeholder="--Select--"
-                                                    selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length == 0) ? [] : this.state.selectedTechnology}
-                                                    options={this.renderListing('technology')}
-                                                    selectionChanged={this.handleTechnology}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    className="multiselect-with-border"
-                                                //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Operation Name`}
-                                                    name={"OperationName"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    disabled={isEditFlag ? true : false}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Operation Code`}
-                                                    name={"OperationCode"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderText}
-                                                    //required={true}
-                                                    disabled={isEditFlag ? true : false}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Description`}
-                                                    name={"Description"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderText}
-                                                    //required={true}
-                                                    disabled={isEditFlag ? true : false}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                />
                                             </Col>
                                         </Row>
 
@@ -527,6 +494,21 @@ class AddOperation extends Component {
                                             </Col>
                                             <Col md="3">
                                                 <Field
+                                                    label={`Vendor Code`}
+                                                    name={"VendorCode"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderText}
+                                                    //onChange={this.handleBasicRate}
+                                                    //required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
                                                     label="Vendor Plant"
                                                     name="VendorPlant"
                                                     placeholder="--- Plant ---"
@@ -544,38 +526,16 @@ class AddOperation extends Component {
                                         </Row>
 
                                         <Row>
-                                            <Col md="2">
-                                                <Field
-                                                    name="UnitOfMeasurementId"
-                                                    type="text"
-                                                    label="UOM"
-                                                    component={searchableSelect}
-                                                    placeholder={'--- Select ---'}
-                                                    options={this.renderListing('UOM')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleUOM}
-                                                    valueDescription={this.state.UOM}
-                                                    disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="1">
-                                                <div
-                                                    onClick={this.uomToggler}
-                                                    className={'plus-icon-square mt30 mr15 right'}>
-                                                </div>
-                                            </Col>
                                             <Col md="3">
                                                 <Field
-                                                    label={`Rate (INR)`}
-                                                    name={"Rate"}
+                                                    label={`Part No.`}
+                                                    name={"PartNumber"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    //validate={[required]}
+                                                    component={renderText}
                                                     //onChange={this.handleBasicRate}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={false}
                                                     className=" "
                                                     customClassName=" withBorder"
@@ -583,14 +543,14 @@ class AddOperation extends Component {
                                             </Col>
                                             <Col md="3">
                                                 <Field
-                                                    label={`Labour Rate/UOM`}
-                                                    name={"LabourRatePerUOM"}
+                                                    label={`Part Name`}
+                                                    name={"PartName"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    //validate={[required]}
+                                                    component={renderText}
                                                     //onChange={this.handleBasicRate}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName=" withBorder"
@@ -599,68 +559,34 @@ class AddOperation extends Component {
                                         </Row>
 
                                         <Row>
-                                            <Col md="3" className="mb15">
-                                                <label
-                                                    className={`custom-checkbox ${this.state.isEditFlag ? 'disabled' : ''}`}
-                                                    onChange={this.onPressSurfaceTreatment}
-                                                >
-                                                    Surface Treatment Operation
-                                                        <input
-                                                        type="checkbox"
-                                                        checked={this.state.isSurfaceTreatment}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                    <span
-                                                        className=" before-box"
-                                                        checked={this.state.isSurfaceTreatment}
-                                                        onChange={this.onPressSurfaceTreatment}
-                                                    />
-                                                </label>
-                                            </Col>
-                                            {this.state.isSurfaceTreatment &&
-                                                <Col md='3'>
-                                                    <Field
-                                                        label={`Surface Treatment Charges`}
-                                                        name={"SurfaceTreatmentCharges"}
-                                                        type="text"
-                                                        placeholder={'Enter'}
-                                                        validate={[required]}
-                                                        component={renderNumberInputField}
-                                                        //onChange={this.handleBasicRate}
-                                                        required={true}
-                                                        disabled={isEditFlag ? true : false}
-                                                        className=" "
-                                                        customClassName=" withBorder"
-                                                    />
-                                                </Col>}
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="12">
-                                                <div className="left-border">
-                                                    {'Remarks & Attachment'}
+                                            <Col md="3">
+                                                <div className="form-group">
+                                                    <label>
+                                                        Year
+                                                    <span className="asterisk-required">*</span>
+                                                    </label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            selected={this.state.year}
+                                                            onChange={this.setStartDate}
+                                                            showYearPicker
+                                                            dateFormat="yyyy"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </Col>
-                                            <Col md="6">
-                                                <Field
-                                                    label={'Remarks'}
-                                                    name={`Remark`}
-                                                    placeholder="Type here..."
-                                                    value={this.state.remarks}
-                                                    className=""
-                                                    customClassName=" textAreaWithBorder"
-                                                    onChange={this.handleMessageChange}
-                                                    validate={[required, maxLength100]}
-                                                    required={true}
-                                                    component={renderTextAreaField}
-                                                    maxLength="5000"
-                                                />
-                                            </Col>
-                                            <Col md="6">
-
+                                            <Col md="12">
+                                                {this.showFinancialYear()}
+                                                <BootstrapTable data={this.state.tableData} cellEdit={cellEditProp}>
+                                                    <TableHeaderColumn dataField='Month' editable={false}>Month</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField='BudgetedQuantity'>Budgeted Qty</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField='ApprovedQuantity'>Approved Qty</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField='VolumeApprovedDetailId' hidden>Volume Approv Id</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField='VolumeBudgetedDetailId' hidden>Vol Budget Id</TableHeaderColumn>
+                                                    <TableHeaderColumn className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                                                </BootstrapTable>
                                             </Col>
                                         </Row>
-
 
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
                                             <div className="col-md-12">
@@ -686,7 +612,7 @@ class AddOperation extends Component {
                             </div>}
                     </div>
                 </div>
-                <OperationListing
+                <VolumeListing
                     onRef={ref => (this.child = ref)}
                     getDetail={this.getDetail}
                     formToggle={this.formToggle}
@@ -695,13 +621,6 @@ class AddOperation extends Component {
                 {isOpenVendor && <AddVendorDrawer
                     isOpen={isOpenVendor}
                     closeDrawer={this.closeVendorDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                />}
-                {isOpenUOM && <AddUOM
-                    isOpen={isOpenUOM}
-                    closeDrawer={this.closeUOMDrawer}
                     isEditFlag={false}
                     ID={''}
                     anchor={'right'}
@@ -716,25 +635,22 @@ class AddOperation extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, otherOperation, material, }) {
-    const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
-    const { operationData } = otherOperation;
+function mapStateToProps({ comman, volume, material, }) {
+    const { plantList, plantSelectList, filterPlantList, } = comman;
+    const { volumeData } = volume;
     const { vendorListByVendorType } = material;
+
     let initialValues = {};
-    if (operationData && operationData !== undefined) {
+    if (volumeData && volumeData !== undefined) {
         initialValues = {
-            OperationName: operationData.OperationName,
-            OperationCode: operationData.OperationCode,
-            Description: operationData.Description,
-            Rate: operationData.Rate,
-            LabourRatePerUOM: operationData.LabourRatePerUOM,
-            SurfaceTreatmentCharges: operationData.SurfaceTreatmentCharges,
-            Remark: operationData.Remark,
+            PartNumber: volumeData.PartNumber,
+            PartName: volumeData.PartName,
         }
     }
+
     return {
-        technologySelectList, plantSelectList, vendorListByVendorType, UOMSelectList,
-        plantList, operationData, filterPlantList, initialValues
+        plantSelectList, vendorListByVendorType, plantList, filterPlantList, volumeData,
+        initialValues,
     }
 }
 
@@ -745,16 +661,14 @@ function mapStateToProps({ comman, otherOperation, material, }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getTechnologySelectList,
     getPlantSelectList,
     getVendorListByVendorType,
     getPlantBySupplier,
-    getUOMSelectList,
-    createOperationsAPI,
-    updateOperationAPI,
-    getOperationDataAPI,
+    createVolume,
+    updateVolume,
+    getVolumeData,
 })(reduxForm({
-    form: 'AddOperation',
+    form: 'AddVolume',
     enableReinitialize: true,
-})(AddOperation));
+})(AddVolume));
 

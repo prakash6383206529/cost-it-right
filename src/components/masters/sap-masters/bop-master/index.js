@@ -1,92 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Container, Row, Col, Button, Table
-} from 'reactstrap';
-import AddBOP from './AddBOP';
-import { getAllBOPAPI, deleteBOPAPI } from '../../../../actions/master/BoughtOutParts';
-import { Loader } from '../../../common/Loader';
-import { CONSTANT } from '../../../../helper/AllConastant';
-import {
-    convertISOToUtcDate,
-} from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
-import NoContentFound from '../../../common/NoContentFound';
+import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import classnames from 'classnames';
+import AddBOPDomestic from './AddBOPDomestic';
+import AddBOPImport from './AddBOPImport';
 
 class BOPMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
-            isEditFlag: false,
+            activeTab: '1'
         }
     }
 
     /**
-     * @method componentDidMount
-     * @description  called before mounting the component
-     */
-    componentDidMount() {
-        this.props.getAllBOPAPI(res => { });
-    }
-    /**
-     * @method openModel
-     * @description  used to open filter form 
-     */
-    openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
-    }
-
-    /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = () => {
-        this.setState({ isOpen: false }, () => {
-            this.props.getAllBOPAPI(res => { });
-        })
-    }
-
-    /**
-   * @method editDetails
-   * @description confirm delete bop
-   */
-    editDetails = (Id) => {
-        this.setState({
-            isEditFlag: true,
-            isOpen: true,
-            bopId: Id,
-        })
-    }
-
-    /**
-    * @method delete 
-    * @description confirm delete bop
+    * @method toggle
+    * @description toggling the tabs
     */
-    deleteBOP = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
-        };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE} BOP ?`, toastrConfirmOptions);
-    }
-
-    /**
-    * @method confirmDelete
-    * @description confirm delete bought out part
-    */
-    confirmDelete = (Id) => {
-        this.props.deleteBOPAPI(Id, (res) => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.DELETE_BOP_SUCCESS);
-                this.props.getAllBOPAPI(res => { });
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        });
+    toggle = (tab) => {
+        if (this.state.activeTab !== tab) {
+            this.setState({
+                activeTab: tab
+            });
+        }
     }
 
     /**
@@ -94,87 +30,48 @@ class BOPMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, bopId } = this.state;
+        const { } = this.state;
         return (
-            <Container className="top-margin">
-                {this.props.loading && <Loader />}
+            <Container>
+                {/* {this.props.loading && <Loader/>} */}
                 <Row>
-                    <Col>
-                        <h3>{`Bought Out Part Master`}</h3>
-                    </Col>
-                    <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.BOPP} `}</Button>
+                    <Col sm="4">
+                        <h3>{`BOP Master`}</h3>
                     </Col>
                 </Row>
-                <hr />
+
                 <Row>
                     <Col>
-                        <Table className="table table-striped" hover bordered>
-                            {this.props.BOPListing && this.props.BOPListing.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`${CONSTANT.TECHNOLOGY}`}</th>
-                                        <th>{`${CONSTANT.SUPPLIER} ${CONSTANT.PART} ${CONSTANT.NUMBER}`}</th>
-                                        <th>{`${CONSTANT.CATEGORY}`}</th>
-                                        <th>{` ${CONSTANT.SPECIFICATION}`}</th>
-                                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
-                                        <th>{`${CONSTANT.UOM}`}</th>
-                                        <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
-                                        <th>{`${CONSTANT.SOURCE} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
-                                        <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.NAME}`}</th>
-                                        <th>{`${CONSTANT.DESTINATION} ${CONSTANT.SUPPLIER} ${CONSTANT.LOCATION}`}</th>
-                                        <th>{` ${CONSTANT.PLANT} ${CONSTANT.NAME}`}</th>
-                                        <th>{` ${CONSTANT.PART} ${CONSTANT.NAME}`}</th>
-                                        {/* <th>{`${CONSTANT.REVISION} ${CONSTANT.NUMBER}`}</th> */}
-                                        <th>{`Basic Rate`}</th>
-                                        <th>{`${CONSTANT.QUANTITY} `}</th>
-                                        <th>{` Net Landed Cost`}</th>
-                                        <th>{`${CONSTANT.DATE}`}</th>
-                                        <th>{}</th>
-                                        {/* <th>{}</th> */}
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.BOPListing && this.props.BOPListing.length > 0 &&
-                                    this.props.BOPListing.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td>{item.TechnologyName}</td>
-                                                <td>{item.PartNumber}</td>
-                                                <td>{item.CategoryName}</td>
-                                                <td>{item.Specification}</td>
-                                                <td >{item.MaterialTypeName}</td>
-                                                <td>{item.UnitOfMeasurementName}</td>
-                                                <td>{item.SourceSupplierName}</td>
-                                                <td>{item.SourceSupplierLocation}</td>
-                                                <td>{item.DestinationSupplierName}</td>
-                                                <td>{item.DestinationSupplierLocation}</td>
-                                                <td>{item.PlantName}</td>
-                                                <td>{item.PartName}</td>
-                                                <td>{item.BasicRate}</td>
-                                                <td>{item.Quantity}</td>
-                                                <td>{item.NetLandedCost}</td>
-                                                <td>{convertISOToUtcDate(item.CreatedDate)}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editDetails(item.BopId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteBOP(item.BopId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.BOPListing === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
+                        <div>
+                            <Nav tabs className="subtabs">
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Manage BOP (Domestic)
+                                </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        Manage BOP (Import)
+                                </NavLink>
+                                </NavItem>
+                            </Nav>
+
+                            <TabContent activeTab={this.state.activeTab}>
+
+                                {this.state.activeTab == 1 &&
+                                    <TabPane tabId="1">
+                                        <AddBOPDomestic />
+                                    </TabPane>}
+
+                                {this.state.activeTab == 2 &&
+                                    <TabPane tabId="2">
+                                        <AddBOPImport />
+                                    </TabPane>}
+                            </TabContent>
+                        </div>
                     </Col>
                 </Row>
-                {isOpen && (
-                    <AddBOP
-                        isOpen={isOpen}
-                        onCancel={this.onCancel}
-                        isEditFlag={isEditFlag}
-                        bopId={bopId}
-                    />
-                )}
+
             </Container >
         );
     }
@@ -192,6 +89,7 @@ function mapStateToProps({ boughtOutparts }) {
 
 
 export default connect(
-    mapStateToProps, { getAllBOPAPI, deleteBOPAPI }
+    mapStateToProps, {
+}
 )(BOPMaster);
 

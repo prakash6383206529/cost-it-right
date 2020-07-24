@@ -10,28 +10,23 @@ import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import {
-    getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
-    getVendorTypesSelectList, getVendorsByVendorTypeID,
-} from '../../../../actions/master/Supplier';
-import { fetchCountryDataAPI, } from '../../../../actions/master/Comman';
+import { getClientDataList, deleteClient } from '../../../../actions/master/Client';
+import { } from '../../../../actions/master/Comman';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
+import { Years, Months } from '../../../../config/masterData';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
 }
 
-class VendorListing extends Component {
+class ClientListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
-            vendorType: [],
-            vendorName: [],
-            country: [],
         }
     }
 
@@ -40,31 +35,29 @@ class VendorListing extends Component {
     * @description called before render the component
     */
     componentWillMount() {
-        this.props.getVendorTypesSelectList()
-        this.props.fetchCountryDataAPI(() => { })
+
     }
 
     componentDidMount() {
-        this.getTableListData(null, null, null)
+        this.getTableListData(null, null)
         this.props.onRef(this)
     }
 
     // Get updated Supplier's list after any action performed.
     getUpdatedData = () => {
-        this.getTableListData(null, null, null)
+        this.getTableListData(null, null)
     }
 
 	/**
 	* @method getTableListData
 	* @description Get user list data
 	*/
-    getTableListData = (vendorType = null, vendorName = null, country = null) => {
+    getTableListData = (clientName = null, companyName = null) => {
         let filterData = {
-            vendor_type: vendorType,
-            vendor_name: vendorName,
-            country: country,
+            clientName: clientName,
+            companyName: companyName,
         }
-        this.props.getSupplierDataList(filterData, res => {
+        this.props.getClientDataList(filterData, res => {
             if (res.status == 204 && res.data == '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -83,40 +76,18 @@ class VendorListing extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { countryList, vendorTypeList } = this.props;
-        const { vendorList } = this.state;
+        const { } = this.props;
         const temp = [];
-        if (label === 'country') {
-            countryList && countryList.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'vendorType') {
-            vendorTypeList && vendorTypeList.map((item, i) => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'vendorList') {
-            vendorList && vendorList.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
+
+        // if (label === 'VendorList') {
+        //     vendorListByVendorType && vendorListByVendorType.map(item => {
+        //         if (item.Value == 0) return false;
+        //         temp.push({ label: item.Text, value: item.Value })
+        //     });
+        //     return temp;
+        // }
+
     }
-
-
-	/**
-     * @method roleHandler
-     * @description Used to handle 
-     */
-    // roleHandler = (newValue, actionMeta) => {
-    //     this.setState({ role: newValue });
-    // };
 
 	/**
 	* @method editItemDetails
@@ -141,7 +112,7 @@ class VendorListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Are you sure you want to delete this supplier?`, toastrConfirmOptions);
+        return toastr.confirm(MESSAGES.CLIENT_DELETE_ALERT, toastrConfirmOptions);
     }
 
 	/**
@@ -149,10 +120,10 @@ class VendorListing extends Component {
 	* @description confirm delete item
 	*/
     confirmDeleteItem = (ID) => {
-        this.props.deleteSupplierAPI(ID, (res) => {
+        this.props.deleteClient(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
-                this.getTableListData(null, null, null)
+                toastr.success(MESSAGES.DELETE_CLIENT_SUCCESS);
+                this.getTableListData(null, null)
             }
         });
     }
@@ -176,61 +147,27 @@ class VendorListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        this.props.activeInactiveVendorStatus(data, res => {
-            if (res && res.data && res.data.Result) {
-                if (cell == true) {
-                    toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-                } else {
-                    toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-                }
-                this.getTableListData(null, null, null)
-            }
-        })
+        // this.props.activeInactiveVendorStatus(data, res => {
+        //     if (res && res.data && res.data.Result) {
+        //         if (cell == true) {
+        //             toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
+        //         } else {
+        //             toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
+        //         }
+        //         this.getTableListData(null, null)
+        //     }
+        // })
     }
 
     /**
-    * @method handleVendorType
-    * @description Used to handle vendor type
+    * @method handlePlant
+    * @description called
     */
-    handleVendorType = (newValue, actionMeta) => {
+    handlePlant = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ vendorType: newValue, vendorName: [], }, () => {
-                const { vendorType } = this.state;
-                this.props.getVendorsByVendorTypeID(vendorType.value, (res) => {
-                    if (res && res.data && res.data.SelectList) {
-                        let Data = res.data.SelectList;
-                        this.setState({ vendorList: Data })
-                    }
-                })
-            });
+            this.setState({ plant: newValue });
         } else {
-            this.setState({ vendorType: [], vendorName: [] })
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description Used to handle vendor name
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ vendorName: newValue, });
-        } else {
-            this.setState({ vendorName: [], })
-        }
-    };
-
-    /**
-    * @method countryHandler
-    * @description Used to handle country
-    */
-    countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ country: newValue, }, () => {
-                const { country } = this.state;
-            });
-        } else {
-            this.setState({ country: [], })
+            this.setState({ plant: [] })
         }
     };
 
@@ -258,7 +195,6 @@ class VendorListing extends Component {
         )
     }
 
-
 	/**
 	* @method indexFormatter
 	* @description Renders serial number
@@ -273,6 +209,10 @@ class VendorListing extends Component {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
         }
         return serialNumber;
+    }
+
+    renderSerialNumber = () => {
+        return <>Sr. <br />No. </>
     }
 
     onExportToCSV = (row) => {
@@ -294,11 +234,13 @@ class VendorListing extends Component {
 	* @description Filter user listing on the basis of role and department
 	*/
     filterList = () => {
-        const { vendorType, vendorName, country } = this.state;
-        const vType = vendorType && vendorType != null ? vendorType.value : null;
-        const vName = vendorName && vendorName != null ? vendorName.value : null;
-        const Country = country && country != null ? country.value : null;
-        this.getTableListData(vType, vName, Country)
+        // const { costingHead, year, month, vendorName, plant } = this.state;
+        // const costingHeadTemp = costingHead ? costingHead.value : null;
+        // const yearTemp = year ? year.value : null;
+        // const monthTemp = month ? month.value : null;
+        // const vendorNameTemp = vendorName ? vendorName.value : null;
+        // const plantTemp = plant ? plant.value : null;
+        // this.getTableListData(costingHeadTemp, yearTemp)
     }
 
 	/**
@@ -307,11 +249,13 @@ class VendorListing extends Component {
 	*/
     resetFilter = () => {
         this.setState({
-            vendorType: [],
+            costingHead: [],
+            year: [],
+            month: [],
             vendorName: [],
-            country: [],
+            plant: [],
         }, () => {
-            this.getTableListData(null, null, null)
+            this.getTableListData(null, null)
         })
     }
 
@@ -349,55 +293,23 @@ class VendorListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
-                        <Col md="9" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                        <Col md="10" className="filter-block">
+                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="VendorType"
+                                        name="year"
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'Vendor Type'}
-                                        options={this.renderListing('vendorType')}
+                                        placeholder={'-Select-'}
+                                        options={this.renderListing('year')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorType == null || this.state.vendorType.length == 0) ? [required] : []}
+                                        validate={(this.state.year == null || this.state.year.length == 0) ? [required] : []}
                                         required={true}
-                                        handleChangeDescription={this.handleVendorType}
-                                        valueDescription={this.state.vendorType}
-                                        disabled={this.state.isEditFlag ? true : false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="Vendors"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Vendor Name'}
-                                        options={this.renderListing('vendorList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleVendorName}
-                                        valueDescription={this.state.vendorName}
-                                        disabled={this.state.isEditFlag ? true : false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="CountryId"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Country'}
-                                        options={this.renderListing('country')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.countryHandler}
-                                        valueDescription={this.state.country}
-                                        disabled={this.state.isEditFlag ? true : false}
+                                        handleChangeDescription={this.handleYear}
+                                        valueDescription={this.state.year}
+                                    //disabled={isEditFlag ? true : false}
                                     />
                                 </div>
 
@@ -419,17 +331,17 @@ class VendorListing extends Component {
                                         {'Apply'}
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
                         </Col>
-                        <Col md="3" className="search-user-block">
-                            <div className="d-flex justify-content-end bd-highlight w100">
+                        <Col md="2" className="search-user-block">
+                            <div className="d-flex justify-content-end bd-highlight">
                                 <div>
                                     {!this.props.isShowForm &&
                                         <button
                                             type="button"
                                             className={'user-btn'}
                                             onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD VENDOR</button>
+                                            <div className={'plus'}></div>ADD</button>
                                     }
                                 </div>
                             </div>
@@ -450,16 +362,16 @@ class VendorListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorType" dataAlign="center" dataSort={true}>Vendor Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorName" dataAlign="center" dataSort={true}>Vendor Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorCode" dataAlign="center" dataSort={true}>Vendor Code</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Country" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="State" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
-                    <TableHeaderColumn dataField="City" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
+                    <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ClientName" dataAlign="center" >{'Client Name'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ClientEmailId" dataAlign="center" >{'Email Id'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PhoneNumber" dataAlign="center" >{'Phone Number'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="MobileNumber" dataAlign="center" >{'Mobile No.'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Country" dataAlign="center" >{'Country'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="State" dataAlign="center" >{'State'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="City" dataAlign="center" >{'City'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ZipCode" dataAlign="center" >{'ZipCode'}</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="VolumeId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
             </ >
         );
@@ -471,13 +383,11 @@ class VendorListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, supplier }) {
-    const { loading, vendorTypeList } = supplier;
-    const { countryList } = comman;
+function mapStateToProps({ comman }) {
+    const { loading, } = comman;
 
-    return { loading, vendorTypeList, countryList };
+    return { loading, };
 }
-
 
 /**
 * @method connect
@@ -485,19 +395,14 @@ function mapStateToProps({ comman, supplier }) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-
 export default connect(mapStateToProps, {
-    getSupplierDataList,
-    activeInactiveVendorStatus,
-    deleteSupplierAPI,
-    getVendorTypesSelectList,
-    fetchCountryDataAPI,
-    getVendorsByVendorTypeID,
+    getClientDataList,
+    deleteClient,
 })(reduxForm({
-    form: 'VendorListing',
+    form: 'ClientListing',
     onSubmitFail: errors => {
         //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,
-})(VendorListing));
+})(ClientListing));

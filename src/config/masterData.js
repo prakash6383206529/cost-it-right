@@ -250,3 +250,48 @@ export const EAccessType = [
     { label: 'Group', value: 2, },
     { label: 'Everyone', value: 3, },
 ]
+
+export const Months = [
+    { Text: 'January', Value: 'January' },
+    { Text: 'February', Value: 'February' },
+    { Text: 'March', Value: 'March' },
+    { Text: 'April', Value: 'April' },
+    { Text: 'May', Value: 'May' },
+    { Text: 'June', Value: 'June' },
+    { Text: 'July', Value: 'July' },
+    { Text: 'August', Value: 'August' },
+    { Text: 'September', Value: 'September' },
+    { Text: 'October', Value: 'October' },
+    { Text: 'November', Value: 'November' },
+    { Text: 'December', Value: 'December' },
+]
+
+export const Years = [
+    { Text: '2010', Value: '2010' },
+    { Text: '2011', Value: '2011' },
+    { Text: '2012', Value: '2012' },
+    { Text: '2013', Value: '2013' },
+    { Text: '2014', Value: '2014' },
+    { Text: '2015', Value: '2015' },
+    { Text: '2016', Value: '2016' },
+    { Text: '2017', Value: '2017' },
+    { Text: '2018', Value: '2018' },
+    { Text: '2019', Value: '2019' },
+    { Text: '2020', Value: '2020' },
+    { Text: '2021', Value: '2021' },
+]
+
+export const monthSequence = [
+    { seq: 0, month: 'April' },
+    { seq: 1, month: 'May' },
+    { seq: 2, month: 'June' },
+    { seq: 3, month: 'July' },
+    { seq: 4, month: 'August' },
+    { seq: 5, month: 'September' },
+    { seq: 6, month: 'October' },
+    { seq: 7, month: 'November' },
+    { seq: 8, month: 'December' },
+    { seq: 9, month: 'January' },
+    { seq: 10, month: 'February' },
+    { seq: 11, month: 'March' },
+] 
