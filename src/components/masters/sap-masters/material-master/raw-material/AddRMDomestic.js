@@ -30,9 +30,9 @@ import AddUOM from '../../uom-master/AddUOM';
 import AddVendorDrawer from '../../supplier-master/AddVendorDrawer';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
+import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from 'jquery';
 import { FILE_URL } from '../../../../../config/constants';
 const selector = formValueSelector('AddRMDomestic');
 

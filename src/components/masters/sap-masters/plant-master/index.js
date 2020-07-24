@@ -1,16 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
-import AddPlant from './AddZBCPlant';
-import { getPlantDataAPI, deletePlantAPI } from '../../../../actions/master/Plant';
-import { Loader } from '../../../common/Loader';
-import { CONSTANT } from '../../../../helper/AllConastant'
-import { convertISOToUtcDate, renderAction } from '../../../../helper/util'
-import { MESSAGES } from '../../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import NoContentFound from '../../../common/NoContentFound';
-import { getMenuByUser } from '../../../../actions/auth/AuthActions';
-import { loggedInUserId } from '../../../../helper/auth';
 import classnames from 'classnames';
 import AddZBCPlant from './AddZBCPlant';
 import AddVBCPlant from './AddVBCPlant';
@@ -25,10 +15,7 @@ class PlantMaster extends Component {
     }
 
     componentDidMount() {
-        const loginUserId = loggedInUserId();
-        if (loginUserId != null) {
-            this.props.getMenuByUser(loginUserId, () => { })
-        }
+
     }
 
     /**
@@ -48,7 +35,7 @@ class PlantMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, PlantId, isEditFlag } = this.state;
+        const { } = this.state;
         return (
             <>
                 <Container className="user-page p-0">
@@ -70,13 +57,11 @@ class PlantMaster extends Component {
                         <TabContent activeTab={this.state.activeTab}>
                             {this.state.activeTab === '1' &&
                                 <TabPane tabId="1">
-                                    <AddZBCPlant
-                                        toggle={this.toggle} />
+                                    <AddZBCPlant />
                                 </TabPane>}
                             {this.state.activeTab === '2' &&
                                 <TabPane tabId="2">
-                                    <AddVBCPlant
-                                        toggle={this.toggle} />
+                                    <AddVBCPlant />
                                 </TabPane>}
                         </TabContent>
                     </div>
@@ -91,14 +76,12 @@ class PlantMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ plant, auth }) {
-    const { menusData } = auth
-    const { plantDetail, loading } = plant;
-    return { plantDetail, loading, menusData }
+function mapStateToProps({ }) {
+
+    return {}
 }
 
-
 export default connect(
-    mapStateToProps, { getPlantDataAPI, deletePlantAPI, getMenuByUser }
+    mapStateToProps, {}
 )(PlantMaster);
 
