@@ -57,8 +57,10 @@ import aboutus from "./about/aboutus";
 class Main extends Component {
   constructor(props) {
     super(props);
+    this.child = React.createRef();
     this.state = {
       visibelPageNotFound: false,
+      breadcrumbTrail: {},
     };
   }
 
@@ -87,9 +89,19 @@ class Main extends Component {
     })
   }
 
+  breadCrumbTrail = (Bread2ndTitle, Bread2ndURL, Bread3rdTitle) => {
+    let breadHeaders = {
+      Bread2ndTitle: Bread2ndTitle,
+      Bread2ndURL: Bread2ndURL,
+      Bread3rdTitle: Bread3rdTitle,
+    }
+    console.log(this.child && this.child.setBreadCrumbs ? this.child.setBreadCrumbs(breadHeaders) : null)
+  }
+
   render() {
     const isLogin = reactLocalStorage.getObject("isUserLoggedIn");
     console.log("isLogin", isLogin);
+
     return (
       <Suspense fallback={<Loader />}>
         <div className="testting">
@@ -119,8 +131,8 @@ class Main extends Component {
               </div>
             </div>}
 
-          {isLogin && !this.state.visibelPageNotFound && <Breadcrumb />}
-          {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} />}
+          {isLogin && !this.state.visibelPageNotFound && <Breadcrumb onRef={ref => (this.child = ref)} />}
+          {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} breadCrumbTrail={this.breadCrumbTrail} />}
 
           <div className={isLogin ? 'content-page' : ''}>
             <div className=" middleContainer">
@@ -143,7 +155,7 @@ class Main extends Component {
 
                 {/* <Route path="/PartMasterOld" component={AuthMiddleware(PartMaster)} /> */}
 
-                <Route path="/PartMaster" component={AuthMiddleware(PartMaster)} />
+                <Route path="/part-master" component={AuthMiddleware(PartMaster)} />
 
                 <Route path="/UOMMaster" component={AuthMiddleware(UOMMaster)} />
 
@@ -153,7 +165,7 @@ class Main extends Component {
 
                 <Route path="/plant-master" component={AuthMiddleware(PlantMaster)} />
 
-                <Route path="/supplier-master" component={AuthMiddleware(SupplierMaster)} />
+                <Route path="/vendor-master" component={AuthMiddleware(SupplierMaster)} />
 
                 <Route path="/bom-master" component={AuthMiddleware(BOMMaster)} />
 

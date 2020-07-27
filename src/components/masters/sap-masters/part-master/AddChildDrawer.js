@@ -160,7 +160,7 @@ class AddChildDrawer extends Component {
                                             customClass={'Personal-Details'} />
                                     </Col>
                                     <Col md="12">
-                                        <Label sm={4} className={'pl0'} check>
+                                        <Label sm={4} className={'pl0 pr0'} check>
                                             <input
                                                 type="radio"
                                                 name="childType"
@@ -169,7 +169,7 @@ class AddChildDrawer extends Component {
                                             />{' '}
                                                 Sub Assembly
                                             </Label>
-                                        <Label sm={4} className={'pl0'} check>
+                                        <Label sm={4} className={'pl0 pr0'} check>
                                             <input
                                                 type="radio"
                                                 name="childType"
@@ -178,7 +178,7 @@ class AddChildDrawer extends Component {
                                             />{' '}
                                                 Component
                                             </Label>
-                                        <Label sm={4} className={'pl0'} check>
+                                        <Label sm={4} className={'pl0 pr0'} check>
                                             <input
                                                 type="radio"
                                                 name="childType"

@@ -429,7 +429,7 @@ class AddAssemblyPart extends Component {
                                                 <Col md="3">
                                                     <button
                                                         type="button"
-                                                        className={'user-btn'}
+                                                        className={'user-btn mt30'}
                                                         onClick={this.childDrawerToggle}>
                                                         <div className={'plus'}></div>ADD Child</button>
                                                 </Col>

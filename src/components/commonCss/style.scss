@@ -1060,3 +1060,9 @@ button.add-btn {
 .pl0 {
   padding-left: 0;
 }
+.pr0 {
+  padding-right: 0;
+}
+.breadcrumbs ul li.active a {
+  text-transform: capitalize;
+}
