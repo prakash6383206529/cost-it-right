@@ -896,3 +896,5 @@ export const SKILLED = 'Skilled';
 export const CONTRACT = 'Contract';
 export const SEMI_SKILLED = 'Semi-Skilled';
 export const UNSKILLED = 'Unskilled';
+
+//M1-Frontend changes
