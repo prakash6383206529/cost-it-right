@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
+import { Container, Row, Col, Label, CustomInput } from 'reactstrap';
 import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
 import {
     renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
@@ -14,12 +14,16 @@ import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import HeaderTitle from '../../../common/HeaderTitle';
+import AddAssemblyForm from './AddAssemblyForm';
+import AddComponentForm from './AddComponentForm';
+import AddBOPForm from './AddBOPForm';
 
 class AddChildDrawer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            childType: 1,
         }
     }
 
@@ -43,6 +47,10 @@ class AddChildDrawer extends Component {
         } else {
 
         }
+    }
+
+    checkRadio = (radioType) => {
+        this.setState({ childType: radioType })
     }
 
     toggleDrawer = (event) => {
@@ -122,52 +130,108 @@ class AddChildDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, reset } = this.props;
+        const { childType } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container>
                         <div className={'drawer-wrapper'}>
-                            <form
+                            {/* <form
                                 noValidate
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                            >
-                                <Row className="drawer-heading">
-                                    <Col>
-                                        <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Child' : 'Add Child'}</h3>
-                                        </div>
-                                        <div
-                                            onClick={(e) => this.toggleDrawer(e)}
-                                            className={'close-button right'}>
-                                        </div>
+                            > */}
+                            <Row className="drawer-heading">
+                                <Col>
+                                    <div className={'header-wrapper left'}>
+                                        <h3>{isEditFlag ? 'Update Child' : 'Add Child'}</h3>
+                                    </div>
+                                    <div
+                                        onClick={(e) => this.toggleDrawer(e)}
+                                        className={'close-button right'}>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <div className="drawer-body">
+                                <Row>
+                                    <Col md="12">
+                                        <HeaderTitle
+                                            title={'Type:'}
+                                            customClass={'Personal-Details'} />
+                                    </Col>
+                                    <Col md="12">
+                                        <Label sm={4} className={'pl0'} check>
+                                            <input
+                                                type="radio"
+                                                name="childType"
+                                                checked={childType == 1 ? true : false}
+                                                onClick={() => this.checkRadio(1)}
+                                            />{' '}
+                                                Sub Assembly
+                                            </Label>
+                                        <Label sm={4} className={'pl0'} check>
+                                            <input
+                                                type="radio"
+                                                name="childType"
+                                                checked={childType == 2 ? true : false}
+                                                onClick={() => this.checkRadio(2)}
+                                            />{' '}
+                                                Component
+                                            </Label>
+                                        <Label sm={4} className={'pl0'} check>
+                                            <input
+                                                type="radio"
+                                                name="childType"
+                                                checked={childType == 3 ? true : false}
+                                                onClick={() => this.checkRadio(3)}
+                                            />{' '}
+                                                Bought Out Part
+                                            </Label>
                                     </Col>
                                 </Row>
-                                <Row>
-
-                                </Row>
 
 
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-center ">
-                                            <input
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
-                                                className="reset mr15 cancel-btn"
-                                            />
-                                            <input
-                                                //disabled={isSubmitted ? true : false}
-                                                type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
-                                            />
+                                {childType == 1 &&
+                                    <AddAssemblyForm
+                                        toggleDrawer={this.toggleDrawer}
+                                    />
+                                }
+
+                                {childType == 2 &&
+                                    <AddComponentForm
+                                        toggleDrawer={this.toggleDrawer}
+                                    />
+                                }
+
+                                {childType == 3 &&
+                                    <AddBOPForm
+                                        toggleDrawer={this.toggleDrawer}
+                                    />
+                                }
+
+
+
+                                {/* <Row className="sf-btn-footer no-gutters justify-content-between">
+                                        <div className="col-md-12">
+                                            <div className="text-center ">
+                                                <input
+                                                    //disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="button"
+                                                    value="Cancel"
+                                                    className="reset mr15 cancel-btn"
+                                                />
+                                                <input
+                                                    //disabled={isSubmitted ? true : false}
+                                                    type="submit"
+                                                    value={isEditFlag ? 'Update' : 'Save'}
+                                                    className="submit-button mr5 save-btn"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                </Row>
-                            </form>
+                                    </Row> */}
+                            </div>
+                            {/* </form> */}
                         </div>
                     </Container>
                 </Drawer>
