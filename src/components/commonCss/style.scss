@@ -1049,7 +1049,14 @@ button.add-btn {
 }
 .date-section .picker-panel.popup-left {
   z-index: 99;
-  left: 0px !important;}
+  left: 0px !important;
+}
+
 ::placeholder { /* Most modern browsers support this now. */
   color:    #000;
+  left: 0px !important;
+}
+
+.pl0 {
+  padding-left: 0;
 }
