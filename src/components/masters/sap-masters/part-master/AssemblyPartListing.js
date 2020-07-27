@@ -299,7 +299,7 @@ class AssemblyPartListing extends Component {
                                 </div>
                             </div> */}
                         </Col>
-                        <Col md="4" className="search-user-block">
+                        <Col md="4" className="search-user-block mb-30">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {!this.props.isShowForm &&
