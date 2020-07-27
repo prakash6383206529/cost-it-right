@@ -155,8 +155,8 @@ class RMListing extends Component {
         return (
             <div>
                 {this.props.loading && <Loader />}
-                <Row>
-                    <Col>
+                <Row className="pt-30 mb-30">
+                    <Col md={12} className="text-right ">
                         <button
                             type={'button'}
                             className={'user-btn'}
@@ -164,7 +164,7 @@ class RMListing extends Component {
                             <div className={'plus'}></div>{`ADD RM MATERIAL`}</button>
                     </Col>
                 </Row>
-                <hr />
+               
                 <Row>
                     <Col>
                         {/* <hr /> */}
