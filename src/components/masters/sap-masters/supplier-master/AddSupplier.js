@@ -324,17 +324,18 @@ class AddSupplier extends Component {
     render() {
         const { handleSubmit, reset } = this.props;
         return (
-            <div>
+            <div className="container">
                 {/* {isLoader && <Loader />} */}
                 <div className="login-container signup-form">
                     <div className="row">
                         {this.state.isShowForm &&
                             <div className="col-md-12">
-                                <div className="shadow-lgg login-formg pt-30">
+                                <div className="shadow-lgg login-formg">
                                     <div className="row">
-                                        <div className="col-md-6">
+                                        <div className="col-md-12">
                                             <div className="form-heading mb-0">
                                                 <h2>{this.state.isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h2>
+                                               <hr/>
                                             </div>
                                         </div>
                                     </div>

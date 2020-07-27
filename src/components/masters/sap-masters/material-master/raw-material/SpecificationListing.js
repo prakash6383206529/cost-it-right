@@ -273,25 +273,16 @@ class SpecificationListing extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row>
-                        <Col>
-                            <button
-                                type={'button'}
-                                className={'user-btn'}
-                                onClick={this.openModel}>
-                                <div className={'plus'}></div>{`ADD SPEC`}</button>
-                        </Col>
-                    </Row>
-                    <hr />
-                    <Row>
-                        <Col md="2" className="mt25">
-                            <h4>{`Filter By:`}</h4>
-                        </Col>
+                <Row className="pt-30">
+                        <Col md="10" className="filter-block ">
+                <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                    
                         <Col md="3">
                             <Field
                                 name="MaterialTypeId"
                                 type="text"
-                                label="Raw Material"
+                                // label="Raw Material"
                                 component={searchableSelect}
                                 placeholder={'Select Raw Material'}
                                 options={this.renderListing('material')}
@@ -306,7 +297,7 @@ class SpecificationListing extends Component {
                             <Field
                                 name="GradeId"
                                 type="text"
-                                label="RM Grade"
+                                // label="RM Grade"
                                 component={searchableSelect}
                                 placeholder={'Select RM Grade'}
                                 options={this.renderListing('RMGrade')}
@@ -317,29 +308,38 @@ class SpecificationListing extends Component {
                                 valueDescription={this.state.RMGrade}
                             />
                         </Col>
-                        <Col md="1">
+                        <Col md="3">
                             <button
                                 type="button"
                                 //disabled={pristine || submitting}
                                 onClick={this.resetFilter}
-                                className="btn btn-secondary mr15 mt25"
+                                className="reset mr10"
                             >
                                 {'Reset'}
                             </button>
-                        </Col>
-                        <Col md="1">
+                        
                             <button
                                 type="button"
                                 //disabled={pristine || submitting}
                                 onClick={this.filterList}
-                                className="btn btn-primary mr15 mt25"
+                                className="apply mr5"
                             >
                                 {'Apply'}
                             </button>
                         </Col>
+                       
+                    </div>
+                    </Col> 
+                    <Col md={2} className="text-right">
+                            <button
+                                type={'button'}
+                                className={'user-btn'}
+                                onClick={this.openModel}>
+                                <div className={'plus'}></div>{`ADD SPEC`}</button>
+                        </Col>
                     </Row>
                 </form>
-                <hr />
+             
                 <Row>
                     <Col>
                         {/* <hr /> */}

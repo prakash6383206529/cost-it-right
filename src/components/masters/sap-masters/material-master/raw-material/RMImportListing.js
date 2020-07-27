@@ -345,7 +345,7 @@ class RMImportListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
-                        <Col md="10" className="filter-block">
+                        <Col md="10" className="filter-block ">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -393,7 +393,7 @@ class RMImportListing extends Component {
                                         valueDescription={this.state.vendorName}
                                     />
                                 </div>
-                                <div className="flex-fill">
+                                <div className="flex-fill sliderange">
                                     <InputRange
                                         maxValue={500}
                                         minValue={0}

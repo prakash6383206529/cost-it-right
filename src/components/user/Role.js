@@ -488,14 +488,14 @@ class Role extends Component {
 		return (
 			<div>
 				{isLoader && <Loader />}
-				<div className="login-container signup-form">
-					<div className="row">
+				<div className="login-container signup-form ">
+					<div className="row pt-30 mb-30">
 						<div className="col-md-12" >
 							<button
 								type="button"
 								className={'user-btn'}
 								onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}>
-								<div className={'plus'}></div>{'ADD'}
+								<div className={'plus'}></div>{'ADD ROLE'}
 							</button>
 						</div>
 						{this.state.isShowForm &&

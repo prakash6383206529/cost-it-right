@@ -40,7 +40,8 @@ class PlantMaster extends Component {
             <>
                 <Container className="user-page p-0">
                     {/* {this.props.loading && <Loader/>} */}
-                    <div>
+                    
+                    <Col>
                         <h1>Plant Master</h1>
                         <Nav tabs className="subtabs">
                             <NavItem>
@@ -64,7 +65,8 @@ class PlantMaster extends Component {
                                     <AddVBCPlant />
                                 </TabPane>}
                         </TabContent>
-                    </div>
+                    </Col>
+                   
                 </Container >
             </ >
         );
