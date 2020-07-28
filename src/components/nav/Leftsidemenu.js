@@ -40,22 +40,22 @@ const masterMenu = [
 		label: 'Bought Out Parts',
 		to: '/bop-master',
 	},
-	{
-		label: 'Other Operation',
-		to: '/other-operation',
-	},
-	{
-		label: 'CED Other Operation',
-		to: '/ced-other-operation',
-	},
-	{
-		label: 'Machine Rate',
-		to: '/mhr-master',
-	},
-	{
-		label: 'Machine Type',
-		to: '/machine-type-master',
-	},
+	// {
+	// 	label: 'Other Operation',
+	// 	to: '/other-operation',
+	// },
+	// {
+	// 	label: 'CED Other Operation',
+	// 	to: '/ced-other-operation',
+	// },
+	// {
+	// 	label: 'Machine Rate',
+	// 	to: '/mhr-master',
+	// },
+	// {
+	// 	label: 'Machine Type',
+	// 	to: '/machine-type-master',
+	// },
 	{
 		label: 'Machine',
 		to: '/machine-master',
@@ -74,7 +74,7 @@ const additionalMasterMenu = [
 	{
 		icon: 'icon-class-name',
 		label: 'UOM',
-		to: '/UOMMaster',
+		to: '/UOM-Master',
 	},
 	{
 		label: 'Category',
@@ -158,8 +158,8 @@ class Leftmenu extends Component {
 			activeURL == '/bop-master' ||
 			activeURL == '/other-operation' ||
 			activeURL == '/ced-other-operation' ||
-			activeURL == '/mhr-master' ||
-			activeURL == '/machine-type-master' ||
+			//activeURL == '/mhr-master' ||
+			//activeURL == '/machine-type-master' ||
 			activeURL == '/machine-master' ||
 			activeURL == '/power-master' ||
 			activeURL == '/client-master') {
@@ -172,7 +172,7 @@ class Leftmenu extends Component {
 	additionalMasterMenusCheck = () => {
 		const { activeURL } = this.state;
 		if (activeURL == '/operation-master' ||
-			activeURL == '/UOMMaster' ||
+			activeURL == '/UOM-Master' ||
 			activeURL == '/category-master' ||
 			activeURL == '/freight-master' ||
 			activeURL == '/labour-master' ||
@@ -212,7 +212,7 @@ class Leftmenu extends Component {
 			this.props.breadCrumbTrail('Costing', '/costing', activeURL)
 		} else if (activeURL == '/user') {
 			content = userMenu;
-			this.props.breadCrumbTrail('Users', '/user', activeURL)
+			this.props.breadCrumbTrail('Users', '/user', 'User Management')
 		} else {
 			content = [];
 			this.props.breadCrumbTrail('', '/', activeURL)

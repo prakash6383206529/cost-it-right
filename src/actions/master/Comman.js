@@ -1031,8 +1031,6 @@ export function getLabourTypeSelectList(callback) {
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });

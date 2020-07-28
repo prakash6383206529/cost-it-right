@@ -1066,3 +1066,9 @@ button.add-btn {
 .breadcrumbs ul li.active a {
   text-transform: capitalize;
 }
+button.user-btn.pull-left {
+  float: left;
+}
+button.user-btn.pull-right {
+  float: right;
+}

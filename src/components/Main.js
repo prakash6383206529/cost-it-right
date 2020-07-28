@@ -22,7 +22,7 @@ import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
 import OtherOperationMaster from './masters/sap-masters/other-operation';
 import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
-import MHRMaster from './masters/sap-masters/mhr-master';
+//import MHRMaster from './masters/sap-masters/mhr-master';
 //import OperationMaster from './masters/sap-masters/operation';
 import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
@@ -34,7 +34,7 @@ import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import DepreciationMaster from './masters/sap-masters/depreciation-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
 import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
-import MachineTypeMaster from './masters/sap-masters/machine-type-master';
+//import MachineTypeMaster from './masters/sap-masters/machine-type-master';
 import MachineMaster from './masters/sap-masters/machine-master';
 import PowerMaster from './masters/sap-masters/power-master';
 import ReasonMaster from './masters/sap-masters/reason-master/AddReason';
@@ -157,7 +157,7 @@ class Main extends Component {
 
                 <Route path="/part-master" component={AuthMiddleware(PartMaster)} />
 
-                <Route path="/UOMMaster" component={AuthMiddleware(UOMMaster)} />
+                <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster)} />
 
                 <Route path="/category-master" component={AuthMiddleware(CategoryMaster)} />
 
@@ -179,9 +179,9 @@ class Main extends Component {
 
                 <Route path="/ced-other-operation" component={AuthMiddleware(CEDoperationMaster)} />
 
-                <Route path="/mhr-master" component={AuthMiddleware(MHRMaster)} />
+                {/* <Route path="/mhr-master" component={AuthMiddleware(MHRMaster)} /> */}
 
-                <Route path="/machine-type-master" component={AuthMiddleware(MachineTypeMaster)} />
+                {/* <Route path="/machine-type-master" component={AuthMiddleware(MachineTypeMaster)} /> */}
 
                 <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
 

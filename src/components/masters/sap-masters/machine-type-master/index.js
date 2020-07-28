@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
-import AddMachineType from './AddMachineType';
+//import AddMachineType from './AddMachineType';
 import { getMachineTypeListAPI, deleteMachineTypeAPI } from '../../../../actions/master/MachineMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -132,14 +132,14 @@ class MachineTypeMaster extends Component {
                         </Table>
                     </Col>
                 </Row>
-                {isOpen && (
+                {/* {isOpen && (
                     <AddMachineType
                         isOpen={isOpen}
                         onCancel={this.onCancel}
                         isEditFlag={isEditFlag}
                         MachineTypeId={this.state.MachineTypeId}
                     />
-                )}
+                )} */}
             </Container >
         );
     }

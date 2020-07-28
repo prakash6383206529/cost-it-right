@@ -468,12 +468,12 @@ export const API = {
   getSupplierType: `${BASE_URL}/configuration/radio-button-list-get-costing-supplier-type`,
 
   //MACHINE TYPE
-  createMachineTypeAPI: `${BASE_URL}/masters-machine/create-machine-type`,
+  createMachineType: `${BASE_URL}/masters-machine/create-machine-type`,
+  getMachineTypeSelectList: `${BASE_URL}/masters-machine/get-machine-type-select-list`,
   getMachineTypeListAPI: `${BASE_URL}/masters-machine/get-all-machine-type`,
   getMachineTypeDataAPI: `${BASE_URL}/masters-machine/get-machine-type`,
   updateMachineTypeAPI: `${BASE_URL}/masters-machine/update-machine-type`,
   deleteMachineTypeAPI: `${BASE_URL}/masters-machine/delete-machine-type`,
-  getMachineTypeSelectList: `${BASE_URL}/configuration/select-list-get-machine-type`,
   getMachineSelectListByMachineType: `${BASE_URL}/configuration/select-list-get-machine`,
   getDepreciationTypeSelectList: `${BASE_URL}/configuration/select-list-get-depreciation-type`, //Used in Depreciation master
   getDepreciationSelectList: `${BASE_URL}/configuration/select-list-get-depreciation`,
@@ -853,6 +853,7 @@ export const GET_MACHINE_TYPE_SELECTLIST_SUCCESS = 'GET_MACHINE_TYPE_SELECTLIST_
 export const GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS = 'GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS';
 export const GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS';
 export const GET_SHIFT_TYPE_SELECTLIST_SUCCESS = 'GET_SHIFT_TYPE_SELECTLIST_SUCCESS';
+export const GET_MACHINE_TYPE_SELECTLIST = 'GET_MACHINE_TYPE_SELECTLIST';
 
 //MACHINE
 export const GET_MACHINE_DATALIST_SUCCESS = 'GET_MACHINE_DATALIST_SUCCESS';
