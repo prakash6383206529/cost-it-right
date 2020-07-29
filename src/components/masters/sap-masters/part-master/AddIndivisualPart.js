@@ -6,8 +6,7 @@ import { required, number, maxLength6, maxLength10, maxLength100 } from "../../.
 import { userDetails, loggedInUserId } from "../../../../helper/auth";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, } from "../../../layout/FormInputs";
 import { createPart, updatePart, getPartData, } from '../../../../actions/master/Part';
-import { getPlantSelectList, } from '../../../../actions/master/Comman';
-import { getRawMaterialNameChild, } from '../../../../actions/master/Material';
+import { getPlantSelectList, getRawMaterialSelectList, } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -38,7 +37,7 @@ class AddIndivisualPart extends Component {
     * @description 
     */
     componentDidMount() {
-        this.props.getRawMaterialNameChild(() => { })
+        this.props.getRawMaterialSelectList(() => { })
         this.props.getPlantSelectList(() => { })
     }
 
@@ -69,9 +68,9 @@ class AddIndivisualPart extends Component {
                     })
 
                     setTimeout(() => {
-                        const { rawMaterialNameSelectList } = this.props;
+                        const { rowMaterialList } = this.props;
 
-                        const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
+                        const materialNameObj = rowMaterialList && rowMaterialList.find(item => item.Value == Data.RawMaterial)
 
                         this.setState({
                             isEditFlag: true,
@@ -133,10 +132,10 @@ class AddIndivisualPart extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { rawMaterialNameSelectList, plantSelectList } = this.props;
+        const { rowMaterialList, plantSelectList } = this.props;
         const temp = [];
         if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
+            rowMaterialList && rowMaterialList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -516,8 +515,7 @@ class AddIndivisualPart extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman, part }) {
-    const { rawMaterialNameSelectList } = material;
-    const { plantSelectList } = comman;
+    const { plantSelectList, rowMaterialList } = comman;
     const { newPartData } = part;
 
     let initialValues = {};
@@ -527,7 +525,7 @@ function mapStateToProps({ material, comman, part }) {
         }
     }
 
-    return { rawMaterialNameSelectList, plantSelectList, newPartData, initialValues }
+    return { rowMaterialList, plantSelectList, newPartData, initialValues }
 }
 
 /**
@@ -537,7 +535,7 @@ function mapStateToProps({ material, comman, part }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getRawMaterialNameChild,
+    getRawMaterialSelectList,
     getPlantSelectList,
     createPart,
     updatePart,

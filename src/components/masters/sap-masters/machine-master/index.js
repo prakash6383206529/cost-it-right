@@ -4,6 +4,7 @@ import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button
 import classnames from 'classnames';
 import MachineRateListing from './MachineRateListing';
 import AddMachineRate from './AddMachineRate';
+import AddMoreDetails from './AddMoreDetails';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -11,6 +12,7 @@ class MachineMaster extends Component {
         this.state = {
             activeTab: '1',
             isMachineRateForm: false,
+            isAddMoreDetails: false,
         }
     }
 
@@ -27,11 +29,28 @@ class MachineMaster extends Component {
     }
 
     displayForm = () => {
-        this.setState({ isMachineRateForm: true })
+        this.setState({
+            isMachineRateForm: true,
+            isAddMoreDetails: false,
+        })
     }
 
     hideForm = () => {
         this.setState({ isMachineRateForm: false })
+    }
+
+    displayMoreDetailsForm = () => {
+        this.setState({
+            isAddMoreDetails: true,
+            isMachineRateForm: false,
+        })
+    }
+
+    hideMoreDetailsForm = () => {
+        this.setState({
+            isAddMoreDetails: false,
+            isMachineRateForm: true,
+        })
     }
 
     /**
@@ -39,11 +58,18 @@ class MachineMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isMachineRateForm } = this.state;
+        const { isMachineRateForm, isAddMoreDetails } = this.state;
 
         if (isMachineRateForm === true) {
             return <AddMachineRate
                 hideForm={this.hideForm}
+                displayMoreDetailsForm={this.displayMoreDetailsForm}
+            />
+        }
+
+        if (isAddMoreDetails === true) {
+            return <AddMoreDetails
+                hideMoreDetailsForm={this.hideMoreDetailsForm}
             />
         }
 

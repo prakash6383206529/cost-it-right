@@ -46,8 +46,8 @@ export const API = {
   getState: `${BASE_URL}/configuration-location/select-list-get-state`,
   getCity: `${BASE_URL}/configuration-location/select-list-get-city`,
 
-  //api's for configure row material
-  getRowMaterial: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
+  //api's for configure raw material
+  getRawMaterialSelectList: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
   getRowGrade: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
   getRowMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-categoryy`,
@@ -485,6 +485,8 @@ export const API = {
   deleteMachineAPI: `${BASE_URL}/masters-machine/delete`,
   getMachineDataAPI: `${BASE_URL}/masters-machine/get`,
   updateMachineAPI: `${BASE_URL}/masters-machine/update`,
+  getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
+  createProcess: `${BASE_URL}/masters-machine/create-process`,
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
@@ -597,7 +599,7 @@ export const GET_CATEGORY_TYPE_LIST_SUCCESS = 'GET_CATEGORY_TYPE_SUCCESS';
 //RAW MATERIAL
 export const CREATE_MATERIAL_SUCCESS = ' CREATE_MATERIAL_SUCCESS';
 export const CREATE_MATERIAL_FAILURE = 'CREATE_MATERIAL_FAILURE';
-export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
+export const GET_RAW_MATERIAL_SUCCESS = 'GET_RAW_MATERIAL_SUCCESS';
 export const GET_RAW_MATERIAL_DATA_SUCCESS = 'GET_RAW_MATERIAL_DATA_SUCCESS';
 export const GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS';
 export const GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS';

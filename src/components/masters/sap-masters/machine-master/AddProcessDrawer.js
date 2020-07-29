@@ -7,8 +7,8 @@ import {
     renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
     searchableSelect
 } from "../../../layout/FormInputs";
-import { createMachineType } from '../../../../actions/master/MachineMaster';
-import { getLabourTypeSelectList } from '../../../../actions/master/Comman';
+import { getProcessCode, getMachineTypeSelectList, createProcess, } from '../../../../actions/master/MachineMaster';
+import { getPlantSelectList, } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -19,7 +19,8 @@ class AddProcessDrawer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            labourType: [],
+            selectedPlants: [],
+            selectedMachine: [],
         }
     }
 
@@ -36,7 +37,9 @@ class AddProcessDrawer extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        this.props.getLabourTypeSelectList(() => { })
+        this.props.getPlantSelectList(() => { })
+        this.props.getMachineTypeSelectList(() => { })
+
     }
 
     toggleDrawer = (event) => {
@@ -46,33 +49,56 @@ class AddProcessDrawer extends Component {
         this.props.closeDrawer('')
     };
 
+    checkProcessCode = (e) => {
+        console.log('triggered >>>>>>>>>>>>', e.target.value)
+        const value = e.target.value;
+        this.props.getProcessCode(value, res => {
+            if (res && res.data && res.data.Result) {
+                let Data = res.data.DynamicData;
+                this.props.change('ProcessCode', Data.ProcessCode)
+            }
+        })
+    }
+
+    /**
+     * @method handlePlants
+     * @description Used handle Plants
+     */
+    handlePlants = (e) => {
+        this.setState({ selectedPlants: e })
+    }
+
+    /**
+     * @method handleMachine
+     * @description Used handle Machine
+     */
+    handleMachine = (e) => {
+        this.setState({ selectedMachine: e })
+    }
+
     /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { labourTypeSelectList } = this.props;
+        const { plantSelectList, machineTypeSelectList } = this.props;
         const temp = [];
-        if (label === 'labourList') {
-            labourTypeSelectList && labourTypeSelectList.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
+        if (label === 'machine') {
+            machineTypeSelectList && machineTypeSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
             return temp;
         }
 
     }
-
-    /**
-    * @method labourHandler
-    * @description called
-    */
-    labourHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ labourType: newValue });
-        } else {
-            this.setState({ labourType: [] })
-        }
-    };
 
     /**
     * @method cancel
@@ -90,11 +116,23 @@ class AddProcessDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { labourType } = this.state;
+        const { selectedPlants, selectedMachine } = this.state;
+
+        let plantArray = [];
+        selectedPlants && selectedPlants.map((item) => {
+            plantArray.push(item.Value)
+            return plantArray;
+        })
+
+        let machineArray = [];
+        selectedMachine && selectedMachine.map((item) => {
+            machineArray.push(item.Value)
+            return machineArray;
+        })
 
         /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
-            const { supplierId } = this.props;
+
             let formData = {
 
             }
@@ -107,14 +145,16 @@ class AddProcessDrawer extends Component {
             // });
         } else {/** Add new detail for creating supplier master **/
             let formData = {
-                MachineType: values.MachineType,
+                ProcessName: values.ProcessName,
+                ProcessCode: values.ProcessCode,
+                PlantIds: plantArray,
+                MachineIds: machineArray,
                 LoggedInUserId: loggedInUserId(),
-                LabourTypeIds: [labourType.value]
             }
 
-            this.props.createMachineType(formData, (res) => {
+            this.props.createProcess(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
+                    toastr.success(MESSAGES.PROCESS_ADD_SUCCESS);
                     this.toggleDrawer('')
                 }
             });
@@ -153,8 +193,22 @@ class AddProcessDrawer extends Component {
 
                                     <Col md="12">
                                         <Field
-                                            label={`Machine Type`}
-                                            name={"MachineType"}
+                                            label={`Process Name`}
+                                            name={"ProcessName"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required]}
+                                            component={renderText}
+                                            onBlur={this.checkProcessCode}
+                                            required={true}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                        />
+                                    </Col>
+                                    <Col md="12">
+                                        <Field
+                                            label={`Process Code`}
+                                            name={"ProcessCode"}
                                             type="text"
                                             placeholder={''}
                                             validate={[required]}
@@ -166,17 +220,34 @@ class AddProcessDrawer extends Component {
                                     </Col>
                                     <Col md="12">
                                         <Field
-                                            name="LabourTypeIds"
-                                            type="text"
-                                            label="Labour Type"
-                                            component={searchableSelect}
-                                            placeholder={'Select Labour'}
-                                            options={this.renderListing('labourList')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.labourHandler}
-                                            valueDescription={this.state.labourType}
+                                            label="Plant"
+                                            name="Plant"
+                                            placeholder="--Select--"
+                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                            options={this.renderListing('plant')}
+                                            selectionChanged={this.handlePlants}
+                                            optionValue={option => option.Value}
+                                            optionLabel={option => option.Text}
+                                            component={renderMultiSelectField}
+                                            mendatory={true}
+                                            className="multiselect-with-border"
+                                            disabled={isEditFlag ? true : false}
+                                        />
+                                    </Col>
+                                    <Col md="12">
+                                        <Field
+                                            label="Machine"
+                                            name="Machine"
+                                            placeholder="--Select--"
+                                            selection={(this.state.selectedMachine == null || this.state.selectedMachine.length == 0) ? [] : this.state.selectedMachine}
+                                            options={this.renderListing('machine')}
+                                            selectionChanged={this.handleMachine}
+                                            optionValue={option => option.Value}
+                                            optionLabel={option => option.Text}
+                                            component={renderMultiSelectField}
+                                            mendatory={true}
+                                            className="multiselect-with-border"
+                                            disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
 
@@ -215,8 +286,9 @@ class AddProcessDrawer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
-    const { labourTypeSelectList } = comman;
+function mapStateToProps({ comman, machine }) {
+    const { plantSelectList } = comman;
+    const { machineTypeSelectList } = machine;
 
     let initialValues = {};
     // if (supplierData && supplierData !== undefined) {
@@ -224,7 +296,7 @@ function mapStateToProps({ comman }) {
     //         VendorName: supplierData.VendorName,
     //     }
     // }
-    return { labourTypeSelectList, initialValues }
+    return { plantSelectList, machineTypeSelectList, initialValues }
 }
 
 /**
@@ -234,8 +306,10 @@ function mapStateToProps({ comman }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createMachineType,
-    getLabourTypeSelectList,
+    getProcessCode,
+    getPlantSelectList,
+    getMachineTypeSelectList,
+    createProcess,
 })(reduxForm({
     form: 'AddProcessDrawer',
     enableReinitialize: true,

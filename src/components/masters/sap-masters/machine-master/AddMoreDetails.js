@@ -29,16 +29,17 @@ import HeaderTitle from '../../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../../common/NoContentFound';
-const selector = formValueSelector('AddMachineRate');
+const selector = formValueSelector('AddMoreDetails');
 
-class AddMachineRate extends Component {
+class AddMoreDetails extends Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
         this.state = {
             BOPID: '',
             isEditFlag: false,
-            IsVendor: false,
+            IsPurchased: false,
+            isMoreDetails: false,
 
             selectedTechnology: [],
             vendorName: [],
@@ -82,19 +83,15 @@ class AddMachineRate extends Component {
     }
 
     /**
-    * @method onPressVendor
+    * @method onPressOwnership
     * @description Used for Vendor checked
     */
-    onPressVendor = () => {
+    onPressOwnership = () => {
         this.setState({
-            IsVendor: !this.state.IsVendor,
-            vendorName: [],
-            selectedVendorPlants: [],
-            vendorLocation: [],
-            selectedPlants: [],
+            IsPurchased: !this.state.IsPurchased,
         }, () => {
-            const { IsVendor } = this.state;
-            this.props.getVendorListByVendorType(true, () => { })
+            //const { IsVendor } = this.state;
+            //this.props.getVendorListByVendorType(true, () => { })
         });
     }
 
@@ -332,6 +329,7 @@ class AddMachineRate extends Component {
 
     moreDetailsToggler = () => {
         this.props.displayMoreDetailsForm()
+        this.setState({ isMoreDetails: !this.state.isMoreDetails })
     }
 
     /**
@@ -507,7 +505,7 @@ class AddMachineRate extends Component {
             isShowForm: false,
             IsVendor: false,
         })
-        this.props.hideForm()
+        this.props.hideMoreDetailsForm()
         //this.props.getRawMaterialDetailsAPI('', false, res => { })
     }
 
@@ -585,7 +583,7 @@ class AddMachineRate extends Component {
     */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { files, errors, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
+        const { files, errors, isEditFlag, isOpenMachineType, isMoreDetails, isOpenProcessDrawer, } = this.state;
 
         const previewStyle = {
             display: 'inline',
@@ -603,7 +601,7 @@ class AddMachineRate extends Component {
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="form-heading">
-                                                <h2>{isEditFlag ? `Update Machine` : `Add Machine`}</h2>
+                                                <h2>{isEditFlag ? `Update More Details` : `Add More Details`}</h2>
                                             </div>
                                         </div>
                                     </div>
@@ -612,20 +610,6 @@ class AddMachineRate extends Component {
                                         className="form"
                                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                     >
-                                        <Row>
-                                            <Col md="4" className="switch mb15">
-                                                <label className="switch-level">
-                                                    <div className={'left-title'}>Zero Based</div>
-                                                    <Switch
-                                                        onChange={this.onPressVendor}
-                                                        checked={this.state.IsVendor}
-                                                        id="normal-switch"
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                    <div className={'right-title'}>Vendor Based</div>
-                                                </label>
-                                            </Col>
-                                        </Row>
 
                                         <Row>
                                             <Col md="12">
@@ -633,73 +617,36 @@ class AddMachineRate extends Component {
                                                     title={'Machine:'}
                                                     customClass={'Personal-Details'} />
                                             </Col>
+                                            <Col md="3" className="switch mb15">
+                                                <label>Ownership</label>
+                                                <label className="switch-level">
+                                                    <div className={'left-title'}>Purchased</div>
+                                                    <Switch
+                                                        onChange={this.onPressOwnership}
+                                                        checked={this.state.IsPurchased}
+                                                        id="normal-switch"
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                    <div className={'right-title'}>Leased</div>
+                                                </label>
+                                            </Col>
+
                                             <Col md="3">
                                                 <Field
-                                                    label="Technology"
-                                                    name="technology"
+                                                    label="Plant"
+                                                    name="Plant"
                                                     placeholder="--Select--"
-                                                    selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length == 0) ? [] : this.state.selectedTechnology}
-                                                    options={this.renderListing('technology')}
-                                                    selectionChanged={this.handleTechnology}
+                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                    options={this.renderListing('plant')}
+                                                    selectionChanged={this.handlePlants}
                                                     optionValue={option => option.Value}
                                                     optionLabel={option => option.Text}
                                                     component={renderMultiSelectField}
                                                     mendatory={true}
                                                     className="multiselect-with-border"
-                                                //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                                                    disabled={isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                            {this.state.IsVendor &&
-                                                <Col md="3">
-                                                    <Field
-                                                        name="VendorName"
-                                                        type="text"
-                                                        label="Vendor Name"
-                                                        component={searchableSelect}
-                                                        placeholder={'--select--'}
-                                                        options={this.renderListing('VendorNameList')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleVendorName}
-                                                        valueDescription={this.state.vendorName}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>}
-                                            {this.state.IsVendor &&
-                                                <Col md="3">
-                                                    <Field
-                                                        label="Vendor Plant"
-                                                        name="VendorPlant"
-                                                        placeholder="--- Plant ---"
-                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
-                                                        options={this.renderListing('VendorPlant')}
-                                                        selectionChanged={this.handleVendorPlant}
-                                                        optionValue={option => option.Value}
-                                                        optionLabel={option => option.Text}
-                                                        component={renderMultiSelectField}
-                                                        mendatory={true}
-                                                        className="multiselect-with-border"
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>}
-                                            {!this.state.IsVendor &&
-                                                <Col md="3">
-                                                    <Field
-                                                        label="Plant"
-                                                        name="Plant"
-                                                        placeholder="--Select--"
-                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
-                                                        options={this.renderListing('plant')}
-                                                        selectionChanged={this.handlePlants}
-                                                        optionValue={option => option.Value}
-                                                        optionLabel={option => option.Text}
-                                                        component={renderMultiSelectField}
-                                                        mendatory={true}
-                                                        className="multiselect-with-border"
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>}
                                             <Col md="3">
                                                 <Field
                                                     label={`Machine No.`}
@@ -714,9 +661,6 @@ class AddMachineRate extends Component {
                                                     customClassName="withBorder"
                                                 />
                                             </Col>
-                                        </Row>
-
-                                        <Row>
                                             <Col md="3">
                                                 <Field
                                                     label={`Machine Name`}
@@ -731,6 +675,9 @@ class AddMachineRate extends Component {
                                                     customClassName="withBorder"
                                                 />
                                             </Col>
+                                        </Row>
+
+                                        <Row>
                                             <Col md="2">
                                                 <Field
                                                     name="MachineType"
@@ -755,8 +702,8 @@ class AddMachineRate extends Component {
                                             </Col>
                                             <Col md="3">
                                                 <Field
-                                                    label={`Machine Capacity / Tonnage`}
-                                                    name={"TonnageCapacity"}
+                                                    label={`Manufacturer`}
+                                                    name={"Manufacture"}
                                                     type="text"
                                                     placeholder={'Enter'}
                                                     validate={[required]}
@@ -769,8 +716,8 @@ class AddMachineRate extends Component {
                                             </Col>
                                             <Col md="3">
                                                 <Field
-                                                    label={`Description`}
-                                                    name={"Description"}
+                                                    label={`Year Of Manufacturing`}
+                                                    name={"YearOfManufacturing"}
                                                     type="text"
                                                     placeholder={'Enter'}
                                                     validate={[required]}
@@ -781,19 +728,211 @@ class AddMachineRate extends Component {
                                                     customClassName="withBorder"
                                                 />
                                             </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Machine Capacity / Tonnage`}
+                                                    name={"TonnageCapacity"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                        </Row>
 
-                                            {!this.state.IsVendor &&
-                                                <Col md="12">
-                                                    <div>
-                                                        <button
-                                                            type="button"
-                                                            className={'user-btn'}
-                                                            onClick={this.moreDetailsToggler}>
-                                                            <div className={'plus'}></div>ADD MORE DETAILS</button>
+                                        <Row>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Machine Cost (INR)`}
+                                                    name={"MachineCost"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Accessories Cost (INR)`}
+                                                    name={"AccessoriesCost"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Installation Charges (INR)`}
+                                                    name={"InstallationCharges"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Total Cost (INR)`}
+                                                    name={"TotalCost"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                        </Row>
 
-                                                    </div>
-                                                </Col>}
-                                            <hr />
+                                        <Row>
+                                            <Col md="12">
+                                                <HeaderTitle
+                                                    title={'Loan & Interest:'}
+                                                    customClass={'Personal-Details'} />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Loan (%)`}
+                                                    name={"LoanPercentage"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Loan Value`}
+                                                    name={"LoanValue"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Equity (%)`}
+                                                    name={"EquityPercentage"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Equity Value`}
+                                                    name={"EquityValue"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Rate Of Interest (%)`}
+                                                    name={"RateOfInterestPercentage"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Rate Of Interest Value`}
+                                                    name={"RateOfInterestValue"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="12">
+                                                <HeaderTitle
+                                                    title={'Working Hours:'}
+                                                    customClass={'Personal-Details'} />
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="12">
+                                                <HeaderTitle
+                                                    title={'Depreciation:'}
+                                                    customClass={'Personal-Details'} />
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="12">
+                                                <HeaderTitle
+                                                    title={'Variable Cost:'}
+                                                    customClass={'Personal-Details'} />
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="12">
+                                                <HeaderTitle
+                                                    title={'Power:'}
+                                                    customClass={'Personal-Details'} />
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="12">
+                                                <HeaderTitle
+                                                    title={'Labour:'}
+                                                    customClass={'Personal-Details'} />
+                                            </Col>
                                         </Row>
 
                                         <Row>
@@ -1004,6 +1143,6 @@ export default connect(mapStateToProps, {
     getMachineTypeSelectList,
     getProcessesSelectList,
 })(reduxForm({
-    form: 'AddMachineRate',
+    form: 'AddMoreDetails',
     enableReinitialize: true,
-})(AddMachineRate));
+})(AddMoreDetails));

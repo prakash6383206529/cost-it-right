@@ -9,6 +9,7 @@ import {
     GET_MACHINE_DATALIST_SUCCESS,
     GET_MACHINE_DATA_SUCCESS,
     GET_MACHINE_TYPE_SELECTLIST,
+    GET_PROCESSES_LIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -80,6 +81,13 @@ export default function MachineReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 machineTypeSelectList: action.payload
+            };
+        case GET_PROCESSES_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                processSelectList: action.payload
             };
         default:
             return state;

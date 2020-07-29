@@ -12,6 +12,7 @@ import {
     GET_MACHINE_DATALIST_SUCCESS,
     GET_MACHINE_DATA_SUCCESS,
     GET_MACHINE_TYPE_SELECTLIST,
+    GET_PROCESSES_LIST_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -257,6 +258,68 @@ export function getMachineTypeSelectList(callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getProcessCode
+ * @description Used to get 
+ */
+export function getProcessCode(value, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getProcessCode}?processName=${value}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method createProcess
+ * @description create Process
+ */
+export function createProcess(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createProcess, data, headers);
+        request.then((response) => {
+            if (response.data.Result == true) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: CREATE_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getProcessesSelectList
+ * @description Get Processes select list in process grid
+ */
+export function getProcessesSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getProcessesSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PROCESSES_LIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             callback(error);
             apiErrors(error);
         });
