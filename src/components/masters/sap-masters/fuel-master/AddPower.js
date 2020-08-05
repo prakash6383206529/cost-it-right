@@ -7,7 +7,7 @@ import {
     renderText, renderSelectField, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField, focusOnError,
 } from "../../../layout/FormInputs";
-import { getPowerTypeSelectList, } from '../../../../actions/master/Comman';
+import { getPowerTypeSelectList, getUOMSelectList, } from '../../../../actions/master/Comman';
 import { } from '../../../../actions/master/Material';
 import axios from 'axios';
 import { toastr } from 'react-redux-toastr';
@@ -59,6 +59,7 @@ class AddPower extends Component {
         const { data } = this.props;
         this.getDetails(data);
         this.props.getPowerTypeSelectList(() => { })
+        this.props.getUOMSelectList(() => { })
 
     }
 
@@ -189,20 +190,137 @@ class AddPower extends Component {
         }
     };
 
+
+    powerTableHandler = () => {
+        const { source, UOM, powerGrid, } = this.state;
+        const { fieldsObj } = this.props;
+
+        if (source.length == 0) {
+            toastr.warning('Fields should not be empty');
+            return false;
+        }
+
+        const AssetCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AssetCost : 0;
+        const AnnualCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AnnualCost : 0;
+        const UnitGeneratedPerAnnum = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
+        const CostPerUnit = fieldsObj && fieldsObj != undefined ? fieldsObj.CostPerUnit : 0;
+        const PowerContributionPercentage = fieldsObj && fieldsObj != undefined ? fieldsObj.PowerContributionPercentage : 0;
+        const CostPerUnitOfMeasurement = fieldsObj && fieldsObj != undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+        const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
+
+        const tempArray = [];
+
+        tempArray.push(...powerGrid, {
+            PowerSGPCId: '',
+            SourcePowerType: source.value,
+            AssetCost: AssetCost,
+            AnnualCost: AnnualCost,
+            UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
+            CostPerUnit: CostPerUnit,
+            PowerContributionPercentage: PowerContributionPercentage,
+            UnitOfMeasurementId: UOM.value,
+            UnitOfMeasurementName: UOM.label,
+            CostPerUnitOfMeasurement: CostPerUnitOfMeasurement,
+            UnitGeneratedPerUnitOfFuel: UnitGeneratedPerUnitOfFuel,
+            OtherCharges: 0
+        })
+
+        this.setState({
+            powerGrid: tempArray,
+            source: [],
+            UOM: [],
+        }, () => this.props.change('Rate', 0));
+
+    }
+
+    /**
+  * @method updatePowerGrid
+  * @description Used to handle updateProcessGrid
+  */
+    updatePowerGrid = () => {
+        const { StateName, rateGrid, rateGridEditIndex } = this.state;
+        const { fieldsObj } = this.props;
+        const Rate = fieldsObj && fieldsObj != undefined ? fieldsObj : 0;
+        let tempArray = [];
+
+        let tempData = rateGrid[rateGridEditIndex];
+        tempData = {
+            StateLabel: StateName.label,
+            StateId: StateName.value,
+            Rate: Rate,
+        }
+
+        tempArray = Object.assign([...rateGrid], { [rateGridEditIndex]: tempData })
+
+        this.setState({
+            rateGrid: tempArray,
+            StateName: [],
+            rateGridEditIndex: '',
+            isEditIndex: false,
+        }, () => this.props.change('Rate', 0));
+    };
+
+    /**
+    * @method resetPowerGridData
+    * @description Used to handle setTechnologyLevel
+    */
+    resetPowerGridData = () => {
+        this.setState({
+            StateName: [],
+            processGridEditIndex: '',
+            isEditIndex: false,
+        }, () => this.props.change('Rate', 0));
+    };
+
+    /**
+    * @method editItemDetails
+    * @description used to Reset form
+    */
+    editItemDetails = (index) => {
+        const { rateGrid } = this.state;
+        const tempData = rateGrid[index];
+
+        this.setState({
+            rateGridEditIndex: index,
+            isEditIndex: true,
+            StateName: { label: tempData.StateLabel, value: tempData.StateId },
+        }, () => this.props.change('Rate', tempData.Rate))
+    }
+
+    /**
+    * @method deleteItem
+    * @description used to Reset form
+    */
+    deleteItem = (index) => {
+        const { rateGrid } = this.state;
+
+        let tempData = rateGrid.filter((item, i) => {
+            if (i == index) {
+                return false;
+            }
+            return true;
+        });
+
+        this.setState({
+            rateGrid: tempData
+        })
+    }
+
+
     /**
     * @method renderListing
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { powerTypeSelectList } = this.props;
+        const { powerTypeSelectList, UOMSelectList, } = this.props;
         const temp = [];
-        // if (label === 'material') {
-        //     rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
-        //         if (item.Value == 0) return false;
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     });
-        //     return temp;
-        // }
+        if (label === 'UOM') {
+            UOMSelectList && UOMSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
 
         if (label === 'Source') {
             powerTypeSelectList && powerTypeSelectList.map(item => {
@@ -622,8 +740,8 @@ class AddPower extends Component {
                                                             placeholder={'--- Select ---'}
                                                             options={this.renderListing('Source')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.source == null || this.state.source.length == 0) ? [required] : []}
-                                                            required={true}
+                                                            //validate={(this.state.source == null || this.state.source.length == 0) ? [required] : []}
+                                                            //required={true}
                                                             handleChangeDescription={this.handleSource}
                                                             valueDescription={this.state.source}
                                                             disabled={false}
@@ -639,9 +757,9 @@ class AddPower extends Component {
                                                             name={"AssetCost"}
                                                             type="text"
                                                             placeholder={'Enter'}
-                                                            validate={[required]}
+                                                            //validate={[required]}
                                                             component={renderNumberInputField}
-                                                            required={true}
+                                                            //required={true}
                                                             className=""
                                                             customClassName=" withBorder"
                                                             disabled={false}
@@ -657,9 +775,9 @@ class AddPower extends Component {
                                                             name={"AnnualCost"}
                                                             type="text"
                                                             placeholder={'Enter'}
-                                                            validate={[required]}
+                                                            //validate={[required]}
                                                             component={renderNumberInputField}
-                                                            required={true}
+                                                            //required={true}
                                                             className=""
                                                             customClassName=" withBorder"
                                                             disabled={false}
@@ -680,8 +798,8 @@ class AddPower extends Component {
                                                                     placeholder={'--- Select ---'}
                                                                     options={this.renderListing('UOM')}
                                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                    validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                                                                    required={true}
+                                                                    //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                                                                    //required={true}
                                                                     handleChangeDescription={this.handleUOM}
                                                                     valueDescription={this.state.UOM}
                                                                     disabled={false}
@@ -697,9 +815,9 @@ class AddPower extends Component {
                                                                     name={"CostPerUnitOfMeasurement"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
-                                                                    validate={[required]}
+                                                                    //validate={[required]}
                                                                     component={renderNumberInputField}
-                                                                    required={true}
+                                                                    //required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
                                                                     disabled={false}
@@ -715,9 +833,9 @@ class AddPower extends Component {
                                                                     name={"UnitGeneratedPerUnitOfFuel"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
-                                                                    validate={[required]}
+                                                                    //validate={[required]}
                                                                     component={renderNumberInputField}
-                                                                    required={true}
+                                                                    //required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
                                                                     disabled={false}
@@ -735,9 +853,9 @@ class AddPower extends Component {
                                                             name={"UnitGeneratedPerAnnum"}
                                                             type="text"
                                                             placeholder={'Enter'}
-                                                            validate={[required]}
+                                                            //validate={[required]}
                                                             component={renderNumberInputField}
-                                                            required={true}
+                                                            //required={true}
                                                             className=""
                                                             customClassName=" withBorder"
                                                             disabled={false}
@@ -753,9 +871,9 @@ class AddPower extends Component {
                                                             name={"CostPerUnit"}
                                                             type="text"
                                                             placeholder={'Enter'}
-                                                            validate={[required]}
+                                                            //validate={[required]}
                                                             component={renderNumberInputField}
-                                                            required={true}
+                                                            //required={true}
                                                             className=""
                                                             customClassName=" withBorder"
                                                             disabled={true}
@@ -771,14 +889,39 @@ class AddPower extends Component {
                                                             name={"PowerContributionPercentage"}
                                                             type="text"
                                                             placeholder={'Enter'}
-                                                            validate={[required]}
+                                                            //validate={[required]}
                                                             component={renderNumberInputField}
-                                                            required={true}
+                                                            //required={true}
                                                             className=""
                                                             customClassName=" withBorder"
                                                             disabled={false}
                                                         />
                                                     </div>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <div>
+                                                    {this.state.isEditIndex ?
+                                                        <>
+                                                            <button
+                                                                type="button"
+                                                                className={'btn btn-primary mt30 pull-left mr5'}
+                                                                onClick={this.updatePowerGrid}
+                                                            >Update</button>
+
+                                                            <button
+                                                                type="button"
+                                                                className={'cancel-btn mt30 pull-left'}
+                                                                onClick={this.resetPowerGridData}
+                                                            >Cancel</button>
+                                                        </>
+                                                        :
+                                                        <button
+                                                            type="button"
+                                                            className={'user-btn mt30 pull-left'}
+                                                            onClick={this.powerTableHandler}>
+                                                            <div className={'plus'}></div>ADD</button>}
+
                                                 </div>
                                             </Col>
                                         </Row>
@@ -818,9 +961,11 @@ function mapStateToProps(state) {
     const { comman, } = state;
     const fieldsObj = selector(state, 'MinDemandKWPerMonth', 'DemandChargesPerKW', 'AvgUnitConsumptionPerMonth',
         'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'CostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
-        'DutyChargesAndFCA', 'TotalUnitCharges', 'PowerContributaionPersentage');
+        'DutyChargesAndFCA', 'TotalUnitCharges', 'PowerContributaionPersentage', 'AssetCost', 'AnnualCost',
+        'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'CostPerUnit',
+        'PowerContributionPercentage');
 
-    const { powerTypeSelectList, } = comman;
+    const { powerTypeSelectList, UOMSelectList, } = comman;
 
     let initialValues = {};
     // if (rawMaterialDetails && rawMaterialDetails != undefined) {
@@ -829,7 +974,7 @@ function mapStateToProps(state) {
     //     }
     // }
 
-    return { powerTypeSelectList, initialValues, fieldsObj, }
+    return { powerTypeSelectList, UOMSelectList, initialValues, fieldsObj, }
 }
 
 /**
@@ -840,6 +985,7 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getPowerTypeSelectList,
+    getUOMSelectList,
 })(reduxForm({
     form: 'AddPower',
     enableReinitialize: true,
