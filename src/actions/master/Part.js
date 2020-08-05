@@ -15,6 +15,7 @@ import {
     GET_MATERIAL_TYPE_SUCCESS,
     GET_ALL_NEW_PARTS_SUCCESS,
     GET_UNIT_NEW_PART_DATA_SUCCESS,
+    GET_PART_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -415,5 +416,30 @@ export function deletePart(PartId, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+
+/**
+ * @method getPartSelectList
+ * @description Used to Client selectlist
+ */
+export function getPartSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPartSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PART_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

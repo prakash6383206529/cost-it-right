@@ -11,6 +11,7 @@ import {
     fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList,
 } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType } from '../../../../actions/master/Material';
+import { getPartSelectList } from '../../../../actions/master/Part';
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, } from '../../../../actions/master/BoughtOutParts';
 import BOPDomesticListing from './BOPDomesticListing';
 import { toastr } from 'react-redux-toastr';
@@ -67,6 +68,7 @@ class AddBOPDomestic extends Component {
     componentWillMount() {
         this.props.getUOMSelectList(() => { })
         this.props.getBOPCategorySelectList(() => { })
+        this.props.getPartSelectList(() => { })
 
     }
 
@@ -77,6 +79,12 @@ class AddBOPDomestic extends Component {
     componentDidMount() {
         this.props.fetchMaterialComboAPI(res => { });
         this.props.getVendorListByVendorType(false, () => { })
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.fieldsObj != prevProps.fieldsObj) {
+            this.handleCalculation()
+        }
     }
 
     /**
@@ -195,7 +203,7 @@ class AddBOPDomestic extends Component {
     */
     renderListing = (label) => {
         const { vendorListByVendorType, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier, cityList,
-            UOMSelectList, } = this.props;
+            UOMSelectList, partSelectList, } = this.props;
         const temp = [];
         if (label === 'BOPCategory') {
             bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -205,10 +213,10 @@ class AddBOPDomestic extends Component {
             return temp;
         }
         if (label === 'PartAssembly') {
-            // plantList && plantList.map(item => {
-            //     if (item.Value == 0) return false;
-            //     temp.push({ Text: item.Text, Value: item.Value })
-            // });
+            partSelectList && partSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
             return temp;
         }
         if (label === 'plant') {
@@ -429,6 +437,12 @@ class AddBOPDomestic extends Component {
             BOPID, isEditFlag, files, effectiveDate, receivedFiles } = this.state;
         const { reset } = this.props;
 
+        let partArray = [];
+        selectedPartAssembly && selectedPartAssembly.map((item) => {
+            partArray.push({ PartNumber: item.Text, PartId: item.Value })
+            return partArray;
+        })
+
         let plantArray = [];
         selectedPlants && selectedPlants.map((item) => {
             plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
@@ -445,7 +459,7 @@ class AddBOPDomestic extends Component {
 
             let requestData = {
                 BoughtOutPartId: BOPID,
-                Parts: [],
+                Parts: partArray,
                 Source: values.Source,
                 SourceLocation: values.sourceLocation,
                 BasicRate: values.BasicRate,
@@ -472,7 +486,7 @@ class AddBOPDomestic extends Component {
                 BoughtOutPartNumber: values.BoughtOutPartNumber,
                 BoughtOutPartName: values.BoughtOutPartName,
                 CategoryId: BOPCategory.value,
-                Parts: [],
+                Parts: partArray,
                 Specification: values.Specification,
                 Vendor: vendorName.value,
                 VendorLocation: vendorLocation.value,
@@ -691,7 +705,7 @@ class AddBOPDomestic extends Component {
                                                         optionValue={option => option.Value}
                                                         optionLabel={option => option.Text}
                                                         component={renderMultiSelectField}
-                                                        mendatory={true}
+                                                        mendatory={this.state.IsVendor ? true : false}
                                                         className="multiselect-with-border"
                                                         disabled={isEditFlag ? true : (this.state.IsVendor ? false : true)}
                                                     />
@@ -761,7 +775,6 @@ class AddBOPDomestic extends Component {
                                                         placeholder={'Enter'}
                                                         validate={[required]}
                                                         component={renderNumberInputField}
-                                                        onChange={this.handleCalculation}
                                                         required={true}
                                                         className=""
                                                         customClassName=" withBorder"
@@ -775,7 +788,6 @@ class AddBOPDomestic extends Component {
                                                         placeholder={'Enter'}
                                                         validate={[required]}
                                                         component={renderNumberInputField}
-                                                        onChange={this.handleCalculation}
                                                         required={true}
                                                         disabled={false}
                                                         className=" "
@@ -912,12 +924,12 @@ class AddBOPDomestic extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, boughtOutparts, } = state;
+    const { comman, material, boughtOutparts, part } = state;
     const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
 
     const { bopCategorySelectList, bopData, } = boughtOutparts;
     const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, } = comman;
-
+    const { partSelectList } = part;
     const { vendorListByVendorType } = material;
 
     let initialValues = {};
@@ -936,7 +948,7 @@ function mapStateToProps(state) {
 
     return {
         vendorListByVendorType, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-        bopCategorySelectList, bopData, fieldsObj, initialValues,
+        bopCategorySelectList, bopData, partSelectList, fieldsObj, initialValues,
     }
 
 }
@@ -957,6 +969,7 @@ export default connect(mapStateToProps, {
     getUOMSelectList,
     getBOPCategorySelectList,
     getBOPDomesticById,
+    getPartSelectList,
 })(reduxForm({
     form: 'AddBOPDomestic',
     enableReinitialize: true,

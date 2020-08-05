@@ -358,7 +358,7 @@ class SideBar extends Component {
                             {
                               isLoggedIn ?
                                 <>
-                                  <img className="img-xs rounded-circle" src={require('../../assests/images/user.png')}  />
+                                  <img className="img-xs rounded-circle" src={require('../../assests/images/user.png')} />
                                   {userData.Name}
                                 </>
                                 :

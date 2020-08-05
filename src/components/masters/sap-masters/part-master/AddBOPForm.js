@@ -300,7 +300,7 @@ class AddBOPForm extends Component {
                                     //disabled={isSubmitted ? true : false}
                                     type="submit"
                                     onClick={() => this.setState({ isAddMore: true })}
-                                    value={isEditFlag ? 'Update' : 'Save'}
+                                    value={'ADD MORE'}
                                     className="submit-button mr5 save-btn"
                                 />
                                 <input

@@ -1088,7 +1088,8 @@ export function bulkUploadRMDomestic(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadRMDomestic, data, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            console.log('res bulk', response)
+            if (response.status == 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -1107,6 +1108,24 @@ export function bulkfileUploadRM(data, callback) {
         const request = axios.post(API.bulkfileUploadRM, data, headers);
         request.then((response) => {
             if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadRMImport
+ * @description upload bulk RM Domestic
+ */
+export function bulkUploadRMImport(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMImport, data, headers);
+        request.then((response) => {
+            if (response.status == 200) {
                 callback(response);
             }
         }).catch((error) => {

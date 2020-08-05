@@ -905,6 +905,7 @@ button.add-btn {
   padding-left: 10px;
   font-size: 18px;
   margin-bottom: 10px;
+  font-weight: 600;
 }
 
 .ext {
@@ -1119,4 +1120,16 @@ label for[normal-switch]{
 
 .pl0 {
   padding-left: 0;
+}
+.pr0 {
+  padding-right: 0;
+}
+.breadcrumbs ul li.active a {
+  text-transform: capitalize;
+}
+button.user-btn.pull-left {
+  float: left;
+}
+button.user-btn.pull-right {
+  float: right;
 }

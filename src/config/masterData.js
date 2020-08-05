@@ -57,6 +57,46 @@ export const Masters = [
     },
 ];
 
+
+export const RMDomestic = [
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "RawMaterial", value: "RawMaterial" },
+    { label: "RMGrade", value: "RMGrade" },
+    { label: "RMSpec", value: "RMSpec" },
+    { label: "Category", value: "Category" },
+    { label: "Plant", value: "Plant" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "VendorPlant", value: "VendorPlant" },
+    { label: "VendorLocation", value: "VendorLocation" },
+    { label: "HasDifferentSource", value: "HasDifferentSource" },
+    { label: "Source", value: "Source" },
+    { label: "SourceLocation", value: "SourceLocation" },
+    { label: "UOM", value: "UOM" },
+    { label: "BasicRate", value: "BasicRate" },
+    { label: "ScrapRate", value: "ScrapRate" },
+    { label: "Remark", value: "Remark" },
+]
+
+export const RMImport = [
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "RawMaterial", value: "RawMaterial" },
+    { label: "RMGrade", value: "RMGrade" },
+    { label: "RMSpec", value: "RMSpec" },
+    { label: "Category", value: "Category" },
+    { label: "Plant", value: "Plant" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "VendorPlant", value: "VendorPlant" },
+    { label: "VendorLocation", value: "VendorLocation" },
+    { label: "HasDifferentSource", value: "HasDifferentSource" },
+    { label: "Source", value: "Source" },
+    { label: "SourceLocation", value: "SourceLocation" },
+    { label: "Currency", value: "Currency" },
+    { label: "UOM", value: "UOM" },
+    { label: "BasicRate", value: "BasicRate" },
+    { label: "ScrapRate", value: "ScrapRate" },
+    { label: "Remark", value: "Remark" },
+]
+
 export const Supplier = [
     { label: 'SupplierName', value: 'SupplierName', },
     { label: 'SupplierCode', value: 'SupplierCode', },
@@ -228,20 +268,13 @@ export const MHR = [
 ]
 
 export const Fuel = [
+    { label: 'Fuel Name', value: 'FuelName', },
     { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
     { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
+    { label: 'Effective Date', value: 'EffectiveDate', },
+    { label: 'UOM', value: 'UOM', },
 ]
 
-export const RM = [
-    { label: 'State', value: 'State', },
-    { label: 'Fuel', value: 'Fuel', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Date', value: 'Date', },
-]
 
 export const EAccessType = [
     { label: '--Select EAccess Type--', value: '', },

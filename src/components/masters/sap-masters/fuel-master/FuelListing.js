@@ -2,26 +2,23 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
-import {
-    deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild,
-} from '../../../../../actions/master/Material';
-import { required } from "../../../../../helper/validation";
-import { getSupplierList } from '../../../../../actions/master/Comman';
-import { searchableSelect } from "../../../../layout/FormInputs";
-import { Loader } from '../../../../common/Loader';
-import { CONSTANT } from '../../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../../helper';
-import NoContentFound from '../../../../common/NoContentFound';
-import { MESSAGES } from '../../../../../config/message';
+import { required } from "../../../../helper/validation";
+import { } from '../../../../actions/master/Comman';
+import { getFuelDetailDataList, } from '../../../../actions/master/Fuel';
+import { searchableSelect } from "../../../layout/FormInputs";
+import { Loader } from '../../../common/Loader';
+import { CONSTANT } from '../../../../helper/AllConastant';
+import { convertISOToUtcDate, } from '../../../../helper';
+import NoContentFound from '../../../common/NoContentFound';
+import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
 import moment from 'moment';
-import BulkUpload from '../../../../massUpload/BulkUpload';
+import BulkUpload from '../../../massUpload/BulkUpload';
 
-class RMDomesticListing extends Component {
+class FuelListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -41,27 +38,24 @@ class RMDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        //this.props.onRef(this)
-        this.props.getRawMaterialNameChild(() => { })
-        this.props.getSupplierList(() => { })
-        this.getDataList(null, null, null)
+        this.getDataList()
     }
 
     // Get updated Table data list after any action performed.
     getUpdatedData = () => {
-        this.getDataList(null, null, null)
+        this.getDataList()
     }
 
-    getDataList = (materialId = null, gradeId = null, vendorId = null) => {
+    getDataList = () => {
         const { value } = this.state;
-        const filterData = {
-            material_id: materialId,
-            grade_id: gradeId,
-            vendor_id: vendorId,
-            net_landed_min_range: value.min,
-            net_landed_max_range: value.max,
-        }
-        this.props.getRMDomesticDataList(filterData, (res) => {
+        // const filterData = {
+        //     material_id: materialId,
+        //     grade_id: gradeId,
+        //     vendor_id: vendorId,
+        //     net_landed_min_range: value.min,
+        //     net_landed_max_range: value.max,
+        // }
+        this.props.getFuelDetailDataList((res) => {
             if (res && res.status == 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -81,7 +75,7 @@ class RMDomesticListing extends Component {
         let data = {
             isEditFlag: true,
             Id: Id,
-            IsVendor: rowData.CostingHead,
+            //IsVendor: rowData.CostingHead,
         }
         this.props.getDetails(data);
     }
@@ -105,12 +99,12 @@ class RMDomesticListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        this.props.deleteRawMaterialAPI(ID, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-                this.getDataList(null, null, null)
-            }
-        });
+        // this.props.deleteRawMaterialAPI(ID, (res) => {
+        //     if (res.data.Result === true) {
+        //         toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+        //         this.getDataList()
+        //     }
+        // });
     }
 
     /**
@@ -133,7 +127,7 @@ class RMDomesticListing extends Component {
         return (
             <>
                 <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
             </>
         )
     }
@@ -167,38 +161,6 @@ class RMDomesticListing extends Component {
         return <>Sr. <br />No. </>
     }
 
-    renderCostingHead = () => {
-        return <>Costing <br />Head </>
-    }
-
-    renderRawMaterial = () => {
-        return <>Raw <br />Material </>
-    }
-
-    renderRMGrade = () => {
-        return <>RM <br />Grade </>
-    }
-
-    renderRMSpec = () => {
-        return <>RM <br />Spec </>
-    }
-
-    renderVendorLocation = () => {
-        return <>Vendor <br />Location </>
-    }
-
-    renderBasicRate = () => {
-        return <>Basic <br />Rate(INR) </>
-    }
-
-    renderScrapRate = () => {
-        return <>Scrap <br />Rate(INR) </>
-    }
-
-    renderNetCost = () => {
-        return <>Net Landed <br />Cost(INR) </>
-    }
-
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -216,29 +178,15 @@ class RMDomesticListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { gradeSelectListByRMID, rawMaterialNameSelectList, supplierSelectList } = this.props;
+        const { } = this.props;
         const temp = [];
-        if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'grade') {
-            gradeSelectListByRMID && gradeSelectListByRMID.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'VendorNameList') {
-            supplierSelectList && supplierSelectList.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
+        // if (label === 'material') {
+        //     rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
+        //         if (item.Value == 0) return false;
+        //         temp.push({ label: item.Text, value: item.Value })
+        //     });
+        //     return temp;
+        // }
 
     }
 
@@ -248,57 +196,23 @@ class RMDomesticListing extends Component {
     */
     handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-
-            this.setState({ RawMaterial: newValue }, () => {
-                const { RawMaterial } = this.state;
-                this.props.getGradeListByRawMaterialNameChild(RawMaterial.value, res => { })
-            });
-
+            this.setState({ RawMaterial: newValue });
         } else {
-
-            this.setState({
-                RMGrade: [],
-                RawMaterial: [],
-            });
-
+            this.setState({ RawMaterial: [], });
         }
     }
-
-    /**
-    * @method handleGradeChange
-    * @description  used to handle row material grade selection
-    */
-    handleGradeChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ RMGrade: newValue })
-        } else {
-            this.setState({ RMGrade: [], })
-        }
-    }
-
-    /**
-    * @method handleVendorName
-    * @description called
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ vendorName: newValue });
-        } else {
-            this.setState({ vendorName: [] })
-        }
-    };
 
     /**
 	* @method filterList
 	* @description Filter user listing on the basis of role and department
 	*/
     filterList = () => {
-        const { RawMaterial, RMGrade, vendorName } = this.state;
-        const RMid = RawMaterial ? RawMaterial.value : null;
-        const RMGradeid = RMGrade ? RMGrade.value : null;
-        const Vendorid = vendorName ? vendorName.value : null;
+        // const { RawMaterial, RMGrade, vendorName } = this.state;
+        // const RMid = RawMaterial ? RawMaterial.value : null;
+        // const RMGradeid = RMGrade ? RMGrade.value : null;
+        // const Vendorid = vendorName ? vendorName.value : null;
 
-        this.getDataList(RMid, RMGradeid, Vendorid)
+        // this.getDataList()
     }
 
 	/**
@@ -306,15 +220,14 @@ class RMDomesticListing extends Component {
 	* @description Reset user filter
 	*/
     resetFilter = () => {
-        this.setState({
-            RawMaterial: [],
-            RMGrade: [],
-            vendorName: [],
-            value: { min: 10, max: 150 },
-        }, () => {
-            this.getDataList(null, null, null)
-        })
-
+        // this.setState({
+        //     RawMaterial: [],
+        //     RMGrade: [],
+        //     vendorName: [],
+        //     value: { min: 10, max: 150 },
+        // }, () => {
+        //     this.getDataList()
+        // })
     }
 
     formToggle = () => {
@@ -357,7 +270,7 @@ class RMDomesticListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
                         <Col md="9" className="filter-block ">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
                                     <Field
@@ -374,43 +287,7 @@ class RMDomesticListing extends Component {
                                         valueDescription={this.state.RawMaterial}
                                     />
                                 </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="RawMaterialGradeId"
-                                        type="text"
-                                        label={''}
-                                        component={searchableSelect}
-                                        placeholder={'RM Grade'}
-                                        options={this.renderListing('grade')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleGradeChange}
-                                        valueDescription={this.state.RMGrade}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="VendorId"
-                                        type="text"
-                                        label={''}
-                                        component={searchableSelect}
-                                        placeholder={'-Vendor-'}
-                                        options={this.renderListing('VendorNameList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleVendorName}
-                                        valueDescription={this.state.vendorName}
-                                    />
-                                </div>
-                                <div className="flex-fill sliderange ">
-                                    <InputRange
-                                        maxValue={500}
-                                        minValue={0}
-                                        value={this.state.value}
-                                        onChange={value => this.setState({ value })} />
-                                </div>
+                                
 
                                 <div className="flex-fill">
                                     <button
@@ -431,7 +308,7 @@ class RMDomesticListing extends Component {
                                         {'Apply'}
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
                         </Col>
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -460,8 +337,7 @@ class RMDomesticListing extends Component {
                     <Col>
                         <BootstrapTable
                             data={this.state.tableData}
-                            striped={false}
-                            bordered={false}
+                            striped={true}
                             hover={true}
                             options={options}
                             search
@@ -470,19 +346,13 @@ class RMDomesticListing extends Component {
                             ref={'table'}
                             pagination>
                             <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="center" >{this.renderRawMaterial()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="center" >{this.renderRMGrade()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Category" >Category</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" >UOM</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRate" >{this.renderBasicRate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" >{this.renderNetCost()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="FuelName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Fuel'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="UnitOfMeasurementName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'UOM'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="StateName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="RawMaterialId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>
@@ -490,8 +360,8 @@ class RMDomesticListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'RMDomestic'}
-                    messageLabel={'RM Domestic'}
+                    fileName={'Fuel'}
+                    messageLabel={'Fuel'}
                     anchor={'right'}
                 />}
             </div >
@@ -517,12 +387,8 @@ function mapStateToProps({ material, comman }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    deleteRawMaterialAPI,
-    getRMDomesticDataList,
-    getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild,
-    getSupplierList,
+    getFuelDetailDataList,
 })(reduxForm({
-    form: 'RMDomesticListing',
+    form: 'FuelListing',
     enableReinitialize: true,
-})(RMDomesticListing));
+})(FuelListing));

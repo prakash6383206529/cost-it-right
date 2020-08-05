@@ -73,72 +73,72 @@ class Login extends Component {
         {isLoader && <Loader />}
         <div className="container ">
           <div className="login-form">
-            
+
             <div className="row shadow-lg">
               <div className="col-md-4 form-section">
-            
-             <div className="text-center">
-              <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
-              </a>
-           </div>
-             <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.</h3>
-             <p>Welcome Back, Please login to your account</p>
-            <form
-              noValidate
-              className="form"
-              onSubmit={handleSubmit(this.onSubmit.bind(this))}
-            >
-              <div className="input-group ">
-                <Field
-                  name="UserName"
-                  // label="UserName"
-                  component={renderEmailInputField}
-                  isDisabled={false}
-                  placeholder={"email@domain.coms"}
-                  validate={[required, email, minLength5, maxLength70]}
-                  required={true}
-                  maxLength={71}
-                />
-              </div>
-              <div className="input-group ">
-                <Field
-                  name="Password"
-                  // label="Password"
-                  placeholder="Must have atleast 5 characters"
-                  component={renderPasswordInputField}
-                  validate={[required, minLength5, maxLength25]}
-                  required={true}
-                  maxLength={26}
-                />
-              </div>
-              
-              <div className="text-center ">
-                <input
-                  type="submit"
-                  disabled={isSubmitted ? true : false}
-                  value="Login"
-                  className="btn login-btn w-100 dark-pinkbtn"
-                />
-              </div>
-              <div className="form-group forgot-link d-flex pt-2 ">
-                {/* <div className="checkboxWrap ">
+
+                <div className="text-center">
+                  <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
+                  </a>
+                </div>
+                <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.</h3>
+                <p>Welcome Back, Please login to your account</p>
+                <form
+                  noValidate
+                  className="form"
+                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                >
+                  <div className="input-group ">
+                    <Field
+                      name="UserName"
+                      // label="UserName"
+                      component={renderEmailInputField}
+                      isDisabled={false}
+                      placeholder={"email@domain.com"}
+                      validate={[required, email, minLength5, maxLength70]}
+                      required={true}
+                      maxLength={71}
+                    />
+                  </div>
+                  <div className="input-group ">
+                    <Field
+                      name="Password"
+                      // label="Password"
+                      placeholder="Must have atleast 5 characters"
+                      component={renderPasswordInputField}
+                      validate={[required, minLength5, maxLength25]}
+                      required={true}
+                      maxLength={26}
+                    />
+                  </div>
+
+                  <div className="text-center ">
+                    <input
+                      type="submit"
+                      disabled={isSubmitted ? true : false}
+                      value="Login"
+                      className="btn login-btn w-100 dark-pinkbtn"
+                    />
+                  </div>
+                  <div className="form-group forgot-link d-flex pt-2 ">
+                    {/* <div className="checkboxWrap ">
                           <label className="customs-checkbox">
                           Remember me
                             <input type="checkbox" />
                             <span className=" before-box"></span>
                           </label>
                         </div> */}
-                <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
-                <Link to="/forgot-password" className="forgotpwd-field" target='_blank'>
-                  Forgot Password?
+                    <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
+                    <Link to="/forgot-password" className="forgotpwd-field" target='_blank'>
+                      Forgot Password?
                         </Link>
+                  </div>
+
+                </form>
               </div>
-              
-            </form>
-            </div>
-            <div className="col-md-8 p-0 right-sideimg">
-            <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
-            </div>
+              <div className="col-md-8 p-0 right-sideimg">
+                <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
+              </div>
             </div>
           </div>
         </div>

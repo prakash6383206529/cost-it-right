@@ -14,7 +14,7 @@ const masterMenu = [
 	{
 		icon: 'icon-class-name',
 		label: 'Vendor',
-		to: '/supplier-master',
+		to: '/vendor-master',
 	},
 	{
 		label: 'Raw Material',
@@ -26,55 +26,55 @@ const masterMenu = [
 	},
 	{
 		label: 'Part',
-		to: '/PartMaster',
+		to: '/part-master',
 	},
-	{
-		label: 'BOM Master Old',
-		to: '/bom-master',
-	},
-	{
-		label: 'Bill Of Material',
-		to: '/part-bom-register',
-	},
+	// {
+	// 	label: 'BOM Master Old',
+	// 	to: '/bom-master',
+	// },
+	// {
+	// 	label: 'Bill Of Material',
+	// 	to: '/part-bom-register',
+	// },
 	{
 		label: 'Bought Out Parts',
 		to: '/bop-master',
 	},
-	{
-		label: 'Other Operation',
-		to: '/other-operation',
-	},
-	{
-		label: 'CED Other Operation',
-		to: '/ced-other-operation',
-	},
-	{
-		label: 'Machine Rate',
-		to: '/mhr-master',
-	},
-	{
-		label: 'Machine Type',
-		to: '/machine-type-master',
-	},
+	// {
+	// 	label: 'Other Operation',
+	// 	to: '/other-operation',
+	// },
+	// {
+	// 	label: 'CED Other Operation',
+	// 	to: '/ced-other-operation',
+	// },
+	// {
+	// 	label: 'Machine Rate',
+	// 	to: '/mhr-master',
+	// },
+	// {
+	// 	label: 'Machine Type',
+	// 	to: '/machine-type-master',
+	// },
 	{
 		label: 'Machine',
 		to: '/machine-master',
 	},
-	{
-		label: 'Power',
-		to: '/power-master',
-	},
+	// {
+	// 	label: 'Power',
+	// 	to: '/power-master',
+	// },
 ];
 
 const additionalMasterMenu = [
 	{
-		label: 'Process Operation',
+		label: 'Operation',
 		to: '/operation-master',
 	},
 	{
 		icon: 'icon-class-name',
 		label: 'UOM',
-		to: '/UOMMaster',
+		to: '/UOM-Master',
 	},
 	{
 		label: 'Category',
@@ -105,7 +105,7 @@ const additionalMasterMenu = [
 		to: '/interest-rate-master',
 	},
 	{
-		label: 'Fuel',
+		label: 'Fuel & Power',
 		to: '/fuel-master',
 	},
 	{
@@ -150,17 +150,16 @@ class Leftmenu extends Component {
 	masterMenusCheck = () => {
 		const { activeURL } = this.state;
 		if (activeURL == '/plant-master' ||
-			activeURL == '/supplier-master' ||
+			activeURL == '/vendor-master' ||
 			activeURL == '/raw-material-master' ||
-			activeURL == '/PartMaster' ||
+			activeURL == '/part-master' ||
 			activeURL == '/bom-master' ||
 			activeURL == '/part-bom-register' ||
 			activeURL == '/bop-master' ||
 			activeURL == '/other-operation' ||
-			activeURL == '/PartMaster' ||
 			activeURL == '/ced-other-operation' ||
-			activeURL == '/mhr-master' ||
-			activeURL == '/machine-type-master' ||
+			//activeURL == '/mhr-master' ||
+			//activeURL == '/machine-type-master' ||
 			activeURL == '/machine-master' ||
 			activeURL == '/power-master' ||
 			activeURL == '/client-master') {
@@ -173,7 +172,7 @@ class Leftmenu extends Component {
 	additionalMasterMenusCheck = () => {
 		const { activeURL } = this.state;
 		if (activeURL == '/operation-master' ||
-			activeURL == '/UOMMaster' ||
+			activeURL == '/UOM-Master' ||
 			activeURL == '/category-master' ||
 			activeURL == '/freight-master' ||
 			activeURL == '/labour-master' ||
@@ -201,16 +200,22 @@ class Leftmenu extends Component {
 
 		if (activeURL == '/') {
 			content = dashboardMenu;
+			this.props.breadCrumbTrail('Dashboard', '/')
 		} else if (this.masterMenusCheck()) {
 			content = masterMenu;
+			this.props.breadCrumbTrail('Master', '/plant-master', activeURL)
 		} else if (this.additionalMasterMenusCheck()) {
 			content = additionalMasterMenu;
+			this.props.breadCrumbTrail('Additional Master', '/operation-master', activeURL)
 		} else if (activeURL == '/costing') {
 			content = costingMenu;
+			this.props.breadCrumbTrail('Costing', '/costing', activeURL)
 		} else if (activeURL == '/user') {
 			content = userMenu;
+			this.props.breadCrumbTrail('Users', '/user', 'User Management')
 		} else {
 			content = [];
+			this.props.breadCrumbTrail('', '/', activeURL)
 		}
 
 		return (

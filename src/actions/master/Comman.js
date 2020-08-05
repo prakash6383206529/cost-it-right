@@ -11,7 +11,7 @@ import {
     GET_STATE_SUCCESS,
     GET_CITY_SUCCESS,
     GET_PLANT_SUCCESS,
-    GET_ROW_MATERIAL_SUCCESS,
+    GET_RAW_MATERIAL_SUCCESS,
     GET_GRADE_SUCCESS,
     GET_SUPPLIER_SUCCESS,
     GET_SUPPLIER_CITY_SUCCESS,
@@ -245,22 +245,20 @@ export function fetchPlantDataAPI(callback) {
 }
 
 /**
- * @method fetchRowMaterialAPI
+ * @method getRawMaterialSelectList
  * @description Used to fetch row material list
  */
-export function fetchRowMaterialAPI(callback) {
+export function getRawMaterialSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRowMaterial}`, headers);
+        const request = axios.get(`${API.getRawMaterialSelectList}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_ROW_MATERIAL_SUCCESS,
+                    type: GET_RAW_MATERIAL_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -310,11 +308,11 @@ export function fetchRMGradeAPI(Id, callback) {
 export function fetchRMCategoryAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRowMaterial}`, headers);
+        const request = axios.get(`${API.getRawMaterialSelectList}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_ROW_MATERIAL_SUCCESS,
+                    type: GET_RAW_MATERIAL_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);
@@ -366,35 +364,6 @@ export function fetchCategoryAPI(Id, callback) {
 
 //COMBO API"S
 
-/**
- * @method fetchFuelComboAPI
- * @description Used to fuel form 
- */
-export function fetchFuelComboAPI(callback) {
-    return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelComboAPI}`, headers);
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_FUEL_SUCCESS,
-                    payload: response.data.DynamicData.Fuels,
-                });
-                dispatch({
-                    type: GET_STATE_SUCCESS,
-                    payload: response.data.DynamicData.States,
-                });
-                callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
 
 export function getOtherOperationData(callback) {
     return (dispatch) => {
@@ -586,7 +555,7 @@ export function fetchMaterialComboAPI(callback) {
                     payload: response.data.DynamicData.Technologies,
                 });
                 dispatch({
-                    type: GET_ROW_MATERIAL_SUCCESS,
+                    type: GET_RAW_MATERIAL_SUCCESS,
                     payload: response.data.DynamicData.RawMaterials,
                 });
                 dispatch({
@@ -1031,8 +1000,6 @@ export function getLabourTypeSelectList(callback) {
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -1057,8 +1024,6 @@ export function getPowerTypeSelectList(callback) {
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
@@ -1220,7 +1185,7 @@ export function getDepreciationSelectList(callback) {
 
 /**
  * @method getShiftTypeSelectList
- * @description Used to fetch Depreciation type selectlist
+ * @description Used to GET SHIFT TYPE selectlist
  */
 export function getShiftTypeSelectList(callback) {
     return (dispatch) => {

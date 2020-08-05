@@ -9,7 +9,7 @@ import {
     GET_STATE_SUCCESS,
     GET_CITY_SUCCESS,
     GET_PLANT_SUCCESS,
-    GET_ROW_MATERIAL_SUCCESS,
+    GET_RAW_MATERIAL_SUCCESS,
     GET_GRADE_SUCCESS,
     GET_SUPPLIER_SUCCESS,
     GET_SUPPLIER_CITY_SUCCESS,
@@ -157,7 +157,7 @@ export default function commanReducer(state = initialState, action) {
                 error: true,
                 plantList: action.payload
             };
-        case GET_ROW_MATERIAL_SUCCESS:
+        case GET_RAW_MATERIAL_SUCCESS:
             return {
                 ...state,
                 loading: false,

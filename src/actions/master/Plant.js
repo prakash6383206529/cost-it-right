@@ -97,10 +97,10 @@ export function deletePlantAPI(Id, callback) {
  * @method getOneUnitOfPlantAPI
  * @description get one Plant based on id
  */
-export function getPlantUnitAPI(plantId, isEditFlag, callback) {
+export function getPlantUnitAPI(plantId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (isEditFlag) {
+        if (plantId != '') {
             axios.get(`${API.getPlantAPI}/${plantId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
@@ -109,10 +109,7 @@ export function getPlantUnitAPI(plantId, isEditFlag, callback) {
                             payload: response.data.Data,
                         });
                         callback(response);
-                    } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
                     }
-                    callback(response);
                 }).catch((error) => {
                     apiErrors(error);
                     dispatch({ type: API_FAILURE });

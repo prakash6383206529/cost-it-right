@@ -1,7 +1,7 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
 import {
-    Fuel, OverheadAndProfit, RMDomestic, Supplier, Plant,
+    Fuel, OverheadAndProfit, RMDomestic, RMImport, Supplier, Plant,
     Bought_Out_Parts, Processes, MachineClass, Labour, Operation,
     OtherOperation, Power, MHR,
 } from '../../config/masterData';
@@ -19,13 +19,7 @@ const dataSet1 = [
     // }
 ];
 
-class DownloadMasterxls extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-
-        };
-    }
+class Downloadxls extends React.Component {
 
     /**
     * @method renderSwitch
@@ -34,6 +28,10 @@ class DownloadMasterxls extends React.Component {
     renderSwitch = (master) => {
 
         switch (master) {
+            case 'RMDomestic':
+                return this.returnExcelColumn(RMDomestic);
+            case 'RMImport':
+                return this.returnExcelColumn(RMImport);
             case 'Supplier':
                 return this.returnExcelColumn(Supplier);
             case 'Plant':
@@ -58,32 +56,39 @@ class DownloadMasterxls extends React.Component {
                 return this.returnExcelColumn(MHR);
             case 'Fuel':
                 return this.returnExcelColumn(Fuel);
-            case 'RMDomestic':
-                return this.returnExcelColumn(RMDomestic);
             default:
                 return 'foo';
         }
     }
 
     /**
-    * @method returnExcelColumn
-    * @description Used to get excel column names
-    */
+        * @method returnExcelColumn
+        * @description Used to get excel column names
+        */
     returnExcelColumn = (data) => {
-        const { selectedMaster } = this.props;
-        return (<ExcelSheet data={dataSet1} name={selectedMaster ? selectedMaster.label : ''}>
+        const { fileName, failedData, isFailedFlag } = this.props;
+        return (<ExcelSheet data={isFailedFlag ? failedData : []} name={fileName}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
         </ExcelSheet>);
     }
 
     render() {
-        const { selectedMaster } = this.props;
+        const { failedData, isFailedFlag, fileName } = this.props;
+
+        if (isFailedFlag) {
+            return (
+                <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
+                    {isFailedFlag ? this.renderSwitch(fileName) : ''}
+                </ExcelFile>
+            );
+        }
+
         return (
-            <ExcelFile filename={selectedMaster ? selectedMaster.label : ''} fileExtension={'.xls'} element={<button className={'btn btn-primary pull-right'}>Download File</button>}>
-                {selectedMaster ? this.renderSwitch(selectedMaster.label) : ''}
+            <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}>Download File</button>}>
+                {fileName ? this.renderSwitch(fileName) : ''}
             </ExcelFile>
         );
     }
 }
 
-export default DownloadMasterxls;
+export default Downloadxls;
