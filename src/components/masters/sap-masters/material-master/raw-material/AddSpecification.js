@@ -292,7 +292,7 @@ class AddSpecification extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h1>{isEditFlag ? 'Update Raw Material Specification' : 'Add Raw Material Specification'}</h1>
+                                            <h3>{isEditFlag ? 'Update  Specification' : 'Add Specification'}</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}
@@ -346,7 +346,7 @@ class AddSpecification extends Component {
                                             className={'plus-icon mt30 mr15 right'}>
                                         </div>
                                     </Col>
-                                    <Col md="12">
+                                    <Col md="11">
                                         <Field
                                             label={`Density`}
                                             name={"Density"}
@@ -387,7 +387,7 @@ class AddSpecification extends Component {
 
 
                                 <Row>
-                                    <Col md="12">
+                                    <Col md="11">
                                         <Field
                                             label={`${CONSTANT.SPECIFICATION}`}
                                             name={"Specification"}
@@ -404,8 +404,8 @@ class AddSpecification extends Component {
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12">
-                                        <div className="text-center ">
-                                            <input
+                                        <div className="text-right ">
+                                            {/* <input
                                                 //disabled={pristine || submitting}
                                                 onClick={this.cancel}
                                                 type="button"
@@ -417,7 +417,23 @@ class AddSpecification extends Component {
                                                 type="submit"
                                                 value={isEditFlag ? 'Update' : 'Save'}
                                                 className="submit-button mr5 save-btn"
-                                            />
+                                            /> */}
+                                           
+                                            <button
+                        onClick={this.cancel}
+                        type="submit"
+                        value="CANCEL"
+                        className="reset mr15 cancel-btn">
+
+                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>CANCEL</button>
+                      <button
+                        type="submit"
+                        // disabled={isSubmitted ? true : false}
+                        className="btn-primary save-btn"
+                      >	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                        </div>
+                        {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
+                      </button>
                                         </div>
                                     </div>
                                 </Row>

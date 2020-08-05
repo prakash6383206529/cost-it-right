@@ -155,7 +155,7 @@ class AddMaterialType extends Component {
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12">
-                                        <div className="text-center ">
+                                        <div className="text-right ">
                                             {/* <input
                                                 //disabled={pristine || submitting}
                                                 onClick={this.cancel}

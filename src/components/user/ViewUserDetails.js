@@ -235,11 +235,11 @@ class ViewUserDetails extends Component {
                   </Col>
                   {isPermissionOpen &&
                     <Col md="12">
-                      <Table className="table table-bordered table table-sm" size="sm" >
+                      <Table className="table table-bordered table table-sm role-depatment" size="sm" >
                         <thead>
                           <tr>
                             <th>{`Module Name`}</th>
-                            <th colSpan="5">{`Permission Granted`}</th>
+                            <th colSpan="7">{`Permission Granted`}</th>
                           </tr>
                         </thead>
                         <tbody >
@@ -281,8 +281,8 @@ class ViewUserDetails extends Component {
                       <Table className="table table-bordered table table-sm" size="sm" >
                         <thead>
                           <tr>
-                            <th className="text-left" style={{ width: "36%" }}>{`Technology`}</th>
-                            <th className="text-left">{`Level`}</th>
+                            <th className="text-left" >{`Technology`}</th>
+                            <th  className="text-left">{`Level`}</th>
                           </tr>
                         </thead>
                         <tbody >

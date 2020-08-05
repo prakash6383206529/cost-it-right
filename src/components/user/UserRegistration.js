@@ -1531,7 +1531,7 @@ class UserRegistration extends Component {
                             <tr>
                               <th>{`Technology`}</th>
                               <th>{`Level`}</th>
-                              <th>{`Action`}</th>
+                              <th className="text-right">{`Action`}</th>
                             </tr>
                           </thead>
                           <tbody >
@@ -1542,7 +1542,7 @@ class UserRegistration extends Component {
                                   <tr key={index}>
                                     <td>{item.Technology}</td>
                                     <td>{item.Level}</td>
-                                    <td>
+                                    <td className="text-right">
                                       <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
                                       <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
                                     </td>

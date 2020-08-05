@@ -121,7 +121,7 @@ class SideBar extends Component {
         if (el.ModuleName == module) {
           return (
             <a className="nav-link active" href="/">
-              <img className="" src={require('../../assests/images/sydney-opera-house.svg')} alt='sydney-opera-house' />
+              <img className="" src={require('../../assests/images/homeicon.svg')} alt='' />
               <span>{module}</span>
             </a>
           )
@@ -312,7 +312,7 @@ class SideBar extends Component {
               <button className="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
                 <span className="navbar-toggler-icon"></span>
               </button>
-              <div className="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+              <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
 
                   {isLoggedIn &&
@@ -358,7 +358,7 @@ class SideBar extends Component {
                             {
                               isLoggedIn ?
                                 <>
-                                  <img className="img-xs rounded-circle" src={require('../../assests/images/user-pic.png')} alt='Cost It Right' />
+                                  <img className="img-xs rounded-circle" src={require('../../assests/images/user.png')}  />
                                   {userData.Name}
                                 </>
                                 :
