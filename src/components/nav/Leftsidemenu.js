@@ -28,14 +28,14 @@ const masterMenu = [
 		label: 'Part',
 		to: '/part-master',
 	},
-	{
-		label: 'BOM Master Old',
-		to: '/bom-master',
-	},
-	{
-		label: 'Bill Of Material',
-		to: '/part-bom-register',
-	},
+	// {
+	// 	label: 'BOM Master Old',
+	// 	to: '/bom-master',
+	// },
+	// {
+	// 	label: 'Bill Of Material',
+	// 	to: '/part-bom-register',
+	// },
 	{
 		label: 'Bought Out Parts',
 		to: '/bop-master',
@@ -60,15 +60,15 @@ const masterMenu = [
 		label: 'Machine',
 		to: '/machine-master',
 	},
-	{
-		label: 'Power',
-		to: '/power-master',
-	},
+	// {
+	// 	label: 'Power',
+	// 	to: '/power-master',
+	// },
 ];
 
 const additionalMasterMenu = [
 	{
-		label: 'Process Operation',
+		label: 'Operation',
 		to: '/operation-master',
 	},
 	{
@@ -105,7 +105,7 @@ const additionalMasterMenu = [
 		to: '/interest-rate-master',
 	},
 	{
-		label: 'Fuel',
+		label: 'Fuel & Power',
 		to: '/fuel-master',
 	},
 	{

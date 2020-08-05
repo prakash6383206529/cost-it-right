@@ -19,6 +19,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
 import moment from 'moment';
+import BulkUpload from '../../../../massUpload/BulkUpload';
 
 class RMImportListing extends Component {
     constructor(props) {
@@ -31,6 +32,7 @@ class RMImportListing extends Component {
             RMGrade: [],
             vendorName: [],
             value: { min: 10, max: 150 },
+            isBulkUpload: false,
         }
     }
 
@@ -39,7 +41,7 @@ class RMImportListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.onRef(this)
+        //this.props.onRef(this)
         this.props.getRawMaterialNameChild(() => { })
         this.props.getSupplierList(() => { })
         this.getDataList(null, null, null)
@@ -319,6 +321,14 @@ class RMImportListing extends Component {
         this.props.formToggle()
     }
 
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false })
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -333,6 +343,7 @@ class RMImportListing extends Component {
     */
     render() {
         const { handleSubmit } = this.props;
+        const { isBulkUpload } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -345,7 +356,7 @@ class RMImportListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
-                        <Col md="10" className="filter-block ">
+                        <Col md="9" className="filter-block ">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -384,7 +395,7 @@ class RMImportListing extends Component {
                                         type="text"
                                         label={''}
                                         component={searchableSelect}
-                                        placeholder={'Vendor Name'}
+                                        placeholder={'-Vendor-'}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
@@ -422,16 +433,19 @@ class RMImportListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="2" className="search-user-block">
+                        <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD RM</button>
-                                    }
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.bulkToggle}>
+                                        <div className={'plus'}></div>Bulk Upload</button>
+                                    <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD</button>
                                 </div>
                             </div>
                         </Col>
@@ -467,6 +481,14 @@ class RMImportListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
+                {isBulkUpload && <BulkUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    fileName={'RMImport'}
+                    messageLabel={'RM Import'}
+                    anchor={'right'}
+                />}
             </div >
         );
     }

@@ -2,23 +2,32 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, maxLength25, minLength3 } from "../../../../../helper/validation";
-import { renderText, searchableSelect } from "../../../../layout/FormInputs";
-import { bulkUploadRMDomestic, bulkfileUploadRM } from '../../../../../actions/master/Material';
+import { required, maxLength25, minLength3 } from "../../helper/validation";
+import { renderText, searchableSelect } from "../layout/FormInputs";
+import { bulkUploadRMDomestic, bulkfileUploadRM, bulkUploadRMImport, } from '../../actions/master/Material';
+import { fuelBulkUpload } from '../../actions/master/Fuel';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../../config/message';
-import { loggedInUserId } from "../../../../../helper/auth";
+import { MESSAGES } from '../../config/message';
+import { loggedInUserId } from "../../helper/auth";
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
-import DownloadRMDomesticxls from './DownloadRMDomesticxls';
+import Downloadxls from './Downloadxls';
+import ReactExport from 'react-export-excel';
 
-class DomesticBulkUpload extends Component {
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+class BulkUpload extends Component {
     constructor(props) {
         super(props);
         this.state = {
             cols: [],
             rows: [],
             fileData: [],
+
+            faildRecords: false,
+            failedData: [],
         }
     }
 
@@ -64,16 +73,16 @@ class DomesticBulkUpload extends Component {
      * @description called for profile pic change
      */
     fileHandler = event => {
-
+        const { fileName } = this.props;
         let fileObj = event.target.files[0];
         let fileHeads = [];
-        let fileName = fileObj.name;
-        let fileType = fileName.substr(fileName.indexOf('.'));
+        let uploadfileName = fileObj.name;
+        let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
-        if (fileType != '.xls' || fileName != 'RMDomestic.xls') {
-            if (fileName != 'RMDomestic.xls') {
-                toastr.warning('File name should be RMDomestic.xls')
+        if (fileType != '.xls' || uploadfileName != `${fileName}.xls`) {
+            if (uploadfileName != `${fileName}.xls`) {
+                toastr.warning(`File name should be ${fileName}.xls`)
             }
             if (fileType != '.xls') {
                 toastr.warning('File type should be .xls')
@@ -119,20 +128,64 @@ class DomesticBulkUpload extends Component {
         }
     }
 
+    responseHandler = (res) => {
+        const { messageLabel } = this.props;
+        if (res.data.Result == false) {
+            let Data = res.data.Data;
+            toastr.warning(res.data.Message);
+            if (Data.CountSucceeded > 0) {
+                toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
+            }
+            if (Data.FaildRecords.length > 0) {
+                this.setState({
+                    faildRecords: true,
+                    failedData: Data.FaildRecords,
+                })
+            }
+        } else {
+            let Data = res.data.Data;
+            if (Data.CountSucceeded > 0) {
+                toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
+            }
+        }
+        this.toggleDrawer('')
+    }
+
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
         const { fileData } = this.state;
+        const { fileName } = this.props;
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
         }
-        this.props.bulkUploadRMDomestic(uploadData, (res) => {
-            console.log('res upload >>', res)
-            toastr.success('RM Domestic has been uploaded successfully.')
-        });
+
+        if (fileName == 'RMDomestic') {
+
+            this.props.bulkUploadRMDomestic(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'RMImport') {
+
+            this.props.bulkUploadRMImport(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'Fuel') {
+
+            this.props.fuelBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else {
+
+        }
+
     }
 
     /**
@@ -140,7 +193,13 @@ class DomesticBulkUpload extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, reset, fileName, messageLabel } = this.props;
+        const { faildRecords, failedData } = this.state;
+
+        if (faildRecords) {
+            return <Downloadxls isFailedFlag={true} fileName={fileName} failedData={failedData} />
+        }
+
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                 <Container>
@@ -153,7 +212,7 @@ class DomesticBulkUpload extends Component {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{isEditFlag ? '' : 'BULK UPLOAD'}</h3>
+                                        <h3>{isEditFlag ? '' : `${messageLabel} BULK UPLOAD`}</h3>
                                     </div>
                                     <div
                                         onClick={(e) => this.toggleDrawer(e)}
@@ -165,7 +224,7 @@ class DomesticBulkUpload extends Component {
                             <Row>
 
                                 <div className="input-group mt25 col-md-12 input-withouticon" >
-                                    <DownloadRMDomesticxls />
+                                    <Downloadxls fileName={fileName} isFailedFlag={false} />
                                 </div>
 
                                 <div className="input-group mt25 col-md-12 input-withouticon" >
@@ -222,7 +281,9 @@ function mapStateToProps({ }) {
 export default connect(mapStateToProps, {
     bulkUploadRMDomestic,
     bulkfileUploadRM,
+    bulkUploadRMImport,
+    fuelBulkUpload,
 })(reduxForm({
-    form: 'DomesticBulkUpload',
+    form: 'BulkUpload',
     enableReinitialize: true,
-})(DomesticBulkUpload));
+})(BulkUpload));

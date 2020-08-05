@@ -91,6 +91,8 @@ class AddRMImport extends Component {
      * @description Called after rendering the component
      */
     componentDidMount() {
+        const { data } = this.props;
+        this.getDetails(data);
         this.props.change('NetLandedCost', 0)
         this.props.fetchMaterialComboAPI(res => { });
         this.props.getVendorListByVendorType(false, () => { })
@@ -332,19 +334,19 @@ class AddRMImport extends Component {
                             isLoader: false,
                             isShowForm: true,
                             IsVendor: Data.IsVendor,
-                            RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value },
-                            RMGrade: { label: gradeObj.Text, value: gradeObj.Value },
-                            RMSpec: { label: specObj.Text, value: specObj.Value },
-                            Category: { label: categoryObj.Text, value: categoryObj.Value },
+                            RawMaterial: materialNameObj != undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
+                            RMGrade: gradeObj != undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
+                            RMSpec: specObj != undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                            Category: gradeObj != undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                             selectedPlants: plantArray,
-                            vendorName: { label: vendorObj.Text, value: vendorObj.Value },
+                            vendorName: vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
                             selectedVendorPlants: vendorPlantArray,
-                            vendorLocation: { label: vendorLocationObj.Text, value: vendorLocationObj.Value },
+                            vendorLocation: vendorLocationObj != undefined ? { label: vendorLocationObj.Text, value: vendorLocationObj.Value } : [],
                             HasDifferentSource: Data.HasDifferentSource,
-                            sourceLocation: { label: sourceLocationObj.Text, value: sourceLocationObj.Value },
-                            UOM: { label: UOMObj.Text, value: UOMObj.Value },
+                            sourceLocation: sourceLocationObj != undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
+                            UOM: UOMObj != undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
                             effectiveDate: new Date(Data.EffectiveDate),
-                            currency: { label: currencyObj.Text, value: currencyObj.Value },
+                            currency: currencyObj != undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                             remarks: Data.Remark,
                         })
                     }, 200)
@@ -557,9 +559,11 @@ class AddRMImport extends Component {
             UOM: [],
             remarks: '',
             isShowForm: false,
+            isEditFlag: false,
             IsVendor: false,
         })
         this.props.getRMImportDataById('', false, res => { })
+        this.props.hideForm()
     }
 
     /**
@@ -664,7 +668,7 @@ class AddRMImport extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
                     this.clearForm();
-                    this.child.getUpdatedData();
+                    //this.child.getUpdatedData();
                 }
             })
 
@@ -706,7 +710,7 @@ class AddRMImport extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
                     this.clearForm();
-                    this.child.getUpdatedData();
+                    //this.child.getUpdatedData();
                 }
             });
         }
@@ -732,335 +736,256 @@ class AddRMImport extends Component {
                 <div>
                     <div className="login-container signup-form">
                         <div className="row">
-                            {this.state.isShowForm &&
-                                <div className="col-md-12">
-                                    <div className="shadow-lgg login-formg">
-                                        <div className="row mt15">
-                                            <div className="col-md-6">
-                                                <div className="form-heading">
-                                                    <h2>{isEditFlag ? `Update Raw Material Details` : `Add Raw Material Details`}</h2>
-                                                </div>
+                            <div className="col-md-12">
+                                <div className="shadow-lgg login-formg">
+                                    <div className="row mt15">
+                                        <div className="col-md-6">
+                                            <div className="form-heading">
+                                                <h2>{isEditFlag ? `Update Raw Material Details` : `Add Raw Material Details`}</h2>
                                             </div>
                                         </div>
-                                        <form
-                                            noValidate
-                                            className="form"
-                                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                        >
-                                            <Row>
-                                                <Col md="4" className="switch mb15">
-                                                    <label className="switch-level">
-                                                        <div className={'left-title'}>Zero Based</div>
-                                                        <Switch
-                                                            onChange={this.onPressVendor}
-                                                            checked={this.state.IsVendor}
-                                                            id="normal-switch"
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                        <div className={'right-title'}>Vendor Based</div>
-                                                    </label>
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                            <Col md="12" className="filter-block">
-                                                    <div className=" flex-fills mb-2">
-                                                    <h5>{'Raw Material:'}</h5>
-                                                        </div>
-                                                        </Col>
-                                                <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div  className="fullinput-icon">
-                                                    <Field
-                                                        name="RawMaterialId"
-                                                        type="text"
-                                                        label="Raw Material"
-                                                        component={searchableSelect}
-                                                        placeholder={'Select Raw Material'}
-                                                        options={this.renderListing('material')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleRMChange}
-                                                        valueDescription={this.state.RawMaterial}
+                                    </div>
+                                    <form
+                                        noValidate
+                                        className="form"
+                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                    >
+                                        <Row>
+                                            <Col md="4" className="switch mb15">
+                                                <label className="switch-level">
+                                                    <div className={'left-title'}>Zero Based</div>
+                                                    <Switch
+                                                        onChange={this.onPressVendor}
+                                                        checked={this.state.IsVendor}
+                                                        id="normal-switch"
                                                         disabled={isEditFlag ? true : false}
                                                     />
+                                                    <div className={'right-title'}>Vendor Based</div>
+                                                </label>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col md="12" className="filter-block">
+                                                <div className=" flex-fills mb-2">
+                                                    <h5>{'Raw Material:'}</h5>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="RawMaterialId"
+                                                            type="text"
+                                                            label="Raw Material"
+                                                            component={searchableSelect}
+                                                            placeholder={'Select Raw Material'}
+                                                            options={this.renderListing('material')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleRMChange}
+                                                            valueDescription={this.state.RawMaterial}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
                                                     </div>
                                                     <div
                                                         onClick={this.rmToggler}
                                                         className={'plus-icon-square  right'}>
                                                     </div>
-                                                    </div>
-                                                </Col>
-                                                <Col md="3">
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div  className="fullinput-icon">
-                                                    <Field
-                                                        name="RawMaterialGradeId"
-                                                        type="text"
-                                                        label="RM Grade"
-                                                        component={searchableSelect}
-                                                        placeholder={'Select RM Grade'}
-                                                        options={this.renderListing('grade')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleGradeChange}
-                                                        valueDescription={this.state.RMGrade}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="RawMaterialGradeId"
+                                                            type="text"
+                                                            label="RM Grade"
+                                                            component={searchableSelect}
+                                                            placeholder={'Select RM Grade'}
+                                                            options={this.renderListing('grade')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleGradeChange}
+                                                            valueDescription={this.state.RMGrade}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
                                                     </div>
                                                     <div
                                                         onClick={this.gradeToggler}
                                                         className={'plus-icon-square  right'}>
                                                     </div>
-                                                    </div>
-                                                </Col>
-                                                <Col md="3">
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div  className="fullinput-icon">
-                                                    <Field
-                                                        name="RawMaterialSpecificationId"
-                                                        type="text"
-                                                        label="RM Spec"
-                                                        component={searchableSelect}
-                                                        placeholder={'Select RM Spec'}
-                                                        options={this.renderListing('specification')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.RMSpec == null || this.state.RMSpec.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleSpecChange}
-                                                        valueDescription={this.state.RMSpec}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="RawMaterialSpecificationId"
+                                                            type="text"
+                                                            label="RM Spec"
+                                                            component={searchableSelect}
+                                                            placeholder={'Select RM Spec'}
+                                                            options={this.renderListing('specification')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.RMSpec == null || this.state.RMSpec.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleSpecChange}
+                                                            valueDescription={this.state.RMSpec}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
                                                     </div>
                                                     <div
                                                         onClick={this.specificationToggler}
                                                         className={'plus-icon-square  right'}>
                                                     </div>
-                                                    </div>
-                                                </Col>
-                                                <Col md="3">
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div  className="fullinput-icon">
-                                                    <Field
-                                                        name="CategoryId"
-                                                        type="text"
-                                                        label="Category"
-                                                        component={searchableSelect}
-                                                        placeholder={'Select Category'}
-                                                        options={this.renderListing('category')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleCategoryChange}
-                                                        valueDescription={this.state.Category}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                   </div>
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="CategoryId"
+                                                            type="text"
+                                                            label="Category"
+                                                            component={searchableSelect}
+                                                            placeholder={'Select Category'}
+                                                            options={this.renderListing('category')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleCategoryChange}
+                                                            valueDescription={this.state.Category}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
                                                     <div
                                                         onClick={this.categoryToggler}
                                                         className={'plus-icon-square  right'}>
                                                     </div>
-                                                    </div>
-                                                </Col>
-                                            </Row>
-                                            {!this.state.IsVendor &&
-                                                <Row>
-                                                    <Col md="3">
-                                                        <Field
-                                                            label="Plant"
-                                                            name="SourceSupplierPlantId"
-                                                            placeholder="--Select--"
-                                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
-                                                            options={this.renderListing('plant')}
-                                                            selectionChanged={this.handleSourceSupplierPlant}
-                                                            optionValue={option => option.Value}
-                                                            optionLabel={option => option.Text}
-                                                            component={renderMultiSelectField}
-                                                            mendatory={true}
-                                                            className="multiselect-with-border"
-                                                            disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                                                        />
-                                                    </Col>
-                                                </Row>}
-
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                        {!this.state.IsVendor &&
                                             <Row>
-
-
-                                            <Col md="12" className="filter-block">
-                                                    <div className=" flex-fills mb-2">
-                                                       <h5>{'Vendor'}</h5> 
-                                                    </div>
-                                                </Col>
-                                                <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div  className="fullinput-icon">
-                                                    <Field
-                                                        name="DestinationSupplierId"
-                                                        type="text"
-                                                        label="Vendor Name"
-                                                        component={searchableSelect}
-                                                        placeholder={'--- Select Vendor ---'}
-                                                        options={this.renderListing('VendorNameList')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleVendorName}
-                                                        valueDescription={this.state.vendorName}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                     </div>
-                                                    <div
-                                                        onClick={this.vendorToggler}
-                                                        className={'plus-icon-square  right'}>
-                                                    </div>
-                                                    </div>
-                                                </Col>
                                                 <Col md="3">
                                                     <Field
-                                                        label="Vendor Plant"
-                                                        name="DestinationSupplierPlantId"
+                                                        label="Plant"
+                                                        name="SourceSupplierPlantId"
                                                         placeholder="--Select--"
-                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
-                                                        options={this.renderListing('VendorPlant')}
-                                                        selectionChanged={this.handleVendorPlant}
+                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                        options={this.renderListing('plant')}
+                                                        selectionChanged={this.handleSourceSupplierPlant}
                                                         optionValue={option => option.Value}
                                                         optionLabel={option => option.Text}
                                                         component={renderMultiSelectField}
                                                         mendatory={true}
                                                         className="multiselect-with-border"
-                                                        disabled={isEditFlag ? true : (this.state.IsVendor ? false : true)}
+                                                        disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                                                     />
                                                 </Col>
-                                                <Col md="3">
-                                                    <Field
-                                                        name="DestinationSupplierCityId"
-                                                        type="text"
-                                                        label="Vendor Location"
-                                                        component={searchableSelect}
-                                                        placeholder={'--- Select Location ---'}
-                                                        options={this.renderListing('VendorLocation')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorLocation == null || this.state.vendorLocation.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleVendorLocation}
-                                                        valueDescription={this.state.vendorLocation}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>
+                                            </Row>}
 
-                                            </Row>
+                                        <Row>
 
-                                            {!this.state.IsVendor &&
-                                                <Row>
-                                                    <Col md="4" className="mb15">
-                                                        <label
-                                                            className={`custom-checkbox ${this.state.IsVendor ? 'disabled' : ''}`}
-                                                            onChange={this.onPressDifferentSource}
-                                                        >
-                                                            Has Difference Source?
-                                                        <input
-                                                                type="checkbox"
-                                                                checked={this.state.HasDifferentSource}
-                                                                disabled={this.state.IsVendor ? true : false}
-                                                            />
-                                                            <span
-                                                                className=" before-box"
-                                                                checked={this.state.HasDifferentSource}
-                                                                onChange={this.onPressDifferentSource}
-                                                            />
-                                                        </label>
-                                                    </Col>
-                                                </Row>}
 
-                                            {(this.state.HasDifferentSource || this.state.IsVendor) &&
-                                                <Row>
-                                                    <Col md="3">
-                                                        <Field
-                                                            label={`Source`}
-                                                            name={"Source"}
-                                                            type="text"
-                                                            placeholder={'Enter'}
-                                                            validate={[required]}
-                                                            component={renderText}
-                                                            required={true}
-                                                            disabled={false}
-                                                            className=" "
-                                                            customClassName=" withBorder"
-                                                        />
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <Field
-                                                            name="SourceSupplierCityId"
-                                                            type="text"
-                                                            label="Source Location"
-                                                            component={searchableSelect}
-                                                            placeholder={'--- Select Plant ---'}
-                                                            options={this.renderListing('SourceLocation')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleSourceSupplierCity}
-                                                            valueDescription={this.state.sourceLocation}
-                                                        />
-                                                    </Col>
-                                                </Row>}
-
-                                            <Row>
                                             <Col md="12" className="filter-block">
-                                                    <div className=" flex-fills mb-2">
-                                                       <h5>{'Cost:'}</h5> 
-                                                    </div>
-                                                </Col>
-                                                <Col md="3">
+                                                <div className=" flex-fills mb-2">
+                                                    <h5>{'Vendor'}</h5>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div  className="fullinput-icon">
-                                                    <Field
-                                                        name="UnitOfMeasurementId"
-                                                        type="text"
-                                                        label="UOM"
-                                                        component={searchableSelect}
-                                                        placeholder={'--- Select ---'}
-                                                        options={this.renderListing('uom')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleUOM}
-                                                        valueDescription={this.state.UOM}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="DestinationSupplierId"
+                                                            type="text"
+                                                            label="Vendor Name"
+                                                            component={searchableSelect}
+                                                            placeholder={'--- Select Vendor ---'}
+                                                            options={this.renderListing('VendorNameList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleVendorName}
+                                                            valueDescription={this.state.vendorName}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
                                                     </div>
                                                     <div
-                                                        onClick={this.uomToggler}
+                                                        onClick={this.vendorToggler}
                                                         className={'plus-icon-square  right'}>
                                                     </div>
-                                                    </div>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label="Vendor Plant"
+                                                    name="DestinationSupplierPlantId"
+                                                    placeholder="--Select--"
+                                                    selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                    options={this.renderListing('VendorPlant')}
+                                                    selectionChanged={this.handleVendorPlant}
+                                                    optionValue={option => option.Value}
+                                                    optionLabel={option => option.Text}
+                                                    component={renderMultiSelectField}
+                                                    mendatory={true}
+                                                    className="multiselect-with-border"
+                                                    disabled={isEditFlag ? true : (this.state.IsVendor ? false : true)}
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    name="DestinationSupplierCityId"
+                                                    type="text"
+                                                    label="Vendor Location"
+                                                    component={searchableSelect}
+                                                    placeholder={'--- Select Location ---'}
+                                                    options={this.renderListing('VendorLocation')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.vendorLocation == null || this.state.vendorLocation.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleVendorLocation}
+                                                    valueDescription={this.state.vendorLocation}
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                            </Col>
+
+                                        </Row>
+
+                                        {!this.state.IsVendor &&
+                                            <Row>
+                                                <Col md="4" className="mb15">
+                                                    <label
+                                                        className={`custom-checkbox ${this.state.IsVendor ? 'disabled' : ''}`}
+                                                        onChange={this.onPressDifferentSource}
+                                                    >
+                                                        Has Difference Source?
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={this.state.HasDifferentSource}
+                                                            disabled={this.state.IsVendor ? true : false}
+                                                        />
+                                                        <span
+                                                            className=" before-box"
+                                                            checked={this.state.HasDifferentSource}
+                                                            onChange={this.onPressDifferentSource}
+                                                        />
+                                                    </label>
                                                 </Col>
+                                            </Row>}
+
+                                        {(this.state.HasDifferentSource || this.state.IsVendor) &&
+                                            <Row>
                                                 <Col md="3">
                                                     <Field
-                                                        name="Currency"
-                                                        type="text"
-                                                        label="Currency"
-                                                        component={searchableSelect}
-                                                        placeholder={'--- Select Currency ---'}
-                                                        options={this.renderListing('currency')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.currency == null || this.state.currency.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleCurrency}
-                                                        valueDescription={this.state.currency}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>
-                                                <Col md="3">
-                                                    <Field
-                                                        label={`Basic Rate/UOM (INR)`}
-                                                        name={"BasicRate"}
+                                                        label={`Source`}
+                                                        name={"Source"}
                                                         type="text"
                                                         placeholder={'Enter'}
                                                         validate={[required]}
-                                                        component={renderNumberInputField}
-                                                        onChange={this.handleBasicRate}
+                                                        component={renderText}
                                                         required={true}
                                                         disabled={false}
                                                         className=" "
@@ -1069,124 +994,201 @@ class AddRMImport extends Component {
                                                 </Col>
                                                 <Col md="3">
                                                     <Field
-                                                        label={`Scrap Rate (INR)`}
-                                                        name={"ScrapRate"}
+                                                        name="SourceSupplierCityId"
                                                         type="text"
-                                                        placeholder={'Enter'}
-                                                        validate={[required]}
-                                                        component={renderNumberInputField}
+                                                        label="Source Location"
+                                                        component={searchableSelect}
+                                                        placeholder={'--- Select Plant ---'}
+                                                        options={this.renderListing('SourceLocation')}
+                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                        validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
                                                         required={true}
-                                                        className=""
-                                                        customClassName=" withBorder"
+                                                        handleChangeDescription={this.handleSourceSupplierCity}
+                                                        valueDescription={this.state.sourceLocation}
                                                     />
                                                 </Col>
-                                                <Col md="3">
-                                                    <Field
-                                                        label={`Net Landed Cost (INR/UOM)`}
-                                                        name={"NetLandedCost"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        validate={[required]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        disabled={true}
-                                                        className=" "
-                                                        customClassName=" withBorder"
-                                                    />
-                                                </Col>
-                                                <Col md="3">
-                                                    <div className="form-group">
-                                                        <label>
-                                                            Effective Date
-                                                    <span className="asterisk-required">*</span>
-                                                        </label>
-                                                        <div className="inputbox date-section">
-                                                            <DatePicker
-                                                                name="EffectiveDate"
-                                                                selected={this.state.effectiveDate}
-                                                                onChange={this.handleEffectiveDateChange}
-                                                                showMonthDropdown
-                                                                showYearDropdown
-                                                                dateFormat="dd/MM/yyyy"
-                                                                //maxDate={new Date()}
-                                                                dropdownMode="select"
-                                                                placeholderText="Select date"
-                                                                className="withBorder form-control"
-                                                                autoComplete={'off'}
-                                                                disabledKeyboardNavigation
-                                                                onChangeRaw={(e) => e.preventDefault()}
-                                                                disabled={isEditFlag ? true : false}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </Col>
-                                            </Row>
+                                            </Row>}
 
-                                            <Row>
+                                        <Row>
                                             <Col md="12" className="filter-block">
-                                                    <div className=" flex-fills mb-2">
-                                                       <h5>{'Remarks & Attachment'}</h5> 
-                                                    </div>
-                                                </Col>
-                                                <Col md="6">
-                                                    <Field
-                                                        label={'Remarks'}
-                                                        name={`Remark`}
-                                                        placeholder="Type here..."
-                                                        value={this.state.remarks}
-                                                        className=""
-                                                        customClassName=" textAreaWithBorder"
-                                                        onChange={this.handleMessageChange}
-                                                        validate={[required, maxLength100]}
-                                                        required={true}
-                                                        component={renderTextAreaField}
-                                                        maxLength="5000"
-                                                        rows="10"
-                                                    />
-                                                </Col>
-                                                <Col md="6">
-                                                <label>Upload Attachment ( upload up to 3 files )</label>
-                                                    <Dropzone
-                                                        getUploadParams={this.getUploadParams}
-                                                        onChangeStatus={this.handleChangeStatus}
-                                                        //onSubmit={this.handleSubmit}
-                                                        accept="image/jpeg,image/png,xls,doc,pdf"
-                                                        maxFiles={3}
-                                                        maxSizeBytes={2000000}
-                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
-                                                        styles={{
-                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
-                                                        }}
-                                                    />
-                                                </Col>
-                                            </Row>
-                                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                                <div className="col-sm-12 text-right bluefooter-butn">
-                                                    <button
-                                                        type={'button'}
-                                                        className="reset mr15 cancel-btn"
-                                                        onClick={this.cancel} >
-                                                        {'Cancel'}
-                                                    </button>
-                                                    <button
-                                                        type="submit"
-                                                        className="submit-button mr5 save-btn" >
-                                                        {isEditFlag ? 'Update' : 'Save'}
-                                                    </button>
+                                                <div className=" flex-fills mb-2">
+                                                    <h5>{'Cost:'}</h5>
                                                 </div>
-                                            </Row>
-                                        </form>
-                                    </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="UnitOfMeasurementId"
+                                                            type="text"
+                                                            label="UOM"
+                                                            component={searchableSelect}
+                                                            placeholder={'--- Select ---'}
+                                                            options={this.renderListing('uom')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleUOM}
+                                                            valueDescription={this.state.UOM}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        onClick={this.uomToggler}
+                                                        className={'plus-icon-square  right'}>
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    name="Currency"
+                                                    type="text"
+                                                    label="Currency"
+                                                    component={searchableSelect}
+                                                    placeholder={'--- Select Currency ---'}
+                                                    options={this.renderListing('currency')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.currency == null || this.state.currency.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleCurrency}
+                                                    valueDescription={this.state.currency}
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Basic Rate/UOM (INR)`}
+                                                    name={"BasicRate"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    onChange={this.handleBasicRate}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Scrap Rate (INR)`}
+                                                    name={"ScrapRate"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    className=""
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Net Landed Cost (INR/UOM)`}
+                                                    name={"NetLandedCost"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <div className="form-group">
+                                                    <label>
+                                                        Effective Date
+                                                    <span className="asterisk-required">*</span>
+                                                    </label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name="EffectiveDate"
+                                                            selected={this.state.effectiveDate}
+                                                            onChange={this.handleEffectiveDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dateFormat="dd/MM/yyyy"
+                                                            //maxDate={new Date()}
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder form-control"
+                                                            autoComplete={'off'}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="12" className="filter-block">
+                                                <div className=" flex-fills mb-2">
+                                                    <h5>{'Remarks & Attachment'}</h5>
+                                                </div>
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={'Remarks'}
+                                                    name={`Remark`}
+                                                    placeholder="Type here..."
+                                                    value={this.state.remarks}
+                                                    className=""
+                                                    customClassName=" textAreaWithBorder"
+                                                    onChange={this.handleMessageChange}
+                                                    validate={[required, maxLength100]}
+                                                    required={true}
+                                                    component={renderTextAreaField}
+                                                    maxLength="5000"
+                                                    rows="10"
+                                                />
+                                            </Col>
+                                            <Col md="6">
+                                                <label>Upload Attachment ( upload up to 3 files )</label>
+                                                <Dropzone
+                                                    getUploadParams={this.getUploadParams}
+                                                    onChangeStatus={this.handleChangeStatus}
+                                                    //onSubmit={this.handleSubmit}
+                                                    accept="image/jpeg,image/png,xls,doc,pdf"
+                                                    maxFiles={3}
+                                                    maxSizeBytes={2000000}
+                                                    inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                                                    styles={{
+                                                        dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                                        inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                                                    }}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row className="sf-btn-footer no-gutters justify-content-between">
+                                            <div className="col-sm-12 text-right bluefooter-butn">
+                                                <button
+                                                    type={'button'}
+                                                    className="reset mr15 cancel-btn"
+                                                    onClick={this.cancel} >
+                                                    {'Cancel'}
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    className="submit-button mr5 save-btn" >
+                                                    {isEditFlag ? 'Update' : 'Save'}
+                                                </button>
+                                            </div>
+                                        </Row>
+                                    </form>
                                 </div>
-                            }
+                            </div>
                         </div>
                     </div>
-                    <RMImportListing
+                    {/* <RMImportListing
                         onRef={ref => (this.child = ref)}
                         getDetails={this.getDetails}
                         formToggle={this.formToggle}
-                        isShowForm={this.state.isShowForm} />
+                        isShowForm={this.state.isShowForm} /> */}
                 </div>
 
                 {isRMDrawerOpen && <AddSpecification

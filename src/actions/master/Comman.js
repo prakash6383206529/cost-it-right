@@ -364,35 +364,6 @@ export function fetchCategoryAPI(Id, callback) {
 
 //COMBO API"S
 
-/**
- * @method fetchFuelComboAPI
- * @description Used to fuel form 
- */
-export function fetchFuelComboAPI(callback) {
-    return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelComboAPI}`, headers);
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_FUEL_SUCCESS,
-                    payload: response.data.DynamicData.Fuels,
-                });
-                dispatch({
-                    type: GET_STATE_SUCCESS,
-                    payload: response.data.DynamicData.States,
-                });
-                callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
 
 export function getOtherOperationData(callback) {
     return (dispatch) => {
@@ -1053,8 +1024,6 @@ export function getPowerTypeSelectList(callback) {
                     payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
@@ -1216,7 +1185,7 @@ export function getDepreciationSelectList(callback) {
 
 /**
  * @method getShiftTypeSelectList
- * @description Used to fetch Depreciation type selectlist
+ * @description Used to GET SHIFT TYPE selectlist
  */
 export function getShiftTypeSelectList(callback) {
     return (dispatch) => {

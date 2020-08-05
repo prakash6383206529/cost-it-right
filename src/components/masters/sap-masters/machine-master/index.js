@@ -13,6 +13,7 @@ class MachineMaster extends Component {
             activeTab: '1',
             isMachineRateForm: false,
             isAddMoreDetails: false,
+            data: {},
         }
     }
 
@@ -39,6 +40,10 @@ class MachineMaster extends Component {
         this.setState({ isMachineRateForm: false })
     }
 
+    setData = (data) => {
+        this.setState({ data: data })
+    }
+
     displayMoreDetailsForm = () => {
         this.setState({
             isAddMoreDetails: true,
@@ -62,6 +67,7 @@ class MachineMaster extends Component {
 
         if (isMachineRateForm === true) {
             return <AddMachineRate
+                setData={this.setData}
                 hideForm={this.hideForm}
                 displayMoreDetailsForm={this.displayMoreDetailsForm}
             />
@@ -69,6 +75,7 @@ class MachineMaster extends Component {
 
         if (isAddMoreDetails === true) {
             return <AddMoreDetails
+                data={this.state.data}
                 hideMoreDetailsForm={this.hideMoreDetailsForm}
             />
         }

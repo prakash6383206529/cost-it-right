@@ -503,7 +503,7 @@ class OverheadListing extends Component {
                             ref={'table'}
                             pagination>
                             <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" >{this.renderVendor()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="center" >{this.renderModelType()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="OverheadApplicabilityType" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadAppli()}</TableHeaderColumn>

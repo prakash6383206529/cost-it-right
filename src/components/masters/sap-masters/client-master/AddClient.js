@@ -287,7 +287,7 @@ class AddClient extends Component {
                     <div className="row">
                         {this.state.isShowForm &&
                             <div className="col-md-12">
-                                <div className="shadow-lgg login-formg pt-30">
+                                <div className="shadow-lgg login-formg">
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="form-heading mb-0">

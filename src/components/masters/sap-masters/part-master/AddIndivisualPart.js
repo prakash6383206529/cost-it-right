@@ -62,7 +62,7 @@ class AddIndivisualPart extends Component {
                     const Data = res.data.Data;
 
                     let plantArray = [];
-                    Data && Data.Plant.map((item) => {
+                    Data && Data.SelectedPlants.map((item) => {
                         plantArray.push({ Text: item.PlantName, Value: item.PlantId })
                         return plantArray;
                     })
@@ -70,7 +70,7 @@ class AddIndivisualPart extends Component {
                     setTimeout(() => {
                         const { rowMaterialList } = this.props;
 
-                        const materialNameObj = rowMaterialList && rowMaterialList.find(item => item.Value == Data.RawMaterial)
+                        const materialNameObj = rowMaterialList && rowMaterialList.find(item => item.Value == Data.RawMaterialId)
 
                         this.setState({
                             isEditFlag: true,
@@ -522,6 +522,14 @@ function mapStateToProps({ material, comman, part }) {
     if (newPartData && newPartData != undefined) {
         initialValues = {
             PartNumber: newPartData.PartNumber,
+            PartName: newPartData.PartName,
+            BOMNumber: newPartData.BOMNumber,
+            Description: newPartData.Description,
+            GroupCode: newPartData.GroupCode,
+            ECNNumber: newPartData.ECNNumber,
+            DrawingNumber: newPartData.DrawingNumber,
+            RevisionNumber: newPartData.RevisionNumber,
+            Remark: newPartData.Remark,
         }
     }
 

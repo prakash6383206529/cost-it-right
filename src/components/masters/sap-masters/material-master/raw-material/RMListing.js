@@ -133,8 +133,8 @@ class RMListing extends Component {
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <Button className="btn btn-secondary mr5" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button>
-                <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button>
+                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
+                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
             </>
         )
     }
@@ -164,7 +164,7 @@ class RMListing extends Component {
                             <div className={'plus'}></div>{`ADD RM MATERIAL`}</button>
                     </Col>
                 </Row>
-               
+
                 <Row>
                     <Col>
                         {/* <hr /> */}

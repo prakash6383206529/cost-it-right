@@ -81,6 +81,17 @@ class AddMachineRate extends Component {
         this.props.getProcessesSelectList(() => { })
     }
 
+    componentWillUnmount() {
+        const { selectedPlants, machineType, } = this.state;
+        const { fieldsObj } = this.props;
+        let data = {
+            fieldsObj: fieldsObj,
+            selectedPlants: selectedPlants,
+            machineType: machineType,
+        }
+        this.props.setData(data)
+    }
+
     /**
     * @method onPressVendor
     * @description Used for Vendor checked
@@ -962,7 +973,7 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
     const { comman, material, machine, } = state;
-    const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
+    const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity',);
 
     const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
     const { machineTypeSelectList, processSelectList } = machine;

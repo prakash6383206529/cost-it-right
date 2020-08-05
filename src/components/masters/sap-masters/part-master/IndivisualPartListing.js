@@ -4,6 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import { } from '../../../../actions/master/Comman';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
+import { getPartDataList, deletePart, } from '../../../../actions/master/Part';
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -12,6 +13,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
+import moment from 'moment';
 import { loggedInUserId } from '../../../../helper/auth';
 
 function enumFormatter(cell, row, enumObject) {
@@ -43,13 +45,18 @@ class IndivisualPartListing extends Component {
 	* @description Get user list data
 	*/
     getTableListData = () => {
-        // this.props.getPlantDataAPI(false, (res) => {
-        //     if (res && res.data && res.status === 200) {
-        //         let Data = res.data.DataList;
+        this.props.getPartDataList((res) => {
+            if (res.status == 204 && res.data == '') {
+                this.setState({ tableData: [], })
+            } else if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                this.setState({
+                    tableData: Data,
+                })
+            } else {
 
-        //         this.setState({ tableData: Data })
-        //     }
-        // })
+            }
+        })
     }
 
 	/**
@@ -75,7 +82,7 @@ class IndivisualPartListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
 	/**
@@ -83,12 +90,12 @@ class IndivisualPartListing extends Component {
 	* @description confirm delete user item
 	*/
     confirmDeleteItem = (ID) => {
-        // this.props.deletePlantAPI(ID, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
-        //         this.getTableListData();
-        //     }
-        // });
+        this.props.deletePart(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+                this.getTableListData();
+            }
+        });
     }
 
 	/**
@@ -177,6 +184,14 @@ class IndivisualPartListing extends Component {
         return serialNumber;
     }
 
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
     onExportToCSV = (row) => {
         console.log('row', row)
         // ...
@@ -263,39 +278,10 @@ class IndivisualPartListing extends Component {
                             {/* <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
-                                    <Field
-                                        name="CountryId"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Country'}
-                                        options={this.renderListing('country')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.countryHandler}
-                                        valueDescription={this.state.country}
-                                    />
+                                   
                                 </div>
-
                                 <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
+                                    
                                 </div>
                             </div> */}
                         </Col>
@@ -307,7 +293,7 @@ class IndivisualPartListing extends Component {
                                             type="button"
                                             className={'user-btn'}
                                             onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD Part</button>
+                                            <div className={'plus'}></div>ADD PART</button>
                                     }
                                 </div>
                             </div>
@@ -331,12 +317,12 @@ class IndivisualPartListing extends Component {
                     <TableHeaderColumn dataField="" width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >RM Material</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Plant</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RawMaterial" >RM Material</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Plants" >Plant</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECONumber" >ECN No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="" >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Effective Date</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Date" dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="PartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
@@ -366,7 +352,8 @@ function mapStateToProps({ }) {
 */
 
 export default connect(mapStateToProps, {
-
+    getPartDataList,
+    deletePart,
 })(reduxForm({
     form: 'IndivisualPartListing',
     onSubmitFail: errors => {

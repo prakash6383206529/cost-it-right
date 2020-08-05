@@ -49,10 +49,7 @@ class AddZBCPlant extends Component {
                 isShowForm: true,
                 PlantId: data.Id,
             })
-            if (data.passwordFlag == false) {
-                $('html, body').animate({ scrollTop: 0 }, 'slow');
-            }
-            this.props.getPlantUnitAPI(data.Id, true, res => {
+            this.props.getPlantUnitAPI(data.Id, res => {
                 if (res && res.data && res.data.Result) {
 
                     const Data = res.data.Data;
@@ -78,17 +75,10 @@ class AddZBCPlant extends Component {
                 }
             })
         } else {
-            this.props.getPlantUnitAPI('', false, res => { })
+            this.props.getPlantUnitAPI('', res => { })
         }
     }
 
-    /**
-    * @method toggleModel
-    * @description Used to cancel modal
-    */
-    toggleModel = () => {
-        this.props.onCancel();
-    }
 
     /**
     * @method selectType
@@ -171,7 +161,7 @@ class AddZBCPlant extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.props.getPlantUnitAPI('', false, res => { })
+        this.props.getPlantUnitAPI('', res => { })
         this.setState({
             isEditFlag: false,
             isShowForm: false,

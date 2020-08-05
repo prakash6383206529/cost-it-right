@@ -9,6 +9,7 @@ import {
 } from "../../../layout/FormInputs";
 import {
     getTechnologySelectList, getPlantSelectList, getPlantBySupplier, getUOMSelectList,
+    getShiftTypeSelectList, getDepreciationTypeSelectList, getLabourTypeSelectList,
 } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import { getMachineTypeSelectList, getProcessesSelectList } from '../../../../actions/master/MachineMaster';
@@ -19,9 +20,9 @@ import { loggedInUserId } from "../../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
+import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from 'jquery';
 import { FILE_URL } from '../../../../config/constants';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -49,13 +50,29 @@ class AddMoreDetails extends Component {
             machineType: [],
             isOpenMachineType: false,
 
+            shiftType: [],
+
+            depreciationType: [],
+            DateOfPurchase: '',
+
+            IsAnnualMaintenanceFixed: false,
+            IsAnnualConsumableFixed: false,
+            IsInsuranceFixed: false,
+
+            IsUsesFuel: false,
+            IsUsesSolarPower: false,
+
+            labourType: [],
+            labourGrid: [],
+            isEditLabourIndex: false,
+            labourGridEditIndex: '',
+
             processName: [],
             isOpenProcessDrawer: false,
 
             processGrid: [],
             processGridEditIndex: '',
             isEditIndex: false,
-            machineRate: '',
 
         }
     }
@@ -74,12 +91,35 @@ class AddMoreDetails extends Component {
      * @description Called after rendering the component
      */
     componentDidMount() {
+        const { data } = this.props;
         this.props.getTechnologySelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
         this.props.getPlantSelectList(() => { })
         this.props.getMachineTypeSelectList(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getProcessesSelectList(() => { })
+        this.props.getShiftTypeSelectList(() => { })
+        this.props.getDepreciationTypeSelectList(() => { })
+        this.props.getLabourTypeSelectList(() => { })
+
+        if (data && data != undefined) {
+            console.log('data', data)
+
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.data != this.props.data) {
+            const { fieldsObj, machineType, selectedPlants } = nextProps.data;
+            this.props.change('MachineName', fieldsObj.MachineName)
+            this.props.change('MachineNumber', fieldsObj.MachineNumber)
+            this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
+            this.setState({
+                selectedPlants: selectedPlants,
+                machineType: machineType,
+            })
+        }
+
     }
 
     /**
@@ -190,20 +230,15 @@ class AddMoreDetails extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { technologySelectList, vendorListByVendorType, plantSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList,
-            UOMSelectList, machineTypeSelectList, processSelectList, } = this.props;
+        const { technologySelectList, plantSelectList, plantList, filterPlantList,
+            UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
+            DepreciationTypeSelectList, labourTypeSelectList, } = this.props;
+
         const temp = [];
         if (label === 'technology') {
             technologySelectList && technologySelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ Text: item.Text, Value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'VendorNameList') {
-            vendorListByVendorType && vendorListByVendorType.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
@@ -235,15 +270,22 @@ class AddMoreDetails extends Component {
             });
             return temp;
         }
-        if (label === 'VendorLocation') {
-            filterCityListBySupplier && filterCityListBySupplier.map(item => {
+        if (label === 'ShiftType') {
+            ShiftTypeSelectList && ShiftTypeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
-        if (label === 'SourceLocation') {
-            cityList && cityList.map(item => {
+        if (label === 'DepreciationType') {
+            DepreciationTypeSelectList && DepreciationTypeSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'labourList') {
+            labourTypeSelectList && labourTypeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -327,9 +369,32 @@ class AddMoreDetails extends Component {
         })
     }
 
-    moreDetailsToggler = () => {
-        this.props.displayMoreDetailsForm()
-        this.setState({ isMoreDetails: !this.state.isMoreDetails })
+    handleShiftType = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ shiftType: newValue });
+        } else {
+            this.setState({ shiftType: [], })
+        }
+    }
+
+    efficiencyCalculationToggler = () => {
+
+    }
+
+    handleDereciationType = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ depreciationType: newValue });
+        } else {
+            this.setState({ depreciationType: [], })
+        }
+    }
+
+    handleFuelType = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ fuelType: newValue });
+        } else {
+            this.setState({ fuelType: [], })
+        }
     }
 
     /**
@@ -366,13 +431,231 @@ class AddMoreDetails extends Component {
         }
     };
 
-    handleMachineRate = (e) => {
-        const value = e.target.value;
-        this.setState({ machineRate: value })
+
+
+
+    /**
+     * @method handleChange
+     * @description Handle Purchase Date
+     */
+    handleDateOfPurchase = (date) => {
+        this.setState({
+            DateOfPurchase: date,
+        });
+    };
+
+
+    /**
+     * @method onPressAnnualMaintenance
+     * @description Used for Annual Maintenance
+     */
+    onPressAnnualMaintenance = () => {
+        this.setState({
+            IsAnnualMaintenanceFixed: !this.state.IsAnnualMaintenanceFixed,
+        });
+    }
+
+    /**
+     * @method onPressAnnualConsumable
+     * @description Used for Annual Maintenance
+     */
+    onPressAnnualConsumable = () => {
+        this.setState({
+            IsAnnualConsumableFixed: !this.state.IsAnnualConsumableFixed,
+        });
+    }
+
+    /**
+     * @method onPressInsurance
+     * @description Used for Annual Maintenance
+     */
+    onPressInsurance = () => {
+        this.setState({
+            IsInsuranceFixed: !this.state.IsInsuranceFixed,
+        });
+    }
+
+    /**
+     * @method onPressUsesFuel
+     * @description Used for Annual Maintenance
+     */
+    onPressUsesFuel = () => {
+        this.setState({
+            IsUsesFuel: !this.state.IsUsesFuel,
+        });
+    }
+
+    /**
+     * @method onPressUsesSolarPower
+     * @description Used for Uses Solar Power
+     */
+    onPressUsesSolarPower = () => {
+        this.setState({
+            IsUsesSolarPower: !this.state.IsUsesSolarPower,
+        });
+    }
+
+    /**
+    * @method labourHandler
+    * @description called
+    */
+    labourHandler = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ labourType: newValue });
+        } else {
+            this.setState({ labourType: [] })
+        }
+    };
+
+    componentDidUpdate(prevProps) {
+        if (this.props.fieldsObj !== prevProps.fieldsObj) {
+            this.handleLabourCalculation()
+            this.handleProcessCalculation()
+        }
+    }
+
+    handleLabourCalculation = () => {
+        const { fieldsObj } = this.props
+        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum != undefined ? fieldsObj.LabourCostPerAnnum : 0;
+        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour != undefined ? fieldsObj.NumberOfLabour : 0;
+        const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
+        this.props.change('LabourCost', TotalLabourCost)
+    }
+
+    labourTableHandler = () => {
+        const { labourType, labourGrid } = this.state;
+        const { fieldsObj } = this.props
+        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum != undefined ? fieldsObj.LabourCostPerAnnum : 0;
+        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour != undefined ? fieldsObj.NumberOfLabour : 0;
+        const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
+        const tempArray = [];
+
+        tempArray.push(...labourGrid, {
+            labourTypeName: labourType.label,
+            labourTypeId: labourType.value,
+            LabourCostPerAnnum: LabourPerCost,
+            NumberOfLabour: NumberOfLabour,
+            LabourCost: TotalLabourCost,
+        })
+
+        this.setState({
+            labourGrid: tempArray,
+            labourType: [],
+        }, () => {
+            this.props.change('LabourCostPerAnnum', '')
+            this.props.change('NumberOfLabour', '')
+            this.props.change('LabourCost', '')
+        });
+    }
+
+    updateLabourGrid = () => {
+        const { labourType, labourGrid, labourGridEditIndex } = this.state;
+        const { fieldsObj } = this.props
+        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum != undefined ? fieldsObj.LabourCostPerAnnum : 0;
+        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour != undefined ? fieldsObj.NumberOfLabour : 0;
+        const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
+
+        let tempArray = [];
+
+        let tempData = labourGrid[labourGridEditIndex];
+        tempData = {
+            labourTypeName: labourType.label,
+            labourTypeId: labourType.value,
+            LabourCostPerAnnum: LabourPerCost,
+            NumberOfLabour: NumberOfLabour,
+            LabourCost: TotalLabourCost,
+        }
+
+        tempArray = Object.assign([...labourGrid], { [labourGridEditIndex]: tempData })
+
+        this.setState({
+            labourGrid: tempArray,
+            labourType: [],
+            labourGridEditIndex: '',
+            isEditLabourIndex: false,
+        }, () => {
+            this.props.change('LabourCostPerAnnum', '')
+            this.props.change('NumberOfLabour', '')
+            this.props.change('LabourCost', '')
+        });
+    }
+
+    resetLabourGridData = () => {
+        this.setState({
+            labourType: [],
+            labourGridEditIndex: '',
+            isEditLabourIndex: false,
+        }, () => {
+            this.props.change('LabourCostPerAnnum', '')
+            this.props.change('NumberOfLabour', '')
+            this.props.change('LabourCost', '')
+        });
+    }
+
+    /**
+    * @method editLabourItemDetails
+    * @description used to Edit Labour Grid Item
+    */
+    editLabourItemDetails = (index) => {
+        const { labourGrid } = this.state;
+        const tempData = labourGrid[index];
+
+        this.setState({
+            labourGridEditIndex: index,
+            isEditLabourIndex: true,
+            labourType: { label: tempData.labourTypeName, value: tempData.labourTypeId },
+        }, () => {
+            this.props.change('LabourCostPerAnnum', tempData.LabourCostPerAnnum)
+            this.props.change('NumberOfLabour', tempData.NumberOfLabour)
+            this.props.change('LabourCost', tempData.LabourCost)
+        });
+    }
+
+    /**
+    * @method deleteLabourItem
+    * @description used to Reset form
+    */
+    deleteLabourItem = (index) => {
+        const { labourGrid } = this.state;
+
+        let tempData = labourGrid.filter((item, i) => {
+            if (i == index) {
+                return false;
+            }
+            return true;
+        });
+
+        this.setState({
+            labourGrid: tempData
+        })
+    }
+
+    calculateTotalLabourCost = () => {
+        const { labourGrid } = this.state;
+        let cost = 0;
+        labourGrid && labourGrid.map(item => {
+            cost = cost + item.LabourCost;
+        })
+        return cost;
+    }
+
+    handleProcessCalculation = () => {
+        const { fieldsObj } = this.props
+        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours != undefined ? fieldsObj.OutputPerHours : 0;
+        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear != undefined ? fieldsObj.OutputPerYear : 0;
+
+        this.props.change('OutputPerYear', OutputPerHours * 10)
+        this.props.change('MachineRate', 1000 / OutputPerYear)
     }
 
     processTableHandler = () => {
-        const { processName, UOM, processGrid, machineRate, } = this.state;
+        const { processName, UOM, processGrid, } = this.state;
+        const { fieldsObj } = this.props
+
+        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours != undefined ? fieldsObj.OutputPerHours : 0;
+        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear != undefined ? fieldsObj.OutputPerYear : 0;
+        const MachineRate = fieldsObj && fieldsObj.MachineRate != undefined ? fieldsObj.MachineRate : 0;
+
         const tempArray = [];
 
         tempArray.push(...processGrid, {
@@ -380,15 +663,20 @@ class AddMoreDetails extends Component {
             processNameId: processName.value,
             UOM: UOM.label,
             UOMId: UOM.value,
-            machineRate: machineRate,
+            OutputPerHours: OutputPerHours,
+            OutputPerYear: OutputPerYear,
+            MachineRate: MachineRate,
         })
 
         this.setState({
             processGrid: tempArray,
             processName: [],
             UOM: [],
-            machineRate: '',
-        }, () => this.props.change('MachineRate', ''));
+        }, () => {
+            this.props.change('OutputPerHours', '')
+            this.props.change('OutputPerYear', '')
+            this.props.change('MachineRate', '')
+        });
     }
 
     /**
@@ -396,7 +684,12 @@ class AddMoreDetails extends Component {
   * @description Used to handle updateProcessGrid
   */
     updateProcessGrid = () => {
-        const { processName, UOM, processGrid, machineRate, processGridEditIndex } = this.state;
+        const { processName, UOM, processGrid, processGridEditIndex } = this.state;
+        const { fieldsObj } = this.props
+
+        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours != undefined ? fieldsObj.OutputPerHours : 0;
+        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear != undefined ? fieldsObj.OutputPerYear : 0;
+        const MachineRate = fieldsObj && fieldsObj.MachineRate != undefined ? fieldsObj.MachineRate : 0;
         let tempArray = [];
 
         let tempData = processGrid[processGridEditIndex];
@@ -405,7 +698,9 @@ class AddMoreDetails extends Component {
             processNameId: processName.value,
             UOM: UOM.label,
             UOMId: UOM.value,
-            machineRate: machineRate,
+            OutputPerHours: OutputPerHours,
+            OutputPerYear: OutputPerYear,
+            MachineRate: MachineRate,
         }
 
         tempArray = Object.assign([...processGrid], { [processGridEditIndex]: tempData })
@@ -414,23 +709,29 @@ class AddMoreDetails extends Component {
             processGrid: tempArray,
             processName: [],
             UOM: [],
-            machineRate: '',
             processGridEditIndex: '',
             isEditIndex: false,
-        }, () => this.props.change('MachineRate', ''));
+        }, () => {
+            this.props.change('OutputPerHours', '')
+            this.props.change('OutputPerYear', '')
+            this.props.change('MachineRate', '')
+        });
     };
 
     /**
-  * @method resetProcessGridData
-  * @description Used to handle setTechnologyLevel
-  */
+    * @method resetProcessGridData
+    * @description Used to handle setTechnologyLevel
+    */
     resetProcessGridData = () => {
         this.setState({
             processName: [],
             UOM: [],
-            machineRate: '',
             processGridEditIndex: '',
             isEditIndex: false,
+        }, () => {
+            this.props.change('OutputPerHours', '')
+            this.props.change('OutputPerYear', '')
+            this.props.change('MachineRate', '')
         });
     };
 
@@ -447,7 +748,11 @@ class AddMoreDetails extends Component {
             isEditIndex: true,
             processName: { label: tempData.processName, value: tempData.processNameId },
             UOM: { label: tempData.UOM, value: tempData.UOMId },
-        }, () => this.props.change('MachineRate', tempData.machineRate))
+        }, () => {
+            this.props.change('OutputPerHours', tempData.OutputPerHours)
+            this.props.change('OutputPerYear', tempData.OutputPerYear)
+            this.props.change('MachineRate', tempData.MachineRate)
+        })
     }
 
     /**
@@ -469,6 +774,7 @@ class AddMoreDetails extends Component {
         })
     }
 
+
     handleCalculation = () => {
         const { fieldsObj } = this.props
         const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces != undefined ? fieldsObj.NumberOfPieces : 0;
@@ -476,16 +782,6 @@ class AddMoreDetails extends Component {
         const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
         this.props.change('NetLandedCost', NetLandedCost)
     }
-
-    /**
-    * @method handleChange
-    * @description Handle Effective Date
-    */
-    handleEffectiveDateChange = (date) => {
-        this.setState({
-            effectiveDate: date,
-        });
-    };
 
     formToggle = () => {
         this.setState({
@@ -901,6 +1197,84 @@ class AddMoreDetails extends Component {
                                                     title={'Working Hours:'}
                                                     customClass={'Personal-Details'} />
                                             </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    name="WorkingShift"
+                                                    type="text"
+                                                    label="No. Of Shifts"
+                                                    component={searchableSelect}
+                                                    placeholder={'--select--'}
+                                                    options={this.renderListing('ShiftType')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.shiftType == null || this.state.shiftType.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleShiftType}
+                                                    valueDescription={this.state.shiftType}
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Working Hr/Shift`}
+                                                    name={"WorkingHoursPerShift"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`No. Of Working days/Annum`}
+                                                    name={"NumberOfWorkingDaysPerYear"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label={`Efficiency (%)`}
+                                                    name={"EfficiencyPercentage"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="1">
+                                                <div
+                                                    onClick={this.efficiencyCalculationToggler}
+                                                    className={'plus-icon-square mt30 mr15 right'}>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`No. Of Working Hrs/Annum`}
+                                                    name={"NumberOfWorkingHoursPerYear"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
                                         </Row>
 
                                         <Row>
@@ -908,6 +1282,104 @@ class AddMoreDetails extends Component {
                                                 <HeaderTitle
                                                     title={'Depreciation:'}
                                                     customClass={'Personal-Details'} />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    name="DepreciationTypeId"
+                                                    type="text"
+                                                    label="Depreciation Type"
+                                                    component={searchableSelect}
+                                                    placeholder={'--select--'}
+                                                    options={this.renderListing('DepreciationType')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.depreciationType == null || this.state.depreciationType.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleDereciationType}
+                                                    valueDescription={this.state.depreciationType}
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Depreciation Rate (%)`}
+                                                    name={"DepreciationRatePercentage"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Life Of Assest (Years)`}
+                                                    name={"LifeOfAssetPerYear"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Cost Of Scrap (INR)`}
+                                                    name={"CastOfScrap"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <div className="form-group">
+                                                    <label>
+                                                        Date of Purchase
+                                                    <span className="asterisk-required">*</span>
+                                                    </label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name="DateOfPurchase"
+                                                            selected={this.state.DateOfPurchase}
+                                                            onChange={this.handleDateOfPurchase}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dateFormat="dd/MM/yyyy"
+                                                            //maxDate={new Date()}
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={'off'}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Depreciation Amount (INR)`}
+                                                    name={"DepreciationAmount"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
                                             </Col>
                                         </Row>
 
@@ -917,6 +1389,203 @@ class AddMoreDetails extends Component {
                                                     title={'Variable Cost:'}
                                                     customClass={'Personal-Details'} />
                                             </Col>
+                                            <Col md={`${this.state.IsAnnualMaintenanceFixed ? 2 : 3}`} className="switch mb15">
+                                                <label>Annual Maintenance</label>
+                                                <label className="switch-level">
+                                                    <div className={'left-title'}>Fixed</div>
+                                                    <Switch
+                                                        onChange={this.onPressAnnualMaintenance}
+                                                        checked={this.state.IsAnnualMaintenanceFixed}
+                                                        id="normal-switch"
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                    <div className={'right-title'}>%</div>
+                                                </label>
+                                            </Col>
+                                            {this.state.IsAnnualMaintenanceFixed &&
+                                                <Col md="1">
+                                                    <Field
+                                                        label={``}
+                                                        name={"AnnualMaintancePercentage"}
+                                                        type="text"
+                                                        placeholder={'Enter'}
+                                                        //validate={[required]}
+                                                        component={renderNumberInputField}
+                                                        //required={true}
+                                                        disabled={false}
+                                                        className=" mt5"
+                                                        customClassName="withBorder"
+                                                    />
+                                                </Col>}
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Annual Maintenance Amount (INR)`}
+                                                    name={"AnnualMaintanceAmount"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={this.state.IsAnnualMaintenanceFixed ? true : false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md={`${this.state.IsAnnualConsumableFixed ? 2 : 3}`} className="switch mb15">
+                                                <label>Annual Consumable</label>
+                                                <label className="switch-level">
+                                                    <div className={'left-title'}>Fixed</div>
+                                                    <Switch
+                                                        onChange={this.onPressAnnualConsumable}
+                                                        checked={this.state.IsAnnualConsumableFixed}
+                                                        id="normal-switch"
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                    <div className={'right-title'}>%</div>
+                                                </label>
+                                            </Col>
+                                            {this.state.IsAnnualConsumableFixed &&
+                                                <Col md="1">
+                                                    <Field
+                                                        label={``}
+                                                        name={"AnnualConsumablePercentage"}
+                                                        type="text"
+                                                        placeholder={'Enter'}
+                                                        //validate={[required]}
+                                                        component={renderNumberInputField}
+                                                        //required={true}
+                                                        disabled={false}
+                                                        className=" mt5"
+                                                        customClassName="withBorder"
+                                                    />
+                                                </Col>}
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Annual Consumable Amount (INR)`}
+                                                    name={"AnnualConsumableAmount"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={this.state.IsAnnualConsumableFixed ? true : false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+
+                                            <Col md={`${this.state.IsInsuranceFixed ? 2 : 3}`} className="switch mb15">
+                                                <label>Insurance</label>
+                                                <label className="switch-level">
+                                                    <div className={'left-title'}>Fixed</div>
+                                                    <Switch
+                                                        onChange={this.onPressInsurance}
+                                                        checked={this.state.IsInsuranceFixed}
+                                                        id="normal-switch"
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                    <div className={'right-title'}>%</div>
+                                                </label>
+                                            </Col>
+                                            {this.state.IsInsuranceFixed &&
+                                                <Col md="1">
+                                                    <Field
+                                                        label={``}
+                                                        name={"AnnualInsurancePercentage"}
+                                                        type="text"
+                                                        placeholder={'Enter'}
+                                                        //validate={[required]}
+                                                        component={renderNumberInputField}
+                                                        //required={true}
+                                                        disabled={false}
+                                                        className=" mt5"
+                                                        customClassName="withBorder"
+                                                    />
+                                                </Col>}
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Insurance Amount (INR)`}
+                                                    name={"AnnualInsuranceAmount"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={this.state.IsInsuranceFixed ? true : false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Building Cost/Sq Ft`}
+                                                    name={"BuildingCostPerSquareFeet"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Machine Floor Area (Sq Ft)`}
+                                                    name={"MachineFloorAreaPerSquareFeet"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Annual Area Cost (INR)`}
+                                                    name={"AnnualAreaCost"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Other Yearly Cost (INR)`}
+                                                    name={"OtherYearlyCost"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Total Machine Cost/Annum (INR)`}
+                                                    name={"TotalMachineCostPerAnnum"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
                                         </Row>
 
                                         <Row>
@@ -925,6 +1594,153 @@ class AddMoreDetails extends Component {
                                                     title={'Power:'}
                                                     customClass={'Personal-Details'} />
                                             </Col>
+                                            <Col md={`3`} className="switch mb15">
+                                                <label>Uses Fuel</label>
+                                                <label className="switch-level">
+                                                    <div className={'left-title'}>No</div>
+                                                    <Switch
+                                                        onChange={this.onPressUsesFuel}
+                                                        checked={this.state.IsUsesFuel}
+                                                        id="normal-switch"
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                    <div className={'right-title'}>Yes</div>
+                                                </label>
+                                            </Col>
+                                            {this.state.IsUsesFuel &&
+                                                <>
+                                                    <Col md="3">
+                                                        <Field
+                                                            name="FuelTypeId"
+                                                            type="text"
+                                                            label="Fuel"
+                                                            component={searchableSelect}
+                                                            placeholder={'--select--'}
+                                                            options={this.renderListing('FuelSelectList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.fuelType == null || this.state.fuelType.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleFuelType}
+                                                            valueDescription={this.state.fuelType}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label={`Fuel Cost/UOM`}
+                                                            name={"FuelCostPerUnit"}
+                                                            type="text"
+                                                            placeholder={'Enter'}
+                                                            //validate={[required]}
+                                                            component={renderNumberInputField}
+                                                            //required={true}
+                                                            disabled={true}
+                                                            className=" "
+                                                            customClassName="withBorder"
+                                                        />
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label={`Consumption/Annum`}
+                                                            name={"ConsumptionPerYear"}
+                                                            type="text"
+                                                            placeholder={'Enter'}
+                                                            //validate={[required]}
+                                                            component={renderNumberInputField}
+                                                            //required={true}
+                                                            disabled={false}
+                                                            className=" "
+                                                            customClassName="withBorder"
+                                                        />
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label={`Total Power Cost/Annum (INR)`}
+                                                            name={"TotalFuelCostPerYear"}
+                                                            type="text"
+                                                            placeholder={'Enter'}
+                                                            //validate={[required]}
+                                                            component={renderNumberInputField}
+                                                            //required={true}
+                                                            disabled={true}
+                                                            className=" "
+                                                            customClassName="withBorder"
+                                                        />
+                                                    </Col>
+                                                </>}
+
+                                            {!this.state.IsUsesFuel &&
+                                                <>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label={`Utilization (%)`}
+                                                            name={"UtilizationFactorPercentage"}
+                                                            type="text"
+                                                            placeholder={'Enter'}
+                                                            //validate={[required]}
+                                                            component={renderNumberInputField}
+                                                            //required={true}
+                                                            disabled={false}
+                                                            className=" "
+                                                            customClassName="withBorder"
+                                                        />
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label={`Power Rating (Kw)`}
+                                                            name={"PowerRatingPerKW"}
+                                                            type="text"
+                                                            placeholder={'Enter'}
+                                                            //validate={[required]}
+                                                            component={renderNumberInputField}
+                                                            //required={true}
+                                                            disabled={false}
+                                                            className=" "
+                                                            customClassName="withBorder"
+                                                        />
+                                                    </Col>
+                                                    <Col md={`3`} className="switch mb15">
+                                                        <label>Uses Solar Power</label>
+                                                        <label className="switch-level">
+                                                            <div className={'left-title'}>No</div>
+                                                            <Switch
+                                                                onChange={this.onPressUsesSolarPower}
+                                                                checked={this.state.IsUsesSolarPower}
+                                                                id="normal-switch"
+                                                                disabled={isEditFlag ? true : false}
+                                                            />
+                                                            <div className={'right-title'}>Yes</div>
+                                                        </label>
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label={`Cost/Unit`}
+                                                            name={"PowerCostPerUnit"}
+                                                            type="text"
+                                                            placeholder={'Enter'}
+                                                            //validate={[required]}
+                                                            component={renderNumberInputField}
+                                                            //required={true}
+                                                            disabled={true}
+                                                            className=" "
+                                                            customClassName="withBorder"
+                                                        />
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label={`Total Power Cost/Annum (INR)`}
+                                                            name={"TotalPowerCostPerYear"}
+                                                            type="text"
+                                                            placeholder={'Enter'}
+                                                            //validate={[required]}
+                                                            component={renderNumberInputField}
+                                                            //required={true}
+                                                            disabled={true}
+                                                            className=" "
+                                                            customClassName="withBorder"
+                                                        />
+                                                    </Col>
+                                                </>}
                                         </Row>
 
                                         <Row>
@@ -932,6 +1748,129 @@ class AddMoreDetails extends Component {
                                                 <HeaderTitle
                                                     title={'Labour:'}
                                                     customClass={'Personal-Details'} />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    name="LabourTypeIds"
+                                                    type="text"
+                                                    label="Labour Type"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select Labour'}
+                                                    options={this.renderListing('labourList')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.labourHandler}
+                                                    valueDescription={this.state.labourType}
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label={`Cost/Annum (INR)`}
+                                                    name={"LabourCostPerAnnum"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //onChange={this.handleLabourCalculation}
+                                                    //required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label={`No. Of People`}
+                                                    name={"NumberOfLabour"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //onChange={this.handleLabourCalculation}
+                                                    //required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label={`Total Cost (INR)`}
+                                                    name={"LabourCost"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                {this.state.isEditLabourIndex ?
+                                                    <>
+                                                        <button
+                                                            type="button"
+                                                            className={'btn btn-primary mt30 pull-left mr5'}
+                                                            onClick={this.updateLabourGrid}
+                                                        >Update</button>
+
+                                                        <button
+                                                            type="button"
+                                                            className={'cancel-btn mt30 pull-left'}
+                                                            onClick={this.resetLabourGridData}
+                                                        >Cancel</button>
+                                                    </>
+                                                    :
+                                                    <button
+                                                        type="button"
+                                                        className={'user-btn mt30 pull-left'}
+                                                        onClick={this.labourTableHandler}>
+                                                        <div className={'plus'}></div>ADD</button>}
+                                            </Col>
+                                            <Col md="12">
+                                                <Table className="table" size="sm" >
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{`Labour Type`}</th>
+                                                            <th>{`Cost/Annum (INR)`}</th>
+                                                            <th>{`No. Of People`}</th>
+                                                            <th>{`Total Cost (INR)`}</th>
+                                                            <th>{`Action`}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody >
+                                                        {
+                                                            this.state.labourGrid &&
+                                                            this.state.labourGrid.map((item, index) => {
+                                                                return (
+                                                                    <tr key={index}>
+                                                                        <td>{item.labourTypeName}</td>
+                                                                        <td>{item.LabourCostPerAnnum}</td>
+                                                                        <td>{item.NumberOfLabour}</td>
+                                                                        <td>{item.LabourCost}</td>
+                                                                        <td>
+                                                                            <button className="Edit mr5" type={'button'} onClick={() => this.editLabourItemDetails(index)} />
+                                                                            <button className="Delete" type={'button'} onClick={() => this.deleteLabourItem(index)} />
+                                                                        </td>
+                                                                    </tr>
+                                                                )
+                                                            })
+                                                        }
+                                                        {this.state.labourGrid.length > 0 &&
+                                                            <tr>
+                                                                <td>{''}</td>
+                                                                <td>{''}</td>
+                                                                <td>{'Total Labour Cost/Annum (INR):'}</td>
+                                                                <td>{this.calculateTotalLabourCost()}</td>
+                                                                <td>{''}</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                    {this.state.labourGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                                </Table>
                                             </Col>
                                         </Row>
 
@@ -963,7 +1902,7 @@ class AddMoreDetails extends Component {
                                                     className={'plus-icon-square mt30 mr15 right'}>
                                                 </div>
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="2">
                                                 <Field
                                                     name="UOM"
                                                     type="text"
@@ -979,9 +1918,37 @@ class AddMoreDetails extends Component {
                                                     disabled={isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="1">
                                                 <Field
-                                                    label={`Machine Rate (INR)`}
+                                                    label={`Output/Hr`}
+                                                    name={"OutputPerHours"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="1">
+                                                <Field
+                                                    label={`Output/Yr`}
+                                                    name={"OutputPerYear"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderNumberInputField}
+                                                    //required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="2">
+                                                <Field
+                                                    label={`Machine Rate/Hr (INR)`}
                                                     name={"MachineRate"}
                                                     type="text"
                                                     placeholder={'Enter'}
@@ -989,7 +1956,7 @@ class AddMoreDetails extends Component {
                                                     component={renderNumberInputField}
                                                     onChange={this.handleMachineRate}
                                                     //required={true}
-                                                    disabled={false}
+                                                    disabled={true}
                                                     className=" "
                                                     customClassName=" withBorder"
                                                 />
@@ -1026,7 +1993,9 @@ class AddMoreDetails extends Component {
                                                         <tr>
                                                             <th>{`Process Name`}</th>
                                                             <th>{`UOM`}</th>
-                                                            <th>{`Machine Rate (INR)`}</th>
+                                                            <th>{`Output/Hr`}</th>
+                                                            <th>{`Output/Annum`}</th>
+                                                            <th>{`Machine Rate/Hr (INR)`}</th>
                                                             <th>{`Action`}</th>
                                                         </tr>
                                                     </thead>
@@ -1038,7 +2007,9 @@ class AddMoreDetails extends Component {
                                                                     <tr key={index}>
                                                                         <td>{item.processName}</td>
                                                                         <td>{item.UOM}</td>
-                                                                        <td>{item.machineRate}</td>
+                                                                        <td>{item.OutputPerHours}</td>
+                                                                        <td>{item.OutputPerYear}</td>
+                                                                        <td>{item.MachineRate}</td>
                                                                         <td>
                                                                             <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
                                                                             <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
@@ -1101,9 +2072,11 @@ class AddMoreDetails extends Component {
 */
 function mapStateToProps(state) {
     const { comman, material, machine, } = state;
-    const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
+    const fieldsObj = selector(state, 'LabourCostPerAnnum', 'NumberOfLabour', 'LabourCost', 'OutputPerHours',
+        'OutputPerYear', 'MachineRate');
 
-    const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
+    const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
+        ShiftTypeSelectList, DepreciationTypeSelectList, labourTypeSelectList, } = comman;
     const { machineTypeSelectList, processSelectList } = machine;
     const { vendorListByVendorType } = material;
 
@@ -1123,7 +2096,8 @@ function mapStateToProps(state) {
 
     return {
         vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
-        machineTypeSelectList, processSelectList, fieldsObj, initialValues,
+        machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
+        labourTypeSelectList, fieldsObj, initialValues,
     }
 
 }
@@ -1142,6 +2116,9 @@ export default connect(mapStateToProps, {
     getUOMSelectList,
     getMachineTypeSelectList,
     getProcessesSelectList,
+    getShiftTypeSelectList,
+    getDepreciationTypeSelectList,
+    getLabourTypeSelectList,
 })(reduxForm({
     form: 'AddMoreDetails',
     enableReinitialize: true,

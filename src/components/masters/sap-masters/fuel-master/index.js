@@ -1,102 +1,59 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
-import AddFuelDetail from './AddFuelDetail';
-import AddFuel from './AddFuel';
-import FuelDetail from './FuelDetail';
-import FuelTypeDetail from './FuelTypeDetail';
-import { getFuelAPI, getFuelDetailAPI } from '../../../../actions/master/Fuel';
+import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import classnames from 'classnames';
+
+import { getRowMaterialDataAPI } from '../../../../actions/master/Material';
+import AddFuel from './AddFuel';
+import AddPower from './AddPower';
+import FuelListing from './FuelListing';
+import PowerListing from './PowerListing';
 
 class FuelMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
-            isOpenModel: false,
+            Id: '',
             activeTab: '1',
-            isEditFlag: false,
-            fuelId: '',
+
+            isFuelForm: false,
+            isPowerForm: false,
+            data: {},
         }
     }
 
     /**
-    * @method componentDidMount
-    * @description called after render the component
+    * @method toggle
+    * @description toggling the tabs
     */
-    componentDidMount() {
-        this.props.getFuelDetailAPI(res => { });
-    }
-
-    /**
-   * @method toggle
-   * @description toggling the tabs
-   */
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
                 activeTab: tab
             });
         }
-        this.props.getFuelDetailAPI(res => { });
-        this.props.getFuelAPI(res => { });
     }
 
-    /**
-     * @method openModel
-     * @description  used to open filter form 
-     */
-    openModel = () => {
-        this.setState({
-            isOpen: true,
-            isEditFlag: false,
-        })
+    displayFuelForm = () => {
+        this.setState({ isFuelForm: true, })
     }
 
-    /**
-    * @method openFuelModel
-    * @description  used to open fuel form 
-    */
-    openFuelModel = () => {
-        this.setState({ isOpenModel: true })
+    displayPowerForm = () => {
+        this.setState({ isPowerForm: true, })
     }
 
-    /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = () => {
-        this.setState({
-            isOpen: false,
-            isOpenModel: false
-        }, () => {
-            this.props.getFuelDetailAPI(res => { });
-        })
+    hideForm = () => {
+        this.setState({ isFuelForm: false, isPowerForm: false, data: {} })
     }
 
-    /**
-    * @method editFuelDetails
-    * @description  used to edit fuel details
-    */
-    editFuelDetails = (editFlag, isModelOpen, FuelId) => {
-        this.setState({
-            isEditFlag: editFlag,
-            isOpenModel: isModelOpen,
-            fuelId: FuelId,
-        })
+    getDetails = (data) => {
+        this.setState({ isFuelForm: true, data: data })
     }
 
-    /**
-    * @method editFuelTypeDetails
-    * @description  used to edit fuel type details
-    */
-    editFuelTypeDetails = (editFlag, isModelOpen, FuelId) => {
-        this.setState({
-            isEditFlag: editFlag,
-            isOpen: isModelOpen,
-            fuelId: FuelId,
-        })
+    getDetailsPower = (data) => {
+        this.setState({ isPowerForm: true, data: data })
     }
 
     /**
@@ -104,66 +61,70 @@ class FuelMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isOpenModel, fuelId, isEditFlag } = this.state;
+        const { isFuelForm, isPowerForm, data } = this.state;
+
+        if (isFuelForm === true) {
+            return <AddFuel
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
+        if (isPowerForm === true) {
+            return <AddPower
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
         return (
-            <Container className="top-margin">
+            <Container>
+                {/* {this.props.loading && <Loader/>} */}
                 <Row>
-                    <Col md="3">
-                        <h3>Fuel Master </h3>
-                    </Col>
-                    <Col md="3">
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.FUEL}`}</Button>
-                    </Col>
-                    <Col md="3">
-                        <Button onClick={this.openFuelModel}>{`${CONSTANT.ADD} ${CONSTANT.FUEL} ${CONSTANT.DETAILS}`}</Button>
+                    <Col sm="4">
+                        <h3>{`Fuel & Power Master`}</h3>
                     </Col>
                 </Row>
-                {/* <hr /> */}
+
                 <Row>
                     <Col>
-                        <Nav tabs className="subtabs">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Fuel Type
+                        <div>
+                            <Nav tabs className="subtabs">
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Manage Fuel
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Fuel Details
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        Manage Power
                                 </NavLink>
-                            </NavItem>
-                        </Nav>
-                        <TabContent activeTab={this.state.activeTab}>
-                            <TabPane tabId="1">
-                                <FuelTypeDetail
-                                    editFuelTypeDetails={this.editFuelTypeDetails}
-                                    toggle={this.toggle} />
-                            </TabPane>
-                            <TabPane tabId="2">
-                                <FuelDetail
-                                    editFuelDetails={this.editFuelDetails}
-                                    toggle={this.toggle} />
-                            </TabPane>
+                                </NavItem>
 
-                        </TabContent>
+                            </Nav>
+
+                            <TabContent activeTab={this.state.activeTab}>
+
+                                {this.state.activeTab == 1 &&
+                                    <TabPane tabId="1">
+                                        <FuelListing
+                                            formToggle={this.displayFuelForm}
+                                            getDetails={this.getDetails}
+                                        />
+                                    </TabPane>}
+
+                                {this.state.activeTab == 2 &&
+                                    <TabPane tabId="2">
+                                        <PowerListing
+                                            formToggle={this.displayPowerForm}
+                                            getDetails={this.getDetailsPower}
+                                        />
+                                    </TabPane>}
+
+                            </TabContent>
+                        </div>
                     </Col>
                 </Row>
-                {isOpen && (
-                    <AddFuel
-                        isOpen={isOpen}
-                        onCancel={this.onCancel}
-                        fuelId={fuelId}
-                        isEditFlag={isEditFlag}
-                    />
-                )}
-                {isOpenModel && (
-                    <AddFuelDetail
-                        isOpen={isOpenModel}
-                        onCancel={this.onCancel}
-                        fuelId={fuelId}
-                        isEditFlag={isEditFlag}
-                    />
-                )}
 
             </Container >
         );
@@ -175,13 +136,14 @@ class FuelMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ fuel }) {
-    const { fuelDataList } = fuel;
-    return { fuelDataList }
+function mapStateToProps({ }) {
+    // const { partsListing ,loading } = part;
+    // console.log('partsListing: ', partsListing);
+    // return { partsListing, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getFuelAPI, getFuelDetailAPI }
+    mapStateToProps, { getRowMaterialDataAPI }
 )(FuelMaster);
 

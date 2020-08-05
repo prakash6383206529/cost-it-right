@@ -12,6 +12,8 @@ import classnames from 'classnames';
 
 import { getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import AddRMImport from './AddRMImport';
+import RMDomesticListing from './RMDomesticListing';
+import RMImportListing from './RMImportListing';
 
 class RowMaterialMaster extends Component {
     constructor(props) {
@@ -21,7 +23,11 @@ class RowMaterialMaster extends Component {
             isOpen: false,
             isEditFlag: false,
             Id: '',
-            activeTab: '1'
+            activeTab: '1',
+
+            isRMDomesticForm: false,
+            isRMImportForm: false,
+            data: {},
         }
     }
 
@@ -37,19 +43,24 @@ class RowMaterialMaster extends Component {
         }
     }
 
-    /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = (tab) => {
-        this.setState({
-            activeTab: tab,
-            isOpen: false,
-            isRMOpen: false,
-            isEditFlag: false,
-        }, () => {
-            this.props.getRowMaterialDataAPI(res => { });
-        })
+    displayDomesticForm = () => {
+        this.setState({ isRMDomesticForm: true, })
+    }
+
+    displayImportForm = () => {
+        this.setState({ isRMImportForm: true, })
+    }
+
+    hideForm = () => {
+        this.setState({ isRMDomesticForm: false, isRMImportForm: false, data: {} })
+    }
+
+    getDetails = (data) => {
+        this.setState({ isRMDomesticForm: true, data: data })
+    }
+
+    getDetailsImport = (data) => {
+        this.setState({ isRMImportForm: true, data: data })
     }
 
     /**
@@ -57,7 +68,22 @@ class RowMaterialMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpenMaterialType, isRMOpen, isOpen, isCategory, isGrade, isSpecification } = this.state;
+        const { isRMDomesticForm, isRMImportForm, data } = this.state;
+
+        if (isRMDomesticForm === true) {
+            return <AddRMDomestic
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
+        if (isRMImportForm === true) {
+            return <AddRMImport
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
         return (
             <Container>
                 {/* {this.props.loading && <Loader/>} */}
@@ -97,34 +123,28 @@ class RowMaterialMaster extends Component {
 
                                 {this.state.activeTab == 1 &&
                                     <TabPane tabId="1">
-                                        <AddRMDomestic
-                                            isOpen={isRMOpen}
-                                            onCancel={this.onCancel}
-                                            RawMaterialDetailsId={this.state.Id}
-                                            isEditFlag={this.state.isEditFlag}
+                                        <RMDomesticListing
+                                            formToggle={this.displayDomesticForm}
+                                            getDetails={this.getDetails}
                                         />
                                     </TabPane>}
 
                                 {this.state.activeTab == 2 &&
                                     <TabPane tabId="2">
-                                        <AddRMImport
-                                            isOpen={isRMOpen}
-                                            onCancel={this.onCancel}
-                                            RawMaterialDetailsId={this.state.Id}
-                                            isEditFlag={this.state.isEditFlag}
+                                        <RMImportListing
+                                            formToggle={this.displayImportForm}
+                                            getDetails={this.getDetailsImport}
                                         />
                                     </TabPane>}
 
                                 {this.state.activeTab == 3 &&
                                     <TabPane tabId="3">
-                                        <SpecificationListing
-                                            toggle={this.toggle} />
+                                        <SpecificationListing />
                                     </TabPane>}
 
                                 {this.state.activeTab == 4 &&
                                     <TabPane tabId="4">
-                                        <RMListing
-                                            toggle={this.toggle} />
+                                        <RMListing />
                                     </TabPane>}
 
                             </TabContent>

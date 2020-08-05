@@ -11,7 +11,7 @@ import {
     createMHRMasterAPI, getLabourDetailsSelectListByMachine, getDepreciationDataAPI, getMHRDataAPI,
     updateMHRAPI, getSupplierType,
 } from '../../../../actions/master/MHRMaster';
-import { getMachineTypeSelectList, getDepreciationSelectList, fetchFuelComboAPI, getShiftTypeSelectList } from '../../../../actions/master/Comman';
+import { getMachineTypeSelectList, getDepreciationSelectList, getShiftTypeSelectList } from '../../../../actions/master/Comman';
 import { getMachineDataAPI } from '../../../../actions/master/MachineMaster';
 import { getFuelDetailAPI } from '../../../../actions/master/Fuel';
 import { getPowerDataListAPI, getPowerDataAPI } from '../../../../actions/master/PowerMaster';
@@ -47,7 +47,6 @@ class AddMHR extends Component {
         this.props.getMHRMasterComboData(() => { });
         this.props.getMachineTypeSelectList(() => { })
         this.props.getDepreciationSelectList(() => { })
-        this.props.fetchFuelComboAPI(() => { })
         this.props.getShiftTypeSelectList(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getFuelDetailAPI(() => { })
@@ -1457,7 +1456,6 @@ export default connect(mapStateToProps, {
     getLabourDetailsSelectListByMachine,
     getMachineDataAPI,
     getDepreciationSelectList,
-    fetchFuelComboAPI,
     getShiftTypeSelectList,
     getUOMSelectList,
     getDepreciationDataAPI,

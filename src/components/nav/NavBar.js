@@ -121,7 +121,7 @@ class SideBar extends Component {
         if (el.ModuleName == module) {
           return (
             <a className="nav-link active" href="/">
-              <img className="" src={require('../../assests/images/sydney-opera-house.svg')} alt='sydney-opera-house' />
+              <img className="" src={require('../../assests/images/sydney-opera-house.svg')} alt='Home' />
               <span>{module}</span>
             </a>
           )

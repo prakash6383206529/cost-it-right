@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, Label } from 'reactstrap';
 import { required, checkForNull, maxLength100 } from "../../../../helper/validation";
 import {
     renderText, renderSelectField, renderNumberInputField, searchableSelect,
@@ -10,6 +10,7 @@ import {
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType } from '../../../../actions/master/Material';
 import { createProfit, updateProfit, getProfitData, } from '../../../../actions/master/OverheadProfit';
+import { getClientSelectList, } from '../../../../actions/master/Client';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -28,6 +29,7 @@ class AddProfit extends Component {
         this.child = React.createRef();
         this.state = {
             ProfitID: '',
+            costingHead: 'zero',
             isShowForm: false,
             isEditFlag: false,
             IsVendor: false,
@@ -54,15 +56,17 @@ class AddProfit extends Component {
         this.props.fetchModelTypeAPI('--Model Types--', res => { });
         this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
         this.props.getVendorListByVendorType(false, () => { })
+        this.props.getClientSelectList(() => { })
     }
 
     /**
     * @method onPressVendor
     * @description Used for Vendor checked
     */
-    onPressVendor = () => {
+    onPressVendor = (vendorFlag, costingHeadFlag) => {
         this.setState({
-            IsVendor: !this.state.IsVendor,
+            IsVendor: vendorFlag,
+            costingHead: costingHeadFlag,
             vendorName: [],
         }, () => {
             const { IsVendor } = this.state;
@@ -145,7 +149,7 @@ class AddProfit extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { vendorListByVendorType, modelTypes, costingHead } = this.props;
+        const { vendorListByVendorType, modelTypes, costingHead, clientSelectList } = this.props;
         const temp = [];
 
         if (label === 'ModelType') {
@@ -166,6 +170,14 @@ class AddProfit extends Component {
 
         if (label === 'VendorNameList') {
             vendorListByVendorType && vendorListByVendorType.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'ClientList') {
+            clientSelectList && clientSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -344,7 +356,7 @@ class AddProfit extends Component {
     */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { isRM, isCC, isBOP, isOverheadPercent, files, errors, isEditFlag, } = this.state;
+        const { isRM, isCC, isBOP, isOverheadPercent, files, errors, isEditFlag, costingHead, } = this.state;
 
         const previewStyle = {
             display: 'inline',
@@ -373,7 +385,7 @@ class AddProfit extends Component {
                                             onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                         >
                                             <Row>
-                                                <Col md="4" className="switch mb15">
+                                                {/* <Col md="4" className="switch mb15">
                                                     <label>
                                                         <div className={'left-title'}>Zero Based</div>
                                                         <Switch
@@ -384,15 +396,44 @@ class AddProfit extends Component {
                                                         />
                                                         <div className={'right-title'}>Vendor Based</div>
                                                     </label>
+                                                </Col> */}
+                                                <Col md="12">
+                                                    <Label sm={2} className={'pl0 pr0'} check>
+                                                        <input
+                                                            type="radio"
+                                                            name="costingHead"
+                                                            checked={costingHead == 'zero' ? true : false}
+                                                            onClick={() => this.onPressVendor(false, 'zero')}
+                                                        />{' '}
+                                                        Zero Based
+                                                    </Label>
+                                                    <Label sm={2} className={'pl0 pr0'} check>
+                                                        <input
+                                                            type="radio"
+                                                            name="costingHead"
+                                                            checked={costingHead == 'vendor' ? true : false}
+                                                            onClick={() => this.onPressVendor(true, 'vendor')}
+                                                        />{' '}
+                                                        Vendor Based
+                                                    </Label>
+                                                    <Label sm={2} className={'pl0 pr0'} check>
+                                                        <input
+                                                            type="radio"
+                                                            name="costingHead"
+                                                            checked={costingHead == 'client' ? true : false}
+                                                            onClick={() => this.onPressVendor(true, 'client')}
+                                                        />{' '}
+                                                        Client Based
+                                                    </Label>
                                                 </Col>
                                             </Row>
                                             <Row>
-                                                {this.state.IsVendor &&
+                                                {this.state.IsVendor && costingHead == 'vendor' &&
                                                     <Col md="3">
                                                         <Field
                                                             name="vendorName"
                                                             type="text"
-                                                            label="Vendor Name"
+                                                            label={'Vendor Name'}
                                                             component={searchableSelect}
                                                             placeholder={'---Select---'}
                                                             options={this.renderListing('VendorNameList')}
@@ -401,6 +442,23 @@ class AddProfit extends Component {
                                                             required={true}
                                                             handleChangeDescription={this.handleVendorName}
                                                             valueDescription={this.state.vendorName}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </Col>}
+                                                {this.state.IsVendor && costingHead == 'client' &&
+                                                    <Col md="3">
+                                                        <Field
+                                                            name="clientName"
+                                                            type="text"
+                                                            label={'Client Name'}
+                                                            component={searchableSelect}
+                                                            placeholder={'---Select---'}
+                                                            options={this.renderListing('ClientList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.client == null || this.state.client.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleClient}
+                                                            valueDescription={this.state.client}
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>}
@@ -569,11 +627,11 @@ class AddProfit extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, overheadProfit, } = state;
+    const { comman, material, overheadProfit, client, } = state;
 
     const { modelTypes, costingHead, } = comman;
     const { overheadProfitData, } = overheadProfit;
-
+    const { clientSelectList } = client;
     const { vendorListByVendorType } = material;
 
     let initialValues = {};
@@ -587,7 +645,10 @@ function mapStateToProps(state) {
         }
     }
 
-    return { modelTypes, costingHead, vendorListByVendorType, overheadProfitData, initialValues, }
+    return {
+        modelTypes, costingHead, vendorListByVendorType, overheadProfitData, clientSelectList,
+        initialValues,
+    }
 
 }
 
@@ -601,6 +662,7 @@ export default connect(mapStateToProps, {
     fetchModelTypeAPI,
     fetchCostingHeadsAPI,
     getVendorListByVendorType,
+    getClientSelectList,
     createProfit,
     updateProfit,
     getProfitData,

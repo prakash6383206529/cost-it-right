@@ -30,7 +30,7 @@ class AssemblyPartListing extends Component {
 
     componentDidMount() {
         this.getTableListData();
-        this.props.onRef(this)
+        //this.props.onRef(this)
     }
 
     // Get updated user list after any action performed.
@@ -229,6 +229,10 @@ class AssemblyPartListing extends Component {
         this.props.formToggle()
     }
 
+    displayForm = () => {
+        this.props.displayForm()
+    }
+
 	/**
 	* @name onSubmit
 	* @param values
@@ -302,13 +306,13 @@ class AssemblyPartListing extends Component {
                         <Col md="4" className="search-user-block mb-30">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD BOM</button>
-                                    }
+
+                                    <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.displayForm}>
+                                        <div className={'plus'}></div>ADD BOM</button>
+
                                 </div>
                             </div>
                         </Col>
