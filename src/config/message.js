@@ -6,7 +6,7 @@ export const MESSAGES = {
   UPDATE_PASSWORD_SUCCESS: 'Your password has been successfully updated.',
   NOT_VERIFIED_USER: 'Your account is pending for verification. Please verify your account for login.',
 
-  //MASTERS
+  //PART MASTERS
   PART_ADD_SUCCESS: 'Part added successfully.',
   PART_DELETE_SUCCESS: 'Part has been deleted.',
   UPDATE_PART_SUCESS: 'Part updated successfully',

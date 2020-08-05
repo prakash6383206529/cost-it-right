@@ -260,9 +260,9 @@ class AssemblyPartListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
                         <Col md="8" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                {/* <div className="flex-fill">
+                                <div className="flex-fill">
                                     <Field
                                         name="CountryId"
                                         type="text"
@@ -276,7 +276,7 @@ class AssemblyPartListing extends Component {
                                         handleChangeDescription={this.countryHandler}
                                         valueDescription={this.state.country}
                                     />
-                                </div> */}
+                                </div>
 
                                 <div className="flex-fill">
                                     <button
@@ -297,9 +297,9 @@ class AssemblyPartListing extends Component {
                                         {'Apply'}
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
                         </Col>
-                        <Col md="4" className="search-user-block">
+                        <Col md="4" className="search-user-block mb-30">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {!this.props.isShowForm &&
@@ -307,7 +307,7 @@ class AssemblyPartListing extends Component {
                                             type="button"
                                             className={'user-btn'}
                                             onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>
+                                            <div className={'plus'}></div>ADD BOM</button>
                                     }
                                 </div>
                             </div>
@@ -328,7 +328,19 @@ class AssemblyPartListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Sr. No." width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >BOM NO.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Plant</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width={100}>No. of Child Parts</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >BOM Level Count</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Effective Date</TableHeaderColumn>
+                    <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
+                    <TableHeaderColumn dataField="" >Visual Aid</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 

@@ -99,6 +99,13 @@ export const API = {
   getNewPartsDataAPI: `${BASE_URL}/masters-part/get-part`,
   updateNewPartsAPI: `${BASE_URL}/masters-part/update-part`,
 
+  //PART MASTER INDIVISUAL COMPONENT
+  createPart: `${BASE_URL}/masters-part/create-component-part`,
+  updatePart: `${BASE_URL}/masters-part/update-component-part`,
+  deletePart: `${BASE_URL}/masters-part/delete-component-part`,
+  getPartData: `${BASE_URL}/masters-part/get-component-part`,
+  getPartDataList: `${BASE_URL}/masters-part/get-all-component-part`,
+
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
   createNewBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-new-bill-of-material`,
