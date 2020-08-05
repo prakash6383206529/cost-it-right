@@ -278,7 +278,7 @@ class AddZBCPlant extends Component {
         const { isEditFlag } = this.state;
         return (
             <>
-                <Container>
+                <Container fluid>
                     <div className="login-container signup-form">
 
                         <Row>
@@ -462,14 +462,15 @@ class AddZBCPlant extends Component {
                                                     <button
                                                         type="submit"
                                                         className="submit-button mr5 save-btn" >
-                                                        {isEditFlag ? 'Update' : 'Save'}
+                                                        <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                        </div> {isEditFlag ? 'Update' : 'Save'}
                                                     </button>
 
                                                     <button
                                                         type={'button'}
                                                         className="reset mr15 cancel-btn"
                                                         onClick={this.cancel} >
-                                                        {'Cancel'}
+                                                       <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
                                                     </button>
                                                 </div>
                                             </Row>

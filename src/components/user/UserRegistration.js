@@ -455,7 +455,7 @@ class UserRegistration extends Component {
       return actions && actions.map((item, index) => {
         if (el.Text != item.ActionName) return false;
         return (
-          <td>
+          <td className="text-center"> 
             {/* {<input
                      type="checkbox"
                      value={item.ActionId}
@@ -1102,7 +1102,7 @@ class UserRegistration extends Component {
                       </div>
                     </div>
                     {this.state.isEditFlag && <div className="col-md-6">
-                      <a href="javascript:void(0)" className={'linkButton btn-primary'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</a>
+                      <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
                     </div>}
                   </div>
                   <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser">
@@ -1117,7 +1117,7 @@ class UserRegistration extends Component {
                           label="First Name"
                           name={"FirstName"}
                           type="text"
-                          placeholder={''}
+                          placeholder={'Enter'}
                           validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
                           component={renderText}
                           required={true}
@@ -1142,7 +1142,7 @@ class UserRegistration extends Component {
                           label="Last Name"
                           name={"LastName"}
                           type="text"
-                          placeholder={''}
+                          placeholder={'Enter'}
                           validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
                           component={renderText}
                           required={true}
@@ -1155,7 +1155,7 @@ class UserRegistration extends Component {
                           name="Mobile"
                           label="Mobile"
                           type="text"
-                          placeholder={''}
+                          placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
                           validate={[required, number, minLength7]}
@@ -1171,7 +1171,7 @@ class UserRegistration extends Component {
                               label="Phone Number"
                               name={"PhoneNumber"}
                               type="text"
-                              placeholder={''}
+                              placeholder={'Enter'}
                               validate={[number]}
                               component={renderText}
                               //required={true}
@@ -1279,7 +1279,7 @@ class UserRegistration extends Component {
                           label="Address 1"
                           name={"AddressLine1"}
                           type="text"
-                          placeholder={''}
+                          placeholder={'Enter'}
                           validate={[required]}
                           component={renderText}
                           required={true}
@@ -1292,7 +1292,7 @@ class UserRegistration extends Component {
                           label="Address 2"
                           name={"AddressLine2"}
                           type="text"
-                          placeholder={''}
+                          placeholder={'Enter'}
                           validate={[required]}
                           component={renderText}
                           required={true}
@@ -1320,7 +1320,7 @@ class UserRegistration extends Component {
                           label="ZipCode"
                           name={"ZipCode"}
                           type="text"
-                          placeholder={''}
+                          placeholder={'Enter'}
                           validate={[required, number]}
                           component={renderText}
                           required={true}
@@ -1400,7 +1400,7 @@ class UserRegistration extends Component {
                     {this.state.IsShowAdditionalPermission &&
                       <div className=" row form-group grant-user-grid">
                         <div className="col-md-12">
-                          <Table className="table table-bordered" size="sm" >
+                          <Table className="table table-bordered " size="sm" >
                             <thead>
                               <tr>
                                 <th>{`Module Name`}</th>

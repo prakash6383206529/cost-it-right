@@ -128,9 +128,9 @@ class AddCategory extends Component {
                                     </Col>
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-center ">
-                                            <input
+                                    <div className="col-md-12 bluefooter-butn">
+                                        <div className=" ">
+                                            {/* <input
                                                 //disabled={pristine || submitting}
                                                 onClick={this.cancel}
                                                 type="button"
@@ -142,7 +142,22 @@ class AddCategory extends Component {
                                                 type="submit"
                                                 value={isEditFlag ? 'Update' : 'Save'}
                                                 className="submit-button mr5 save-btn"
-                                            />
+                                            /> */}
+                                            <button
+                        onClick={this.cancel}
+                        type="submit"
+                        value="CANCEL"
+                        className="reset mr15 cancel-btn">
+
+                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>CANCEL</button>
+                      <button
+                        type="submit"
+                        // disabled={isSubmitted ? true : false}
+                        className="btn-primary save-btn"
+                      >	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                        </div>
+                        {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
+                      </button>
                                         </div>
                                     </div>
                                 </Row>

@@ -345,7 +345,7 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className="container">
+            <div className="container-fluid">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="mr15">
                 <div class="col-sm-4"><h3>Vendor</h3></div>

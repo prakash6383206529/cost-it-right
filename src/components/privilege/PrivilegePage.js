@@ -126,7 +126,7 @@ class PrivilegePage extends Component {
                                         label={`Privilege Module`}
                                         name={"PrivilageModuleId"}
                                         type="text"
-                                        placeholder={''}
+                                        placeholder={'Enter'}
                                         validate={[required]}
                                         required={true}
                                         className=" withoutBorder custom-select"
@@ -142,7 +142,7 @@ class PrivilegePage extends Component {
                                         label="Page Name"
                                         name={"PageName"}
                                         type="text"
-                                        placeholder={''}
+                                        placeholder={'Enter'}
                                         validate={[required, alphabetsOnlyForName]}
                                         component={renderText}
                                         required={true}
@@ -154,7 +154,7 @@ class PrivilegePage extends Component {
                                         label="Forms Name"
                                         name={"FormsName"}
                                         type="text"
-                                        placeholder={''}
+                                        placeholder={'Enter'}
                                         validate={[]}
                                         component={renderText}
                                         required={false}

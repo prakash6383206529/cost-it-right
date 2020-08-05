@@ -164,7 +164,7 @@ class PrivilegePageUserWise extends Component {
                                         label={`User Id`}
                                         name={"UserId"}
                                         type="text"
-                                        placeholder={''}
+                                        placeholder={'Enter'}
                                         validate={[required]}
                                         required={true}
                                         className=" withoutBorder custom-select"
@@ -180,7 +180,7 @@ class PrivilegePageUserWise extends Component {
                                         label={`EAccessType`}
                                         name={"EAccessType"}
                                         type="text"
-                                        placeholder={''}
+                                        placeholder={'Enter'}
                                         validate={[required]}
                                         required={true}
                                         className=" withoutBorder custom-select"

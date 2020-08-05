@@ -442,7 +442,8 @@ class RMImportListing extends Component {
                     <Col>
                         <BootstrapTable
                             data={this.state.tableData}
-                            striped={true}
+                            striped={false}
+                            bordered={false}
                             hover={true}
                             options={options}
                             search

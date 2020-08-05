@@ -749,6 +749,7 @@ button.add-btn {
 .manageuser .css-yk16xz-control {
   font-size: 14px !important;
   font-weight: 400 !important;
+  height: 32px;
 }
 
 .form-group.inputbox.withBorder {
@@ -1052,4 +1053,63 @@ button.add-btn {
   left: 0px !important;}
 ::placeholder { /* Most modern browsers support this now. */
   color:    #000;
+}
+.blue-box{padding:0 30px; background-color: #EDF0F5;}
+label for[normal-switch]{
+  text-align: center;
+}
+.user-detail{
+  .drawer-wrapper{
+    width: 500px;
+    .grant-user-grid .table-bordered{
+      overflow-x: auto;
+    width: 479px;
+    
+    display: block;
+    tr td {
+      padding: 18px 10px !important;
+  }
+   
+}
+    }
+  }
+
+.level-table{
+  .react-bs-table-container{
+  .react-bs-table {
+    margin-top: 0;
+}
+  }
+}
+.userlisting-row{
+  td{
+    &::second-child{
+      text-align: center;
+    }
+  }
+}
+.css-1okebmr-indicatorSeparator { display: none;}
+.input-range__slider{    background: transparent;
+  border: 1px solid #256BD1;
+  border-radius: 50%;    width: 16px;height: 16px;}
+  .textAreaWithBorder textarea.form-control {min-height: 119px;}
+  input::-webkit-input-placeholder {
+    color: #999;
+}
+
+::-moz-placeholder {
+    color: #999;
+}
+
+:-ms-input-placeholder {
+    /** notice that ie has only a single colon) */
+    color: #999;
+}
+
+::-webkit-input-placeholder {
+    color: #999;
+}
+
+::placeholder {
+    color: #999;
 }

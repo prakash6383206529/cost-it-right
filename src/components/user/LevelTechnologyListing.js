@@ -123,7 +123,7 @@ class LevelTechnologyListing extends Component {
 							<div className={'plus'}></div>{'Add Mapping'}</button>
 					</Col>
 
-					<Col>
+					<Col className="level-table">
 						<BootstrapTable
 							data={this.state.tableData}
 							striped={false}
@@ -137,7 +137,7 @@ class LevelTechnologyListing extends Component {
 							tableHeaderClass='my-custom-header'
 							pagination>
 							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
+							<TableHeaderColumn dataField="Level" dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
 							<TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 						</BootstrapTable>
 					</Col>

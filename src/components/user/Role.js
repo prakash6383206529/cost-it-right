@@ -320,7 +320,7 @@ class Role extends Component {
 			return actions && actions.map((item, index) => {
 				if (el.Text != item.ActionName) return false;
 				return (
-					<td>
+					<td className="text-center">
 						{/* {<input
                             type="checkbox"
                             value={item.ActionId}
@@ -514,7 +514,7 @@ class Role extends Component {
 													<Field
 														name={"RoleName"}
 														type="text"
-														placeholder={''}
+														placeholder={'Enter'}
 														validate={[required, alphabetsOnlyForName]}
 														component={renderText}
 														required={true}

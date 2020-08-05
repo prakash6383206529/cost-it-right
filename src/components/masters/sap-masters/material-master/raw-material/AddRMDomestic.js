@@ -1191,6 +1191,7 @@ class AddRMDomestic extends Component {
                                                         </label>
                                                         <div className="inputbox date-section">
                                                             <DatePicker
+                                                              label="Select date"
                                                                 name="EffectiveDate"
                                                                 selected={this.state.effectiveDate}
                                                                 onChange={this.handleEffectiveDateChange}
@@ -1199,7 +1200,7 @@ class AddRMDomestic extends Component {
                                                                 dateFormat="dd/MM/yyyy"
                                                                 //maxDate={new Date()}
                                                                 dropdownMode="select"
-                                                                placeholderText="Select date"
+                                                                // placeholderText={"Select date"}
                                                                 className="withBorder"
                                                                 autoComplete={'off'}
                                                                 disabledKeyboardNavigation
@@ -1230,7 +1231,7 @@ class AddRMDomestic extends Component {
                                                         required={true}
                                                         component={renderTextAreaField}
                                                         maxLength="5000"
-                                                        rows="6"
+                                                        rows="10"
                                                     />
                                                 </Col>
                                                 <Col md="6">
@@ -1256,17 +1257,18 @@ class AddRMDomestic extends Component {
                                                 </Col>
                                             </Row>
                                             <Row className="sf-btn-footer no-gutters justify-content-between">
-                                                <div className="col-sm-12 text-right bluefooter-butn">
+                                                <div className="col-sm-12 bluefooter-butn text-right ">
                                                     <button
                                                         type={'button'}
                                                         className="reset mr15 cancel-btn"
                                                         onClick={this.cancel} >
-                                                        {'Cancel'}
+                                                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
                                                     </button>
                                                     <button
                                                         type="submit"
                                                         className="submit-button mr5 save-btn" >
-                                                        {isEditFlag ? 'Update' : 'Save'}
+                                                       <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                        </div> {isEditFlag ? 'Update' : 'Save'}
                                                     </button>
                                                 </div>
                                             </Row>

@@ -59,11 +59,11 @@ class RowMaterialMaster extends Component {
     render() {
         const { isOpenMaterialType, isRMOpen, isOpen, isCategory, isGrade, isSpecification } = this.state;
         return (
-            <Container>
+            <Container fluid>
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
-                        <h3>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER}`}</h3>
+                        <h1>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER}`}</h1>
                     </Col>
                 </Row>
 

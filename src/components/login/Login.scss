@@ -176,25 +176,26 @@ span.input-group-text.bg-white {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    border-radius: 8px 0 0 8px; 
    img{
      width: 62%;
      padding: 15px;
    }
  h3{
-  font-size: 18px;
+  font-size: 20px;
   padding: 15px 0;
   color: #3D4465;
-  font-weight: 600;
+  font-weight: 500;
  }
  p{
   font-size: 14px;
-  color: #3D4465;
+  color: #8A91AC;
  }
  .inputbox {
   border-bottom:none;
  }
  label.btn.btn-link.align-middle.checkbox-label { margin:0; padding: 0; font-size: 12px;margin-bottom: 0 !important;
-  padding-left: 5px;}
+  padding-left: 5px;color: #3D4465;}
  .forgotpwd-field { font-size: 12px;}
  .asterisk-required {
   display: none;
@@ -203,6 +204,9 @@ span.input-group-text.bg-white {
 label{margin-bottom: 0;}
 .form-group {
   margin-bottom: 0;
+}
+.text-help{
+  height: auto;
 }
 }
 

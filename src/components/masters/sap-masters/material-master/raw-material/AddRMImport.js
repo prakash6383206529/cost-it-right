@@ -1167,12 +1167,13 @@ class AddRMImport extends Component {
                                                         type={'button'}
                                                         className="reset mr15 cancel-btn"
                                                         onClick={this.cancel} >
-                                                        {'Cancel'}
+                                                       <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
                                                     </button>
                                                     <button
                                                         type="submit"
                                                         className="submit-button mr5 save-btn" >
-                                                        {isEditFlag ? 'Update' : 'Save'}
+                                                        <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                        </div> {isEditFlag ? 'Update' : 'Save'}
                                                     </button>
                                                 </div>
                                             </Row>

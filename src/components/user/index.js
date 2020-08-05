@@ -44,7 +44,7 @@ class User extends Component {
   render() {
     const { isOpen } = this.state;
     return (
-      <Container className="user-page">
+      <Container fluid className="user-page">
         {/* {this.props.loading && <Loader/>} */}
         <div>
           <h1>User Management</h1>
@@ -56,7 +56,7 @@ class User extends Component {
             </NavItem>
             <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                Roles & Permission
+              Manage Roles & Permission 
                                 </NavLink>
             </NavItem>
             <NavItem>

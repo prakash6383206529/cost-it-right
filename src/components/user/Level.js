@@ -342,7 +342,7 @@ class Level extends Component {
                           label="Level Name"
                           name={"LevelName"}
                           type="text"
-                          placeholder={''}
+                          placeholder={'Enter'}
                           validate={[required]}
                           component={renderText}
                           required={true}
@@ -355,7 +355,7 @@ class Level extends Component {
                           label="Sequence"
                           name={"Sequence"}
                           type="text"
-                          placeholder={''}
+                          placeholder={'Enter'}
                           validate={[number]}
                           component={renderText}
                           required={false}

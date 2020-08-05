@@ -181,7 +181,7 @@ class LevelsListing extends Component {
 									onClick={this.levelToggler}>
 									<div className={'plus'}></div>{'Add Level'}</button>
 							</Col>
-							<Col>
+							<Col className="mt-0 level-table">
 								<BootstrapTable
 									data={this.state.tableData}
 									striped={false}
@@ -195,7 +195,7 @@ class LevelsListing extends Component {
 									tableHeaderClass='my-custom-header'
 									pagination>
 									<TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
-									<TableHeaderColumn dataField="Sequence" dataAlign="left" dataSort={true}>Sequence</TableHeaderColumn>
+									<TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>
 									<TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 								</BootstrapTable>
 							</Col>

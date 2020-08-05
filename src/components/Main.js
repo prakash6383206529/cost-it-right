@@ -118,7 +118,7 @@ class Main extends Component {
                 </div>
               </div>
             </div>}
-
+          <div className="blue-box">
           {isLogin && !this.state.visibelPageNotFound && <Breadcrumb />}
           {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} />}
 
@@ -206,6 +206,7 @@ class Main extends Component {
                 />
               </Switch>
             </div>
+          </div>
           </div>
           {!this.state.visibelPageNotFound &&
             <div>

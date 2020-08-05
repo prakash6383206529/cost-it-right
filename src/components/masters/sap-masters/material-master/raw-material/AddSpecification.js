@@ -292,7 +292,7 @@ class AddSpecification extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Raw Material Specification' : 'Add Raw Material Specification'}</h3>
+                                            <h1>{isEditFlag ? 'Update Raw Material Specification' : 'Add Raw Material Specification'}</h1>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}

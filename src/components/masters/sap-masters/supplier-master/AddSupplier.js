@@ -324,7 +324,7 @@ class AddSupplier extends Component {
     render() {
         const { handleSubmit, reset } = this.props;
         return (
-            <div className="container">
+            <div className="container-fluid">
                 {/* {isLoader && <Loader />} */}
                 <div className="login-container signup-form">
                     <div className="row">
@@ -573,9 +573,9 @@ class AddSupplier extends Component {
                                         </Row> */}
 
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-md-12">
-                                                <div className="text-center ">
-                                                    <input
+                                            <div className="col-md-12 bluefooter-butn text-right">
+                                                <div className="">
+                                                    {/* <input
                                                         //disabled={pristine || submitting}
                                                         onClick={this.cancel}
                                                         type="button"
@@ -587,7 +587,19 @@ class AddSupplier extends Component {
                                                         type="submit"
                                                         value={this.state.isEditFlag ? 'Update' : 'Save'}
                                                         className="submit-button mr5 save-btn"
-                                                    />
+                                                    /> */}
+                                                    <button
+                                                        type={'button'}
+                                                        className="reset mr15 cancel-btn"
+                                                        onClick={this.cancel} >
+                                                       <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
+                                                    </button>
+                                                    <button
+                                                        type="submit"
+                                                        className="submit-button mr5 save-btn" >
+                                                        <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                        </div> {this.state.isEditFlag ? 'Update' : 'Save'}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </Row>

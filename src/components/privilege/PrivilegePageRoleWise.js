@@ -216,7 +216,7 @@ class PrivilegePageRoleWise extends Component {
                                         label={`Module`}
                                         name={"ModuleId"}
                                         type="text"
-                                        placeholder={''}
+                                        placeholder={'Enter'}
                                         validate={[required]}
                                         required={true}
                                         className=" withoutBorder custom-select"
@@ -285,7 +285,7 @@ class PrivilegePageRoleWise extends Component {
                                         label={`EAccessType`}
                                         name={"EAccessType"}
                                         type="text"
-                                        placeholder={''}
+                                        placeholder={'Enter'}
                                         validate={[required]}
                                         required={true}
                                         className=" withoutBorder custom-select"

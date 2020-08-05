@@ -345,7 +345,8 @@ class SpecificationListing extends Component {
                         {/* <hr /> */}
                         <BootstrapTable
                             data={this.state.specificationData}
-                            striped={true}
+                            striped={false}
+                            bordered={false}
                             hover={true}
                             options={options}
                             search

@@ -616,7 +616,7 @@ class PermissionsUserWise extends Component {
                                         label="Role"
                                         name={"Role"}
                                         type="text"
-                                        placeholder={''}
+                                        placeholder={'Enter'}
                                         customClassName={'withoutBorderBottom'}
                                         validate={[required]}
                                         component={renderText}
@@ -683,7 +683,7 @@ class PermissionsUserWise extends Component {
                             </div> */}
 
 
-                            <Table className="table table-striped" size="sm" bordered dark striped >
+                            <Table className="table table-striped switch-table" size="sm" bordered dark striped >
                                 <thead>
                                     <tr>
                                         <th>{`Module Name`}</th>

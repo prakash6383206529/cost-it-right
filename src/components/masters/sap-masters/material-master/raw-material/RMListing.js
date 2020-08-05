@@ -133,8 +133,8 @@ class RMListing extends Component {
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <Button className="btn btn-secondary mr5" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button>
-                <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button>
+                <button className="Edit mr5" onClick={() => this.editItemDetails(cell)}></button>
+                <button className="Delete" onClick={() => this.deleteItem(cell)}></button>
             </>
         )
     }
@@ -170,7 +170,8 @@ class RMListing extends Component {
                         {/* <hr /> */}
                         <BootstrapTable
                             data={this.props.rawMaterialTypeDataList}
-                            striped={true}
+                            striped={false}
+                            bordered={false}
                             hover={true}
                             options={options}
                             search
@@ -181,7 +182,7 @@ class RMListing extends Component {
                             <TableHeaderColumn dataField="" dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
                             <TableHeaderColumn dataField="MaterialType" dataAlign="center" dataSort={true}>Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="Density" dataSort={true}>Density (g/cm3)</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MaterialTypeId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MaterialTypeId" dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>

@@ -146,7 +146,7 @@ li.nav-item .logo {
 .sf-mainheader {
   .navbar {
     background-color: #fff !important;
-    padding: 0.1rem 1rem;
+    padding: 0.1rem 2rem;
     border-bottom: 1px solid rgba(180, 197, 226, 0.51);
 
     .nav-link {
@@ -164,19 +164,25 @@ li.nav-item .logo {
     border-top: #ccc 1px dashed;
     background: $white !important;
     box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.075) !important;
-    /* height: 50px; */
-    /* line-height: 32px; */
-    padding: 6px 1rem;
+     
+    // line-height: 32px; 
+    padding: 0px 2rem;
+    nav{
+      align-items: center;
+      height: 50px; 
+    }
 
     a {
       text-align: left;
-      font-size: 13px;
+      font-size: 1rem;
       letter-spacing: 0px;
       color: #3d4465;
       font-weight: 400;
       opacity: 1;
       margin-right: 25px;
-
+      &:hover, &:active{
+        span{ color:#256BD1}
+      }
       img,
       span {
         display: inline-block;
@@ -339,6 +345,8 @@ li.nav-item .logo {
       padding-right: 0;
       background: $white !important;
       border: $white 1px solid !important;
+      box-shadow: none;
+      height: 43px;
 
       &:hover,
       &:focus,

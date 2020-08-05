@@ -146,7 +146,7 @@ class ViewUserDetails extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
-        <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+        <Drawer className="user-detail" anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
           <Container>
             <div className={'drawer-wrapper'}>
               <Row className="drawer-heading">
@@ -243,19 +243,21 @@ class ViewUserDetails extends Component {
                           </tr>
                         </thead>
                         <tbody >
+                          
                           {this.state.Modules && this.state.Modules.map((item, index) => {
                             if (item.IsChecked == false) return false;
                             return (
                               <tr key={index}>
 
-                                <td className={'Module-Name'} >{item.ModuleName}</td>
+                                <td  colSpan="6" className={'Module-Name'} >{item.ModuleName}</td>
 
                                 {this.renderAction(item.Actions, index)}
                               </tr>
                             )
                           })}
                           {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </tbody>
+                      
+                       </tbody>
                       </Table>
                     </Col>}
 

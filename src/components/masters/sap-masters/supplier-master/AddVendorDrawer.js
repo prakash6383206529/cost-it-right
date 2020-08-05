@@ -294,7 +294,7 @@ class AddVendorDrawer extends Component {
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                    <Container>
+                    <Container >
                         <div className={'drawer-wrapper'}>
                             <form
                                 noValidate
@@ -304,7 +304,7 @@ class AddVendorDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h3>
+                                            <h1>{isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h1>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}

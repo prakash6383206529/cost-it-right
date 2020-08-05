@@ -38,7 +38,7 @@ class PlantMaster extends Component {
         const { } = this.state;
         return (
             <>
-                <Container className="user-page p-0">
+                <Container fluid className="user-page p-0">
                     {/* {this.props.loading && <Loader/>} */}
                     
                     <Col>
