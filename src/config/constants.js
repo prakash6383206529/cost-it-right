@@ -909,3 +909,9 @@ export const SKILLED = 'Skilled';
 export const CONTRACT = 'Contract';
 export const SEMI_SKILLED = 'Semi-Skilled';
 export const UNSKILLED = 'Unskilled';
+
+//POWER LIST ENUMS
+export const SOLAR_POWER = 'Solar Power';
+export const HYDRO_POWER = 'Hydro Power';
+export const WIND_POWER = 'Wind Power';
+export const GENERATOR_DIESEL = 'Generator Diesel';
