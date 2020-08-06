@@ -1,86 +1,61 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Button, Table } from 'reactstrap';
-import AddMachine from './AddMachine';
-import { getMachineListAPI, deleteMachineAPI } from '../../../../actions/master/MachineMaster';
-import { Loader } from '../../../common/Loader';
-import { CONSTANT } from '../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
-import NoContentFound from '../../../common/NoContentFound';
+import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import classnames from 'classnames';
+import MachineRateListing from './MachineRateListing';
+import AddMachineRate from './AddMachineRate';
+import AddMoreDetails from './AddMoreDetails';
 
 class MachineMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
-            isEditFlag: false,
-            machineId: '',
+            activeTab: '1',
+            isMachineRateForm: false,
+            isAddMoreDetails: false,
+            data: {},
         }
     }
 
     /**
-    * @method componentDidMount
-    * @description Called after rendering the component
+    * @method toggle
+    * @description toggling the tabs
     */
-    componentDidMount() {
-        this.props.getMachineListAPI(() => { })
+    toggle = (tab) => {
+        if (this.state.activeTab !== tab) {
+            this.setState({
+                activeTab: tab
+            });
+        }
     }
 
-    /**
-     * @method openModel
-     * @description  used to open filter form 
-     */
-    openModel = () => {
-        this.setState({ isOpen: true, isEditFlag: false })
-    }
-
-    /**
-     * @method onCancel
-     * @description  used to cancel filter form
-     */
-    onCancel = () => {
-        this.setState({ isOpen: false }, () => this.props.getMachineListAPI(() => { }))
-    }
-
-    /**
-  * @method editItem
-  * @description used to edit machine details
-  */
-    editItem = (Id) => {
+    displayForm = () => {
         this.setState({
-            isEditFlag: true,
-            isOpen: true,
-            machineId: Id,
+            isMachineRateForm: true,
+            isAddMoreDetails: false,
         })
     }
 
-    /**
-    * @method delete 
-    * @description confirm delete machine
-    */
-    deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
-        };
-        return toastr.confirm(MESSAGES.MACHINE_DELETE_ALERT, toastrConfirmOptions);
+    hideForm = () => {
+        this.setState({ isMachineRateForm: false })
     }
 
-    /**
-    * @method confirmDelete
-    * @description confirm delete machine
-    */
-    confirmDelete = (Id) => {
-        this.props.deleteMachineAPI(Id, (res) => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-                this.props.getMachineListAPI(res => { });
-            }
-        });
+    setData = (data) => {
+        this.setState({ data: data })
+    }
+
+    displayMoreDetailsForm = () => {
+        this.setState({
+            isAddMoreDetails: true,
+            isMachineRateForm: false,
+        })
+    }
+
+    hideMoreDetailsForm = () => {
+        this.setState({
+            isAddMoreDetails: false,
+            isMachineRateForm: true,
+        })
     }
 
     /**
@@ -88,78 +63,65 @@ class MachineMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, machineId } = this.state;
+        const { isMachineRateForm, isAddMoreDetails } = this.state;
+
+        if (isMachineRateForm === true) {
+            return <AddMachineRate
+                setData={this.setData}
+                hideForm={this.hideForm}
+                displayMoreDetailsForm={this.displayMoreDetailsForm}
+            />
+        }
+
+        if (isAddMoreDetails === true) {
+            return <AddMoreDetails
+                data={this.state.data}
+                hideMoreDetailsForm={this.hideMoreDetailsForm}
+            />
+        }
+
         return (
-            <Container className="top-margin">
-                {this.props.loading && <Loader />}
+            <Container>
+                {/* {this.props.loading && <Loader/>} */}
                 <Row>
-                    <Col>
+                    <Col sm="4">
                         <h3>{`Machine Master`}</h3>
                     </Col>
-                    <Col>
-                        <Button onClick={this.openModel}>{`Add Machine Master`}</Button>
-                    </Col>
                 </Row>
-                <hr />
+
                 <Row>
                     <Col>
-                        <Table className="table table-striped" bordered>
-                            <thead>
-                                <tr>
-                                    <th>{`Machine Name`}</th>
-                                    <th>{`Machine Number`}</th>
-                                    <th>{`Description`}</th>
-                                    <th>{`Machine Class Name`}</th>
-                                    {/* <th>{`Labour Type`}</th> */}
-                                    <th>{`Capacity`}</th>
-                                    {/* <th>{`Fuel Type`}</th> */}
-                                    <th>{`Power Rating`}</th>
-                                    <th>{`Consumable`}</th>
-                                    <th>{`Loan`}</th>
-                                    <th>{`Machine Cost`}</th>
-                                    <th>{`Equity`}</th>
-                                    <th>{`Rate of Interest`}</th>
-                                    <th>{``}</th>
-                                </tr>
-                            </thead>
-                            <tbody >
-                                {this.props.machineDatalist && this.props.machineDatalist.length > 0 &&
-                                    this.props.machineDatalist.map((item, index) => {
-                                        return (
-                                            <tr>
-                                                <td>{item.MachineName}</td>
-                                                <td>{item.MachineNumber}</td>
-                                                <td>{item.Description}</td>
-                                                <td>{item.MachineClassName}</td>
-                                                {/* <td>{item.LabourType}</td> */}
-                                                <td>{item.MachineCapacity}</td>
-                                                {/* <td>{item.FuelType}</td> */}
-                                                <td>{item.PowerRating}</td>
-                                                <td>{item.UtilizationFactor}</td>
-                                                <td>{item.LoanAmount}</td>
-                                                <td>{item.CostOfMachine}</td>
-                                                <td>{item.Equity}</td>
-                                                <td>{item.RateOfInterest}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editItem(item.MachineId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(item.MachineId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.machineDatalist === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
+                        <div>
+                            <Nav tabs className="subtabs">
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Machine Rate
+                                </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        Manage Process
+                                </NavLink>
+                                </NavItem>
+                            </Nav>
+
+                            <TabContent activeTab={this.state.activeTab}>
+
+                                {this.state.activeTab == 1 &&
+                                    <TabPane tabId="1">
+                                        <MachineRateListing
+                                            displayForm={this.displayForm}
+                                        />
+                                    </TabPane>}
+
+                                {this.state.activeTab == 2 &&
+                                    <TabPane tabId="2">
+                                        {/* <AddBOPImport /> */}
+                                    </TabPane>}
+                            </TabContent>
+                        </div>
                     </Col>
                 </Row>
-                {isOpen && (
-                    <AddMachine
-                        isOpen={isOpen}
-                        onCancel={this.onCancel}
-                        isEditFlag={isEditFlag}
-                        machineId={machineId}
-                    />
-                )}
             </Container >
         );
     }
@@ -170,16 +132,14 @@ class MachineMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ machine }) {
-    const { loading, machineDatalist } = machine;
+function mapStateToProps({ }) {
 
-    return { loading, machineDatalist }
+    return {}
 }
 
-export default connect(mapStateToProps,
-    {
-        getMachineListAPI,
-        deleteMachineAPI,
-    }
+
+export default connect(
+    mapStateToProps, {
+}
 )(MachineMaster);
 

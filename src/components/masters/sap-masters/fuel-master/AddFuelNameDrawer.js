@@ -1,0 +1,171 @@
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Field, reduxForm } from "redux-form";
+import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { required, maxLength25, minLength3 } from "../../../../helper/validation";
+import { renderText, searchableSelect } from "../../../layout/FormInputs";
+import { createFuel } from '../../../../actions/master/Fuel';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
+import { loggedInUserId } from "../../../../helper/auth";
+import Drawer from '@material-ui/core/Drawer';
+
+class AddFuelNameDrawer extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            unitTypes: []
+        }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description called after render the component
+    */
+    componentDidMount() {
+
+    }
+
+    /**
+    * @method toggleModel
+    * @description Used to cancel modal
+    */
+    toggleModel = () => {
+        this.props.onCancel();
+    }
+
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+
+        this.props.closeDrawer('')
+    };
+
+
+
+    /**
+   * @method cancel
+   * @description used to Reset form
+   */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.toggleDrawer('')
+    }
+
+    /**
+    * @method onSubmit
+    * @description Used to Submit the form
+    */
+    onSubmit = (values) => {
+        const { unitTypes } = this.state;
+
+        /** Update detail of the existing UOM  */
+        if (this.props.isEditFlag) {
+
+        } else {
+            /** Add detail for creating new UOM  */
+            let reqData = {
+                FuelName: values.FuelName,
+            }
+            this.props.createFuel(reqData, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
+                    this.toggleDrawer('');
+                }
+            });
+        }
+    }
+
+    /**
+    * @method render
+    * @description Renders the component
+    */
+    render() {
+        const { handleSubmit, isEditFlag, reset } = this.props;
+        return (
+            <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                <Container>
+                    <div className={'drawer-wrapper'}>
+                        <form
+                            noValidate
+                            className="form"
+                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                        >
+                            <Row className="drawer-heading">
+                                <Col>
+                                    <div className={'header-wrapper left'}>
+                                        <h3>{isEditFlag ? 'UPDATE FUEL' : 'ADD FUEL'}</h3>
+                                    </div>
+                                    <div
+                                        onClick={(e) => this.toggleDrawer(e)}
+                                        className={'close-button right'}>
+                                    </div>
+                                </Col>
+                            </Row>
+
+                            <Row>
+                                <div className="input-group form-group col-md-12 input-withouticon" >
+                                    <Field
+                                        label="Fuel Name"
+                                        name={"FuelName"}
+                                        type="text"
+                                        placeholder={''}
+                                        validate={[required]}
+                                        component={renderText}
+                                        required={true}
+                                        maxLength={26}
+                                        customClassName={'withBorder'}
+                                    />
+                                </div>
+
+                            </Row>
+                            <Row className="sf-btn-footer no-gutters justify-content-between">
+                                <div className="col-sm-12 text-right">
+                                    <button
+                                        type="submit"
+                                        className="submit-button mr5 save-btn" >
+                                        {isEditFlag ? 'Update' : 'Save'}
+                                    </button>
+
+                                    <button
+                                        type={'button'}
+                                        className="reset mr15 cancel-btn"
+                                        onClick={this.cancel} >
+                                        {'Cancel'}
+                                    </button>
+                                </div>
+                            </Row>
+                        </form>
+                    </div>
+                </Container>
+            </Drawer>
+        );
+    }
+}
+
+/**
+* @method mapStateToProps
+* @description return state to component as props
+* @param {*} state
+*/
+function mapStateToProps({ fuel }) {
+    const { } = fuel;
+    let initialValues = {};
+
+    return { initialValues };
+}
+
+/**
+* @method connect
+* @description connect with redux
+* @param {function} mapStateToProps
+* @param {function} mapDispatchToProps
+*/
+export default connect(mapStateToProps, {
+    createFuel,
+})(reduxForm({
+    form: 'AddFuelNameDrawer',
+    enableReinitialize: true,
+})(AddFuelNameDrawer));

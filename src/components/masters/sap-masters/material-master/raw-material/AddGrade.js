@@ -6,7 +6,7 @@ import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
-import { fetchRowMaterialAPI } from '../../../../../actions/master/Comman';
+import { getRawMaterialSelectList } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -28,7 +28,7 @@ class AddGrade extends Component {
     * @description call before rendering the component
     */
     componentWillMount() {
-        this.props.fetchRowMaterialAPI(res => { });
+        this.props.getRawMaterialSelectList(res => { });
         this.props.getMaterialTypeSelectList(() => { })
     }
 
@@ -233,7 +233,7 @@ function mapStateToProps({ comman, costWorking, material }) {
 export default connect(mapStateToProps,
     {
         createRMGradeAPI,
-        fetchRowMaterialAPI,
+        getRawMaterialSelectList,
         getMaterialTypeSelectList,
         getRMGradeDataAPI,
         updateRMGradeAPI,

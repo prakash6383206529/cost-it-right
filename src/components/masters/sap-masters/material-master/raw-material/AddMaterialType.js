@@ -153,7 +153,7 @@ class AddMaterialType extends Component {
                                     </Col>
                                 </Row>
 
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
+                                <Row className=" no-gutters justify-content-between">
                                     <div className="col-md-12">
                                         <div className="text-right ">
                                             {/* <input

@@ -4,6 +4,7 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_CLIENT_DATA_SUCCESS,
+    GET_CLIENT_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -111,5 +112,30 @@ export function deleteClient(ID, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+
+/**
+ * @method getClientSelectList
+ * @description Used to Client selectlist
+ */
+export function getClientSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getClientSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CLIENT_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

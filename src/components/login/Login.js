@@ -73,7 +73,7 @@ class Login extends Component {
         {isLoader && <Loader />}
         <div className="container ">
           <div className="login-form">
-            
+
             <div className="row shadow-lg">
               <div className="col-md-5 form-section">
             
@@ -128,17 +128,17 @@ class Login extends Component {
                             <span className=" before-box"></span>
                           </label>
                         </div> */}
-                <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
-                <Link to="/forgot-password" className="forgotpwd-field" target='_blank'>
-                  Forgot Password?
+                    <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
+                    <Link to="/forgot-password" className="forgotpwd-field" target='_blank'>
+                      Forgot Password?
                         </Link>
+                  </div>
+
+                </form>
               </div>
-              
-            </form>
-            </div>
-            <div className="col-md-7 p-0 right-sideimg">
-            <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
-            </div>
+              <div className="col-md-7 p-0 right-sideimg">
+                <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
+              </div>
             </div>
           </div>
         </div>

@@ -14,7 +14,7 @@ export const MESSAGES = {
   UOM_ADD_SUCCESS: 'Unit Of measurement added successfully',
   UPDATE_UOM_SUCESS: 'Unit Of measurement updated successfully',
   DELETE_UOM_SUCCESS: 'Unit Of measurement deleted successfully',
-  CONFIRM_DELETE: 'Are you sure you want to delete This',
+  CONFIRM_DELETE: 'Are you sure you want to delete Part?',
 
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
@@ -109,8 +109,7 @@ export const MESSAGES = {
   DEPRECIATION_DELETE_SUCCESS: 'Depreciation deleted successfully',
   DEPRECIATION_UPDATE_SUCCESS: 'Depreciation has been updated successfully',
 
-  DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
-  DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
+
 
   //PLANT
   DELETE_PLANT_SUCCESS: 'Plant deleted successfully',
@@ -142,10 +141,19 @@ export const MESSAGES = {
   BOP_DELETE_ALERT: 'Are you sure you want to delete BOP?',
   BOP_DELETE_SUCCESS: 'BOP has been deleted.',
 
+  //FUEL & POWER MASTER
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
   FUEL_ADD_SUCCESS: 'Fuel added successfully',
+  UPDATE_FUEL_DETAIL_SUCESS: 'Fuel detail updated successfully',
   FUEL_DELETE_ALERT: 'Are you sure you want to delete Fule?',
   FUEL_DETAIL_DELETE_ALERT: 'Are you sure you want to delete Fule Detail?',
+  DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
+  DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
+  POWER_DETAIL_ADD_SUCCESS: 'Power detail added successfully',
+  POWER_ADD_SUCCESS: 'Power added successfully',
+  POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',
+  POWER_DETAIL_DELETE_ALERT: 'Are you sure you want to delete Power Detail?',
+
   INTEREST_RATE_ADDED_SUCCESS: 'Suppiler interest rate added successfully',
   DELETE_INTEREST_RATE_SUCCESS: 'Supplier interest rate deleted successfully',
   UPDATE_INTEREST_RATE_SUCESS: 'Supplier interest rate updated successfully',

@@ -7,7 +7,7 @@ import { renderSelectField, renderNumberInputField, renderText, searchableSelect
 import { } from '../../../../actions/master/MachineMaster';
 import {
     getPowerTypeSelectList, getChargeTypeSelectList, getPowerSupplierTypeSelectList,
-    fetchPlantDataAPI, getUOMSelectList, fetchFuelComboAPI
+    fetchPlantDataAPI, getUOMSelectList,
 } from '../../../../actions/master/Comman';
 import { createPowerAPI, getPowerDataAPI, updatePowerAPI } from '../../../../actions/master/PowerMaster';
 import { toastr } from 'react-redux-toastr';
@@ -39,7 +39,6 @@ class AddPower extends Component {
         this.props.getPowerSupplierTypeSelectList(() => { })
         this.props.fetchPlantDataAPI(() => { })
         this.props.getUOMSelectList(() => { })
-        this.props.fetchFuelComboAPI(() => { })
     }
 
     /**
@@ -728,7 +727,6 @@ export default connect(mapStateToProps, {
     getPowerSupplierTypeSelectList,
     fetchPlantDataAPI,
     getUOMSelectList,
-    fetchFuelComboAPI,
     createPowerAPI,
     getPowerDataAPI,
     updatePowerAPI,

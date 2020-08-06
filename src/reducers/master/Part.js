@@ -11,6 +11,7 @@ import {
     GET_MATERIAL_TYPE_SUCCESS,
     GET_ALL_NEW_PARTS_SUCCESS,
     GET_UNIT_NEW_PART_DATA_SUCCESS,
+    GET_PART_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -59,6 +60,14 @@ export default function partReducer(state = initialState, action) {
             return {
                 ...state,
                 partsListing: action.payload,
+                loading: false,
+                error: false
+            };
+        }
+        case GET_PART_SELECTLIST_SUCCESS: {
+            return {
+                ...state,
+                partSelectList: action.payload,
                 loading: false,
                 error: false
             };

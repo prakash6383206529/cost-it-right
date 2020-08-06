@@ -7,7 +7,8 @@ import {
     GET_FUEL_DATALIST_SUCCESS,
     GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
-    GET_FUEL_DETAIL_SUCCESS
+    GET_FUEL_DETAIL_SUCCESS,
+    GET_FULE_COMBO_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -67,6 +68,14 @@ export default function fuelReducer(state = initialState, action) {
                 loading: false,
                 error: false,
                 fuelDetailList: action.payload
+            };
+        }
+        case GET_FULE_COMBO_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                fuelComboSelectList: action.payload
             };
         }
         case GET_FUEL_FAILURE:

@@ -10,7 +10,7 @@ export const FILE_URL = 'http://10.10.1.100:8090/';
 /** Export API */
 export const API = {
   //configure api's
-  getPart: `${BASE_URL}/configuration/select-list-get-part`,
+
   getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
   getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
@@ -26,7 +26,7 @@ export const API = {
 
   //Combo apis
   //configure api's
-  getFuelComboAPI: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+
   getOtherOperationComboAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
   getCEDComboAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
   getMHRComboAPI: `${BASE_URL}/configuration-master/get-machine-hour-rate-combo-select-list`,
@@ -46,8 +46,8 @@ export const API = {
   getState: `${BASE_URL}/configuration-location/select-list-get-state`,
   getCity: `${BASE_URL}/configuration-location/select-list-get-city`,
 
-  //api's for configure row material
-  getRowMaterial: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
+  //api's for configure raw material
+  getRawMaterialSelectList: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
   getRowGrade: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
   getRowMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-categoryy`,
@@ -105,6 +105,8 @@ export const API = {
   deletePart: `${BASE_URL}/masters-part/delete-component-part`,
   getPartData: `${BASE_URL}/masters-part/get-component-part`,
   getPartDataList: `${BASE_URL}/masters-part/get-all-component-part`,
+  getPart: `${BASE_URL}/configuration/select-list-get-part`,
+  getPartSelectList: `${BASE_URL}/configuration/select-list-get-part`,
 
   //Api's for bill of materail
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -164,6 +166,7 @@ export const API = {
   updateRMImportAPI: `${BASE_URL}/masters-raw-material/update-raw-material-import`,
   getRMImportDataById: `${BASE_URL}/masters-raw-material/get-raw-material-import-by-id`,
   getRMImportDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-import-list`,
+  bulkUploadRMImport: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-import-json`,
 
   //RAW MATERIAL CATEGORY
   getCategoryDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
@@ -206,7 +209,7 @@ export const API = {
   createSupplierAPI: `${BASE_URL}/vendor/create-vendor`,
   getSupplierAPI: `${BASE_URL}/vendor/get-vendor`,
   getAllSupplierAPI: `${BASE_URL}/vendor/get-all-vendors`,
-  updateSupplierAPI: `${BASE_URL}/vendor/update`,
+  updateSupplierAPI: `${BASE_URL}/vendor/update-vendor`,
   deleteSupplierAPI: `${BASE_URL}/vendor/delete`,
   getRadioButtonSupplierType: `${BASE_URL}/configuration/radio-button-list-get-supplier-type`,
   getVendorTypesSelectList: `${BASE_URL}/vendor/vendor-types-select-list`,
@@ -238,15 +241,18 @@ export const API = {
   updateProcessAPI: `${BASE_URL}/masters-process/update`,
   deleteProcessAPI: `${BASE_URL}/masters-process/delete`,
 
-  //Api's for fuel master
-  createFuelAPI: `${BASE_URL}/masters-fuel/create-fuel`,
-  createFuelDetailAPI: `${BASE_URL}/masters-fuel/create-fuel-details`,
+  //FUEL MASTER
+  createFuel: `${BASE_URL}/masters-fuel/create-fuel`,
+  createFuelDetail: `${BASE_URL}/masters-fuel/create-fuel-details`,
+  updateFuelDetail: `${BASE_URL}/masters-fuel/update-fuel-details`,
   getFuelAPI: `${BASE_URL}/masters-fuel/get-fuel`,
   getAllFuelAPI: `${BASE_URL}/masters-fuel/get-all-fuel`,
-  getFuelDetailAPI: `${BASE_URL}/masters-fuel/get-fuel-details`,
-  getAllFuelDetailAPI: `${BASE_URL}/masters-fuel/get-all-fuel-details`,
+  getFuelDetailData: `${BASE_URL}/masters-fuel/get-fuel-details`,
+  getFuelDetailDataList: `${BASE_URL}/masters-fuel/get-all-fuel-details`,
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
+  getFuelComboData: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+  fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-details-json`,
 
   //API's for other operations
   getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-other-operation`,
@@ -468,12 +474,12 @@ export const API = {
   getSupplierType: `${BASE_URL}/configuration/radio-button-list-get-costing-supplier-type`,
 
   //MACHINE TYPE
-  createMachineTypeAPI: `${BASE_URL}/masters-machine/create-machine-type`,
+  createMachineType: `${BASE_URL}/masters-machine/create-machine-type`,
+  getMachineTypeSelectList: `${BASE_URL}/masters-machine/get-machine-type-select-list`,
   getMachineTypeListAPI: `${BASE_URL}/masters-machine/get-all-machine-type`,
   getMachineTypeDataAPI: `${BASE_URL}/masters-machine/get-machine-type`,
   updateMachineTypeAPI: `${BASE_URL}/masters-machine/update-machine-type`,
   deleteMachineTypeAPI: `${BASE_URL}/masters-machine/delete-machine-type`,
-  getMachineTypeSelectList: `${BASE_URL}/configuration/select-list-get-machine-type`,
   getMachineSelectListByMachineType: `${BASE_URL}/configuration/select-list-get-machine`,
   getDepreciationTypeSelectList: `${BASE_URL}/configuration/select-list-get-depreciation-type`, //Used in Depreciation master
   getDepreciationSelectList: `${BASE_URL}/configuration/select-list-get-depreciation`,
@@ -485,6 +491,8 @@ export const API = {
   deleteMachineAPI: `${BASE_URL}/masters-machine/delete`,
   getMachineDataAPI: `${BASE_URL}/masters-machine/get`,
   updateMachineAPI: `${BASE_URL}/masters-machine/update`,
+  getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
+  createProcess: `${BASE_URL}/masters-machine/create-process`,
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
@@ -526,6 +534,7 @@ export const API = {
   getClientData: `${BASE_URL}/client/get-client-detail-by-id`,
   getClientDataList: `${BASE_URL}/client/get-all-client`,
   deleteClient: `${BASE_URL}/client/delete`,
+  getClientSelectList: `${BASE_URL}/client/select-list-client`,
 
 }
 
@@ -582,6 +591,7 @@ export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS';
 //NEW PART MASTER
 export const GET_ALL_NEW_PARTS_SUCCESS = 'GET_ALL_NEW_PARTS_SUCCESS';
 export const GET_UNIT_NEW_PART_DATA_SUCCESS = 'GET_UNIT_NEW_PART_DATA_SUCCESS';
+export const GET_PART_SELECTLIST_SUCCESS = 'GET_PART_SELECTLIST_SUCCESS';
 
 //for category master
 export const CREATE_CATEGORY_TYPE_SUCCESS = 'CREATE_CATEGORY_TYPE_SUCCESS';
@@ -597,7 +607,7 @@ export const GET_CATEGORY_TYPE_LIST_SUCCESS = 'GET_CATEGORY_TYPE_SUCCESS';
 //RAW MATERIAL
 export const CREATE_MATERIAL_SUCCESS = ' CREATE_MATERIAL_SUCCESS';
 export const CREATE_MATERIAL_FAILURE = 'CREATE_MATERIAL_FAILURE';
-export const GET_ROW_MATERIAL_SUCCESS = 'GET_ROW_MATERIAL_SUCCESS';
+export const GET_RAW_MATERIAL_SUCCESS = 'GET_RAW_MATERIAL_SUCCESS';
 export const GET_RAW_MATERIAL_DATA_SUCCESS = 'GET_RAW_MATERIAL_DATA_SUCCESS';
 export const GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS';
 export const GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS = 'GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS';
@@ -679,6 +689,7 @@ export const CREATE_FUEL_DETAIL_FAILURE = 'CREATE_FUEL_DETAIL_FAILURE';
 export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS';
 export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS';
 export const GET_FUEL__DETAIL_DATA_SUCCESS = 'GET_FUEL_DETAIL_DATA_SUCCESS';
+export const GET_FULE_COMBO_SUCCESS = 'GET_FULE_COMBO_SUCCESS';
 
 //OTHER OPERATION MASTER
 export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS';
@@ -853,6 +864,7 @@ export const GET_MACHINE_TYPE_SELECTLIST_SUCCESS = 'GET_MACHINE_TYPE_SELECTLIST_
 export const GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS = 'GET_MACHINE_SELECTLIST_BY_MACHINE_TYPE_SUCCESS';
 export const GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_TYPE_SELECTLIST_SUCCESS';
 export const GET_SHIFT_TYPE_SELECTLIST_SUCCESS = 'GET_SHIFT_TYPE_SELECTLIST_SUCCESS';
+export const GET_MACHINE_TYPE_SELECTLIST = 'GET_MACHINE_TYPE_SELECTLIST';
 
 //MACHINE
 export const GET_MACHINE_DATALIST_SUCCESS = 'GET_MACHINE_DATALIST_SUCCESS';
@@ -875,6 +887,7 @@ export const GET_VOLUME_DATA_SUCCESS = 'GET_VOLUME_DATA_SUCCESS';
 
 //CLIENT MASTER
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
+export const GET_CLIENT_SELECTLIST_SUCCESS = 'GET_CLIENT_SELECTLIST_SUCCESS';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';
@@ -896,3 +909,9 @@ export const SKILLED = 'Skilled';
 export const CONTRACT = 'Contract';
 export const SEMI_SKILLED = 'Semi-Skilled';
 export const UNSKILLED = 'Unskilled';
+
+//POWER LIST ENUMS
+export const SOLAR_POWER = 'Solar Power';
+export const HYDRO_POWER = 'Hydro Power';
+export const WIND_POWER = 'Wind Power';
+export const GENERATOR_DIESEL = 'Generator Diesel';

@@ -11,6 +11,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import VBCPlantListing from "./VBCPlantListing";
+import $ from 'jquery';
 
 class AddVBCPlant extends Component {
     constructor(props) {
@@ -26,31 +27,59 @@ class AddVBCPlant extends Component {
     }
 
     /**
-    * @method toggleModel
-    * @description Used to cancel modal
+    * @method componentDidMount
+    * @description 
     */
     componentDidMount() {
         const { PlantId, isEditFlag } = this.props;
         this.props.fetchCountryDataAPI(() => { })
         this.props.getSupplierList(() => { })
-        if (isEditFlag) {
-            this.setState({ isEditFlag }, () => {
-                this.props.getPlantUnitAPI(PlantId, true, res => {
-                    const response = res.data.Data;
-                })
-            })
-        } else {
-            this.props.getPlantUnitAPI('', false, res => { })
-        }
     }
 
     /**
-    * @method toggleModel
+    * @method getDetails
     * @description Used to cancel modal
     */
-    toggleModel = () => {
-        this.props.onCancel();
+    getDetails = (data) => {
+        if (data && data.isEditFlag) {
+            this.setState({
+                isEditFlag: false,
+                isLoader: true,
+                isShowForm: true,
+                PlantId: data.PlantId,
+            })
+            this.props.getPlantUnitAPI(data.PlantId, res => {
+                if (res && res.data && res.data.Result) {
+
+                    const Data = res.data.Data;
+
+                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
+                    this.props.fetchCityDataAPI(Data.StateId, () => { })
+
+                    setTimeout(() => {
+                        const { countryList, stateList, cityList, supplierSelectList } = this.props;
+
+                        const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
+                        const CityObj = cityList && cityList.find(item => item.Value == Data.CityIdRef)
+                        const VendorObj = supplierSelectList && supplierSelectList.find(item => item.Value == Data.VendorId)
+
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            country: { label: CountryObj.Text, value: CountryObj.Value },
+                            state: { label: StateObj.Text, value: StateObj.Value },
+                            city: { label: CityObj.Text, value: CityObj.Value },
+                            vendor: { label: VendorObj.Text, value: VendorObj.Value },
+                        })
+                    }, 500)
+                }
+            })
+        } else {
+            this.props.getPlantUnitAPI('', res => { })
+        }
     }
+
 
     /**
     * @method selectType
@@ -61,28 +90,32 @@ class AddVBCPlant extends Component {
         const temp = [];
 
         if (label === 'vendors') {
-            supplierSelectList && supplierSelectList.map(item =>
+            supplierSelectList && supplierSelectList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
 
         if (label === 'country') {
-            countryList && countryList.map(item =>
+            countryList && countryList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'state') {
-            stateList && stateList.map(item =>
+            stateList && stateList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'city') {
-            cityList && cityList.map(item =>
+            cityList && cityList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
 
@@ -169,10 +202,10 @@ class AddVBCPlant extends Component {
     */
     onSubmit = (values) => {
         console.log("values", values)
-        const { city, vendor } = this.state;
+        const { city, vendor, isEditFlag } = this.state;
         const { reset } = this.props;
 
-        if (this.props.isEditFlag) {
+        if (isEditFlag) {
             const { PlantId } = this.props;
             this.setState({ isSubmitted: true });
             let updateData = {
@@ -235,7 +268,8 @@ class AddVBCPlant extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, plantUnitDetail, reset } = this.props;
+        const { handleSubmit, reset } = this.props;
+        const { isEditFlag } = this.state;
         return (
             <>
                 <Container fluid>
@@ -251,7 +285,7 @@ class AddVBCPlant extends Component {
                                         <Row>
                                             <Col md="6">
                                                 <div className="form-heading mb-0">
-                                                    <h2>{this.state.isEditFlag ? 'Update ZBC Plant' : 'Add  ZBC Plant'}</h2>
+                                                    <h2>{this.state.isEditFlag ? 'Update VBC Plant' : 'Add  VBC Plant'}</h2>
                                                 </div>
                                             </Col>
                                         </Row>
@@ -460,7 +494,7 @@ class AddVBCPlant extends Component {
                     </div>
                     <VBCPlantListing
                         onRef={ref => (this.child = ref)}
-                        getUserDetail={this.getUserDetail}
+                        getDetails={this.getDetails}
                         formToggle={this.formToggle}
                         isShowForm={this.state.isShowForm}
                     />
@@ -482,16 +516,13 @@ function mapStateToProps({ comman, plant }) {
     if (plantUnitDetail && plantUnitDetail !== undefined) {
         initialValues = {
             PlantName: plantUnitDetail.PlantName,
+            PlantCode: plantUnitDetail.PlantCode,
             PlantTitle: plantUnitDetail.PlantTitle,
-            UnitNumber: plantUnitDetail.UnitNumber,
-            CityId: plantUnitDetail.CityIdRef,
             AddressLine1: plantUnitDetail.AddressLine1,
             AddressLine2: plantUnitDetail.AddressLine2,
             ZipCode: plantUnitDetail.ZipCode,
             PhoneNumber: plantUnitDetail.PhoneNumber,
             Extension: plantUnitDetail.Extension,
-            //CountryId: plantUnitDetail.CreatedBy,
-            //StateId: plantUnitDetail.CreatedBy,
         }
     }
     return { countryList, stateList, cityList, initialValues, plantUnitDetail, supplierSelectList }

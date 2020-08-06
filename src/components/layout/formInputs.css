@@ -55,7 +55,7 @@ body .border-btm, body .inputbox{
 padding:2rem;
 }
 .sf-btn-footer{
-    margin:2rem 0
+    margin:0 -15px
 }
 .text-help{
     font-size:12px;

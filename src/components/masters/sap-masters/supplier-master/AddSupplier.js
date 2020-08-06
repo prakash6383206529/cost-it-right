@@ -276,12 +276,11 @@ class AddSupplier extends Component {
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
+                MobileNumber: values.MobileNumber,
                 Extension: values.Extension,
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
-                VendorPlants: [],
             }
-            this.setState({ isSubmitted: true });
             this.props.updateSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
@@ -335,7 +334,7 @@ class AddSupplier extends Component {
                                         <div className="col-md-12">
                                             <div className="form-heading mb-0">
                                                 <h2>{this.state.isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h2>
-                                               <hr/>
+                                                <hr />
                                             </div>
                                         </div>
                                     </div>
@@ -446,7 +445,7 @@ class AddSupplier extends Component {
                                                     isDisabled={false}
                                                     validate={[required, number, minLength7]}
                                                     required={true}
-                                                    maxLength={70}
+                                                    maxLength={12}
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>

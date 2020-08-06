@@ -9,7 +9,7 @@ import {
     getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI,
 } from '../../../../../actions/master/Material';
 import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
-import { fetchRowMaterialAPI, fetchRMGradeAPI } from '../../../../../actions/master/Comman';
+import { getRawMaterialSelectList, fetchRMGradeAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -38,7 +38,7 @@ class AddSpecification extends Component {
     * @description Called before render the component
     */
     componentWillMount() {
-        this.props.fetchRowMaterialAPI(res => { });
+        this.props.getRawMaterialSelectList(res => { });
         this.props.getMaterialTypeSelectList(() => { })
         this.props.getRawMaterialNameChild(() => { })
     }
@@ -281,7 +281,7 @@ class AddSpecification extends Component {
         const { handleSubmit, isEditFlag } = this.props;
         return (
             <div>
-                <Drawer  anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container>
                         <div className={'drawer-wrapper spec-drawer'}>
                             <form
@@ -301,125 +301,124 @@ class AddSpecification extends Component {
                                     </Col>
                                 </Row>
                                 <div className="mr15">
-                                <Row>
-                                    <Col md="11">
-                                        <Field
-                                            name="RawMaterialName"
-                                            type="text"
-                                            label="Raw Material"
-                                            component={searchableSelect}
-                                            placeholder={'Select Raw Material'}
-                                            options={this.renderListing('RawMaterialName')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleRawMaterial}
-                                            valueDescription={this.state.RawMaterial}
-                                        />
-                                    </Col>
-                                    <Col md="1">
-                                        <div
-                                            onClick={this.rawMaterialToggler}
-                                            className={'plus-icon mt30 mr15 right'}>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md="11">
-                                        <Field
-                                            name="MaterialTypeId"
-                                            type="text"
-                                            label="Material"
-                                            component={searchableSelect}
-                                            placeholder={'Select Material'}
-                                            options={this.renderListing('material')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.material == null || this.state.material.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleMaterialChange}
-                                            valueDescription={this.state.material}
-                                        />
-                                    </Col>
-                                    <Col md="1">
-                                        <div
-                                            onClick={this.materialToggler}
-                                            className={'plus-icon mt30 mr15 right'}>
-                                        </div>
-                                    </Col>
-                                    <Col md="11">
-                                        <Field
-                                            label={`Density`}
-                                            name={"Density"}
-                                            type="text"
-                                            placeholder={'Enter'}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            className=" "
-                                            disabled={true}
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md="11">
-                                        <Field
-                                            name="GradeId"
-                                            type="text"
-                                            label="RM Grade"
-                                            component={searchableSelect}
-                                            placeholder={'Select RM Grade'}
-                                            options={this.renderListing('RMGrade')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleGrade}
-                                            valueDescription={this.state.RMGrade}
-                                        />
-                                    </Col>
-                                    <Col md="1">
-                                        <div
-                                            onClick={this.gradeToggler}
-                                            className={'plus-icon mt30 mr15 right'}>
-                                        </div>
-                                    </Col>
-                                </Row>
-
-
-                                <Row>
-                                    <Col md="11">
-                                        <Field
-                                            label={`${CONSTANT.SPECIFICATION}`}
-                                            name={"Specification"}
-                                            type="text"
-                                            placeholder={'Enter'}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            className=" "
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>
-                                </Row>
-
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-right ">
-                                            {/* <input
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
-                                                className="reset mr15 cancel-btn"
+                                    <Row>
+                                        <Col md="11">
+                                            <Field
+                                                name="RawMaterialName"
+                                                type="text"
+                                                label="Raw Material"
+                                                component={searchableSelect}
+                                                placeholder={'Select Raw Material'}
+                                                options={this.renderListing('RawMaterialName')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleRawMaterial}
+                                                valueDescription={this.state.RawMaterial}
                                             />
-                                            <input
-                                                //disabled={isSubmitted ? true : false}
-                                                type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
-                                            /> */}
-                                           
-                                            <button
+                                        </Col>
+                                        <Col md="1">
+                                            <div
+                                                onClick={this.rawMaterialToggler}
+                                                className={'plus-icon mt30 mr15 right'}>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="11">
+                                            <Field
+                                                name="MaterialTypeId"
+                                                type="text"
+                                                label="Material"
+                                                component={searchableSelect}
+                                                placeholder={'Select Material'}
+                                                options={this.renderListing('material')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.material == null || this.state.material.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleMaterialChange}
+                                                valueDescription={this.state.material}
+                                            />
+                                        </Col>
+                                        <Col md="1">
+                                            <div
+                                                onClick={this.materialToggler}
+                                                className={'plus-icon mt30 mr15 right'}>
+                                            </div>
+                                        </Col>
+                                        <Col md="11">
+                                            <Field
+                                                label={`Density`}
+                                                name={"Density"}
+                                                type="text"
+                                                placeholder={'Enter'}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" "
+                                                disabled={true}
+                                                customClassName=" withBorder"
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="11">
+                                            <Field
+                                                name="GradeId"
+                                                type="text"
+                                                label="RM Grade"
+                                                component={searchableSelect}
+                                                placeholder={'Select RM Grade'}
+                                                options={this.renderListing('RMGrade')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleGrade}
+                                                valueDescription={this.state.RMGrade}
+                                            />
+                                        </Col>
+                                        <Col md="1">
+                                            <div
+                                                onClick={this.gradeToggler}
+                                                className={'plus-icon mt30 mr15 right'}>
+                                            </div>
+                                        </Col>
+                                    </Row>
+
+
+                                    <Row>
+                                        <Col md="11">
+                                            <Field
+                                                label={`${CONSTANT.SPECIFICATION}`}
+                                                name={"Specification"}
+                                                type="text"
+                                                placeholder={'Enter'}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=" "
+                                                customClassName=" withBorder"
+                                            />
+                                        </Col>
+                                    </Row>
+
+                                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                                        <div className="col-md-12">
+                                            <div className="text-right ">
+                                                {/* <input
+                                                    //disabled={pristine || submitting}
+                                                    onClick={this.cancel}
+                                                    type="button"
+                                                    value="Cancel"
+                                                    className="reset mr15 cancel-btn"
+                                                />
+                                                <input
+                                                    //disabled={isSubmitted ? true : false}
+                                                    type="submit"
+                                                    value={isEditFlag ? 'Update' : 'Save'}
+                                                    className="submit-button mr5 save-btn"
+                                                /> */}
+                                                <button
                         onClick={this.cancel}
                         type="submit"
                         value="CANCEL"
@@ -434,9 +433,9 @@ class AddSpecification extends Component {
                         </div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Row>
+                                    </Row>
                                 </div>
                             </form>
                         </div>
@@ -500,7 +499,7 @@ function mapStateToProps({ comman, costWorking, material }) {
  */
 export default connect(mapStateToProps, {
     createRMSpecificationAPI,
-    fetchRowMaterialAPI,
+    getRawMaterialSelectList,
     fetchRMGradeAPI,
     getMaterialTypeSelectList,
     updateRMSpecificationAPI,
