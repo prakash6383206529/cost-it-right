@@ -619,7 +619,7 @@ class Role extends Component {
 													type="button"
 													value="RESET"
 													className="reset mr15 cancel-btn">
-													<div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>RESET</button>}
+													<div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> RESET</button>}
 											{isEditFlag &&
 												// <input
 												// 	//disabled={pristine || submitting}
@@ -634,7 +634,7 @@ class Role extends Component {
 													type="button"
 													value="Cancel"
 													className="reset mr15 cancel-btn">
-													<div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>Cancel</button>}
+													<div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> Cancel</button>}
 											{/* <input
 												disabled={isSubmitted ? true : false}
 												type="submit"
@@ -645,7 +645,7 @@ class Role extends Component {
 												disabled={isSubmitted ? true : false}
 												type="submit"
 												className="btn-primary save-btn"
-											>	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+											>	<div className={'check-icon'}><img src={require('../../assests/images/check.png')} alt='check-icon.jpg' />
 												</div>
 												{isEditFlag ? 'Update' : 'Save'}
 											</button>

@@ -881,8 +881,8 @@ p {
   text-transform: uppercase;
 
   &:hover {
-    background: $customPrimary-Hover;
-    border-color: $customPrimary-Hover;
+    // background: $customPrimary-Hover;
+    // border-color: $customPrimary-Hover;
     color: $white;
   }
 
@@ -1162,7 +1162,7 @@ p {
       min-height: 32px !important;
       font-size: $font-14;
       border-color: #C2CBE8;
-      height: 32px;
+      height: 40px;
     }
 
     .css-tlfecz-indicatorContainer {

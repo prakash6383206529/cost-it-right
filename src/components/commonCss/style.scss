@@ -749,7 +749,7 @@ button.add-btn {
 .manageuser .css-yk16xz-control {
   font-size: 14px !important;
   font-weight: 400 !important;
-  height: 32px;
+  height: 40px;
 }
 
 .form-group.inputbox.withBorder {
@@ -1119,4 +1119,13 @@ label for[normal-switch]{
 
 .pl0 {
   padding-left: 0;
+}
+.content-page .filter-block .css-yk16xz-control{
+  height: 32px!important;
+}
+.form-group.form-group-sm.react-bs-table-search-form.input-group.input-group-sm 
+{
+  input{
+    height: 32px;
+}
 }

@@ -104,8 +104,29 @@ input:focus {
   width: 100%;
   padding-top: 100px;
   height: 550px;
-  
+  .inputbox.input-group {
+  .form-control { height: 48px;border-color: #C2CBE8;padding-left: 40px!important;
+  }
+    &::before{
+      // content: url(../../assests/images/email.png);
+      position: absolute;
+      left: 11px;
+      top: 13px;
+      z-index: 10;
+    }
+  }
+  .input-group.mail  .inputbox.input-group {
+    &::before{
+    content: url(../../assests/images/email.png);}
 
+  }
+  .input-group.phone  .inputbox.input-group {
+    &::before{
+    content: url(../../assests/images/password.png);}
+    
+  }
+  .input-group  {label{display: none}}
+  .form{ margin-top: 48px;}
 }
 .customs-checkbox {
   position: relative;
@@ -154,8 +175,8 @@ input:focus {
   position: relative;
 }
 .login-btn {
-  font-size: 1.2rem;
-  padding: 8px 15px;
+  font-size: 14px;
+  padding: 10px 15px;
   margin-top: 10px;
   min-width: 150px;
 }
@@ -168,17 +189,17 @@ span.input-group-text.bg-white {
 .small-screen {
   height: calc(100vh - 265px);
 }
-.login-bg{background-image: url(../../assests/images/loginbg.png);background-size: 100% 100%;height:100vh;}
+.login-bg{background-image: url(../../assests/images/bgnew.png);background-size: 100% 100%;height:100vh;}
 .login-box {background-image: url(../../assests/images/box.png);}
 .form-section {
   background-color: #fff;;
-    padding: 0 30px 0;
+    padding: 0 71px 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     border-radius: 8px 0 0 8px; 
    img{
-     width: 62%;
+     width: 78%;
      padding: 15px;
    }
  h3{
@@ -203,7 +224,7 @@ span.input-group-text.bg-white {
 .input-group-prepend{display: none;}
 label{margin-bottom: 0;}
 .form-group {
-  margin-bottom: 0;
+  margin-bottom: 0.5rem;
 }
 .text-help{
   height: auto;

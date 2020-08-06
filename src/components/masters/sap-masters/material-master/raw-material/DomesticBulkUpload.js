@@ -180,18 +180,19 @@ class DomesticBulkUpload extends Component {
 
                             </Row>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-center">
+                                <div className="col-sm-12 text-right">
                                     <button
                                         type="submit"
                                         className="submit-button mr5 save-btn" >
-                                        {isEditFlag ? 'Update' : 'Save'}
+                                       <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' />
+                          </div> {isEditFlag ? 'Update' : 'Save'}
                                     </button>
 
                                     <button
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={this.cancel} >
-                                        {'Cancel'}
+                                       <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                                     </button>
                                 </div>
                             </Row>

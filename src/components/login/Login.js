@@ -75,7 +75,7 @@ class Login extends Component {
           <div className="login-form">
             
             <div className="row shadow-lg">
-              <div className="col-md-4 form-section">
+              <div className="col-md-5 form-section">
             
              <div className="text-center">
               <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
@@ -88,7 +88,7 @@ class Login extends Component {
               className="form"
               onSubmit={handleSubmit(this.onSubmit.bind(this))}
             >
-              <div className="input-group ">
+              <div className="input-group mail">
                 <Field
                   name="UserName"
                   // label="UserName"
@@ -100,7 +100,7 @@ class Login extends Component {
                   maxLength={71}
                 />
               </div>
-              <div className="input-group ">
+              <div className="input-group phone">
                 <Field
                   name="Password"
                   // label="Password"
@@ -136,7 +136,7 @@ class Login extends Component {
               
             </form>
             </div>
-            <div className="col-md-8 p-0 right-sideimg">
+            <div className="col-md-7 p-0 right-sideimg">
             <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
             </div>
             </div>
