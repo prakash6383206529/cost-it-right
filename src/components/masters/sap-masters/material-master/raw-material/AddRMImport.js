@@ -759,6 +759,14 @@ class AddRMImport extends Component {
                                                         checked={this.state.IsVendor}
                                                         id="normal-switch"
                                                         disabled={isEditFlag ? true : false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        id="normal-switch"
+                                                        uncheckedIcon={false}
+                                                         checkedIcon={false}
+                                                       height={21}
                                                     />
                                                     <div className={'right-title'}>Vendor Based</div>
                                                 </label>
