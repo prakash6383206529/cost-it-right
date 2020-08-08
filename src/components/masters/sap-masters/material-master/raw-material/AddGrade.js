@@ -80,7 +80,7 @@ class AddGrade extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { GradeId, isEditFlag, material } = this.props;
+        const { GradeId, isEditFlag, RawMaterial } = this.props;
         const { MaterialId } = this.state;
 
         values.CreatedBy = loggedInUserId();
@@ -106,7 +106,7 @@ class AddGrade extends Component {
             })
         } else {
 
-            values.MaterialId = material.value;
+            values.RawMaterialId = RawMaterial.value;
 
             this.props.createRMGradeAPI(values, (res) => {
                 if (res.data.Result) {
@@ -170,13 +170,13 @@ class AddGrade extends Component {
                                                 className="reset mr15 cancel-btn"
                                             /> */}
                                             <button
-                        onClick={this.cancel}
-                        type="submit"
-                        value="CANCEL"
-                        className="reset mr15 cancel-btn">
+                                                onClick={this.cancel}
+                                                type="submit"
+                                                value="CANCEL"
+                                                className="reset mr15 cancel-btn">
 
-                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>CANCEL</button>
-                      
+                                                <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>CANCEL</button>
+
                                             {/* <input
                                                 //disabled={isSubmitted ? true : false}
                                                 type="submit"
@@ -184,13 +184,13 @@ class AddGrade extends Component {
                                                 className="submit-button mr5 save-btn"
                                             /> */}
                                             <button
-                        type="submit"
-                        // disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"
-                      >	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
-                        </div>
-                        {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
-                      </button>
+                                                type="submit"
+                                                // disabled={isSubmitted ? true : false}
+                                                className="btn-primary save-btn"
+                                            >	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                </div>
+                                                {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
+                                            </button>
                                         </div>
                                     </div>
                                 </Row>

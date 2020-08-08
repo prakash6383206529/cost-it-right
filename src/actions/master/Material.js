@@ -25,6 +25,8 @@ import {
     GET_RM_NAME_SELECTLIST,
     GET_GRADELIST_BY_RM_NAME_SELECTLIST,
     GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
+    GET_GRADE_SELECTLIST_BY_RAWMATERIAL,
+    GET_GRADE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
     apiErrors
@@ -122,7 +124,8 @@ export function deleteRawMaterialAPI(RawMaterialId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                callback(error.response);
+                //apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
     };
@@ -362,21 +365,17 @@ export function getRMSpecificationDataAPI(SpecificationId, callback) {
     };
 }
 
-
 /**
- * @method getAllRMSpecificationList
+ * @method getRMSpecificationDataList
  * @description Used to get RM Specification Datalist
  */
-export function getAllRMSpecificationList(data, callback) {
+export function getRMSpecificationDataList(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(`${API.getRMSpecificationAPI}`, data, headers);
+        const queryParams = `material_id=${data.MaterialId}&grade_id=${data.GradeId}`
+        const request = axios.get(`${API.getRMSpecificationDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: GET_RM_SPECIFICATION_LIST_SUCCESS,
-                    payload: response.data.DataList,
-                });
                 callback(response);
             }
         }).catch((error) => {
@@ -415,12 +414,42 @@ export function deleteRMSpecificationAPI(ID, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                callback(error.response);
+                //apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
     };
 }
 
+/**
+ * @method getRMGradeSelectListByRawMaterial
+ * @description Used to Grade List By Raw Material Id
+ */
+export function getRMGradeSelectListByRawMaterial(Id, callback) {
+    return (dispatch) => {
+        if (Id != '') {
+            const request = axios.get(`${API.getRMGradeSelectListByRawMaterial}/${Id}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_GRADE_SELECTLIST_BY_RAWMATERIAL,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_GRADE_SELECTLIST_BY_RAWMATERIAL,
+                payload: [],
+            });
+        }
+    };
+}
 
 /**
  * @method getRMTypeSelectListAPI
@@ -434,6 +463,31 @@ export function getRMTypeSelectListAPI(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_RMTYPE_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getGradeSelectList
+ * @description Used to Get Grade List 
+ */
+export function getGradeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getGradeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_GRADE_SELECTLIST_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);
@@ -578,7 +632,8 @@ export function deleteMaterialTypeAPI(MaterialTypeId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                callback(error.response);
+                //apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
     };
@@ -1124,6 +1179,24 @@ export function bulkfileUploadRM(data, callback) {
 export function bulkUploadRMImport(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadRMImport, data, headers);
+        request.then((response) => {
+            if (response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadRMSpecification
+ * @description upload bulk RM Specification
+ */
+export function bulkUploadRMSpecification(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMSpecification, data, headers);
         request.then((response) => {
             if (response.status == 200) {
                 callback(response);

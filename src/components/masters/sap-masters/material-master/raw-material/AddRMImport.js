@@ -14,7 +14,8 @@ import {
 } from '../../../../../actions/master/Comman';
 import {
     createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild, getVendorListByVendorType, fileUploadRMDomestic,
+    getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic,
+    fileDeleteRMDomestic,
 } from '../../../../../actions/master/Material';
 import RMImportListing from './RMImportListing';
 import { toastr } from 'react-redux-toastr';
@@ -31,6 +32,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { FILE_URL } from '../../../../../config/constants';
 import $ from 'jquery';
 const selector = formValueSelector('AddRMImport');
 
@@ -72,6 +74,9 @@ class AddRMImport extends Component {
             isOpenVendor: false,
             isOpenUOM: false,
 
+            isVisible: false,
+            imageURL: '',
+
         }
     }
 
@@ -104,20 +109,13 @@ class AddRMImport extends Component {
     */
     handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-
             this.setState({ RawMaterial: newValue }, () => {
                 const { RawMaterial } = this.state;
-                this.props.getGradeListByRawMaterialNameChild(RawMaterial.value, res => { })
+                this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
             });
-
         } else {
-
-            this.setState({
-                RMGrade: [],
-                RMSpec: [],
-                RawMaterial: [],
-            });
-
+            this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [], });
+            this.props.getRMGradeSelectListByRawMaterial(0, res => { });
         }
     }
 
@@ -295,7 +293,7 @@ class AddRMImport extends Component {
                     const Data = res.data.Data;
 
                     this.props.getVendorListByVendorType(Data.IsVendor, () => { })
-                    this.props.getGradeListByRawMaterialNameChild(Data.RawMaterial, res => { })
+                    this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => { })
                     this.props.fetchSpecificationDataAPI(Data.RMGrade, res => { });
                     this.props.getPlantBySupplier(Data.Vendor, () => { })
                     this.props.getCityBySupplier(Data.Vendor, () => { })
@@ -310,6 +308,11 @@ class AddRMImport extends Component {
                         const specObj = rmSpecification && rmSpecification.find(item => item.Value == Data.RMSpec)
                         const categoryObj = categoryList && categoryList.find(item => item.Value == Data.Category)
                         const currencyObj = currencySelectList && currencySelectList.find(item => item.Text == Data.Currency)
+
+                        console.log('materialNameObj', materialNameObj)
+                        console.log('gradeObj', gradeObj)
+                        console.log('specObj', specObj)
+                        console.log('categoryObj', categoryObj)
 
                         let plantArray = [];
                         Data && Data.Plant.map((item) => {
@@ -337,7 +340,7 @@ class AddRMImport extends Component {
                             RawMaterial: materialNameObj != undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
                             RMGrade: gradeObj != undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
                             RMSpec: specObj != undefined ? { label: specObj.Text, value: specObj.Value } : [],
-                            Category: gradeObj != undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
+                            Category: categoryObj != undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                             selectedPlants: plantArray,
                             vendorName: vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
                             selectedVendorPlants: vendorPlantArray,
@@ -345,11 +348,12 @@ class AddRMImport extends Component {
                             HasDifferentSource: Data.HasDifferentSource,
                             sourceLocation: sourceLocationObj != undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                             UOM: UOMObj != undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
-                            effectiveDate: new Date(Data.EffectiveDate),
+                            effectiveDate: Data.EffectiveDate ? new Date(Data.EffectiveDate) : new Date(),
                             currency: currencyObj != undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                             remarks: Data.Remark,
+                            files: Data.FileList,
                         })
-                    }, 200)
+                    }, 500)
                 }
             })
         } else {
@@ -399,8 +403,8 @@ class AddRMImport extends Component {
     */
     closeGradeDrawer = (e = '') => {
         this.setState({ isOpenGrade: false }, () => {
-            //const { RawMaterial } = this.state;
-            //this.handleMaterialChange(RawMaterial, '');
+            const { RawMaterial } = this.state;
+            this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
         })
     }
 
@@ -409,7 +413,10 @@ class AddRMImport extends Component {
     }
 
     closeSpecDrawer = (e = '') => {
-        this.setState({ isOpenSpecification: false })
+        this.setState({ isOpenSpecification: false }, () => {
+            const { RMGrade } = this.state;
+            this.props.fetchSpecificationDataAPI(RMGrade.value, res => { });
+        })
     }
 
     categoryToggler = () => {
@@ -584,49 +591,80 @@ class AddRMImport extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
-        //console.log('body', file, meta)
+        const { isEditFlag, RawMaterialID } = this.state;
         return { url: 'https://httpbin.org/post', }
+
     }
 
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
-
-        //console.log('handleChangeStatus', status, meta, file)
+        const { isEditFlag, files, } = this.state;
 
         if (status == 'removed') {
-            // const { files } = this.state;
-            // const id = meta.id;
-            // let tempArr = files.filter(item => item.id != id)
-            // //console.log('tempArr', tempArr)
-            console.log('remove >>>>', status, meta, file)
-            // this.setState({ files: tempArr })
+            console.log('removed')
+            const removedFileName = file.name;
+            let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
+            this.setState({ files: tempArr })
         }
 
         if (status == 'done') {
-
             let data = new FormData()
             data.append('file', file)
-            console.log('before >>>', data)
-            const { files } = this.state;
-            this.setState({ files: file })
-            console.log('before >>>', data)
-
             this.props.fileUploadRMDomestic(data, (res) => {
                 let Data = res.data[0]
-                console.log('after success >>>', Data)
+                const { files } = this.state;
+                files.push(Data)
+                this.setState({ files: files })
             })
-
         }
 
         if (status == 'rejected_file_type') {
+            console.log('rejected_file_type', status, meta, file)
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
 
-    // receives array of files that are done uploading when submit button is clicked
-    handleSubmit = (files, allFiles) => {
-        console.log('handleSubmit', files.map(f => f.meta))
-        allFiles.forEach(f => f.remove())
+    renderImages = () => {
+        this.state.files && this.state.files.map(f => {
+            const withOutTild = f.FileURL.replace('~', '')
+            console.log('withOutTild', withOutTild)
+            const fileURL = `${FILE_URL}${withOutTild}`;
+            return (
+                <div className={'attachment-wrapper images'}>
+                    <img src={fileURL} />
+                    <button
+                        type="button"
+                        onClick={() => this.deleteFile(f.FileId)}>X</button>
+                </div>
+            )
+        })
+    }
+
+    deleteFile = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            this.props.fileDeleteRMDomestic(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = this.state.files.filter(item => item.FileId != FileId)
+                this.setState({ files: tempArr })
+            })
+        }
+        if (FileId == null) {
+            let tempArr = this.state.files.filter(item => item.OriginalFileName != OriginalFileName)
+            this.setState({ files: tempArr })
+        }
+    }
+
+    Preview = ({ meta }) => {
+        const { name, percent, status } = meta
+        return (
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {/* {Math.round(percent)}% */}
+            </span>
+        )
     }
 
     /**
@@ -636,7 +674,7 @@ class AddRMImport extends Component {
     onSubmit = (values) => {
         const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName,
             selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, currency,
-            effectiveDate, remarks, RawMaterialID, isEditFlag, } = this.state;
+            effectiveDate, remarks, RawMaterialID, isEditFlag, files, } = this.state;
         const { reset } = this.props;
 
         let plantArray = [];
@@ -652,6 +690,9 @@ class AddRMImport extends Component {
         })
 
         if (isEditFlag) {
+            let updatedFiles = files.map((file) => {
+                return { ...file, ContextId: RawMaterialID }
+            })
             let requestData = {
                 RawMaterialId: RawMaterialID,
                 IsVendor: IsVendor,
@@ -663,6 +704,8 @@ class AddRMImport extends Component {
                 ScrapRate: values.ScrapRate,
                 NetLandedCost: values.NetLandedCost,
                 LoggedInUserId: loggedInUserId(),
+                EffectiveDate: effectiveDate,
+                Attachements: updatedFiles,
             }
             this.props.updateRMImportAPI(requestData, (res) => {
                 if (res.data.Result) {
@@ -693,19 +736,11 @@ class AddRMImport extends Component {
                 LoggedInUserId: loggedInUserId(),
                 Plant: IsVendor == false ? plantArray : [],
                 VendorPlant: IsVendor == false ? [] : vendorPlantArray,
-                Attachements: [],
+                Attachements: files,
                 Currency: currency.label,
                 EffectiveDate: effectiveDate,
             }
 
-            // let data = new FormData()
-            // data.append('file', this.state.files)
-            // console.log('file upload >>>', data)
-            // this.props.fileUploadRMDomestic(data, (res) => {
-            //     console.log('file upload >>>', res)
-            // })
-
-            //console.log('formData >>>', formData)
             this.props.createRMImport(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
@@ -741,7 +776,7 @@ class AddRMImport extends Component {
                                     <div className="row mt15">
                                         <div className="col-md-6">
                                             <div className="form-heading">
-                                                <h2>{isEditFlag ? `Update Raw Material Details` : `Add Raw Material Details`}</h2>
+                                                <h2>{isEditFlag ? `Update Raw Material Import Details` : `Add Raw Material Import Details`}</h2>
                                             </div>
                                         </div>
                                     </div>
@@ -778,7 +813,7 @@ class AddRMImport extends Component {
                                                             type="text"
                                                             label="Raw Material"
                                                             component={searchableSelect}
-                                                            placeholder={'Select Raw Material'}
+                                                            placeholder={'-Raw Material-'}
                                                             options={this.renderListing('material')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
@@ -802,7 +837,7 @@ class AddRMImport extends Component {
                                                             type="text"
                                                             label="RM Grade"
                                                             component={searchableSelect}
-                                                            placeholder={'Select RM Grade'}
+                                                            placeholder={'-RM Grade-'}
                                                             options={this.renderListing('grade')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
@@ -826,7 +861,7 @@ class AddRMImport extends Component {
                                                             type="text"
                                                             label="RM Spec"
                                                             component={searchableSelect}
-                                                            placeholder={'Select RM Spec'}
+                                                            placeholder={'-RM Spec-'}
                                                             options={this.renderListing('specification')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.RMSpec == null || this.state.RMSpec.length == 0) ? [required] : []}
@@ -850,7 +885,7 @@ class AddRMImport extends Component {
                                                             type="text"
                                                             label="Category"
                                                             component={searchableSelect}
-                                                            placeholder={'Select Category'}
+                                                            placeholder={'-Category-'}
                                                             options={this.renderListing('category')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
@@ -873,7 +908,7 @@ class AddRMImport extends Component {
                                                     <Field
                                                         label="Plant"
                                                         name="SourceSupplierPlantId"
-                                                        placeholder="--Select--"
+                                                        placeholder="-Select-"
                                                         selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
                                                         options={this.renderListing('plant')}
                                                         selectionChanged={this.handleSourceSupplierPlant}
@@ -903,7 +938,7 @@ class AddRMImport extends Component {
                                                             type="text"
                                                             label="Vendor Name"
                                                             component={searchableSelect}
-                                                            placeholder={'--- Select Vendor ---'}
+                                                            placeholder={'-Vendor-'}
                                                             options={this.renderListing('VendorNameList')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
@@ -941,7 +976,7 @@ class AddRMImport extends Component {
                                                     type="text"
                                                     label="Vendor Location"
                                                     component={searchableSelect}
-                                                    placeholder={'--- Select Location ---'}
+                                                    placeholder={'-Location-'}
                                                     options={this.renderListing('VendorLocation')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                                     validate={(this.state.vendorLocation == null || this.state.vendorLocation.length == 0) ? [required] : []}
@@ -998,7 +1033,7 @@ class AddRMImport extends Component {
                                                         type="text"
                                                         label="Source Location"
                                                         component={searchableSelect}
-                                                        placeholder={'--- Select Plant ---'}
+                                                        placeholder={'-Plant-'}
                                                         options={this.renderListing('SourceLocation')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
@@ -1023,7 +1058,7 @@ class AddRMImport extends Component {
                                                             type="text"
                                                             label="UOM"
                                                             component={searchableSelect}
-                                                            placeholder={'--- Select ---'}
+                                                            placeholder={'-UOM-'}
                                                             options={this.renderListing('uom')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
@@ -1045,7 +1080,7 @@ class AddRMImport extends Component {
                                                     type="text"
                                                     label="Currency"
                                                     component={searchableSelect}
-                                                    placeholder={'--- Select Currency ---'}
+                                                    placeholder={'-Currency-'}
                                                     options={this.renderListing('currency')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                                     validate={(this.state.currency == null || this.state.currency.length == 0) ? [required] : []}
@@ -1111,14 +1146,14 @@ class AddRMImport extends Component {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
+                                                            minDate={new Date()}
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder form-control"
                                                             autoComplete={'off'}
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isEditFlag ? true : false}
+                                                            disabled={false}
                                                         />
                                                     </div>
                                                 </div>
@@ -1149,19 +1184,42 @@ class AddRMImport extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <label>Upload Attachment ( upload up to 3 files )</label>
-                                                <Dropzone
-                                                    getUploadParams={this.getUploadParams}
-                                                    onChangeStatus={this.handleChangeStatus}
-                                                    //onSubmit={this.handleSubmit}
-                                                    accept="image/jpeg,image/png,xls,doc,pdf"
-                                                    maxFiles={3}
-                                                    maxSizeBytes={2000000}
-                                                    inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
-                                                    styles={{
-                                                        dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-                                                        inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
-                                                    }}
-                                                />
+                                                {this.state.files.length >= 3 ? '' :
+                                                    <Dropzone
+                                                        getUploadParams={this.getUploadParams}
+                                                        onChangeStatus={this.handleChangeStatus}
+                                                        PreviewComponent={this.Preview}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                                        initialFiles={this.state.initialFiles}
+                                                        maxFiles={3}
+                                                        maxSizeBytes={2000000}
+                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                                                        styles={{
+                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                                                        }}
+                                                        classNames="draper-drop"
+                                                    />}
+                                                <div className={'attachment-wrapper'}>
+                                                    {
+                                                        this.state.files && this.state.files.map(f => {
+                                                            const withOutTild = f.FileURL.replace('~', '')
+                                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                                            return (
+                                                                <div className={'attachment images'}>
+                                                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                                                        <img src={fileURL} height={50} width={100} />
+                                                                    </div> */}
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => this.deleteFile(f.FileId, f.FileName)}>X</button>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
                                             </Col>
                                         </Row>
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -1170,12 +1228,13 @@ class AddRMImport extends Component {
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
                                                     onClick={this.cancel} >
-                                                    {'Cancel'}
+                                                    <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="submit-button mr5 save-btn" >
-                                                    {isEditFlag ? 'Update' : 'Save'}
+                                                    <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                    </div> {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>
                                         </Row>
@@ -1202,7 +1261,7 @@ class AddRMImport extends Component {
                     isOpen={isOpenGrade}
                     closeDrawer={this.closeGradeDrawer}
                     isEditFlag={false}
-                    //RawMaterial={this.state.RawMaterial}
+                    RawMaterial={this.state.RawMaterial}
                     anchor={'right'}
                 />}
                 {isOpenSpecification && <AddSpecification
@@ -1294,7 +1353,7 @@ export default connect(mapStateToProps, {
     updateRMImportAPI,
     fetchRMGradeAPI,
     getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild,
+    getRMGradeSelectListByRawMaterial,
     getSupplierList,
     getPlantBySupplier,
     getUOMSelectList,

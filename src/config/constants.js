@@ -185,15 +185,17 @@ export const API = {
   updateRMGradeAPI: `${BASE_URL}/masters-raw-material/update-material-grade`,
 
   //RM SPECIFICATION
-  getRMSpecificationAPI: `${BASE_URL}/masters-raw-material/get-all-raw-material-specifications`,
+  getRMSpecificationAPI: `${BASE_URL}/masters-raw-material/get-all-specifications`,
+  getRMSpecificationDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-specifications`,
   getRMSpecificationDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-specifications`,
   updateRMSpecificationAPI: `${BASE_URL}/masters-raw-material/update-material-specification`,
   deleteRMSpecificationAPI: `${BASE_URL}/masters-raw-material/delete-material-specification`,
   getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
   getRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-material-type`,
+  getGradeSelectList: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade`,
   getGradeByRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
-
-
+  getRMGradeSelectListByRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade-by-raw-material-id`,
+  bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
 
   //Api for plant master
   //createPlantAPI: `${BASE_URL}/plant/create`,
@@ -626,6 +628,8 @@ export const GET_RM_SPECIFICATION_LIST_SUCCESS = 'GET_RM_SPECIFICATION_LIST_SUCC
 export const GET_SPECIFICATION_DATA_SUCCESS = 'GET_SPECIFICATION_DATA_SUCCESS';
 export const GET_RMTYPE_SELECTLIST_SUCCESS = 'GET_RMTYPE_SELECTLIST_SUCCESS';
 export const GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS = 'GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS';
+export const GET_GRADE_SELECTLIST_BY_RAWMATERIAL = 'GET_GRADE_SELECTLIST_BY_RAWMATERIAL';
+export const GET_GRADE_SELECTLIST_SUCCESS = 'GET_GRADE_SELECTLIST_SUCCESS';
 
 export const GET_RM_LIST_SUCCESS = 'GET_RM_LIST_SUCCESS';
 export const GET_RM_CATEGORY_LIST_SUCCESS = 'GET_RM_CATEGORY_LIST_SUCCESS';

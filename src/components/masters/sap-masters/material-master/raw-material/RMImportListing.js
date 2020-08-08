@@ -4,7 +4,7 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild,
+    getGradeSelectList,
 } from '../../../../../actions/master/Material';
 import { required } from "../../../../../helper/validation";
 import { getSupplierList } from '../../../../../actions/master/Comman';
@@ -31,7 +31,7 @@ class RMImportListing extends Component {
             RawMaterial: [],
             RMGrade: [],
             vendorName: [],
-            value: { min: 10, max: 150 },
+            value: { min: 0, max: 0 },
             isBulkUpload: false,
         }
     }
@@ -43,6 +43,7 @@ class RMImportListing extends Component {
     componentDidMount() {
         //this.props.onRef(this)
         this.props.getRawMaterialNameChild(() => { })
+        this.props.getGradeSelectList(() => { })
         this.props.getSupplierList(() => { })
         this.getDataList(null, null, null)
     }
@@ -106,7 +107,10 @@ class RMImportListing extends Component {
     */
     confirmDelete = (ID) => {
         this.props.deleteRawMaterialAPI(ID, (res) => {
-            if (res.data.Result === true) {
+            if (res.status == 417 && res.data.Result == false) {
+                toastr.warning(res.data.Message)
+                //toastr.warning('The specification is associated in the system. Please remove the association to delete')
+            } else if (res && res.data && res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
                 this.getDataList(null, null, null)
             }
@@ -216,7 +220,7 @@ class RMImportListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { gradeSelectListByRMID, rawMaterialNameSelectList, supplierSelectList } = this.props;
+        const { gradeSelectList, rawMaterialNameSelectList, supplierSelectList } = this.props;
         const temp = [];
         if (label === 'material') {
             rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -226,7 +230,7 @@ class RMImportListing extends Component {
             return temp;
         }
         if (label === 'grade') {
-            gradeSelectListByRMID && gradeSelectListByRMID.map(item => {
+            gradeSelectList && gradeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -248,19 +252,9 @@ class RMImportListing extends Component {
     */
     handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-
-            this.setState({ RawMaterial: newValue }, () => {
-                const { RawMaterial } = this.state;
-                this.props.getGradeListByRawMaterialNameChild(RawMaterial.value, res => { })
-            });
-
+            this.setState({ RawMaterial: newValue });
         } else {
-
-            this.setState({
-                RMGrade: [],
-                RawMaterial: [],
-            });
-
+            this.setState({ RawMaterial: [], });
         }
     }
 
@@ -310,7 +304,7 @@ class RMImportListing extends Component {
             RawMaterial: [],
             RMGrade: [],
             vendorName: [],
-            value: { min: 10, max: 150 },
+            value: { min: 0, max: 0 },
         }, () => {
             this.getDataList(null, null, null)
         })
@@ -326,7 +320,9 @@ class RMImportListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false })
+        this.setState({ isBulkUpload: false }, () => {
+            this.getDataList(null, null, null)
+        })
     }
 
     /**
@@ -487,6 +483,7 @@ class RMImportListing extends Component {
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
                     fileName={'RMImport'}
+                    isZBCVBCTemplate={true}
                     messageLabel={'RM Import'}
                     anchor={'right'}
                 />}
@@ -501,9 +498,9 @@ class RMImportListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman }) {
-    const { rawMaterialNameSelectList, gradeSelectListByRMID } = material;
+    const { rawMaterialNameSelectList, gradeSelectList } = material;
     const { supplierSelectList, } = comman;
-    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectListByRMID }
+    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList }
 }
 
 /**
@@ -516,7 +513,7 @@ export default connect(mapStateToProps, {
     deleteRawMaterialAPI,
     getRMImportDataList,
     getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild,
+    getGradeSelectList,
     getSupplierList,
 })(reduxForm({
     form: 'RMImportListing',

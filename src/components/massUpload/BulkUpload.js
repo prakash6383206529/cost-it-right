@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import { required, maxLength25, minLength3 } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
-import { bulkUploadRMDomestic, bulkfileUploadRM, bulkUploadRMImport, } from '../../actions/master/Material';
+import { bulkUploadRMDomestic, bulkfileUploadRM, bulkUploadRMImport, bulkUploadRMSpecification, } from '../../actions/master/Material';
 import { fuelBulkUpload } from '../../actions/master/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
@@ -28,6 +28,7 @@ class BulkUpload extends Component {
 
             faildRecords: false,
             failedData: [],
+            costingHead: '',
         }
     }
 
@@ -78,9 +79,9 @@ class BulkUpload extends Component {
         let fileHeads = [];
         let uploadfileName = fileObj.name;
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
-
+        console.log('fileType >>', fileType)
         //pass the fileObj as parameter
-        if (fileType != '.xls' || fileType != '.xlsx') {
+        if (fileType != '.xls' && fileType != '.xlsx') {
             toastr.warning('File type should be .xls or .xlsx')
         } else {
 
@@ -107,7 +108,10 @@ class BulkUpload extends Component {
                                 // CreatedBy: loggedInUserId(),
                             }
                             val.map((el, i) => {
-                                obj[fileHeads[i]] = el
+                                obj[fileHeads[i]] = el;
+                                if (fileHeads[i] == 'CostingHead') {
+                                    this.setState({ costingHead: el })
+                                }
                             })
                             fileData.push(obj)
                             obj = {}
@@ -128,14 +132,15 @@ class BulkUpload extends Component {
         const { messageLabel } = this.props;
         if (res.data.Result == false) {
             let Data = res.data.Data;
-            toastr.warning(res.data.Message);
+            console.log('Data.FaildRecords', Data)
             if (Data.CountSucceeded > 0) {
                 toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
             }
-            if (Data.FaildRecords.length > 0) {
+            if (Data.CountFailed > 0) {
+                toastr.warning(res.data.Message);
                 this.setState({
-                    faildRecords: true,
                     failedData: Data.FaildRecords,
+                    faildRecords: true,
                 })
             }
         } else {
@@ -161,14 +166,20 @@ class BulkUpload extends Component {
         }
 
         if (fileName == 'RMDomestic') {
-
+            console.log('uploadData', uploadData)
             this.props.bulkUploadRMDomestic(uploadData, (res) => {
+                console.log('res data', res)
                 this.responseHandler(res)
             });
 
         } else if (fileName == 'RMImport') {
 
             this.props.bulkUploadRMImport(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+        } else if (fileName == 'RMSpecification') {
+
+            this.props.bulkUploadRMSpecification(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -189,11 +200,16 @@ class BulkUpload extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset, fileName, messageLabel } = this.props;
-        const { faildRecords, failedData } = this.state;
+        const { handleSubmit, isEditFlag, reset, fileName, messageLabel, isZBCVBCTemplate } = this.props;
+        const { faildRecords, failedData, costingHead } = this.state;
 
         if (faildRecords) {
-            return <Downloadxls isFailedFlag={true} fileName={fileName} failedData={failedData} />
+            return <Downloadxls
+                isFailedFlag={true}
+                fileName={fileName}
+                failedData={failedData}
+                costingHead={costingHead}
+            />
         }
 
         return (
@@ -220,7 +236,7 @@ class BulkUpload extends Component {
                             <Row>
 
                                 <div className="input-group mt25 col-md-12 input-withouticon" >
-                                    <Downloadxls fileName={fileName} isFailedFlag={false} />
+                                    <Downloadxls isZBCVBCTemplate={isZBCVBCTemplate} fileName={fileName} isFailedFlag={false} />
                                 </div>
 
                                 <div className="input-group mt25 col-md-12 input-withouticon" >
@@ -239,14 +255,15 @@ class BulkUpload extends Component {
                                     <button
                                         type="submit"
                                         className="submit-button mr5 save-btn" >
-                                        {isEditFlag ? 'Update' : 'Save'}
+                                        <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                        </div> {isEditFlag ? 'Update' : 'Save'}
                                     </button>
 
                                     <button
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={this.cancel} >
-                                        {'Cancel'}
+                                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
                                     </button>
                                 </div>
                             </Row>
@@ -278,6 +295,7 @@ export default connect(mapStateToProps, {
     bulkUploadRMDomestic,
     bulkfileUploadRM,
     bulkUploadRMImport,
+    bulkUploadRMSpecification,
     fuelBulkUpload,
 })(reduxForm({
     form: 'BulkUpload',

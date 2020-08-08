@@ -6,7 +6,7 @@ import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../../layout/FormInputs";
 import {
     createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
-    getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI,
+    getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
 } from '../../../../../actions/master/Material';
 import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
 import { getRawMaterialSelectList, fetchRMGradeAPI } from '../../../../../actions/master/Comman';
@@ -52,26 +52,24 @@ class AddSpecification extends Component {
         if (isEditFlag) {
             this.props.getRMSpecificationDataAPI(ID, res => {
                 if (res && res.data && res.data.Data) {
-                    const { rawMaterialNameSelectList, MaterialSelectList, } = this.props;
                     let Data = res.data.Data;
-                    this.props.fetchRMGradeAPI(Data.MaterialTypeId, res => { })
-
-
+                    this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterialId, res => { })
 
                     setTimeout(() => {
-                        const { rmGradeList } = this.props;
-                        let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterialId)
-                        let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Value == Data.MaterialTypeId)
-                        let tempObj3 = rmGradeList && rmGradeList.find(item => item.Value == Data.GradeId)
+                        const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectListByRMID } = this.props;
 
-                        console.log('tempObj1', tempObj1)
-                        console.log('tempObj2', tempObj2)
-                        console.log('tempObj3', tempObj3)
-                        this.setDensity(Data.MaterialTypeId);
+                        let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterialId)
+                        let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Value == Data.MaterialId)
+                        let tempObj3 = gradeSelectListByRMID && gradeSelectListByRMID.find(item => item.Value == Data.GradeId)
+
+                        //console.log('tempObj1', tempObj1)
+                        //console.log('tempObj2', tempObj2)
+                        //console.log('tempObj3', tempObj3)
+                        this.setDensity(Data.MaterialId);
                         this.setState({
-                            RawMaterial: { label: tempObj1.Text, value: tempObj1.Value },
-                            material: { label: tempObj2.Text, value: tempObj2.Value },
-                            RMGrade: { label: tempObj3.Text, value: tempObj3.Value },
+                            RawMaterial: tempObj1 && tempObj1 != undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+                            material: tempObj2 && tempObj2 != undefined ? { label: tempObj2.Text, value: tempObj2.Value } : [],
+                            RMGrade: tempObj3 && tempObj3 != undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
                         })
                     }, 500)
 
@@ -88,9 +86,13 @@ class AddSpecification extends Component {
     */
     handleRawMaterial = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RawMaterial: newValue });
+            this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
+                const { RawMaterial } = this.state;
+                this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
+            });
         } else {
-            this.setState({ RawMaterial: [] });
+            this.setState({ RawMaterial: [], RMGrade: [], });
+            this.props.getRMGradeSelectListByRawMaterial(0, res => { });
         }
     }
 
@@ -102,12 +104,10 @@ class AddSpecification extends Component {
         if (newValue && newValue != '') {
             this.setState({ material: newValue }, () => {
                 const { material } = this.state;
-                this.props.fetchRMGradeAPI(material.value, res => { });
                 this.setDensity(material.value);
             });
         } else {
             this.setState({ material: [], RMGrade: [] });
-            this.props.fetchRMGradeAPI(0, res => { });
             this.props.change('Density', '')
         }
     }
@@ -138,27 +138,30 @@ class AddSpecification extends Component {
     * @description Used show listing of row material
     */
     renderListing = (label) => {
-        const { rawMaterialNameSelectList, MaterialSelectList, rmGradeList, } = this.props;
+        const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectListByRMID, } = this.props;
         const temp = [];
 
         if (label === 'RawMaterialName') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item =>
+            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
 
         if (label === 'material') {
-            MaterialSelectList && MaterialSelectList.map(item =>
+            MaterialSelectList && MaterialSelectList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
 
         if (label === 'RMGrade') {
-            rmGradeList && rmGradeList.map(item =>
+            gradeSelectListByRMID && gradeSelectListByRMID.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
     }
@@ -209,8 +212,8 @@ class AddSpecification extends Component {
     */
     closeGradeDrawer = (e = '') => {
         this.setState({ isOpenGrade: false }, () => {
-            const { material } = this.state;
-            this.handleMaterialChange(material, '');
+            const { RawMaterial } = this.state;
+            this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
         })
     }
 
@@ -246,7 +249,7 @@ class AddSpecification extends Component {
                 CreatedDate: '',
                 CreatedBy: loggedInUserId(),
                 GradeName: RMGrade.label,
-                MaterialTypeId: material.value,
+                MaterialId: material.value,
                 MaterialTypeName: material.label,
             }
             this.props.updateRMSpecificationAPI(formData, (res) => {
@@ -315,6 +318,7 @@ class AddSpecification extends Component {
                                                 required={true}
                                                 handleChangeDescription={this.handleRawMaterial}
                                                 valueDescription={this.state.RawMaterial}
+                                                disabled={isEditFlag ? true : false}
                                             />
                                         </Col>
                                         <Col md="1">
@@ -437,7 +441,7 @@ class AddSpecification extends Component {
                     isOpen={isOpenGrade}
                     closeDrawer={this.closeGradeDrawer}
                     isEditFlag={false}
-                    material={this.state.material}
+                    RawMaterial={this.state.RawMaterial}
                     //ID={ID}
                     anchor={'right'}
                 />}
@@ -459,8 +463,8 @@ class AddSpecification extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, costWorking, material }) {
-    const { rowMaterialList, rmGradeList } = comman;
-    const { specificationData, rawMaterialNameSelectList } = material;
+    const { rowMaterialList } = comman;
+    const { specificationData, rawMaterialNameSelectList, gradeSelectListByRMID } = material;
     const { MaterialSelectList } = costWorking;
 
     let initialValues = {};
@@ -471,7 +475,7 @@ function mapStateToProps({ comman, costWorking, material }) {
     }
 
     return {
-        rowMaterialList, rmGradeList, MaterialSelectList, specificationData,
+        rowMaterialList, gradeSelectListByRMID, MaterialSelectList, specificationData,
         rawMaterialNameSelectList, initialValues
     }
 }
@@ -493,6 +497,7 @@ export default connect(mapStateToProps, {
     getRowMaterialDataAPI,
     getRawMaterialNameChild,
     getMaterialTypeDataAPI,
+    getRMGradeSelectListByRawMaterial,
 })(reduxForm({
     form: 'AddSpecification',
     enableReinitialize: true,

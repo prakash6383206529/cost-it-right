@@ -21,6 +21,9 @@ import Switch from "react-switch";
 import $ from 'jquery';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
+import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css';
+import { FILE_URL } from '../../../../config/constants';
 
 class AddOperation extends Component {
     constructor(props) {
@@ -37,6 +40,9 @@ class AddOperation extends Component {
 
             isSurfaceTreatment: false,
             remarks: '',
+            files: [],
+            isVisible: false,
+            imageURL: '',
 
             isEditFlag: false,
             isShowForm: false,
@@ -265,12 +271,93 @@ class AddOperation extends Component {
                             UOM: { label: UOMObj.Text, value: UOMObj.Value },
                             isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
                             remarks: Data.Remark,
+                            files: Data.FileList,
                         })
                     }, 500)
 
                 }
             })
         }
+    }
+
+
+
+    // specify upload params and url for your files
+    getUploadParams = ({ file, meta }) => {
+        const { isEditFlag, RawMaterialID } = this.state;
+        return { url: 'https://httpbin.org/post', }
+
+    }
+
+    // called every time a file's `status` changes
+    handleChangeStatus = ({ meta, file }, status) => {
+        const { isEditFlag, files, } = this.state;
+
+        if (status == 'removed') {
+            const removedFileName = file.name;
+            let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
+            this.setState({ files: tempArr })
+        }
+
+        if (status == 'done') {
+            let data = new FormData()
+            data.append('file', file)
+            this.props.fileUploadRMDomestic(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state;
+                files.push(Data)
+                this.setState({ files: files })
+            })
+        }
+
+        if (status == 'rejected_file_type') {
+            console.log('rejected_file_type', status, meta, file)
+            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        }
+    }
+
+    renderImages = () => {
+        this.state.files && this.state.files.map(f => {
+            const withOutTild = f.FileURL.replace('~', '')
+            console.log('withOutTild', withOutTild)
+            const fileURL = `${FILE_URL}${withOutTild}`;
+            return (
+                <div className={'attachment-wrapper images'}>
+                    <img src={fileURL} />
+                    <button
+                        type="button"
+                        onClick={() => this.deleteFile(f.FileId)}>X</button>
+                </div>
+            )
+        })
+    }
+
+    deleteFile = (FileId, OriginalFileName) => {
+        console.log('removed', FileId, OriginalFileName)
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            this.props.fileDeleteRMDomestic(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = this.state.files.filter(item => item.FileId != FileId)
+                this.setState({ files: tempArr })
+            })
+        }
+        if (FileId == null) {
+            let tempArr = this.state.files.filter(item => item.FileName != OriginalFileName)
+            this.setState({ files: tempArr })
+        }
+    }
+
+    Preview = ({ meta }) => {
+        const { name, percent, status } = meta
+        return (
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {/* {Math.round(percent)}% */}
+            </span>
+        )
     }
 
     formToggle = () => {
@@ -310,7 +397,7 @@ class AddOperation extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, selectedVendorPlants, selectedPlants, vendorName,
+        const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
             UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId } = this.state;
         const { reset } = this.props;
 
@@ -334,13 +421,16 @@ class AddOperation extends Component {
 
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
+            let updatedFiles = files.map((file) => {
+                return { ...file, ContextId: OperationId }
+            })
             let updateData = {
                 OperationId: OperationId,
                 UnitOfMeasurementId: UOM.value,
                 Rate: values.Rate,
                 Technology: technologyArray,
                 Remark: remarks,
-                Attachements: [],
+                Attachements: updatedFiles,
                 LoggedInUserId: loggedInUserId(),
             }
 
@@ -369,7 +459,7 @@ class AddOperation extends Component {
                 Remark: remarks,
                 Plant: !IsVendor ? plantArray : [],
                 VendorPlant: vendorPlants,
-                Attachements: [],
+                Attachements: files,
                 LoggedInUserId: loggedInUserId(),
             }
             this.props.createOperationsAPI(formData, (res) => {
@@ -657,7 +747,43 @@ class AddOperation extends Component {
                                                 />
                                             </Col>
                                             <Col md="6">
-
+                                                <label>Upload Attachment ( upload up to 3 files )</label>
+                                                {this.state.files.length >= 3 ? '' :
+                                                    <Dropzone
+                                                        getUploadParams={this.getUploadParams}
+                                                        onChangeStatus={this.handleChangeStatus}
+                                                        PreviewComponent={this.Preview}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                                        initialFiles={this.state.initialFiles}
+                                                        maxFiles={3}
+                                                        maxSizeBytes={2000000}
+                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                                                        styles={{
+                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                                                        }}
+                                                        classNames="draper-drop"
+                                                    />}
+                                                <div className={'attachment-wrapper'}>
+                                                    {
+                                                        this.state.files && this.state.files.map(f => {
+                                                            const withOutTild = f.FileURL.replace('~', '')
+                                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                                            return (
+                                                                <div className={'attachment images'}>
+                                                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                                                        <img src={fileURL} height={50} width={100} />
+                                                                    </div> */}
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => this.deleteFile(f.FileId, f.FileName)}>X</button>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
                                             </Col>
                                         </Row>
 
