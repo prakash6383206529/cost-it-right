@@ -448,7 +448,7 @@ class ZBCPlantListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Sr. No." width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Sr. No." width={'70'} dataFormat={this.indexFormatter} dataSort={true}>Sr. No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsVendor" hidden={true} dataFormat={this.checkIsVendorFormatter} dataAlign="center" dataSort={true}>Is Vendor</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantName" dataAlign="center" dataSort={true}>Plant Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>
