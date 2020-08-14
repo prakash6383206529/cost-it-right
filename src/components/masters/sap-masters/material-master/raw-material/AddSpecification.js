@@ -9,7 +9,7 @@ import {
     getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
 } from '../../../../../actions/master/Material';
 import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
-import { getRawMaterialSelectList, fetchRMGradeAPI } from '../../../../../actions/master/Comman';
+import { fetchRMGradeAPI } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -27,6 +27,7 @@ class AddSpecification extends Component {
             RawMaterial: [],
             material: [],
             RMGrade: [],
+            Id: '',
             isOpenRMDrawer: false,
             isOpenGrade: false,
             isOpenMaterialDrawer: false,
@@ -38,9 +39,8 @@ class AddSpecification extends Component {
     * @description Called before render the component
     */
     componentWillMount() {
-        this.props.getRawMaterialSelectList(res => { });
-        this.props.getMaterialTypeSelectList(() => { })
         this.props.getRawMaterialNameChild(() => { })
+        this.props.getMaterialTypeSelectList(() => { })
     }
 
     /**
@@ -48,6 +48,10 @@ class AddSpecification extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        this.getDetails()
+    }
+
+    getDetails = () => {
         const { ID, isEditFlag } = this.props;
         if (isEditFlag) {
             this.props.getRMSpecificationDataAPI(ID, res => {
@@ -56,15 +60,12 @@ class AddSpecification extends Component {
                     this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterialId, res => { })
 
                     setTimeout(() => {
-                        const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectListByRMID } = this.props;
+                        const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectList } = this.props;
 
                         let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterialId)
                         let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Value == Data.MaterialId)
-                        let tempObj3 = gradeSelectListByRMID && gradeSelectListByRMID.find(item => item.Value == Data.GradeId)
+                        let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Value == Data.GradeId)
 
-                        //console.log('tempObj1', tempObj1)
-                        //console.log('tempObj2', tempObj2)
-                        //console.log('tempObj3', tempObj3)
                         this.setDensity(Data.MaterialId);
                         this.setState({
                             RawMaterial: tempObj1 && tempObj1 != undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
@@ -138,7 +139,7 @@ class AddSpecification extends Component {
     * @description Used show listing of row material
     */
     renderListing = (label) => {
-        const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectListByRMID, } = this.props;
+        const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectList, } = this.props;
         const temp = [];
 
         if (label === 'RawMaterialName') {
@@ -158,7 +159,7 @@ class AddSpecification extends Component {
         }
 
         if (label === 'RMGrade') {
-            gradeSelectListByRMID && gradeSelectListByRMID.map(item => {
+            gradeSelectList && gradeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -188,8 +189,8 @@ class AddSpecification extends Component {
         this.props.closeDrawer('')
     };
 
-    rawMaterialToggler = () => {
-        this.setState({ isOpenRMDrawer: true })
+    rawMaterialToggler = (Id = '') => {
+        this.setState({ isOpenRMDrawer: true, Id: Id })
     }
 
     /**
@@ -197,13 +198,14 @@ class AddSpecification extends Component {
     * @description  used to toggle RM Drawer Popup/Drawer
     */
     closeRMDrawer = (e = '') => {
-        this.setState({ isOpenRMDrawer: false }, () => {
+        this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
+            this.getDetails()
             this.props.getRawMaterialNameChild(() => { })
         })
     }
 
-    gradeToggler = () => {
-        this.setState({ isOpenGrade: true })
+    gradeToggler = (Id = '') => {
+        this.setState({ isOpenGrade: true, Id: Id })
     }
 
     /**
@@ -211,7 +213,8 @@ class AddSpecification extends Component {
     * @description  used to toggle grade Popup/Drawer
     */
     closeGradeDrawer = (e = '') => {
-        this.setState({ isOpenGrade: false }, () => {
+        this.setState({ isOpenGrade: false, Id: '' }, () => {
+            this.getDetails()
             const { RawMaterial } = this.state;
             this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
         })
@@ -281,7 +284,7 @@ class AddSpecification extends Component {
     */
     render() {
         const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer } = this.state;
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, specificationData } = this.props;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -322,10 +325,14 @@ class AddSpecification extends Component {
                                             />
                                         </Col>
                                         <Col md="1">
-                                            <div
-                                                onClick={this.rawMaterialToggler}
-                                                className={'plus-icon mt30 mr15 right'}>
-                                            </div>
+                                            {isEditFlag ?
+                                                <button className="Edit mr5" type={'button'} onClick={() => this.rawMaterialToggler(specificationData.RawMaterialId)} />
+                                                :
+                                                <div
+                                                    onClick={() => this.rawMaterialToggler('')}
+                                                    className={'plus-icon-square mt30 mr15 right'}>
+                                                </div>
+                                            }
                                         </Col>
                                     </Row>
                                     <Row>
@@ -347,7 +354,7 @@ class AddSpecification extends Component {
                                         <Col md="1">
                                             <div
                                                 onClick={this.materialToggler}
-                                                className={'plus-icon mt30 mr15 right'}>
+                                                className={'plus-icon-square mt30 mr15 right'}>
                                             </div>
                                         </Col>
                                         <Col md="12">
@@ -382,10 +389,19 @@ class AddSpecification extends Component {
                                             />
                                         </Col>
                                         <Col md="1">
-                                            <div
-                                                onClick={this.gradeToggler}
-                                                className={'plus-icon mt30 mr15 right'}>
-                                            </div>
+                                            {isEditFlag ?
+                                                <button className="Edit mr5" type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
+                                                :
+                                                (this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ?
+                                                    <div className={'plus-icon-square blurPlus-icon-square right'}>
+                                                    </div>
+                                                    :
+                                                    <div
+                                                        onClick={() => this.gradeToggler('')}
+                                                        className={'plus-icon-square right'}>
+                                                    </div>
+                                            }
+
                                         </Col>
                                     </Row>
 
@@ -409,19 +425,18 @@ class AddSpecification extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-md-12">
                                             <div className="text-center ">
-                                                <input
-                                                    //disabled={pristine || submitting}
-                                                    onClick={this.cancel}
-                                                    type="button"
-                                                    value="Cancel"
+                                                <button
+                                                    type={'button'}
                                                     className="reset mr15 cancel-btn"
-                                                />
-                                                <input
-                                                    //disabled={isSubmitted ? true : false}
+                                                    onClick={this.cancel} >
+                                                    <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
+                                                </button>
+                                                <button
                                                     type="submit"
-                                                    value={isEditFlag ? 'Update' : 'Save'}
-                                                    className="submit-button mr5 save-btn"
-                                                />
+                                                    className="submit-button mr5 save-btn" >
+                                                    <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                    </div> {isEditFlag ? 'Update' : 'Save'}
+                                                </button>
                                             </div>
                                         </div>
                                     </Row>
@@ -433,16 +448,16 @@ class AddSpecification extends Component {
                 {isOpenRMDrawer && <AddRawMaterial
                     isOpen={isOpenRMDrawer}
                     closeDrawer={this.closeRMDrawer}
-                    isEditFlag={false}
-                    //ID={ID}
+                    isEditFlag={isEditFlag}
+                    ID={this.state.Id}
                     anchor={'right'}
                 />}
                 {isOpenGrade && <AddGrade
                     isOpen={isOpenGrade}
                     closeDrawer={this.closeGradeDrawer}
-                    isEditFlag={false}
+                    isEditFlag={isEditFlag}
                     RawMaterial={this.state.RawMaterial}
-                    //ID={ID}
+                    ID={this.state.Id}
                     anchor={'right'}
                 />}
                 {isOpenMaterialDrawer && <AddMaterialType
@@ -463,8 +478,7 @@ class AddSpecification extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, costWorking, material }) {
-    const { rowMaterialList } = comman;
-    const { specificationData, rawMaterialNameSelectList, gradeSelectListByRMID } = material;
+    const { specificationData, rawMaterialNameSelectList, gradeSelectList } = material;
     const { MaterialSelectList } = costWorking;
 
     let initialValues = {};
@@ -475,7 +489,7 @@ function mapStateToProps({ comman, costWorking, material }) {
     }
 
     return {
-        rowMaterialList, gradeSelectListByRMID, MaterialSelectList, specificationData,
+        gradeSelectList, MaterialSelectList, specificationData,
         rawMaterialNameSelectList, initialValues
     }
 }
@@ -488,7 +502,6 @@ function mapStateToProps({ comman, costWorking, material }) {
  */
 export default connect(mapStateToProps, {
     createRMSpecificationAPI,
-    getRawMaterialSelectList,
     fetchRMGradeAPI,
     getMaterialTypeSelectList,
     updateRMSpecificationAPI,

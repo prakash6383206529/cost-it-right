@@ -17,6 +17,7 @@ export function formatLoginResult(res) {
             Roles: res.Data.Roles,
             Plants: res.Data.Plants,
             Permissions: res.Data.Permissions,
+            IsVendorPlantConfigurable: res.Data.IsVendorPlantConfigurable,
         };
         //console.log("userObj", userObj)
         return userObj;

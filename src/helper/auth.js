@@ -24,3 +24,8 @@ export function loggedInUserId() {
         return null;
     }
 };
+
+export function checkVendorPlantConfigurable() {
+    const userDetail = reactLocalStorage.getObject("userDetail");
+    return userDetail.IsVendorPlantConfigurable;
+};

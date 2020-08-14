@@ -4,7 +4,14 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild,
-    getGradeSelectList,
+    getGradeSelectList, getRMGradeSelectListByRawMaterial,
+    getRawMaterialFilterSelectList,
+    getGradeFilterByRawMaterialSelectList,
+    getVendorFilterByRawMaterialSelectList,
+    getRawMaterialFilterByGradeSelectList,
+    getVendorFilterByGradeSelectList,
+    getRawMaterialFilterByVendorSelectList,
+    getGradeFilterByVendorSelectList,
 } from '../../../../../actions/master/Material';
 import { required } from "../../../../../helper/validation";
 import { getSupplierList } from '../../../../../actions/master/Comman';
@@ -32,9 +39,32 @@ class RMImportListing extends Component {
             RMGrade: [],
             vendorName: [],
             value: { min: 0, max: 0 },
+            maxRange: 0,
             isBulkUpload: false,
         }
     }
+
+    componentWillMount() {
+        this.getInitialRange()
+    }
+
+    getInitialRange = () => {
+        const { value } = this.state;
+        const filterData = {
+            material_id: null,
+            grade_id: null,
+            vendor_id: null,
+            net_landed_min_range: value.min,
+            net_landed_max_range: value.max,
+        }
+        this.props.getRMImportDataList(filterData, (res) => {
+            if (res && res.status == 200) {
+                let DynamicData = res.data.DynamicData;
+                this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
+            }
+        })
+    }
+
 
     /**
     * @method componentDidMount
@@ -45,6 +75,9 @@ class RMImportListing extends Component {
         this.props.getRawMaterialNameChild(() => { })
         this.props.getGradeSelectList(() => { })
         this.props.getSupplierList(() => { })
+
+        this.props.getRawMaterialFilterSelectList(() => { })
+
         this.getDataList(null, null, null)
     }
 
@@ -65,7 +98,11 @@ class RMImportListing extends Component {
         this.props.getRMImportDataList(filterData, (res) => {
             if (res && res.status == 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                let DynamicData = res.data.DynamicData;
+                this.setState({
+                    tableData: Data,
+                    maxRange: DynamicData.MaxRange,
+                })
             } else if (res && res.response && res.response.status == 412) {
                 this.setState({ tableData: [] })
             } else {
@@ -252,9 +289,18 @@ class RMImportListing extends Component {
     */
     handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RawMaterial: newValue });
+            this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
+                const { RawMaterial } = this.state;
+                this.props.getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { })
+                this.props.getVendorFilterByRawMaterialSelectList(RawMaterial.value, res => { })
+
+                //this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
+            });
         } else {
-            this.setState({ RawMaterial: [], });
+            this.setState({ RawMaterial: [], RMGrade: [] }, () => {
+                this.props.getGradeSelectList(res => { });
+            });
+
         }
     }
 
@@ -264,7 +310,11 @@ class RMImportListing extends Component {
     */
     handleGradeChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RMGrade: newValue })
+            this.setState({ RMGrade: newValue }, () => {
+                const { RMGrade } = this.state;
+                this.props.getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { })
+                this.props.getVendorFilterByGradeSelectList(RMGrade.value, () => { })
+            })
         } else {
             this.setState({ RMGrade: [], })
         }
@@ -276,7 +326,11 @@ class RMImportListing extends Component {
     */
     handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ vendorName: newValue });
+            this.setState({ vendorName: newValue }, () => {
+                const { vendorName } = this.state;
+                this.props.getRawMaterialFilterByVendorSelectList(vendorName.value, () => { })
+                this.props.getGradeFilterByVendorSelectList(vendorName.value, () => { })
+            });
         } else {
             this.setState({ vendorName: [] })
         }
@@ -306,7 +360,10 @@ class RMImportListing extends Component {
             vendorName: [],
             value: { min: 0, max: 0 },
         }, () => {
+            this.getInitialRange()
             this.getDataList(null, null, null)
+            this.props.getRawMaterialFilterSelectList(() => { })
+            //this.props.getGradeSelectList(() => { });
         })
 
     }
@@ -402,7 +459,7 @@ class RMImportListing extends Component {
                                 </div>
                                 <div className="flex-fill sliderange">
                                     <InputRange
-                                        maxValue={500}
+                                        maxValue={this.state.maxRange}
                                         minValue={0}
                                         value={this.state.value}
                                         onChange={value => this.setState({ value })} />
@@ -461,7 +518,7 @@ class RMImportListing extends Component {
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="center" >{this.renderRawMaterial()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="center" >{this.renderRMGrade()}</TableHeaderColumn>
@@ -498,9 +555,9 @@ class RMImportListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman }) {
-    const { rawMaterialNameSelectList, gradeSelectList } = material;
+    const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList } = material;
     const { supplierSelectList, } = comman;
-    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList }
+    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList }
 }
 
 /**
@@ -514,7 +571,15 @@ export default connect(mapStateToProps, {
     getRMImportDataList,
     getRawMaterialNameChild,
     getGradeSelectList,
+    getRMGradeSelectListByRawMaterial,
     getSupplierList,
+    getRawMaterialFilterSelectList,
+    getGradeFilterByRawMaterialSelectList,
+    getVendorFilterByRawMaterialSelectList,
+    getRawMaterialFilterByGradeSelectList,
+    getVendorFilterByGradeSelectList,
+    getRawMaterialFilterByVendorSelectList,
+    getGradeFilterByVendorSelectList,
 })(reduxForm({
     form: 'RMImportListing',
     enableReinitialize: true,

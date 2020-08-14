@@ -17,7 +17,7 @@ import UOMMaster from './masters/sap-masters/uom-master';
 import CategoryMaster from './masters/sap-masters/category-master';
 import RowMaterialMaster from './masters/sap-masters/material-master/raw-material';
 import PlantMaster from './masters/sap-masters/plant-master/index';
-import SupplierMaster from './masters/sap-masters/supplier-master/AddSupplier';
+import SupplierMaster from './masters/sap-masters/supplier-master/VendorListing';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
 import OtherOperationMaster from './masters/sap-masters/other-operation';
@@ -130,12 +130,12 @@ class Main extends Component {
                 </div>
               </div>
             </div>}
-          <div className="blue-box">
+          <div className={isLogin ? 'blue-box' : ''}>
             {isLogin && !this.state.visibelPageNotFound && <Breadcrumb onRef={ref => (this.child = ref)} />}
             {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} breadCrumbTrail={this.breadCrumbTrail} />}
 
             <div className={isLogin ? 'content-page' : ''}>
-              <div className=" middleContainer">
+              <div className={isLogin ? 'middleContainer' : ''}>
                 <Switch>
                   {/* <Route exact path="/" component={Homepage} /> */}
                   <Route exact path="/" component={AuthMiddleware(Dashboard)} />

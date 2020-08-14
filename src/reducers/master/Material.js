@@ -25,10 +25,17 @@ import {
     GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
     GET_GRADE_SELECTLIST_BY_RAWMATERIAL,
     GET_GRADE_SELECTLIST_SUCCESS,
+    GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA,
+    GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST,
+    GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST,
+    GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST,
+    GET_VENDOR_FILTER_BY_GRADE_SELECTLIST,
+    GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
+    GET_GRADE_FILTER_BY_VENDOR_SELECTLIST,
 } from '../../config/constants';
 
 const initialState = {
-
+    filterRMSelectList: {}
 };
 
 export default function materialReducer(state = initialState, action) {
@@ -215,6 +222,55 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 gradeSelectList: action.payload
+            };
+        case GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterRMSelectList: action.payload
+            };
+        case GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterRMSelectList: { ...state.filterRMSelectList, Grades: action.payload }
+            };
+        case GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterRMSelectList: { ...state.filterRMSelectList, Vendors: action.payload }
+            };
+        case GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterRMSelectList: { ...state.filterRMSelectList, RawMaterials: action.payload }
+            };
+        case GET_VENDOR_FILTER_BY_GRADE_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterRMSelectList: { ...state.filterRMSelectList, Vendors: action.payload }
+            };
+        case GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterRMSelectList: { ...state.filterRMSelectList, RawMaterials: action.payload }
+            };
+        case GET_GRADE_FILTER_BY_VENDOR_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                filterRMSelectList: { ...state.filterRMSelectList, Grades: action.payload }
             };
         default:
             return state;

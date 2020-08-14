@@ -139,7 +139,7 @@ class RowMaterialMaster extends Component {
 
                                 {this.state.activeTab == 3 &&
                                     <TabPane tabId="3">
-                                        <SpecificationListing />
+                                        <SpecificationListing toggle={this.toggle} />
                                     </TabPane>}
 
                                 {this.state.activeTab == 4 &&

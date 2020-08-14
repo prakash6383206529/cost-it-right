@@ -13,6 +13,7 @@ import { CONSTANT } from '../../helper/AllConastant';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
+import UsersListing from './UsersListing';
 
 
 class User extends Component {
@@ -20,7 +21,9 @@ class User extends Component {
     super(props);
     this.state = {
       isOpen: false,
-      activeTab: '1'
+      activeTab: '1',
+      isUserForm: false,
+      data: {},
     }
   }
 
@@ -37,12 +40,32 @@ class User extends Component {
     }
   }
 
+  displayForm = () => {
+    this.setState({ isUserForm: true, })
+  }
+
+  hideForm = () => {
+    this.setState({ isUserForm: false, data: {} })
+  }
+
+  getUserDetail = (data) => {
+    this.setState({ isUserForm: true, data: data })
+  }
+
   /**
   * @method render
   * @description Renders the component
   */
   render() {
-    const { isOpen } = this.state;
+    const { isUserForm, data } = this.state;
+
+    if (isUserForm === true) {
+      return <UserRegistration
+        data={data}
+        hideForm={this.hideForm}
+      />
+    }
+
     return (
       <Container fluid className="user-page">
         {/* {this.props.loading && <Loader/>} */}
@@ -52,29 +75,31 @@ class User extends Component {
             <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                 Manage Users
-                                </NavLink>
+              </NavLink>
             </NavItem>
             <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-              Manage Roles & Permission 
-                                </NavLink>
+                Manage Roles & Permission
+              </NavLink>
             </NavItem>
             <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                 Manage Department
-                                </NavLink>
+              </NavLink>
             </NavItem>
             <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                 Manage Levels
-                                </NavLink>
+              </NavLink>
             </NavItem>
           </Nav>
           <TabContent activeTab={this.state.activeTab}>
             {this.state.activeTab === '1' &&
               <TabPane tabId="1">
-                <UserRegistration
-                  toggle={this.toggle} />
+                <UsersListing
+                  formToggle={this.displayForm}
+                  getUserDetail={this.getUserDetail}
+                />
               </TabPane>}
             {this.state.activeTab === '2' &&
               <TabPane tabId="2">

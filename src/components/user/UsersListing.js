@@ -68,7 +68,7 @@ class UsersListing extends Component {
 				})
 			}
 		})
-		this.props.onRef(this)
+		//this.props.onRef(this)
 	}
 
 	// Get updated user list after any action performed.
@@ -146,13 +146,13 @@ class UsersListing extends Component {
 	* @description confirm edit item
 	*/
 	editItemDetails = (Id, passwordFlag = false) => {
-		let requestData = {
+		let data = {
 			isEditFlag: true,
 			UserId: Id,
 			passwordFlag: passwordFlag,
 		}
 		this.closeUserDetails()
-		this.props.getUserDetail(requestData)
+		this.props.getUserDetail(data)
 	}
 
 	/**

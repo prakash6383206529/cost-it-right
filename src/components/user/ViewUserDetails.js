@@ -26,11 +26,14 @@ class ViewUserDetails extends Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.props.getUserDataAPI(this.props.UserId, (res) => {
-      if (res && res.data && res.data.Data) {
-      }
+      if (res && res.data && res.data.Data) { }
     })
+  }
+
+  componentDidMount() {
+
     this.props.getActionHeadsSelectList(() => { })
     this.getUserPermission(this.props.UserId)
     this.getUsersTechnologyLevelData(this.props.UserId)
@@ -140,8 +143,8 @@ class ViewUserDetails extends Component {
     const { UserId, registerUserData } = this.props;
     const { isPermissionOpen, isTechnologyOpen } = this.state;
 
-    const address = `${registerUserData.AddressLine1}, ${registerUserData.AddressLine2}, 
-    ${registerUserData.CityName},  ${registerUserData.ZipCode}`;
+    const address = registerUserData ? `${registerUserData.AddressLine1}, ${registerUserData.AddressLine2}, 
+    ${registerUserData.CityName},  ${registerUserData.ZipCode}` : '';
 
     return (
       <>
@@ -175,15 +178,15 @@ class ViewUserDetails extends Component {
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Name</div>
-                    <div className={'right-details'}>{registerUserData.FullName}</div>
+                    <div className={'right-details'}>{registerUserData ? registerUserData.FullName : ''}</div>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Mobile No.</div>
-                    <div className={'right-details'}>{registerUserData.Mobile}</div>
+                    <div className={'right-details'}>{registerUserData ? registerUserData.Mobile : ''}</div>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Phone No.-Ext:</div>
-                    <div className={'right-details'}>{registerUserData.PhoneNumber}-{registerUserData.Extension}</div>
+                    <div className={'right-details'}>{registerUserData ? registerUserData.PhoneNumber : ''}-{registerUserData ? registerUserData.Extension : ''}</div>
                   </Col>
                 </Row>
                 <Row className="mt-15">
@@ -194,11 +197,11 @@ class ViewUserDetails extends Component {
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Email ID:</div>
-                    <div className={'right-details'}>{registerUserData.EmailAddress}</div>
+                    <div className={'right-details'}>{registerUserData ? registerUserData.EmailAddress : ''}</div>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>User Name</div>
-                    <div className={'right-details'}>{registerUserData.UserName}</div>
+                    <div className={'right-details'}>{registerUserData ? registerUserData.UserName : ''}</div>
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Password</div>
@@ -243,21 +246,21 @@ class ViewUserDetails extends Component {
                           </tr>
                         </thead>
                         <tbody >
-                          
+
                           {this.state.Modules && this.state.Modules.map((item, index) => {
                             if (item.IsChecked == false) return false;
                             return (
                               <tr key={index}>
 
-                                <td  colSpan="6" className={'Module-Name'} >{item.ModuleName}</td>
+                                <td colSpan="6" className={'Module-Name'} >{item.ModuleName}</td>
 
                                 {this.renderAction(item.Actions, index)}
                               </tr>
                             )
                           })}
                           {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                      
-                       </tbody>
+
+                        </tbody>
                       </Table>
                     </Col>}
 
@@ -282,7 +285,7 @@ class ViewUserDetails extends Component {
                         <thead>
                           <tr>
                             <th className="text-left" >{`Technology`}</th>
-                            <th  className="text-left">{`Level`}</th>
+                            <th className="text-left">{`Level`}</th>
                           </tr>
                         </thead>
                         <tbody >

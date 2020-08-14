@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../../../helper/validation";
+import { required, checkForNull, maxLength100, getVendorCode } from "../../../../../helper/validation";
 import {
     renderText, renderSelectField, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField
@@ -21,7 +21,7 @@ import RMImportListing from './RMImportListing';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../../helper/auth";
+import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../../helper/auth";
 import Switch from "react-switch";
 import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
@@ -51,6 +51,7 @@ class AddRMImport extends Component {
             selectedPlants: [],
 
             vendorName: [],
+            VendorCode: '',
             selectedVendorPlants: [],
             vendorLocation: [],
 
@@ -182,6 +183,8 @@ class AddRMImport extends Component {
         if (newValue && newValue != '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
                 const { vendorName } = this.state;
+                const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
+                this.setState({ VendorCode: result })
                 this.props.getPlantBySupplier(vendorName.value, () => { })
                 this.props.getCityBySupplier(vendorName.value, () => { })
             });
@@ -299,12 +302,12 @@ class AddRMImport extends Component {
                     this.props.getCityBySupplier(Data.Vendor, () => { })
 
                     setTimeout(() => {
-                        const { gradeSelectListByRMID, rmSpecification, cityList, categoryList,
+                        const { gradeSelectList, rmSpecification, cityList, categoryList,
                             filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
                             vendorListByVendorType, currencySelectList, } = this.props;
 
                         const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
-                        const gradeObj = gradeSelectListByRMID && gradeSelectListByRMID.find(item => item.Value == Data.RMGrade)
+                        const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value == Data.RMGrade)
                         const specObj = rmSpecification && rmSpecification.find(item => item.Value == Data.RMSpec)
                         const categoryObj = categoryList && categoryList.find(item => item.Value == Data.Category)
                         const currencyObj = currencySelectList && currencySelectList.find(item => item.Text == Data.Currency)
@@ -343,6 +346,7 @@ class AddRMImport extends Component {
                             Category: categoryObj != undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                             selectedPlants: plantArray,
                             vendorName: vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            //VendorCode: Data.VendorCode,
                             selectedVendorPlants: vendorPlantArray,
                             vendorLocation: vendorLocationObj != undefined ? { label: vendorLocationObj.Text, value: vendorLocationObj.Value } : [],
                             HasDifferentSource: Data.HasDifferentSource,
@@ -440,7 +444,9 @@ class AddRMImport extends Component {
     }
 
     closeUOMDrawer = (e = '') => {
-        this.setState({ isOpenUOM: false })
+        this.setState({ isOpenUOM: false }, () => {
+            this.props.getUOMSelectList(() => { })
+        })
     }
 
     /**
@@ -448,7 +454,7 @@ class AddRMImport extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { gradeSelectListByRMID, rmSpecification, plantList, filterPlantList,
+        const { gradeSelectList, rmSpecification, plantList, filterPlantList,
             cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
             UOMSelectList, currencySelectList, vendorListByVendorType } = this.props;
         const temp = [];
@@ -460,7 +466,7 @@ class AddRMImport extends Component {
             return temp;
         }
         if (label === 'grade') {
-            gradeSelectListByRMID && gradeSelectListByRMID.map(item => {
+            gradeSelectList && gradeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -672,7 +678,7 @@ class AddRMImport extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName,
+        const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
             selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, currency,
             effectiveDate, remarks, RawMaterialID, isEditFlag, files, } = this.state;
         const { reset } = this.props;
@@ -735,7 +741,8 @@ class AddRMImport extends Component {
                 Remark: remarks,
                 LoggedInUserId: loggedInUserId(),
                 Plant: IsVendor == false ? plantArray : [],
-                VendorPlant: IsVendor == false ? [] : vendorPlantArray,
+                VendorPlant: checkVendorPlantConfigurable() ? (IsVendor ? vendorPlantArray : []) : [],
+                VendorCode: VendorCode,
                 Attachements: files,
                 Currency: currency.label,
                 EffectiveDate: effectiveDate,
@@ -954,22 +961,23 @@ class AddRMImport extends Component {
                                                     </div>
                                                 </div>
                                             </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label="Vendor Plant"
-                                                    name="DestinationSupplierPlantId"
-                                                    placeholder="--Select--"
-                                                    selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
-                                                    options={this.renderListing('VendorPlant')}
-                                                    selectionChanged={this.handleVendorPlant}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    className="multiselect-with-border"
-                                                    disabled={isEditFlag ? true : (this.state.IsVendor ? false : true)}
-                                                />
-                                            </Col>
+                                            {checkVendorPlantConfigurable() && this.state.IsVendor &&
+                                                <Col md="3">
+                                                    <Field
+                                                        label="Vendor Plant"
+                                                        name="DestinationSupplierPlantId"
+                                                        placeholder="--Select--"
+                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                        options={this.renderListing('VendorPlant')}
+                                                        selectionChanged={this.handleVendorPlant}
+                                                        optionValue={option => option.Value}
+                                                        optionLabel={option => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        className="multiselect-with-border"
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                </Col>}
                                             <Col md="3">
                                                 <Field
                                                     name="DestinationSupplierCityId"
@@ -1312,7 +1320,7 @@ function mapStateToProps(state) {
         currencySelectList, } = comman;
 
     const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
-        gradeSelectListByRMID, vendorListByVendorType } = material;
+        gradeSelectList, vendorListByVendorType } = material;
 
     let initialValues = {};
     if (rawMaterialDetails && rawMaterialDetails != undefined) {
@@ -1329,7 +1337,7 @@ function mapStateToProps(state) {
         uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification,
         plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
         filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
-        fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectListByRMID,
+        fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
         filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList,
     }
 

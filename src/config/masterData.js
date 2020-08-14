@@ -58,14 +58,15 @@ export const Masters = [
 ];
 
 export const RMDomesticZBC = [
-    { label: "CostingHead", value: "CostingHead" },
+    //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
+    { label: "Material", value: "Material" },
     { label: "Plant", value: "Plant" },
     { label: "VendorName", value: "VendorName" },
-    //{ label: "VendorPlant", value: "VendorPlant" },
+    { label: "VendorCode", value: "VendorCode" },
     { label: "VendorLocation", value: "VendorLocation" },
     { label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" },
@@ -79,37 +80,38 @@ export const RMDomesticZBC = [
 
 export const RMDomesticZBCTempData = [
     {
-        "CostingHead": "ZBC",
+        //"CostingHead": "ZBC",
         "RawMaterial": "RawMaterial Name",
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
+        "Material": "Aluminium",
         "Plant": "Plant Name",
         "VendorName": "Vendor Name",
-        //"VendorPlant": "VendorPlant",
+        "VendorCode": "Vendor123",
         "VendorLocation": "Vendor Location",
-        "HasDifferentSource": "True or False",
+        "HasDifferentSource": "YES or NO",
         "Source": "Source Name",
         "SourceLocation": "Source Location",
         "UOM": "Kilogram or Litre",
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",
-        "EffectiveDate": "YYYY-DD-MM",
+        "EffectiveDate": "DD-MM-YYYY",
     }
 ]
 
 export const RMDomesticVBC = [
-    { label: "CostingHead", value: "CostingHead" },
+    //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
-    //{ label: "Plant", value: "Plant" },
+    { label: "Material", value: "Material" },
     { label: "VendorName", value: "VendorName" },
+    { label: "VendorCode", value: "VendorCode" },
     { label: "VendorPlant", value: "VendorPlant" },
     { label: "VendorLocation", value: "VendorLocation" },
-    //{ label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" },
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" },
@@ -121,35 +123,36 @@ export const RMDomesticVBC = [
 
 export const RMDomesticVBCTempData = [
     {
-        "CostingHead": "VBC",
+        //"CostingHead": "VBC",
         "RawMaterial": "RawMaterial Name",
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        //"Plant": "Plant Name",
+        "Material": "Aluminium",
         "VendorName": "Vendor Name",
+        "VendorCode": "Vendor123",
         "VendorPlant": "VendorPlant",
         "VendorLocation": "Vendor Location",
-        //"HasDifferentSource": "True or False",
         "Source": "Source Name",
         "SourceLocation": "Source Location",
         "UOM": "Unit Measurement",
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",
-        "EffectiveDate": "YYYY-DD-MM",
+        "EffectiveDate": "DD-MM-YYYY",
     }
 ]
 
 export const RMImportZBC = [
-    { label: "CostingHead", value: "CostingHead" },
+    //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
+    { label: "Material", value: "Material" },
     { label: "Plant", value: "Plant" },
     { label: "VendorName", value: "VendorName" },
-    //{ label: "VendorPlant", value: "VendorPlant" },
+    { label: "VendorCode", value: "VendorCode" },
     { label: "VendorLocation", value: "VendorLocation" },
     { label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" },
@@ -165,16 +168,17 @@ export const RMImportZBC = [
 
 export const RMImportZBCTempData = [
     {
-        "CostingHead": "ZBC",
+        //"CostingHead": "ZBC",
         "RawMaterial": "RawMaterial Name",
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
+        "Material": "Aluminium",
         "Plant": "Plant Name",
         "VendorName": "Vendor Name",
-        //"VendorPlant": "VendorPlant",
+        "VendorCode": "Vendor123",
         "VendorLocation": "Vendor Location",
-        "HasDifferentSource": "True or False",
+        "HasDifferentSource": "YES or NO",
         "Source": "Source Name",
         "SourceLocation": "Source Location",
         "Currency": "Currency USD or INR",
@@ -182,21 +186,21 @@ export const RMImportZBCTempData = [
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",
-        "EffectiveDate": "YYYY-DD-MM",
+        "EffectiveDate": "DD-MM-YYYY",
     }
 ]
 
 export const RMImportVBC = [
-    { label: "CostingHead", value: "CostingHead" },
+    //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
-    //{ label: "Plant", value: "Plant" },
+    { label: "Material", value: "Material" },
     { label: "VendorName", value: "VendorName" },
+    { label: "VendorCode", value: "VendorCode" },
     { label: "VendorPlant", value: "VendorPlant" },
     { label: "VendorLocation", value: "VendorLocation" },
-    //{ label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" },
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "Currency", value: "Currency" },
@@ -209,16 +213,16 @@ export const RMImportVBC = [
 
 export const RMImportVBCTempData = [
     {
-        "CostingHead": "VBC",
+        //"CostingHead": "VBC",
         "RawMaterial": "RawMaterial Name",
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        //"Plant": "Plant Name",
+        "Material": "Aluminium",
         "VendorName": "Vendor Name",
+        "VendorCode": "Vendor123",
         "VendorPlant": "VendorPlant",
         "VendorLocation": "Vendor Location",
-        //"HasDifferentSource": "True or False",
         "Source": "Source Name",
         "SourceLocation": "Source Location",
         "Currency": "Currency USD or INR",
@@ -226,7 +230,7 @@ export const RMImportVBCTempData = [
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",
-        "EffectiveDate": "YYYY-DD-MM",
+        "EffectiveDate": "DD-MM-YYYY",
     }
 ]
 
@@ -235,7 +239,7 @@ export const RMSpecification = [
     { label: "Material", value: "Material" },
     { label: "RMGrade", value: "RMGrade" },
     { label: "Specification", value: "Specification" },
-    { label: "Plant", value: "Plant" },
+    //{ label: "Plant", value: "Plant" },
 ]
 
 export const RMSpecificationXLTempData = [
@@ -244,23 +248,42 @@ export const RMSpecificationXLTempData = [
         "Material": "Plastic",
         "RMGrade": "A1",
         "Specification": "Aluminium Wired",
-        "Plant": "Plant Name"
+        //"Plant": "Plant Name"
     }
 ]
 
-export const Supplier = [
-    { label: 'SupplierName', value: 'SupplierName', },
-    { label: 'SupplierCode', value: 'SupplierCode', },
-    { label: 'SupplierEmail', value: 'SupplierEmail', },
-    { label: 'Description', value: 'Description', },
+export const Vendor = [
+    { label: 'VendorType', value: 'VendorType', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'VendorEmail', value: 'VendorEmail', },
+    { label: 'MobileNumber', value: 'MobileNumber', },
     { label: 'AddressLine1', value: 'AddressLine1', },
     { label: 'AddressLine2', value: 'AddressLine2', },
     { label: 'ZipCode', value: 'ZipCode', },
     { label: 'PhoneNumber', value: 'PhoneNumber', },
     { label: 'Extension', value: 'Extension', },
-    { label: 'SupplierType', value: 'SupplierType', },
-    { label: 'CityName', value: 'CityName', },
-    { label: 'Plants', value: 'Plants', },
+    { label: 'City', value: 'City', },
+    { label: 'State', value: 'State', },
+    { label: 'Country', value: 'Country', },
+]
+
+export const VendorTempData = [
+    {
+        'VendorType': 'Vendor Type Name',
+        'VendorName': 'Vendor Name',
+        'VendorCode': 'Vendor Code',
+        'VendorEmail': 'Vendor Email',
+        'MobileNumber': 'Mobile Number',
+        'AddressLine1': 'Address',
+        'AddressLine2': 'Address',
+        'ZipCode': 'Zip Code',
+        'PhoneNumber': 'Phone Number',
+        'Extension': 'Extension',
+        'City': 'City',
+        'State': 'State',
+        'Country': 'Country',
+    }
 ]
 
 export const Plant = [

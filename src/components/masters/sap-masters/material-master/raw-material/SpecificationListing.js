@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
 import {
-    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMTypeSelectListAPI, getGradeSelectList,
+    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial,
+    getGradeSelectList, getRawMaterialNameChild,
 } from '../../../../../actions/master/Material';
 import { } from '../../../../../actions/costing/CostWorking';
 import { searchableSelect } from "../../../../layout/FormInputs";
@@ -37,7 +38,7 @@ class SpecificationListing extends Component {
    * @description Called after rendering the component
    */
     componentDidMount() {
-        this.props.getRMTypeSelectListAPI(() => { })
+        this.props.getRawMaterialNameChild(() => { })
         this.props.getGradeSelectList(() => { })
         this.getSpecificationListData('', '');
     }
@@ -76,7 +77,7 @@ class SpecificationListing extends Component {
     * @description Used show listing of row material
     */
     renderListing = (label) => {
-        const { gradeSelectList, rawMaterialTypeSelectList } = this.props;
+        const { gradeSelectList, rawMaterialNameSelectList } = this.props;
         const temp = [];
 
         if (label === 'RMGrade') {
@@ -88,7 +89,7 @@ class SpecificationListing extends Component {
         }
 
         if (label === 'RawMaterialName') {
-            rawMaterialTypeSelectList && rawMaterialTypeSelectList.map(item => {
+            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -114,9 +115,15 @@ class SpecificationListing extends Component {
     */
     handleMaterialChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RawMaterial: newValue, RMGrade: [], });
+            this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
+                const { RawMaterial } = this.state;
+                this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
+            });
         } else {
-            this.setState({ RawMaterial: [], RMGrade: [], });
+            this.setState({ RawMaterial: [], RMGrade: [] }, () => {
+                this.props.getGradeSelectList(res => { });
+            });
+
         }
     }
 
@@ -238,6 +245,7 @@ class SpecificationListing extends Component {
             const { RMGrade, RawMaterial } = this.state;
             const filterRM = RawMaterial ? RawMaterial.value : '';
             const filterGrade = RMGrade ? RMGrade.value : '';
+            this.props.getGradeSelectList(res => { });
             this.getSpecificationListData(filterRM, filterGrade)
         })
     }
@@ -247,7 +255,31 @@ class SpecificationListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false })
+        this.setState({ isBulkUpload: false }, () => {
+            this.getSpecificationListData('', '');
+        })
+    }
+
+    /**
+    * @method densityAlert
+    * @description confirm Redirection to Material tab.
+    */
+    densityAlert = () => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDensity()
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDensity
+    * @description confirm density popup.
+    */
+    confirmDensity = () => {
+        this.props.toggle('4')
     }
 
     /**
@@ -362,7 +394,7 @@ class SpecificationListing extends Component {
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="" dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>Raw Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
@@ -383,6 +415,7 @@ class SpecificationListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
+                    densityAlert={this.densityAlert}
                     fileName={'RMSpecification'}
                     messageLabel={'RM Specification'}
                     anchor={'right'}
@@ -398,14 +431,15 @@ class SpecificationListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material }) {
-    const { rmSpecificationDetail, rawMaterialTypeSelectList, gradeSelectList, } = material;
-    return { rmSpecificationDetail, rawMaterialTypeSelectList, gradeSelectList, }
+    const { rmSpecificationDetail, rawMaterialNameSelectList, gradeSelectList, } = material;
+    return { rmSpecificationDetail, rawMaterialNameSelectList, gradeSelectList, }
 }
 
 export default connect(mapStateToProps, {
     getRMSpecificationDataList,
     deleteRMSpecificationAPI,
-    getRMTypeSelectListAPI,
+    getRawMaterialNameChild,
+    getRMGradeSelectListByRawMaterial,
     getGradeSelectList,
 })(reduxForm({
     form: 'SpecificationListing',

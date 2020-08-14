@@ -23,6 +23,7 @@ export const API = {
   getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
   getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
   getPlantSelectList: `${BASE_URL}/configuration/select-list-get-plant`,
+  getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
 
   //Combo apis
   //configure api's
@@ -108,7 +109,7 @@ export const API = {
   getPart: `${BASE_URL}/configuration/select-list-get-part`,
   getPartSelectList: `${BASE_URL}/configuration/select-list-get-part`,
 
-  //Api's for bill of materail
+  //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
   createNewBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-new-bill-of-material`,
   getBOMAPI: `${BASE_URL}/masters-part-bill-of-material/get-bill-of-materials`,
@@ -120,7 +121,7 @@ export const API = {
   checkCostingExistForPart: `${BASE_URL}/masters-part-bill-of-material/check-exist-costing-by-part`,
   deleteExisCostingByPartID: `${BASE_URL}/masters-part-bill-of-material/delete-exist-costing-by-part`,
 
-  //Api for category master
+  //CATEGORY MASTER
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/masters-category/create`,
   getCategoryTypeDataAPI: `${BASE_URL}/masters-category/get-category-type`,
@@ -132,9 +133,6 @@ export const API = {
   getCategoryData: `${BASE_URL}/masters-category/get-category`,
   updateCategoryMasterAPI: `${BASE_URL}/masters-category/update-category`,
   deleteCategoryMasterAPI: `${BASE_URL}/masters-category/delete-category`,
-
-  //Api for row material master
-  //createMaterialAPI: `${BASE_URL}/masters-material/material-type-create`,
 
   //RAW MATERIAL MASTER
   createMaterialAPI: `${BASE_URL}/masters-raw-material/create-raw-material`,
@@ -158,7 +156,8 @@ export const API = {
   fileUploadRMDomestic: `${BASE_URL}/masters-raw-material/raw-material-file-upload`,
   fileUpdateRMDomestic: `${BASE_URL}/masters-raw-material/update-raw-material-file`,
   fileDeleteRMDomestic: `${BASE_URL}/masters-raw-material/delete-raw-material-file`,
-  bulkUploadRMDomestic: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-domestic-json`,
+  bulkUploadRMDomesticZBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-zbc-domestic-json`,
+  bulkUploadRMDomesticVBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-vbc-domestic-json`,
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
 
   //RAW MATERIAL IMPORT
@@ -166,7 +165,20 @@ export const API = {
   updateRMImportAPI: `${BASE_URL}/masters-raw-material/update-raw-material-import`,
   getRMImportDataById: `${BASE_URL}/masters-raw-material/get-raw-material-import-by-id`,
   getRMImportDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-import-list`,
-  bulkUploadRMImport: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-import-json`,
+  bulkUploadRMImportZBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-zbc-import-json`,
+  bulkUploadRMImportVBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-vbc-import-json`,
+
+  //RAW MATERIAL DOMESTIC AND IMPORT FILTER API'S
+  getRawMaterialFilterSelectList: `${BASE_URL}/masters-raw-material/get-raw-material-filter-select-list`,
+  //BY RM
+  getGradeFilterByRawMaterialSelectList: `${BASE_URL}/masters-raw-material/get-grades-select-list-by-raw-material`,
+  getVendorFilterByRawMaterialSelectList: `${BASE_URL}/masters-raw-material/get-vendors-select-list-by-raw-material`,
+  //BY GRADE
+  getRawMaterialFilterByGradeSelectList: `${BASE_URL}/masters-raw-material/get-raw-materils-select-list-by-grade`,
+  getVendorFilterByGradeSelectList: `${BASE_URL}/masters-raw-material/get-vendors-select-list-by-grade`,
+  //BY VENDOR
+  getRawMaterialFilterByVendorSelectList: `${BASE_URL}/masters-raw-material/get-raw-material-select-list-by-vendor`,
+  getGradeFilterByVendorSelectList: `${BASE_URL}/masters-raw-material/get-grade-select-list-by-vendor`,
 
   //RAW MATERIAL CATEGORY
   getCategoryDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
@@ -196,8 +208,10 @@ export const API = {
   getGradeByRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
   getRMGradeSelectListByRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade-by-raw-material-id`,
   bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
+  getRawMaterialChildById: `${BASE_URL}/masters-raw-material/get-raw-material-child-by-id`,
+  updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name-child`,
 
-  //Api for plant master
+  //PLANT MASTER
   //createPlantAPI: `${BASE_URL}/plant/create`,
   createPlantAPI: `${BASE_URL}/masters-plant/create`,
   getPlantAPI: `${BASE_URL}/masters-plant/get`,
@@ -207,17 +221,18 @@ export const API = {
   activeInactiveStatus: `${BASE_URL}/masters-plant/active`,
   getFilteredPlantList: `${BASE_URL}/masters-plant/get-all-by-filter`,
 
-  //Api for supplier master
+  //VENDOR MASTER
   createSupplierAPI: `${BASE_URL}/vendor/create-vendor`,
   getSupplierAPI: `${BASE_URL}/vendor/get-vendor`,
   getAllSupplierAPI: `${BASE_URL}/vendor/get-all-vendors`,
   updateSupplierAPI: `${BASE_URL}/vendor/update-vendor`,
-  deleteSupplierAPI: `${BASE_URL}/vendor/delete`,
+  deleteSupplierAPI: `${BASE_URL}/vendor/delete-vendor`,
   getRadioButtonSupplierType: `${BASE_URL}/configuration/radio-button-list-get-supplier-type`,
   getVendorTypesSelectList: `${BASE_URL}/vendor/vendor-types-select-list`,
   getSupplierLists: `${BASE_URL}/configuration/select-list-get-vendor`,
   activeInactiveVendorStatus: `${BASE_URL}/vendor/active-vendor`,
   getVendorsByVendorTypeID: `${BASE_URL}/vendor/vendor-by-vendor-type-select-list`,
+  vendorBulkUpload: `${BASE_URL}/vendor/bulk-upload-for-vendor-json`,
 
   //BOP DOMESTIC
   createBOPDomestic: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-domestic`,
@@ -236,7 +251,7 @@ export const API = {
   createBOPCategory: `${BASE_URL}/masters-bought-out-part/add-bought-out-part-category`,
   getBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
 
-  //Api's for process master
+  //PROCESS MASTER
   createProcessAPI: `${BASE_URL}/masters-process/create`,
   getProcessAPI: `${BASE_URL}/masters-process/get`,
   getAllProcessAPI: `${BASE_URL}/masters-process/get-all`,
@@ -559,6 +574,7 @@ export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
 export const GET_SUPPLIER_SELECTLIST_SUCCESS = 'GET_SUPPLIER_SELECTLIST_SUCCESS';
 export const GET_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_TECHNOLOGY_SELECTLIST_SUCCESS';
 export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS';
+export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST';
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS';
@@ -617,6 +633,13 @@ export const GET_RM_TYPE_DATALIST_SUCCESS = 'GET_RM_TYPE_DATALIST_SUCCESS';
 export const GET_RM_NAME_SELECTLIST = 'GET_RM_NAME_SELECTLIST';
 export const GET_GRADELIST_BY_RM_NAME_SELECTLIST = 'GET_GRADELIST_BY_RM_NAME_SELECTLIST';
 export const GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST = 'GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST';
+export const GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA = 'GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA';
+export const GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST = 'GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST';
+export const GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST = 'GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST';
+export const GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST = 'GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST';
+export const GET_VENDOR_FILTER_BY_GRADE_SELECTLIST = 'GET_VENDOR_FILTER_BY_GRADE_SELECTLIST';
+export const GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST = 'GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST';
+export const GET_GRADE_FILTER_BY_VENDOR_SELECTLIST = 'GET_GRADE_FILTER_BY_VENDOR_SELECTLIST';
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS';

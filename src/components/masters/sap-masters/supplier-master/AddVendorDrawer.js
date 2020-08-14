@@ -11,12 +11,14 @@ import {
     createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType,
     getVendorTypesSelectList,
 } from '../../../../actions/master/Supplier';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../helper/auth";
+import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../helper/auth";
+import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
+import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -32,6 +34,9 @@ class AddVendorDrawer extends Component {
 
             isOpenFuel: false,
             isOpenPlant: false,
+
+            isOpenVendorPlant: false,
+            VendorId: '',
         }
     }
 
@@ -41,36 +46,25 @@ class AddVendorDrawer extends Component {
     */
     componentWillMount() {
         this.props.getVendorTypesSelectList()
+        this.props.getVendorPlantSelectList(() => { })
         this.props.fetchCountryDataAPI(() => { })
     }
 
     /**
-   * @method componentDidMount
-   * @description called after render the component
-   */
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
-        const { supplierId, isEditFlag } = this.props;
-
-        if (isEditFlag) {
-
-        } else {
-
-        }
+        this.props.getSupplierByIdAPI('', false, () => { })
+        this.getDetail()
     }
 
-    toggleDrawer = (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-        this.props.closeDrawer('')
-    };
-
     /**
-    * @method handlePlantSelection
+    * @method handleVendorPlant
     * @description called
     */
-    handlePlantSelection = e => {
-        this.setState({ selectedPlants: e });
+    handleVendorPlant = e => {
+        this.setState({ selectedVendorPlants: e });
     };
 
     /**
@@ -81,14 +75,16 @@ class AddVendorDrawer extends Component {
         this.setState({ selectedVendorType: e });
     };
 
-    /**
-    * @method handleCityChange
-    * @description  used to handle city selection
-    */
-    handleCityChange = (e) => {
-        this.setState({
-            CityId: e.target.value
-        });
+    checkVendorSelection = () => {
+        const { selectedVendorType } = this.state;
+        let isContent = selectedVendorType && selectedVendorType.find(item => {
+            if (item.Text == 'VBC' || item.Text == 'BOP' || item.Text == 'RAW MATERIAL') {
+                return true;
+            }
+            return false;
+        })
+        //console.log('isContent', isContent)
+        return (isContent && isContent.Text) ? true : false;
     }
 
     /**
@@ -97,12 +93,12 @@ class AddVendorDrawer extends Component {
     */
     countryHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ country: newValue, state: [], city: [], }, () => {
+            this.setState({ country: newValue, state: [], city: [] }, () => {
                 const { country } = this.state;
                 this.props.fetchStateDataAPI(country.value, () => { })
             });
         } else {
-            this.setState({ country: [], state: [], city: [], })
+            this.setState({ country: [], state: [], city: [] })
         }
     };
 
@@ -112,12 +108,12 @@ class AddVendorDrawer extends Component {
     */
     stateHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ state: newValue, city: [], }, () => {
+            this.setState({ state: newValue, city: [] }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
             });
         } else {
-            this.setState({ state: [], city: [], });
+            this.setState({ state: [], city: [] });
         }
 
     };
@@ -138,8 +134,14 @@ class AddVendorDrawer extends Component {
         this.setState({ isOpenFuel: true })
     }
 
-    plantToggler = () => {
-        this.setState({ isOpenPlant: true })
+    vendorPlantToggler = () => {
+        this.setState({ isOpenVendorPlant: true })
+    }
+
+    closeVendorDrawer = (e = '') => {
+        this.setState({ isOpenVendorPlant: false }, () => {
+            this.props.getVendorPlantSelectList(() => { })
+        })
     }
 
     /**
@@ -147,28 +149,39 @@ class AddVendorDrawer extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { countryList, stateList, cityList, vendorTypeList } = this.props;
+        const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList } = this.props;
         const temp = [];
         if (label === 'country') {
-            countryList && countryList.map(item =>
+            countryList && countryList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'state') {
-            stateList && stateList.map(item =>
+            stateList && stateList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'city') {
-            cityList && cityList.map(item =>
+            cityList && cityList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'vendorType') {
             vendorTypeList && vendorTypeList.map((item, i) => {
+                if (item.Value == 0) return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'vendorPlants') {
+            vendorPlantSelectList && vendorPlantSelectList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
@@ -176,34 +189,80 @@ class AddVendorDrawer extends Component {
     }
 
     /**
-    * @method renderSelectPlantList
-    * @description Used to render listing of selected plants
+    * @method getDetail
+    * @description used to get user detail
     */
-    renderSelectPlantList = () => {
-        const { plantList } = this.props;
-        const temp = [];
-        plantList && plantList.map(item => {
-            if (item.Value != 0) {
-                temp.push({ Text: item.Text, Value: item.Value })
-            }
-        });
-        return temp;
+    getDetail = () => {
+        const { isEditFlag, ID } = this.props;
+        if (isEditFlag) {
+            this.setState({
+                isLoader: true,
+                isEditFlag: true,
+                isShowForm: true,
+                VendorId: ID,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getSupplierByIdAPI(ID, isEditFlag, (res) => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    let tempArr = [];
+                    let tempVendorPlant = [];
+                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
+                    this.props.fetchCityDataAPI(Data.StateId, () => { })
+
+                    Data && Data.VendorTypes.map((item) => {
+                        tempArr.push({ Text: item.VendorType, Value: item.VendorTypeId })
+                    })
+
+                    Data && Data.VendorPlants.map((item) => {
+                        tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
+                    })
+
+                    setTimeout(() => {
+                        const { countryList, stateList, cityList } = this.props;
+
+                        const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
+                        const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
+
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            selectedVendorType: tempArr,
+                            country: CountryObj && CountryObj != undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
+                            state: StateObj && StateObj != undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
+                            city: CityObj && CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            existedVendorPlants: tempVendorPlant,
+                            selectedVendorPlants: tempVendorPlant,
+                        })
+                    }, 500)
+
+                }
+            })
+        }
     }
 
-    /**
-    * @method checkVendorType
-    * @description Used to render listing of selected plants
-    */
-    checkVendorType = () => {
-        const { selectedVendorType } = this.state;
-        let isContent = selectedVendorType && selectedVendorType.find(item => {
-            if (item.Text == 'BOP' || item.Text == 'RAW MATERIAL') {
-                return true;
-            }
-            return false;
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        this.props.closeDrawer('')
+    };
+
+    clearForm = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            selectedVendorType: [],
+            selectedVendorPlants: [],
+            plantsArray: [],
+            country: [],
+            state: [],
+            city: [],
+            isShowForm: false,
+            isEditFlag: false,
         })
-        //console.log('isContent', isContent)
-        return (isContent == null || isContent == undefined) ? true : false;
+        this.toggleDrawer('')
     }
 
     /**
@@ -213,18 +272,21 @@ class AddVendorDrawer extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.toggleDrawer('')
-        //this.props.getRMSpecificationDataAPI('', res => { });
+        this.clearForm();
+        this.props.getSupplierByIdAPI('', false, () => { })
     }
+
+
+
 
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedVendorType, selectedPlants, plantsArray, country, state, city, } = this.state;
-        const { vendorTypeList } = this.props;
-        let loginUserId = loggedInUserId();
+        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, country,
+            state, city, VendorId } = this.state;
+        const { reset, supplierData, vendorPlantSelectList } = this.props;
 
         let vendorArray = [];
         selectedVendorType && selectedVendorType.map((item) => {
@@ -232,28 +294,59 @@ class AddVendorDrawer extends Component {
             return vendorArray;
         })
 
+        //Vendor Plants Array
+        let VendorPlantsArray = [];
+        vendorPlantSelectList && vendorPlantSelectList.map((item, index) => {
+            VendorPlantsArray.push(item.Value)
+        })
+
+        //DefaultIds Get in Edit Mode.
+        let DefaultVendorPlantIds = [];
+        existedVendorPlants && existedVendorPlants.map((item, index) => {
+            DefaultVendorPlantIds.push(item.Value)
+        })
+
+        //Selected Vendor Plant IDs.
+        let SelectedVendorPlantIds = [];
+        selectedVendorPlants && selectedVendorPlants.map((item, index) => {
+            SelectedVendorPlantIds.push(item.Value)
+        })
+
+        //Additonal Vendor Plant Id's
+        let AdditonalPlants = SelectedVendorPlantIds.filter(x => !DefaultVendorPlantIds.includes(x));
+
+        //Removed Vendor Plant Id's
+        let removedVendorPlants = DefaultVendorPlantIds.filter(x => !SelectedVendorPlantIds.includes(x));
+
+        let vendorPlantArray = [];
+        selectedVendorPlants && selectedVendorPlants.map((item) => {
+            vendorPlantArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
+            return vendorPlantArray;
+        })
+
         /** Update existing detail of supplier master **/
-        if (this.props.isEditFlag) {
-            const { supplierId } = this.props;
+        if (this.state.isEditFlag) {
             let formData = {
-                VendorId: '',
+                VendorId: VendorId,
                 VendorCode: values.VendorCode,
                 Email: values.Email,
-                AddressId: '',
+                AddressId: supplierData.AddressId,
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
-                Extension: '',
+                MobileNumber: values.MobileNumber,
+                Extension: values.Extension,
                 LoggedInUserId: loggedInUserId(),
-                AddedPlants: [],
-                RemovePlants: [],
+                AddedVendorPlants: AdditonalPlants,
+                RemoveVendorPlants: removedVendorPlants,
+                VendorTypes: vendorArray,
             }
-            this.setState({ isSubmitted: true });
             this.props.updateSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-                    this.toggleDrawer('')
+                    this.clearForm()
+                    //this.child.getUpdatedData();
                 }
             });
         } else {/** Add new detail for creating supplier master **/
@@ -265,6 +358,7 @@ class AddVendorDrawer extends Component {
                 IsActive: true,
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
+                VendorPlants: vendorPlantArray,
                 UserId: loggedInUserId(),
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
@@ -273,11 +367,11 @@ class AddVendorDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
             }
-            console.log('formData', formData)
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                    this.toggleDrawer('')
+                    this.clearForm();
+                    //this.child.getUpdatedData();
                 }
             });
         }
@@ -290,6 +384,7 @@ class AddVendorDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, reset } = this.props;
+        const { country, isOpenVendorPlant } = this.state;
         //console.log('sssssssssssss', this.checkVendorType())
         return (
             <div>
@@ -326,7 +421,7 @@ class AddVendorDrawer extends Component {
                                             component={renderMultiSelectField}
                                             mendatory={true}
                                             className="multiselect-with-border"
-                                            disabled={false}
+                                            disabled={this.state.isEditFlag ? true : false}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -340,6 +435,7 @@ class AddVendorDrawer extends Component {
                                             required={true}
                                             className=" "
                                             customClassName=" withBorder"
+                                            disabled={this.state.isEditFlag ? true : false}
                                         />
                                     </Col>
                                 </Row>
@@ -356,8 +452,10 @@ class AddVendorDrawer extends Component {
                                             normalize={upper}
                                             className=" "
                                             customClassName=" withBorder"
+                                            disabled={this.state.isEditFlag ? true : false}
                                         />
                                     </Col>
+
                                     <Col md="6">
                                         <Field
                                             label={`Email Id`}
@@ -410,9 +508,9 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[number, minLength7]}
-                                            //required={true}
-                                            maxLength={70}
+                                            validate={[required, number, minLength7]}
+                                            required={true}
+                                            maxLength={12}
                                             customClassName={'withBorder'}
                                         />
                                     </Col>
@@ -431,40 +529,46 @@ class AddVendorDrawer extends Component {
                                             required={true}
                                             handleChangeDescription={this.countryHandler}
                                             valueDescription={this.state.country}
+                                            disabled={this.state.isEditFlag ? true : false}
                                         />
                                     </Col>
-                                    <Col md="6">
-                                        <Field
-                                            name="StateId"
-                                            type="text"
-                                            label="State"
-                                            component={searchableSelect}
-                                            placeholder={'Select State'}
-                                            options={this.renderListing('state')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.stateHandler}
-                                            valueDescription={this.state.state}
-                                        />
-                                    </Col>
+                                    {(country.length == 0 || country.label == 'India') &&
+                                        <Col md="6">
+                                            <Field
+                                                name="StateId"
+                                                type="text"
+                                                label="State"
+                                                component={searchableSelect}
+                                                placeholder={'Select State'}
+                                                options={this.renderListing('state')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.stateHandler}
+                                                valueDescription={this.state.state}
+                                                disabled={this.state.isEditFlag ? true : false}
+                                            />
+                                        </Col>}
                                 </Row>
                                 <Row>
-                                    <Col md="6">
-                                        <Field
-                                            name="CityId"
-                                            type="text"
-                                            label="City"
-                                            component={searchableSelect}
-                                            placeholder={'Select city'}
-                                            options={this.renderListing('city')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.cityHandler}
-                                            valueDescription={this.state.city}
-                                        />
-                                    </Col>
+                                    {(country.length == 0 || country.label == 'India') &&
+                                        <Col md="6">
+                                            <Field
+                                                name="CityId"
+                                                type="text"
+                                                label="City"
+                                                component={searchableSelect}
+                                                placeholder={'Select city'}
+                                                options={this.renderListing('city')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.cityHandler}
+                                                valueDescription={this.state.city}
+                                                disabled={this.state.isEditFlag ? true : false}
+                                            />
+                                        </Col>}
+
                                     <Col md="6">
                                         <Field
                                             label="Address 1"
@@ -479,18 +583,17 @@ class AddVendorDrawer extends Component {
                                             customClassName=" withBorder"
                                         />
                                     </Col>
-
                                 </Row>
                                 <Row>
-                                    <Col md="6" >
+                                    <Col md="6">
                                         <Field
                                             label="Address 2"
                                             name={"AddressLine2"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
+                                            //validate={[required]}
                                             component={renderText}
-                                            required={true}
+                                            //required={true}
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
@@ -498,7 +601,7 @@ class AddVendorDrawer extends Component {
                                     </Col>
                                     <Col md="6">
                                         <Field
-                                            label="Zip Code"
+                                            label="ZipCode"
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={''}
@@ -511,47 +614,49 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                {/* {this.checkVendorType() &&
-                                    <Row>
-                                        <Col md="5">
-                                            <Field
-                                                label="Vendor Plant"
-                                                name="SelectedPlants"
-                                                placeholder="--Select Plant--"
-                                                selection={this.state.selectedPlants}
-                                                options={this.renderSelectPlantList()}
-                                                selectionChanged={this.handlePlantSelection}
-                                                optionValue={option => option.Value}
-                                                optionLabel={option => option.Text}
-                                                component={renderMultiSelectField}
-                                                mendatory={false}
-                                                className="multiselect-with-border"
-                                            />
-                                        </Col>
-                                        <Col md="1">
-                                            <div
-                                                onClick={this.plantToggler}
-                                                className={'plus-icon mt30 mr15 right'}>
-                                            </div>
-                                        </Col>
-                                    </Row>} */}
+                                <Row>
+                                    {this.checkVendorSelection() && checkVendorPlantConfigurable() &&
+                                        <>
+                                            <Col md="11">
+                                                <Field
+                                                    label="Vendor Plant"
+                                                    name="SelectedPlants"
+                                                    placeholder="--Select Plant--"
+                                                    selection={this.state.selectedVendorPlants}
+                                                    options={this.renderListing('vendorPlants')}
+                                                    selectionChanged={this.handleVendorPlant}
+                                                    optionValue={option => option.Value}
+                                                    optionLabel={option => option.Text}
+                                                    component={renderMultiSelectField}
+                                                    mendatory={false}
+                                                    className="multiselect-with-border"
+                                                />
+                                            </Col>
+                                            {this.props.isEditFlag &&
+                                                <Col md="1">
+                                                    <div
+                                                        onClick={this.vendorPlantToggler}
+                                                        className={'plus-icon mt30 mr15 right'}>
+                                                    </div>
+                                                </Col>}
+                                        </>}
+                                </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-center ">
-                                            <input
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
+                                    <div className="col-md-12 bluefooter-butn text-right">
+                                        <div className="">
+                                            <button
+                                                type={'button'}
                                                 className="reset mr15 cancel-btn"
-                                            />
-                                            <input
-                                                //disabled={isSubmitted ? true : false}
+                                                onClick={this.cancel} >
+                                                <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
+                                            </button>
+                                            <button
                                                 type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
-                                            />
+                                                className="submit-button mr5 save-btn" >
+                                                <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                </div> {this.props.isEditFlag ? 'Update' : 'Save'}
+                                            </button>
                                         </div>
                                     </div>
                                 </Row>
@@ -559,6 +664,14 @@ class AddVendorDrawer extends Component {
                         </div>
                     </Container>
                 </Drawer>
+                {isOpenVendorPlant && <AddVendorPlantDrawer
+                    isOpen={isOpenVendorPlant}
+                    closeDrawer={this.closeVendorDrawer}
+                    isEditFlag={false}
+                    VendorId={this.state.VendorId}
+                    ID={''}
+                    anchor={'right'}
+                />}
             </div>
         );
     }
@@ -570,7 +683,7 @@ class AddVendorDrawer extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, supplier }) {
-    const { countryList, stateList, cityList, plantList } = comman;
+    const { countryList, stateList, cityList, plantList, vendorPlantSelectList, } = comman;
     const { supplierData, vendorTypeList } = supplier;
     let initialValues = {};
     if (supplierData && supplierData !== undefined) {
@@ -586,7 +699,10 @@ function mapStateToProps({ comman, supplier }) {
             Extension: supplierData.Extension,
         }
     }
-    return { countryList, stateList, cityList, plantList, initialValues, supplierData, vendorTypeList }
+    return {
+        countryList, stateList, cityList, plantList, initialValues, supplierData, vendorTypeList,
+        vendorPlantSelectList,
+    }
 }
 
 /**
@@ -604,6 +720,7 @@ export default connect(mapStateToProps, {
     fetchStateDataAPI,
     fetchCityDataAPI,
     getVendorTypesSelectList,
+    getVendorPlantSelectList,
 })(reduxForm({
     form: 'AddVendorDrawer',
     enableReinitialize: true,

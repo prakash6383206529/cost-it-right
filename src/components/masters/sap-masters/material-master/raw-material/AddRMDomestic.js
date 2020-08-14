@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../../../helper/validation";
+import { required, checkForNull, maxLength100, getVendorCode } from "../../../../../helper/validation";
 import {
     renderText, renderSelectField, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField, focusOnError,
@@ -21,7 +21,7 @@ import RMDomesticListing from './RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../../helper/auth";
+import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../../helper/auth";
 import Switch from "react-switch";
 import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
@@ -53,6 +53,7 @@ class AddRMDomestic extends Component {
             selectedPlants: [],
 
             vendorName: [],
+            VendorCode: '',
             selectedVendorPlants: [],
             vendorLocation: [],
 
@@ -89,7 +90,7 @@ class AddRMDomestic extends Component {
         this.props.getRawMaterialNameChild(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getSupplierList(() => { })
-
+        this.props.getRMGradeSelectListByRawMaterial(0, res => { });
     }
 
     /**
@@ -102,6 +103,7 @@ class AddRMDomestic extends Component {
         this.props.change('NetLandedCost', 0)
         this.props.fetchMaterialComboAPI(res => { });
         this.props.getVendorListByVendorType(false, () => { })
+
     }
 
     /**
@@ -185,11 +187,15 @@ class AddRMDomestic extends Component {
         if (newValue && newValue != '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
                 const { vendorName } = this.state;
+                const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
+                this.setState({ VendorCode: result })
                 this.props.getPlantBySupplier(vendorName.value, () => { })
                 this.props.getCityBySupplier(vendorName.value, () => { })
             });
         } else {
             this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+            this.props.getPlantBySupplier('', () => { })
+            this.props.getCityBySupplier(0, () => { })
         }
     };
 
@@ -290,12 +296,12 @@ class AddRMDomestic extends Component {
                     this.props.getCityBySupplier(Data.Vendor, () => { })
 
                     setTimeout(() => {
-                        const { gradeSelectListByRMID, rmSpecification, cityList, categoryList,
+                        const { gradeSelectList, rmSpecification, cityList, categoryList,
                             filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
                             vendorListByVendorType } = this.props;
 
                         const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
-                        const gradeObj = gradeSelectListByRMID && gradeSelectListByRMID.find(item => item.Value == Data.RMGrade)
+                        const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value == Data.RMGrade)
                         const specObj = rmSpecification && rmSpecification.find(item => item.Value == Data.RMSpec)
                         const categoryObj = categoryList && categoryList.find(item => item.Value == Data.Category)
 
@@ -332,6 +338,7 @@ class AddRMDomestic extends Component {
                             Category: categoryObj != undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                             selectedPlants: plantArray,
                             vendorName: vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            //VendorCode: Data.VendorCode,
                             selectedVendorPlants: vendorPlantArray,
                             vendorLocation: vendorLocationObj != undefined ? { label: vendorLocationObj.Text, value: vendorLocationObj.Value } : [],
                             HasDifferentSource: Data.HasDifferentSource,
@@ -367,6 +374,8 @@ class AddRMDomestic extends Component {
         }, () => {
             const { IsVendor } = this.state;
             this.props.getVendorListByVendorType(IsVendor, () => { })
+            this.props.getPlantBySupplier('', () => { })
+            this.props.getCityBySupplier(0, () => { })
         });
     }
 
@@ -436,7 +445,9 @@ class AddRMDomestic extends Component {
     }
 
     closeUOMDrawer = (e = '') => {
-        this.setState({ isOpenUOM: false })
+        this.setState({ isOpenUOM: false }, () => {
+            this.props.getUOMSelectList(() => { })
+        })
     }
 
     /**
@@ -463,7 +474,7 @@ class AddRMDomestic extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { rowMaterialList, gradeSelectListByRMID, rmSpecification, plantList,
+        const { rowMaterialList, gradeSelectList, rmSpecification, plantList,
             supplierSelectList, filterPlantList, cityList, technologyList, categoryList, filterPlantListByCity,
             filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
             vendorListByVendorType } = this.props;
@@ -476,7 +487,7 @@ class AddRMDomestic extends Component {
             return temp;
         }
         if (label === 'grade') {
-            gradeSelectListByRMID && gradeSelectListByRMID.map(item => {
+            gradeSelectList && gradeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -683,7 +694,7 @@ class AddRMDomestic extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName,
+        const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
             selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, remarks,
             RawMaterialID, isEditFlag, files, effectiveDate, receivedFiles } = this.state;
         const { reset } = this.props;
@@ -704,7 +715,7 @@ class AddRMDomestic extends Component {
             let updatedFiles = files.map((file) => {
                 return { ...file, ContextId: RawMaterialID }
             })
-            console.log('updatedFiles', updatedFiles)
+            //console.log('updatedFiles', updatedFiles)
             let requestData = {
                 RawMaterialId: RawMaterialID,
                 IsVendor: IsVendor,
@@ -719,8 +730,7 @@ class AddRMDomestic extends Component {
                 EffectiveDate: effectiveDate,
                 Attachements: updatedFiles,
             }
-            //console.log('requestData >> effectiveDate', effectiveDate, moment(effectiveDate)._i)
-            //console.log('requestData >>', requestData)
+
             this.props.updateRMDomesticAPI(requestData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
@@ -750,11 +760,11 @@ class AddRMDomestic extends Component {
                 Remark: remarks,
                 LoggedInUserId: loggedInUserId(),
                 Plant: IsVendor == false ? plantArray : [],
-                VendorPlant: IsVendor == false ? [] : vendorPlantArray,
+                VendorPlant: checkVendorPlantConfigurable() ? (IsVendor ? vendorPlantArray : []) : [],
+                VendorCode: VendorCode,
                 Attachements: files,
             }
-            //console.log('formData >> effectiveDate', effectiveDate, moment(effectiveDate)._i)
-            //console.log('formData >>', formData)
+
             this.props.createRMDomestic(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
@@ -849,7 +859,8 @@ class AddRMDomestic extends Component {
                                                     <div
                                                         onClick={this.rmToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div></div>
+                                                    </div>
+                                                </div>
                                             </Col>
                                             <Col md="3">
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -869,10 +880,15 @@ class AddRMDomestic extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
-                                                        onClick={this.gradeToggler}
-                                                        className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    {(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ?
+                                                        <div className={'plus-icon-square blurPlus-icon-square right'}>
+                                                        </div>
+                                                        :
+                                                        <div
+                                                            onClick={this.gradeToggler}
+                                                            className={'plus-icon-square right'}>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -900,28 +916,28 @@ class AddRMDomestic extends Component {
                                                 </div>
                                             </Col>
                                             <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div className="fullinput-icon">
-                                                        <Field
-                                                            name="CategoryId"
-                                                            type="text"
-                                                            label="Category"
-                                                            component={searchableSelect}
-                                                            placeholder={'Category'}
-                                                            options={this.renderListing('category')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleCategoryChange}
-                                                            valueDescription={this.state.Category}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </div>
-                                                    <div
+                                                {/* <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon"> */}
+                                                <Field
+                                                    name="CategoryId"
+                                                    type="text"
+                                                    label="Category"
+                                                    component={searchableSelect}
+                                                    placeholder={'Category'}
+                                                    options={this.renderListing('category')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleCategoryChange}
+                                                    valueDescription={this.state.Category}
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                                {/* </div> */}
+                                                {/* <div
                                                         onClick={this.categoryToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
-                                                </div>
+                                                    </div> */}
+                                                {/* </div> */}
                                             </Col>
                                         </Row>
                                         {!this.state.IsVendor &&
@@ -976,22 +992,23 @@ class AddRMDomestic extends Component {
                                                     </div>
                                                 </div>
                                             </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label="Vendor Plant"
-                                                    name="DestinationSupplierPlantId"
-                                                    placeholder="--- Plant ---"
-                                                    selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
-                                                    options={this.renderListing('VendorPlant')}
-                                                    selectionChanged={this.handleVendorPlant}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    className="multiselect-with-border"
-                                                    disabled={isEditFlag ? true : (this.state.IsVendor ? false : true)}
-                                                />
-                                            </Col>
+                                            {checkVendorPlantConfigurable() && this.state.IsVendor &&
+                                                <Col md="3">
+                                                    <Field
+                                                        label="Vendor Plant"
+                                                        name="DestinationSupplierPlantId"
+                                                        placeholder="--- Plant ---"
+                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                        options={this.renderListing('VendorPlant')}
+                                                        selectionChanged={this.handleVendorPlant}
+                                                        optionValue={option => option.Value}
+                                                        optionLabel={option => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        className="multiselect-with-border"
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                </Col>}
                                             <Col md="3">
                                                 <Field
                                                     name="DestinationSupplierCityId"
@@ -1323,7 +1340,7 @@ function mapStateToProps(state) {
         categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, } = comman;
 
     const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
-        gradeSelectListByRMID, vendorListByVendorType } = material;
+        gradeSelectList, vendorListByVendorType } = material;
 
     let initialValues = {};
     if (rawMaterialDetails && rawMaterialDetails != undefined) {
@@ -1340,7 +1357,7 @@ function mapStateToProps(state) {
         rowMaterialList, rmGradeList, rmSpecification,
         plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
         filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
-        fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectListByRMID,
+        fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
         filterPlantList, UOMSelectList, vendorListByVendorType,
     }
 

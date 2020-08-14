@@ -4,10 +4,17 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild,
-    getGradeSelectList,
+    getGradeSelectList, getRMGradeSelectListByRawMaterial, getVendorListByVendorType,
+    getRawMaterialFilterSelectList,
+    getGradeFilterByRawMaterialSelectList,
+    getVendorFilterByRawMaterialSelectList,
+    getRawMaterialFilterByGradeSelectList,
+    getVendorFilterByGradeSelectList,
+    getRawMaterialFilterByVendorSelectList,
+    getGradeFilterByVendorSelectList,
 } from '../../../../../actions/master/Material';
 import { required } from "../../../../../helper/validation";
-import { getSupplierList } from '../../../../../actions/master/Comman';
+import { } from '../../../../../actions/master/Comman';
 import { searchableSelect } from "../../../../layout/FormInputs";
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -32,8 +39,30 @@ class RMDomesticListing extends Component {
             RMGrade: [],
             vendorName: [],
             value: { min: 0, max: 0 },
+            maxRange: 0,
             isBulkUpload: false,
         }
+    }
+
+    componentWillMount() {
+        this.getInitialRange()
+    }
+
+    getInitialRange = () => {
+        const { value } = this.state;
+        const filterData = {
+            material_id: null,
+            grade_id: null,
+            vendor_id: null,
+            net_landed_min_range: value.min,
+            net_landed_max_range: value.max,
+        }
+        this.props.getRMDomesticDataList(filterData, (res) => {
+            if (res && res.status == 200) {
+                let DynamicData = res.data.DynamicData;
+                this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
+            }
+        })
     }
 
     /**
@@ -44,7 +73,10 @@ class RMDomesticListing extends Component {
         //this.props.onRef(this)
         this.props.getRawMaterialNameChild(() => { })
         this.props.getGradeSelectList(() => { })
-        this.props.getSupplierList(() => { })
+        this.props.getVendorListByVendorType(false, () => { })
+
+        this.props.getRawMaterialFilterSelectList(() => { })
+
         this.getDataList(null, null, null)
     }
 
@@ -65,11 +97,15 @@ class RMDomesticListing extends Component {
         this.props.getRMDomesticDataList(filterData, (res) => {
             if (res && res.status == 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                let DynamicData = res.data.DynamicData;
+                this.setState({
+                    tableData: Data,
+                    maxRange: DynamicData.MaxRange,
+                })
             } else if (res && res.response && res.response.status == 412) {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], maxRange: 0, })
             } else {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], maxRange: 0, })
             }
         })
     }
@@ -220,24 +256,25 @@ class RMDomesticListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { gradeSelectList, rawMaterialNameSelectList, supplierSelectList } = this.props;
+        const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType,
+            filterRMSelectList } = this.props;
         const temp = [];
         if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
+            filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'grade') {
-            gradeSelectList && gradeSelectList.map(item => {
+            filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
-            supplierSelectList && supplierSelectList.map(item => {
+            filterRMSelectList && filterRMSelectList.Vendors && filterRMSelectList.Vendors.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -252,9 +289,24 @@ class RMDomesticListing extends Component {
     */
     handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RawMaterial: newValue });
+            this.setState({
+                RawMaterial: newValue,
+                //RMGrade: [],
+            }, () => {
+                const { RawMaterial } = this.state;
+                this.props.getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { })
+                this.props.getVendorFilterByRawMaterialSelectList(RawMaterial.value, res => { })
+
+                //this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
+            });
         } else {
-            this.setState({ RawMaterial: [], });
+            this.setState({
+                RawMaterial: [],
+                //RMGrade: [],
+            }, () => {
+                this.props.getGradeSelectList(res => { });
+            });
+
         }
     }
 
@@ -264,19 +316,27 @@ class RMDomesticListing extends Component {
     */
     handleGradeChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RMGrade: newValue })
+            this.setState({ RMGrade: newValue }, () => {
+                const { RMGrade } = this.state;
+                this.props.getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { })
+                this.props.getVendorFilterByGradeSelectList(RMGrade.value, () => { })
+            })
         } else {
             this.setState({ RMGrade: [], })
         }
     }
 
     /**
-    * @method handleVendorName
-    * @description called
-    */
+     * @method handleVendorName
+     * @description called
+     */
     handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ vendorName: newValue });
+            this.setState({ vendorName: newValue }, () => {
+                const { vendorName } = this.state;
+                this.props.getRawMaterialFilterByVendorSelectList(vendorName.value, () => { })
+                this.props.getGradeFilterByVendorSelectList(vendorName.value, () => { })
+            });
         } else {
             this.setState({ vendorName: [] })
         }
@@ -306,7 +366,10 @@ class RMDomesticListing extends Component {
             vendorName: [],
             value: { min: 0, max: 0 },
         }, () => {
+            this.getInitialRange()
             this.getDataList(null, null, null)
+            this.props.getRawMaterialFilterSelectList(() => { })
+            //this.props.getGradeSelectList(() => { });
         })
 
     }
@@ -402,7 +465,7 @@ class RMDomesticListing extends Component {
                                 </div>
                                 <div className="flex-fill sliderange ">
                                     <InputRange
-                                        maxValue={500}
+                                        maxValue={this.state.maxRange}
                                         minValue={0}
                                         value={this.state.value}
                                         onChange={value => this.setState({ value })} />
@@ -465,7 +528,7 @@ class RMDomesticListing extends Component {
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="center" >{this.renderRawMaterial()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="center" >{this.renderRMGrade()}</TableHeaderColumn>
@@ -502,9 +565,9 @@ class RMDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman }) {
-    const { rawMaterialNameSelectList, gradeSelectList } = material;
-    const { supplierSelectList, } = comman;
-    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList }
+    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList } = material;
+    const { } = comman;
+    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList }
 }
 
 /**
@@ -518,7 +581,15 @@ export default connect(mapStateToProps, {
     getRMDomesticDataList,
     getRawMaterialNameChild,
     getGradeSelectList,
-    getSupplierList,
+    getRMGradeSelectListByRawMaterial,
+    getVendorListByVendorType,
+    getRawMaterialFilterSelectList,
+    getGradeFilterByRawMaterialSelectList,
+    getVendorFilterByRawMaterialSelectList,
+    getRawMaterialFilterByGradeSelectList,
+    getVendorFilterByGradeSelectList,
+    getRawMaterialFilterByVendorSelectList,
+    getGradeFilterByVendorSelectList,
 })(reduxForm({
     form: 'RMDomesticListing',
     enableReinitialize: true,
