@@ -224,3 +224,21 @@ export function getVendorsByVendorTypeID(VendorID, callback) {
 
     };
 }
+
+/**
+ * @method vendorBulkUpload
+ * @description create Vendor by Bulk Upload
+ */
+export function vendorBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.vendorBulkUpload, data, headers);
+        request.then((response) => {
+            if (response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

@@ -17,9 +17,7 @@ class AddGrade extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            typeOfListing: [],
             MaterialId: '',
-            isEditFlag: false
         }
     }
 
@@ -37,19 +35,9 @@ class AddGrade extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        const { GradeId, isEditFlag } = this.props;
+        const { ID, isEditFlag } = this.props;
         if (isEditFlag) {
-            this.props.getRMGradeDataAPI(GradeId, res => {
-                if (res && res.data && res.data.Result) {
-                    let Data = res.data.Data;
-                    const { MaterialSelectList } = this.props;
-                    const tempObj = MaterialSelectList.find(item => item.Value == Data.MaterialTypeId)
-                    this.setState({
-                        MaterialId: tempObj.Value
-                    });
-
-                }
-            });
+            this.props.getRMGradeDataAPI(ID, res => { });
         } else {
             this.props.getRMGradeDataAPI('', res => { });
         }
@@ -80,19 +68,12 @@ class AddGrade extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { GradeId, isEditFlag, material } = this.props;
-        const { MaterialId } = this.state;
-
-        values.CreatedBy = loggedInUserId();
+        const { ID, isEditFlag, RawMaterial } = this.props;
 
         if (isEditFlag) {
             let formData = {
-                GradeId: GradeId,
+                GradeId: ID,
                 Grade: values.Grade,
-                Description: values.Description,
-                MaterialTypeId: MaterialId,
-                MaterialTypeName: '',
-                Density: '',
                 IsActive: true,
                 CreatedDate: '',
                 CreatedBy: loggedInUserId(),
@@ -100,13 +81,13 @@ class AddGrade extends Component {
             this.props.updateRMGradeAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
-                    this.toggleModel();
-                    this.props.getRowMaterialDataAPI(res => { });
+                    this.toggleDrawer('')
                 }
             })
         } else {
 
-            values.MaterialId = material.value;
+            values.RawMaterialId = RawMaterial.value;
+            values.CreatedBy = loggedInUserId();
 
             this.props.createRMGradeAPI(values, (res) => {
                 if (res.data.Result) {
@@ -162,35 +143,20 @@ class AddGrade extends Component {
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12">
                                         <div className="text-center ">
-                                            {/* <input
-                                                //disabled={pristine || submitting}
+                                            <button
                                                 onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
-                                                className="reset mr15 cancel-btn"
-                                            /> */}
-                                            <button
-                        onClick={this.cancel}
-                        type="submit"
-                        value="CANCEL"
-                        className="reset mr15 cancel-btn">
-
-                        <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
-                      
-                                            {/* <input
-                                                //disabled={isSubmitted ? true : false}
                                                 type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
-                                            /> */}
+                                                value="CANCEL"
+                                                className="reset mr15 cancel-btn">
+                                                <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>CANCEL</button>
                                             <button
-                        type="submit"
-                        // disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"
-                      >	<div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' />
-                        </div>
-                        {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
-                      </button>
+                                                type="submit"
+                                                // disabled={isSubmitted ? true : false}
+                                                className="btn-primary save-btn"
+                                            >	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                </div>
+                                                {this.props.isEditFlag ? 'UPDATE' : 'SAVE'}
+                                            </button>
                                         </div>
                                     </div>
                                 </Row>
@@ -216,9 +182,7 @@ function mapStateToProps({ comman, costWorking, material }) {
 
     if (gradeData && gradeData != undefined) {
         initialValues = {
-            MaterialId: gradeData.MaterialTypeId,
             Grade: gradeData.Grade,
-            Description: gradeData.Description,
         }
     }
     return { rowMaterialList, MaterialSelectList, gradeData, initialValues }

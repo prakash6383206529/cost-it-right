@@ -17,6 +17,8 @@ import {
 import { fetchCountryDataAPI, } from '../../../../actions/master/Comman';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
+import BulkUpload from '../../../massUpload/BulkUpload';
+import AddVendorDrawer from './AddVendorDrawer';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -27,7 +29,9 @@ class VendorListing extends Component {
         super(props);
         this.state = {
             isEditFlag: false,
-            isOpen: false,
+            isOpenVendor: false,
+            ID: '',
+            isBulkUpload: false,
             tableData: [],
             vendorType: [],
             vendorName: [],
@@ -46,7 +50,7 @@ class VendorListing extends Component {
 
     componentDidMount() {
         this.getTableListData(null, null, null)
-        this.props.onRef(this)
+        //this.props.onRef(this)
     }
 
     // Get updated Supplier's list after any action performed.
@@ -127,7 +131,12 @@ class VendorListing extends Component {
             isEditFlag: true,
             ID: Id,
         }
-        this.props.getDetail(requestData)
+        //this.props.getDetail(requestData)
+        this.setState({
+            isOpenVendor: true,
+            isEditFlag: true,
+            ID: Id,
+        })
     }
 
 	/**
@@ -289,6 +298,16 @@ class VendorListing extends Component {
         );
     }
 
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+            this.getTableListData(null, null, null)
+        })
+    }
+
 	/**
 	* @method filterList
 	* @description Filter user listing on the basis of role and department
@@ -316,7 +335,18 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
-        this.props.formToggle()
+        //this.props.formToggle()
+        this.setState({ isOpenVendor: true })
+    }
+
+    closeVendorDrawer = (e = '') => {
+        this.setState({
+            isOpenVendor: false,
+            isEditFlag: false,
+            ID: '',
+        }, () => {
+            this.getTableListData(null, null, null)
+        })
     }
 
 	/**
@@ -333,7 +363,7 @@ class VendorListing extends Component {
 	*/
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag } = this.state;
+        const { isOpenVendor, isEditFlag, isBulkUpload, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -348,8 +378,8 @@ class VendorListing extends Component {
             <div className="container-fluid">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="mr15">
-                <div class="col-sm-4"><h3>Vendor</h3></div>
-                <hr/>
+                    <div class="col-sm-4"><h3>Vendor</h3></div>
+                    <hr />
                     <Row className="pt-30 px-15">
                         <Col md="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -427,11 +457,18 @@ class VendorListing extends Component {
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD VENDOR</button>
+                                        <>
+                                            <button
+                                                type="button"
+                                                className={'user-btn mr5'}
+                                                onClick={this.bulkToggle}>
+                                                <div className={'plus'}></div>Bulk Upload</button>
+                                            <button
+                                                type="button"
+                                                className={'user-btn'}
+                                                onClick={this.formToggle}>
+                                                <div className={'plus'}></div>ADD VENDOR</button>
+                                        </>
                                     }
                                 </div>
                             </div>
@@ -462,8 +499,23 @@ class VendorListing extends Component {
                     <TableHeaderColumn dataField="City" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
                 </BootstrapTable>
+                {isBulkUpload && <BulkUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    isZBCVBCTemplate={false}
+                    fileName={'Vendor'}
+                    messageLabel={'Vendor'}
+                    anchor={'right'}
+                />}
+                {isOpenVendor && <AddVendorDrawer
+                    isOpen={isOpenVendor}
+                    closeDrawer={this.closeVendorDrawer}
+                    isEditFlag={isEditFlag}
+                    ID={this.state.ID}
+                    anchor={'right'}
+                />}
             </ div>
         );
     }

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../../../helper/validation";
+import { required, checkForNull, maxLength100, getVendorCode } from "../../../../../helper/validation";
 import {
     renderText, renderSelectField, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField, focusOnError,
@@ -13,7 +13,7 @@ import {
 } from '../../../../../actions/master/Comman';
 import {
     createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild, getVendorListByVendorType, fileUploadRMDomestic,
+    getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic,
     fileUpdateRMDomestic, fileDeleteRMDomestic,
 } from '../../../../../actions/master/Material';
 import axios from 'axios';
@@ -21,7 +21,7 @@ import RMDomesticListing from './RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../../helper/auth";
+import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../../helper/auth";
 import Switch from "react-switch";
 import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
@@ -34,6 +34,8 @@ import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../../../config/constants';
+import ImageModel from '../../../../common/ImageModel';
+import moment from 'moment';
 const selector = formValueSelector('AddRMDomestic');
 
 class AddRMDomestic extends Component {
@@ -51,6 +53,7 @@ class AddRMDomestic extends Component {
             selectedPlants: [],
 
             vendorName: [],
+            VendorCode: '',
             selectedVendorPlants: [],
             vendorLocation: [],
 
@@ -73,8 +76,8 @@ class AddRMDomestic extends Component {
             isOpenVendor: false,
             isOpenUOM: false,
 
-            initialFiles: [],
-            receivedFiles: [],
+            isVisible: false,
+            imageURL: '',
 
         }
     }
@@ -87,7 +90,7 @@ class AddRMDomestic extends Component {
         this.props.getRawMaterialNameChild(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getSupplierList(() => { })
-
+        this.props.getRMGradeSelectListByRawMaterial(0, res => { });
     }
 
     /**
@@ -100,6 +103,7 @@ class AddRMDomestic extends Component {
         this.props.change('NetLandedCost', 0)
         this.props.fetchMaterialComboAPI(res => { });
         this.props.getVendorListByVendorType(false, () => { })
+
     }
 
     /**
@@ -111,17 +115,12 @@ class AddRMDomestic extends Component {
 
             this.setState({ RawMaterial: newValue }, () => {
                 const { RawMaterial } = this.state;
-                this.props.getGradeListByRawMaterialNameChild(RawMaterial.value, res => { })
+                this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
             });
 
         } else {
-
-            this.setState({
-                RMGrade: [],
-                RMSpec: [],
-                RawMaterial: [],
-            });
-
+            this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [], });
+            this.props.getRMGradeSelectListByRawMaterial(0, res => { });
         }
     }
 
@@ -188,11 +187,15 @@ class AddRMDomestic extends Component {
         if (newValue && newValue != '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
                 const { vendorName } = this.state;
+                const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
+                this.setState({ VendorCode: result })
                 this.props.getPlantBySupplier(vendorName.value, () => { })
                 this.props.getCityBySupplier(vendorName.value, () => { })
             });
         } else {
             this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+            this.props.getPlantBySupplier('', () => { })
+            this.props.getCityBySupplier(0, () => { })
         }
     };
 
@@ -287,20 +290,24 @@ class AddRMDomestic extends Component {
                     const Data = res.data.Data;
 
                     this.props.getVendorListByVendorType(Data.IsVendor, () => { })
-                    this.props.getGradeListByRawMaterialNameChild(Data.RawMaterial, res => { })
+                    this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => { })
                     this.props.fetchSpecificationDataAPI(Data.RMGrade, res => { });
                     this.props.getPlantBySupplier(Data.Vendor, () => { })
                     this.props.getCityBySupplier(Data.Vendor, () => { })
 
                     setTimeout(() => {
-                        const { gradeSelectListByRMID, rmSpecification, cityList, categoryList,
+                        const { gradeSelectList, rmSpecification, cityList, categoryList,
                             filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
                             vendorListByVendorType } = this.props;
 
                         const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
-                        const gradeObj = gradeSelectListByRMID && gradeSelectListByRMID.find(item => item.Value == Data.RMGrade)
+                        const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value == Data.RMGrade)
                         const specObj = rmSpecification && rmSpecification.find(item => item.Value == Data.RMSpec)
                         const categoryObj = categoryList && categoryList.find(item => item.Value == Data.Category)
+
+                        console.log('materialNameObj', materialNameObj)
+                        console.log('gradeObj', gradeObj)
+                        console.log('specObj', specObj)
 
                         let plantArray = [];
                         Data && Data.Plant.map((item) => {
@@ -320,93 +327,6 @@ class AddRMDomestic extends Component {
                         const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
                         const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value == Data.UOM)
 
-                        let tempArr = [];
-                        let tempFiles = [];
-
-                        if (Data && Data.FileList) {
-                            Data.FileList.map(item => {
-                                const fileName = item.OriginalFileName;
-                                //const fileURL = item.FileURL;
-                                const withOutTild = item.FileURL.replace('~', '')
-                                console.log('withOutTild', withOutTild)
-                                //const fileURL = `${FILE_URL}Upload/Attachement/RawMaterial/${fileName}`;
-                                const fileURL = `${FILE_URL}${withOutTild}`;
-
-                                let fileObj = {
-                                    ContextId: item.RawMaterialId,
-                                    Exist: true,
-                                    FileExtension: item.FileExtension,
-                                    FileId: item.FileId,
-                                    FileName: item.FileName,
-                                    FilePath: item.FilePath,
-                                    FileSize: item.FileSize,
-                                    FileURL: fileURL,
-                                    MimeType: item.MimeType,
-                                    OriginalFileName: item.OriginalFileName,
-                                }
-                                tempFiles.push(fileObj)
-
-                                let headers = new Headers();
-                                headers.append('Content-Type', 'application/json');
-                                headers.append('Accept', 'application/json');
-                                headers.append('Access-Control-Allow-Origin', '*');
-                                headers.append('Access-Control-Allow-Credentials', 'true');
-                                //headers.append('GET', 'POST', 'OPTIONS');
-
-                                const myHeaders = new Headers();
-
-                                const myRequest = new Request(fileURL, {
-                                    method: 'GET',
-                                    headers: myHeaders,
-                                    mode: 'no-cors',
-                                    cache: 'default',
-                                });
-
-                                fetch(myRequest)
-                                    .then(response => {
-                                        console.log('response >>', response)
-                                        response.arrayBuffer().then(buf => {
-                                            let file = new File([buf], fileName, { type: item.MimeType })
-                                            file.FileId = item.FileId;
-                                            tempArr.push(file)
-                                            console.log('file >>>>', file)
-                                            //response.blob()
-                                        })
-                                    }).catch((error) => {
-                                        console.log('response error >>>>>>', error)
-                                    })
-
-                                // .then(myBlob => {
-                                //     console.log('myBlob', myBlob)
-                                //     //myImage.src = URL.createObjectURL(myBlob);
-                                // });
-
-                                // axios.get('http://10.10.1.100:8090//Upload/Attachement/RawMaterial/108787395_dummy1.png', { headers: headers })
-                                //     .then((response) => {
-                                //         console.log('response >>>>>>', response)
-                                //     }).catch((error) => {
-                                //         console.log('response error >>>>>>', error)
-                                //     });
-
-                                // fetch(fileURL, { headers: headers })
-                                //     .then(res => {
-                                //         res.arrayBuffer().then(buf => {
-                                //             const file = new File([buf], fileName, { type: item.MimeType })
-                                //             file.FileId = item.FileId;
-                                //             tempArr.push(file)
-                                //             //console.log('file >>>>', file)
-                                //         })
-                                //     }).catch((error) => {
-                                //         console.log('catch >>>>', error)
-                                //     })
-                                setTimeout(() => {
-                                    this.setState({ initialFiles: tempArr, receivedFiles: tempFiles })
-                                }, 2000)
-                                console.log('URL', fileURL)
-                            })
-
-                        }
-
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
@@ -418,15 +338,17 @@ class AddRMDomestic extends Component {
                             Category: categoryObj != undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                             selectedPlants: plantArray,
                             vendorName: vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            //VendorCode: Data.VendorCode,
                             selectedVendorPlants: vendorPlantArray,
                             vendorLocation: vendorLocationObj != undefined ? { label: vendorLocationObj.Text, value: vendorLocationObj.Value } : [],
                             HasDifferentSource: Data.HasDifferentSource,
                             sourceLocation: sourceLocationObj != undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                             UOM: UOMObj != undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
-                            effectiveDate: new Date(Data.EffectiveDate),
+                            effectiveDate: Data.EffectiveDate ? new Date(Data.EffectiveDate) : new Date(),
                             remarks: Data.Remark,
+                            files: Data.FileList,
                         })
-                    }, 200)
+                    }, 500)
                 }
             })
         } else {
@@ -452,6 +374,8 @@ class AddRMDomestic extends Component {
         }, () => {
             const { IsVendor } = this.state;
             this.props.getVendorListByVendorType(IsVendor, () => { })
+            this.props.getPlantBySupplier('', () => { })
+            this.props.getCityBySupplier(0, () => { })
         });
     }
 
@@ -481,8 +405,8 @@ class AddRMDomestic extends Component {
     */
     closeGradeDrawer = (e = '') => {
         this.setState({ isOpenGrade: false }, () => {
-            //const { RawMaterial } = this.state;
-            //this.handleMaterialChange(RawMaterial, '');
+            const { RawMaterial } = this.state;
+            this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
         })
     }
 
@@ -491,7 +415,10 @@ class AddRMDomestic extends Component {
     }
 
     closeSpecDrawer = (e = '') => {
-        this.setState({ isOpenSpecification: false })
+        this.setState({ isOpenSpecification: false }, () => {
+            const { RMGrade } = this.state;
+            this.props.fetchSpecificationDataAPI(RMGrade.value, res => { });
+        })
     }
 
     categoryToggler = () => {
@@ -518,7 +445,28 @@ class AddRMDomestic extends Component {
     }
 
     closeUOMDrawer = (e = '') => {
-        this.setState({ isOpenUOM: false })
+        this.setState({ isOpenUOM: false }, () => {
+            this.props.getUOMSelectList(() => { })
+        })
+    }
+
+    /**
+ * @method onCancel
+ * @description called
+ */
+    onCancel = () => {
+        this.setState({
+            modalVisible: false,
+            isVisible: false,
+            imageURL: '',
+        });
+    };
+
+    viewImage = (fileURL) => {
+        this.setState({
+            isVisible: true,
+            imageURL: fileURL,
+        })
     }
 
     /**
@@ -526,7 +474,7 @@ class AddRMDomestic extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { rowMaterialList, gradeSelectListByRMID, rmSpecification, plantList,
+        const { rowMaterialList, gradeSelectList, rmSpecification, plantList,
             supplierSelectList, filterPlantList, cityList, technologyList, categoryList, filterPlantListByCity,
             filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
             vendorListByVendorType } = this.props;
@@ -539,7 +487,7 @@ class AddRMDomestic extends Component {
             return temp;
         }
         if (label === 'grade') {
-            gradeSelectListByRMID && gradeSelectListByRMID.map(item => {
+            gradeSelectList && gradeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -661,64 +609,34 @@ class AddRMDomestic extends Component {
         this.clearForm()
     }
 
+
+
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
         const { isEditFlag, RawMaterialID } = this.state;
-        console.log('getUploadParams', file, meta, file.FileId)
-        console.log('file.FileId', file.FileId)
-
-        // if (isEditFlag && file.FileId == undefined) {
-        //     let data = new FormData()
-        //     data.append('file', file)
-        //     this.props.fileUploadRMDomestic(data, (res) => {
-        //         let Data = res.data[0]
-        //         const { files } = this.state;
-        //         files.push(Data)
-        //         this.setState({ files: files })
-        //     })
-        //     return { url: 'https://httpbin.org/post', }
-        // } else {
-
-        let data = new FormData()
-        data.append('file', file)
-        this.props.fileUploadRMDomestic(data, (res) => {
-            let Data = res.data[0]
-            const { files } = this.state;
-            files.push(Data)
-            this.setState({ files: files })
-        })
         return { url: 'https://httpbin.org/post', }
-        //}
+
     }
 
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
-        const { isEditFlag, files, receivedFiles, initialFiles, RawMaterialID } = this.state;
-        console.log('handleChangeStatus', status, meta, file)
+        const { isEditFlag, files, } = this.state;
 
         if (status == 'removed') {
-
-            // let removdArr = receivedFiles.filter(item => item.FileId != file.FileId)
-            // console.log('remove >>>>', status, meta, file)
-            // if (isEditFlag && file.FileId) {
-            //     let deleteData = {
-            //         Id: file.FileId,
-            //         DeletedBy: loggedInUserId(),
-            //     }
-            //     //this.setState({ receivedFiles: removdArr, files: tempArr })
-            //     this.props.fileDeleteRMDomestic(deleteData, (res) => {
-            //         toastr.success('File has been deleted successfully.')
-            //     })
-            //     //return false;
-            // } else {
-            //     const removedFileName = file.name;
-            //     let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
-            //     this.setState({ files: tempArr })
-            // }
+            const removedFileName = file.name;
+            let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
+            this.setState({ files: tempArr })
         }
 
         if (status == 'done') {
-
+            let data = new FormData()
+            data.append('file', file)
+            this.props.fileUploadRMDomestic(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state;
+                files.push(Data)
+                this.setState({ files: files })
+            })
         }
 
         if (status == 'rejected_file_type') {
@@ -727,17 +645,46 @@ class AddRMDomestic extends Component {
         }
     }
 
-    // receives array of files that are done uploading when submit button is clicked
-    handleSubmit = (files, allFiles) => {
-        console.log('handleSubmit', files.map(f => f.meta))
-        allFiles.forEach(f => f.remove())
+    renderImages = () => {
+        this.state.files && this.state.files.map(f => {
+            const withOutTild = f.FileURL.replace('~', '')
+            console.log('withOutTild', withOutTild)
+            const fileURL = `${FILE_URL}${withOutTild}`;
+            return (
+                <div className={'attachment-wrapper images'}>
+                    <img src={fileURL} />
+                    <button
+                        type="button"
+                        onClick={() => this.deleteFile(f.FileId)}>X</button>
+                </div>
+            )
+        })
+    }
+
+    deleteFile = (FileId, OriginalFileName) => {
+        console.log('removed', FileId, OriginalFileName)
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            this.props.fileDeleteRMDomestic(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = this.state.files.filter(item => item.FileId != FileId)
+                this.setState({ files: tempArr })
+            })
+        }
+        if (FileId == null) {
+            let tempArr = this.state.files.filter(item => item.FileName != OriginalFileName)
+            this.setState({ files: tempArr })
+        }
     }
 
     Preview = ({ meta }) => {
         const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
-                {name}, {Math.round(percent)}%, {status}
+                {/* {Math.round(percent)}% */}
             </span>
         )
     }
@@ -747,7 +694,7 @@ class AddRMDomestic extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName,
+        const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
             selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, remarks,
             RawMaterialID, isEditFlag, files, effectiveDate, receivedFiles } = this.state;
         const { reset } = this.props;
@@ -768,7 +715,7 @@ class AddRMDomestic extends Component {
             let updatedFiles = files.map((file) => {
                 return { ...file, ContextId: RawMaterialID }
             })
-            console.log('updatedFiles', updatedFiles)
+            //console.log('updatedFiles', updatedFiles)
             let requestData = {
                 RawMaterialId: RawMaterialID,
                 IsVendor: IsVendor,
@@ -780,8 +727,10 @@ class AddRMDomestic extends Component {
                 ScrapRate: values.ScrapRate,
                 NetLandedCost: values.NetLandedCost,
                 LoggedInUserId: loggedInUserId(),
+                EffectiveDate: effectiveDate,
                 Attachements: updatedFiles,
             }
+
             this.props.updateRMDomesticAPI(requestData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
@@ -811,7 +760,8 @@ class AddRMDomestic extends Component {
                 Remark: remarks,
                 LoggedInUserId: loggedInUserId(),
                 Plant: IsVendor == false ? plantArray : [],
-                VendorPlant: IsVendor == false ? [] : vendorPlantArray,
+                VendorPlant: checkVendorPlantConfigurable() ? (IsVendor ? vendorPlantArray : []) : [],
+                VendorCode: VendorCode,
                 Attachements: files,
             }
 
@@ -832,13 +782,20 @@ class AddRMDomestic extends Component {
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
         const { files, errors, isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-            isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
+            isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isVisible, } = this.state;
 
         const previewStyle = {
             display: 'inline',
             width: 100,
             height: 100,
         };
+
+        const uploadButton = (
+            <div>
+                {/* <PlusOutlined /> */}
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        );
 
         return (
             <>
@@ -850,7 +807,7 @@ class AddRMDomestic extends Component {
                                     <div className="row">
                                         <div className="col-md-6 mt-15">
                                             <div className="form-heading">
-                                                <h2>{isEditFlag ? `Update Raw Material Details` : `Add Raw Material Details`}</h2>
+                                                <h2>{isEditFlag ? `Update Raw Material Domestic Details` : `Add Raw Material Domestic Details`}</h2>
                                             </div>
                                         </div>
                                     </div>
@@ -874,8 +831,8 @@ class AddRMDomestic extends Component {
                                                         offColor="#4DC771"
                                                         id="normal-switch"
                                                         uncheckedIcon={false}
-                                                         checkedIcon={false}
-                                                       height={21}
+                                                        checkedIcon={false}
+                                                        height={21}
                                                     />
                                                     <div className={'right-title'}>Vendor Based</div>
                                                 </label>
@@ -910,7 +867,8 @@ class AddRMDomestic extends Component {
                                                     <div
                                                         onClick={this.rmToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div></div>
+                                                    </div>
+                                                </div>
                                             </Col>
                                             <Col md="3">
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -930,10 +888,15 @@ class AddRMDomestic extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
-                                                        onClick={this.gradeToggler}
-                                                        className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    {(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ?
+                                                        <div className={'plus-icon-square blurPlus-icon-square right'}>
+                                                        </div>
+                                                        :
+                                                        <div
+                                                            onClick={this.gradeToggler}
+                                                            className={'plus-icon-square right'}>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -961,28 +924,28 @@ class AddRMDomestic extends Component {
                                                 </div>
                                             </Col>
                                             <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div className="fullinput-icon">
-                                                        <Field
-                                                            name="CategoryId"
-                                                            type="text"
-                                                            label="Category"
-                                                            component={searchableSelect}
-                                                            placeholder={'Category'}
-                                                            options={this.renderListing('category')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleCategoryChange}
-                                                            valueDescription={this.state.Category}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </div>
-                                                    <div
+                                                {/* <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon"> */}
+                                                <Field
+                                                    name="CategoryId"
+                                                    type="text"
+                                                    label="Category"
+                                                    component={searchableSelect}
+                                                    placeholder={'Category'}
+                                                    options={this.renderListing('category')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleCategoryChange}
+                                                    valueDescription={this.state.Category}
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                                {/* </div> */}
+                                                {/* <div
                                                         onClick={this.categoryToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
-                                                </div>
+                                                    </div> */}
+                                                {/* </div> */}
                                             </Col>
                                         </Row>
                                         {!this.state.IsVendor &&
@@ -1037,22 +1000,23 @@ class AddRMDomestic extends Component {
                                                     </div>
                                                 </div>
                                             </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label="Vendor Plant"
-                                                    name="DestinationSupplierPlantId"
-                                                    placeholder="--- Plant ---"
-                                                    selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
-                                                    options={this.renderListing('VendorPlant')}
-                                                    selectionChanged={this.handleVendorPlant}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    className="multiselect-with-border"
-                                                    disabled={isEditFlag ? true : (this.state.IsVendor ? false : true)}
-                                                />
-                                            </Col>
+                                            {checkVendorPlantConfigurable() && this.state.IsVendor &&
+                                                <Col md="3">
+                                                    <Field
+                                                        label="Vendor Plant"
+                                                        name="DestinationSupplierPlantId"
+                                                        placeholder="--- Plant ---"
+                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                        options={this.renderListing('VendorPlant')}
+                                                        selectionChanged={this.handleVendorPlant}
+                                                        optionValue={option => option.Value}
+                                                        optionLabel={option => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        className="multiselect-with-border"
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                </Col>}
                                             <Col md="3">
                                                 <Field
                                                     name="DestinationSupplierCityId"
@@ -1214,14 +1178,14 @@ class AddRMDomestic extends Component {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
+                                                            minDate={new Date()}
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
                                                             autoComplete={'off'}
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isEditFlag ? true : false}
+                                                            disabled={false}
                                                         />
                                                     </div>
                                                 </div>
@@ -1230,65 +1194,11 @@ class AddRMDomestic extends Component {
 
                                         <Row>
                                             <Col md="12" className="filter-block">
-                                                    <div className=" flex-fills mb-2">
-                                                       <h5>{'Remarks & Attachment'}</h5>  
-                                                    </div>
-                                                </Col>
-                                                <Col md="6">
-                                                    <Field
-                                                        label={'Remarks'}
-                                                        name={`Remark`}
-                                                        placeholder="Type here..."
-                                                        value={this.state.remarks}
-                                                        className=""
-                                                        customClassName=" textAreaWithBorder"
-                                                        onChange={this.handleMessageChange}
-                                                        validate={[required, maxLength100]}
-                                                        required={true}
-                                                        component={renderTextAreaField}
-                                                        maxLength="5000"
-                                                        rows="10"
-                                                    />
-                                                </Col>
-                                                <Col md="6">
-                                                    <label>Upload Attachment ( upload up to 3 files )</label>
-                                                   
-                                                    <Dropzone
-                                                        getUploadParams={this.getUploadParams}
-                                                        onChangeStatus={this.handleChangeStatus}
-                                                        
-                                                        //PreviewComponent={this.Preview}
-                                                        //onSubmit={this.handleSubmit}
-                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,xls,doc,pdf"
-                                                        initialFiles={this.state.initialFiles}
-                                                        maxFiles={3}
-                                                        maxSizeBytes={2000000}
-                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
-                                                        styles={{
-                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
-                                                        }}
-                                                        classNames="draper-drop"
-                                                    />
-                                                </Col>
-                                            </Row>
-                                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                                <div className="col-sm-12 bluefooter-butn text-right ">
-                                                    <button
-                                                        type={'button'}
-                                                        className="reset mr15 cancel-btn"
-                                                        onClick={this.cancel} >
-                                                        <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                                    </button>
-                                                    <button
-                                                        type="submit"
-                                                        className="submit-button mr5 save-btn" >
-                                                       <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' />
-                        </div> {isEditFlag ? 'Update' : 'Save'}
-                                                    </button>
+                                                <div className=" flex-fills mb-2">
+                                                    <h5>{'Remarks & Attachment'}</h5>
                                                 </div>
-                                            </Row>
-                                            {/* <Col md="6">
+                                            </Col>
+                                            <Col md="6">
                                                 <Field
                                                     label={'Remarks'}
                                                     name={`Remark`}
@@ -1306,51 +1216,69 @@ class AddRMDomestic extends Component {
                                             </Col>
                                             <Col md="6">
                                                 <label>Upload Attachment ( upload up to 3 files )</label>
-
-                                                <Dropzone
-                                                    getUploadParams={this.getUploadParams}
-                                                    onChangeStatus={this.handleChangeStatus}
-
-                                                    //PreviewComponent={this.Preview}
-                                                    //onSubmit={this.handleSubmit}
-                                                    accept="image/jpeg,image/jpg,image/png,image/PNG,xls,doc,pdf"
-                                                    initialFiles={this.state.initialFiles}
-                                                    maxFiles={3}
-                                                    maxSizeBytes={2000000}
-                                                    inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
-                                                    styles={{
-                                                        dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-                                                        inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
-                                                    }}
-                                                    classNames="draper-drop"
-                                                />
+                                                {this.state.files.length >= 3 ? '' :
+                                                    <Dropzone
+                                                        getUploadParams={this.getUploadParams}
+                                                        onChangeStatus={this.handleChangeStatus}
+                                                        PreviewComponent={this.Preview}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                                        initialFiles={this.state.initialFiles}
+                                                        maxFiles={3}
+                                                        maxSizeBytes={2000000}
+                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                                                        styles={{
+                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                                                        }}
+                                                        classNames="draper-drop"
+                                                    />}
+                                                <div className={'attachment-wrapper'}>
+                                                    {
+                                                        this.state.files && this.state.files.map(f => {
+                                                            const withOutTild = f.FileURL.replace('~', '')
+                                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                                            return (
+                                                                <div className={'attachment images'}>
+                                                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
+                                                                    </a> */}
+                                                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                                                        <img src={fileURL} height={50} width={100} />
+                                                                    </div> */}
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => this.deleteFile(f.FileId, f.FileName)}>X</button>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
                                             </Col>
                                         </Row>
+
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
                                             <div className="col-sm-12 text-right bluefooter-butn">
                                                 <button
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
                                                     onClick={this.cancel} >
-                                                    {'Cancel'}
+                                                    <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="submit-button mr5 save-btn" >
-                                                    {isEditFlag ? 'Update' : 'Save'}
+                                                    <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                    </div> {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>
-                                        </Row> */}
+                                        </Row>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {/* <RMDomesticListing
-                        onRef={ref => (this.child = ref)}
-                        getDetails={this.getDetails}
-                        formToggle={this.formToggle}
-                        isShowForm={this.state.isShowForm} /> */}
                 </div>
 
                 {isRMDrawerOpen && <AddSpecification
@@ -1364,7 +1292,7 @@ class AddRMDomestic extends Component {
                     isOpen={isOpenGrade}
                     closeDrawer={this.closeGradeDrawer}
                     isEditFlag={false}
-                    //RawMaterial={this.state.RawMaterial}
+                    RawMaterial={this.state.RawMaterial}
                     anchor={'right'}
                 />}
                 {isOpenSpecification && <AddSpecification
@@ -1395,6 +1323,13 @@ class AddRMDomestic extends Component {
                     ID={''}
                     anchor={'right'}
                 />}
+                {isVisible && <ImageModel
+                    onOk={this.onOk}
+                    onCancel={this.onCancel}
+                    modalVisible={isVisible}
+                    imageURL={this.state.imageURL}
+                //modelData={}
+                />}
             </>
         );
     }
@@ -1414,7 +1349,7 @@ function mapStateToProps(state) {
         categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, } = comman;
 
     const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
-        gradeSelectListByRMID, vendorListByVendorType } = material;
+        gradeSelectList, vendorListByVendorType } = material;
 
     let initialValues = {};
     if (rawMaterialDetails && rawMaterialDetails != undefined) {
@@ -1431,7 +1366,7 @@ function mapStateToProps(state) {
         rowMaterialList, rmGradeList, rmSpecification,
         plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
         filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
-        fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectListByRMID,
+        fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
         filterPlantList, UOMSelectList, vendorListByVendorType,
     }
 
@@ -1455,7 +1390,7 @@ export default connect(mapStateToProps, {
     updateRMDomesticAPI,
     fetchRMGradeAPI,
     getRawMaterialNameChild,
-    getGradeListByRawMaterialNameChild,
+    getRMGradeSelectListByRawMaterial,
     getSupplierList,
     getPlantBySupplier,
     getUOMSelectList,

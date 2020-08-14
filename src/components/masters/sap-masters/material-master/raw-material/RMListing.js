@@ -79,7 +79,9 @@ class RMListing extends Component {
     */
     confirmDelete = (ID) => {
         this.props.deleteMaterialTypeAPI(ID, (res) => {
-            if (res.data.Result === true) {
+            if (res.status == 417 && res.data.Result == false) {
+                toastr.warning(res.data.Message)
+            } else if (res && res.data && res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
                 this.getListData();
             }
@@ -161,7 +163,7 @@ class RMListing extends Component {
                             type={'button'}
                             className={'user-btn'}
                             onClick={this.openModel}>
-                            <div className={'plus'}></div>{`ADD RM MATERIAL`}</button>
+                            <div className={'plus'}></div>{`ADD MATERIAL`}</button>
                     </Col>
                 </Row>
 
@@ -179,7 +181,7 @@ class RMListing extends Component {
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="" dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="MaterialType" dataAlign="center" dataSort={true}>Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="Density" dataSort={true}>Density (g/cm3)</TableHeaderColumn>
                             <TableHeaderColumn dataField="MaterialTypeId" dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

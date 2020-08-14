@@ -17,7 +17,7 @@ export const MESSAGES = {
   CONFIRM_DELETE: 'Are you sure you want to delete Part?',
 
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
-  SUPPLIER_ADDED_SUCCESS: 'Supplier added successfully',
+  SUPPLIER_ADDED_SUCCESS: 'Vendor added successfully',
 
   BOM_ADD_SUCCESS: 'Bill of material added successfully',
   BOM_DELETE_ALERT: 'Are you sure you want to delete Assembly Part?',
@@ -74,7 +74,7 @@ export const MESSAGES = {
   DELETE_RM_GRADE_SUCCESS: 'Grade has been deleted successfully.',
 
   //RM SPECIFICATION
-  SPECIFICATION_ADD_SUCCESS: 'Row material specification added successfully',
+  SPECIFICATION_ADD_SUCCESS: 'Raw material specification added successfully',
   SPECIFICATION_DELETE_ALERT: 'Are you sure you want to delete RM Specification?',
   DELETE_SPECIFICATION_SUCCESS: 'RM Specification has been deleted successfully.',
   SPECIFICATION_UPDATE_SUCCESS: 'RM Specification has been updated successfully',
@@ -129,8 +129,8 @@ export const MESSAGES = {
   UPDATE_LABOUR_SUCCESS: 'Labour updated successfully',
 
   //SUPPLIER OR VENDOR
-  DELETE_SUPPLIER_SUCCESS: 'Supplier deleted successfully',
-  UPDATE_SUPPLIER_SUCESS: 'Supplier updated successfully',
+  DELETE_SUPPLIER_SUCCESS: 'Vendor deleted successfully',
+  UPDATE_SUPPLIER_SUCESS: 'Vendor updated successfully',
   VENDOR_ACTIVE_SUCCESSFULLY: 'Vendor has been active successfully.',
   VENDOR_INACTIVE_SUCCESSFULLY: 'Vendor has been inactive successfully.',
 

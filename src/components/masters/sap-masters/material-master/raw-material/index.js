@@ -114,7 +114,7 @@ class RowMaterialMaster extends Component {
                                 </NavItem>
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
-                                        Manage RM Material
+                                        Manage Material
                                 </NavLink>
                                 </NavItem>
                             </Nav>
@@ -139,7 +139,7 @@ class RowMaterialMaster extends Component {
 
                                 {this.state.activeTab == 3 &&
                                     <TabPane tabId="3">
-                                        <SpecificationListing />
+                                        <SpecificationListing toggle={this.toggle} />
                                     </TabPane>}
 
                                 {this.state.activeTab == 4 &&

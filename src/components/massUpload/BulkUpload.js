@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, Label } from 'reactstrap';
 import { required, maxLength25, minLength3 } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
-import { bulkUploadRMDomestic, bulkfileUploadRM, bulkUploadRMImport, } from '../../actions/master/Material';
+import {
+    bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
+    bulkfileUploadRM, bulkUploadRMSpecification,
+} from '../../actions/master/Material';
 import { fuelBulkUpload } from '../../actions/master/Fuel';
+import { vendorBulkUpload } from '../../actions/master/Supplier';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { loggedInUserId } from "../../helper/auth";
@@ -28,6 +32,7 @@ class BulkUpload extends Component {
 
             faildRecords: false,
             failedData: [],
+            costingHead: 'ZBC',
         }
     }
 
@@ -69,6 +74,14 @@ class BulkUpload extends Component {
     }
 
     /**
+    * @method onPressHeads
+    * @description Used for Costing head check
+    */
+    onPressHeads = (costingHeadFlag) => {
+        this.setState({ costingHead: costingHeadFlag, });
+    }
+
+    /**
      * @method fileChangedHandler
      * @description called for profile pic change
      */
@@ -80,7 +93,7 @@ class BulkUpload extends Component {
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
-        if (fileType != '.xls' || fileType != '.xlsx') {
+        if (fileType != '.xls' && fileType != '.xlsx') {
             toastr.warning('File type should be .xls or .xlsx')
         } else {
 
@@ -95,9 +108,7 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
-                    // fileHeads = ["SerialNumber", "BillNumber", "AssemblyBOMPartNumber", "PartNumber", "MaterialDescription",
-                    //     "MaterialTypeName", "UnitOfMeasurementName", "Quantity", "AssemblyPartNumberMark", "BOMLevel", "EcoNumber",
-                    //     "RevisionNumber"]
+                    // fileHeads = ["SerialNumber", "BillNumber"]
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
@@ -107,7 +118,7 @@ class BulkUpload extends Component {
                                 // CreatedBy: loggedInUserId(),
                             }
                             val.map((el, i) => {
-                                obj[fileHeads[i]] = el
+                                obj[fileHeads[i]] = el;
                             })
                             fileData.push(obj)
                             obj = {}
@@ -125,24 +136,26 @@ class BulkUpload extends Component {
     }
 
     responseHandler = (res) => {
-        const { messageLabel } = this.props;
-        if (res.data.Result == false) {
+        const { messageLabel, fileName } = this.props;
+        if (res.data.Data) {
             let Data = res.data.Data;
-            toastr.warning(res.data.Message);
+            let DynamicData = res.data.DynamicData;
+
             if (Data.CountSucceeded > 0) {
                 toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
+                if (DynamicData && DynamicData.IsDensityAvailable == false && fileName == 'RMSpecification') {
+                    this.props.densityAlert()
+                }
             }
-            if (Data.FaildRecords.length > 0) {
+
+            if (Data.CountFailed > 0) {
+                toastr.warning(res.data.Message);
                 this.setState({
-                    faildRecords: true,
                     failedData: Data.FaildRecords,
+                    faildRecords: true,
                 })
             }
-        } else {
-            let Data = res.data.Data;
-            if (Data.CountSucceeded > 0) {
-                toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
-            }
+
         }
         this.toggleDrawer('')
     }
@@ -153,22 +166,46 @@ class BulkUpload extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { fileData } = this.state;
+        const { fileData, costingHead } = this.state;
         const { fileName } = this.props;
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
         }
 
-        if (fileName == 'RMDomestic') {
+        if (fileName == 'RMDomestic' && costingHead == 'ZBC') {
 
-            this.props.bulkUploadRMDomestic(uploadData, (res) => {
+            this.props.bulkUploadRMDomesticZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'RMImport') {
+        } else if (fileName == 'RMDomestic' && costingHead == 'VBC') {
 
-            this.props.bulkUploadRMImport(uploadData, (res) => {
+            this.props.bulkUploadRMDomesticVBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'RMImport' && costingHead == 'ZBC') {
+
+            this.props.bulkUploadRMImportZBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'RMImport' && costingHead == 'VBC') {
+
+            this.props.bulkUploadRMImportVBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'RMSpecification') {
+
+            this.props.bulkUploadRMSpecification(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'Vendor') {
+
+            this.props.vendorBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -189,11 +226,16 @@ class BulkUpload extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset, fileName, messageLabel } = this.props;
-        const { faildRecords, failedData } = this.state;
+        const { handleSubmit, isEditFlag, reset, fileName, messageLabel, isZBCVBCTemplate = '' } = this.props;
+        const { faildRecords, failedData, costingHead } = this.state;
 
         if (faildRecords) {
-            return <Downloadxls isFailedFlag={true} fileName={fileName} failedData={failedData} />
+            return <Downloadxls
+                isFailedFlag={true}
+                fileName={fileName}
+                failedData={failedData}
+                costingHead={costingHead}
+            />
         }
 
         return (
@@ -218,9 +260,35 @@ class BulkUpload extends Component {
                             </Row>
 
                             <Row>
+                                {isZBCVBCTemplate &&
+                                    <Col md="12">
+                                        <Label sm={2} className={'pl0 pr0'} check>
+                                            <input
+                                                type="radio"
+                                                name="costingHead"
+                                                checked={costingHead == 'ZBC' ? true : false}
+                                                onClick={() => this.onPressHeads('ZBC')}
+                                            />{' '}
+                                        ZBC
+                                    </Label>
+                                        <Label sm={2} className={'pl0 pr0'} check>
+                                            <input
+                                                type="radio"
+                                                name="costingHead"
+                                                checked={costingHead == 'VBC' ? true : false}
+                                                onClick={() => this.onPressHeads('VBC')}
+                                            />{' '}
+                                        VBC
+                                    </Label>
+                                    </Col>}
 
                                 <div className="input-group mt25 col-md-12 input-withouticon" >
-                                    <Downloadxls fileName={fileName} isFailedFlag={false} />
+                                    <Downloadxls
+                                        isZBCVBCTemplate={isZBCVBCTemplate}
+                                        fileName={fileName}
+                                        isFailedFlag={false}
+                                        costingHead={costingHead}
+                                    />
                                 </div>
 
                                 <div className="input-group mt25 col-md-12 input-withouticon" >
@@ -235,19 +303,19 @@ class BulkUpload extends Component {
 
                             </Row>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right">
+                                <div className="col-sm-12  bluefooter-butn1 text-right">
                                     <button
                                         type="submit"
                                         className="submit-button mr5 save-btn" >
-                                       <div className={'check-icon'}><img src={require('../../assests/images/check.png')} alt='check-icon.jpg' />
-                          </div> {isEditFlag ? 'Update' : 'Save'}
+                                        <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                        </div> {isEditFlag ? 'Update' : 'Save'}
                                     </button>
 
                                     <button
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={this.cancel} >
-                                       <div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
                                     </button>
                                 </div>
                             </Row>
@@ -276,10 +344,14 @@ function mapStateToProps({ }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    bulkUploadRMDomestic,
     bulkfileUploadRM,
-    bulkUploadRMImport,
+    bulkUploadRMSpecification,
     fuelBulkUpload,
+    vendorBulkUpload,
+    bulkUploadRMDomesticZBC,
+    bulkUploadRMDomesticVBC,
+    bulkUploadRMImportZBC,
+    bulkUploadRMImportVBC,
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

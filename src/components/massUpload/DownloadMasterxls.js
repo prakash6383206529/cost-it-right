@@ -33,36 +33,36 @@ class DownloadMasterxls extends React.Component {
     */
     renderSwitch = (master) => {
 
-        switch (master) {
-            case 'Supplier':
-                return this.returnExcelColumn(Supplier);
-            case 'Plant':
-                return this.returnExcelColumn(Plant);
-            case 'BOP':
-                return this.returnExcelColumn(Bought_Out_Parts);
-            case 'Processes':
-                return this.returnExcelColumn(Processes);
-            case 'MachineClass':
-                return this.returnExcelColumn(MachineClass);
-            case 'Labour':
-                return this.returnExcelColumn(Labour);
-            case 'Operation':
-                return this.returnExcelColumn(Operation);
-            case 'OtherOperation':
-                return this.returnExcelColumn(OtherOperation);
-            case 'Power':
-                return this.returnExcelColumn(Power);
-            case 'OverheadAndProfit':
-                return this.returnExcelColumn(OverheadAndProfit);
-            case 'MHR':
-                return this.returnExcelColumn(MHR);
-            case 'Fuel':
-                return this.returnExcelColumn(Fuel);
-            case 'RMDomestic':
-                return this.returnExcelColumn(RMDomestic);
-            default:
-                return 'foo';
-        }
+        // switch (master) {
+        //     case 'Supplier':
+        //         return this.returnExcelColumn(Supplier);
+        //     case 'Plant':
+        //         return this.returnExcelColumn(Plant);
+        //     case 'BOP':
+        //         return this.returnExcelColumn(Bought_Out_Parts);
+        //     case 'Processes':
+        //         return this.returnExcelColumn(Processes);
+        //     case 'MachineClass':
+        //         return this.returnExcelColumn(MachineClass);
+        //     case 'Labour':
+        //         return this.returnExcelColumn(Labour);
+        //     case 'Operation':
+        //         return this.returnExcelColumn(Operation);
+        //     case 'OtherOperation':
+        //         return this.returnExcelColumn(OtherOperation);
+        //     case 'Power':
+        //         return this.returnExcelColumn(Power);
+        //     case 'OverheadAndProfit':
+        //         return this.returnExcelColumn(OverheadAndProfit);
+        //     case 'MHR':
+        //         return this.returnExcelColumn(MHR);
+        //     case 'Fuel':
+        //         return this.returnExcelColumn(Fuel);
+        //     case 'RMDomestic':
+        //         return this.returnExcelColumn(RMDomestic);
+        //     default:
+        //         return 'foo';
+        // }
     }
 
     /**

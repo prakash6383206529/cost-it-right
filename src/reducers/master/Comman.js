@@ -48,6 +48,7 @@ import {
     GET_CURRENCY_SELECTLIST_SUCCESS,
     GET_TECHNOLOGY_SELECTLIST_SUCCESS,
     GET_PLANT_SELECTLIST_SUCCESS,
+    GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
 } from '../../config/constants';
 
 const initialState = {
@@ -383,6 +384,13 @@ export default function commanReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 plantSelectList: action.payload
+            };
+        case GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                vendorPlantSelectList: action.payload
             };
         default:
             return state;

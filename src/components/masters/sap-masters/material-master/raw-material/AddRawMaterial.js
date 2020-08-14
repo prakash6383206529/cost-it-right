@@ -4,7 +4,10 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
 import { renderText, renderSelectField } from "../../../../layout/FormInputs";
-import { createRawMaterialNameChild } from '../../../../../actions/master/Material';
+import {
+    createRawMaterialNameChild, getRawMaterialChildById,
+    updateRawMaterialChildName
+} from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { CONSTANT } from '../../../../../helper/AllConastant'
@@ -15,7 +18,7 @@ class AddRawMaterial extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isEditFlag: false,
+
         }
     }
 
@@ -24,6 +27,13 @@ class AddRawMaterial extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        const { ID, isEditFlag } = this.props;
+        if (isEditFlag) {
+            this.props.getRawMaterialChildById(ID, res => {
+                let Data = res.data.Data;
+                this.props.change('RawMaterialName', Data.RawMaterialName)
+            })
+        }
 
     }
 
@@ -49,23 +59,21 @@ class AddRawMaterial extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { RawMaterialId, MaterialSelectList, isEditFlag } = this.props;
+        const { ID, isEditFlag } = this.props;
 
         if (isEditFlag) {
 
-            // let formData = {
-            //     RawMaterialId: RawMaterialId,
-            //     RawMaterialName: values.RawMaterialName,
-            //     IsActive: true,
-            //     CreatedDate: '',
-            //     CreatedBy: loggedInUserId(),
-            // }
-            // this.props.updateRawMaterialAPI(formData, (res) => {
-            //     if (res.data.Result === true) {
-            //         toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-            //         this.toggleDrawer('')
-            //     }
-            // })
+            let formData = {
+                RawMaterialId: ID,
+                RawMaterialName: values.RawMaterialName,
+                LoggedInUserId: loggedInUserId(),
+            }
+            this.props.updateRawMaterialChildName(formData, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
+                    this.toggleDrawer('')
+                }
+            })
 
         } else {
             values.LoggedInUserId = loggedInUserId();
@@ -123,34 +131,20 @@ class AddRawMaterial extends Component {
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12">
                                         <div className="text-center ">
-                                            {/* <input
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
-                                                className="reset mr15 cancel-btn"
-                                            />
-                                            <input
-                                                //disabled={isSubmitted ? true : false}
-                                                type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
-                                            /> */}
                                             <button
-                        onClick={this.cancel}
-                        type="submit"
-                        value="CANCEL"
-                        className="reset mr15 cancel-btn">
-
-                        <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
-                      <button
-                        type="submit"
-                        // disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"
-                      >	<div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' />
-                        </div>
-                        {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
-                      </button>
+                                                onClick={this.cancel}
+                                                type="submit"
+                                                value="CANCEL"
+                                                className="reset mr15 cancel-btn">
+                                                <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>CANCEL</button>
+                                            <button
+                                                type="submit"
+                                                // disabled={isSubmitted ? true : false}
+                                                className="btn-primary save-btn" >
+                                                <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                </div>
+                                                {this.props.isEditFlag ? 'UPDATE' : 'SAVE'}
+                                            </button>
                                         </div>
                                     </div>
                                 </Row>
@@ -168,9 +162,7 @@ class AddRawMaterial extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, costWorking, material }) {
-    const { plantList, rmGradeList, rmSpecification } = comman;
-    const { MaterialSelectList } = costWorking;
+function mapStateToProps({ material }) {
     const { rawMaterialData } = material;
 
     let initialValues = {};
@@ -192,6 +184,8 @@ function mapStateToProps({ comman, costWorking, material }) {
 export default connect(mapStateToProps,
     {
         createRawMaterialNameChild,
+        getRawMaterialChildById,
+        updateRawMaterialChildName,
     })(reduxForm({
         form: 'AddRawMaterial',
         enableReinitialize: true,

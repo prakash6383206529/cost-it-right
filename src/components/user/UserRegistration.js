@@ -78,6 +78,8 @@ class UserRegistration extends Component {
   * @description used to called after mounting component
   */
   componentDidMount() {
+    const { data } = this.props;
+    this.getUserDetail(data);
     this.props.setEmptyUserDataAPI('', () => { })
     this.props.getAllRoleAPI(() => { })
     this.props.getAllDepartmentAPI(() => { })
@@ -455,7 +457,7 @@ class UserRegistration extends Component {
       return actions && actions.map((item, index) => {
         if (el.Text != item.ActionName) return false;
         return (
-          <td className="text-center"> 
+          <td className="text-center">
             {/* {<input
                      type="checkbox"
                      value={item.ActionId}
@@ -736,26 +738,15 @@ class UserRegistration extends Component {
       IsShowAdditionalPermission: false,
       TechnologyLevelGrid: [],
     })
-  }
-
-  /**
-  * @method resetForm
-  * @description used to Reset form
-  */
-  resetForm = () => {
-    const { reset } = this.props;
-    reset();
-    this.props.setEmptyUserDataAPI('', () => { })
-    this.setState({
-      isEditFlag: false,
-      isShowForm: false,
-      department: [],
-      role: [],
-      city: [],
-      Modules: [],
-      IsShowAdditionalPermission: false,
-      TechnologyLevelGrid: [],
-    })
+    let data = {
+      UserId: loggedInUserId(),
+      PageSize: 0,
+      LastIndex: 0,
+      DepartmentId: '',
+      RoleId: '',
+    }
+    this.props.getAllUserDataAPI(data, res => { });
+    this.props.hideForm()
   }
 
   /**
@@ -775,29 +766,7 @@ class UserRegistration extends Component {
       if (res.data.Result) {
         toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
-      this.setState({
-        isLoader: false,
-        isEditFlag: false,
-        isSubmitted: false,
-        isShowForm: false,
-        department: [],
-        role: [],
-        city: [],
-        IsShowAdditionalPermission: false,
-        Modules: [],
-        TechnologyLevelGrid: [],
-      })
-
-      let data = {
-        UserId: loggedInUserId(),
-        PageSize: 0,
-        LastIndex: 0,
-        DepartmentId: '',
-        RoleId: '',
-      }
-      this.props.getAllUserDataAPI(data, res => { });
-      this.props.setEmptyUserDataAPI('', () => { })
-      this.child.getUpdatedData();
+      this.cancel();
     })
   }
 
@@ -898,6 +867,7 @@ class UserRegistration extends Component {
       console.log('checks', isDepartmentUpdate, isRoleUpdate, isPermissionUpdate, isTechnologyUpdate);
 
       if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
+
         const toastrConfirmOptions = {
           onOk: () => {
             this.confirmUpdateUser(updatedData, true)
@@ -907,6 +877,7 @@ class UserRegistration extends Component {
           }
         };
         return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
+
       } else {
 
         reset();
@@ -914,72 +885,9 @@ class UserRegistration extends Component {
           if (res.data.Result) {
             toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
           }
-          this.setState({
-            isLoader: false,
-            isEditFlag: false,
-            isSubmitted: false,
-            isShowForm: false,
-            department: [],
-            role: [],
-            city: [],
-            Modules: [],
-            IsShowAdditionalPermission: false,
-            TechnologyLevelGrid: [],
-          })
-
-          //////////////////  ADDITIONAL PERMISSION START /////////
-          // let formData = {
-          //    UserId: UserId,
-          //    Modules: Modules,
-          // }
-
-          // this.props.setUserAdditionalPermission(formData, (res) => {
-          //    if (res && res.data && res.data.Result) {
-          //       toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
-          //    }
-          //    this.setState({
-          //       Modules: [],
-          //       IsShowAdditionalPermission: false,
-          //    })
-          // })
-          //////////////////  ADDITIONAL PERMISSION END /////////
-
-          //////////////////  TECHNOLOGY LEVEL START /////////
-          // let tempTechnologyLevelArray = []
-
-          // TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
-          //    tempTechnologyLevelArray.push({
-          //       Technology: item.Technology,
-          //       Level: item.Level,
-          //       TechnologyId: item.TechnologyId,
-          //       LevelId: item.LevelId
-          //    })
-          // })
-
-          // let technologyLevelFormData = {
-          //    UserId: UserId,
-          //    TechnologyLevels: tempTechnologyLevelArray
-          // }
-
-          // this.props.updateUserTechnologyLevelForCosting(technologyLevelFormData, (res) => {
-          //    if (res && res.data && res.data.Result) {
-          //       //toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
-          //    }
-          //    this.setState({ TechnologyLevelGrid: [] })
-          // })
-          //////////////////  TECHNOLOGY LEVEL END /////////
-
-          let data = {
-            UserId: loggedInUserId(),
-            PageSize: 0,
-            LastIndex: 0,
-            DepartmentId: '',
-            RoleId: '',
-          }
-          this.props.getAllUserDataAPI(data, res => { });
-          this.props.setEmptyUserDataAPI('', () => { })
-          this.child.getUpdatedData();
+          this.cancel();
         })
+
       }
     } else {
 
@@ -1012,65 +920,8 @@ class UserRegistration extends Component {
         if (res && res.data && res.data.Result) {
           const newUserId = res.data.Identity;
           toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
-          reset();
-          this.setState({
-            isLoader: false,
-            isSubmitted: false,
-            isShowForm: false,
-            department: [],
-            role: [],
-            city: [],
-          })
+          this.cancel();
 
-          //////////////////  ADDITIONAL PERMISSION START /////////
-          // let formData = {
-          //    UserId: newUserId,
-          //    Modules: Modules,
-          // }
-
-          // this.props.setUserAdditionalPermission(formData, (res) => {
-          //    if (res && res.data && res.data.Result) {
-          //       toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
-          //    }
-          //    this.setState({
-          //       Modules: [],
-          //       IsShowAdditionalPermission: false,
-          //    })
-          // })
-          //////////////////  ADDITIONAL PERMISSION END /////////
-
-          //////////////////  TECHNOLOGY LEVEL START /////////
-          // let tempTechnologyLevelArray = []
-
-          // TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {
-          //    tempTechnologyLevelArray.push({
-          //       TechnologyId: item.TechnologyId,
-          //       LevelId: item.LevelId
-          //    })
-          // })
-
-          // let technologyLevelFormData = {
-          //    UserId: newUserId,
-          //    TechnologyLevels: tempTechnologyLevelArray
-          // }
-
-          // this.props.setUserTechnologyLevelForCosting(technologyLevelFormData, (res) => {
-          //    if (res && res.data && res.data.Result) {
-          //       //toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
-          //    }
-          //    this.setState({ TechnologyLevelGrid: [] })
-          // })
-          //////////////////  TECHNOLOGY LEVEL END /////////
-
-          let data = {
-            UserId: loggedInUserId(),
-            PageSize: 0,
-            LastIndex: 0,
-            DepartmentId: '',
-            RoleId: '',
-          }
-          this.props.getAllUserDataAPI(data, res => { });
-          this.child.getUpdatedData();
         }
       })
 
@@ -1085,293 +936,275 @@ class UserRegistration extends Component {
         {/* {isLoader && <Loader />} */}
         <div className="login-container signup-form">
           <div className="row">
-            {/* {!this.state.isShowForm && <div className="col-md-12" >
-                     <button
-                        type="button"
-                        className={'user-btn mb15'}
-                        onClick={() => this.setState({ isShowForm: !this.state.isShowForm })}><div className={'plus'}></div>ADD USER</button>
-                  </div>} */}
 
-            {this.state.isShowForm &&
-              <div className="col-md-12">
-                <div className="shadow-lgg login-formg pt-30">
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="form-heading mb-0">
-                        <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
-                      </div>
+            <div className="col-md-12">
+              <div className="shadow-lgg login-formg pt-30">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="form-heading mb-0">
+                      <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
                     </div>
-                    {this.state.isEditFlag && <div className="col-md-6">
-                      <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
-                    </div>}
                   </div>
-                  <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser">
+                  {this.state.isEditFlag && <div className="col-md-6">
+                    <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
+                  </div>}
+                </div>
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser">
 
-                    <HeaderTitle
-                      title={'Personal Details:'}
-                      customClass={'Personal-Details'} />
+                  <HeaderTitle
+                    title={'Personal Details:'}
+                    customClass={'Personal-Details'} />
 
-                    <div className=" row form-group">
-                      <div className="input-group col-md-3 input-withouticon" >
-                        <Field
-                          label="First Name"
-                          name={"FirstName"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
-                          component={renderText}
-                          required={true}
-                          maxLength={26}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
-                      {/* <div className="input-group  col-md-4 input-withouticon">
-                                    <Field
-                                       label="Middle Name"
-                                       name={"MiddleName"}
-                                       type="text"
-                                       placeholder={''}
-                                       validate={[alphabetsOnlyForName]}
-                                       component={renderText}
-                                       required={false}
-                                       maxLength={26}
-                                    />
-                                 </div> */}
-                      <div className="input-group col-md-3 input-withouticon">
-                        <Field
-                          label="Last Name"
-                          name={"LastName"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
-                          component={renderText}
-                          required={true}
-                          maxLength={26}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
-                      <div className="input-group col-md-3">
-                        <Field
-                          name="Mobile"
-                          label="Mobile"
-                          type="text"
-                          placeholder={'Enter'}
-                          component={renderText}
-                          isDisabled={false}
-                          validate={[required, number, minLength7]}
-                          required={true}
-                          maxLength={70}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
-                      <div className="input-group col-md-3 input-withouticon">
-                        <div className="row form-group">
-                          <div className="Phone phoneNumber col-md-8 input-withouticon">
-                            <Field
-                              label="Phone Number"
-                              name={"PhoneNumber"}
-                              type="text"
-                              placeholder={'Enter'}
-                              validate={[number]}
-                              component={renderText}
-                              //required={true}
-                              maxLength={12}
-                              customClassName={'withBorder'}
-                            />
-                          </div>
-                          {/* <div className="dash phoneNumber col-md-1 input-withouticon">
+                  <div className=" row form-group">
+                    <div className="input-group col-md-3 input-withouticon" >
+                      <Field
+                        label="First Name"
+                        name={"FirstName"}
+                        type="text"
+                        placeholder={'Enter'}
+                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                        component={renderText}
+                        required={true}
+                        maxLength={26}
+                        customClassName={'withBorder'}
+                      />
+                    </div>
+
+                    <div className="input-group col-md-3 input-withouticon">
+                      <Field
+                        label="Last Name"
+                        name={"LastName"}
+                        type="text"
+                        placeholder={'Enter'}
+                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                        component={renderText}
+                        required={true}
+                        maxLength={26}
+                        customClassName={'withBorder'}
+                      />
+                    </div>
+                    <div className="input-group col-md-3">
+                      <Field
+                        name="Mobile"
+                        label="Mobile"
+                        type="text"
+                        placeholder={'Enter'}
+                        component={renderText}
+                        isDisabled={false}
+                        validate={[required, number, minLength7]}
+                        required={true}
+                        maxLength={70}
+                        customClassName={'withBorder'}
+                      />
+                    </div>
+                    <div className="input-group col-md-3 input-withouticon">
+                      <div className="row form-group">
+                        <div className="Phone phoneNumber col-md-8 input-withouticon">
+                          <Field
+                            label="Phone Number"
+                            name={"PhoneNumber"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[number]}
+                            component={renderText}
+                            //required={true}
+                            maxLength={12}
+                            customClassName={'withBorder'}
+                          />
+                        </div>
+                        {/* <div className="dash phoneNumber col-md-1 input-withouticon">
                                           {''}
                                        </div> */}
-                          <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
-                            <Field
-                              label="Extension"
-                              name={"Extension"}
-                              type="text"
-                              placeholder={'Ext'}
-                              validate={[number]}
-                              component={renderText}
-                              //required={true}
-                              maxLength={5}
-                              customClassName={'withBorder w100'}
-                            />
-                          </div>
+                        <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
+                          <Field
+                            label="Extension"
+                            name={"Extension"}
+                            type="text"
+                            placeholder={'Ext'}
+                            validate={[number]}
+                            component={renderText}
+                            //required={true}
+                            maxLength={5}
+                            customClassName={'withBorder w100'}
+                          />
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <HeaderTitle
-                      title={'ID & Password:'}
-                      customClass={''} />
+                  <HeaderTitle
+                    title={'ID & Password:'}
+                    customClass={''} />
 
-                    <div className="row form-group">
-                      <div className="input-group col-md-3">
-                        <Field
-                          name="EmailAddress"
-                          label="Email ID"
-                          component={renderEmailInputField}
-                          isDisabled={false}
-                          placeholder={'Enter'}
-                          validate={[required, email, minLength7, maxLength70]}
-                          required={true}
-                          maxLength={70}
-                          isDisabled={this.state.isEditFlag ? true : false}
-                          customClassName={'withBorderEmail'}
-                        />
-                      </div>
-                      <div className="input-group col-md-3">
-                        <Field
-                          name="UserName"
-                          label="User name"
-                          type="text"
-                          placeholder={'Enter'}
-                          component={renderText}
-                          isDisabled={false}
-                          validate={[required, minLength7]}
-                          required={true}
-                          maxLength={70}
-                          disabled={this.state.isEditFlag ? true : false}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
-                      {this.state.isShowPwdField &&
-                        <>
-                          <div id="password" className="input-group password col-md-3">
-                            <Field
-                              name="Password"
-                              label="Password"
-                              placeholder="Enter"
-                              component={renderPasswordInputField}
-                              onChange={this.passwordPatternHandler}
-                              validate={[required, minLength6, maxLength18]}
-                              isShowHide={this.state.isShowHidePassword}
-                              showHide={this.showHidePasswordHandler}
-                              required={true}
-                              maxLength={26}
-                              isEyeIcon={true}
-                              customClassName={'withBorderPWD'}
-                            />
-                          </div>
-                          <div className="input-group col-md-3">
-                            <Field
-                              name="passwordConfirm"
-                              label="Confirm Password"
-                              placeholder={'Enter'}
-                              component={renderPasswordInputField}
-                              validate={[required, minLength6, maxLength18]}
-                              required={true}
-                              maxLength={26}
-                              isShowHide={this.state.isShowHide}
-                              showHide={this.showHideHandler}
-                              isEyeIcon={true}
-                              customClassName={'withBorderPWD'}
-                            />
-                          </div>
-                        </>}
+                  <div className="row form-group">
+                    <div className="input-group col-md-3">
+                      <Field
+                        name="EmailAddress"
+                        label="Email ID"
+                        component={renderEmailInputField}
+                        isDisabled={false}
+                        placeholder={'Enter'}
+                        validate={[required, email, minLength7, maxLength70]}
+                        required={true}
+                        maxLength={70}
+                        isDisabled={this.state.isEditFlag ? true : false}
+                        customClassName={'withBorderEmail'}
+                      />
                     </div>
-
-                    <HeaderTitle
-                      title={'Address:'}
-                      customClass={''} />
-
-                    <div className="row form-group">
-                      <div className="input-group  col-md-3 input-withouticon">
-                        <Field
-                          label="Address 1"
-                          name={"AddressLine1"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[required]}
-                          component={renderText}
-                          required={true}
-                          maxLength={26}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
-                      <div className="input-group col-md-3 input-withouticon">
-                        <Field
-                          label="Address 2"
-                          name={"AddressLine2"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[required]}
-                          component={renderText}
-                          required={true}
-                          maxLength={26}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <Field
-                          name="CityId"
-                          type="text"
-                          label="City"
-                          component={searchableSelect}
-                          placeholder={'Select city'}
-                          options={this.searchableSelectType('city')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={[required]}
-                          //required={true}
-                          handleChangeDescription={this.cityHandler}
-                          valueDescription={this.state.city}
-                        />
-                      </div>
-                      <div className="input-group col-md-3 input-withouticon">
-                        <Field
-                          label="ZipCode"
-                          name={"ZipCode"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[required, number]}
-                          component={renderText}
-                          required={true}
-                          maxLength={26}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
+                    <div className="input-group col-md-3">
+                      <Field
+                        name="UserName"
+                        label="User name"
+                        type="text"
+                        placeholder={'Enter'}
+                        component={renderText}
+                        isDisabled={false}
+                        validate={[required, minLength7]}
+                        required={true}
+                        maxLength={70}
+                        disabled={this.state.isEditFlag ? true : false}
+                        customClassName={'withBorder'}
+                      />
                     </div>
+                    {this.state.isShowPwdField &&
+                      <>
+                        <div id="password" className="input-group password col-md-3">
+                          <Field
+                            name="Password"
+                            label="Password"
+                            placeholder="Enter"
+                            component={renderPasswordInputField}
+                            onChange={this.passwordPatternHandler}
+                            validate={[required, minLength6, maxLength18]}
+                            isShowHide={this.state.isShowHidePassword}
+                            showHide={this.showHidePasswordHandler}
+                            required={true}
+                            maxLength={26}
+                            isEyeIcon={true}
+                            customClassName={'withBorderPWD'}
+                          />
+                        </div>
+                        <div className="input-group col-md-3">
+                          <Field
+                            name="passwordConfirm"
+                            label="Confirm Password"
+                            placeholder={'Enter'}
+                            component={renderPasswordInputField}
+                            validate={[required, minLength6, maxLength18]}
+                            required={true}
+                            maxLength={26}
+                            isShowHide={this.state.isShowHide}
+                            showHide={this.showHideHandler}
+                            isEyeIcon={true}
+                            customClassName={'withBorderPWD'}
+                          />
+                        </div>
+                      </>}
+                  </div>
 
-                    <HeaderTitle
-                      title={'Role & Department:'}
-                      customClass={''} />
+                  <HeaderTitle
+                    title={'Address:'}
+                    customClass={''} />
 
-                    <div className="row form-group">
-                      <div className="col-md-3">
-                        <Field
-                          name="RoleId"
-                          type="text"
-                          label="Role"
-                          component={searchableSelect}
-                          placeholder={'Select role'}
-                          options={this.searchableSelectType('role')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
-                          required={true}
-                          handleChangeDescription={this.roleHandler}
-                          valueDescription={this.state.role}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <Field
-                          name="DepartmentId"
-                          type="text"
-                          label="Department"
-                          component={searchableSelect}
-                          placeholder={'Select department'}
-                          options={this.searchableSelectType('department')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
-                          required={true}
-                          handleChangeDescription={this.departmentHandler}
-                          valueDescription={this.state.department}
-                        />
-                      </div>
+                  <div className="row form-group">
+                    <div className="input-group  col-md-3 input-withouticon">
+                      <Field
+                        label="Address 1"
+                        name={"AddressLine1"}
+                        type="text"
+                        placeholder={'Enter'}
+                        validate={[required]}
+                        component={renderText}
+                        required={true}
+                        maxLength={26}
+                        customClassName={'withBorder'}
+                      />
                     </div>
+                    <div className="input-group col-md-3 input-withouticon">
+                      <Field
+                        label="Address 2"
+                        name={"AddressLine2"}
+                        type="text"
+                        placeholder={'Enter'}
+                        validate={[required]}
+                        component={renderText}
+                        required={true}
+                        maxLength={26}
+                        customClassName={'withBorder'}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <Field
+                        name="CityId"
+                        type="text"
+                        label="City"
+                        component={searchableSelect}
+                        placeholder={'Select city'}
+                        options={this.searchableSelectType('city')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={[required]}
+                        //required={true}
+                        handleChangeDescription={this.cityHandler}
+                        valueDescription={this.state.city}
+                      />
+                    </div>
+                    <div className="input-group col-md-3 input-withouticon">
+                      <Field
+                        label="ZipCode"
+                        name={"ZipCode"}
+                        type="text"
+                        placeholder={'Enter'}
+                        validate={[required, number]}
+                        component={renderText}
+                        required={true}
+                        maxLength={26}
+                        customClassName={'withBorder'}
+                      />
+                    </div>
+                  </div>
+
+                  <HeaderTitle
+                    title={'Role & Department:'}
+                    customClass={''} />
+
+                  <div className="row form-group">
+                    <div className="col-md-3">
+                      <Field
+                        name="RoleId"
+                        type="text"
+                        label="Role"
+                        component={searchableSelect}
+                        placeholder={'Select role'}
+                        options={this.searchableSelectType('role')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
+                        required={true}
+                        handleChangeDescription={this.roleHandler}
+                        valueDescription={this.state.role}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <Field
+                        name="DepartmentId"
+                        type="text"
+                        label="Department"
+                        component={searchableSelect}
+                        placeholder={'Select department'}
+                        options={this.searchableSelectType('department')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
+                        required={true}
+                        handleChangeDescription={this.departmentHandler}
+                        valueDescription={this.state.department}
+                      />
+                    </div>
+                  </div>
 
 
 
 
 
-                    {/* ///////////////////////////////////////////////
+                  {/* ///////////////////////////////////////////////
                               ////////////////////////////////////////////////////
                               /////////////// USER WISE PERMISSION START ////////
                               //////////////////////////////////////////////////
@@ -1380,78 +1213,78 @@ class UserRegistration extends Component {
 
 
 
-                    <div className=" row form-group">
-                      <div className={'col-md-6'}>
-                        <label
-                          className="custom-checkbox"
-                          onChange={this.onPressUserPermission}
-                        >
-                          Grant User Wise Permission
+                  <div className=" row form-group">
+                    <div className={'col-md-6'}>
+                      <label
+                        className="custom-checkbox"
+                        onChange={this.onPressUserPermission}
+                      >
+                        Grant User Wise Permission
                                                 <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
-                          <span
-                            className=" before-box"
-                            checked={this.state.IsShowAdditionalPermission}
-                            onChange={this.onPressUserPermission}
-                          />
-                        </label>
-                      </div>
+                        <span
+                          className=" before-box"
+                          checked={this.state.IsShowAdditionalPermission}
+                          onChange={this.onPressUserPermission}
+                        />
+                      </label>
                     </div>
+                  </div>
 
-                    {this.state.IsShowAdditionalPermission &&
-                      <div className=" row form-group grant-user-grid">
-                        <div className="col-md-12">
-                          <Table className="table table-bordered " size="sm" >
-                            <thead>
-                              <tr>
-                                <th>{`Module Name`}</th>
-                                <th>{``}</th>
-                                {this.renderActionHeads(actionSelectList)}
-                              </tr>
-                            </thead>
-                            <tbody >
-                              {this.state.Modules && this.state.Modules.map((item, index) => {
-                                return (
-                                  <tr key={index}>
+                  {this.state.IsShowAdditionalPermission &&
+                    <div className=" row form-group grant-user-grid">
+                      <div className="col-md-12">
+                        <Table className="table table-bordered " size="sm" >
+                          <thead>
+                            <tr>
+                              <th>{`Module Name`}</th>
+                              <th>{``}</th>
+                              {this.renderActionHeads(actionSelectList)}
+                            </tr>
+                          </thead>
+                          <tbody >
+                            {this.state.Modules && this.state.Modules.map((item, index) => {
+                              return (
+                                <tr key={index}>
 
-                                    <td >{
-                                      <label
-                                        className="custom-checkbox"
+                                  <td >{
+                                    <label
+                                      className="custom-checkbox"
+                                      onChange={() => this.moduleHandler(index)}
+                                    >
+                                      {item.ModuleName}
+                                      <input
+                                        type="checkbox"
+                                        value={'All'}
+                                        checked={item.IsChecked} />
+                                      <span
+                                        className={`before-box`}
+                                        //className={`before-box ${item.IsChecked ? 'selected-box' : 'not-selected-box'}`}
+                                        checked={item.IsChecked}
                                         onChange={() => this.moduleHandler(index)}
-                                      >
-                                        {item.ModuleName}
-                                        <input
-                                          type="checkbox"
-                                          value={'All'}
-                                          checked={item.IsChecked} />
-                                        <span
-                                          className={`before-box`}
-                                          //className={`before-box ${item.IsChecked ? 'selected-box' : 'not-selected-box'}`}
-                                          checked={item.IsChecked}
-                                          onChange={() => this.moduleHandler(index)}
-                                        />
-                                      </label>
-                                    }
-                                    </td>
+                                      />
+                                    </label>
+                                  }
+                                  </td>
 
-                                    <td className="select-all-block"> {<input
-                                      type="checkbox"
-                                      value={'All'}
-                                      className={this.isCheckAll(index, item.Actions) ? 'selected-box' : 'not-selected-box'}
-                                      checked={this.isCheckAll(index, item.Actions)}
-                                      onClick={() => this.selectAllHandler(index, item.Actions)} />} <span>Select All</span></td>
+                                  <td className="select-all-block"> {<input
+                                    type="checkbox"
+                                    value={'All'}
+                                    className={this.isCheckAll(index, item.Actions) ? 'selected-box' : 'not-selected-box'}
+                                    checked={this.isCheckAll(index, item.Actions)}
+                                    onClick={() => this.selectAllHandler(index, item.Actions)} />} <span>Select All</span></td>
 
-                                    {this.renderAction(item.Actions, index)}
-                                  </tr>
-                                )
-                              })}
-                              {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                          </Table>
-                        </div>
-                      </div>}
+                                  {this.renderAction(item.Actions, index)}
+                                </tr>
+                              )
+                            })}
+                            {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                          </tbody>
+                        </Table>
+                      </div>
+                    </div>}
 
 
-                    {/* ///////////////////////////////////////////////
+                  {/* ///////////////////////////////////////////////
                               ////////////////////////////////////////////////////
                               /////////////// USER WISE PERMISSION END ////////
                               //////////////////////////////////////////////////
@@ -1461,155 +1294,133 @@ class UserRegistration extends Component {
 
 
 
-                    {/* ///////////////////////////////////////////////
+                  {/* ///////////////////////////////////////////////
                               ////////////////////////////////////////////////////
                               /////////////// User's technology level START ////////
                               //////////////////////////////////////////////////
                               ///////////////////////////////////////////////// */}
 
-                    <HeaderTitle
-                      title={'Technology & Level:'}
-                      customClass={''} />
+                  <HeaderTitle
+                    title={'Technology & Level:'}
+                    customClass={''} />
 
-                    <div className="row form-group">
-                      <div className="col-md-3">
-                        <Field
-                          name="TechnologyId"
-                          type="text"
-                          label="Technology"
-                          component={searchableSelect}
-                          options={this.searchableSelectType('technology')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.technologyHandler}
-                          valueDescription={this.state.technology}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <Field
-                          name="LevelId"
-                          type="text"
-                          label="Level"
-                          component={searchableSelect}
-                          options={this.searchableSelectType('level')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.levelHandler}
-                          valueDescription={this.state.level}
-                        />
-                      </div>
-                      <div className="col-md-2 mt25">
-                        {this.state.isEditIndex ?
-                          <>
-                            <button
-                              type="button"
-                              className={'btn btn-primary'}
-                              onClick={this.updateTechnologyLevel}
-                            >Update</button>
-
-                            <button
-                              type="button"
-                              className={'btn btn-secondary'}
-                              onClick={this.resetTechnologyLevel}
-                            >Cancel</button>
-                          </>
-                          :
+                  <div className="row form-group">
+                    <div className="col-md-3">
+                      <Field
+                        name="TechnologyId"
+                        type="text"
+                        label="Technology"
+                        component={searchableSelect}
+                        options={this.searchableSelectType('technology')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
+                        //required={true}
+                        handleChangeDescription={this.technologyHandler}
+                        valueDescription={this.state.technology}
+                      />
+                    </div>
+                    <div className="col-md-3">
+                      <Field
+                        name="LevelId"
+                        type="text"
+                        label="Level"
+                        component={searchableSelect}
+                        options={this.searchableSelectType('level')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                        //required={true}
+                        handleChangeDescription={this.levelHandler}
+                        valueDescription={this.state.level}
+                      />
+                    </div>
+                    <div className="col-md-2 mt25">
+                      {this.state.isEditIndex ?
+                        <>
                           <button
                             type="button"
-                            className={'add-button add-button-big'}
-                            onClick={this.setTechnologyLevel}
-                          ><div className={'plus'}></div>ADD</button>}
-                      </div>
+                            className={'btn btn-primary'}
+                            onClick={this.updateTechnologyLevel}
+                          >Update</button>
+
+                          <button
+                            type="button"
+                            className={'btn btn-secondary'}
+                            onClick={this.resetTechnologyLevel}
+                          >Cancel</button>
+                        </>
+                        :
+                        <button
+                          type="button"
+                          className={'add-button add-button-big'}
+                          onClick={this.setTechnologyLevel}
+                        ><div className={'plus'}></div>ADD</button>}
                     </div>
+                  </div>
 
-                    <div className="row form-group">
-                      <div className="col-md-12">
-                        <Table className="table" size="sm" >
-                          <thead>
-                            <tr>
-                              <th>{`Technology`}</th>
-                              <th>{`Level`}</th>
-                              <th className="text-right">{`Action`}</th>
-                            </tr>
-                          </thead>
-                          <tbody >
-                            {
-                              this.state.TechnologyLevelGrid &&
-                              this.state.TechnologyLevelGrid.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td>{item.Technology}</td>
-                                    <td>{item.Level}</td>
-                                    <td className="text-right">
-                                      <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                      <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
-                                    </td>
-                                  </tr>
-                                )
-                              })
-                            }
-                          </tbody>
-                          {this.state.TechnologyLevelGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </Table>
-                      </div>
+                  <div className="row form-group">
+                    <div className="col-md-12">
+                      <Table className="table" size="sm" >
+                        <thead>
+                          <tr>
+                            <th>{`Technology`}</th>
+                            <th>{`Level`}</th>
+                            <th className="text-right">{`Action`}</th>
+                          </tr>
+                        </thead>
+                        <tbody >
+                          {
+                            this.state.TechnologyLevelGrid &&
+                            this.state.TechnologyLevelGrid.map((item, index) => {
+                              return (
+                                <tr key={index}>
+                                  <td>{item.Technology}</td>
+                                  <td>{item.Level}</td>
+                                  <td className="text-right">
+                                    <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                    <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                  </td>
+                                </tr>
+                              )
+                            })
+                          }
+                        </tbody>
+                        {this.state.TechnologyLevelGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                      </Table>
                     </div>
+                  </div>
 
-                    {/* ///////////////////////////////////////////////
-                              ////////////////////////////////////////////////////
-                              /////////////// User's technology level END ////////
-                              //////////////////////////////////////////////////
-                              ///////////////////////////////////////////////// */}
+                  {/* ////////////////////////////////////////////////////
+                      ////////////////////////////////////////////////////
+                      /////////////// User's technology level END ////////
+                      ////////////////////////////////////////////////////
+                      ///////////////////////////////////////////////// */}
 
 
-                    <div className="text-right btn-blue-block">
+                  <div className="text-right btn-blue-block">
 
-                      {/* <input
-                        //disabled={pristine || submitting}
-                        onClick={this.cancel}
-                        type="submit"
-                        value="CANCEL"
-                        className="reset mr15 cancel-btn"
-                      /> */}
-                      <button
-                        onClick={this.cancel}
-                        type="submit"
-                        value="CANCEL"
-                        className="reset mr15 cancel-btn">
-
-                        <div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
-                      <button
-                        type="submit"
-                        disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"
-                      >	<div className={'check-icon'}><img src={require('../../assests/images/check.png')} alt='check-icon.jpg' />
-                        </div>
-                        {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
+                    <button
+                      onClick={this.cancel}
+                      type="submit"
+                      value="CANCEL"
+                      className="reset mr15 cancel-btn">
+                      <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>
+                      CANCEL
                       </button>
 
-                      {/* {!this.state.isEditFlag &&
-                                    <input
-                                       disabled={pristine || submitting}
-                                       onClick={this.resetForm}
-                                       type="submit"
-                                       value="Reset"
-                                       className="reset"
-                                    />} */}
+                    <button
+                      type="submit"
+                      disabled={isSubmitted ? true : false}
+                      className="btn-primary save-btn"><div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i></div>
+                      {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
+                    </button>
+                  </div>
 
-                    </div>
-
-                  </form>
-                </div>
-              </div>}
+                </form>
+              </div>
+            </div>
           </div>
         </div>
-        <UsersListing
-          onRef={ref => (this.child = ref)}
-          getUserDetail={this.getUserDetail}
-          formToggle={this.formToggle}
-          isShowForm={this.state.isShowForm}
-        />
+
       </div>
     );
   }

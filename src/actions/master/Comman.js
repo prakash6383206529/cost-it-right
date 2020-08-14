@@ -47,6 +47,7 @@ import {
     GET_CURRENCY_SELECTLIST_SUCCESS,
     GET_TECHNOLOGY_SELECTLIST_SUCCESS,
     GET_PLANT_SELECTLIST_SUCCESS,
+    GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
 } from '../../config/constants';
 import {
     apiErrors
@@ -922,7 +923,7 @@ export function getCityBySupplier(SupplierId, callback) {
         } else {
             dispatch({
                 type: GET_CITY_BY_SUPPLIER,
-                payload: {},
+                payload: [],
             });
             callback();
         }
@@ -1299,6 +1300,29 @@ export function getPlantSelectList(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_PLANT_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getVendorPlantSelectList
+* @description Used to get Un Associated vendor platn list
+*/
+export function getVendorPlantSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getVendorPlantSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
                     payload: response.data.SelectList,
                 });
                 callback(response);

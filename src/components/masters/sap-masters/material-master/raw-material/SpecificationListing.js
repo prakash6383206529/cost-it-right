@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
 import {
-    getAllRMSpecificationList, getRowMaterialDataAPI, deleteRMSpecificationAPI,
-    getRMTypeSelectListAPI, getGradeByRMTypeSelectListAPI,
+    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial,
+    getGradeSelectList, getRawMaterialNameChild,
 } from '../../../../../actions/master/Material';
-import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
+import { } from '../../../../../actions/costing/CostWorking';
 import { searchableSelect } from "../../../../layout/FormInputs";
 import { required } from "../../../../../helper/validation";
 import { Loader } from '../../../../common/Loader';
@@ -17,6 +17,7 @@ import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import AddSpecification from './AddSpecification';
+import BulkUpload from '../../../../massUpload/BulkUpload';
 
 class SpecificationListing extends Component {
     constructor(props) {
@@ -24,6 +25,7 @@ class SpecificationListing extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            isBulkUpload: false,
             ID: '',
             specificationData: [],
             RawMaterial: [],
@@ -36,8 +38,8 @@ class SpecificationListing extends Component {
    * @description Called after rendering the component
    */
     componentDidMount() {
-        this.props.getRMTypeSelectListAPI(() => { });
-        this.props.getMaterialTypeSelectList(() => { })
+        this.props.getRawMaterialNameChild(() => { })
+        this.props.getGradeSelectList(() => { })
         this.getSpecificationListData('', '');
     }
 
@@ -47,12 +49,10 @@ class SpecificationListing extends Component {
     */
     getSpecificationListData = (materialId = '', gradeId = '') => {
         let data = {
-            PageSize: 0,
-            LastIndex: 0,
             MaterialId: materialId,
             GradeId: gradeId
         }
-        this.props.getAllRMSpecificationList(data, res => {
+        this.props.getRMSpecificationDataList(data, res => {
             if (res.status == 204 && res.data == '') {
                 this.setState({ specificationData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -77,24 +77,24 @@ class SpecificationListing extends Component {
     * @description Used show listing of row material
     */
     renderListing = (label) => {
-        const { gradeByRMTypeSelectList, rawMaterialTypeSelectList } = this.props;
+        const { gradeSelectList, rawMaterialNameSelectList } = this.props;
         const temp = [];
 
-
         if (label === 'RMGrade') {
-            gradeByRMTypeSelectList && gradeByRMTypeSelectList.map(item =>
+            gradeSelectList && gradeSelectList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
 
-        if (label === 'material') {
-            rawMaterialTypeSelectList && rawMaterialTypeSelectList.map(item =>
+        if (label === 'RawMaterialName') {
+            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
-
     }
 
     /**
@@ -115,14 +115,15 @@ class SpecificationListing extends Component {
     */
     handleMaterialChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RawMaterial: newValue }, () => {
+            this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
                 const { RawMaterial } = this.state;
-                this.props.getGradeByRMTypeSelectListAPI(RawMaterial.value, (res) => {
-
-                })
+                this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
             });
         } else {
-            this.setState({ RawMaterial: [] });
+            this.setState({ RawMaterial: [], RMGrade: [] }, () => {
+                this.props.getGradeSelectList(res => { });
+            });
+
         }
     }
 
@@ -169,7 +170,10 @@ class SpecificationListing extends Component {
     */
     confirmDelete = (ID) => {
         this.props.deleteRMSpecificationAPI(ID, (res) => {
-            if (res.data.Result === true) {
+            if (res.status == 417 && res.data.Result == false) {
+                //toastr.warning(res.data.Message)
+                toastr.warning('The specification is associated in the system. Please remove the association to delete')
+            } else if (res && res.data && res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_SPECIFICATION_SUCCESS);
                 this.getSpecificationListData('', '');
             }
@@ -241,8 +245,41 @@ class SpecificationListing extends Component {
             const { RMGrade, RawMaterial } = this.state;
             const filterRM = RawMaterial ? RawMaterial.value : '';
             const filterGrade = RMGrade ? RMGrade.value : '';
+            this.props.getGradeSelectList(res => { });
             this.getSpecificationListData(filterRM, filterGrade)
         })
+    }
+
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+            this.getSpecificationListData('', '');
+        })
+    }
+
+    /**
+    * @method densityAlert
+    * @description confirm Redirection to Material tab.
+    */
+    densityAlert = () => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDensity()
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDensity
+    * @description confirm density popup.
+    */
+    confirmDensity = () => {
+        this.props.toggle('4')
     }
 
     /**
@@ -259,7 +296,7 @@ class SpecificationListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, ID } = this.state;
+        const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
         const { handleSubmit } = this.props;
 
         const options = {
@@ -273,73 +310,76 @@ class SpecificationListing extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                <Row className="pt-30">
-                        <Col md="10" className="filter-block ">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                    
-                        <Col md="3">
-                            <Field
-                                name="MaterialTypeId"
-                                type="text"
-                                // label="Raw Material"
-                                component={searchableSelect}
-                                placeholder={'Select Raw Material'}
-                                options={this.renderListing('material')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleMaterialChange}
-                                valueDescription={this.state.RawMaterial}
-                            />
+                    <Row className="pt-30">
+                        <Col md="8" className="filter-block">
+                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="MaterialTypeId"
+                                        type="text"
+                                        // label="Raw Material"
+                                        component={searchableSelect}
+                                        placeholder={'-Raw Material-'}
+                                        options={this.renderListing('RawMaterialName')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleMaterialChange}
+                                        valueDescription={this.state.RawMaterial}
+
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="GradeId"
+                                        type="text"
+                                        // label="RM Grade"
+                                        component={searchableSelect}
+                                        placeholder={'-RM Grade-'}
+                                        options={this.renderListing('RMGrade')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleGrade}
+                                        valueDescription={this.state.RMGrade}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={this.resetFilter}
+                                        className="reset mr10"
+                                    >
+                                        {'Reset'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={this.filterList}
+                                        className="apply mr5"
+                                    >
+                                        {'Apply'}
+                                    </button>
+                                </div>
+                            </div>
                         </Col>
-                        <Col md="3">
-                            <Field
-                                name="GradeId"
-                                type="text"
-                                // label="RM Grade"
-                                component={searchableSelect}
-                                placeholder={'Select RM Grade'}
-                                options={this.renderListing('RMGrade')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleGrade}
-                                valueDescription={this.state.RMGrade}
-                            />
-                        </Col>
-                        <Col md="3">
+                        <Col md={4} className="text-right">
                             <button
                                 type="button"
-                                //disabled={pristine || submitting}
-                                onClick={this.resetFilter}
-                                className="reset mr10"
-                            >
-                                {'Reset'}
-                            </button>
-                        
-                            <button
-                                type="button"
-                                //disabled={pristine || submitting}
-                                onClick={this.filterList}
-                                className="apply mr5"
-                            >
-                                {'Apply'}
-                            </button>
-                        </Col>
-                       
-                    </div>
-                    </Col> 
-                    <Col md={2} className="text-right">
+                                className={'user-btn mr5'}
+                                onClick={this.bulkToggle}>
+                                <div className={'plus'}></div>Bulk Upload</button>
                             <button
                                 type={'button'}
                                 className={'user-btn'}
                                 onClick={this.openModel}>
-                                <div className={'plus'}></div>{`ADD SPEC`}</button>
+                                <div className={'plus'}></div>{`ADD`}</button>
                         </Col>
                     </Row>
                 </form>
-             
+
                 <Row>
                     <Col>
                         {/* <hr /> */}
@@ -354,7 +394,7 @@ class SpecificationListing extends Component {
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="" dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>Raw Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
@@ -371,6 +411,15 @@ class SpecificationListing extends Component {
                     ID={ID}
                     anchor={'right'}
                 />}
+                {isBulkUpload && <BulkUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    densityAlert={this.densityAlert}
+                    fileName={'RMSpecification'}
+                    messageLabel={'RM Specification'}
+                    anchor={'right'}
+                />}
             </div>
         );
     }
@@ -382,19 +431,16 @@ class SpecificationListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material }) {
-    const { rmSpecificationDetail, rawMaterialTypeSelectList, gradeByRMTypeSelectList } = material;
-    return {
-        rmSpecificationDetail, rawMaterialTypeSelectList,
-        gradeByRMTypeSelectList
-    }
+    const { rmSpecificationDetail, rawMaterialNameSelectList, gradeSelectList, } = material;
+    return { rmSpecificationDetail, rawMaterialNameSelectList, gradeSelectList, }
 }
 
 export default connect(mapStateToProps, {
-    getAllRMSpecificationList,
-    getRMTypeSelectListAPI,
-    getGradeByRMTypeSelectListAPI,
+    getRMSpecificationDataList,
     deleteRMSpecificationAPI,
-    getMaterialTypeSelectList,
+    getRawMaterialNameChild,
+    getRMGradeSelectListByRawMaterial,
+    getGradeSelectList,
 })(reduxForm({
     form: 'SpecificationListing',
     enableReinitialize: true,

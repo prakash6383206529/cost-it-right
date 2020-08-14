@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
 import {
     renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
@@ -11,13 +11,14 @@ import {
     createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType,
     getVendorTypesSelectList,
 } from '../../../../actions/master/Supplier';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../helper/auth";
+import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../helper/auth";
 import VendorListing from './VendorListing';
 import $ from 'jquery';
+import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 
 class AddSupplier extends Component {
     constructor(props) {
@@ -25,7 +26,8 @@ class AddSupplier extends Component {
         this.child = React.createRef();
         this.state = {
             selectedVendorType: [],
-            selectedPlants: [],
+            selectedVendorPlants: [],
+            existedVendorPlants: [],
             plantsArray: [],
 
             country: [],
@@ -33,7 +35,7 @@ class AddSupplier extends Component {
             city: [],
 
             isOpenFuel: false,
-            isOpenPlant: false,
+            isOpenVendorPlant: false,
 
             isShowForm: false,
             VendorId: '',
@@ -46,6 +48,7 @@ class AddSupplier extends Component {
     */
     componentWillMount() {
         this.props.getVendorTypesSelectList()
+        this.props.getVendorPlantSelectList(() => { })
         this.props.fetchCountryDataAPI(() => { })
     }
 
@@ -58,11 +61,11 @@ class AddSupplier extends Component {
     }
 
     /**
-    * @method handlePlantSelection
+    * @method handleVendorPlant
     * @description called
     */
-    handlePlantSelection = e => {
-        this.setState({ selectedPlants: e });
+    handleVendorPlant = e => {
+        this.setState({ selectedVendorPlants: e });
     };
 
     /**
@@ -72,6 +75,18 @@ class AddSupplier extends Component {
     handleVendorType = (e) => {
         this.setState({ selectedVendorType: e });
     };
+
+    checkVendorSelection = () => {
+        const { selectedVendorType } = this.state;
+        let isContent = selectedVendorType && selectedVendorType.find(item => {
+            if (item.Text == 'VBC' || item.Text == 'BOP' || item.Text == 'RAW MATERIAL') {
+                return true;
+            }
+            return false;
+        })
+        //console.log('isContent', isContent)
+        return (isContent && isContent.Text) ? true : false;
+    }
 
     /**
     * @method countryHandler
@@ -120,8 +135,14 @@ class AddSupplier extends Component {
         this.setState({ isOpenFuel: true })
     }
 
-    plantToggler = () => {
-        this.setState({ isOpenPlant: true })
+    vendorPlantToggler = () => {
+        this.setState({ isOpenVendorPlant: true })
+    }
+
+    closeVendorDrawer = (e = '') => {
+        this.setState({ isOpenVendorPlant: false }, () => {
+            this.props.getVendorPlantSelectList(() => { })
+        })
     }
 
     /**
@@ -129,49 +150,44 @@ class AddSupplier extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { countryList, stateList, cityList, vendorTypeList } = this.props;
+        const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList } = this.props;
         const temp = [];
         if (label === 'country') {
-            countryList && countryList.map(item =>
+            countryList && countryList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'state') {
-            stateList && stateList.map(item =>
+            stateList && stateList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'city') {
-            cityList && cityList.map(item =>
+            cityList && cityList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'vendorType') {
             vendorTypeList && vendorTypeList.map((item, i) => {
+                if (item.Value == 0) return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'vendorPlants') {
+            vendorPlantSelectList && vendorPlantSelectList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
     }
-
-    /**
-    * @method renderSelectPlantList
-    * @description Used to render listing of selected plants
-    */
-    renderSelectPlantList = () => {
-        const { plantList } = this.props;
-        const temp = [];
-        plantList && plantList.map(item => {
-            if (item.Value != 0) {
-                temp.push({ Text: item.Text, Value: item.Value })
-            }
-        });
-        return temp;
-    }
-
 
     /**
     * @method getDetail
@@ -190,11 +206,16 @@ class AddSupplier extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     let tempArr = [];
+                    let tempVendorPlant = [];
                     this.props.fetchStateDataAPI(Data.CountryId, () => { })
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
 
                     Data && Data.VendorTypes.map((item) => {
                         tempArr.push({ Text: item.VendorType, Value: item.VendorTypeId })
+                    })
+
+                    Data && Data.VendorPlants.map((item) => {
+                        tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
                     })
 
                     setTimeout(() => {
@@ -208,9 +229,11 @@ class AddSupplier extends Component {
                             isEditFlag: true,
                             isLoader: false,
                             selectedVendorType: tempArr,
-                            country: { label: CountryObj.Text, value: CountryObj.Value },
-                            state: { label: StateObj.Text, value: StateObj.Value },
-                            city: { label: CityObj.Text, value: CityObj.Value },
+                            country: CountryObj && CountryObj != undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
+                            state: StateObj && StateObj != undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
+                            city: CityObj && CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            existedVendorPlants: tempVendorPlant,
+                            selectedVendorPlants: tempVendorPlant,
                         })
                     }, 500)
 
@@ -230,7 +253,7 @@ class AddSupplier extends Component {
         reset();
         this.setState({
             selectedVendorType: [],
-            selectedPlants: [],
+            selectedVendorPlants: [],
             plantsArray: [],
             country: [],
             state: [],
@@ -256,13 +279,44 @@ class AddSupplier extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedVendorType, selectedPlants, plantsArray, country, state, city, VendorId } = this.state;
-        const { reset } = this.props;
+        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, country,
+            state, city, VendorId } = this.state;
+        const { reset, supplierData, vendorPlantSelectList } = this.props;
 
         let vendorArray = [];
         selectedVendorType && selectedVendorType.map((item) => {
             vendorArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
             return vendorArray;
+        })
+
+        //Vendor Plants Array
+        let VendorPlantsArray = [];
+        vendorPlantSelectList && vendorPlantSelectList.map((item, index) => {
+            VendorPlantsArray.push(item.Value)
+        })
+
+        //DefaultIds Get in Edit Mode.
+        let DefaultVendorPlantIds = [];
+        existedVendorPlants && existedVendorPlants.map((item, index) => {
+            DefaultVendorPlantIds.push(item.Value)
+        })
+
+        //Selected Vendor Plant IDs.
+        let SelectedVendorPlantIds = [];
+        selectedVendorPlants && selectedVendorPlants.map((item, index) => {
+            SelectedVendorPlantIds.push(item.Value)
+        })
+
+        //Additonal Vendor Plant Id's
+        let AdditonalPlants = SelectedVendorPlantIds.filter(x => !DefaultVendorPlantIds.includes(x));
+
+        //Removed Vendor Plant Id's
+        let removedVendorPlants = DefaultVendorPlantIds.filter(x => !SelectedVendorPlantIds.includes(x));
+
+        let vendorPlantArray = [];
+        selectedVendorPlants && selectedVendorPlants.map((item) => {
+            vendorPlantArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
+            return vendorPlantArray;
         })
 
         /** Update existing detail of supplier master **/
@@ -271,7 +325,7 @@ class AddSupplier extends Component {
                 VendorId: VendorId,
                 VendorCode: values.VendorCode,
                 Email: values.Email,
-                AddressId: '',
+                AddressId: supplierData.AddressId,
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
@@ -279,13 +333,15 @@ class AddSupplier extends Component {
                 MobileNumber: values.MobileNumber,
                 Extension: values.Extension,
                 LoggedInUserId: loggedInUserId(),
+                AddedVendorPlants: AdditonalPlants,
+                RemoveVendorPlants: removedVendorPlants,
                 VendorTypes: vendorArray,
             }
             this.props.updateSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
                     this.clearForm()
-                    this.child.getUpdatedData();
+                    //this.child.getUpdatedData();
                 }
             });
         } else {/** Add new detail for creating supplier master **/
@@ -297,6 +353,7 @@ class AddSupplier extends Component {
                 IsActive: true,
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
+                VendorPlants: vendorPlantArray,
                 UserId: loggedInUserId(),
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
@@ -309,7 +366,7 @@ class AddSupplier extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
                     this.clearForm();
-                    this.child.getUpdatedData();
+                    //this.child.getUpdatedData();
                 }
             });
         }
@@ -322,6 +379,8 @@ class AddSupplier extends Component {
     */
     render() {
         const { handleSubmit, reset } = this.props;
+        const { country, selectedVendorType, isOpenVendorPlant, } = this.state;
+        //console.log('this.checkVendorSelection()', this.checkVendorSelection())
         return (
             <div className="container-fluid">
                 {/* {isLoader && <Loader />} */}
@@ -344,7 +403,7 @@ class AddSupplier extends Component {
                                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                     >
                                         <Row>
-                                            <Col md="6">
+                                            <Col md="4">
                                                 <Field
                                                     label="Vendor Type"
                                                     name="VendorType"
@@ -360,7 +419,7 @@ class AddSupplier extends Component {
                                                     disabled={this.state.isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                            <Col md="6">
+                                            <Col md="4">
                                                 <Field
                                                     label={`Vendor Name`}
                                                     name={"VendorName"}
@@ -374,9 +433,8 @@ class AddSupplier extends Component {
                                                     disabled={this.state.isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md="6">
+
+                                            <Col md="4">
                                                 <Field
                                                     label={`Vendor Code`}
                                                     name={"VendorCode"}
@@ -391,7 +449,9 @@ class AddSupplier extends Component {
                                                     disabled={this.state.isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                            <Col md="6">
+                                        </Row>
+                                        <Row>
+                                            <Col md="4">
                                                 <Field
                                                     label={`Email Id`}
                                                     name={"Email"}
@@ -403,9 +463,8 @@ class AddSupplier extends Component {
                                                     customClassName={'withBorderEmail'}
                                                 />
                                             </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md="6">
+
+                                            <Col md="4">
                                                 <Row>
                                                     <Col md="9">
                                                         <Field
@@ -435,9 +494,9 @@ class AddSupplier extends Component {
                                                     </Col>
                                                 </Row>
                                             </Col>
-                                            <Col md="6">
+                                            <Col md="4">
                                                 <Field
-                                                    name="Mobile"
+                                                    name="MobileNumber"
                                                     label="MobileNumber"
                                                     type="text"
                                                     placeholder={''}
@@ -451,7 +510,7 @@ class AddSupplier extends Component {
                                             </Col>
                                         </Row>
                                         <Row>
-                                            <Col md="6">
+                                            <Col md="4">
                                                 <Field
                                                     name="CountryId"
                                                     type="text"
@@ -467,41 +526,44 @@ class AddSupplier extends Component {
                                                     disabled={this.state.isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                            <Col md="6">
-                                                <Field
-                                                    name="StateId"
-                                                    type="text"
-                                                    label="State"
-                                                    component={searchableSelect}
-                                                    placeholder={'Select State'}
-                                                    options={this.renderListing('state')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.stateHandler}
-                                                    valueDescription={this.state.state}
-                                                    disabled={this.state.isEditFlag ? true : false}
-                                                />
-                                            </Col>
+                                            {(country.length == 0 || country.label == 'India') &&
+                                                <Col md="4">
+                                                    <Field
+                                                        name="StateId"
+                                                        type="text"
+                                                        label="State"
+                                                        component={searchableSelect}
+                                                        placeholder={'Select State'}
+                                                        options={this.renderListing('state')}
+                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                        validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                        required={true}
+                                                        handleChangeDescription={this.stateHandler}
+                                                        valueDescription={this.state.state}
+                                                        disabled={this.state.isEditFlag ? true : false}
+                                                    />
+                                                </Col>}
+
+                                            {(country.length == 0 || country.label == 'India') &&
+                                                <Col md="4">
+                                                    <Field
+                                                        name="CityId"
+                                                        type="text"
+                                                        label="City"
+                                                        component={searchableSelect}
+                                                        placeholder={'Select city'}
+                                                        options={this.renderListing('city')}
+                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                        validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                                        required={true}
+                                                        handleChangeDescription={this.cityHandler}
+                                                        valueDescription={this.state.city}
+                                                        disabled={this.state.isEditFlag ? true : false}
+                                                    />
+                                                </Col>}
                                         </Row>
                                         <Row>
-                                            <Col md="6">
-                                                <Field
-                                                    name="CityId"
-                                                    type="text"
-                                                    label="City"
-                                                    component={searchableSelect}
-                                                    placeholder={'Select city'}
-                                                    options={this.renderListing('city')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.cityHandler}
-                                                    valueDescription={this.state.city}
-                                                    disabled={this.state.isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="6">
+                                            <Col md="4">
                                                 <Field
                                                     label="Address 1"
                                                     name={"AddressLine1"}
@@ -515,10 +577,7 @@ class AddSupplier extends Component {
                                                     customClassName=" withBorder"
                                                 />
                                             </Col>
-
-                                        </Row>
-                                        <Row>
-                                            <Col md="6" >
+                                            <Col md="4" >
                                                 <Field
                                                     label="Address 2"
                                                     name={"AddressLine2"}
@@ -532,7 +591,7 @@ class AddSupplier extends Component {
                                                     customClassName=" withBorder"
                                                 />
                                             </Col>
-                                            <Col md="6">
+                                            <Col md="4">
                                                 <Field
                                                     label="ZipCode"
                                                     name={"ZipCode"}
@@ -547,57 +606,48 @@ class AddSupplier extends Component {
                                                 />
                                             </Col>
                                         </Row>
-                                        {/* <Row>
-                                            <Col md="5">
-                                                <Field
-                                                    label="Vendor Plant"
-                                                    name="SelectedPlants"
-                                                    placeholder="--Select Plant--"
-                                                    selection={this.state.selectedPlants}
-                                                    options={this.renderSelectPlantList()}
-                                                    selectionChanged={this.handlePlantSelection}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={false}
-                                                    className="multiselect-with-border"
-                                                />
-                                            </Col>
-                                            <Col md="1">
-                                                <div
-                                                    onClick={this.plantToggler}
-                                                    className={'plus-icon mt30 mr15 right'}>
-                                                </div>
-                                            </Col>
-                                        </Row> */}
+                                        <Row>
+                                            {this.checkVendorSelection() && checkVendorPlantConfigurable() &&
+                                                <>
+                                                    <Col md="3">
+                                                        <Field
+                                                            label="Vendor Plant"
+                                                            name="SelectedPlants"
+                                                            placeholder="--Select Plant--"
+                                                            selection={this.state.selectedVendorPlants}
+                                                            options={this.renderListing('vendorPlants')}
+                                                            selectionChanged={this.handleVendorPlant}
+                                                            optionValue={option => option.Value}
+                                                            optionLabel={option => option.Text}
+                                                            component={renderMultiSelectField}
+                                                            mendatory={false}
+                                                            className="multiselect-with-border"
+                                                        />
+                                                    </Col>
+                                                    {this.state.isEditFlag &&
+                                                        <Col md="1">
+                                                            <div
+                                                                onClick={this.vendorPlantToggler}
+                                                                className={'plus-icon mt30 mr15 right'}>
+                                                            </div>
+                                                        </Col>}
+                                                </>}
+                                        </Row>
 
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
                                             <div className="col-md-12 bluefooter-butn text-right">
                                                 <div className="">
-                                                    {/* <input
-                                                        //disabled={pristine || submitting}
-                                                        onClick={this.cancel}
-                                                        type="button"
-                                                        value="Cancel"
-                                                        className="reset mr15 cancel-btn"
-                                                    />
-                                                    <input
-                                                        //disabled={isSubmitted ? true : false}
-                                                        type="submit"
-                                                        value={this.state.isEditFlag ? 'Update' : 'Save'}
-                                                        className="submit-button mr5 save-btn"
-                                                    /> */}
                                                     <button
                                                         type={'button'}
                                                         className="reset mr15 cancel-btn"
                                                         onClick={this.cancel} >
-                                                       <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
                                                     </button>
                                                     <button
                                                         type="submit"
                                                         className="submit-button mr5 save-btn" >
-                                                        <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' />
-                        </div> {this.state.isEditFlag ? 'Update' : 'Save'}
+                                                        <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                        </div> {this.state.isEditFlag ? 'Update' : 'Save'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -607,12 +657,20 @@ class AddSupplier extends Component {
                             </div>}
                     </div>
                 </div>
-                <VendorListing
+                {/* <VendorListing
                     onRef={ref => (this.child = ref)}
                     getDetail={this.getDetail}
                     formToggle={this.formToggle}
                     isShowForm={this.state.isShowForm}
-                />
+                /> */}
+                {isOpenVendorPlant && <AddVendorPlantDrawer
+                    isOpen={isOpenVendorPlant}
+                    closeDrawer={this.closeVendorDrawer}
+                    isEditFlag={false}
+                    VendorId={this.state.VendorId}
+                    ID={''}
+                    anchor={'right'}
+                />}
             </div>
         );
     }
@@ -624,7 +682,7 @@ class AddSupplier extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, supplier }) {
-    const { countryList, stateList, cityList, plantList } = comman;
+    const { countryList, stateList, cityList, plantList, vendorPlantSelectList, } = comman;
     const { supplierData, vendorTypeList } = supplier;
     let initialValues = {};
     if (supplierData && supplierData !== undefined) {
@@ -640,7 +698,10 @@ function mapStateToProps({ comman, supplier }) {
             Extension: supplierData.Extension,
         }
     }
-    return { countryList, stateList, cityList, plantList, initialValues, supplierData, vendorTypeList }
+    return {
+        countryList, stateList, cityList, plantList, initialValues, supplierData, vendorTypeList,
+        vendorPlantSelectList,
+    }
 }
 
 /**
@@ -658,6 +719,7 @@ export default connect(mapStateToProps, {
     fetchStateDataAPI,
     fetchCityDataAPI,
     getVendorTypesSelectList,
+    getVendorPlantSelectList,
 })(reduxForm({
     form: 'AddSupplier',
     enableReinitialize: true,
