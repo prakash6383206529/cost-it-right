@@ -370,7 +370,7 @@ class SpecificationListing extends Component {
                                 type="button"
                                 className={'user-btn mr5'}
                                 onClick={this.bulkToggle}>
-                                <div className={'plus'}></div>Bulk Upload</button>
+                                <div className={'upload'}></div>Bulk Upload</button>
                             <button
                                 type={'button'}
                                 className={'user-btn'}
@@ -398,8 +398,8 @@ class SpecificationListing extends Component {
                             <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>Raw Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMSpec" >Specification</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SpecificationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMSpec" dataAlign="center">Specification</TableHeaderColumn>
+                            <TableHeaderColumn dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>

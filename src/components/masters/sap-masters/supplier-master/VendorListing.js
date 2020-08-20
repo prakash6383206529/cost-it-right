@@ -462,7 +462,7 @@ class VendorListing extends Component {
                                                 type="button"
                                                 className={'user-btn mr5'}
                                                 onClick={this.bulkToggle}>
-                                                <div className={'plus'}></div>Bulk Upload</button>
+                                                <div className={'upload'}></div>Bulk Upload</button>
                                             <button
                                                 type="button"
                                                 className={'user-btn'}

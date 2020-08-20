@@ -938,7 +938,7 @@ class UserRegistration extends Component {
           <div className="row">
 
             <div className="col-md-12">
-              <div className="shadow-lgg login-formg pt-30">
+              <div className="shadow-lgg login-formg ">
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
@@ -1403,14 +1403,14 @@ class UserRegistration extends Component {
                       type="submit"
                       value="CANCEL"
                       className="reset mr15 cancel-btn">
-                      <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>
+                      <div className={'cross-icon'}><img src={require('../../assests/images/times.png')}></img></div>
                       CANCEL
                       </button>
 
                     <button
                       type="submit"
                       disabled={isSubmitted ? true : false}
-                      className="btn-primary save-btn"><div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i></div>
+                      className="btn-primary save-btn"><div className={'check-icon'}><img src={require('../../assests/images/check.png')}></img></div>
                       {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                     </button>
                   </div>

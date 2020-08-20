@@ -29,6 +29,7 @@
 
 body {
   color: #000;
+  overflow: hidden;
 }
 
 .icon-about:before {
@@ -874,7 +875,7 @@ button.add-btn {
 
 .form-group {
   .css-yk16xz-control {
-    // height: 48px;
+     height: 40px;
     border-color: #c2cbe8;
   }
 }
@@ -935,7 +936,8 @@ button.add-btn {
   background: transparent url("../../assests/images/add-icons.png") 0% 0% no-repeat padding-box;
   opacity: 1;
   cursor: pointer;
-  margin-top: 18px;
+  margin-top: 8px;
+  background-position: center right;
 }
 
 .plus-icon {
@@ -1003,7 +1005,7 @@ button.add-btn {
     align-items: center;
 }
 .fullinput-icon{
-  width: 89%; margin-right:10px;
+  width: 110%; 
 }
 .dzu-dropzone {  overflow-x: hidden;
   overflow-y: auto;
@@ -1058,7 +1060,7 @@ button.add-btn {
 ::placeholder { /* Most modern browsers support this now. */
   color:    #000;
 }
-.blue-box{padding:0 30px; background-color: #EDF0F5;}
+.blue-box{padding:0 30px 30px; background-color: #EDF0F5;height: 100vh;}
 label for[normal-switch]{
   text-align: center;
 }
@@ -1094,19 +1096,21 @@ label for[normal-switch]{
 }
 .css-1okebmr-indicatorSeparator { display: none;}
 .input-range__slider{    background: transparent;
-  border: 1px solid #256BD1;
+  border: 3px solid #256BD1;
   border-radius: 50%;    width: 16px;height: 16px;}
   .textAreaWithBorder textarea.form-control {min-height: 119px;}
   input::-webkit-input-placeholder {
     color: #999;
 }
-
-
+.input-range__track {height:2px;}
+.input-range__track--background {
+  top: 53%;}
 .pl0 {
   padding-left: 0;
 }
-.content-page .filter-block .css-yk16xz-control{
+.content-page .filter-block {
   height: 32px!important;
+  margin-bottom: 12px;
 }
 .form-group.form-group-sm.react-bs-table-search-form.input-group.input-group-sm 
 {
@@ -1132,3 +1136,24 @@ button.user-btn.pull-right {
 .react-bs-table-container .react-bs-table .sort-column .dropdown .caret, .react-bs-table-container .react-bs-table .sort-column .dropup .caret {
   background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAADxSURBVHicY2BAB6H/mZUzL+xVSj+viiHHwMDAiMJLO8OqwsJ6gpGRwej/P4ZHfxj/+T+YZngBuwaoYgaG/0b/YRL/GTE0MaGb/O8/wy6G/wwM//8zHmRg/C/E8p9po0LWeQOEBhTF/xf8//e/h4GBgeE/A+MJhv9MFeiamJRZ2dbAFN+dZpCI7N470/WmwjQxMzAtlku/qsXy6+/PajYGtvt3ZxgUYAuVO9P1pipnXPrzj+n/90czta+xPJ5heoWBgQGrYhi4O0NvJqqnSQAka2DBFGH+yfCfgYH5/1+shmEI3hfVPfKX4a/hB0a2JmwaAFZTZQVmByh5AAAAAElFTkSuQmCC) 0 0;
   width: 11px;}
+  .react-bs-table table th {
+    border-top: none;
+    border-bottom-color: #b4c5e2;
+    border-bottom-width: 1px;
+    color: #3d4465;
+    font-size: 14px;
+    font-weight: 500;
+}
+.react-bs-table table td {font-size: 14px;
+    color: #8a91ac;}
+.email-input {
+  .inputbox {
+    border-bottom:none;}
+    .input-group-prepend{
+      display: none
+    }
+}
+.main-section .content-page .filter-block .css-yk16xz-control,
+.main-section .content-page .filter-block .css-1pahdxg-control
+{min-height: 32px !important;    height: 32px;}
+    

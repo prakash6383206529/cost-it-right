@@ -808,7 +808,8 @@ class AddRMImport extends Component {
                                                         id="normal-switch"
                                                         uncheckedIcon={false}
                                                         checkedIcon={false}
-                                                        height={21}
+                                                        height={20}
+                                                        width={46}
                                                     />
                                                     <div className={'right-title'}>Vendor Based</div>
                                                 </label>
@@ -1199,6 +1200,7 @@ class AddRMImport extends Component {
                                                 />
                                             </Col>
                                             <Col md="6">
+                                            <label>Upload Attachment ( upload up to 3 files )</label>
                                                 {this.state.files.length >= 3 ? '' :
                                                     <Dropzone
                                                         getUploadParams={this.getUploadParams}

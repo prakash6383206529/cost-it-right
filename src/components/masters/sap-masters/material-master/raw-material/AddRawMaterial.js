@@ -136,7 +136,7 @@ class AddRawMaterial extends Component {
                                                 type="submit"
                                                 value="CANCEL"
                                                 className="reset mr15 cancel-btn">
-                                                <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div>CANCEL</button>
+                                                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
                                             <button
                                                 type="submit"
                                                 // disabled={isSubmitted ? true : false}

@@ -132,6 +132,7 @@ class Main extends Component {
             </div>}
           <div className={isLogin ? 'blue-box' : ''}>
             {isLogin && !this.state.visibelPageNotFound && <Breadcrumb onRef={ref => (this.child = ref)} />}
+            <div className="main-section">
             {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} breadCrumbTrail={this.breadCrumbTrail} />}
 
             <div className={isLogin ? 'content-page' : ''}>
@@ -218,6 +219,7 @@ class Main extends Component {
                   />
                 </Switch>
               </div>
+            </div>
             </div>
           </div>
           {!this.state.visibelPageNotFound &&

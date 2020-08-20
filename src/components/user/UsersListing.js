@@ -188,11 +188,11 @@ class UsersListing extends Component {
 	*/
 	buttonFormatter = (cell, row, enumObject, rowIndex) => {
 		return (
-			<>
+			<div className="text-right">
 				{/* <Button className="btn btn-secondary" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button> */}
-				<button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell, false)} />
+				<button className="Edit " type={'button'} onClick={() => this.editItemDetails(cell, false)} />
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
-			</>
+			</div>
 		)
 	}
 
@@ -451,7 +451,7 @@ class UsersListing extends Component {
                                 filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn> */}
 					<TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn>
 					<TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-					<TableHeaderColumn className="action" dataField="UserId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+					<TableHeaderColumn className="action text-right" dataField="UserId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 				</BootstrapTable>
 
 				{this.state.isOpen &&

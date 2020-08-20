@@ -609,7 +609,7 @@ export const searchableSelect = ({ input, label, required, disabled, handleChang
   const { name, value, onBlur, onChange, onFocus } = input;
   let isDisable = (disabled && disabled == true) ? true : false;
   return (
-    <div>
+    <div className="w-100">
       {label && <label>{label}{(required == true) ? <span className="asterisk-required">*</span> : ''}</label>}
       <Select
         isClearable

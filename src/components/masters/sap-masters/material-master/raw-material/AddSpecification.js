@@ -308,7 +308,8 @@ class AddSpecification extends Component {
                                 </Row>
                                 <div className="mr15">
                                     <Row>
-                                        <Col md="11">
+                                        <Col md="12">
+                                            <div className="d-flex">
                                             <Field
                                                 name="RawMaterialName"
                                                 type="text"
@@ -322,21 +323,23 @@ class AddSpecification extends Component {
                                                 handleChangeDescription={this.handleRawMaterial}
                                                 valueDescription={this.state.RawMaterial}
                                                 disabled={isEditFlag ? true : false}
+                                                className="w-100"
                                             />
-                                        </Col>
-                                        <Col md="1">
+                                        
                                             {isEditFlag ?
                                                 <button className="Edit mr5" type={'button'} onClick={() => this.rawMaterialToggler(specificationData.RawMaterialId)} />
                                                 :
                                                 <div
                                                     onClick={() => this.rawMaterialToggler('')}
-                                                    className={'plus-icon-square mt30 mr15 right'}>
+                                                    className={'plus-icon-square mt30  right'}>
                                                 </div>
                                             }
+                                            </div>
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col md="11">
+                                        <Col md="12">
+                                        <div className="d-flex">
                                             <Field
                                                 name="MaterialTypeId"
                                                 type="text"
@@ -350,14 +353,14 @@ class AddSpecification extends Component {
                                                 handleChangeDescription={this.handleMaterialChange}
                                                 valueDescription={this.state.material}
                                             />
-                                        </Col>
-                                        <Col md="1">
+                                       
                                             <div
                                                 onClick={this.materialToggler}
-                                                className={'plus-icon-square mt30 mr15 right'}>
+                                                className={'plus-icon-square mt30  right'}>
+                                            </div>
                                             </div>
                                         </Col>
-                                        <Col md="11">
+                                        <Col md="12">
                                             <Field
                                                 label={`Density`}
                                                 name={"Density"}
@@ -373,7 +376,8 @@ class AddSpecification extends Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col md="11">
+                                        <Col md="12">
+                                        <div className="d-flex">
                                             <Field
                                                 name="GradeId"
                                                 type="text"
@@ -387,13 +391,12 @@ class AddSpecification extends Component {
                                                 handleChangeDescription={this.handleGrade}
                                                 valueDescription={this.state.RMGrade}
                                             />
-                                        </Col>
-                                        <Col md="1">
+                                      
                                             {isEditFlag ?
-                                                <button className="Edit mr5" type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
+                                                <button className="Edit " type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
                                                 :
                                                 (this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ?
-                                                    <div className={'plus-icon-square blurPlus-icon-square right'}>
+                                                    <div className={'plus-icon-square blurPlus-icon-square right mt30'}>
                                                     </div>
                                                     :
                                                     <div
@@ -401,13 +404,13 @@ class AddSpecification extends Component {
                                                         className={'plus-icon-square right'}>
                                                     </div>
                                             }
-
+                                            </div>
                                         </Col>
                                     </Row>
 
 
                                     <Row>
-                                        <Col md="11">
+                                        <Col md="12">
                                             <Field
                                                 label={`${CONSTANT.SPECIFICATION}`}
                                                 name={"Specification"}
@@ -424,12 +427,12 @@ class AddSpecification extends Component {
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-md-12">
-                                            <div className="text-center ">
+                                            <div className="text-right ">
                                                 <button
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
                                                     onClick={this.cancel} >
-                                                    <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
+                                                    <div className={'cross-icon'}> <img src={require('../../../../../assests/images/times.png')} ></img></div> {'Cancel'}
                                                 </button>
                                                 <button
                                                     type="submit"

@@ -180,7 +180,7 @@ a:hover {
     background-color: #1d59af;
   }
 }
-
+.apply{width: 100px;}
 .reset {
   height: 32px;
   box-shadow: 0px 5px 10px #0000000f;
@@ -248,18 +248,23 @@ a:hover {
 .save-btn,
 .cancel-btn {
   background-size: 11px 11px !important;
-  padding: 0 19px 0 19px;
+  padding: 0;
   font-size: 14px;
   border-radius: 4px;
   height: 36px;
   display: inline-flex;
   align-items: center;
+  width: 96px;
+  justify-content: center;
+  text-transform: uppercase;    margin-top: 8px;
+  img{width: 13px;}
 }
 
 .save-btn {
   color: $white;
   background-size: 10px 10px !important;
-  padding: 0 19px 0 19px;
+  padding: 0;
+  img{width: 16px;}
 }
 
 .plus {
@@ -267,10 +272,17 @@ a:hover {
   height: 12px;
   background: transparent url("../../assests/images/Path 15286.svg") 0% 0% no-repeat padding-box;
 }
+.upload {
+  width: 12px;
+  height: 14px;
+  background: transparent url("../../assests/images/upload-icon.svg") 0% 0% no-repeat padding-box;
+}
 
 .plus,
 .cross-icon,
-.check-icon {
+.check-icon,
+.upload
+ {
   position: relative;
   display: inline-block;
   vertical-align: middle;
@@ -290,7 +302,7 @@ a:hover {
 }
 
 .check-icon {
-  width: 30px;
+  width: 24px;
 }
 
 .add-button-big {
@@ -423,6 +435,7 @@ a:hover {
   }
 
   .react-bs-table-pagination {
+    border-top: 1px solid #ccc;
     .col-md-6 {
       display: flex;
 
@@ -1066,15 +1079,19 @@ p {
     }
   }
 }
-
+.main-section {    display: flex;
+  align-content: stretch;
+  margin-top: calc(100vh - 618px);}
 /*Right Content Css*/
 .content-page {
   margin-left: 205px;
-  overflow: hidden;
-  padding: 21px 15px 0px 15px;
-  min-height: 80vh;
-  margin-top: 139px;
+  overflow: auto;
+  padding: 21px 15px 15px 15px;
+  min-height: 588px;
+  margin-top: 0 ;
   background-color: #FFFFFF;
+  height: calc(100vh - 169px);
+  width: 100%;
 
   .nav-item {
     margin-right: 48px;
@@ -1175,7 +1192,7 @@ p {
     .css-1pahdxg-control {
       border: 1px solid #c2cbe8 !important;
       color: #a4abc5;
-      min-height: 32px !important;
+      min-height: 40px !important;
       font-size: $font-14;
       border-color: #C2CBE8;
       height: 40px;
@@ -1193,6 +1210,7 @@ p {
   .btn-blue-block {
     background-color: #e0e9f5;
     padding: 30px;
+    margin: 0 -15px -30px;
   }
 }
 
@@ -1287,7 +1305,7 @@ button .fas {
     width: 18px;
     height: 18px;
     background-color: transparent;
-    border: 1px solid #4dc771;
+    border: 1px solid #c1b8b8;
     top: 3px;
     left: 0;
     border-radius: 3px;
@@ -1823,7 +1841,14 @@ body {
 }
 .css-yk16xz-control {
   border-color: #C2CBE8 !important;
+  min-height: 40px !important;
 }
 .form-group {
   margin-bottom: 0.5rem;
+}
+.react-bs-table-container .react-bs-table-pagination .col-md-6{
+  align-items: center;
+}
+.react-bs-table-container .react-bs-table-pagination span .btn-secondary{
+  top:0
 }

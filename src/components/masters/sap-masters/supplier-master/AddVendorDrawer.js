@@ -399,7 +399,7 @@ class AddVendorDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h1>{isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h1>
+                                            <h3>{isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}
@@ -456,7 +456,7 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
 
-                                    <Col md="6">
+                                    <Col md="6" className="email-input">
                                         <Field
                                             label={`Email Id`}
                                             name={"Email"}
@@ -465,14 +465,16 @@ class AddVendorDrawer extends Component {
                                             validate={[required, email, minLength7, maxLength70]}
                                             component={renderEmailInputField}
                                             required={true}
-                                            customClassName={'withBorderEmail'}
+                                            customClassName={'withBorder '}
+                                            className=" "
+                                            
                                         />
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col md="6">
-                                        <Row>
-                                            <Col md="9">
+                                    <Col md="12">
+                                       <Row>
+                                           <Col md={9}>
                                                 <Field
                                                     label="Phone Number"
                                                     name={"PhoneNumber"}
@@ -485,7 +487,7 @@ class AddVendorDrawer extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            <Col  md={3}>
                                                 <Field
                                                     label="Extension"
                                                     name={"Extension"}
@@ -495,10 +497,9 @@ class AddVendorDrawer extends Component {
                                                     component={renderText}
                                                     //required={true}
                                                     maxLength={5}
-                                                    customClassName={'withBorder w100'}
-                                                />
-                                            </Col>
-                                        </Row>
+                                                    customClassName={'withBorder'}
+                                                /></Col>
+                                          </Row>  
                                     </Col>
                                     <Col md="6">
                                         <Field
@@ -514,8 +515,7 @@ class AddVendorDrawer extends Component {
                                             customClassName={'withBorder'}
                                         />
                                     </Col>
-                                </Row>
-                                <Row>
+                                
                                     <Col md="6">
                                         <Field
                                             name="CountryId"
@@ -549,8 +549,7 @@ class AddVendorDrawer extends Component {
                                                 disabled={this.state.isEditFlag ? true : false}
                                             />
                                         </Col>}
-                                </Row>
-                                <Row>
+                                
                                     {(country.length == 0 || country.label == 'India') &&
                                         <Col md="6">
                                             <Field
@@ -569,7 +568,7 @@ class AddVendorDrawer extends Component {
                                             />
                                         </Col>}
 
-                                    <Col md="6">
+                                    <Col md="12">
                                         <Field
                                             label="Address 1"
                                             name={"AddressLine1"}
@@ -617,7 +616,7 @@ class AddVendorDrawer extends Component {
                                 <Row>
                                     {this.checkVendorSelection() && checkVendorPlantConfigurable() &&
                                         <>
-                                            <Col md="11">
+                                            <Col md="10">
                                                 <Field
                                                     label="Vendor Plant"
                                                     name="SelectedPlants"
@@ -633,28 +632,28 @@ class AddVendorDrawer extends Component {
                                                 />
                                             </Col>
                                             {this.props.isEditFlag &&
-                                                <Col md="1">
+                                                <Col md="2">
                                                     <div
                                                         onClick={this.vendorPlantToggler}
-                                                        className={'plus-icon mt30 mr15 right'}>
+                                                        className={'plus-icon-square mt30 mr15 right'}>
                                                     </div>
                                                 </Col>}
                                         </>}
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12 bluefooter-butn text-right">
+                                    <div className="col-md-12  text-right">
                                         <div className="">
                                             <button
                                                 type={'button'}
                                                 className="reset mr15 cancel-btn"
                                                 onClick={this.cancel} >
-                                                <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
+                                                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                                             </button>
                                             <button
                                                 type="submit"
                                                 className="submit-button mr5 save-btn" >
-                                                <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' />
                                                 </div> {this.props.isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
