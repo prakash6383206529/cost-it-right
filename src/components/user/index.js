@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
 import UserRegistration from './UserRegistration';
-import Role from './Role';
+import Role from './RolePermissions/Role';
 import Department from './Department';
 import Level from './Level';
 import LevelUser from './LevelUser';
@@ -14,6 +14,7 @@ import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
+import RolesListing from './RolePermissions/RolesListing';
 
 
 class User extends Component {
@@ -23,6 +24,7 @@ class User extends Component {
       isOpen: false,
       activeTab: '1',
       isUserForm: false,
+      isRolePermissionForm: false,
       data: {},
     }
   }
@@ -41,15 +43,23 @@ class User extends Component {
   }
 
   displayForm = () => {
-    this.setState({ isUserForm: true, })
+    this.setState({ isUserForm: true, isRolePermissionForm: false, })
+  }
+
+  displayRoleForm = () => {
+    this.setState({ isRolePermissionForm: true, isUserForm: false, })
   }
 
   hideForm = () => {
-    this.setState({ isUserForm: false, data: {} })
+    this.setState({ isUserForm: false, isRolePermissionForm: false, data: {} })
   }
 
   getUserDetail = (data) => {
-    this.setState({ isUserForm: true, data: data })
+    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data })
+  }
+
+  getRoleDetail = (data) => {
+    this.setState({ isRolePermissionForm: true, isUserForm: false, data: data })
   }
 
   /**
@@ -57,10 +67,17 @@ class User extends Component {
   * @description Renders the component
   */
   render() {
-    const { isUserForm, data } = this.state;
+    const { isUserForm, isRolePermissionForm, data } = this.state;
 
     if (isUserForm === true) {
       return <UserRegistration
+        data={data}
+        hideForm={this.hideForm}
+      />
+    }
+
+    if (isRolePermissionForm === true) {
+      return <Role
         data={data}
         hideForm={this.hideForm}
       />
@@ -103,8 +120,10 @@ class User extends Component {
               </TabPane>}
             {this.state.activeTab === '2' &&
               <TabPane tabId="2">
-                <Role
-                  toggle={this.toggle} />
+                <RolesListing
+                  formToggle={this.displayRoleForm}
+                  getDetail={this.getRoleDetail}
+                />
               </TabPane>}
             {this.state.activeTab === '3' &&
               <TabPane tabId="3">

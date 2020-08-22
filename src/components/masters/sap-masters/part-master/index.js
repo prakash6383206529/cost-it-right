@@ -61,7 +61,7 @@ class PartMaster extends Component {
 
         return (
             <>
-                <Container className="user-page p-0">
+                <div className="user-page p-0">
                     {/* {this.props.loading && <Loader/>} */}
                     <div>
                         <h1>Part Master</h1>
@@ -91,7 +91,7 @@ class PartMaster extends Component {
                                 </TabPane>}
                         </TabContent>
                     </div>
-                </Container >
+                </div >
             </ >
         );
     }

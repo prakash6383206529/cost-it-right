@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  Container, Row, Col, Button, Table
-} from 'reactstrap';
-import { getAllRoleAPI, deleteRoleAPI } from '../../actions/auth/AuthActions';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { getAllRoleAPI, deleteRoleAPI } from '../../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../config/message';
-import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
-import NoContentFound from '../common/NoContentFound';
+import { MESSAGES } from '../../../config/message';
+import { Loader } from '../../common/Loader';
+import { CONSTANT } from '../../../helper/AllConastant';
+import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 class RolesListing extends Component {
@@ -23,7 +21,7 @@ class RolesListing extends Component {
 
   componentDidMount() {
     this.getRolesListData()
-    this.props.onRef(this)
+    //this.props.onRef(this)
   }
 
   getRolesListData = () => {
@@ -54,7 +52,8 @@ class RolesListing extends Component {
       isEditFlag: true,
       RoleId: Id,
     }
-    this.props.getRoleDetail(requestData)
+    //this.props.getRoleDetail(requestData)
+    this.props.getDetail(requestData)
   }
 
   /**
@@ -97,6 +96,10 @@ class RolesListing extends Component {
     )
   }
 
+  formToggle = () => {
+    this.props.formToggle()
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -110,6 +113,22 @@ class RolesListing extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
+        <Row className="pt-30">
+          <Col md="8" className="filter-block">
+
+          </Col>
+          <Col md="4" className="search-user-block">
+            <div className="d-flex justify-content-end bd-highlight w100">
+              <div>
+                <button
+                  type="button"
+                  className={'user-btn'}
+                  onClick={this.formToggle}>
+                  <div className={'plus'}></div>ADD ROLE</button>
+              </div>
+            </div>
+          </Col>
+        </Row>
         <Row class="mt-2">
           <Col>
             <BootstrapTable
@@ -118,7 +137,7 @@ class RolesListing extends Component {
               bordered={false}
               hover={true}
               options={options}
-              search
+              //search
               ignoreSinglePage
               ref={'table'}
               trClassName={'userlisting-row'}
@@ -129,34 +148,6 @@ class RolesListing extends Component {
             </BootstrapTable>
           </Col>
         </Row>
-        {/* <Row>
-                    <Col>
-                        <Table className="table table-striped" size="sm" bordered>
-                            {this.props.roleList && this.props.roleList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`Role`}</th>
-                                        <th>{''}</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.roleList && this.props.roleList.length > 0 &&
-                                    this.props.roleList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.RoleName}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.RoleId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.RoleId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.roleList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row> */}
       </ >
     );
   }

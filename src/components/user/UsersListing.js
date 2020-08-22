@@ -409,13 +409,11 @@ class UsersListing extends Component {
 						<Col md="4" className="search-user-block">
 							<div className="d-flex justify-content-end bd-highlight w100">
 								<div>
-									{!this.props.isShowForm &&
-										<button
-											type="button"
-											className={'user-btn'}
-											onClick={this.formToggle}>
-											<div className={'plus'}></div>ADD USER</button>
-									}
+									<button
+										type="button"
+										className={'user-btn'}
+										onClick={this.formToggle}>
+										<div className={'plus'}></div>ADD USER</button>
 								</div>
 							</div>
 						</Col>

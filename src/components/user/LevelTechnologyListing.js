@@ -27,11 +27,15 @@ class LevelTechnologyListing extends Component {
 
 	getLevelsListData = () => {
 		this.props.getAllLevelMappingAPI(res => {
-			if (res && res.data && res.data.DataList) {
+			if (res.status == 204 && res.data == '') {
+				this.setState({ tableData: [], })
+			} else if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
 				this.setState({
 					tableData: Data,
 				})
+			} else {
+
 			}
 		});
 	}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import Main from './components/Main.js';
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, browserHistory } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { toastr } from "react-redux-toastr";
 import { MESSAGES } from '../src/config/message';
@@ -36,6 +36,7 @@ class App extends Component {
     this.setState({ isUserLoggedIn: false });
     reactLocalStorage.setObject("isUserLoggedIn", false);
     reactLocalStorage.setObject("userDetail", {});
+    reactLocalStorage.set('ModuleId', '');
     toastr.success(MESSAGES.LOGOUT_SUCCESS);
     setTimeout(() => {
       window.location.assign('/login');
@@ -44,7 +45,7 @@ class App extends Component {
 
   render() {
     return (
-      <BrowserRouter>
+      <BrowserRouter browserHistory>
         <div>
           <Route path="/" render={
             (props) => <Main {...props}

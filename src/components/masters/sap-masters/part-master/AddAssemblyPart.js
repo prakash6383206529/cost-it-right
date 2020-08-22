@@ -230,262 +230,262 @@ class AddAssemblyPart extends Component {
         const { isEditFlag, isOpenChildDrawer, } = this.state;
         return (
             <>
-                <Container>
-                    <div className="login-container signup-form">
-                        <Row>
-                            <Col md="12">
-                                <div className="shadow-lgg login-formg">
+
+                <div className="login-container signup-form">
+                    <Row>
+                        <Col md="12">
+                            <div className="shadow-lgg login-formg">
+                                <Row>
+                                    <Col md="6">
+                                        <div className="form-heading mb-0">
+                                            <h2>{this.state.isEditFlag ? 'Update Assembly Part' : 'Add  Assembly Part'}</h2>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <form
+                                    noValidate
+                                    className="form"
+                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                >
                                     <Row>
-                                        <Col md="6">
-                                            <div className="form-heading mb-0">
-                                                <h2>{this.state.isEditFlag ? 'Update Assembly Part' : 'Add  Assembly Part'}</h2>
+                                        <Col md="12">
+                                            <div className="left-border">
+                                                {'Assembly Details:'}
                                             </div>
                                         </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`BOM No.`}
+                                                name={"BOMNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`Assembly Part No.`}
+                                                name={"AssemblyPartNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`Assembly Name`}
+                                                name={"AssemblyPartName"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`Description`}
+                                                name={"Description"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+
                                     </Row>
-                                    <form
-                                        noValidate
-                                        className="form"
-                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                    >
-                                        <Row>
-                                            <Col md="12">
-                                                <div className="left-border">
-                                                    {'Assembly Details:'}
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`BOM No.`}
-                                                    name={"BOMNumber"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Assembly Part No.`}
-                                                    name={"AssemblyPartNumber"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Assembly Name`}
-                                                    name={"AssemblyPartName"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Description`}
-                                                    name={"Description"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
 
-                                        </Row>
+                                    <Row>
+                                        <Col md="3">
+                                            <Field
+                                                label={`ECN No.`}
+                                                name={"ECNNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`Revision No.`}
+                                                name={"RevisionNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`Drawing No.`}
+                                                name={"DrawingNumber"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`Group Code`}
+                                                name={"GroupCode"}
+                                                type="text"
+                                                placeholder={''}
+                                                validate={[required]}
+                                                component={renderText}
+                                                required={true}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                            />
+                                        </Col>
+                                    </Row>
 
-                                        <Row>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`ECN No.`}
-                                                    name={"ECNNumber"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Revision No.`}
-                                                    name={"RevisionNumber"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Drawing No.`}
-                                                    name={"DrawingNumber"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Group Code`}
-                                                    name={"GroupCode"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            <Col md='3'>
-                                                <Field
-                                                    name="RawMaterialId"
-                                                    type="text"
-                                                    label={'RM Material'}
-                                                    component={searchableSelect}
-                                                    placeholder={'Raw Material'}
-                                                    options={this.renderListing('material')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleRMChange}
-                                                    valueDescription={this.state.RawMaterial}
-                                                />
-                                            </Col>
-                                            <Col md='3'>
-                                                <Field
-                                                    label="Plant"
-                                                    name="Plant"
-                                                    placeholder="--Select--"
-                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
-                                                    options={this.renderListing('plant')}
-                                                    selectionChanged={this.handlePlant}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    className="multiselect-with-border"
-                                                //disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <div className="form-group">
-                                                    <label>
-                                                        Effective Date
+                                    <Row>
+                                        <Col md='3'>
+                                            <Field
+                                                name="RawMaterialId"
+                                                type="text"
+                                                label={'RM Material'}
+                                                component={searchableSelect}
+                                                placeholder={'Raw Material'}
+                                                options={this.renderListing('material')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleRMChange}
+                                                valueDescription={this.state.RawMaterial}
+                                            />
+                                        </Col>
+                                        <Col md='3'>
+                                            <Field
+                                                label="Plant"
+                                                name="Plant"
+                                                placeholder="--Select--"
+                                                selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                options={this.renderListing('plant')}
+                                                selectionChanged={this.handlePlant}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={true}
+                                                className="multiselect-with-border"
+                                            //disabled={isEditFlag ? true : false}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <div className="form-group">
+                                                <label>
+                                                    Effective Date
                                                             <span className="asterisk-required">*</span>
-                                                    </label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            name="EffectiveDate"
-                                                            selected={this.state.effectiveDate}
-                                                            onChange={this.handleEffectiveDateChange}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
-                                                            dropdownMode="select"
-                                                            placeholderText="Select date"
-                                                            className="withBorder"
-                                                            autoComplete={'off'}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </div>
+                                                </label>
+                                                <div className="inputbox date-section">
+                                                    <DatePicker
+                                                        name="EffectiveDate"
+                                                        selected={this.state.effectiveDate}
+                                                        onChange={this.handleEffectiveDateChange}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dateFormat="dd/MM/yyyy"
+                                                        //maxDate={new Date()}
+                                                        dropdownMode="select"
+                                                        placeholderText="Select date"
+                                                        className="withBorder"
+                                                        autoComplete={'off'}
+                                                        disabledKeyboardNavigation
+                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
                                                 </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <button
-                                                    type="button"
-                                                    className={'user-btn mt30'}
-                                                    onClick={this.childDrawerToggle}>
-                                                    <div className={'plus'}></div>ADD Child</button>
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="12">
-                                                <div className="left-border">
-                                                    {'Remarks & Attachment'}
-                                                </div>
-                                            </Col>
-                                            <Col md="6">
-                                                <Field
-                                                    label={'Remarks'}
-                                                    name={`Remark`}
-                                                    placeholder="Type here..."
-                                                    value={this.state.remarks}
-                                                    className=""
-                                                    customClassName=" textAreaWithBorder"
-                                                    onChange={this.handleMessageChange}
-                                                    validate={[required, maxLength100]}
-                                                    required={true}
-                                                    component={renderTextAreaField}
-                                                    maxLength="5000"
-                                                />
-                                            </Col>
-                                            <Col md="6">
-
-                                            </Col>
-                                        </Row>
-
-                                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-sm-12 text-center">
-                                                <button
-                                                    type={'button'}
-                                                    className="reset mr15 cancel-btn"
-                                                    onClick={this.cancel} >
-                                                    {'Cancel'}
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="submit-button mr5 save-btn" >
-                                                    {isEditFlag ? 'Update' : 'Save'}
-                                                </button>
-
                                             </div>
-                                        </Row>
+                                        </Col>
+                                        <Col md="3">
+                                            <button
+                                                type="button"
+                                                className={'user-btn mt30'}
+                                                onClick={this.childDrawerToggle}>
+                                                <div className={'plus'}></div>ADD Child</button>
+                                        </Col>
+                                    </Row>
 
-                                    </form>
-                                </div>
-                            </Col>
+                                    <Row>
+                                        <Col md="12">
+                                            <div className="left-border">
+                                                {'Remarks & Attachment'}
+                                            </div>
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label={'Remarks'}
+                                                name={`Remark`}
+                                                placeholder="Type here..."
+                                                value={this.state.remarks}
+                                                className=""
+                                                customClassName=" textAreaWithBorder"
+                                                onChange={this.handleMessageChange}
+                                                validate={[required, maxLength100]}
+                                                required={true}
+                                                component={renderTextAreaField}
+                                                maxLength="5000"
+                                            />
+                                        </Col>
+                                        <Col md="6">
 
-                        </Row>
-                    </div>
-                    {/* <AssemblyPartListing
+                                        </Col>
+                                    </Row>
+
+                                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                                        <div className="col-sm-12 text-center">
+                                            <button
+                                                type={'button'}
+                                                className="reset mr15 cancel-btn"
+                                                onClick={this.cancel} >
+                                                {'Cancel'}
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="submit-button mr5 save-btn" >
+                                                {isEditFlag ? 'Update' : 'Save'}
+                                            </button>
+
+                                        </div>
+                                    </Row>
+
+                                </form>
+                            </div>
+                        </Col>
+
+                    </Row>
+                </div>
+                {/* <AssemblyPartListing
                         onRef={ref => (this.child = ref)}
                         getDetails={this.getDetails}
                         formToggle={this.formToggle}
                         isShowForm={this.state.isShowForm}
                     /> */}
-                </Container>
+
                 {isOpenChildDrawer && <AddChildDrawer
                     isOpen={isOpenChildDrawer}
                     closeDrawer={this.closeChildDrawer}

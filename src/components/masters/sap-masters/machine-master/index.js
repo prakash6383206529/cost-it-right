@@ -81,7 +81,7 @@ class MachineMaster extends Component {
         }
 
         return (
-            <Container>
+            <>
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
@@ -122,7 +122,7 @@ class MachineMaster extends Component {
                         </div>
                     </Col>
                 </Row>
-            </Container >
+            </>
         );
     }
 }

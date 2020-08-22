@@ -362,7 +362,7 @@ class ClientListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="ClientName" dataAlign="center" >{'Client Name'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ClientEmailId" dataAlign="center" >{'Email Id'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PhoneNumber" dataAlign="center" >{'Phone Number'}</TableHeaderColumn>

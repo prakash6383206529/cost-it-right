@@ -26,7 +26,6 @@ export const API = {
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
 
   //Combo apis
-  //configure api's
 
   getOtherOperationComboAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,
   getCEDComboAPI: `${BASE_URL}/configuration-master/get-ced-other-operation-combo-select-list`,
@@ -40,20 +39,21 @@ export const API = {
   getWeightCalculationLayoutType: `${BASE_URL}/configuration/radio-button-list-get-weight-calculate-layout-type`,
   getLabourTypeSelectList: `${BASE_URL}/configuration/select-list-get-labour-type`,
 
-
-  //api's for configure location
+  //LOCATION API
+  getAllCities: `${BASE_URL}/configuration-location/select-list-get-vendor-city`,
   getSupplierCity: `${BASE_URL}/configuration-location/select-list-get-vendor-city`,
   getCountry: `${BASE_URL}/configuration-location/select-list-get-country`,
   getState: `${BASE_URL}/configuration-location/select-list-get-state`,
   getCity: `${BASE_URL}/configuration-location/select-list-get-city`,
+  getCityByCountry: `${BASE_URL}/configuration-location/select-list-get-city-by-request`,
 
   //api's for configure raw material
   getRawMaterialSelectList: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
   getRowGrade: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
-  getRowMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-categoryy`,
+  getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
 
-  //Api's for material
+  //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
   getMaterialTypeDataAPI: `${BASE_URL}/masters-material/get-material-type`,
   deleteMaterialTypeAPI: `${BASE_URL}/masters-material/delete-material-type`,
@@ -62,7 +62,7 @@ export const API = {
   getMaterialTypeDataList: `${BASE_URL}/masters-material/get-all-material-type`,
   getMaterial: `${BASE_URL}/masters-raw-material/get-all-costing-raw-material-details`,
 
-  //Api for Unit of measurement master
+  //UOM MASTER
   createUOMAPI: `${BASE_URL}/masters-unit-of-measurement/create`,
   getUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getAllUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get-all`,
@@ -411,10 +411,10 @@ export const API = {
   updateUserTechnologyLevelForCosting: `${BASE_URL}/user-level/update-user-technology-levels`,
 
   //Role's API
-  addRoleAPI: `${BASE_URL}/user-role/create`,
+  addRoleAPI: `${BASE_URL}/user-role/create-new`,
   getAllRoleAPI: `${BASE_URL}/user-role/get-all`,
-  getRoleAPI: `${BASE_URL}/user-role/get`,
-  updateRoleAPI: `${BASE_URL}/user-role/update`,
+  getRoleAPI: `${BASE_URL}/user-role/get-new`,
+  updateRoleAPI: `${BASE_URL}/user-role/update-new`,
   deleteRoleAPI: `${BASE_URL}/user-role/delete`,
   rolesSelectList: `${BASE_URL}/configuration/select-list-get-roles`,
 
@@ -434,10 +434,10 @@ export const API = {
   deleteUserLevelAPI: `${BASE_URL}/user-level/delete`,
 
   //SET LEVEL FOR TECHNOLOGY
-  setApprovalLevelForTechnology: `${BASE_URL}/costing/approval-level-for-technology/create`,
-  getLevelMappingAPI: `${BASE_URL}/costing/approval-level-for-technology/get`,
-  getAllLevelMappingAPI: `${BASE_URL}/costing/approval-level-for-technology/get-all`,
-  updateLevelMappingAPI: `${BASE_URL}/costing/approval-level-for-technology/update`,
+  setApprovalLevelForTechnology: `${BASE_URL}/costing-old/approval-level-for-technology/create`,
+  getLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get`,
+  getAllLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get-all`,
+  updateLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/update`,
 
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-vendor`,
@@ -471,6 +471,8 @@ export const API = {
   getActionHeadsSelectList: `${BASE_URL}/app-privilege-permission/get-action-heads-list`,
   getMenuByUser: `${BASE_URL}/app-privilege-permission/get-user-menu-by-user`,
   getModuleActionInit: `${BASE_URL}/user-role/get-module-action-init`,
+  getModuleActionInitNew: `${BASE_URL}/user-role/get-module-page-action-init_new`,
+  getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
 
   //REASON
   createReason: `${BASE_URL}/masters-reason/create`,
@@ -870,6 +872,7 @@ export const GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS = 'GET_PAGE_SELECTLIST_BY_MOD
 export const GET_PAGES_SELECTLIST_SUCCESS = 'GET_PAGES_SELECTLIST_SUCCESS';
 export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SUCCESS';
 export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS';
+export const GET_LEFT_MENU_BY_MODULE_ID_AND_USER = 'GET_LEFT_MENU_BY_MODULE_ID_AND_USER';
 
 //REASON
 export const GET_REASON_DATA_SUCCESS = 'GET_REASON_DATA_SUCCESS';
@@ -942,3 +945,12 @@ export const SOLAR_POWER = 'Solar Power';
 export const HYDRO_POWER = 'Hydro Power';
 export const WIND_POWER = 'Wind Power';
 export const GENERATOR_DIESEL = 'Generator Diesel';
+
+//MODULE NAME ENUMS
+export const DASHBOARD_AND_AUDIT = 'Dashboard And Audit';
+export const MASTERS = 'Master';
+export const ADDITIONAL_MASTERS = 'Additional Masters';
+export const COSTING = 'Costing';
+export const SIMULATION = 'Simulation';
+export const REPORTS_AND_ANALYTICS = 'Reports And Analytics';
+export const USERS = 'Users';
