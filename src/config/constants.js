@@ -472,6 +472,7 @@ export const API = {
   getMenuByUser: `${BASE_URL}/app-privilege-permission/get-user-menu-by-user`,
   getModuleActionInit: `${BASE_URL}/user-role/get-module-action-init`,
 
+
   //REASON
   createReason: `${BASE_URL}/masters-reason/create`,
   getAllReasonAPI: `${BASE_URL}/masters-reason/get-all`,
