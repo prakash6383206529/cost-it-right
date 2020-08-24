@@ -6,20 +6,20 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength5, minLength6, maxLength25, maxLength11, maxLength12, required, email,
-  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18
+  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10
 } from "../../helper/validation";
 import {
   renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
-  searchableSelect
+  searchableSelect,
+  renderNumberInputField
 } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
-  updateUserAPI, setEmptyUserDataAPI, getActionHeadsSelectList, getModuleSelectList,
-  getModuleActionInit, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI,
+  updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
   setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
 } from "../../actions/auth/AuthActions";
-import { fetchSupplierCityDataAPI } from "../../actions/master/Comman";
+import { getAllCities } from "../../actions/master/Comman";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { loggedInUserId } from "../../helper/auth";
@@ -31,6 +31,7 @@ import NoContentFound from "../common/NoContentFound";
 import Switch from "react-switch";
 import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
+import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 
 
 class UserRegistration extends Component {
@@ -79,47 +80,13 @@ class UserRegistration extends Component {
   */
   componentDidMount() {
     const { data } = this.props;
-    this.getUserDetail(data);
     this.props.setEmptyUserDataAPI('', () => { })
     this.props.getAllRoleAPI(() => { })
     this.props.getAllDepartmentAPI(() => { })
-    this.props.fetchSupplierCityDataAPI(() => { })
-
-    this.props.getActionHeadsSelectList(() => {
-      this.getRolePermission()
-    })
-    this.props.getModuleSelectList(() => { })
-
+    this.props.getAllCities(() => { })
     this.props.getAllTechnologyAPI(() => { })
     this.props.getAllLevelAPI(() => { })
-  }
-
-  getRolePermission = () => {
-    this.setState({ isLoader: true });
-    this.props.getModuleActionInit((res) => {
-      if (res && res.data && res.data.Data) {
-
-        let Data = res.data.Data;
-        let Modules = res.data.Data;
-
-        let moduleCheckedArray = [];
-        Modules && Modules.map((el, i) => {
-          let tempObj = {
-            ModuleName: el.ModuleName,
-            IsChecked: el.IsChecked,
-            ModuleId: el.ModuleId,
-          }
-          moduleCheckedArray.push(tempObj)
-        })
-
-        this.setState({
-          actionData: Data,
-          Modules: Modules,
-          moduleCheckedAll: moduleCheckedArray,
-          isLoader: false,
-        })
-      }
-    })
+    this.getUserDetail(data);
   }
 
   /**
@@ -203,7 +170,7 @@ class UserRegistration extends Component {
 
   /**
   * @method selectType
-  * @description Used show listing of unit of measurement
+  * @description Used show listing
   */
   searchableSelectType = (label) => {
     const { roleList, departmentList, cityList, technologyList, levelList } = this.props;
@@ -232,9 +199,10 @@ class UserRegistration extends Component {
     }
 
     if (label === 'technology') {
-      technologyList && technologyList.map(item =>
+      technologyList && technologyList.map(item => {
+        if (item.Value == 0) return false;
         temp.push({ label: item.Text, value: item.Value })
-      );
+      });
       return temp;
     }
 
@@ -284,14 +252,13 @@ class UserRegistration extends Component {
     this.setState({ city: newValue });
   };
 
-
-
   /**
   * @method getUserDetail
   * @description used to get user detail
   */
   getUserDetail = (data) => {
     if (data && data.isEditFlag) {
+      console.log('updated 111')
       this.setState({
         isLoader: true,
         isEditFlag: false,
@@ -306,22 +273,25 @@ class UserRegistration extends Component {
 
       this.props.getUserDataAPI(data.UserId, (res) => {
         if (res && res.data && res.data.Data) {
-
-          const { roleList, departmentList, cityList } = this.props;
+          console.log('updated 222')
           let Data = res.data.Data;
 
-          const RoleObj = roleList.find(item => item.RoleId == Data.RoleId)
-          const DepartmentObj = departmentList.find(item => item.DepartmentId == Data.DepartmentId)
-          const CityObj = cityList.find(item => item.Value == Data.CityId)
+          setTimeout(() => {
+            const { roleList, departmentList, cityList } = this.props;
 
-          this.setState({
-            isEditFlag: true,
-            isLoader: false,
-            department: DepartmentObj != undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
-            role: RoleObj != undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
-            city: { label: CityObj.Text, value: CityObj.Value },
-          })
-          this.getUserPermission(data.UserId)
+            const RoleObj = roleList && roleList.find(item => item.RoleId == Data.RoleId)
+            const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId == Data.DepartmentId)
+            const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
+            console.log('updated 333', RoleObj, DepartmentObj, CityObj)
+            this.setState({
+              isEditFlag: true,
+              isLoader: false,
+              department: DepartmentObj != undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
+              role: RoleObj != undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
+              city: CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+            })
+            this.getUserPermission(data.UserId)
+          }, 500)
           this.getUsersTechnologyLevelData(data.UserId)
 
           if (data.passwordFlag) {
@@ -339,25 +309,9 @@ class UserRegistration extends Component {
   getUserPermission = (UserId) => {
     this.props.getPermissionByUser(UserId, (res) => {
       if (res && res.data && res.data.Data) {
-
         let Data = res.data.Data;
-        let Modules = Data.Modules;
-
-        let moduleCheckedArray = [];
-        Modules && Modules.map((el, i) => {
-          let tempObj = {
-            ModuleName: el.ModuleName,
-            IsChecked: el.IsChecked,
-            ModuleId: el.ModuleId,
-          }
-          moduleCheckedArray.push(tempObj)
-        })
-        this.setState({
-          actionData: Data,
-          Modules: Modules,
-          oldModules: Modules,
-          moduleCheckedAll: moduleCheckedArray,
-        })
+        this.setState({ Modules: Data.Modules, oldModules: Data.Modules })
+        this.child.getUpdatedData(Data.Modules)
       }
     })
   }
@@ -384,170 +338,6 @@ class UserRegistration extends Component {
   //Below code for Table rendering...... 
 
   /**
-  * @method renderActionHeads
-  * @description used to add more permission for user
-  */
-  renderActionHeads = (actionHeads) => {
-    return actionHeads && actionHeads.map((item, index) => {
-      if (item.Value == 0) return false;
-      return (
-        <th className="crud-label">
-          <div className={item.Text}></div>
-          {item.Text}
-        </th>
-      )
-    })
-  }
-
-  /**
-      * @method moduleHandler
-      * @description used to checked module
-      */
-  moduleHandler = (index) => {
-    //alert('hi')
-    const { Modules, checkedAll } = this.state;
-    const isModuleChecked = Modules[index].IsChecked;
-
-    let actionArray = [];
-    let tempArray = [];
-
-    let actionRow = (Modules && Modules != undefined) ? Modules[index].Actions : [];
-    if (isModuleChecked) {
-      actionArray = actionRow && actionRow.map((item, index) => {
-        item.IsChecked = false;
-        return item;
-      })
-
-      tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
-
-      this.setState({ Modules: tempArray })
-    } else {
-      actionArray = actionRow && actionRow.map((item, index) => {
-        item.IsChecked = true;
-        return item;
-      })
-
-      tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
-
-      this.setState({ Modules: tempArray })
-    }
-  }
-
-  /**
-  * @method isCheckAll
-  * @description used to select module's action row (Horizontally)
-  */
-  isCheckAll = (parentIndex, actionData) => {
-    const { actionSelectList } = this.props;
-
-    let tempArray = actionData.filter(item => item.IsChecked == true)
-    if (actionData && actionData != undefined) {
-      return tempArray.length == actionSelectList.length - 1 ? true : false;
-    }
-  }
-
-  /**
-   * @method renderAction
-   * @description used to render row of actions
-   */
-  renderAction = (actions, parentIndex) => {
-    const { actionSelectList } = this.props;
-
-    return actionSelectList && actionSelectList.map((el, i) => {
-      return actions && actions.map((item, index) => {
-        if (el.Text != item.ActionName) return false;
-        return (
-          <td className="text-center">
-            {/* {<input
-                     type="checkbox"
-                     value={item.ActionId}
-                     onChange={() => this.actionCheckHandler(parentIndex, index)}
-                     checked={item.IsChecked}
-                  />} */}
-            {
-              <label htmlFor="normal-switch">
-                {/* <span>Switch with default style</span> */}
-                <Switch
-                  onChange={() => this.actionCheckHandler(parentIndex, index)}
-                  checked={item.IsChecked}
-                  value={item.ActionId}
-                  id="normal-switch"
-                  onColor="#4DC771"
-                  onHandleColor="#ffffff"
-                  offColor="#959CB6"
-                  checkedIcon={false}
-                  uncheckedIcon={false}
-                  height={18}
-                  width={40}
-                />
-              </label>
-            }
-          </td>
-        )
-      })
-    })
-  }
-
-  /**
-   * @method actionCheckHandler
-   * @description Used to check/uncheck action's checkbox
-   */
-  actionCheckHandler = (parentIndex, childIndex) => {
-    const { Modules } = this.state;
-
-    let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
-
-
-    let actionArray = actionRow && actionRow.map((el, index) => {
-      if (childIndex == index) {
-        el.IsChecked = !el.IsChecked
-      }
-      return el;
-    })
-    let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
-    this.setState({ Modules: tempArray }, () => {
-      const { Modules } = this.state;
-      let aa = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
-      let checkedActions = aa.filter(item => item.IsChecked == true)
-      let abcd = checkedActions && checkedActions.length != 0 ? true : false;
-      let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
-      this.setState({ Modules: tempArray1 })
-    })
-  }
-
-  selectAllHandler = (parentIndex, actionRows) => {
-    const { Modules } = this.state;
-    const { actionSelectList } = this.props;
-
-    let checkedActions = actionRows.filter(item => item.IsChecked == true)
-
-    let tempArray = [];
-    let isCheckedSelectAll = (checkedActions.length == actionSelectList.length - 1) ? true : false;
-
-    if (isCheckedSelectAll) {
-      let actionArray = actionRows && actionRows.map((item, index) => {
-        item.IsChecked = false;
-        return item;
-      })
-      tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
-      this.setState({
-        Modules: tempArray,
-        //checkedAll: false,
-      })
-    } else {
-      let actionArray = actionRows && actionRows.map((item, index) => {
-        item.IsChecked = true;
-        return item;
-      })
-      tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
-      this.setState({
-        Modules: tempArray,
-        //checkedAll: true
-      })
-    }
-  }
-
-  /**
    * @method onPressUserPermission
    * @description Used for User's additional permission
    */
@@ -565,6 +355,39 @@ class UserRegistration extends Component {
   }
 
   /**
+ 	* @method setInitialModuleData
+ 	* @description SET INITIAL MODULE DATA FROM PERMISSION TAB
+ 	*/
+  setInitialModuleData = (data) => {
+    this.setState({ Modules: data })
+  }
+
+  /**
+   * @method moduleDataHandler
+   * @description used to set PERMISSION MODULE
+   */
+  moduleDataHandler = (data, ModuleName) => {
+    const { Modules } = this.state;
+    let tempArray = [];
+    let temp111 = data;
+
+    let isAnyChildChecked = data && data.map((item, i) => {
+      let index = item.Actions.findIndex(el => el.IsChecked == true)
+      if (index != -1) {
+        temp111[i].IsChecked = true;
+        tempArray.push(index)
+      }
+    })
+
+    let isParentChecked = temp111.findIndex(el => el.IsChecked == true)
+    const isAvailable = Modules && Modules.findIndex(a => a.ModuleName == ModuleName)
+    if (isAvailable != -1 && Modules) {
+      let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked != -1 ? true : false, Pages: temp111, }) })
+      this.setState({ Modules: tempArray })
+    }
+  }
+
+  /**
    * @method getRoleDetail
    * @description used to get role detail
    */
@@ -574,26 +397,12 @@ class UserRegistration extends Component {
       this.props.getRoleDataAPI(role.value, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-          let Modules = Data.Modules;
-
-          let moduleCheckedArray = [];
-          Modules && Modules.map((el, i) => {
-            let tempObj = {
-              ModuleName: el.ModuleName,
-              IsChecked: el.IsChecked,
-              ModuleId: el.ModuleId,
-            }
-            moduleCheckedArray.push(tempObj)
-          })
-
           this.setState({
-            //isEditFlag: true,
             RoleId: role.value,
-            Modules: Modules,
-            moduleCheckedAll: moduleCheckedArray,
+            Modules: Data.Modules,
             isLoader: false,
           })
-          if (Modules.length == 0) this.getRolePermission();
+          this.child.getUpdatedData(Data.Modules)
         }
       })
     }
@@ -735,6 +544,7 @@ class UserRegistration extends Component {
       role: [],
       city: [],
       Modules: [],
+      oldModules: [],
       IsShowAdditionalPermission: false,
       TechnologyLevelGrid: [],
     })
@@ -755,12 +565,6 @@ class UserRegistration extends Component {
   */
   confirmUpdateUser = (updatedData, RemoveCostingFlag) => {
 
-    const { reset, registerUserData } = this.props;
-    const { department, role, city, isEditFlag, Modules, oldModules,
-      TechnologyLevelGrid, oldTechnologyLevelGrid, UserId } = this.state;
-    const userDetails = reactLocalStorage.getObject("userDetail")
-
-    reset();
     updatedData.IsRemoveCosting = RemoveCostingFlag;
     this.props.updateUserAPI(updatedData, (res) => {
       if (res.data.Result) {
@@ -768,6 +572,7 @@ class UserRegistration extends Component {
       }
       this.cancel();
     })
+
   }
 
   formToggle = () => {
@@ -991,9 +796,9 @@ class UserRegistration extends Component {
                         placeholder={'Enter'}
                         component={renderText}
                         isDisabled={false}
-                        validate={[required, number, minLength7]}
+                        validate={[required, number, minLength10, maxLength12]}
                         required={true}
-                        maxLength={70}
+                        maxLength={12}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -1005,16 +810,13 @@ class UserRegistration extends Component {
                             name={"PhoneNumber"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[number]}
+                            validate={[number, minLength10, maxLength12]}
                             component={renderText}
                             //required={true}
-                            maxLength={12}
+                            maxLength={10}
                             customClassName={'withBorder'}
                           />
                         </div>
-                        {/* <div className="dash phoneNumber col-md-1 input-withouticon">
-                                          {''}
-                                       </div> */}
                         <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
                           <Field
                             label="Extension"
@@ -1024,7 +826,7 @@ class UserRegistration extends Component {
                             validate={[number]}
                             component={renderText}
                             //required={true}
-                            maxLength={5}
+                            maxLength={3}
                             customClassName={'withBorder w100'}
                           />
                         </div>
@@ -1154,10 +956,10 @@ class UserRegistration extends Component {
                         name={"ZipCode"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required, number]}
+                        validate={[required, number, maxLength6]}
                         component={renderText}
                         required={true}
-                        maxLength={26}
+                        maxLength={6}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -1233,53 +1035,12 @@ class UserRegistration extends Component {
                   {this.state.IsShowAdditionalPermission &&
                     <div className=" row form-group grant-user-grid">
                       <div className="col-md-12">
-                        <Table className="table table-bordered " striped={false} size="sm" >
-                          <thead>
-                            <tr>
-                              <th>{`Module Name`}</th>
-                              <th>{``}</th>
-                              {this.renderActionHeads(actionSelectList)}
-                            </tr>
-                          </thead>
-                          <tbody >
-                            {this.state.Modules && this.state.Modules.map((item, index) => {
-                              return (
-                                <tr key={index}>
-
-                                  <td >{
-                                    <label
-                                      className="custom-checkbox"
-                                      onChange={() => this.moduleHandler(index)}
-                                    >
-                                      {item.ModuleName}
-                                      <input
-                                        type="checkbox"
-                                        value={'All'}
-                                        checked={item.IsChecked} />
-                                      <span
-                                        className={`before-box`}
-                                        //className={`before-box ${item.IsChecked ? 'selected-box' : 'not-selected-box'}`}
-                                        checked={item.IsChecked}
-                                        onChange={() => this.moduleHandler(index)}
-                                      />
-                                    </label>
-                                  }
-                                  </td>
-
-                                  <td className="select-all-block"> {<input
-                                    type="checkbox"
-                                    value={'All'}
-                                    className={this.isCheckAll(index, item.Actions) ? 'selected-box' : 'not-selected-box'}
-                                    checked={this.isCheckAll(index, item.Actions)}
-                                    onClick={() => this.selectAllHandler(index, item.Actions)} />} <span>Select All</span></td>
-
-                                  {this.renderAction(item.Actions, index)}
-                                </tr>
-                              )
-                            })}
-                            {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                          </tbody>
-                        </Table>
+                        <PermissionsTabIndex
+                          onRef={ref => (this.child = ref)}
+                          isEditFlag={this.state.isEditFlag}
+                          setInitialModuleData={this.setInitialModuleData}
+                          moduleData={this.moduleDataHandler}
+                        />
                       </div>
                     </div>}
 
@@ -1501,14 +1262,11 @@ export default connect(mapStateToProps, {
   registerUserAPI,
   getAllRoleAPI,
   getAllDepartmentAPI,
-  fetchSupplierCityDataAPI,
+  getAllCities,
   getUserDataAPI,
   getAllUserDataAPI,
   updateUserAPI,
   setEmptyUserDataAPI,
-  getActionHeadsSelectList,
-  getModuleSelectList,
-  getModuleActionInit,
   getRoleDataAPI,
   getAllTechnologyAPI,
   getAllLevelAPI,

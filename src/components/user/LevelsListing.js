@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-	Container, Row, Col, Button, Table
-} from 'reactstrap';
-import { getAllLevelAPI, deleteUserLevelAPI } from '../../actions/auth/AuthActions';
+import { Row, Col, } from 'reactstrap';
+import { getAllLevelAPI, deleteUserLevelAPI, getLeftMenu, } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
+import { loggedInUserId } from '../../helper/auth';
+import { checkPermission } from '../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
+import { LEVELS } from '../../config/constants';
 
 class LevelsListing extends Component {
 	constructor(props) {
@@ -22,7 +24,30 @@ class LevelsListing extends Component {
 			tableData: [],
 			isShowForm: false,
 			isShowMappingForm: false,
+			AddAccessibility: false,
+			EditAccessibility: false,
+			DeleteAccessibility: false,
 		}
+	}
+
+	componentWillMount() {
+		let ModuleId = reactLocalStorage.get('ModuleId');
+		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+			const { leftMenuData } = this.props;
+			if (leftMenuData != undefined) {
+				let Data = leftMenuData;
+				const accessData = Data && Data.find(el => el.PageName == LEVELS)
+				const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+				if (permmisionData != undefined) {
+					this.setState({
+						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+					})
+				}
+			}
+		})
 	}
 
 	componentDidMount() {
@@ -141,10 +166,11 @@ class LevelsListing extends Component {
 	* @description Renders buttons
 	*/
 	buttonFormatter = (cell, row, enumObject, rowIndex) => {
+		const { EditAccessibility, DeleteAccessibility } = this.state;
 		return (
 			<>
-				<button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />
-				<button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />
+				{EditAccessibility && <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />}
+				{DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
 			</>
 		)
 	}
@@ -159,7 +185,8 @@ class LevelsListing extends Component {
 	* @description Renders the component
 	*/
 	render() {
-		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId } = this.state;
+		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId,
+			AddAccessibility, EditAccessibility, DeleteAccessibility } = this.state;
 		const options = {
 			//clearSearch: true,
 			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -175,11 +202,12 @@ class LevelsListing extends Component {
 								<h2 className="manage-level-heading">{`Levels`}</h2>
 							</Col>
 							<Col md="6" className="text-right">
-								<button
+								{AddAccessibility && <button
 									type="button"
 									className={'user-btn'}
 									onClick={this.levelToggler}>
-									<div className={'plus'}></div>{'Add Level'}</button>
+									<div className={'plus'}></div>
+									{'Add Level'}</button>}
 							</Col>
 							<Col className="mt-0 level-table">
 								<BootstrapTable
@@ -206,6 +234,9 @@ class LevelsListing extends Component {
 							onRef={ref => (this.child = ref)}
 							mappingToggler={this.mappingToggler}
 							getLevelMappingDetail={this.getLevelMappingDetail}
+							AddAccessibility={AddAccessibility}
+							EditAccessibility={EditAccessibility}
+							DeleteAccessibility={DeleteAccessibility}
 						/>
 					</Col>
 				</Row>
@@ -232,9 +263,9 @@ class LevelsListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { levelList, loading } = auth;
+	const { levelList, leftMenuData, loading } = auth;
 
-	return { levelList, loading };
+	return { levelList, leftMenuData, loading };
 }
 
 
@@ -242,5 +273,6 @@ export default connect(mapStateToProps,
 	{
 		getAllLevelAPI,
 		deleteUserLevelAPI,
+		getLeftMenu,
 	})(LevelsListing);
 

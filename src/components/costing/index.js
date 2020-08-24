@@ -14,7 +14,6 @@ import { fetchPlantDataAPI } from '../../actions/master/Comman';
 import { uploadBOMxlsAPI } from '../../actions/master/BillOfMaterial';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 import { searchableSelect } from '../../components/layout/FormInputs'
-import DownloadBOMxls from './DownloadBOMxls';
 import { loggedInUserId } from "../../helper/auth";
 
 class Costing extends Component {
@@ -211,7 +210,6 @@ class Costing extends Component {
                             className={'btn btn-primary pull-right'}>Save</button>
                     </Col>
                     <Col md="3" className={'mt40'}>
-                        <DownloadBOMxls />
                         {/* <button
                             onClick={this.downloadBOM}
                             className={'btn btn-primary pull-right'}>Download BOM Format</button> */}

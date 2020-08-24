@@ -258,7 +258,7 @@ class AddIndivisualPart extends Component {
         const { isEditFlag } = this.state;
         return (
             <>
-                <Container>
+                <div>
                     <div className="login-container signup-form">
 
                         <Row>
@@ -503,7 +503,7 @@ class AddIndivisualPart extends Component {
                         formToggle={this.formToggle}
                         isShowForm={this.state.isShowForm}
                     />
-                </Container>
+                </div>
             </>
         );
     }

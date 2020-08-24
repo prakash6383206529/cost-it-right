@@ -19,7 +19,7 @@ class Dashboard extends Component {
     */
     render() {
         return (
-            <Container className="dashboard-top">
+            <div className="dashboard-top">
                 {/* {(this.props.loading || this.state.showLoader) && <Loader />} */}
                 {/* <Row>
                     <Col> */}
@@ -203,7 +203,7 @@ class Dashboard extends Component {
                 </div>
                 {/* </Col>
                 </Row> */}
-            </Container >
+            </div >
         );
     }
 }

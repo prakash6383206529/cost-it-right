@@ -2,18 +2,19 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
 import UserRegistration from './UserRegistration';
-import Role from './Role';
-import Department from './Department';
-import Level from './Level';
-import LevelUser from './LevelUser';
-import LevelTechnology from './LevelTechnology';
-import PermissionsUserWise from './PermissionsUserWise';
+import Role from './RolePermissions/Role';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
+import { getLeftMenu, } from '../../actions/auth/AuthActions';
+import { checkPermission } from '../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { loggedInUserId } from '../../helper/auth';
+import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
+import RolesListing from './RolePermissions/RolesListing';
 
 
 class User extends Component {
@@ -23,15 +24,49 @@ class User extends Component {
       isOpen: false,
       activeTab: '1',
       isUserForm: false,
+      isRolePermissionForm: false,
       data: {},
+      ViewUserAccessibility: false,
+      ViewRoleAccessibility: false,
+      ViewDepartmentAccessibility: false,
+      ViewLevelAccessibility: false,
     }
   }
 
+  componentDidMount() {
+    let ModuleId = reactLocalStorage.get('ModuleId');
+    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+      const { leftMenuData } = this.props;
+      if (leftMenuData != undefined) {
+        let Data = leftMenuData;
+
+        const userPermissions = Data && Data.find(el => el.PageName == USER)
+        const rolePermissions = Data && Data.find(el => el.PageName == ROLE)
+        const departmentPermissions = Data && Data.find(el => el.PageName == DEPARTMENT)
+        const levelsPermissions = Data && Data.find(el => el.PageName == LEVELS)
+
+        const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+        const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
+        const departmentData = departmentPermissions && departmentPermissions.Actions && checkPermission(departmentPermissions.Actions)
+        const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
+
+        if (userData != undefined) {
+          this.setState({
+            ViewUserAccessibility: userData && userData.View ? userData.View : false,
+            ViewRoleAccessibility: roleData && roleData.View ? roleData.View : false,
+            ViewDepartmentAccessibility: departmentData && departmentData.View ? departmentData.View : false,
+            ViewLevelAccessibility: levelsData && levelsData.View ? levelsData.View : false,
+            activeTab: userData && userData.View ? '1' : (roleData && roleData.View ? '2' : (departmentData && departmentData.View ? '3' : '4'))
+          })
+        }
+      }
+    })
+  }
 
   /**
- * @method toggle
- * @description toggling the tabs
- */
+  * @method toggle
+  * @description toggling the tabs
+  */
   toggle = (tab) => {
     if (this.state.activeTab !== tab) {
       this.setState({
@@ -41,15 +76,23 @@ class User extends Component {
   }
 
   displayForm = () => {
-    this.setState({ isUserForm: true, })
+    this.setState({ isUserForm: true, isRolePermissionForm: false, })
+  }
+
+  displayRoleForm = () => {
+    this.setState({ isRolePermissionForm: true, isUserForm: false, })
   }
 
   hideForm = () => {
-    this.setState({ isUserForm: false, data: {} })
+    this.setState({ isUserForm: false, isRolePermissionForm: false, data: {} })
   }
 
   getUserDetail = (data) => {
-    this.setState({ isUserForm: true, data: data })
+    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data })
+  }
+
+  getRoleDetail = (data) => {
+    this.setState({ isRolePermissionForm: true, isUserForm: false, data: data })
   }
 
   /**
@@ -57,10 +100,18 @@ class User extends Component {
   * @description Renders the component
   */
   render() {
-    const { isUserForm, data } = this.state;
+    const { isUserForm, isRolePermissionForm, data, ViewUserAccessibility,
+      ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, } = this.state;
 
     if (isUserForm === true) {
       return <UserRegistration
+        data={data}
+        hideForm={this.hideForm}
+      />
+    }
+
+    if (isRolePermissionForm === true) {
+      return <Role
         data={data}
         hideForm={this.hideForm}
       />
@@ -72,46 +123,48 @@ class User extends Component {
         <div>
           <h1>User Management</h1>
           <Nav tabs className="subtabs">
-            <NavItem>
+            {ViewUserAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                 Manage Users
               </NavLink>
-            </NavItem>
-            <NavItem>
+            </NavItem>}
+            {ViewRoleAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                 Manage Roles & Permission
               </NavLink>
-            </NavItem>
-            <NavItem>
+            </NavItem>}
+            {ViewDepartmentAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                 Manage Department
               </NavLink>
-            </NavItem>
-            <NavItem>
+            </NavItem>}
+            {ViewLevelAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                 Manage Levels
               </NavLink>
-            </NavItem>
+            </NavItem>}
           </Nav>
           <TabContent activeTab={this.state.activeTab}>
-            {this.state.activeTab === '1' &&
+            {this.state.activeTab === '1' && ViewUserAccessibility &&
               <TabPane tabId="1">
                 <UsersListing
                   formToggle={this.displayForm}
                   getUserDetail={this.getUserDetail}
                 />
               </TabPane>}
-            {this.state.activeTab === '2' &&
+            {this.state.activeTab === '2' && ViewRoleAccessibility &&
               <TabPane tabId="2">
-                <Role
-                  toggle={this.toggle} />
+                <RolesListing
+                  formToggle={this.displayRoleForm}
+                  getDetail={this.getRoleDetail}
+                />
               </TabPane>}
-            {this.state.activeTab === '3' &&
+            {this.state.activeTab === '3' && ViewDepartmentAccessibility &&
               <TabPane tabId="3">
                 <DepartmentsListing
                   toggle={this.toggle} />
               </TabPane>}
-            {this.state.activeTab === '4' &&
+            {this.state.activeTab === '4' && ViewLevelAccessibility &&
               <TabPane tabId="4">
                 <LevelsListing
                   toggle={this.toggle} />
@@ -128,11 +181,16 @@ class User extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
+function mapStateToProps({ auth }) {
+  const { leftMenuData, loading } = auth;
+
+  return { leftMenuData, loading };
 }
 
 
-export default connect(
-  mapStateToProps, {}
+export default connect(mapStateToProps,
+  {
+    getLeftMenu
+  }
 )(User);
 

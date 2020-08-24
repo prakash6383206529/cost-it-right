@@ -140,7 +140,7 @@ class ViewUserDetails extends Component {
 	* @description Renders the component
 	*/
   render() {
-    const { UserId, registerUserData } = this.props;
+    const { UserId, registerUserData, EditAccessibility } = this.props;
     const { isPermissionOpen, isTechnologyOpen } = this.state;
 
     const address = registerUserData ? `${registerUserData.AddressLine1}, ${registerUserData.AddressLine2}, 
@@ -171,10 +171,11 @@ class ViewUserDetails extends Component {
                       customClass={'Personal-Details'} />
                   </Col>
                   <Col md="6">
-                    <button
+                    {EditAccessibility && <button
                       className={'user-btn'}
                       onClick={() => this.props.editItemDetails(UserId, false)}
-                      type="button"><div className={'edit-icon'}></div>EDIT DETAILS</button>
+                      type="button">
+                      <div className={'edit-icon'}></div>EDIT DETAILS</button>}
                   </Col>
                   <Col md={'12'}>
                     <div className={'left-details'}>Name</div>
@@ -185,7 +186,7 @@ class ViewUserDetails extends Component {
                     <div className={'right-details'}>{registerUserData ? registerUserData.Mobile : ''}</div>
                   </Col>
                   <Col md={'12'}>
-                    <div className={'left-details'}>Phone No.-Ext:</div>
+                    <div className={'left-details'}>Phone No.</div>
                     <div className={'right-details'}>{registerUserData ? registerUserData.PhoneNumber : ''}-{registerUserData ? registerUserData.Extension : ''}</div>
                   </Col>
                 </Row>

@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import {
 	getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI,
-	activeInactiveUser,
+	activeInactiveUser, getLeftMenu,
 } from '../../actions/auth/AuthActions';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import { required } from "../../helper/validation";
@@ -12,11 +12,14 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
+import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
+import { checkPermission } from '../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
 function enumFormatter(cell, row, enumObject) {
 	return enumObject[cell];
 }
@@ -34,13 +37,36 @@ class UsersListing extends Component {
 			role: [],
 			UserId: '',
 			isOpen: false,
+			AddAccessibility: false,
+			EditAccessibility: false,
+			DeleteAccessibility: false,
 		}
+	}
+
+	componentWillMount() {
+		let ModuleId = reactLocalStorage.get('ModuleId');
+		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+			const { leftMenuData } = this.props;
+			if (leftMenuData != undefined) {
+				let Data = leftMenuData;
+				const userPermissions = Data && Data.find(el => el.PageName == USER)
+				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+				console.log('userPermissions: ', permmisionData);
+				if (permmisionData != undefined) {
+					this.setState({
+						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+					})
+				}
+			}
+		})
 	}
 
 	componentDidMount() {
 		this.getUsersListData('', '');
 
-		// Get department listing
+		//Get Department Listing
 		this.props.getAllDepartmentAPI((res) => {
 			if (res && res.data && res.data.DataList) {
 				const { departmentType } = this.state;
@@ -70,6 +96,8 @@ class UsersListing extends Component {
 		})
 		//this.props.onRef(this)
 	}
+
+
 
 	// Get updated user list after any action performed.
 	getUpdatedData = () => {
@@ -187,10 +215,12 @@ class UsersListing extends Component {
 	* @description Renders buttons
 	*/
 	buttonFormatter = (cell, row, enumObject, rowIndex) => {
+		const { EditAccessibility } = this.state;
+		if (cell == loggedInUserId()) return null;
 		return (
 			<div className="text-right">
 				{/* <Button className="btn btn-secondary" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button> */}
-				<button className="Edit " type={'button'} onClick={() => this.editItemDetails(cell, false)} />
+				{EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cell, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)
@@ -219,6 +249,7 @@ class UsersListing extends Component {
 	* @description Renders buttons
 	*/
 	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+		if (row.UserId == loggedInUserId()) return null;
 		return (
 			<>
 				<label htmlFor="normal-switch">
@@ -341,7 +372,7 @@ class UsersListing extends Component {
 	*/
 	render() {
 		const { handleSubmit, pristine, submitting, } = this.props;
-		const { isOpen, isEditFlag, editIndex, PartId, departmentType, roleType } = this.state;
+		const { isEditFlag, EditAccessibility, departmentType, roleType, AddAccessibility } = this.state;
 		const options = {
 			clearSearch: true,
 			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -407,17 +438,16 @@ class UsersListing extends Component {
 							</div>
 						</Col>
 						<Col md="4" className="search-user-block">
-							<div className="d-flex justify-content-end bd-highlight w100">
-								<div>
-									{!this.props.isShowForm &&
+							{AddAccessibility &&
+								<div className="d-flex justify-content-end bd-highlight w100">
+									<div>
 										<button
 											type="button"
 											className={'user-btn'}
 											onClick={this.formToggle}>
 											<div className={'plus'}></div>ADD USER</button>
-									}
-								</div>
-							</div>
+									</div>
+								</div>}
 						</Col>
 					</Row>
 
@@ -460,6 +490,7 @@ class UsersListing extends Component {
 						isOpen={this.state.isOpen}
 						editItemDetails={this.editItemDetails}
 						closeUserDetails={this.closeUserDetails}
+						EditAccessibility={EditAccessibility}
 						anchor={'right'}
 					/>}
 			</ >
@@ -473,9 +504,9 @@ class UsersListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { userDataList, roleList, departmentList, loading } = auth;
+	const { userDataList, roleList, departmentList, leftMenuData, loading } = auth;
 
-	return { userDataList, roleList, departmentList, loading };
+	return { userDataList, roleList, departmentList, leftMenuData, loading };
 }
 
 
@@ -492,6 +523,7 @@ export default connect(mapStateToProps, {
 	getAllDepartmentAPI,
 	getAllRoleAPI,
 	activeInactiveUser,
+	getLeftMenu,
 })(reduxForm({
 	form: 'UsersListing',
 	onSubmitFail: errors => {

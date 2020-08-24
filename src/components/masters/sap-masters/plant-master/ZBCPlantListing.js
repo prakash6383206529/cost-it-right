@@ -169,7 +169,7 @@ class ZBCPlantListing extends Component {
 	* @description Renders IsVendor
 	*/
     checkIsVendorFormatter = (cell, row, enumObject, rowIndex) => {
-        console.log('>>>>>>>>>>>>>>>>', cell, row)
+
         return (
             <>
 
@@ -218,21 +218,24 @@ class ZBCPlantListing extends Component {
         const temp = [];
 
         if (label === 'country') {
-            countryList && countryList.map(item =>
+            countryList && countryList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'state') {
-            stateList && stateList.map(item =>
+            stateList && stateList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
         if (label === 'city') {
-            cityList && cityList.map(item =>
+            cityList && cityList.map(item => {
+                if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
-            );
+            });
             return temp;
         }
 
@@ -448,7 +451,7 @@ class ZBCPlantListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Sr. No." width={'70'} dataFormat={this.indexFormatter} dataSort={true}>Sr. No.</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="Sr. No." width={'70'} dataFormat={this.indexFormatter} dataSort={true}>Sr. No.</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="IsVendor" hidden={true} dataFormat={this.checkIsVendorFormatter} dataAlign="center" dataSort={true}>Is Vendor</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantName" dataAlign="center" dataSort={true}>Plant Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>

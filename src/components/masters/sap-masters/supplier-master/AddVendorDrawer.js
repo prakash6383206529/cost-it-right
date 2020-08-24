@@ -11,7 +11,10 @@ import {
     createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType,
     getVendorTypesSelectList,
 } from '../../../../actions/master/Supplier';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList } from '../../../../actions/master/Comman';
+import {
+    fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList,
+    getAllCities, getCityByCountry,
+} from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -87,6 +90,15 @@ class AddVendorDrawer extends Component {
         return (isContent && isContent.Text) ? true : false;
     }
 
+    getAllCityData = () => {
+        const { country } = this.state;
+        if (country && country.label != 'India') {
+            this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+        } else {
+            this.props.fetchStateDataAPI(country.value, () => { })
+        }
+    }
+
     /**
     * @method countryHandler
     * @description Used to handle country
@@ -94,8 +106,7 @@ class AddVendorDrawer extends Component {
     countryHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
             this.setState({ country: newValue, state: [], city: [] }, () => {
-                const { country } = this.state;
-                this.props.fetchStateDataAPI(country.value, () => { })
+                this.getAllCityData()
             });
         } else {
             this.setState({ country: [], state: [], city: [] })
@@ -130,16 +141,13 @@ class AddVendorDrawer extends Component {
         }
     };
 
-    fuelToggler = () => {
-        this.setState({ isOpenFuel: true })
-    }
-
     vendorPlantToggler = () => {
         this.setState({ isOpenVendorPlant: true })
     }
 
     closeVendorDrawer = (e = '') => {
         this.setState({ isOpenVendorPlant: false }, () => {
+            this.getDetail()
             this.props.getVendorPlantSelectList(() => { })
         })
     }
@@ -275,9 +283,6 @@ class AddVendorDrawer extends Component {
         this.clearForm();
         this.props.getSupplierByIdAPI('', false, () => { })
     }
-
-
-
 
     /**
     * @method onSubmit
@@ -467,14 +472,14 @@ class AddVendorDrawer extends Component {
                                             required={true}
                                             customClassName={'withBorder '}
                                             className=" "
-                                            
+
                                         />
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col md="12">
-                                       <Row>
-                                           <Col md={9}>
+                                        <Row>
+                                            <Col md={9}>
                                                 <Field
                                                     label="Phone Number"
                                                     name={"PhoneNumber"}
@@ -487,9 +492,9 @@ class AddVendorDrawer extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col  md={3}>
+                                            <Col md={3}>
                                                 <Field
-                                                    label="Extension"
+                                                    label="Ext"
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={'Ext'}
@@ -499,7 +504,7 @@ class AddVendorDrawer extends Component {
                                                     maxLength={5}
                                                     customClassName={'withBorder'}
                                                 /></Col>
-                                          </Row>  
+                                        </Row>
                                     </Col>
                                     <Col md="6">
                                         <Field
@@ -515,7 +520,7 @@ class AddVendorDrawer extends Component {
                                             customClassName={'withBorder'}
                                         />
                                     </Col>
-                                
+
                                     <Col md="6">
                                         <Field
                                             name="CountryId"
@@ -549,24 +554,26 @@ class AddVendorDrawer extends Component {
                                                 disabled={this.state.isEditFlag ? true : false}
                                             />
                                         </Col>}
-                                
-                                    {(country.length == 0 || country.label == 'India') &&
-                                        <Col md="6">
-                                            <Field
-                                                name="CityId"
-                                                type="text"
-                                                label="City"
-                                                component={searchableSelect}
-                                                placeholder={'Select city'}
-                                                options={this.renderListing('city')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.cityHandler}
-                                                valueDescription={this.state.city}
-                                                disabled={this.state.isEditFlag ? true : false}
-                                            />
-                                        </Col>}
+                                </Row>
+                                <Row>
+                                    {/* {(country.length == 0 || country.label == 'India') && */}
+                                    <Col md="6">
+                                        <Field
+                                            name="CityId"
+                                            type="text"
+                                            label="City"
+                                            component={searchableSelect}
+                                            placeholder={'Select city'}
+                                            options={this.renderListing('city')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.cityHandler}
+                                            valueDescription={this.state.city}
+                                            disabled={this.state.isEditFlag ? true : false}
+                                        />
+                                    </Col>
+                                    {/* } */}
 
                                     <Col md="12">
                                         <Field
@@ -635,7 +642,7 @@ class AddVendorDrawer extends Component {
                                                 <Col md="2">
                                                     <div
                                                         onClick={this.vendorPlantToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square mt30 mr30 right'}>
                                                     </div>
                                                 </Col>}
                                         </>}
@@ -718,6 +725,8 @@ export default connect(mapStateToProps, {
     fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
+    getAllCities,
+    getCityByCountry,
     getVendorTypesSelectList,
     getVendorPlantSelectList,
 })(reduxForm({

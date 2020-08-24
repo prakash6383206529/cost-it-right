@@ -151,7 +151,7 @@ class AssemblyPartListing extends Component {
 	* @description Renders IsVendor
 	*/
     checkIsVendorFormatter = (cell, row, enumObject, rowIndex) => {
-        console.log('>>>>>>>>>>>>>>>>', cell, row)
+
         return (
             <>
 

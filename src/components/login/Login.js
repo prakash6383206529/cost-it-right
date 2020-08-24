@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { renderPasswordInputField, renderEmailInputField, renderCheckboxInputField, focusOnError } from "../layout/FormInputs";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
-import { loginUserAPI } from "../../actions";
+import { loginUserAPI, getMenuByUser, getLeftMenu, } from "../../actions";
 import { maxLength70, minLength5, maxLength25, required, email } from "../../helper/validation";
 import { MESSAGES } from "../../config/message";
 import "./Login.scss";
@@ -49,7 +49,15 @@ class Login extends Component {
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();
-        setTimeout(() => { window.location.replace("/"); }, 100)
+
+        setTimeout(() => {
+          this.props.getMenuByUser(userDetail.LoggedInUserId, () => {
+            const { menusData } = this.props;
+            reactLocalStorage.set('ModuleId', menusData[0].ModuleId);
+            this.props.getLeftMenu(menusData[0].ModuleId, userDetail.LoggedInUserId, (res) => { })
+          })
+          window.location.replace("/");
+        }, 500)
         // this.setState({
         //   isRedirect: true
         // })
@@ -76,52 +84,52 @@ class Login extends Component {
 
             <div className="row shadow-lg">
               <div className="col-md-5 form-section">
-            
-             <div className="text-center">
-              <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
-              </a>
-           </div>
-             <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.</h3>
-             <p>Welcome Back, Please login to your account</p>
-            <form
-              noValidate
-              className="form"
-              onSubmit={handleSubmit(this.onSubmit.bind(this))}
-            >
-              <div className="input-group mail">
-                <Field
-                  name="UserName"
-                  // label="UserName"
-                  component={renderEmailInputField}
-                  isDisabled={false}
-                  placeholder={"email@domain.coms"}
-                  validate={[required, email, minLength5, maxLength70]}
-                  required={true}
-                  maxLength={71}
-                />
-              </div>
-              <div className="input-group phone">
-                <Field
-                  name="Password"
-                  // label="Password"
-                  placeholder="Must have atleast 5 characters"
-                  component={renderPasswordInputField}
-                  validate={[required, minLength5, maxLength25]}
-                  required={true}
-                  maxLength={26}
-                />
-              </div>
-              
-              <div className="text-center ">
-                <input
-                  type="submit"
-                  disabled={isSubmitted ? true : false}
-                  value="Login"
-                  className="btn login-btn w-100 dark-pinkbtn"
-                />
-              </div>
-              <div className="form-group forgot-link d-flex pt-2 ">
-                {/* <div className="checkboxWrap ">
+
+                <div className="text-center">
+                  <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
+                  </a>
+                </div>
+                <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.</h3>
+                <p>Welcome Back, Please login to your account</p>
+                <form
+                  noValidate
+                  className="form"
+                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                >
+                  <div className="input-group mail">
+                    <Field
+                      name="UserName"
+                      // label="UserName"
+                      component={renderEmailInputField}
+                      isDisabled={false}
+                      placeholder={"email@domain.coms"}
+                      validate={[required, email, minLength5, maxLength70]}
+                      required={true}
+                      maxLength={71}
+                    />
+                  </div>
+                  <div className="input-group phone">
+                    <Field
+                      name="Password"
+                      // label="Password"
+                      placeholder="Must have atleast 5 characters"
+                      component={renderPasswordInputField}
+                      validate={[required, minLength5, maxLength25]}
+                      required={true}
+                      maxLength={26}
+                    />
+                  </div>
+
+                  <div className="text-center ">
+                    <input
+                      type="submit"
+                      disabled={isSubmitted ? true : false}
+                      value="Login"
+                      className="btn login-btn w-100 dark-pinkbtn"
+                    />
+                  </div>
+                  <div className="form-group forgot-link d-flex pt-2 ">
+                    {/* <div className="checkboxWrap ">
                           <label className="customs-checkbox">
                           Remember me
                             <input type="checkbox" />
@@ -159,6 +167,16 @@ const validate = values => {
 };
 
 /**
+ * @name mapStateToProps
+ * @desc map state containing organisation details from the api to props
+ * @return object{}
+ */
+function mapStateToProps({ auth }) {
+  const { menusData, leftMenuData } = auth
+  return { menusData, leftMenuData }
+}
+
+/**
  * @method connect
  * @description connect with redux
 * @param {function} mapStateToProps
@@ -170,6 +188,8 @@ export default reduxForm({
   onSubmitFail: errors => {
     focusOnError(errors);
   }
-})(connect(null,
-  { loginUserAPI }
-)(Login));
+})(connect(mapStateToProps, {
+  loginUserAPI,
+  getMenuByUser,
+  getLeftMenu,
+})(Login));
