@@ -283,3 +283,29 @@ export function customTokenHeader() {
     }
     return customHeader;
 }
+
+export function checkPermission(Data) {
+    let setAccessibleData = {
+        Add: false,
+        Edit: false,
+        Delete: false,
+        View: false,
+    }
+
+    Data && Data.map((item) => {
+        if (item.ActionName == 'Add' && item.IsChecked == true) {
+            setAccessibleData.Add = true;
+        }
+        if (item.ActionName == 'Edit' && item.IsChecked == true) {
+            setAccessibleData.Edit = true;
+        }
+        if (item.ActionName == 'Delete' && item.IsChecked == true) {
+            setAccessibleData.Delete = true;
+        }
+        if (item.ActionName == 'View' && item.IsChecked == true) {
+            setAccessibleData.View = true;
+        }
+    })
+
+    return setAccessibleData;
+}

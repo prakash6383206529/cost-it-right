@@ -6,11 +6,12 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength5, minLength6, maxLength25, maxLength11, maxLength12, required, email,
-  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18
+  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10
 } from "../../helper/validation";
 import {
   renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
-  searchableSelect
+  searchableSelect,
+  renderNumberInputField
 } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
@@ -309,7 +310,7 @@ class UserRegistration extends Component {
     this.props.getPermissionByUser(UserId, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
-        this.setState({ Modules: Data.Modules })
+        this.setState({ Modules: Data.Modules, oldModules: Data.Modules })
         this.child.getUpdatedData(Data.Modules)
       }
     })
@@ -543,6 +544,7 @@ class UserRegistration extends Component {
       role: [],
       city: [],
       Modules: [],
+      oldModules: [],
       IsShowAdditionalPermission: false,
       TechnologyLevelGrid: [],
     })
@@ -563,12 +565,6 @@ class UserRegistration extends Component {
   */
   confirmUpdateUser = (updatedData, RemoveCostingFlag) => {
 
-    const { reset, registerUserData } = this.props;
-    const { department, role, city, isEditFlag, Modules, oldModules,
-      TechnologyLevelGrid, oldTechnologyLevelGrid, UserId } = this.state;
-    const userDetails = reactLocalStorage.getObject("userDetail")
-
-    reset();
     updatedData.IsRemoveCosting = RemoveCostingFlag;
     this.props.updateUserAPI(updatedData, (res) => {
       if (res.data.Result) {
@@ -576,6 +572,7 @@ class UserRegistration extends Component {
       }
       this.cancel();
     })
+
   }
 
   formToggle = () => {
@@ -799,9 +796,9 @@ class UserRegistration extends Component {
                         placeholder={'Enter'}
                         component={renderText}
                         isDisabled={false}
-                        validate={[required, number, minLength7]}
+                        validate={[required, number, minLength10, maxLength12]}
                         required={true}
-                        maxLength={70}
+                        maxLength={12}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -813,16 +810,13 @@ class UserRegistration extends Component {
                             name={"PhoneNumber"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[number]}
+                            validate={[number, minLength10, maxLength12]}
                             component={renderText}
                             //required={true}
-                            maxLength={12}
+                            maxLength={10}
                             customClassName={'withBorder'}
                           />
                         </div>
-                        {/* <div className="dash phoneNumber col-md-1 input-withouticon">
-                                          {''}
-                                       </div> */}
                         <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
                           <Field
                             label="Extension"
@@ -832,7 +826,7 @@ class UserRegistration extends Component {
                             validate={[number]}
                             component={renderText}
                             //required={true}
-                            maxLength={5}
+                            maxLength={3}
                             customClassName={'withBorder w100'}
                           />
                         </div>
@@ -962,10 +956,10 @@ class UserRegistration extends Component {
                         name={"ZipCode"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required, number]}
+                        validate={[required, number, maxLength6]}
                         component={renderText}
                         required={true}
-                        maxLength={26}
+                        maxLength={6}
                         customClassName={'withBorder'}
                       />
                     </div>

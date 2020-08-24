@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
-import { getAllRoleAPI, deleteRoleAPI } from '../../../actions/auth/AuthActions';
+import { getAllRoleAPI, deleteRoleAPI, getLeftMenu } from '../../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
+import { loggedInUserId } from '../../../helper/auth';
+import { checkPermission } from '../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { ROLE } from '../../../config/constants';
 
 class RolesListing extends Component {
   constructor(props) {
@@ -16,7 +20,31 @@ class RolesListing extends Component {
       isEditFlag: false,
       RoleId: '',
       tableData: [],
+      AddAccessibility: false,
+      EditAccessibility: false,
+      DeleteAccessibility: false,
     }
+  }
+
+
+  componentWillMount() {
+    let ModuleId = reactLocalStorage.get('ModuleId');
+    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+      const { leftMenuData } = this.props;
+      if (leftMenuData != undefined) {
+        let Data = leftMenuData;
+        const accessData = Data && Data.find(el => el.PageName == ROLE)
+        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+        console.log('accessData: ', permmisionData);
+        if (permmisionData != undefined) {
+          this.setState({
+            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          })
+        }
+      }
+    })
   }
 
   componentDidMount() {
@@ -88,10 +116,11 @@ class RolesListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />
-        <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />
+        {EditAccessibility && <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />}
+        {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
       </>
     )
   }
@@ -105,7 +134,7 @@ class RolesListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, editIndex, PartId } = this.state;
+    const { isOpen, isEditFlag, editIndex, AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -118,7 +147,7 @@ class RolesListing extends Component {
 
           </Col>
           <Col md="4" className="search-user-block">
-            <div className="d-flex justify-content-end bd-highlight w100">
+            {AddAccessibility && <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 <button
                   type="button"
@@ -126,7 +155,7 @@ class RolesListing extends Component {
                   onClick={this.formToggle}>
                   <div className={'plus'}></div>ADD ROLE</button>
               </div>
-            </div>
+            </div>}
           </Col>
         </Row>
         <Row class="mt-2">
@@ -159,9 +188,9 @@ class RolesListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-  const { roleList, loading } = auth;
+  const { roleList, leftMenuData, loading } = auth;
 
-  return { roleList, loading };
+  return { roleList, leftMenuData, loading };
 }
 
 
@@ -169,5 +198,6 @@ export default connect(mapStateToProps,
   {
     getAllRoleAPI,
     deleteRoleAPI,
+    getLeftMenu,
   })(RolesListing);
 

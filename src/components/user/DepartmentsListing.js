@@ -3,14 +3,18 @@ import { connect } from 'react-redux';
 import {
   Container, Row, Col, Button, Table
 } from 'reactstrap';
-import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
+import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
+import { loggedInUserId } from '../../helper/auth';
+import { checkPermission } from '../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Department from './Department';
+import { DEPARTMENT } from '../../config/constants';
 
 class DepartmentsListing extends Component {
   constructor(props) {
@@ -19,7 +23,30 @@ class DepartmentsListing extends Component {
       isOpen: false,
       isEditFlag: false,
       tableData: [],
+      AddAccessibility: false,
+      EditAccessibility: false,
+      DeleteAccessibility: false,
     }
+  }
+
+  componentWillMount() {
+    let ModuleId = reactLocalStorage.get('ModuleId');
+    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+      const { leftMenuData } = this.props;
+      if (leftMenuData != undefined) {
+        let Data = leftMenuData;
+        const accessData = Data && Data.find(el => el.PageName == DEPARTMENT)
+        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+        if (permmisionData != undefined) {
+          this.setState({
+            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          })
+        }
+      }
+    })
   }
 
   componentDidMount() {
@@ -113,10 +140,11 @@ class DepartmentsListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />
-        <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />
+        {EditAccessibility && <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />}
+        {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
       </>
     )
   }
@@ -126,7 +154,7 @@ class DepartmentsListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, DepartmentId } = this.state;
+    const { isOpen, isEditFlag, DepartmentId, AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -135,15 +163,15 @@ class DepartmentsListing extends Component {
       <>
         {this.props.loading && <Loader />}
         <Row className="pt-30 mb-30">
-          <Col className="text-right">
+          {AddAccessibility && <Col className="text-right">
             <button
               type={'button'}
               className={'user-btn'}
               onClick={this.openModel}>
               <div className={'plus'}></div>{`ADD DEPARTMENT`}</button>
-          </Col>
+          </Col>}
         </Row>
-        
+
         <Row>
           <Col>
             <BootstrapTable
@@ -184,16 +212,15 @@ class DepartmentsListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-  const { departmentList, loading } = auth;
+  const { departmentList, leftMenuData, loading } = auth;
 
-  return { departmentList, loading };
+  return { departmentList, leftMenuData, loading };
 }
-
 
 export default connect(mapStateToProps,
   {
     getAllDepartmentAPI,
     deleteDepartmentAPI,
-
+    getLeftMenu,
   })(DepartmentsListing);
 

@@ -957,3 +957,6 @@ export const USERS = 'Users';
 
 //PAGE NAMES
 export const USER = 'User';
+export const ROLE = 'Role';
+export const DEPARTMENT = 'Department';
+export const LEVELS = 'Levels';
