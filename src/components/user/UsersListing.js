@@ -12,6 +12,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
+import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
@@ -37,10 +38,19 @@ class UsersListing extends Component {
 		}
 	}
 
+	componentWillMount() {
+		// const { leftMenuData } = this.props;
+		// console.log('Hiiiii', leftMenuData)
+		// this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+		// 	const { leftMenuData } = this.props;
+
+		// })
+	}
+
 	componentDidMount() {
 		this.getUsersListData('', '');
 
-		// Get department listing
+		//Get Department Listing
 		this.props.getAllDepartmentAPI((res) => {
 			if (res && res.data && res.data.DataList) {
 				const { departmentType } = this.state;
@@ -69,6 +79,12 @@ class UsersListing extends Component {
 			}
 		})
 		//this.props.onRef(this)
+	}
+
+	componentWillReceiveProps(prevProps) {
+		if (prevProps.leftMenuData != this.props.leftMenuData) {
+			console.log('leftMenuData', prevProps.leftMenuData)
+		}
 	}
 
 	// Get updated user list after any action performed.
@@ -471,9 +487,9 @@ class UsersListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { userDataList, roleList, departmentList, loading } = auth;
+	const { userDataList, roleList, departmentList, leftMenuData, loading } = auth;
 
-	return { userDataList, roleList, departmentList, loading };
+	return { userDataList, roleList, departmentList, leftMenuData, loading };
 }
 
 

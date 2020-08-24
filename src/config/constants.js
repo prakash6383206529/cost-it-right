@@ -954,3 +954,6 @@ export const COSTING = 'Costing';
 export const SIMULATION = 'Simulation';
 export const REPORTS_AND_ANALYTICS = 'Reports And Analytics';
 export const USERS = 'Users';
+
+//PAGE NAMES
+export const USER = 'User';

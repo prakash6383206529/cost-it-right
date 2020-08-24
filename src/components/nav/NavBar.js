@@ -9,8 +9,7 @@ import {
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, userDetails, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu,
-  getPermissionByUser,
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser,
 } from '../../actions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
