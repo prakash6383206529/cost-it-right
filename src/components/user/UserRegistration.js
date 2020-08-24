@@ -1233,7 +1233,7 @@ class UserRegistration extends Component {
                   {this.state.IsShowAdditionalPermission &&
                     <div className=" row form-group grant-user-grid">
                       <div className="col-md-12">
-                        <Table className="table table-bordered " size="sm" >
+                        <Table className="table table-bordered " striped={false} size="sm" >
                           <thead>
                             <tr>
                               <th>{`Module Name`}</th>
