@@ -319,7 +319,7 @@ class FuelListing extends Component {
                                             type="button"
                                             className={'user-btn mr5'}
                                             onClick={this.bulkToggle}>
-                                            <div className={'plus'}></div>Bulk Upload</button>
+                                            <div className={'plus'}></div></button>
                                         <button
                                             type="button"
                                             className={'user-btn'}

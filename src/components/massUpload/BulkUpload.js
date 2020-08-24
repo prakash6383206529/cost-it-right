@@ -250,7 +250,7 @@ class BulkUpload extends Component {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{isEditFlag ? '' : `${messageLabel} BULK UPLOAD`}</h3>
+                                        <h3>{isEditFlag ? '' : `${messageLabel} Bulk Upload`}</h3>
                                     </div>
                                     <div
                                         onClick={(e) => this.toggleDrawer(e)}
@@ -307,7 +307,7 @@ class BulkUpload extends Component {
                                     <button
                                         type="submit"
                                         className="submit-button mr5 save-btn" >
-                                        <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                        <div className={'check-icon'}><img src={require('../../assests/images/check.png')}></img>
                                         </div> {isEditFlag ? 'Update' : 'Save'}
                                     </button>
 
@@ -315,7 +315,7 @@ class BulkUpload extends Component {
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={this.cancel} >
-                                        <div className={'cross-icon'}><i class="fa fa-times" aria-hidden="true"></i></div> {'Cancel'}
+                                        <div className={'cross-icon'}><img src={require('../../assests/images/times.png')}></img></div> {'Cancel'}
                                     </button>
                                 </div>
                             </Row>

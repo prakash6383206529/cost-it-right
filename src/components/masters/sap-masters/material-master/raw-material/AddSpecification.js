@@ -327,7 +327,7 @@ class AddSpecification extends Component {
                                             />
                                         
                                             {isEditFlag ?
-                                                <button className="Edit mr5" type={'button'} onClick={() => this.rawMaterialToggler(specificationData.RawMaterialId)} />
+                                                <button className="Edit drawer-edit ml5" type={'button'} onClick={() => this.rawMaterialToggler(specificationData.RawMaterialId)} />
                                                 :
                                                 <div
                                                     onClick={() => this.rawMaterialToggler('')}
@@ -393,7 +393,7 @@ class AddSpecification extends Component {
                                             />
                                       
                                             {isEditFlag ?
-                                                <button className="Edit " type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
+                                                <button className="Edit drawer-edit" type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
                                                 :
                                                 (this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ?
                                                     <div className={'plus-icon-square blurPlus-icon-square right mt30'}>
@@ -437,7 +437,7 @@ class AddSpecification extends Component {
                                                 <button
                                                     type="submit"
                                                     className="submit-button mr5 save-btn" >
-                                                    <div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
+                                                    <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} ></img>
                                                     </div> {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>

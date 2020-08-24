@@ -100,7 +100,7 @@ class MaterialTypeDetail extends Component {
                                     this.props.rmTypeDetail.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td >{item.MaterialType}</td>
+                                                <td className="text-left">{item.MaterialType}</td>
                                                 <td>{item.Density}</td>
                                                 <td>{convertISOToUtcDate(item.CreatedDate)}</td>
                                                 <td>

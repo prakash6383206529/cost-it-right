@@ -370,7 +370,7 @@ class SpecificationListing extends Component {
                                 type="button"
                                 className={'user-btn mr5'}
                                 onClick={this.bulkToggle}>
-                                <div className={'upload'}></div>Bulk Upload</button>
+                                <div className={'upload'}></div>Bulk upload</button>
                             <button
                                 type={'button'}
                                 className={'user-btn'}
