@@ -255,7 +255,7 @@ class Role extends Component {
 											/>
 										</div>
 									</div>
-
+                                    <div class="role-footer">
 									<div className="text-right btn-blue-block">
 										<button
 											//disabled={pristine || submitting}
@@ -272,6 +272,7 @@ class Role extends Component {
 											</div>
 											{isEditFlag ? 'Update' : 'Save'}
 										</button>
+									</div>
 									</div>
 								</form>
 							</div>

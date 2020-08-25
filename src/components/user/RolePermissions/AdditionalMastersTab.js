@@ -262,7 +262,7 @@ class AdditionalMastersTab extends Component {
                 <div className="row form-group grant-user-grid">
                     <div className="col-md-12">
 
-                        <Table className="table table-striped" size="sm" >
+                        <Table className="table " size="sm" >
                             <thead>
                                 <tr>
                                     <th>{`Module`}</th>

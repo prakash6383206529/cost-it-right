@@ -662,7 +662,7 @@ button.add-btn {
 }
 
 .dashboard-top {
-  margin-top: 3rem;
+  margin-top: 0;
 }
 
 .nav-tabs .nav-item.show .nav-link,
@@ -1161,4 +1161,7 @@ button.user-btn.pull-right {
 {min-height: 32px !important;    height: 32px;}
 .drawer-edit{     margin-top: 31px;
   margin-left: 5px;
+}
+.role-footer{
+  margin-bottom: -45px;
 }

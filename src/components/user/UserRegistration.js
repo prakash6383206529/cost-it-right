@@ -1094,25 +1094,25 @@ class UserRegistration extends Component {
                         valueDescription={this.state.level}
                       />
                     </div>
-                    <div className="col-md-2 mt25">
+                    <div className="col-md-3 mt25 d-flex">
                       {this.state.isEditIndex ?
                         <>
                           <button
                             type="button"
-                            className={'btn btn-primary'}
+                            className={'add-button add-button-big'}
                             onClick={this.updateTechnologyLevel}
                           >Update</button>
 
                           <button
                             type="button"
-                            className={'btn btn-secondary'}
+                            className={'add-button add-button-big ml-2'}
                             onClick={this.resetTechnologyLevel}
                           >Cancel</button>
                         </>
                         :
                         <button
                           type="button"
-                          className={'add-button add-button-big'}
+                          className={'add-button add-button-big ml-2'}
                           onClick={this.setTechnologyLevel}
                         ><div className={'plus'}></div>ADD</button>}
                     </div>

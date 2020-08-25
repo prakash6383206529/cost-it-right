@@ -747,7 +747,7 @@ class AddOperation extends Component {
                                                 />
                                             </Col>
                                             <Col md="6">
-                                                <label>Upload Attachment ( upload up to 3 files )</label>
+                                                <label>Upload Files (upload up to 3 files)</label>
                                                 {this.state.files.length >= 3 ? '' :
                                                     <Dropzone
                                                         getUploadParams={this.getUploadParams}

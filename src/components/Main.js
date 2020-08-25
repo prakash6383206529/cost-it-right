@@ -127,7 +127,7 @@ class Main extends Component {
             </div>}
           <div className={isLogin ? 'blue-box' : ''}>
             {isLogin && !this.state.visibelPageNotFound && <Breadcrumb onRef={ref => (this.child = ref)} />}
-            <div className="main-section">
+            <div className={isLogin ? 'main-section"' : ''}>
               {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} breadCrumbTrail={this.breadCrumbTrail} />}
 
               <div className={isLogin ? 'content-page' : ''}>
