@@ -108,7 +108,7 @@ class UOMMaster extends Component {
         return (
             <>
                 <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
             </>
         )
     }
@@ -185,7 +185,7 @@ class UOMMaster extends Component {
                     </Col>
                 </Row>
 
-               
+
                 <Row>
                     <Col>
                         <BootstrapTable

@@ -384,6 +384,7 @@ class RMDomesticListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
+            this.getInitialRange()
             this.getDataList(null, null, null)
         })
     }

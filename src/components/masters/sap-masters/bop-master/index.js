@@ -32,7 +32,7 @@ class BOPMaster extends Component {
     render() {
         const { } = this.state;
         return (
-            <Container>
+            <>
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
@@ -72,7 +72,7 @@ class BOPMaster extends Component {
                     </Col>
                 </Row>
 
-            </Container >
+            </ >
         );
     }
 }

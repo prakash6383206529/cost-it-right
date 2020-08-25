@@ -27,11 +27,15 @@ class LevelTechnologyListing extends Component {
 
 	getLevelsListData = () => {
 		this.props.getAllLevelMappingAPI(res => {
-			if (res && res.data && res.data.DataList) {
+			if (res.status == 204 && res.data == '') {
+				this.setState({ tableData: [], })
+			} else if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
 				this.setState({
 					tableData: Data,
 				})
+			} else {
+
 			}
 		});
 	}
@@ -84,10 +88,11 @@ class LevelTechnologyListing extends Component {
 	* @description Renders buttons
 	*/
 	buttonFormatter = (cell, row, enumObject, rowIndex) => {
+		const { EditAccessibility, DeleteAccessibility } = this.props;
 		return (
 			<>
-				<button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />
-				<button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />
+				{EditAccessibility && <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />}
+				{DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
 			</>
 		)
 	}
@@ -103,6 +108,7 @@ class LevelTechnologyListing extends Component {
 	*/
 	render() {
 		const { isEditFlag } = this.state;
+		const { AddAccessibility } = this.props;
 		const options = {
 			//clearSearch: true,
 			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -116,11 +122,12 @@ class LevelTechnologyListing extends Component {
 						<h2 className="manage-level-heading">{`Level Mapping`}</h2>
 					</Col>
 					<Col md="6" className="text-right">
-						<button
+						{AddAccessibility && <button
 							type="button"
 							className={'user-btn'}
 							onClick={this.props.mappingToggler}>
-							<div className={'plus'}></div>{'Add Mapping'}</button>
+							<div className={'plus'}></div>
+							{'Add Mapping'}</button>}
 					</Col>
 
 					<Col className="level-table">

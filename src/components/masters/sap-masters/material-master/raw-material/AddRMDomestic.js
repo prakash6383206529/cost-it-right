@@ -8,8 +8,9 @@ import {
     renderMultiSelectField, renderTextAreaField, focusOnError,
 } from "../../../../layout/FormInputs";
 import {
-    fetchMaterialComboAPI, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
+    getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
     getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
+    fetchSupplierCityDataAPI,
 } from '../../../../../actions/master/Comman';
 import {
     createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild,
@@ -101,7 +102,8 @@ class AddRMDomestic extends Component {
         const { data } = this.props;
         this.getDetails(data);
         this.props.change('NetLandedCost', 0)
-        this.props.fetchMaterialComboAPI(res => { });
+        this.props.getRawMaterialCategory(res => { });
+        this.props.fetchSupplierCityDataAPI(res => { });
         this.props.getVendorListByVendorType(false, () => { })
 
     }
@@ -190,12 +192,12 @@ class AddRMDomestic extends Component {
                 const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
                 this.setState({ VendorCode: result })
                 this.props.getPlantBySupplier(vendorName.value, () => { })
-                this.props.getCityBySupplier(vendorName.value, () => { })
+                //this.props.getCityBySupplier(vendorName.value, () => { })
             });
         } else {
             this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
             this.props.getPlantBySupplier('', () => { })
-            this.props.getCityBySupplier(0, () => { })
+            //this.props.getCityBySupplier(0, () => { })
         }
     };
 
@@ -293,7 +295,7 @@ class AddRMDomestic extends Component {
                     this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => { })
                     this.props.fetchSpecificationDataAPI(Data.RMGrade, res => { });
                     this.props.getPlantBySupplier(Data.Vendor, () => { })
-                    this.props.getCityBySupplier(Data.Vendor, () => { })
+                    //this.props.getCityBySupplier(Data.Vendor, () => { })
 
                     setTimeout(() => {
                         const { gradeSelectList, rmSpecification, cityList, categoryList,
@@ -323,7 +325,7 @@ class AddRMDomestic extends Component {
                             return vendorPlantArray;
                         })
 
-                        const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
+                        //const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
                         const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
                         const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value == Data.UOM)
 
@@ -340,7 +342,7 @@ class AddRMDomestic extends Component {
                             vendorName: vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
                             //VendorCode: Data.VendorCode,
                             selectedVendorPlants: vendorPlantArray,
-                            vendorLocation: vendorLocationObj != undefined ? { label: vendorLocationObj.Text, value: vendorLocationObj.Value } : [],
+                            //vendorLocation: vendorLocationObj != undefined ? { label: vendorLocationObj.Text, value: vendorLocationObj.Value } : [],
                             HasDifferentSource: Data.HasDifferentSource,
                             sourceLocation: sourceLocationObj != undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                             UOM: UOMObj != undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
@@ -748,7 +750,7 @@ class AddRMDomestic extends Component {
                 RMSpec: RMSpec.value,
                 Category: Category.value,
                 Vendor: vendorName.value,
-                VendorLocation: vendorLocation.value,
+                //VendorLocation: vendorLocation.value,
                 HasDifferentSource: HasDifferentSource,
                 Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
                 SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
@@ -1018,7 +1020,7 @@ class AddRMDomestic extends Component {
                                                         disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>}
-                                            <Col md="3">
+                                            {/* <Col md="3">
                                                 <Field
                                                     name="DestinationSupplierCityId"
                                                     type="text"
@@ -1033,7 +1035,7 @@ class AddRMDomestic extends Component {
                                                     valueDescription={this.state.vendorLocation}
                                                     disabled={isEditFlag ? true : false}
                                                 />
-                                            </Col>
+                                            </Col> */}
 
                                         </Row>
 
@@ -1081,7 +1083,7 @@ class AddRMDomestic extends Component {
                                                         type="text"
                                                         label="Source Location"
                                                         component={searchableSelect}
-                                                        placeholder={'--- Plant ---'}
+                                                        placeholder={'--- Location ---'}
                                                         options={this.renderListing('SourceLocation')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                         validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
@@ -1382,7 +1384,8 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     createRMDomestic,
-    fetchMaterialComboAPI,
+    getRawMaterialCategory,
+    fetchSupplierCityDataAPI,
     fetchGradeDataAPI,
     fetchSpecificationDataAPI,
     getRawMaterialDetailsAPI,

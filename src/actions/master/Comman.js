@@ -207,8 +207,6 @@ export function fetchCityDataAPI(stateId, callback) {
                         payload: response.data.SelectList,
                     });
                     callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
                 dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -1329,6 +1327,79 @@ export function getVendorPlantSelectList(callback) {
             }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getAllCities
+ * @description Used to GET ALL CITIES LIST
+ */
+export function getAllCities(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllCities}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CITY_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getCityByCountry
+ * @description Used to GET ALL CITIES BY COUNTRY
+ */
+export function getCityByCountry(CountryId, StateId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCityByCountry}/${CountryId}/${StateId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CITY_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getRawMaterialCategory
+ * @description Used to GET ALL RM CATEGORY LIST
+ */
+export function getRawMaterialCategory(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRawMaterialCategory}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_CATEGORY_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+            callback(error);
             apiErrors(error);
         });
     };

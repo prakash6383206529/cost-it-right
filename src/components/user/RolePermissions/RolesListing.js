@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  Container, Row, Col, Button, Table
-} from 'reactstrap';
-import { getAllRoleAPI, deleteRoleAPI } from '../../actions/auth/AuthActions';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { getAllRoleAPI, deleteRoleAPI, getLeftMenu } from '../../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../config/message';
-import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
-import NoContentFound from '../common/NoContentFound';
+import { MESSAGES } from '../../../config/message';
+import { Loader } from '../../common/Loader';
+import { CONSTANT } from '../../../helper/AllConastant';
+import NoContentFound from '../../common/NoContentFound';
+import { loggedInUserId } from '../../../helper/auth';
+import { checkPermission } from '../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { ROLE } from '../../../config/constants';
 
 class RolesListing extends Component {
   constructor(props) {
@@ -18,12 +20,36 @@ class RolesListing extends Component {
       isEditFlag: false,
       RoleId: '',
       tableData: [],
+      AddAccessibility: false,
+      EditAccessibility: false,
+      DeleteAccessibility: false,
     }
+  }
+
+
+  componentWillMount() {
+    let ModuleId = reactLocalStorage.get('ModuleId');
+    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+      const { leftMenuData } = this.props;
+      if (leftMenuData != undefined) {
+        let Data = leftMenuData;
+        const accessData = Data && Data.find(el => el.PageName == ROLE)
+        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+        console.log('accessData: ', permmisionData);
+        if (permmisionData != undefined) {
+          this.setState({
+            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          })
+        }
+      }
+    })
   }
 
   componentDidMount() {
     this.getRolesListData()
-    this.props.onRef(this)
+    //this.props.onRef(this)
   }
 
   getRolesListData = () => {
@@ -54,7 +80,8 @@ class RolesListing extends Component {
       isEditFlag: true,
       RoleId: Id,
     }
-    this.props.getRoleDetail(requestData)
+    //this.props.getRoleDetail(requestData)
+    this.props.getDetail(requestData)
   }
 
   /**
@@ -89,12 +116,17 @@ class RolesListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />
-        <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />
+        {EditAccessibility && <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />}
+        {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
       </>
     )
+  }
+
+  formToggle = () => {
+    this.props.formToggle()
   }
 
   /**
@@ -102,7 +134,7 @@ class RolesListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, editIndex, PartId } = this.state;
+    const { isOpen, isEditFlag, editIndex, AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -110,6 +142,22 @@ class RolesListing extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
+        <Row className="pt-30">
+          <Col md="8" className="filter-block">
+
+          </Col>
+          <Col md="4" className="search-user-block">
+            {AddAccessibility && <div className="d-flex justify-content-end bd-highlight w100">
+              <div>
+                <button
+                  type="button"
+                  className={'user-btn'}
+                  onClick={this.formToggle}>
+                  <div className={'plus'}></div>ADD ROLE</button>
+              </div>
+            </div>}
+          </Col>
+        </Row>
         <Row class="mt-2">
           <Col>
             <BootstrapTable
@@ -118,7 +166,7 @@ class RolesListing extends Component {
               bordered={false}
               hover={true}
               options={options}
-              search
+              //search
               ignoreSinglePage
               ref={'table'}
               trClassName={'userlisting-row'}
@@ -129,34 +177,6 @@ class RolesListing extends Component {
             </BootstrapTable>
           </Col>
         </Row>
-        {/* <Row>
-                    <Col>
-                        <Table className="table table-striped" size="sm" bordered>
-                            {this.props.roleList && this.props.roleList.length > 0 &&
-                                <thead>
-                                    <tr>
-                                        <th>{`Role`}</th>
-                                        <th>{''}</th>
-                                    </tr>
-                                </thead>}
-                            <tbody >
-                                {this.props.roleList && this.props.roleList.length > 0 &&
-                                    this.props.roleList.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td >{item.RoleName}</td>
-                                                <td>
-                                                    <Button className="btn btn-secondary" onClick={() => this.editItemDetails(index, item.RoleId)}><i className="fas fa-pencil-alt"></i></Button>
-                                                    <Button className="btn btn-danger" onClick={() => this.deleteItem(index, item.RoleId)}><i className="far fa-trash-alt"></i></Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                {this.props.roleList === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row> */}
       </ >
     );
   }
@@ -168,9 +188,9 @@ class RolesListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-  const { roleList, loading } = auth;
+  const { roleList, leftMenuData, loading } = auth;
 
-  return { roleList, loading };
+  return { roleList, leftMenuData, loading };
 }
 
 
@@ -178,5 +198,6 @@ export default connect(mapStateToProps,
   {
     getAllRoleAPI,
     deleteRoleAPI,
+    getLeftMenu,
   })(RolesListing);
 

@@ -1006,7 +1006,6 @@ export function fileUploadRMDomestic(data, callback) {
         };
         const request = axios.post(API.fileUploadRMDomestic, data, headers);
         request.then((response) => {
-            //console.log('>>>>>>>>>>>>>>>>>', response)
             if (response && response.status == 200) {
                 callback(response);
             }
@@ -1113,7 +1112,6 @@ export function fileUpdateRMDomestic(data, callback) {
         };
         const request = axios.put(API.fileUpdateRMDomestic, data, headers);
         request.then((response) => {
-            //console.log('>>>>>>>>>>>>>>>>>', response)
             if (response && response.status == 200) {
                 callback(response);
             }

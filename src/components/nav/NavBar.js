@@ -1,14 +1,18 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import {
   Collapse, Navbar, NavbarToggler, Nav, NavItem, NavLink, Dropdown, DropdownToggle,
   DropdownItem, DropdownMenu
 } from "reactstrap";
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, userDetails, loggedInUserId } from '../../helper/auth';
-import { logoutUserAPI, getMenuByUser, getModuleSelectList } from '../../actions';
+import {
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser,
+} from '../../actions';
 import "./NavBar.scss";
+import { Loader } from "../common/Loader";
 
 class SideBar extends Component {
   constructor(props) {
@@ -18,7 +22,19 @@ class SideBar extends Component {
       dropdownOpen: false,
       isOpen: false,
       isRedirect: false,
+      isLoader: false,
     };
+  }
+
+  componentWillMount() {
+    const loginUserId = loggedInUserId();
+    this.props.getModuleSelectList(() => { })
+    if (loginUserId != null) {
+      this.props.getMenuByUser(loginUserId, () => {
+        const { menusData } = this.props;
+        reactLocalStorage.set('ModuleId', menusData[0].ModuleId);
+      })
+    }
   }
 
   /**
@@ -26,11 +42,11 @@ class SideBar extends Component {
   * @description used to called after mounting component
   */
   componentDidMount() {
-    const loginUserId = loggedInUserId();
-    this.props.getModuleSelectList(() => { })
-    if (loginUserId != null) {
-      this.props.getMenuByUser(loginUserId, () => { })
-    }
+    // const loginUserId = loggedInUserId();
+    // this.props.getModuleSelectList(() => { })
+    // if (loginUserId != null) {
+    //   this.props.getMenuByUser(loginUserId, () => { })
+    // }
   }
 
   /**
@@ -87,27 +103,46 @@ class SideBar extends Component {
   */
   renderMenus = (module) => {
     switch (module) {
-      case 'Dashboard':
+      case 'Dashboard And Audit':
         return this.renderDashboard(module);
-      case 'MassUpload':
-        return this.renderMassUpload(module);
       case 'Master':
         return this.renderMaster(module);
-      case 'Report And Analytics':
-        return this.renderReportAnalytics(module);
-      case 'Technology':
-        return this.renderTechnology(module);
+      case 'Additional Masters':
+        return this.renderAdditionalMaster(module);
+      case 'Costing':
+        return this.renderCosting(module);
       case 'Simulation':
         return this.renderSimulation(module);
+      case 'Reports And Analytics':
+        return this.renderReportAnalytics(module);
       case 'Users':
         return this.renderUser(module);
-      // case 'Privilege Permission':
-      //   return this.renderPrivilege(module);
-      case 'AuditLog':
-        return this.renderAuditLog(module);
       default:
         return null;
     }
+  }
+
+  /**
+  * @method setLeftMenu
+  * @description Used to set left menu and Redirect to first menu.
+  */
+  setLeftMenu = (ModuleId) => {
+    reactLocalStorage.set('ModuleId', ModuleId);
+    //this.setState({ isLoader: true })
+    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+      const { location, leftMenuData } = this.props;
+      if (location && location.state) {
+        const PageName = location.state.PageName;
+        const PageURL = location.state.PageURL;
+        this.setState({ activeURL: location.pathname })
+        this.props.breadCrumbTrail(PageName, PageURL, location.pathname)
+      }
+      // if (leftMenuData && leftMenuData != undefined) {
+      //   const NavigationURL = leftMenuData[0].NavigationURL;
+      //   this.props.history.push(NavigationURL);
+      //   this.setState({ isLoader: false })
+      // }
+    })
   }
 
   /**
@@ -120,10 +155,17 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (
-            <a className="nav-link active" href="/">
+            <Link
+              className="nav-link"
+              onClick={() => this.setLeftMenu(el.ModuleId)}
+              to={{
+                pathname: "/",
+                state: { ModuleId: el.ModuleId, PageName: 'Dashboard', PageURL: '/' }
+              }}
+            >
               <img className="" src={require('../../assests/images/homeicon.svg')} alt='' />
               <span>{module}</span>
-            </a>
+            </Link>
           )
         }
         return null;
@@ -132,37 +174,58 @@ class SideBar extends Component {
   }
 
   /**
-  * @method renderMassUpload
-  * @description Render mass upload menu.
-  */
-  // renderMassUpload = () => {
-  //   return (
-  //     <li className="nav-item dropdown">
-  //       <a className="nav-link " href="/mass-upload" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mass Upload</a>
-  //     </li>
-  //   )
-  // }
-
-  /**
   * @method renderMaster
   * @description Render master menu.
   */
   renderMaster = (module) => {
-
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
-          return (<>
-            <a className="nav-link" href="/plant-master">
-              <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
-            </a>
-            <a className="nav-link additional-masters" href="/operation-master">
-              <img className="" src={require('../../assests/images/list-add.png')} alt='List' /><span>Additional Masters</span>
-            </a>
-            {/* <a className="dropdown-item" href="/material-master">Raw Material Detail Master</a> */}
-            {/* <a className="dropdown-item" href="/PartMasterOld">Part</a> */}
-          </>)
+          return (
+            <>
+              <Link
+                className="nav-link"
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: '/raw-material-master',
+                  state: { ModuleId: el.ModuleId, PageName: 'Masters', PageURL: '/raw-material-master' }
+                }}
+              >
+                <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
+              </Link>
+            </>
+          )
+        }
+        return null;
+      })
+    )
+  }
+
+  /**
+  * @method renderAdditionalMaster
+  * @description Render Addtional master menu.
+  */
+  renderAdditionalMaster = (module) => {
+    const { menusData } = this.props;
+    return (
+      menusData && menusData.map((el, i) => {
+        if (el.ModuleName == module) {
+          return (
+            <>
+              <Link
+                className="nav-link additional-masters"
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: "/reason-master",
+                  state: { ModuleId: el.ModuleId, PageName: 'Additional Masters', PageURL: '/reason-master' }
+                }}
+              >
+                <img className="" src={require('../../assests/images/list-add.png')} alt='List' />
+                <span>Additional Masters</span>
+              </Link>
+            </>
+          )
         }
         return null;
       })
@@ -180,10 +243,17 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (
-            <a className="nav-link" href="/report-analytics">
+            <Link
+              className="nav-link"
+              onClick={() => this.setLeftMenu(el.ModuleId)}
+              to={{
+                pathname: "/report-analytics",
+                state: { ModuleId: el.ModuleId, PageName: 'Reports & Analytics', PageURL: '/report-analytics' }
+              }}
+            >
               <img className="" src={require('../../assests/images/chart.svg')} alt='chart' />
               <span>Report</span>
-            </a>
+            </Link>
           )
         }
         return null;
@@ -192,19 +262,26 @@ class SideBar extends Component {
   }
 
   /**
-  * @method renderTechnology
-  * @description Render Technology menu.
+  * @method renderCosting
+  * @description Render Costing menu.
   */
-  renderTechnology = (module) => {
+  renderCosting = (module) => {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (
-            <a className="nav-link" href="/costing">
+            <Link
+              className="nav-link"
+              onClick={() => this.setLeftMenu(el.ModuleId)}
+              to={{
+                pathname: "/costing",
+                state: { ModuleId: el.ModuleId, PageName: 'Technology', PageURL: '/costing' }
+              }}
+            >
               <img className="" src={require('../../assests/images/html.svg')} alt='html' />
               <span>Costing</span>
-            </a>
+            </Link>
           )
         }
         return null;
@@ -222,10 +299,17 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (
-            <a className="nav-link" href="/simulation">
+            <Link
+              className="nav-link"
+              onClick={() => this.setLeftMenu(el.ModuleId)}
+              to={{
+                pathname: "/simulation",
+                state: { ModuleId: el.ModuleId, PageName: 'Simulation', PageURL: '/simulation' }
+              }}
+            >
               <img className="" src={require('../../assests/images/imac.svg')} alt='imac' />
               <span>Simulation</span>
-            </a>
+            </Link>
           )
         }
         return null;
@@ -243,51 +327,17 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName == module) {
           return (
-            <a className="nav-link" href="/user">
+            <Link
+              className="nav-link"
+              onClick={() => this.setLeftMenu(el.ModuleId)}
+              to={{
+                pathname: "/users",
+                state: { ModuleId: el.ModuleId, PageName: 'Users', PageURL: '/users' }
+              }}
+            >
               <img className="" src={require('../../assests/images/men.svg')} alt='men' />
               <span>Users</span>
-            </a>
-          )
-        }
-        return null;
-      })
-    )
-  }
-
-  /**
-  * @method renderPrivilege
-  * @description Render User menu.
-  */
-  renderPrivilege = (module) => {
-    const { menusData } = this.props;
-    return (
-      menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
-          return (
-            <li className="nav-item dropdown">
-              <a className="nav-link " href="/privilege" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Privilege</a>
-            </li>
-          )
-        }
-        return null;
-      })
-    )
-  }
-
-  /**
-  * @method renderAuditLog
-  * @description Render User menu.
-  */
-  renderAuditLog = (module) => {
-    const { menusData } = this.props;
-    return (
-      menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
-          return (
-            <a className="nav-link" href="/auditlog">
-              <img className="" src={require('../../assests/images/men.svg')} alt='men' />
-              <span>Audit Log</span>
-            </a>
+            </Link>
           )
         }
         return null;
@@ -296,10 +346,12 @@ class SideBar extends Component {
   }
 
   render() {
-    const { userData, menusData, moduleSelectList } = this.props;
+    const { userData, menusData, moduleSelectList, loading } = this.props;
+    const { isLoader } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
       <nav>
+        {isLoader && <Loader />}
         <div>
           <div className="flex-conatiner sign-social ">
             <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
@@ -410,8 +462,8 @@ class SideBar extends Component {
  * @return object{}
  */
 function mapStateToProps({ auth }) {
-  const { userData, menusData, moduleSelectList } = auth
-  return { userData, menusData, moduleSelectList }
+  const { loading, userData, leftMenuData, menusData, moduleSelectList, } = auth
+  return { loading, userData, leftMenuData, menusData, moduleSelectList }
 }
 
 /**
@@ -425,5 +477,7 @@ export default connect(
   logoutUserAPI,
   getMenuByUser,
   getModuleSelectList,
+  getLeftMenu,
+  getPermissionByUser,
 }
 )(SideBar);

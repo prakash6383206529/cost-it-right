@@ -273,3 +273,39 @@ export function getFileExtention(url) {
     }
     return ext.toUpperCase() + ' ';
 }
+
+export function customTokenHeader() {
+    const userObj = reactLocalStorage.getObject('userResponse');
+    const customHeader = {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data; boundary=6ff46e0b6b5148d984f148b6542e5a5d',
+        'Authorization': `bearer ${userObj.token}`
+    }
+    return customHeader;
+}
+
+export function checkPermission(Data) {
+    let setAccessibleData = {
+        Add: false,
+        Edit: false,
+        Delete: false,
+        View: false,
+    }
+
+    Data && Data.map((item) => {
+        if (item.ActionName == 'Add' && item.IsChecked == true) {
+            setAccessibleData.Add = true;
+        }
+        if (item.ActionName == 'Edit' && item.IsChecked == true) {
+            setAccessibleData.Edit = true;
+        }
+        if (item.ActionName == 'Delete' && item.IsChecked == true) {
+            setAccessibleData.Delete = true;
+        }
+        if (item.ActionName == 'View' && item.IsChecked == true) {
+            setAccessibleData.View = true;
+        }
+    })
+
+    return setAccessibleData;
+}

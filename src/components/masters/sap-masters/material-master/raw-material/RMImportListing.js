@@ -104,9 +104,9 @@ class RMImportListing extends Component {
                     maxRange: DynamicData.MaxRange,
                 })
             } else if (res && res.response && res.response.status == 412) {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], maxRange: 0, })
             } else {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], maxRange: 0, })
             }
         })
     }
@@ -378,6 +378,7 @@ class RMImportListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
+            this.getInitialRange()
             this.getDataList(null, null, null)
         })
     }

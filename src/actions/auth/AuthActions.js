@@ -34,6 +34,7 @@ import {
     GET_PAGES_SELECTLIST_SUCCESS,
     GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS,
+    GET_LEFT_MENU_BY_MODULE_ID_AND_USER,
     GET_LEVEL_MAPPING_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
@@ -447,9 +448,10 @@ export function updateUserTechnologyLevelForCosting(requestData, callback) {
             });
     };
 }
+
 /**
  * @method addRoleAPI
- * @description add Role API 
+ * @description ADD ROLE API
  */
 export function addRoleAPI(requestData, callback) {
     return (dispatch) => {
@@ -1043,7 +1045,7 @@ export function getRolePermissionByUser(UserId, callback) {
  */
 export function getPermissionByUser(UserId, callback) {
     return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
+        dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getPermissionByUser}/${UserId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
@@ -1065,6 +1067,26 @@ export function getModuleActionInit(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getModuleActionInit}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getModuleActionInitNew
+ * @description get Roles permission by user
+ */
+export function getModuleActionInitNew(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getModuleActionInitNew}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1259,6 +1281,28 @@ export function getMenuByUser(UserId, callback) {
     };
 }
 
+
+/**
+ * @method getLeftMenu
+ * @description GET LEFT MENU BY MODULEID AND USER
+ */
+export function getLeftMenu(ModuleId, UserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getLeftMenu}/${ModuleId}/${UserId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_LEFT_MENU_BY_MODULE_ID_AND_USER,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+        });
+    };
+}
 
 
 // /**
