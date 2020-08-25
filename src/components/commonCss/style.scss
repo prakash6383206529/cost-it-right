@@ -1024,7 +1024,7 @@ button.add-btn {
     min-height: 48px;
   }
   .dzu-inputLabelWithFiles, .dzu-inputLabel{
-    width: 50%;
+    width: 100%;
     padding: 0;
     border: 1px dashed #4a75ba;
     height: 120px;
@@ -1033,6 +1033,9 @@ button.add-btn {
     border-radius: 4px;
     position: absolute;
   }
+}
+.attachment-wrapper {
+  margin-top: 39px;
 }
 .bluefooter-butn {
   background-color: #E0E9F5;

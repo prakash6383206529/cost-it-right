@@ -273,9 +273,9 @@ a:hover {
   background: transparent url("../../assests/images/Path 15286.svg") 0% 0% no-repeat padding-box;
 }
 .upload {
-  width: 12px;
+  width: 14px;
   height: 14px;
-  background: transparent url("../../assests/images/upload-icon.svg") 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/upload.png") 0% 0% no-repeat padding-box;
 }
 
 .plus,
@@ -1851,4 +1851,11 @@ body {
 }
 .react-bs-table-container .react-bs-table-pagination span .btn-secondary{
   top:0
+}
+.attachment.images {
+  border-bottom: 1px solid #e6e3e3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
 }

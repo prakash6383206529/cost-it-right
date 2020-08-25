@@ -1215,7 +1215,7 @@ class AddRMDomestic extends Component {
                                                     rows="6"
                                                 />
                                             </Col>
-                                            <Col md="6">
+                                            <Col md="3">
                                                 <label>Upload Attachment ( upload up to 3 files )</label>
                                                 {this.state.files.length >= 3 ? '' :
                                                     <Dropzone
@@ -1234,6 +1234,8 @@ class AddRMDomestic extends Component {
                                                         }}
                                                         classNames="draper-drop"
                                                     />}
+                                                    </Col>
+                                                    <Col md="3">
                                                 <div className={'attachment-wrapper'}>
                                                     {
                                                         this.state.files && this.state.files.map(f => {
@@ -1248,9 +1250,8 @@ class AddRMDomestic extends Component {
                                                                     {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => this.deleteFile(f.FileId, f.FileName)}>X</button>
+                                                                     
+                                                                        <img className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../../assests/images/red-cross.png')}></img>
                                                                 </div>
                                                             )
                                                         })
