@@ -197,10 +197,11 @@ class SpecificationListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -297,7 +298,7 @@ class SpecificationListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
-        const { handleSubmit } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
 
         const options = {
             clearSearch: true,
@@ -366,16 +367,16 @@ class SpecificationListing extends Component {
                             </div>
                         </Col>
                         <Col md={4} className="text-right">
-                            <button
+                            {BulkUploadAccessibility && <button
                                 type="button"
                                 className={'user-btn mr5'}
                                 onClick={this.bulkToggle}>
-                                <div className={'upload'}></div>Bulk upload</button>
-                            <button
+                                <div className={'upload'}></div>Bulk upload</button>}
+                            {AddAccessibility && <button
                                 type={'button'}
                                 className={'user-btn'}
                                 onClick={this.openModel}>
-                                <div className={'plus'}></div>{`ADD`}</button>
+                                <div className={'plus'}></div>{`ADD`}</button>}
                         </Col>
                     </Row>
                 </form>

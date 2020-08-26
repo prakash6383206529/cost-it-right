@@ -35,7 +35,7 @@ class RolesListing extends Component {
         let Data = leftMenuData;
         const accessData = Data && Data.find(el => el.PageName == ROLE)
         const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-        console.log('accessData: ', permmisionData);
+
         if (permmisionData != undefined) {
           this.setState({
             AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,

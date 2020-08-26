@@ -81,6 +81,17 @@ class ViewUserDetails extends Component {
     return actionSelectList && actionSelectList.map((el, i) => {
       return actions && actions.map((item, index) => {
         if (el.Text != item.ActionName || item.IsChecked == false) return false;
+        this.renderSecondLevelAction(item.Actions, index)
+      })
+    })
+  }
+
+  renderSecondLevelAction = (actions, parentIndex) => {
+    const { actionSelectList } = this.props;
+
+    return actionSelectList && actionSelectList.map((el, i) => {
+      return actions && actions.map((item, index) => {
+        if (el.Text != item.ActionName || item.IsChecked == false) return false;
         return (
           <td>
             <div className={`${item.ActionName}-icon`}>
@@ -231,13 +242,14 @@ class ViewUserDetails extends Component {
                         customClass={'role-department-details'} />
                     </div>
                     <div className={'right-details'}>
-                      {`Executive (Administration)`}
-                      <div
+                      {`${registerUserData ? registerUserData.RoleName : ''} (${registerUserData ? registerUserData.DepartmentName : ''})`}
+                      {/* <div
                         onClick={this.permissionToggle}
-                        className={`${isPermissionOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></div>
+                        className={`${isPermissionOpen ? 'minus-icon' : 'plus-icon'} pull-right`}>
+                      </div> */}
                     </div>
                   </Col>
-                  {isPermissionOpen &&
+                  {/* {isPermissionOpen &&
                     <Col md="12">
                       <Table className="table table-bordered table table-sm role-depatment" size="sm" >
                         <thead>
@@ -255,7 +267,7 @@ class ViewUserDetails extends Component {
 
                                 <td colSpan="6" className={'Module-Name'} >{item.ModuleName}</td>
 
-                                {this.renderAction(item.Actions, index)}
+                                {this.renderAction(item.Pages, index)}
                               </tr>
                             )
                           })}
@@ -263,7 +275,7 @@ class ViewUserDetails extends Component {
 
                         </tbody>
                       </Table>
-                    </Col>}
+                    </Col>} */}
 
                 </Row>
 

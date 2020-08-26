@@ -10,8 +10,7 @@ import {
 } from "../../helper/validation";
 import {
   renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
-  searchableSelect,
-  renderNumberInputField
+  searchableSelect, renderNumberInputField
 } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
@@ -23,7 +22,6 @@ import { getAllCities } from "../../actions/master/Comman";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { loggedInUserId } from "../../helper/auth";
-import UsersListing from "./UsersListing";
 import { Table, Button } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
@@ -32,7 +30,6 @@ import Switch from "react-switch";
 import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
-
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -258,7 +255,7 @@ class UserRegistration extends Component {
   */
   getUserDetail = (data) => {
     if (data && data.isEditFlag) {
-      console.log('updated 111')
+      //console.log('updated 111')
       this.setState({
         isLoader: true,
         isEditFlag: false,
@@ -273,7 +270,7 @@ class UserRegistration extends Component {
 
       this.props.getUserDataAPI(data.UserId, (res) => {
         if (res && res.data && res.data.Data) {
-          console.log('updated 222')
+          //console.log('updated 222')
           let Data = res.data.Data;
 
           setTimeout(() => {
@@ -282,7 +279,7 @@ class UserRegistration extends Component {
             const RoleObj = roleList && roleList.find(item => item.RoleId == Data.RoleId)
             const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId == Data.DepartmentId)
             const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
-            console.log('updated 333', RoleObj, DepartmentObj, CityObj)
+            //console.log('updated 333', RoleObj, DepartmentObj, CityObj)
             this.setState({
               isEditFlag: true,
               isLoader: false,
@@ -310,8 +307,12 @@ class UserRegistration extends Component {
     this.props.getPermissionByUser(UserId, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
-        this.setState({ Modules: Data.Modules, oldModules: Data.Modules })
-        this.child.getUpdatedData(Data.Modules)
+        this.setState({
+          Modules: Data.Modules,
+          oldModules: Data.Modules
+        }, () => {
+          this.child.getUpdatedData(Data.Modules)
+        })
       }
     })
   }
@@ -401,8 +402,8 @@ class UserRegistration extends Component {
             RoleId: role.value,
             Modules: Data.Modules,
             isLoader: false,
-          })
-          this.child.getUpdatedData(Data.Modules)
+          }, () => this.child.getUpdatedData(Data.Modules))
+
         }
       })
     }
@@ -734,11 +735,11 @@ class UserRegistration extends Component {
   }
 
   render() {
-    const { handleSubmit, pristine, submitting, reset, actionSelectList } = this.props;
+    const { handleSubmit, pristine, submitting, reset, actionSelectList, loading } = this.props;
     const { isLoader, isSubmitted } = this.state;
     return (
       <div>
-        {/* {isLoader && <Loader />} */}
+        {loading && <Loader />}
         <div className="login-container signup-form">
           <div className="row">
 
@@ -796,9 +797,9 @@ class UserRegistration extends Component {
                         placeholder={'Enter'}
                         component={renderText}
                         isDisabled={false}
-                        validate={[required, number, minLength10, maxLength12]}
+                        validate={[required, number, minLength10, maxLength10]}
                         required={true}
-                        maxLength={12}
+                        maxLength={10}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -1221,8 +1222,8 @@ function validate(values) {
 * @param {*} state
 */
 const mapStateToProps = ({ auth, comman }) => {
-  const { roleList, departmentList, registerUserData, actionSelectList,
-    technologyList, levelList, } = auth;
+  const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
+    levelList, loading, } = auth;
   const { cityList } = comman;
 
   let initialValues = {};
@@ -1247,7 +1248,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, levelList,
+    initialValues, technologyList, levelList, loading,
   };
 };
 

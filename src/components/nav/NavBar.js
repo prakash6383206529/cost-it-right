@@ -32,7 +32,7 @@ class SideBar extends Component {
     if (loginUserId != null) {
       this.props.getMenuByUser(loginUserId, () => {
         const { menusData } = this.props;
-        reactLocalStorage.set('ModuleId', menusData[0].ModuleId);
+        //reactLocalStorage.set('ModuleId', menusData[0].ModuleId);
       })
     }
   }
@@ -103,7 +103,7 @@ class SideBar extends Component {
   */
   renderMenus = (module) => {
     switch (module) {
-      case 'Dashboard And Audit':
+      case 'Dashboard':
         return this.renderDashboard(module);
       case 'Master':
         return this.renderMaster(module);
@@ -117,6 +117,8 @@ class SideBar extends Component {
         return this.renderReportAnalytics(module);
       case 'Users':
         return this.renderUser(module);
+      case 'Audit':
+        return this.renderAudit(module);
       default:
         return null;
     }
@@ -336,7 +338,35 @@ class SideBar extends Component {
               }}
             >
               <img className="" src={require('../../assests/images/men.svg')} alt='men' />
-              <span>Users</span>
+              <span>{el.ModuleName}</span>
+            </Link>
+          )
+        }
+        return null;
+      })
+    )
+  }
+
+  /**
+  * @method renderAudit
+  * @description Render User menu.
+  */
+  renderAudit = (module) => {
+    const { menusData } = this.props;
+    return (
+      menusData && menusData.map((el, i) => {
+        if (el.ModuleName == module) {
+          return (
+            <Link
+              className="nav-link"
+              onClick={() => this.setLeftMenu(el.ModuleId)}
+              to={{
+                pathname: "/audit",
+                state: { ModuleId: el.ModuleId, PageName: 'Audit', PageURL: '/audit' }
+              }}
+            >
+              <img className="" src={require('../../assests/images/men.svg')} alt='men' />
+              <span>{el.ModuleName}</span>
             </Link>
           )
         }

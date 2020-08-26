@@ -133,10 +133,11 @@ class RMListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -147,6 +148,7 @@ class RMListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
+        const { AddAccessibility, BulkUploadAccessibility } = this.props;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -159,11 +161,11 @@ class RMListing extends Component {
                 {this.props.loading && <Loader />}
                 <Row className="pt-30 mb-30">
                     <Col md={12} className="text-right ">
-                        <button
+                        {AddAccessibility && <button
                             type={'button'}
                             className={'user-btn'}
                             onClick={this.openModel}>
-                            <div className={'plus'}></div>{`Add Material`}</button>
+                            <div className={'plus'}></div>{`Add Material`}</button>}
                     </Col>
                 </Row>
 

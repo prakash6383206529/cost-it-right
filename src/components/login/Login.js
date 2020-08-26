@@ -51,13 +51,9 @@ class Login extends Component {
         this.props.logUserIn();
 
         setTimeout(() => {
-          this.props.getMenuByUser(userDetail.LoggedInUserId, () => {
-            const { menusData } = this.props;
-            reactLocalStorage.set('ModuleId', menusData[0].ModuleId);
-            this.props.getLeftMenu(menusData[0].ModuleId, userDetail.LoggedInUserId, (res) => { })
-          })
+
           window.location.replace("/");
-        }, 500)
+        }, 1000)
         // this.setState({
         //   isRedirect: true
         // })

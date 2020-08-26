@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Loader } from "../common/Loader";
-import { Row, Container, Col } from "reactstrap";
-import { checkForNull } from '../../helper'
+import { } from "reactstrap";
+import { getMenuByUser, getLeftMenu, } from "../../actions";
+import { checkForNull, loggedInUserId } from '../../helper';
+import { reactLocalStorage } from "reactjs-localstorage";
 
 class Dashboard extends Component {
 
@@ -11,6 +13,16 @@ class Dashboard extends Component {
         this.state = {
 
         }
+    }
+
+    componentWillMount() {
+        this.props.getMenuByUser(loggedInUserId(), () => {
+            const { menusData } = this.props;
+            if (menusData != undefined) {
+                reactLocalStorage.set('ModuleId', menusData[0].ModuleId);
+                this.props.getLeftMenu(menusData[0].ModuleId, loggedInUserId(), (res) => { })
+            }
+        })
     }
 
     /**
@@ -209,19 +221,19 @@ class Dashboard extends Component {
 }
 
 /**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ }) {
-
-    return {
-
-    };
+ * @name mapStateToProps
+ * @desc map state containing organisation details from the api to props
+ * @return object{}
+ */
+function mapStateToProps({ auth }) {
+    const { menusData, leftMenuData } = auth
+    return { menusData, leftMenuData }
 }
 
-
-export default connect(
-    null, null
+export default connect(mapStateToProps,
+    {
+        getMenuByUser,
+        getLeftMenu,
+    }
 )(Dashboard);
 

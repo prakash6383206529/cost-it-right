@@ -10,7 +10,7 @@ import {
 import {
     getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
     getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
-    fetchSupplierCityDataAPI,
+    fetchSupplierCityDataAPI, fetchPlantDataAPI,
 } from '../../../../../actions/master/Comman';
 import {
     createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild,
@@ -91,6 +91,7 @@ class AddRMDomestic extends Component {
         this.props.getRawMaterialNameChild(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getSupplierList(() => { })
+        this.props.fetchPlantDataAPI(() => { })
         this.props.getRMGradeSelectListByRawMaterial(0, res => { });
     }
 
@@ -1386,6 +1387,7 @@ export default connect(mapStateToProps, {
     getRawMaterialCategory,
     fetchSupplierCityDataAPI,
     fetchGradeDataAPI,
+    fetchPlantDataAPI,
     fetchSpecificationDataAPI,
     getRawMaterialDetailsAPI,
     getCityBySupplier,
