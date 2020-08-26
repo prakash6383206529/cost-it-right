@@ -258,24 +258,24 @@ class RMImportListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { gradeSelectList, rawMaterialNameSelectList, supplierSelectList } = this.props;
+        const { filterRMSelectList, supplierSelectList } = this.props;
         const temp = [];
         if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
+            filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'grade') {
-            gradeSelectList && gradeSelectList.map(item => {
+            filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
-            supplierSelectList && supplierSelectList.map(item => {
+            filterRMSelectList && filterRMSelectList.Vendors && filterRMSelectList.Vendors.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });

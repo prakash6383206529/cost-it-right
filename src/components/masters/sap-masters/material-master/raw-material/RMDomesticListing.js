@@ -370,7 +370,6 @@ class RMDomesticListing extends Component {
             this.getInitialRange()
             this.getDataList(null, null, null)
             this.props.getRawMaterialFilterSelectList(() => { })
-            //this.props.getGradeSelectList(() => { });
         })
 
     }

@@ -868,10 +868,10 @@ class AddRMDomestic extends Component {
 
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.rmToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -896,7 +896,7 @@ class AddRMDomestic extends Component {
                                                         <div className={'plus-icon-square blurPlus-icon-square right'}>
                                                         </div>
                                                         :
-                                                        <div
+                                                        !isEditFlag && <div
                                                             onClick={this.gradeToggler}
                                                             className={'plus-icon-square right'}>
                                                         </div>
@@ -921,10 +921,10 @@ class AddRMDomestic extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.specificationToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -998,10 +998,10 @@ class AddRMDomestic extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.vendorToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             {checkVendorPlantConfigurable() && this.state.IsVendor &&
@@ -1120,10 +1120,10 @@ class AddRMDomestic extends Component {
                                                         />
                                                     </div>
 
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.uomToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">

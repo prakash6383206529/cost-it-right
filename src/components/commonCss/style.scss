@@ -821,7 +821,14 @@ button.add-btn {
 .Edit,
 .Delete,
 .View,
-.Download {
+.Download,
+.Bulk,
+.Activate,
+.Create,
+.Copy,
+.Approve,
+.Run,
+.Save {
   margin: 0 auto;
   color: #3d4465;
   font-size: 14px;
@@ -1164,4 +1171,56 @@ button.user-btn.pull-right {
 }
 .role-footer{
   margin-bottom: -45px;
+}
+
+.Bulk {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Upload.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+
+.Activate {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Activate.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+
+.Copy.All {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Copy.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+.Create {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Create.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+.Approve {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Approve.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+.Run {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Run.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+.Save {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Save.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
 }

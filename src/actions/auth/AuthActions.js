@@ -267,16 +267,16 @@ export function getAllUserAPI(callback) {
 export function getAllUserDataAPI(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}`, { headers })
+        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}`, { headers })
             .then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_USER_DATA_SUCCESS,
-                        payload: response.data.DataList,
-                    });
-                    callback(response);
-                }
+                console.log('response', response)
+                dispatch({
+                    type: GET_USER_DATA_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
             }).catch((error) => {
+                console.log('error', error)
                 dispatch({ type: API_FAILURE });
                 callback(error);
                 apiErrors(error);
