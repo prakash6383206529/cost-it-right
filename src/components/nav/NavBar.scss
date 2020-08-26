@@ -157,7 +157,7 @@ li.nav-item .logo {
   }
 
   .nav-scroller {
-    position: fixed;
+    // position: fixed;
     z-index: 2;
     /* height: 2.75rem; */
     overflow-y: hidden;
@@ -748,4 +748,8 @@ label.btn.btn-link.align-middle.checkbox-label {
 .forgot-link a {
   font-size: 1rem;
   margin-top: 8px;
+}
+.inner-header.main-menu {
+  position: fixed;
+    width: 100%;
 }
