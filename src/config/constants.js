@@ -48,9 +48,9 @@ export const API = {
   getCityByCountry: `${BASE_URL}/configuration-location/select-list-get-city-by-request`,
 
   //api's for configure raw material
-  getRawMaterialSelectList: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material`,
-  getRowGrade: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
-  getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-specification`,
+  getRawMaterialSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material`,
+  getRowGrade: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-grade`,
+  getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-specification`,
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
 
   //MATERIAL TYPE
