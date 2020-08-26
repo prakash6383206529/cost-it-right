@@ -39,7 +39,7 @@ class UsersTab extends Component {
             const { data, actionData, actionSelectList } = nextProps;
             this.setState({
                 actionData: actionData,
-                Modules: data,
+                Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
                 actionSelectList: actionSelectList,
             })
         }

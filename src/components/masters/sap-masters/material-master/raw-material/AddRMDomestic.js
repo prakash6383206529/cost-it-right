@@ -1182,7 +1182,7 @@ class AddRMDomestic extends Component {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            minDate={new Date()}
+                                                            //minDate={new Date()}
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
@@ -1237,8 +1237,8 @@ class AddRMDomestic extends Component {
                                                         }}
                                                         classNames="draper-drop"
                                                     />}
-                                                    </Col>
-                                                    <Col md="3">
+                                            </Col>
+                                            <Col md="3">
                                                 <div className={'attachment-wrapper'}>
                                                     {
                                                         this.state.files && this.state.files.map(f => {
@@ -1253,8 +1253,8 @@ class AddRMDomestic extends Component {
                                                                     {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
-                                                                     
-                                                                        <img className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../../assests/images/red-cross.png')}></img>
+
+                                                                    <img className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../../assests/images/red-cross.png')}></img>
                                                                 </div>
                                                             )
                                                         })
