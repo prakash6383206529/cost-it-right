@@ -199,6 +199,8 @@ export const MESSAGES = {
   DELETE_USER_SUCCESSFULLY: 'User has been deleted successfully.',
   USER_ACTIVE_SUCCESSFULLY: 'User has been active successfully.',
   USER_INACTIVE_SUCCESSFULLY: 'User has been inactive successfully.',
+  USER_DEACTIVE_ALERT: 'Are you sure you want to deactivate?',
+  USER_ACTIVE_ALERT: 'Are you sure you want to activate?',
   USER_DELETE_ALERT: 'Are you sure you want to delete User?',
   UPDATE_USER_SUCCESSFULLY: 'User has been updated successfully.',
   COSTING_DELETE_ALERT: 'All Costing which are pending for approval and whose approval are awaited will get rejected. Do you wish to proceed further?',

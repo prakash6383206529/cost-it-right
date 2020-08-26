@@ -40,6 +40,7 @@ class UsersListing extends Component {
 			AddAccessibility: false,
 			EditAccessibility: false,
 			DeleteAccessibility: false,
+			ActivateAccessibility: false,
 		}
 	}
 
@@ -51,12 +52,13 @@ class UsersListing extends Component {
 				let Data = leftMenuData;
 				const userPermissions = Data && Data.find(el => el.PageName == USER)
 				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
-				console.log('userPermissions: ', permmisionData);
+
 				if (permmisionData != undefined) {
 					this.setState({
 						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
 						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
 						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
 					})
 				}
 			}
@@ -64,7 +66,7 @@ class UsersListing extends Component {
 	}
 
 	componentDidMount() {
-		this.getUsersListData('', '');
+		this.getUsersListData(null, null);
 
 		//Get Department Listing
 		this.props.getAllDepartmentAPI((res) => {
@@ -101,18 +103,15 @@ class UsersListing extends Component {
 
 	// Get updated user list after any action performed.
 	getUpdatedData = () => {
-		this.getUsersListData('', '')
+		this.getUsersListData(null, null);
 	}
 
 	/**
 	* @method getUsersListData
 	* @description Get user list data
 	*/
-	getUsersListData = (departmentId = '', roleId = '') => {
+	getUsersListData = (departmentId = null, roleId = null) => {
 		let data = {
-			UserId: loggedInUserId(),
-			PageSize: 0,
-			LastIndex: 0,
 			DepartmentId: departmentId,
 			RoleId: roleId,
 		}
@@ -205,7 +204,7 @@ class UsersListing extends Component {
 		this.props.deleteUser(UserId, (res) => {
 			if (res.data.Result === true) {
 				toastr.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
-				this.getUsersListData('', '');
+				this.getUsersListData(null, null);
 			}
 		});
 	}
@@ -219,7 +218,6 @@ class UsersListing extends Component {
 		if (cell == loggedInUserId()) return null;
 		return (
 			<div className="text-right">
-				{/* <Button className="btn btn-secondary" onClick={() => this.editItemDetails(cell)}><i className="fas fa-pencil-alt"></i></Button> */}
 				{EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cell, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
@@ -232,14 +230,28 @@ class UsersListing extends Component {
 			ModifiedBy: loggedInUserId(),
 			IsActive: !cell, //Status of the user.
 		}
+		const toastrConfirmOptions = {
+			onOk: () => {
+				this.confirmDeactivateItem(data, cell)
+			},
+			onCancel: () => console.log('CANCEL: clicked')
+		};
+		return toastr.confirm(`${cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`, toastrConfirmOptions);
+	}
+
+	/**
+	* @method confirmDeactivateItem
+	* @description confirm deactivate user item
+	*/
+	confirmDeactivateItem = (data, cell) => {
 		this.props.activeInactiveUser(data, res => {
 			if (res && res.data && res.data.Result) {
-				if (cell == true) {
-					toastr.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
-				} else {
-					toastr.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
-				}
-				this.getUsersListData('', '')
+				// if (cell == true) {
+				// 	toastr.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
+				// } else {
+				// 	toastr.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
+				// }
+				this.getUsersListData(null, null);
 			}
 		})
 	}
@@ -249,24 +261,39 @@ class UsersListing extends Component {
 	* @description Renders buttons
 	*/
 	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+		const { ActivateAccessibility } = this.state;
 		if (row.UserId == loggedInUserId()) return null;
-		return (
-			<>
-				<label htmlFor="normal-switch">
-					{/* <span>Switch with default style</span> */}
-					<Switch
-						onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-						checked={cell}
-						background="#ff6600"
-						onColor="#4DC771"
-						onHandleColor="#ffffff"
-						offColor="#FC5774"
-						id="normal-switch"
-						height={24}
-					/>
-				</label>
-			</>
-		)
+		if (ActivateAccessibility) {
+			return (
+				<>
+					<label htmlFor="normal-switch">
+						{/* <span>Switch with default style</span> */}
+						<Switch
+							onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+							checked={cell}
+							background="#ff6600"
+							onColor="#4DC771"
+							onHandleColor="#ffffff"
+							offColor="#FC5774"
+							id="normal-switch"
+							height={24}
+						/>
+					</label>
+				</>
+			)
+		} else {
+			return (
+				<>
+					{
+						cell ?
+							<div className={'Activated'}> {'Active'}</div>
+							:
+							<div className={'Deactivated'}>{'Deactive'}</div>
+					}
+				</>
+			)
+		}
+
 	}
 
 	/**
@@ -465,10 +492,10 @@ class UsersListing extends Component {
 					trClassName={'userlisting-row'}
 					tableHeaderClass='my-custom-header'
 					pagination>
-					<TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+					{/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
 					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
 					<TableHeaderColumn dataField="UserName" width={'150'} dataSort={true}>User name</TableHeaderColumn>
-					<TableHeaderColumn dataField="EmailAddress" columnTitle width={'150'} dataSort={true}>Email Id</TableHeaderColumn>
+					<TableHeaderColumn dataField="EmailAddress" columnTitle width={'200'} dataSort={true}>Email Id</TableHeaderColumn>
 					<TableHeaderColumn dataField="Mobile" width={'140'} dataSort={false}>Mobile No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="PhoneNumber" dataSort={false}>Phone No.</TableHeaderColumn>
 

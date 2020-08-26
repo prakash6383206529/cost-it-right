@@ -179,10 +179,11 @@ class RMImportListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -396,8 +397,8 @@ class RMImportListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
-        const { isBulkUpload } = this.state;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { isBulkUpload, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -490,16 +491,16 @@ class RMImportListing extends Component {
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button
+                                    {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
                                         onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>
-                                    <button
+                                        <div className={'upload'}></div>Bulk Upload</button>}
+                                    {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
                                         onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>
+                                        <div className={'plus'}></div>ADD</button>}
                                 </div>
                             </div>
                         </Col>
@@ -555,10 +556,10 @@ class RMImportListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material, comman }) {
+function mapStateToProps({ material, comman, }) {
     const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList } = material;
     const { supplierSelectList, } = comman;
-    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList }
+    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, }
 }
 
 /**

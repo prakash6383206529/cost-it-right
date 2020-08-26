@@ -11,6 +11,7 @@ import { MESSAGES } from "../../../config/message";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
     USERS,
+    AUDIT,
 } from "../../../config/constants";
 import { Table, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
@@ -23,6 +24,7 @@ import CostingTab from "./CostingTab";
 import SimulationTab from "./SimulationTab";
 import UsersTab from "./UsersTab";
 import ReportsTab from "./ReportsTab";
+import AuditTab from "./AuditTab";
 
 class PermissionsTabIndex extends Component {
     constructor(props) {
@@ -38,6 +40,7 @@ class PermissionsTabIndex extends Component {
             simulation: [],
             reportAnalytics: [],
             user: [],
+            audit: [],
         };
     }
 
@@ -47,7 +50,13 @@ class PermissionsTabIndex extends Component {
 	*/
     componentDidMount() {
         this.props.getActionHeadsSelectList(() => {
-            this.getRolePermission()
+            setTimeout(() => {
+                const { isEditFlag, } = this.props;
+                console.log('isEditFlag', isEditFlag)
+                if (isEditFlag == false) {
+                    this.getRolePermission()
+                }
+            }, 500)
         })
         this.props.onRef(this);
     }
@@ -72,8 +81,9 @@ class PermissionsTabIndex extends Component {
 	* @description get updated data after updatesuccess
 	*/
     getUpdatedData = (data) => {
-        console.log('Update Call')
-        this.updateTabs(data)
+        setTimeout(() => {
+            this.updateTabs(data)
+        }, 1000)
     }
 
     /**
@@ -88,6 +98,7 @@ class PermissionsTabIndex extends Component {
         let simulationObj = Data && Data.filter(el => el.ModuleName == SIMULATION)
         let reportAnalyticsObj = Data && Data.filter(el => el.ModuleName == REPORTS_AND_ANALYTICS)
         let usersObj = Data && Data.filter(el => el.ModuleName == USERS)
+        let auditObj = Data && Data.filter(el => el.ModuleName == AUDIT)
 
         this.setState({
             actionData: Data,
@@ -99,6 +110,7 @@ class PermissionsTabIndex extends Component {
             simulation: simulationObj && simulationObj != undefined ? simulationObj[0].Pages : [],
             reportAnalytics: reportAnalyticsObj && reportAnalyticsObj != undefined ? reportAnalyticsObj[0].Pages : [],
             user: usersObj && usersObj != undefined ? usersObj[0].Pages : [],
+            audit: auditObj && auditObj != undefined ? auditObj[0].Pages : [],
         }, () => {
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
             this.permissionHandler(this.state.masters, MASTERS)
@@ -107,6 +119,7 @@ class PermissionsTabIndex extends Component {
             this.permissionHandler(this.state.simulation, SIMULATION)
             this.permissionHandler(this.state.reportAnalytics, REPORTS_AND_ANALYTICS)
             this.permissionHandler(this.state.user, USERS)
+            this.permissionHandler(this.state.audit, AUDIT)
         })
     }
 
@@ -141,7 +154,7 @@ class PermissionsTabIndex extends Component {
                                 <Nav tabs className="subtabs">
                                     <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                            Dashboard & Audit
+                                            Dashboard
               								</NavLink>
                                     </NavItem>
                                     <NavItem>
@@ -174,9 +187,14 @@ class PermissionsTabIndex extends Component {
                                             Users
               								</NavLink>
                                     </NavItem>
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
+                                            Audit
+              								</NavLink>
+                                    </NavItem>
                                 </Nav>
                                 <TabContent activeTab={this.state.activeTab}>
-                                    {/* {this.state.activeTab === '1' && */}
+
                                     <TabPane tabId="1">
                                         <DashboardAuditTab
                                             data={this.state.dashoard}
@@ -185,8 +203,7 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* } */}
-                                    {/* {this.state.activeTab === '2' && */}
+
                                     <TabPane tabId="2">
                                         <MastersTab
                                             data={this.state.masters}
@@ -195,8 +212,7 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* } */}
-                                    {/* {this.state.activeTab === '3' && */}
+
                                     <TabPane tabId="3">
                                         <AdditionalMastersTab
                                             data={this.state.additionalMasters}
@@ -205,8 +221,7 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* } */}
-                                    {/* {this.state.activeTab === '4' && */}
+
                                     <TabPane tabId="4">
                                         <CostingTab
                                             data={this.state.costing}
@@ -215,8 +230,7 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* } */}
-                                    {/* {this.state.activeTab === '5' && */}
+
                                     <TabPane tabId="5">
                                         <SimulationTab
                                             data={this.state.simulation}
@@ -225,8 +239,7 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* } */}
-                                    {/* {this.state.activeTab === '5' && */}
+
                                     <TabPane tabId="6">
                                         <ReportsTab
                                             data={this.state.reportAnalytics}
@@ -235,8 +248,7 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* } */}
-                                    {/* {this.state.activeTab === '6' && */}
+
                                     <TabPane tabId="7">
                                         <UsersTab
                                             data={this.state.user}
@@ -245,7 +257,16 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* } */}
+
+                                    <TabPane tabId="8">
+                                        <AuditTab
+                                            data={this.state.audit}
+                                            actionData={this.state.actionData}
+                                            actionSelectList={this.props.actionSelectList}
+                                            permissions={this.permissionHandler}
+                                        />
+                                    </TabPane>
+
 
                                 </TabContent>
                             </div>

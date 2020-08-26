@@ -70,8 +70,8 @@ class Role extends Component {
 					RoleId: data.RoleId,
 					Modules: Data.Modules,
 					isLoader: false,
-				})
-				this.child.getUpdatedData(Data.Modules)
+				}, () => this.child.getUpdatedData(Data.Modules))
+
 			}
 		})
 	}

@@ -16,7 +16,6 @@ import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
 
-
 class User extends Component {
   constructor(props) {
     super(props);

@@ -474,7 +474,6 @@ export const API = {
   getModuleActionInitNew: `${BASE_URL}/user-role/get-module-page-action-init_new`,
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
 
-
   //REASON
   createReason: `${BASE_URL}/masters-reason/create`,
   getAllReasonAPI: `${BASE_URL}/masters-reason/get-all`,
@@ -949,16 +948,24 @@ export const WIND_POWER = 'Wind Power';
 export const GENERATOR_DIESEL = 'Generator Diesel';
 
 //MODULE NAME ENUMS
-export const DASHBOARD_AND_AUDIT = 'Dashboard And Audit';
+export const DASHBOARD_AND_AUDIT = 'Dashboard';
 export const MASTERS = 'Master';
 export const ADDITIONAL_MASTERS = 'Additional Masters';
 export const COSTING = 'Costing';
 export const SIMULATION = 'Simulation';
 export const REPORTS_AND_ANALYTICS = 'Reports And Analytics';
 export const USERS = 'Users';
+export const AUDIT = 'Audit';
 
 //PAGE NAMES
 export const USER = 'User';
 export const ROLE = 'Role';
 export const DEPARTMENT = 'Department';
 export const LEVELS = 'Levels';
+export const RAW_MATERIAL = 'Raw Material';
+export const BOP = 'BOP';
+export const PART = 'Part';
+export const MACHINE = 'Machine';
+export const VENDOR = 'Vendor';
+export const CLIENT = 'Client';
+export const PLANT = 'Plant';

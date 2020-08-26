@@ -26,6 +26,8 @@ export const apiErrors = (res) => {
             toastr.error('Your session has been expired. Please login again');
         } else if (response && response.status === 403) {
             toastr.error('Server error occurred, please try again after sometime.');
+        } else if (response && response.status === 406) {
+            toastr.error('User does not exist.');
         } else if (response && response.status === 412) {
             const errMsg = response && response.data && response.data.Message ? response.data.Message : 'Something went wrong please try again.';
             toastr.error(errMsg);
@@ -290,6 +292,9 @@ export function checkPermission(Data) {
         Edit: false,
         Delete: false,
         View: false,
+        Download: false,
+        BulkUpload: false,
+        Activate: false,
     }
 
     Data && Data.map((item) => {
@@ -304,6 +309,15 @@ export function checkPermission(Data) {
         }
         if (item.ActionName == 'View' && item.IsChecked == true) {
             setAccessibleData.View = true;
+        }
+        if (item.ActionName == 'Download' && item.IsChecked == true) {
+            setAccessibleData.Download = true;
+        }
+        if (item.ActionName == 'BulkUpload' && item.IsChecked == true) {
+            setAccessibleData.BulkUpload = true;
+        }
+        if (item.ActionName == 'Activate' && item.IsChecked == true) {
+            setAccessibleData.Activate = true;
         }
     })
 
