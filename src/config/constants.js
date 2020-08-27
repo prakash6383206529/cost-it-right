@@ -957,7 +957,6 @@ export const REPORTS_AND_ANALYTICS = 'Reports And Analytics';
 export const USERS = 'Users';
 export const AUDIT = 'Audit';
 
-
 //PAGE NAMES
 export const USER = 'User';
 export const ROLE = 'Role';
