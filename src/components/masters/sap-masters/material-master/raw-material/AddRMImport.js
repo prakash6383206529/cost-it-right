@@ -835,10 +835,10 @@ class AddRMImport extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.rmToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -859,10 +859,15 @@ class AddRMImport extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
-                                                        onClick={this.gradeToggler}
-                                                        className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    {(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ?
+                                                        <div className={'plus-icon-square blurPlus-icon-square right'}>
+                                                        </div>
+                                                        :
+                                                        !isEditFlag && <div
+                                                            onClick={this.gradeToggler}
+                                                            className={'plus-icon-square right'}>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -883,10 +888,10 @@ class AddRMImport extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.specificationToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -907,10 +912,10 @@ class AddRMImport extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {/* <div
                                                         onClick={this.categoryToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </Col>
                                         </Row>
@@ -960,10 +965,10 @@ class AddRMImport extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.vendorToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             {checkVendorPlantConfigurable() && this.state.IsVendor &&
@@ -1081,10 +1086,10 @@ class AddRMImport extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.uomToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">

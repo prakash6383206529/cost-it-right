@@ -550,9 +550,7 @@ class UserRegistration extends Component {
       TechnologyLevelGrid: [],
     })
     let data = {
-      UserId: loggedInUserId(),
-      PageSize: 0,
-      LastIndex: 0,
+      logged_in_user: loggedInUserId(),
       DepartmentId: '',
       RoleId: '',
     }

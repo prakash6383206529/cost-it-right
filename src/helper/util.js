@@ -313,7 +313,7 @@ export function checkPermission(Data) {
         if (item.ActionName == 'Download' && item.IsChecked == true) {
             setAccessibleData.Download = true;
         }
-        if (item.ActionName == 'BulkUpload' && item.IsChecked == true) {
+        if (item.ActionName == 'Bulk Upload' && item.IsChecked == true) {
             setAccessibleData.BulkUpload = true;
         }
         if (item.ActionName == 'Activate' && item.IsChecked == true) {

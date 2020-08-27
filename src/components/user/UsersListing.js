@@ -112,6 +112,7 @@ class UsersListing extends Component {
 	*/
 	getUsersListData = (departmentId = null, roleId = null) => {
 		let data = {
+			logged_in_user: loggedInUserId(),
 			DepartmentId: departmentId,
 			RoleId: roleId,
 		}
