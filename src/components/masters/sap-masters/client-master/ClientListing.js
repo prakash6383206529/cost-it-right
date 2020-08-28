@@ -13,8 +13,14 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getClientDataList, deleteClient } from '../../../../actions/master/Client';
 import { } from '../../../../actions/master/Comman';
 import Switch from "react-switch";
-import { loggedInUserId } from '../../../../helper/auth';
 import { Years, Months } from '../../../../config/masterData';
+import AddClientDrawer from './AddClientDrawer';
+
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { CLIENT } from '../../../../config/constants';
+import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -25,22 +31,36 @@ class ClientListing extends Component {
         super(props);
         this.state = {
             isEditFlag: false,
-            isOpen: false,
+            isOpenVendor: false,
             tableData: [],
+            ID: '',
+
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
         }
-    }
-
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
     }
 
     componentDidMount() {
         this.getTableListData(null, null)
-        this.props.onRef(this)
+
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData != undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName == CLIENT)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData != undefined) {
+                    this.setState({
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    })
+                }
+            }
+        })
     }
 
     // Get updated Supplier's list after any action performed.
@@ -79,14 +99,6 @@ class ClientListing extends Component {
         const { } = this.props;
         const temp = [];
 
-        // if (label === 'VendorList') {
-        //     vendorListByVendorType && vendorListByVendorType.map(item => {
-        //         if (item.Value == 0) return false;
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     });
-        //     return temp;
-        // }
-
     }
 
 	/**
@@ -94,11 +106,11 @@ class ClientListing extends Component {
 	* @description confirm edit item
 	*/
     editItemDetails = (Id) => {
-        let requestData = {
+        this.setState({
+            isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
-        }
-        this.props.getDetail(requestData)
+        })
     }
 
 	/**
@@ -133,10 +145,11 @@ class ClientListing extends Component {
 	* @description Renders buttons
 	*/
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -231,36 +244,32 @@ class ClientListing extends Component {
 
 	/**
 	* @method filterList
-	* @description Filter user listing on the basis of role and department
+	* @description Filter DATALIST
 	*/
     filterList = () => {
-        // const { costingHead, year, month, vendorName, plant } = this.state;
-        // const costingHeadTemp = costingHead ? costingHead.value : null;
-        // const yearTemp = year ? year.value : null;
-        // const monthTemp = month ? month.value : null;
-        // const vendorNameTemp = vendorName ? vendorName.value : null;
-        // const plantTemp = plant ? plant.value : null;
-        // this.getTableListData(costingHeadTemp, yearTemp)
+        this.getTableListData(null, null)
     }
 
 	/**
 	* @method resetFilter
-	* @description Reset user filter
+	* @description RESET FILTERS
 	*/
     resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            year: [],
-            month: [],
-            vendorName: [],
-            plant: [],
-        }, () => {
-            this.getTableListData(null, null)
-        })
+        this.getTableListData(null, null)
     }
 
     formToggle = () => {
-        this.props.formToggle()
+        this.setState({ isOpenVendor: true })
+    }
+
+    closeVendorDrawer = (e = '') => {
+        this.setState({
+            isOpenVendor: false,
+            isEditFlag: false,
+            ID: '',
+        }, () => {
+            this.getTableListData(null, null)
+        })
     }
 
 	/**
@@ -277,7 +286,7 @@ class ClientListing extends Component {
 	*/
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag } = this.state;
+        const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -292,58 +301,18 @@ class ClientListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                    <div class="col-sm-4"><h3>Client</h3></div>
+                    <hr />
                     <Row className="pt-30">
                         <Col md="10" className="filter-block">
-                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="year"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Select-'}
-                                        options={this.renderListing('year')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.year == null || this.state.year.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleYear}
-                                        valueDescription={this.state.year}
-                                    //disabled={isEditFlag ? true : false}
-                                    />
-                                </div>
-
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div> */}
                         </Col>
                         <Col md="2" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight">
-                                <div>
-                                    {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>
-                                    }
-                                </div>
+                                {AddAccessibility && <button
+                                    type="button"
+                                    className={'user-btn'}
+                                    onClick={this.formToggle}>
+                                    <div className={'plus'}></div>ADD</button>}
                             </div>
                         </Col>
                     </Row>
@@ -360,19 +329,28 @@ class ClientListing extends Component {
                     ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
+                    tableHeaderClass='my-custom-header client-table'
+                    className={'client-table'}
                     pagination>
                     {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                    <TableHeaderColumn dataField="CompanyName" dataAlign="center" >{'Company'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ClientName" dataAlign="center" >{'Client Name'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ClientEmailId" dataAlign="center" >{'Email Id'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PhoneNumber" dataAlign="center" >{'Phone Number'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="MobileNumber" dataAlign="center" >{'Mobile No.'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Country" dataAlign="center" >{'Country'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="State" dataAlign="center" >{'State'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="City" dataAlign="center" >{'City'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ZipCode" dataAlign="center" >{'ZipCode'}</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="VolumeId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="PhoneNumber" dataAlign="center" >{'Phone Number'}</TableHeaderColumn> */}
+                    {/* <TableHeaderColumn dataField="MobileNumber" dataAlign="center" >{'Mobile No.'}</TableHeaderColumn> */}
+                    <TableHeaderColumn dataField="CountryName" dataAlign="center" >{'Country'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="StateName" dataAlign="center" >{'State'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="CityName" dataAlign="center" >{'City'}</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="ZipCode" dataAlign="center" >{'ZipCode'}</TableHeaderColumn> */}
+                    <TableHeaderColumn className="action" dataField="ClientId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
+                {isOpenVendor && <AddClientDrawer
+                    isOpen={isOpenVendor}
+                    closeDrawer={this.closeVendorDrawer}
+                    isEditFlag={isEditFlag}
+                    ID={this.state.ID}
+                    anchor={'right'}
+                />}
             </ >
         );
     }
@@ -383,10 +361,10 @@ class ClientListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman }) {
+function mapStateToProps({ comman, auth }) {
     const { loading, } = comman;
-
-    return { loading, };
+    const { leftMenuData } = auth;
+    return { loading, leftMenuData, };
 }
 
 /**
@@ -398,6 +376,7 @@ function mapStateToProps({ comman }) {
 export default connect(mapStateToProps, {
     getClientDataList,
     deleteClient,
+    getLeftMenu,
 })(reduxForm({
     form: 'ClientListing',
     onSubmitFail: errors => {

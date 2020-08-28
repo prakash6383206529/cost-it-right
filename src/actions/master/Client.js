@@ -53,11 +53,11 @@ export function updateClient(requestData, callback) {
  * @method getClientData
  * @description Get Client Data
  */
-export function getClientData(VolumeId, callback) {
+export function getClientData(ClientId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (VolumeId != '') {
-            axios.get(`${API.getClientData}/${VolumeId}`, headers)
+        if (ClientId != '') {
+            axios.get(`${API.getClientData}/${ClientId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({

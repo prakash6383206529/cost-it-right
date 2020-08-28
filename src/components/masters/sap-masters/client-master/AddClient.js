@@ -4,7 +4,8 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
 import {
     required, number, email, minLength7, maxLength70, upper,
-    maxLength100
+    maxLength100,
+    minLength10
 } from "../../../../helper/validation";
 import {
     renderText, renderEmailInputField, searchableSelect, renderNumberInputField, renderTextAreaField
@@ -365,10 +366,10 @@ class AddClient extends Component {
                                                             name={"Extension"}
                                                             type="text"
                                                             placeholder={''}
-                                                            validate={[required]}
+                                                            validate={[required, number]}
                                                             component={renderText}
                                                             required={true}
-                                                            maxLength={5}
+                                                            maxLength={3}
                                                             className=""
                                                             customClassName={'withBorder'}
                                                         />
@@ -386,9 +387,9 @@ class AddClient extends Component {
                                                     placeholder={''}
                                                     component={renderText}
                                                     isDisabled={false}
-                                                    validate={[required, number, minLength7]}
+                                                    validate={[required, number, minLength10]}
                                                     required={true}
-                                                    maxLength={70}
+                                                    maxLength={10}
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
@@ -452,12 +453,11 @@ class AddClient extends Component {
                                                     validate={[required, number]}
                                                     component={renderText}
                                                     required={true}
-                                                    maxLength={26}
+                                                    maxLength={6}
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
                                         </Row>
-
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
                                             <div className="col-md-12">
                                                 <div className="text-center ">

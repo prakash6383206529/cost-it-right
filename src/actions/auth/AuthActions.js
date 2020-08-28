@@ -354,13 +354,15 @@ export function updateUserAPI(requestData, callback) {
         dispatch({ type: AUTH_API_REQUEST });
         axios.put(API.updateUserAPI, requestData, { headers })
             .then((response) => {
+                console.log('>>>>>>', response)
                 dispatch({ type: API_SUCCESS });
                 callback(response);
             })
             .catch((error) => {
+                console.log('>>>>>>', error)
+                callback(error);
                 dispatch({ type: AUTH_API_FAILURE });
                 apiErrors(error);
-                //callback(error);
             });
     };
 }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required, number, maxLength6, maxLength10 } from "../../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../../helper/auth";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
@@ -9,9 +9,7 @@ import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../act
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
-import VBCPlantListing from "./VBCPlantListing";
-import $ from 'jquery';
+import Drawer from '@material-ui/core/Drawer';
 
 class AddVBCPlant extends Component {
     constructor(props) {
@@ -22,7 +20,8 @@ class AddVBCPlant extends Component {
             city: [],
             country: [],
             state: [],
-            isShowForm: false,
+            PlantId: '',
+            IsActive: true,
         }
     }
 
@@ -31,24 +30,23 @@ class AddVBCPlant extends Component {
     * @description 
     */
     componentDidMount() {
-        const { PlantId, isEditFlag } = this.props;
         this.props.fetchCountryDataAPI(() => { })
         this.props.getSupplierList(() => { })
+        this.getDetails()
     }
 
     /**
     * @method getDetails
-    * @description Used to cancel modal
+    * @description GET PLANT DETAIL
     */
-    getDetails = (data) => {
-        if (data && data.isEditFlag) {
+    getDetails = () => {
+        const { isEditFlag, ID } = this.props;
+        if (isEditFlag) {
             this.setState({
-                isEditFlag: false,
                 isLoader: true,
-                isShowForm: true,
-                PlantId: data.PlantId,
+                PlantId: ID,
             })
-            this.props.getPlantUnitAPI(data.PlantId, res => {
+            this.props.getPlantUnitAPI(ID, res => {
                 if (res && res.data && res.data.Result) {
 
                     const Data = res.data.Data;
@@ -65,12 +63,12 @@ class AddVBCPlant extends Component {
                         const VendorObj = supplierSelectList && supplierSelectList.find(item => item.Value == Data.VendorId)
 
                         this.setState({
-                            isEditFlag: true,
                             isLoader: false,
-                            country: { label: CountryObj.Text, value: CountryObj.Value },
-                            state: { label: StateObj.Text, value: StateObj.Value },
-                            city: { label: CityObj.Text, value: CityObj.Value },
-                            vendor: { label: VendorObj.Text, value: VendorObj.Value },
+                            IsActive: Data.IsActive,
+                            country: CountryObj && CountryObj != undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
+                            state: StateObj && StateObj != undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
+                            city: CityObj && CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            vendor: VendorObj && VendorObj != undefined ? { label: VendorObj.Text, value: VendorObj.Value } : [],
                         })
                     }, 500)
                 }
@@ -141,7 +139,7 @@ class AddVBCPlant extends Component {
     */
     countryHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ country: newValue }, () => {
+            this.setState({ country: newValue, state: [], city: [], }, () => {
                 const { country } = this.state;
                 this.props.fetchStateDataAPI(country.value, () => { })
             });
@@ -156,7 +154,7 @@ class AddVBCPlant extends Component {
     */
     stateHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ state: newValue }, () => {
+            this.setState({ state: newValue, city: [], }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
             });
@@ -178,22 +176,28 @@ class AddVBCPlant extends Component {
         }
     };
 
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        this.props.closeDrawer('')
+    };
+
     /**
-   * @method cancel
-   * @description used to Reset form
-   */
+    * @method cancel
+    * @description used to Reset form
+    */
     cancel = () => {
         const { reset } = this.props;
         reset();
         this.setState({
-            isShowForm: false,
+            country: [],
+            state: [],
+            city: [],
+            PlantId: '',
         })
-    }
-
-    formToggle = () => {
-        this.setState({
-            isShowForm: !this.state.isShowForm
-        })
+        this.props.getPlantUnitAPI('', res => { })
+        this.toggleDrawer('')
     }
 
     /**
@@ -201,30 +205,30 @@ class AddVBCPlant extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log("values", values)
-        const { city, vendor, isEditFlag } = this.state;
-        const { reset } = this.props;
+        const { city, vendor, PlantId } = this.state;
+        const { isEditFlag, ID } = this.props;
 
         if (isEditFlag) {
-            const { PlantId } = this.props;
             this.setState({ isSubmitted: true });
             let updateData = {
-                PlantName: values.PlantName,
-                PlantTitle: values.PlantTitle,
-                UnitNumber: values.UnitNumber,
-                CityId: city.value,
                 PlantId: PlantId,
+                IsActive: this.state.IsActive,
+                ModifiedBy: loggedInUserId(),
+                PlantName: values.PlantName,
+                PlantCode: values.PlantCode,
+                IsVendor: true,
                 AddressLine1: values.AddressLine1,
                 AddressLine2: values.AddressLine2,
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
                 CreatedByUserId: loggedInUserId(),
+                CityId: city.value,
             }
             this.props.updatePlantAPI(PlantId, updateData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_PLANT_SUCESS);
-                    this.child.getUpdatedData();
+                    this.cancel()
                 }
             });
         } else {
@@ -247,15 +251,7 @@ class AddVBCPlant extends Component {
             this.props.createPlantAPI(formData, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
-                    reset();
-                    this.setState({
-                        isShowForm: false,
-                        vendor: [],
-                        country: [],
-                        state: [],
-                        city: [],
-                    })
-                    this.child.getUpdatedData();
+                    this.cancel()
                 }
             });
         }
@@ -268,237 +264,224 @@ class AddVBCPlant extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset } = this.props;
-        const { isEditFlag } = this.state;
+        const { handleSubmit, reset, isEditFlag } = this.props;
         return (
             <>
-                <Container fluid>
-                    <div className="login-container signup-form">
-
-                        <Row>
-                            {/* <Col md="12">
-                                <h3>{`Plant Master`}</h3>
-                            </Col> */}
-                            {this.state.isShowForm &&
-                                <Col md="12" className="p-0">
-                                    <div className="shadow-lgg login-formg pt-30">
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                    <Container >
+                        <div className={'drawer-wrapper'}>
+                            <form
+                                noValidate
+                                className="form"
+                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                            >
+                                <Row className="drawer-heading">
+                                    <Col>
+                                        <div className={'header-wrapper left'}>
+                                            <h3>{isEditFlag ? 'Update VBC Plant' : 'Add VBC Plant'}</h3>
+                                        </div>
+                                        <div
+                                            onClick={(e) => this.toggleDrawer(e)}
+                                            className={'close-button right'}>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md="6">
+                                        <Field
+                                            name="VendorId"
+                                            type="text"
+                                            label="Vendor Name"
+                                            component={searchableSelect}
+                                            placeholder={'Select Vendor'}
+                                            options={this.selectType('vendors')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.vendor == null || this.state.vendor.length == 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.vendorHandler}
+                                            valueDescription={this.state.vendor}
+                                            disabled={isEditFlag ? true : false}
+                                        />
+                                    </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label={`Plant Name`}
+                                            name={"PlantName"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required]}
+                                            component={renderText}
+                                            required={true}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md="6">
+                                        <Field
+                                            label={`Plant Code`}
+                                            name={"PlantCode"}
+                                            type="text"
+                                            placeholder={''}
+                                            //validate={[required]}
+                                            component={renderText}
+                                            //required={true}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                        />
+                                    </Col>
+                                    <Col md="6">
                                         <Row>
-                                            <Col md="6">
-                                                <div className="form-heading mb-0">
-                                                    <h2>{this.state.isEditFlag ? 'Update VBC Plant' : 'Add  VBC Plant'}</h2>
-                                                </div>
+                                            <Col className="Phone phoneNumber" md="8">
+                                                <Field
+                                                    label="Phone Number"
+                                                    name={"PhoneNumber"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required, number]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    maxLength={12}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                />
+                                            </Col>
+                                            <Col className="Ext phoneNumber" md="4">
+                                                <Field
+                                                    label="Ext."
+                                                    name={"Extension"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    maxLength={3}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                />
                                             </Col>
                                         </Row>
-                                        <form
-                                            noValidate
-                                            className="form"
-                                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                        >
-                                            <Row>
-                                                <Col md="6">
-                                                    <Field
-                                                        name="VendorId"
-                                                        type="text"
-                                                        label="Vendor Name"
-                                                        component={searchableSelect}
-                                                        placeholder={'Select Vendor'}
-                                                        options={this.selectType('vendors')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendor == null || this.state.vendor.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.vendorHandler}
-                                                        valueDescription={this.state.vendor}
-                                                    />
-                                                </Col>
-                                                <Col md="6">
-                                                    <Field
-                                                        label={`Plant Name`}
-                                                        name={"PlantName"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        validate={[required]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                    />
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col md="6">
-                                                    <Field
-                                                        label={`Plant Code`}
-                                                        name={"PlantCode"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        //validate={[required]}
-                                                        component={renderText}
-                                                        //required={true}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                    />
-                                                </Col>
-                                                <Col md="6">
-                                                    <Row>
-                                                        <Col className="Phone phoneNumber" md="9">
-                                                            <Field
-                                                                label="Phone Number"
-                                                                name={"PhoneNumber"}
-                                                                type="text"
-                                                                placeholder={''}
-                                                                validate={[required, number]}
-                                                                component={renderText}
-                                                                required={true}
-                                                                maxLength={12}
-                                                                className=""
-                                                                customClassName={'withBorder'}
-                                                            />
-                                                        </Col>
-                                                        <Col className="Ext phoneNumber" md="3">
-                                                            <Field
-                                                                label="Extension"
-                                                                name={"Extension"}
-                                                                type="text"
-                                                                placeholder={''}
-                                                                validate={[required]}
-                                                                component={renderText}
-                                                                required={true}
-                                                                maxLength={5}
-                                                                className=""
-                                                                customClassName={'withBorder'}
-                                                            />
-                                                        </Col>
-                                                    </Row>
 
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col md="6">
-                                                    <Field
-                                                        label="Address 1"
-                                                        name={"AddressLine1"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        validate={[required]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        maxLength={26}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                    />
-                                                </Col>
-                                                <Col md="6">
-                                                    <Field
-                                                        label="Address 2"
-                                                        name={"AddressLine2"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        validate={[required]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        maxLength={26}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                    />
-                                                </Col>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md="6">
+                                        <Field
+                                            label="Address 1"
+                                            name={"AddressLine1"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required]}
+                                            component={renderText}
+                                            required={true}
+                                            maxLength={26}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                        />
+                                    </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label="Address 2"
+                                            name={"AddressLine2"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required]}
+                                            component={renderText}
+                                            required={true}
+                                            maxLength={26}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                        />
+                                    </Col>
 
-                                            </Row>
-                                            <Row>
-                                                <Col md="6">
-                                                    <Field
-                                                        name="CountryId"
-                                                        type="text"
-                                                        label="Country"
-                                                        component={searchableSelect}
-                                                        placeholder={'Select Country'}
-                                                        options={this.selectType('country')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.countryHandler}
-                                                        valueDescription={this.state.country}
-                                                    />
-                                                </Col>
-                                                <Col md="6">
-                                                    <Field
-                                                        name="StateId"
-                                                        type="text"
-                                                        label="State"
-                                                        component={searchableSelect}
-                                                        placeholder={'Select State'}
-                                                        options={this.selectType('state')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.stateHandler}
-                                                        valueDescription={this.state.state}
-                                                    />
-                                                </Col>
+                                </Row>
+                                <Row>
+                                    <Col md="6">
+                                        <Field
+                                            name="CountryId"
+                                            type="text"
+                                            label="Country"
+                                            component={searchableSelect}
+                                            placeholder={'Select Country'}
+                                            options={this.selectType('country')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.countryHandler}
+                                            valueDescription={this.state.country}
+                                        />
+                                    </Col>
+                                    <Col md="6">
+                                        <Field
+                                            name="StateId"
+                                            type="text"
+                                            label="State"
+                                            component={searchableSelect}
+                                            placeholder={'Select State'}
+                                            options={this.selectType('state')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.stateHandler}
+                                            valueDescription={this.state.state}
+                                        />
+                                    </Col>
 
-                                            </Row>
+                                </Row>
 
-                                            <Row>
-                                                <Col md="6">
-                                                    <Field
-                                                        name="CityId"
-                                                        type="text"
-                                                        label="City"
-                                                        component={searchableSelect}
-                                                        placeholder={'Select City'}
-                                                        options={this.selectType('city')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.cityHandler}
-                                                        valueDescription={this.state.city}
-                                                    />
-                                                </Col>
-                                                <Col md="6">
-                                                    <Field
-                                                        label="ZipCode"
-                                                        name={"ZipCode"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        validate={[required, number, maxLength6]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        //maxLength={6}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                    />
-                                                </Col>
-                                            </Row>
+                                <Row>
+                                    <Col md="6">
+                                        <Field
+                                            name="CityId"
+                                            type="text"
+                                            label="City"
+                                            component={searchableSelect}
+                                            placeholder={'Select City'}
+                                            options={this.selectType('city')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.cityHandler}
+                                            valueDescription={this.state.city}
+                                        />
+                                    </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label="ZipCode"
+                                            name={"ZipCode"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required, number, maxLength6]}
+                                            component={renderText}
+                                            required={true}
+                                            //maxLength={6}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                        />
+                                    </Col>
+                                </Row>
 
-                                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                                <div className="col-sm-12 text-right bluefooter-butn">
-                                                    <button
-                                                        type="submit"
-                                                        className="submit-button mr5 save-btn" >
-                                                        <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' />
-                        </div> {isEditFlag ? 'Update' : 'Save'}
-                                                    </button>
-
-                                                    <button
-                                                        type={'button'}
-                                                        className="reset mr15 cancel-btn"
-                                                        onClick={this.cancel} >
-                                                       <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                                    </button>
-                                                </div>
-                                            </Row>
-                                        </form>
+                                <Row className="sf-btn-footer no-gutters justify-content-between">
+                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                        <button
+                                            type={'button'}
+                                            className="reset mr15 cancel-btn"
+                                            onClick={this.cancel} >
+                                            <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="submit-button mr5 save-btn" >
+                                            <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' />
+                                            </div> {isEditFlag ? 'Update' : 'Save'}
+                                        </button>
                                     </div>
-                                </Col>
-                            }
-                        </Row>
-                    </div>
-                    <VBCPlantListing
-                        onRef={ref => (this.child = ref)}
-                        getDetails={this.getDetails}
-                        formToggle={this.formToggle}
-                        isShowForm={this.state.isShowForm}
-                    />
-                </Container>
+                                </Row>
+                            </form>
+                        </div>
+                    </Container>
+                </Drawer>
             </>
         );
     }

@@ -12,13 +12,19 @@ import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
-    getVendorTypesSelectList, getVendorsByVendorTypeID,
+    getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
+    getVendorTypeByVendorSelectList
 } from '../../../../actions/master/Supplier';
 import { fetchCountryDataAPI, } from '../../../../actions/master/Comman';
 import Switch from "react-switch";
-import { loggedInUserId } from '../../../../helper/auth';
 import BulkUpload from '../../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
+
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { VENDOR } from '../../../../config/constants';
+import { loggedInUserId } from '../../../../helper';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -36,6 +42,14 @@ class VendorListing extends Component {
             vendorType: [],
             vendorName: [],
             country: [],
+
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
+            ViewAccessibility: false,
+            DownloadAccessibility: false,
+            BulkUploadAccessibility: false,
+            ActivateAccessibility: false,
         }
     }
 
@@ -45,11 +59,34 @@ class VendorListing extends Component {
     */
     componentWillMount() {
         this.props.getVendorTypesSelectList()
+        this.props.getAllVendorSelectList()
         this.props.fetchCountryDataAPI(() => { })
     }
 
     componentDidMount() {
         this.getTableListData(null, null, null)
+
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData != undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName == VENDOR)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData != undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                        ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+                    })
+                }
+            }
+        })
         //this.props.onRef(this)
     }
 
@@ -60,7 +97,7 @@ class VendorListing extends Component {
 
 	/**
 	* @method getTableListData
-	* @description Get user list data
+	* @description GET VENDOR DATA LIST
 	*/
     getTableListData = (vendorType = null, vendorName = null, country = null) => {
         let filterData = {
@@ -87,7 +124,7 @@ class VendorListing extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { countryList, vendorTypeList } = this.props;
+        const { countryList, vendorTypeList, vendorSelectList } = this.props;
         const { vendorList } = this.state;
         const temp = [];
         if (label === 'country') {
@@ -105,7 +142,7 @@ class VendorListing extends Component {
             return temp;
         }
         if (label === 'vendorList') {
-            vendorList && vendorList.map(item => {
+            vendorSelectList && vendorSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -171,10 +208,11 @@ class VendorListing extends Component {
 	* @description Renders buttons
 	*/
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -187,11 +225,11 @@ class VendorListing extends Component {
         }
         this.props.activeInactiveVendorStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
-                    toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-                } else {
-                    toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-                }
+                // if (cell == true) {
+                //     toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
+                // } else {
+                //     toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
+                // }
                 this.getTableListData(null, null, null)
             }
         })
@@ -203,17 +241,14 @@ class VendorListing extends Component {
     */
     handleVendorType = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ vendorType: newValue, vendorName: [], }, () => {
+            this.setState({ vendorType: newValue, }, () => {
                 const { vendorType } = this.state;
-                this.props.getVendorsByVendorTypeID(vendorType.value, (res) => {
-                    if (res && res.data && res.data.SelectList) {
-                        let Data = res.data.SelectList;
-                        this.setState({ vendorList: Data })
-                    }
-                })
+                this.props.getVendorsByVendorTypeID(vendorType.value, (res) => { })
             });
         } else {
-            this.setState({ vendorType: [], vendorName: [] })
+            this.setState({ vendorType: [], }, () => {
+                this.props.getAllVendorSelectList()
+            })
         }
     };
 
@@ -223,7 +258,10 @@ class VendorListing extends Component {
     */
     handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ vendorName: newValue, });
+            this.setState({ vendorName: newValue, }, () => {
+                const { vendorName } = this.state;
+                this.props.getVendorTypeByVendorSelectList(vendorName.value)
+            });
         } else {
             this.setState({ vendorName: [], })
         }
@@ -248,23 +286,36 @@ class VendorListing extends Component {
 	* @description Renders buttons
 	*/
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
+        const { ActivateAccessibility } = this.state;
+        if (ActivateAccessibility) {
+            return (
+                <>
+                    <label htmlFor="normal-switch">
+                        <Switch
+                            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+                            checked={cell}
+                            background="#ff6600"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#FC5774"
+                            id="normal-switch"
+                            height={24}
+                        />
+                    </label>
+                </>
+            )
+        } else {
+            return (
+                <>
+                    {
+                        cell ?
+                            <div className={'Activated'}> {'Active'}</div>
+                            :
+                            <div className={'Deactivated'}>{'Deactive'}</div>
+                    }
+                </>
+            )
+        }
     }
 
 
@@ -330,6 +381,8 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
         }, () => {
+            this.props.getVendorTypesSelectList()
+            this.props.getAllVendorSelectList()
             this.getTableListData(null, null, null)
         })
     }
@@ -363,7 +416,7 @@ class VendorListing extends Component {
 	*/
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpenVendor, isEditFlag, isBulkUpload, } = this.state;
+        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -416,7 +469,7 @@ class VendorListing extends Component {
                                         disabled={this.state.isEditFlag ? true : false}
                                     />
                                 </div>
-                                <div className="flex-fill">
+                                {/* <div className="flex-fill">
                                     <Field
                                         name="CountryId"
                                         type="text"
@@ -431,7 +484,7 @@ class VendorListing extends Component {
                                         valueDescription={this.state.country}
                                         disabled={this.state.isEditFlag ? true : false}
                                     />
-                                </div>
+                                </div> */}
 
                                 <div className="flex-fill">
                                     <button
@@ -456,20 +509,16 @@ class VendorListing extends Component {
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {!this.props.isShowForm &&
-                                        <>
-                                            <button
-                                                type="button"
-                                                className={'user-btn mr5'}
-                                                onClick={this.bulkToggle}>
-                                                <div className={'upload'}></div>Bulk Upload</button>
-                                            <button
-                                                type="button"
-                                                className={'user-btn'}
-                                                onClick={this.formToggle}>
-                                                <div className={'plus'}></div>ADD VENDOR</button>
-                                        </>
-                                    }
+                                    {BulkUploadAccessibility && <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.bulkToggle}>
+                                        <div className={'upload'}></div>Bulk Upload</button>}
+                                    {AddAccessibility && <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD VENDOR</button>}
                                 </div>
                             </div>
                         </Col>
@@ -526,11 +575,12 @@ class VendorListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, supplier }) {
-    const { loading, vendorTypeList } = supplier;
+function mapStateToProps({ comman, supplier, auth, }) {
+    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList } = supplier;
     const { countryList } = comman;
+    const { leftMenuData } = auth;
 
-    return { loading, vendorTypeList, countryList };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList };
 }
 
 
@@ -548,6 +598,9 @@ export default connect(mapStateToProps, {
     getVendorTypesSelectList,
     fetchCountryDataAPI,
     getVendorsByVendorTypeID,
+    getLeftMenu,
+    getAllVendorSelectList,
+    getVendorTypeByVendorSelectList
 })(reduxForm({
     form: 'VendorListing',
     onSubmitFail: errors => {

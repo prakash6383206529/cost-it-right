@@ -50,13 +50,13 @@ class PermissionsTabIndex extends Component {
 	*/
     componentDidMount() {
         this.props.getActionHeadsSelectList(() => {
-            setTimeout(() => {
-                const { isEditFlag, } = this.props;
-                console.log('isEditFlag', isEditFlag)
-                if (isEditFlag == false) {
-                    this.getRolePermission()
-                }
-            }, 500)
+            //setTimeout(() => {
+            const { isEditFlag, } = this.props;
+            console.log('isEditFlag', isEditFlag)
+            if (isEditFlag == false) {
+                this.getRolePermission()
+            }
+            //}, 500)
         })
         this.props.onRef(this);
     }
@@ -83,7 +83,7 @@ class PermissionsTabIndex extends Component {
     getUpdatedData = (data) => {
         setTimeout(() => {
             this.updateTabs(data)
-        }, 1000)
+        }, 2000)
     }
 
     /**

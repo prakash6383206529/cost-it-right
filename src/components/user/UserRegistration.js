@@ -226,8 +226,9 @@ class UserRegistration extends Component {
   roleHandler = (newValue, actionMeta) => {
     if (newValue && newValue != '') {
 
-      this.setState({ Modules: [], IsShowAdditionalPermission: false, }, () => {
-        this.setState({ role: newValue, });
+      this.setState({ role: newValue, Modules: [], IsShowAdditionalPermission: false, }, () => {
+        const { role } = this.state;
+        this.getRoleDetail(role.value)
       });
 
     } else {
@@ -255,7 +256,6 @@ class UserRegistration extends Component {
   */
   getUserDetail = (data) => {
     if (data && data.isEditFlag) {
-      //console.log('updated 111')
       this.setState({
         isLoader: true,
         isEditFlag: false,
@@ -270,7 +270,7 @@ class UserRegistration extends Component {
 
       this.props.getUserDataAPI(data.UserId, (res) => {
         if (res && res.data && res.data.Data) {
-          //console.log('updated 222')
+
           let Data = res.data.Data;
 
           setTimeout(() => {
@@ -279,18 +279,23 @@ class UserRegistration extends Component {
             const RoleObj = roleList && roleList.find(item => item.RoleId == Data.RoleId)
             const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId == Data.DepartmentId)
             const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
-            //console.log('updated 333', RoleObj, DepartmentObj, CityObj)
+
             this.setState({
               isEditFlag: true,
               isLoader: false,
+              IsShowAdditionalPermission: Data.IsAdditionalAccess,
               department: DepartmentObj != undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
               role: RoleObj != undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
               city: CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
             })
-            this.getUserPermission(data.UserId)
-          }, 500)
-          this.getUsersTechnologyLevelData(data.UserId)
 
+            if (Data.IsAdditionalAccess) {
+              this.getUserPermission(data.UserId)
+            }
+
+          }, 500)
+
+          this.getUsersTechnologyLevelData(data.UserId)
           if (data.passwordFlag) {
             $('input[type="password"]').get(0).focus()
           }
@@ -347,7 +352,7 @@ class UserRegistration extends Component {
     if (role && role.value) {
       this.setState({ IsShowAdditionalPermission: !IsShowAdditionalPermission }, () => {
         if (this.state.IsShowAdditionalPermission) {
-          this.getRoleDetail();
+          this.getRoleDetail(role.value);
         }
       });
     } else {
@@ -392,17 +397,23 @@ class UserRegistration extends Component {
    * @method getRoleDetail
    * @description used to get role detail
    */
-  getRoleDetail = () => {
-    const { role } = this.state;
-    if (role && role.value != '') {
-      this.props.getRoleDataAPI(role.value, (res) => {
+  getRoleDetail = (RoleId) => {
+    const { IsShowAdditionalPermission } = this.state;
+    if (RoleId != '') {
+      this.props.getRoleDataAPI(RoleId, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
+
           this.setState({
-            RoleId: role.value,
+            RoleId: RoleId,
             Modules: Data.Modules,
+            oldModules: Data.Modules,
             isLoader: false,
-          }, () => this.child.getUpdatedData(Data.Modules))
+          }, () => {
+            if (IsShowAdditionalPermission == true) {
+              this.child.getUpdatedData(Data.Modules)
+            }
+          })
 
         }
       })
@@ -565,7 +576,9 @@ class UserRegistration extends Component {
   confirmUpdateUser = (updatedData, RemoveCostingFlag) => {
 
     updatedData.IsRemoveCosting = RemoveCostingFlag;
+    console.log('updatedData: >> ', updatedData);
     this.props.updateUserAPI(updatedData, (res) => {
+      console.log('update', res)
       if (res.data.Result) {
         toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
@@ -621,7 +634,7 @@ class UserRegistration extends Component {
         TechnologyName: '',
         PlantName: '',
         IsActive: true,
-        AdditionalPermission: registerUserData.AdditionalPermission,
+        //AdditionalPermission: registerUserData.AdditionalPermission,
         CityName: department.label,
         UserProfileId: registerUserData.UserProfileId,
         UserName: values.UserName,
@@ -649,6 +662,8 @@ class UserRegistration extends Component {
         TechnologyLevels: tempTechnologyLevelArray,
         IsRemoveCosting: false,
         CostingCount: registerUserData.CostingCount,
+        IsAdditionalAccess: this.state.IsShowAdditionalPermission,
+        AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
       }
 
       const isDepartmentUpdate = (registerUserData.DepartmentId != department.value) ? true : false;
@@ -685,7 +700,9 @@ class UserRegistration extends Component {
       } else {
 
         reset();
+        console.log('updatedData: ', updatedData);
         this.props.updateUserAPI(updatedData, (res) => {
+          console.log('update', res)
           if (res.data.Result) {
             toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
           }
@@ -717,7 +734,10 @@ class UserRegistration extends Component {
         CityId: city.value,
         Modules: Modules,
         TechnologyLevels: tempTechnologyLevelArray,
+        IsAdditionalAccess: this.state.IsShowAdditionalPermission,
+        AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
       }
+      console.log('userData', userData)
       this.props.registerUserAPI(userData, res => {
         this.setState({ isSubmitted: false, })
 
@@ -1015,7 +1035,7 @@ class UserRegistration extends Component {
 
 
                   <div className=" row form-group">
-                    <div className={'col-md-6'}>
+                    <div className={'col-md-3'}>
                       <label
                         className="custom-checkbox"
                         onChange={this.onPressUserPermission}

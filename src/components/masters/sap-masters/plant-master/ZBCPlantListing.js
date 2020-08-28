@@ -14,6 +14,8 @@ import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
+import AddZBCPlant from './AddZBCPlant';
+import BulkUpload from '../../../massUpload/BulkUpload';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -24,7 +26,8 @@ class ZBCPlantListing extends Component {
         super(props);
         this.state = {
             isEditFlag: false,
-            isOpen: false,
+            isOpenVendor: false,
+            ID: '',
             tableData: [],
             city: [],
             country: [],
@@ -35,12 +38,7 @@ class ZBCPlantListing extends Component {
     componentDidMount() {
         this.getTableListData();
         this.props.fetchCountryDataAPI(() => { })
-        this.props.onRef(this)
-    }
-
-    // Get updated user list after any action performed.
-    getUpdatedData = () => {
-        this.getTableListData()
+        //this.props.onRef(this)
     }
 
 	/**
@@ -51,35 +49,21 @@ class ZBCPlantListing extends Component {
         this.props.getPlantDataAPI(false, (res) => {
             if (res && res.data && res.status === 200) {
                 let Data = res.data.DataList;
-
                 this.setState({ tableData: Data })
             }
         })
     }
 
 	/**
- * @method selectType
- * @description Used show listing of unit of measurement
- */
-    searchableSelectType = (label) => {
-        const { roleList, departmentList } = this.props;
-        const temp = [];
-
-        return temp;
-
-    }
-
-
-	/**
 	* @method editItemDetails
 	* @description confirm edit item
 	*/
     editItemDetails = (Id) => {
-        let requestData = {
+        this.setState({
+            isOpenVendor: true,
             isEditFlag: true,
-            Id: Id,
-        }
-        this.props.getDetails(requestData)
+            ID: Id,
+        })
     }
 
 	/**
@@ -114,10 +98,11 @@ class ZBCPlantListing extends Component {
 	* @description Renders buttons
 	*/
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -128,13 +113,23 @@ class ZBCPlantListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDeactivateItem(data, cell)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
+    }
+
+    confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
-                    toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-                } else {
-                    toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-                }
+                // if (cell == true) {
+                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                // } else {
+                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                // }
                 this.getTableListData()
             }
         })
@@ -145,39 +140,38 @@ class ZBCPlantListing extends Component {
 	* @description Renders buttons
 	*/
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
+        const { ActivateAccessibility } = this.props;
+        if (ActivateAccessibility) {
+            return (
+                <>
+                    <label htmlFor="normal-switch">
+                        {/* <span>Switch with default style</span> */}
+                        <Switch
+                            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+                            checked={cell}
+                            background="#ff6600"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#FC5774"
+                            id="normal-switch"
+                            height={24}
+                        />
+                    </label>
+                </>
+            )
+        } else {
+            return (
+                <>
+                    {
+                        cell ?
+                            <div className={'Activated'}> {'Active'}</div>
+                            :
+                            <div className={'Deactivated'}>{'Deactive'}</div>
+                    }
+                </>
+            )
+        }
     }
-
-	/**
-	* @method checkIsVendorFormatter
-	* @description Renders IsVendor
-	*/
-    checkIsVendorFormatter = (cell, row, enumObject, rowIndex) => {
-
-        return (
-            <>
-
-            </>
-        )
-    }
-
-
 
 	/**
 	* @method indexFormatter
@@ -238,7 +232,6 @@ class ZBCPlantListing extends Component {
             });
             return temp;
         }
-
     }
 
     /**
@@ -286,7 +279,7 @@ class ZBCPlantListing extends Component {
 
 	/**
 	* @method filterList
-	* @description Filter user listing on the basis of role and department
+	* @description FILTER DATALIST
 	*/
     filterList = () => {
         const { country, state, city, } = this.state;
@@ -297,11 +290,15 @@ class ZBCPlantListing extends Component {
             is_vendor: false,
         }
         this.props.getFilteredPlantList(filterData, (res) => {
-            console.log('resssssssssssssss', res)
-            if (res && res.data && res.status == 200) {
+            if (res.status == 204 && res.data == '') {
+                this.setState({ tableData: [], })
+            } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
-                //this.getTableListData()
+                this.setState({
+                    tableData: Data,
+                })
+            } else {
+
             }
         })
     }
@@ -319,7 +316,17 @@ class ZBCPlantListing extends Component {
     }
 
     formToggle = () => {
-        this.props.formToggle()
+        this.setState({ isOpenVendor: true })
+    }
+
+    closeVendorDrawer = (e = '') => {
+        this.setState({
+            isOpenVendor: false,
+            isEditFlag: false,
+            ID: '',
+        }, () => {
+            this.getTableListData()
+        })
     }
 
 	/**
@@ -330,13 +337,14 @@ class ZBCPlantListing extends Component {
 	*/
     onSubmit(values) {
     }
+
 	/**
 	* @method render
 	* @description Renders the component
 	*/
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag, editIndex, PartId, departmentType, roleType } = this.state;
+        const { handleSubmit, pristine, submitting, AddAccessibility, } = this.props;
+        const { isEditFlag, isOpenVendor, isBulkUpload } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -425,13 +433,11 @@ class ZBCPlantListing extends Component {
                         <Col md="4" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD ZBC PLANT</button>
-                                    }
+                                    {AddAccessibility && <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD ZBC PLANT</button>}
                                 </div>
                             </div>
                         </Col>
@@ -452,14 +458,22 @@ class ZBCPlantListing extends Component {
                     tableHeaderClass='my-custom-header'
                     pagination>
                     {/* <TableHeaderColumn dataField="Sr. No." width={'70'} dataFormat={this.indexFormatter} dataSort={true}>Sr. No.</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="IsVendor" hidden={true} dataFormat={this.checkIsVendorFormatter} dataAlign="center" dataSort={true}>Is Vendor</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantName" dataAlign="center" dataSort={true}>Plant Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>
+                    <TableHeaderColumn dataField="CountryName" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
+                    <TableHeaderColumn dataField="StateName" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
                     <TableHeaderColumn dataField="CityName" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 
+                {isOpenVendor && <AddZBCPlant
+                    isOpen={isOpenVendor}
+                    closeDrawer={this.closeVendorDrawer}
+                    isEditFlag={isEditFlag}
+                    ID={this.state.ID}
+                    anchor={'right'}
+                />}
             </ >
         );
     }
