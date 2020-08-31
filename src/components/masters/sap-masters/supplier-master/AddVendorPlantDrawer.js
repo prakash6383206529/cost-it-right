@@ -8,7 +8,10 @@ import {
     searchableSelect
 } from "../../../layout/FormInputs";
 import { createPlantAPI, } from '../../../../actions/master/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, } from '../../../../actions/master/Comman';
+import {
+    fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
+    getCityByCountry,
+} from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
@@ -75,14 +78,26 @@ class AddVendorPlantDrawer extends Component {
     }
 
     /**
+    * @method getAllCityData
+    * @description  GET ALL CITY ON BASIS OF COUNTRY
+    */
+    getAllCityData = () => {
+        const { country } = this.state;
+        if (country && country.label != 'India') {
+            this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+        } else {
+            this.props.fetchStateDataAPI(country.value, () => { })
+        }
+    }
+
+    /**
     * @method countryHandler
     * @description Used to handle country
     */
     countryHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ country: newValue }, () => {
-                const { country } = this.state;
-                this.props.fetchStateDataAPI(country.value, () => { })
+            this.setState({ country: newValue, state: [], city: [] }, () => {
+                this.getAllCityData()
             });
         } else {
             this.setState({ country: [], state: [], city: [], })
@@ -220,6 +235,7 @@ class AddVendorPlantDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, reset } = this.props;
+        const { country } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -351,21 +367,22 @@ class AddVendorPlantDrawer extends Component {
                                             valueDescription={this.state.country}
                                         />
                                     </Col>
-                                    <Col md="6">
-                                        <Field
-                                            name="StateId"
-                                            type="text"
-                                            label="State"
-                                            component={searchableSelect}
-                                            placeholder={'Select State'}
-                                            options={this.renderListing('state')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.stateHandler}
-                                            valueDescription={this.state.state}
-                                        />
-                                    </Col>
+                                    {(country.length == 0 || country.label == 'India') &&
+                                        <Col md="6">
+                                            <Field
+                                                name="StateId"
+                                                type="text"
+                                                label="State"
+                                                component={searchableSelect}
+                                                placeholder={'Select State'}
+                                                options={this.renderListing('state')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.stateHandler}
+                                                valueDescription={this.state.state}
+                                            />
+                                        </Col>}
 
                                 </Row>
 
@@ -407,7 +424,7 @@ class AddVendorPlantDrawer extends Component {
                                             type="submit"
                                             className="submit-button mr5 save-btn" >
                                             <div className={'check-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>
-                                             {isEditFlag ? 'Update' : 'Save'}
+                                            {isEditFlag ? 'Update' : 'Save'}
                                         </button>
 
                                         <button
@@ -452,6 +469,7 @@ export default connect(mapStateToProps, {
     fetchStateDataAPI,
     fetchCityDataAPI,
     fetchSupplierCityDataAPI,
+    getCityByCountry,
 })(reduxForm({
     form: 'AddVendorPlantDrawer',
     enableReinitialize: true,

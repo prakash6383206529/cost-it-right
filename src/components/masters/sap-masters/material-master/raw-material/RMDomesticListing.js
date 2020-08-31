@@ -390,6 +390,28 @@ class RMDomesticListing extends Component {
     }
 
     /**
+    * @method densityAlert
+    * @description confirm Redirection to Material tab.
+    */
+    densityAlert = () => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDensity()
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDensity
+    * @description confirm density popup.
+    */
+    confirmDensity = () => {
+        this.props.toggle('4')
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
@@ -550,6 +572,7 @@ class RMDomesticListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
+                    densityAlert={this.densityAlert}
                     fileName={'RMDomestic'}
                     isZBCVBCTemplate={true}
                     messageLabel={'RM Domestic'}

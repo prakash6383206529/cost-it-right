@@ -6,7 +6,10 @@ import { required, number, maxLength6, maxLength10 } from "../../../../helper/va
 import { userDetails, loggedInUserId } from "../../../../helper/auth";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList } from '../../../../actions/master/Comman';
+import {
+    fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList,
+    getCityByCountry,
+} from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
@@ -133,6 +136,15 @@ class AddVBCPlant extends Component {
         }
     };
 
+    getAllCityData = () => {
+        const { country } = this.state;
+        if (country && country.label != 'India') {
+            this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+        } else {
+            this.props.fetchStateDataAPI(country.value, () => { })
+        }
+    }
+
     /**
     * @method countryHandler
     * @description Used to handle country
@@ -140,11 +152,11 @@ class AddVBCPlant extends Component {
     countryHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
             this.setState({ country: newValue, state: [], city: [], }, () => {
-                const { country } = this.state;
-                this.props.fetchStateDataAPI(country.value, () => { })
+                this.getAllCityData()
             });
         } else {
             this.setState({ country: [], state: [], city: [], })
+            this.props.fetchStateDataAPI(0, () => { })
         }
     };
 
@@ -160,6 +172,7 @@ class AddVBCPlant extends Component {
             });
         } else {
             this.setState({ state: [], city: [] });
+            this.props.fetchCityDataAPI(0, () => { })
         }
 
     };
@@ -265,6 +278,7 @@ class AddVBCPlant extends Component {
     */
     render() {
         const { handleSubmit, reset, isEditFlag } = this.props;
+        const { country } = this.state;
         return (
             <>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -329,6 +343,7 @@ class AddVBCPlant extends Component {
                                             //required={true}
                                             className=""
                                             customClassName={'withBorder'}
+                                            disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -412,21 +427,22 @@ class AddVBCPlant extends Component {
                                             valueDescription={this.state.country}
                                         />
                                     </Col>
-                                    <Col md="6">
-                                        <Field
-                                            name="StateId"
-                                            type="text"
-                                            label="State"
-                                            component={searchableSelect}
-                                            placeholder={'Select State'}
-                                            options={this.selectType('state')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.stateHandler}
-                                            valueDescription={this.state.state}
-                                        />
-                                    </Col>
+                                    {(country.length == 0 || country.label == 'India') &&
+                                        <Col md="6">
+                                            <Field
+                                                name="StateId"
+                                                type="text"
+                                                label="State"
+                                                component={searchableSelect}
+                                                placeholder={'Select State'}
+                                                options={this.selectType('state')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.stateHandler}
+                                                valueDescription={this.state.state}
+                                            />
+                                        </Col>}
 
                                 </Row>
 
@@ -526,6 +542,7 @@ export default connect(mapStateToProps, {
     fetchSupplierCityDataAPI,
     updatePlantAPI,
     getSupplierList,
+    getCityByCountry,
 })(reduxForm({
     form: 'AddVBCPlant',
     enableReinitialize: true,

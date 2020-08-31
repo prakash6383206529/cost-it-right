@@ -245,6 +245,7 @@ class VBCPlantListing extends Component {
             });
         } else {
             this.setState({ country: [], state: [], city: [], })
+            this.props.fetchStateDataAPI(0, () => { })
         }
     };
 
@@ -260,6 +261,7 @@ class VBCPlantListing extends Component {
             });
         } else {
             this.setState({ state: [], city: [] });
+            this.props.fetchCityDataAPI(0, () => { })
         }
 
     };

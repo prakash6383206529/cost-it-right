@@ -16,7 +16,7 @@ import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
   updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
-  setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
+  setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLoginPageInit,
 } from "../../actions/auth/AuthActions";
 import { getAllCities } from "../../actions/master/Comman";
 import { MESSAGES } from "../../config/message";
@@ -68,7 +68,15 @@ class UserRegistration extends Component {
       technologyLevelEditIndex: '',
       isEditIndex: false,
       isShowPwdField: true,
+      IsLoginEmailConfigure: true,
     };
+  }
+
+  componentWillMount() {
+    this.props.getLoginPageInit(res => {
+      let Data = res.data.Data;
+      this.setState({ IsLoginEmailConfigure: Data.IsLoginEmailConfigure })
+    })
   }
 
   /**
@@ -350,10 +358,8 @@ class UserRegistration extends Component {
   onPressUserPermission = () => {
     const { IsShowAdditionalPermission, role } = this.state;
     if (role && role.value) {
-      this.setState({ IsShowAdditionalPermission: !IsShowAdditionalPermission }, () => {
-        if (this.state.IsShowAdditionalPermission) {
-          this.getRoleDetail(role.value);
-        }
+      this.setState({ IsShowAdditionalPermission: !IsShowAdditionalPermission, Modules: [] }, () => {
+        this.getRoleDetail(role.value);
       });
     } else {
       toastr.warning('Please select role.')
@@ -451,6 +457,14 @@ class UserRegistration extends Component {
   setTechnologyLevel = () => {
     const { technology, level, TechnologyLevelGrid } = this.state;
     const tempArray = [];
+
+    const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
+      return el.TechnologyId == technology.value && el.LevelId == level.value
+    })
+    if (isExistTechnology != -1) {
+      toastr.warning('Technology and Level already allowed.')
+      return false;
+    }
 
     tempArray.push(...TechnologyLevelGrid, {
       Technology: technology.label,
@@ -576,9 +590,7 @@ class UserRegistration extends Component {
   confirmUpdateUser = (updatedData, RemoveCostingFlag) => {
 
     updatedData.IsRemoveCosting = RemoveCostingFlag;
-    console.log('updatedData: >> ', updatedData);
     this.props.updateUserAPI(updatedData, (res) => {
-      console.log('update', res)
       if (res.data.Result) {
         toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
@@ -700,9 +712,7 @@ class UserRegistration extends Component {
       } else {
 
         reset();
-        console.log('updatedData: ', updatedData);
         this.props.updateUserAPI(updatedData, (res) => {
-          console.log('update', res)
           if (res.data.Result) {
             toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
           }
@@ -713,7 +723,7 @@ class UserRegistration extends Component {
     } else {
 
       let userData = {
-        UserName: values.UserName,
+        UserName: !this.state.IsLoginEmailConfigure ? values.UserName : null,
         Password: values.Password,
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
@@ -737,7 +747,6 @@ class UserRegistration extends Component {
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
       }
-      console.log('userData', userData)
       this.props.registerUserAPI(userData, res => {
         this.setState({ isSubmitted: false, })
 
@@ -872,21 +881,22 @@ class UserRegistration extends Component {
                         customClassName={'withBorderEmail'}
                       />
                     </div>
-                    <div className="input-group col-md-3">
-                      <Field
-                        name="UserName"
-                        label="User name"
-                        type="text"
-                        placeholder={'Enter'}
-                        component={renderText}
-                        isDisabled={false}
-                        validate={[required, minLength7]}
-                        required={true}
-                        maxLength={70}
-                        disabled={this.state.isEditFlag ? true : false}
-                        customClassName={'withBorder'}
-                      />
-                    </div>
+                    {!this.state.IsLoginEmailConfigure &&
+                      <div className="input-group col-md-3">
+                        <Field
+                          name="UserName"
+                          label="User name"
+                          type="text"
+                          placeholder={'Enter'}
+                          component={renderText}
+                          isDisabled={false}
+                          validate={[required, minLength7]}
+                          required={true}
+                          maxLength={70}
+                          disabled={this.state.isEditFlag ? true : false}
+                          customClassName={'withBorder'}
+                        />
+                      </div>}
                     {this.state.isShowPwdField &&
                       <>
                         <div id="password" className="input-group password col-md-3">
@@ -1041,7 +1051,7 @@ class UserRegistration extends Component {
                         onChange={this.onPressUserPermission}
                       >
                         Grant User Wise Permission
-                                                <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
+                        <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
                         <span
                           className=" before-box"
                           checked={this.state.IsShowAdditionalPermission}
@@ -1059,6 +1069,7 @@ class UserRegistration extends Component {
                           isEditFlag={this.state.isEditFlag}
                           setInitialModuleData={this.setInitialModuleData}
                           moduleData={this.moduleDataHandler}
+                          isNewRole={false}
                         />
                       </div>
                     </div>}
@@ -1294,6 +1305,7 @@ export default connect(mapStateToProps, {
   setUserAdditionalPermission,
   setUserTechnologyLevelForCosting,
   updateUserTechnologyLevelForCosting,
+  getLoginPageInit,
 })(reduxForm({
   validate,
   form: 'Signup',

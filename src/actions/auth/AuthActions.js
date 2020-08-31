@@ -1195,6 +1195,26 @@ export function setPagePermissionRoleWise(requestData, callback) {
 }
 
 /**
+ * @method getLoginPageInit
+ * @description get Login Page Initial to set Email or Username on login page.
+ */
+export function getLoginPageInit(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getLoginPageInit}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method setPagePermissionUserWise
  * @description set page permission user wise API 
  */

@@ -363,7 +363,7 @@ export const API = {
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
   UpdateCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/update-costing-weight-calculation`,
 
-  //cost working API's
+  //COST WORKING API
   getCostingBySupplier: `${BASE_URL}/costing-sheet-metal/get-costings-by-supplier`,
   getRawMaterialListBySupplierId: `${BASE_URL}/costing-sheet-metal/get-raw-material-by-supplier`,
   addCostingRawMaterial: `${BASE_URL}/costing-sheet-metal/add-costing-raw-material`,
@@ -389,19 +389,20 @@ export const API = {
   saveCosting: `${BASE_URL}/costing-sheet-metal/save-costing`,
   saveBOPCosting: `${BASE_URL}/costing-sheet-metal/save-costing-bought-out-part`,
 
-  //cost summary 
+  //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
   getCostSummaryOtherOperationList: `${BASE_URL}/costing-sheet-metal/get-other-operation-by-supplier`,
   fetchFreightHeadsAPI: `${BASE_URL}/configuration/get-freight-heads`,
   getCostingFreight: `${BASE_URL}/costing-sheet-metal/get-costing-freight`,
   copyCostingAPI: `${BASE_URL}/costing/copy-costing`,
 
-  // Login API
+  //LOGIN API
   login: `${BASE_URL}/user/login`,
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
+  getLoginPageInit: `${BASE_URL}/user/page-init`,
 
-  //User's API
+  //USERS API
   getUserSelectList: `${BASE_URL}/configuration/select-list-get-user`,
   getAllUserDataAPI: `${BASE_URL}/user/get-all`,
   getUserDataAPI: `${BASE_URL}/user/get-by-id`,
@@ -412,7 +413,7 @@ export const API = {
   getUserTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-technology-levels`,
   updateUserTechnologyLevelForCosting: `${BASE_URL}/user-level/update-user-technology-levels`,
 
-  //Role's API
+  //ROLES API
   addRoleAPI: `${BASE_URL}/user-role/create-new`,
   getAllRoleAPI: `${BASE_URL}/user-role/get-all`,
   getRoleAPI: `${BASE_URL}/user-role/get-new`,
@@ -420,14 +421,14 @@ export const API = {
   deleteRoleAPI: `${BASE_URL}/user-role/delete`,
   rolesSelectList: `${BASE_URL}/configuration/select-list-get-roles`,
 
-  //Department's API
+  //DEPARTMENT'S API
   addDepartmentAPI: `${BASE_URL}/user-department/create`,
   getAllDepartmentAPI: `${BASE_URL}/user-department/get-all`,
   getDepartmentAPI: `${BASE_URL}/user-department/get`,
   updateDepartmentAPI: `${BASE_URL}/user-department/update`,
   deleteDepartmentAPI: `${BASE_URL}/user-department/delete`,
 
-  //Level's API
+  //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
   addUserLevelAPI: `${BASE_URL}/user-level/create`,
   getAllLevelAPI: `${BASE_URL}/user-level/get-all`,

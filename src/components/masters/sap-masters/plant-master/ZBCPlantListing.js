@@ -246,6 +246,7 @@ class ZBCPlantListing extends Component {
             });
         } else {
             this.setState({ country: [], state: [], city: [], })
+            this.props.fetchStateDataAPI(0, () => { })
         }
     };
 
@@ -261,6 +262,7 @@ class ZBCPlantListing extends Component {
             });
         } else {
             this.setState({ state: [], city: [] });
+            this.props.fetchCityDataAPI(0, () => { })
         }
 
     };

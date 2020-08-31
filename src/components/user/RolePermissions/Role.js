@@ -11,13 +11,11 @@ import {
 	getActionHeadsSelectList, getModuleActionInit,
 } from "../../../actions/auth/AuthActions";
 import { MESSAGES } from "../../../config/message";
-import { Table, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
+import { } from 'reactstrap';
 import classnames from 'classnames';
 import NoContentFound from "../../common/NoContentFound";
 import { CONSTANT } from "../../../helper/AllConastant";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
-import Switch from "react-switch";
-import DashboardAuditTab from "./DashboardAuditTab";
 import PermissionsTabIndex from "./PermissionsTabIndex";
 
 class Role extends Component {
@@ -33,6 +31,7 @@ class Role extends Component {
 			checkedAll: false,
 			RoleId: '',
 			Modules: [],
+			isNewRole: true,
 		};
 	}
 
@@ -48,10 +47,7 @@ class Role extends Component {
 	}
 
 	componentDidMount() {
-		// const { data } = this.props;
-		// if (data && data.isEditFlag) {
-		// 	this.getRoleDetail()
-		// }
+
 	}
 
 	/**
@@ -67,6 +63,7 @@ class Role extends Component {
 
 				this.setState({
 					isEditFlag: true,
+					isNewRole: false,
 					RoleId: data.RoleId,
 					Modules: Data.Modules,
 					isLoader: false,
@@ -99,19 +96,19 @@ class Role extends Component {
 	moduleDataHandler = (data, ModuleName) => {
 		const { Modules } = this.state;
 		let tempArray = [];
-		let temp111 = data;
+		let oldData = data;
 		let isAnyChildChecked = data && data.map((item, i) => {
 			let index = item.Actions.findIndex(el => el.IsChecked == true)
 			if (index != -1) {
-				temp111[i].IsChecked = true;
+				oldData[i].IsChecked = true;
 				tempArray.push(index)
 			}
 		})
 
-		let isParentChecked = temp111.findIndex(el => el.IsChecked == true)
+		let isParentChecked = oldData.findIndex(el => el.IsChecked == true)
 		const isAvailable = Modules && Modules.findIndex(a => a.ModuleName == ModuleName)
 		if (isAvailable != -1 && Modules) {
-			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked != -1 ? true : false, Pages: temp111, }) })
+			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked != -1 ? true : false, Pages: oldData, }) })
 			this.setState({ Modules: tempArray })
 		}
 	}
@@ -156,17 +153,7 @@ class Role extends Component {
 	onSubmit(values) {
 		const { isEditFlag, Modules, RoleId } = this.state;
 
-		//Validation for atleast 1 permission should be allowed for role, 
-		//Should not be empty
-
-		// const checkedModules = Modules.filter(item => item.IsChecked == true)
-		// if (checkedModules.length == 0) {
-		// 	toastr.warning(MESSAGES.DEPARTMENT_EMPTY_ALERT)
-		// 	return false;
-		// }
-
 		this.setState({ isLoader: true })
-
 		let userDetail = userDetails()
 
 		if (isEditFlag) {
@@ -211,8 +198,8 @@ class Role extends Component {
 	}
 
 	render() {
-		const { handleSubmit, pristine, reset, submitting, actionSelectList, loading } = this.props;
-		const { isLoader, isSubmitted, permissions, isEditFlag } = this.state;
+		const { handleSubmit, pristine, } = this.props;
+		const { isLoader, isSubmitted, isEditFlag } = this.state;
 
 		return (
 			<div>
@@ -252,27 +239,28 @@ class Role extends Component {
 												isEditFlag={this.state.isEditFlag}
 												setInitialModuleData={this.setInitialModuleData}
 												moduleData={this.moduleDataHandler}
+												isNewRole={this.state.isNewRole}
 											/>
 										</div>
 									</div>
-                                    <div class="role-footer">
-									<div className="text-right btn-blue-block">
-										<button
-											//disabled={pristine || submitting}
-											onClick={this.cancel}
-											type="button"
-											value="Cancel"
-											className="reset mr15 cancel-btn">
-											<div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> Cancel</button>
-										<button
-											disabled={isSubmitted ? true : false}
-											type="submit"
-											className="btn-primary save-btn"
-										>	<div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
-											</div>
-											{isEditFlag ? 'Update' : 'Save'}
-										</button>
-									</div>
+									<div class="role-footer">
+										<div className="text-right btn-blue-block">
+											<button
+												//disabled={pristine || submitting}
+												onClick={this.cancel}
+												type="button"
+												value="Cancel"
+												className="reset mr15 cancel-btn">
+												<div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> Cancel</button>
+											<button
+												disabled={isSubmitted ? true : false}
+												type="submit"
+												className="btn-primary save-btn"
+											>	<div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
+												</div>
+												{isEditFlag ? 'Update' : 'Save'}
+											</button>
+										</div>
 									</div>
 								</form>
 							</div>

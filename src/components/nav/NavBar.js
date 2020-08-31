@@ -134,16 +134,8 @@ class SideBar extends Component {
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       const { location, leftMenuData } = this.props;
       if (location && location.state) {
-        const PageName = location.state.PageName;
-        const PageURL = location.state.PageURL;
         this.setState({ activeURL: location.pathname })
-        this.props.breadCrumbTrail(PageName, PageURL, location.pathname)
       }
-      // if (leftMenuData && leftMenuData != undefined) {
-      //   const NavigationURL = leftMenuData[0].NavigationURL;
-      //   this.props.history.push(NavigationURL);
-      //   this.setState({ isLoader: false })
-      // }
     })
   }
 

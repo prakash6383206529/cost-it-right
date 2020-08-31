@@ -162,6 +162,7 @@ class RowMaterialMaster extends Component {
                                         <RMDomesticListing
                                             formToggle={this.displayDomesticForm}
                                             getDetails={this.getDetails}
+                                            toggle={this.toggle}
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
@@ -174,6 +175,7 @@ class RowMaterialMaster extends Component {
                                         <RMImportListing
                                             formToggle={this.displayImportForm}
                                             getDetails={this.getDetailsImport}
+                                            toggle={this.toggle}
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}

@@ -79,7 +79,7 @@ class User extends Component {
   }
 
   displayRoleForm = () => {
-    this.setState({ isRolePermissionForm: true, isUserForm: false, })
+    this.setState({ isRolePermissionForm: true, isUserForm: false, data: {}, })
   }
 
   hideForm = () => {

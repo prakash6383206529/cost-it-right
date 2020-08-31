@@ -143,7 +143,7 @@ class BulkUpload extends Component {
 
             if (Data.CountSucceeded > 0) {
                 toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
-                if (DynamicData && DynamicData.IsDensityAvailable == false && fileName == 'RMSpecification') {
+                if (DynamicData && DynamicData.IsDensityAvailable == false) {
                     this.props.densityAlert()
                 }
             }
@@ -157,7 +157,7 @@ class BulkUpload extends Component {
             }
 
         }
-        this.toggleDrawer('')
+        //this.toggleDrawer('')
     }
 
 

@@ -67,9 +67,7 @@ class AddVendorDrawer extends Component {
     * @description called
     */
     handleVendorPlant = e => {
-        this.setState({ selectedVendorPlants: e }, () => {
-            this.props.getVendorPlantSelectList(() => { })
-        });
+        this.setState({ selectedVendorPlants: e });
     };
 
     /**

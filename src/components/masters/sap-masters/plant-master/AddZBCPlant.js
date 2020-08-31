@@ -6,7 +6,10 @@ import { required, number, maxLength6, maxLength10 } from "../../../../helper/va
 import { userDetails, loggedInUserId } from "../../../../helper/auth";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI } from '../../../../actions/master/Comman';
+import {
+    fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
+    getCityByCountry,
+} from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
@@ -109,18 +112,27 @@ class AddZBCPlant extends Component {
 
     }
 
+    getAllCityData = () => {
+        const { country } = this.state;
+        if (country && country.label != 'India') {
+            this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+        } else {
+            this.props.fetchStateDataAPI(country.value, () => { })
+        }
+    }
+
     /**
     * @method countryHandler
     * @description Used to handle country
     */
     countryHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ country: newValue }, () => {
-                const { country } = this.state;
-                this.props.fetchStateDataAPI(country.value, () => { })
+            this.setState({ country: newValue, state: [], city: [] }, () => {
+                this.getAllCityData()
             });
         } else {
-            this.setState({ country: [], state: [], city: [], })
+            this.setState({ country: [], state: [], city: [] })
+            this.props.fetchStateDataAPI(0, () => { })
         }
     };
 
@@ -136,6 +148,7 @@ class AddZBCPlant extends Component {
             });
         } else {
             this.setState({ state: [], city: [] });
+            this.props.fetchCityDataAPI(0, () => { })
         }
 
     };
@@ -245,7 +258,7 @@ class AddZBCPlant extends Component {
     */
     render() {
         const { handleSubmit, plantUnitDetail, reset, isEditFlag } = this.props;
-        const { } = this.state;
+        const { country } = this.state;
         return (
             <>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -292,6 +305,7 @@ class AddZBCPlant extends Component {
                                             required={true}
                                             className=""
                                             customClassName={'withBorder'}
+                                            disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
                                 </Row>
@@ -375,21 +389,22 @@ class AddZBCPlant extends Component {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col md="6">
-                                        <Field
-                                            name="StateId"
-                                            type="text"
-                                            label="State"
-                                            component={searchableSelect}
-                                            placeholder={'Select State'}
-                                            options={this.selectType('state')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.stateHandler}
-                                            valueDescription={this.state.state}
-                                        />
-                                    </Col>
+                                    {(country.length == 0 || country.label == 'India') &&
+                                        <Col md="6">
+                                            <Field
+                                                name="StateId"
+                                                type="text"
+                                                label="State"
+                                                component={searchableSelect}
+                                                placeholder={'Select State'}
+                                                options={this.selectType('state')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.stateHandler}
+                                                valueDescription={this.state.state}
+                                            />
+                                        </Col>}
                                     <Col md="6">
                                         <Field
                                             name="CityId"
@@ -487,7 +502,8 @@ export default connect(mapStateToProps, {
     fetchCityDataAPI,
     getPlantUnitAPI,
     fetchSupplierCityDataAPI,
-    updatePlantAPI
+    updatePlantAPI,
+    getCityByCountry,
 })(reduxForm({
     form: 'AddZBCPlant',
     enableReinitialize: true,
