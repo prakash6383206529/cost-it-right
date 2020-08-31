@@ -267,16 +267,16 @@ export function getAllUserAPI(callback) {
 export function getAllUserDataAPI(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}`, { headers })
+        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}`, { headers })
             .then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_USER_DATA_SUCCESS,
-                        payload: response.data.DataList,
-                    });
-                    callback(response);
-                }
+                console.log('response', response)
+                dispatch({
+                    type: GET_USER_DATA_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
             }).catch((error) => {
+                console.log('error', error)
                 dispatch({ type: API_FAILURE });
                 callback(error);
                 apiErrors(error);
@@ -354,13 +354,15 @@ export function updateUserAPI(requestData, callback) {
         dispatch({ type: AUTH_API_REQUEST });
         axios.put(API.updateUserAPI, requestData, { headers })
             .then((response) => {
+                console.log('>>>>>>', response)
                 dispatch({ type: API_SUCCESS });
                 callback(response);
             })
             .catch((error) => {
+                console.log('>>>>>>', error)
+                callback(error);
                 dispatch({ type: AUTH_API_FAILURE });
                 apiErrors(error);
-                //callback(error);
             });
     };
 }
@@ -1189,6 +1191,26 @@ export function setPagePermissionRoleWise(requestData, callback) {
                 apiErrors(error);
                 callback(error);
             });
+    };
+}
+
+/**
+ * @method getLoginPageInit
+ * @description get Login Page Initial to set Email or Username on login page.
+ */
+export function getLoginPageInit(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getLoginPageInit}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
 

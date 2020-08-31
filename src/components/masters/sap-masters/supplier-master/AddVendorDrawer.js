@@ -554,9 +554,6 @@ class AddVendorDrawer extends Component {
                                                 disabled={this.state.isEditFlag ? true : false}
                                             />
                                         </Col>}
-                                </Row>
-                                <Row>
-                                    {/* {(country.length == 0 || country.label == 'India') && */}
                                     <Col md="6">
                                         <Field
                                             name="CityId"
@@ -573,9 +570,9 @@ class AddVendorDrawer extends Component {
                                             disabled={this.state.isEditFlag ? true : false}
                                         />
                                     </Col>
-                                    {/* } */}
-
-                                    <Col md="12">
+                                </Row>
+                                <Row>
+                                    <Col md="6">
                                         <Field
                                             label="Address 1"
                                             name={"AddressLine1"}
@@ -589,8 +586,6 @@ class AddVendorDrawer extends Component {
                                             customClassName=" withBorder"
                                         />
                                     </Col>
-                                </Row>
-                                <Row>
                                     <Col md="6">
                                         <Field
                                             label="Address 2"
@@ -605,6 +600,8 @@ class AddVendorDrawer extends Component {
                                             customClassName=" withBorder"
                                         />
                                     </Col>
+                                </Row>
+                                <Row>
                                     <Col md="6">
                                         <Field
                                             label="ZipCode"

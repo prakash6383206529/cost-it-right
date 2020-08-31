@@ -11,6 +11,8 @@ import {
     GET_SUPPLIER_DATA_SUCCESS,
     GET_RADIO_SUPPLIER_TYPE_SUCCESS,
     GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+    GET_ALL_VENDOR_SELECTLIST_SUCCESS,
+    GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR,
 } from '../../config/constants';
 import {
     apiErrors
@@ -167,26 +169,6 @@ export function getRadioButtonSupplierType() {
 }
 
 /**
- * @method getVendorTypesSelectList
- * @description get radio button supplier type
- */
-export function getVendorTypesSelectList() {
-    return (dispatch) => {
-        const request = axios.get(API.getVendorTypesSelectList, headers);
-        request.then((response) => {
-            dispatch({
-                type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
-                payload: response.data.SelectList,
-            });
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
-}
-
-
-/**
  * @method activeInactiveVendorStatus
  * @description active Inactive Status
  */
@@ -204,27 +186,6 @@ export function activeInactiveVendorStatus(requestData, callback) {
     };
 }
 
-
-/**
- * @method getVendorsByVendorTypeID
- * @description get one labour based on id
- */
-export function getVendorsByVendorTypeID(VendorID, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.get(`${API.getVendorsByVendorTypeID}/${VendorID}`, headers)
-            .then((response) => {
-                if (response.data.Result) {
-                    callback(response);
-                }
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-
-    };
-}
-
 /**
  * @method vendorBulkUpload
  * @description create Vendor by Bulk Upload
@@ -236,6 +197,86 @@ export function vendorBulkUpload(data, callback) {
             if (response.status == 200) {
                 callback(response);
             }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorTypesSelectList
+ * @description GET VENDOR TYPE SELECTLIST
+ */
+export function getVendorTypesSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorTypesSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAllVendorSelectList
+ * @description GET ALL VENDORS SELECTLIST
+ */
+export function getAllVendorSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getAllVendorSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorsByVendorTypeID
+ * @description GET VENDOR SELECTLIST BY VENDOR TYPE
+ */
+export function getVendorsByVendorTypeID(VendorID, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getVendorsByVendorTypeID}/${VendorID}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getVendorTypeByVendorSelectList
+ * @description GET ALL VENDORS TYPE SELECTLIST BY VENDOR
+ */
+export function getVendorTypeByVendorSelectList(VendorId) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getVendorTypeByVendorSelectList}/${VendorId}`, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);

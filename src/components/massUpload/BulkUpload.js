@@ -143,7 +143,7 @@ class BulkUpload extends Component {
 
             if (Data.CountSucceeded > 0) {
                 toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
-                if (DynamicData && DynamicData.IsDensityAvailable == false && fileName == 'RMSpecification') {
+                if (DynamicData && DynamicData.IsDensityAvailable == false) {
                     this.props.densityAlert()
                 }
             }
@@ -157,7 +157,7 @@ class BulkUpload extends Component {
             }
 
         }
-        this.toggleDrawer('')
+        //this.toggleDrawer('')
     }
 
 
@@ -306,17 +306,16 @@ class BulkUpload extends Component {
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-sm-12  bluefooter-butn1 text-right">
                                     <button
-                                        type="submit"
-                                        className="submit-button mr5 save-btn" >
-                                        <div className={'check-icon'}><img src={require('../../assests/images/check.png')}></img>
-                                        </div> {isEditFlag ? 'Update' : 'Save'}
-                                    </button>
-
-                                    <button
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={this.cancel} >
                                         <div className={'cross-icon'}><img src={require('../../assests/images/times.png')}></img></div> {'Cancel'}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="submit-button mr5 save-btn" >
+                                        <div className={'check-icon'}><img src={require('../../assests/images/check.png')}></img>
+                                        </div> {isEditFlag ? 'Update' : 'Save'}
                                     </button>
                                 </div>
                             </Row>

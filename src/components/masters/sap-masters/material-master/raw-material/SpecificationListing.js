@@ -5,6 +5,9 @@ import { Row, Col, Table, Button } from 'reactstrap';
 import {
     getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial,
     getGradeSelectList, getRawMaterialNameChild,
+    getRawMaterialFilterSelectList,
+    getGradeFilterByRawMaterialSelectList,
+    getRawMaterialFilterByGradeSelectList,
 } from '../../../../../actions/master/Material';
 import { } from '../../../../../actions/costing/CostWorking';
 import { searchableSelect } from "../../../../layout/FormInputs";
@@ -38,8 +41,7 @@ class SpecificationListing extends Component {
    * @description Called after rendering the component
    */
     componentDidMount() {
-        this.props.getRawMaterialNameChild(() => { })
-        this.props.getGradeSelectList(() => { })
+        this.props.getRawMaterialFilterSelectList(() => { })
         this.getSpecificationListData('', '');
     }
 
@@ -77,19 +79,18 @@ class SpecificationListing extends Component {
     * @description Used show listing of row material
     */
     renderListing = (label) => {
-        const { gradeSelectList, rawMaterialNameSelectList } = this.props;
+        const { filterRMSelectList } = this.props;
         const temp = [];
 
-        if (label === 'RMGrade') {
-            gradeSelectList && gradeSelectList.map(item => {
+        if (label === 'material') {
+            filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
-
-        if (label === 'RawMaterialName') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
+        if (label === 'grade') {
+            filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -103,7 +104,10 @@ class SpecificationListing extends Component {
     */
     handleGrade = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RMGrade: newValue });
+            this.setState({ RMGrade: newValue }, () => {
+                const { RMGrade } = this.state;
+                this.props.getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { })
+            });
         } else {
             this.setState({ RMGrade: [], });
         }
@@ -117,13 +121,10 @@ class SpecificationListing extends Component {
         if (newValue && newValue != '') {
             this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
                 const { RawMaterial } = this.state;
-                this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
+                this.props.getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { })
             });
         } else {
-            this.setState({ RawMaterial: [], RMGrade: [] }, () => {
-                this.props.getGradeSelectList(res => { });
-            });
-
+            this.setState({ RawMaterial: [], RMGrade: [] });
         }
     }
 
@@ -246,7 +247,7 @@ class SpecificationListing extends Component {
             const { RMGrade, RawMaterial } = this.state;
             const filterRM = RawMaterial ? RawMaterial.value : '';
             const filterGrade = RMGrade ? RMGrade.value : '';
-            this.props.getGradeSelectList(res => { });
+            this.props.getRawMaterialFilterSelectList(() => { })
             this.getSpecificationListData(filterRM, filterGrade)
         })
     }
@@ -322,7 +323,7 @@ class SpecificationListing extends Component {
                                         // label="Raw Material"
                                         component={searchableSelect}
                                         placeholder={'-Raw Material-'}
-                                        options={this.renderListing('RawMaterialName')}
+                                        options={this.renderListing('material')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
                                         required={true}
@@ -338,7 +339,7 @@ class SpecificationListing extends Component {
                                         // label="RM Grade"
                                         component={searchableSelect}
                                         placeholder={'-RM Grade-'}
-                                        options={this.renderListing('RMGrade')}
+                                        options={this.renderListing('grade')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
                                         required={true}
@@ -432,8 +433,8 @@ class SpecificationListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material }) {
-    const { rmSpecificationDetail, rawMaterialNameSelectList, gradeSelectList, } = material;
-    return { rmSpecificationDetail, rawMaterialNameSelectList, gradeSelectList, }
+    const { rmSpecificationDetail, filterRMSelectList } = material;
+    return { rmSpecificationDetail, filterRMSelectList }
 }
 
 export default connect(mapStateToProps, {
@@ -442,6 +443,9 @@ export default connect(mapStateToProps, {
     getRawMaterialNameChild,
     getRMGradeSelectListByRawMaterial,
     getGradeSelectList,
+    getRawMaterialFilterSelectList,
+    getGradeFilterByRawMaterialSelectList,
+    getRawMaterialFilterByGradeSelectList,
 })(reduxForm({
     form: 'SpecificationListing',
     enableReinitialize: true,

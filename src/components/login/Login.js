@@ -2,10 +2,13 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
-import { renderPasswordInputField, renderEmailInputField, renderCheckboxInputField, focusOnError } from "../layout/FormInputs";
+import {
+  renderPasswordInputField, renderEmailInputField, renderCheckboxInputField, focusOnError,
+  renderText
+} from "../layout/FormInputs";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
-import { loginUserAPI, getMenuByUser, getLeftMenu, } from "../../actions";
+import { loginUserAPI, getMenuByUser, getLeftMenu, getLoginPageInit, } from "../../actions";
 import { maxLength70, minLength5, maxLength25, required, email } from "../../helper/validation";
 import { MESSAGES } from "../../config/message";
 import "./Login.scss";
@@ -22,23 +25,30 @@ class Login extends Component {
       isLoader: false,
       isSubmitted: false,
       isRedirect: false,
+      IsLoginEmailConfigure: true,
     };
   }
 
   componentWillMount() {
+
+    this.props.getLoginPageInit(res => {
+      let Data = res.data.Data;
+      this.setState({ IsLoginEmailConfigure: Data.IsLoginEmailConfigure })
+    })
+
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
     if (isLoggedIn == true) {
       this.setState({
         isRedirect: true
       })
     }
+
   }
 
   /**
    * Submit the login form
    * @param values
    */
-
   onSubmit(values) {
     //console.log("value", values)
 
@@ -51,19 +61,15 @@ class Login extends Component {
         this.props.logUserIn();
 
         setTimeout(() => {
-
           window.location.replace("/");
         }, 1000)
-        // this.setState({
-        //   isRedirect: true
-        // })
       }
     });
   }
 
   render() {
     const { handleSubmit } = this.props;
-    const { isLoader, isSubmitted, isRedirect } = this.state;
+    const { isLoader, isSubmitted, isRedirect, IsLoginEmailConfigure } = this.state;
 
     if (isRedirect == true) {
       return <Redirect
@@ -93,16 +99,30 @@ class Login extends Component {
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 >
                   <div className="input-group mail">
-                    <Field
-                      name="UserName"
-                      // label="UserName"
-                      component={renderEmailInputField}
-                      isDisabled={false}
-                      placeholder={"email@domain.coms"}
-                      validate={[required, email, minLength5, maxLength70]}
-                      required={true}
-                      maxLength={71}
-                    />
+                    {IsLoginEmailConfigure ?
+                      <Field
+                        name="UserName"
+                        // label="UserName"
+                        component={renderEmailInputField}
+                        isDisabled={false}
+                        placeholder={"Email"}
+                        validate={[required, email, minLength5, maxLength70]}
+                        required={true}
+                        maxLength={71}
+                      />
+                      :
+                      <Field
+                        label=""
+                        name={"UserName"}
+                        type="text"
+                        placeholder={'User Name'}
+                        validate={[required, minLength5, maxLength70]}
+                        component={renderText}
+                        required={true}
+                        maxLength={26}
+                        customClassName={'withBorder'}
+                      />
+                    }
                   </div>
                   <div className="input-group phone">
                     <Field
@@ -188,4 +208,5 @@ export default reduxForm({
   loginUserAPI,
   getMenuByUser,
   getLeftMenu,
+  getLoginPageInit,
 })(Login));

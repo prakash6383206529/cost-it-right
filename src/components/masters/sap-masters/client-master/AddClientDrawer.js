@@ -1,30 +1,32 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70, maxLength6 } from "../../../../helper/validation";
+import { Container, Row, Col, } from 'reactstrap';
+import { required, number, upper, email, minLength7, maxLength70, minLength10 } from "../../../../helper/validation";
 import {
     renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
     searchableSelect
 } from "../../../layout/FormInputs";
-import { createPlantAPI, } from '../../../../actions/master/Plant';
-import {
-    fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
-    getCityByCountry,
-} from '../../../../actions/master/Comman';
+import { createClient, updateClient, getClientData } from '../../../../actions/master/Client';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../helper/auth";
+import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../helper/auth";
+import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
 
-class AddVendorPlantDrawer extends Component {
+class AddClientDrawer extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isEditFlag: false,
+            isShowForm: false,
+            ClientId: '',
+            city: [],
             country: [],
             state: [],
-            city: [],
+            showStateCity: true,
         }
     }
 
@@ -33,54 +35,18 @@ class AddVendorPlantDrawer extends Component {
     * @description called before render the component
     */
     componentWillMount() {
-        this.props.fetchCountryDataAPI(() => { })
+
     }
 
     /**
-   * @method componentDidMount
-   * @description called after render the component
-   */
+    * @method componentDidMount
+    * @description called after render the component
+    */
     componentDidMount() {
-
+        this.props.fetchCountryDataAPI(() => { })
+        this.getDetail()
     }
 
-    toggleDrawer = (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-        this.props.closeDrawer('')
-    };
-
-    /**
-    * @method handlePlantSelection
-    * @description called
-    */
-    handlePlantSelection = e => {
-        this.setState({ selectedPlants: e });
-    };
-
-    /**
-    * @method handleVendorType
-    * @description called
-    */
-    handleVendorType = (e) => {
-        this.setState({ selectedVendorType: e });
-    };
-
-    /**
-    * @method handleCityChange
-    * @description  used to handle city selection
-    */
-    handleCityChange = (e) => {
-        this.setState({
-            CityId: e.target.value
-        });
-    }
-
-    /**
-    * @method getAllCityData
-    * @description  GET ALL CITY ON BASIS OF COUNTRY
-    */
     getAllCityData = () => {
         const { country } = this.state;
         if (country && country.label != 'India') {
@@ -100,7 +66,7 @@ class AddVendorPlantDrawer extends Component {
                 this.getAllCityData()
             });
         } else {
-            this.setState({ country: [], state: [], city: [], })
+            this.setState({ country: [], state: [], city: [] })
         }
     };
 
@@ -110,7 +76,7 @@ class AddVendorPlantDrawer extends Component {
     */
     stateHandler = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ state: newValue }, () => {
+            this.setState({ state: newValue, city: [], }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
             });
@@ -132,7 +98,6 @@ class AddVendorPlantDrawer extends Component {
         }
     };
 
-
     /**
     * @method renderListing
     * @description Used show listing of unit of measurement
@@ -140,6 +105,7 @@ class AddVendorPlantDrawer extends Component {
     renderListing = (label) => {
         const { countryList, stateList, cityList } = this.props;
         const temp = [];
+
         if (label === 'country') {
             countryList && countryList.map(item => {
                 if (item.Value == 0) return false;
@@ -161,23 +127,55 @@ class AddVendorPlantDrawer extends Component {
             });
             return temp;
         }
+
     }
 
     /**
-    * @method checkVendorType
-    * @description Used to render listing of selected plants
+    * @method getDetail
+    * @description used to get user detail
     */
-    checkVendorType = () => {
-        const { selectedVendorType } = this.state;
-        let isContent = selectedVendorType && selectedVendorType.find(item => {
-            if (item.Text == 'BOP' || item.Text == 'RAW MATERIAL') {
-                return true;
-            }
-            return false;
-        })
-        //console.log('isContent', isContent)
-        return (isContent == null || isContent == undefined) ? true : false;
+    getDetail = () => {
+        const { isEditFlag, ID } = this.props;
+        if (isEditFlag) {
+            this.setState({
+                isLoader: true,
+                ClientId: ID,
+            })
+            this.props.getClientData(ID, (res) => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+
+                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
+                    this.props.fetchCityDataAPI(Data.StateId, () => { })
+
+                    setTimeout(() => {
+                        const { countryList, stateList, cityList } = this.props;
+
+                        const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
+                        const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
+
+                        this.setState({
+                            isLoader: false,
+                            country: CountryObj && CountryObj != undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
+                            state: StateObj && StateObj != undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
+                            city: CityObj && CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                        })
+                    }, 500)
+
+                }
+            })
+        } else {
+            this.props.getClientData('', () => { })
+        }
     }
+
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        this.props.closeDrawer('')
+    };
 
     /**
     * @method cancel
@@ -186,6 +184,13 @@ class AddVendorPlantDrawer extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
+        this.setState({
+            city: [],
+            country: [],
+            state: [],
+        })
+        this.props.getClientData('', () => { })
+        this.props.fetchStateDataAPI(0, () => { })
         this.toggleDrawer('')
     }
 
@@ -194,41 +199,54 @@ class AddVendorPlantDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { city } = this.state;
-        const { reset, VendorId, isEditFlag } = this.props;
+        const { ClientId, city, } = this.state;
+        const { isEditFlag, ID } = this.props;
 
+        /** Update existing detail of supplier master **/
         if (isEditFlag) {
-
-        } else {
-            let formData = {
-                PlantName: values.PlantName,
-                PlantCode: values.PlantCode,
-                IsVendor: true,
-                AddressLine1: values.AddressLine1,
-                AddressLine2: values.AddressLine2,
+            let updateData = {
+                ClientId: ID,
+                ClientName: values.ClientName,
+                CompanyName: values.CompanyName,
+                ClientEmailId: values.ClientEmailId,
+                MobileNumber: values.MobileNumber,
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
-                CreatedByUserId: loggedInUserId(),
                 CityId: city.value,
-                EVendorType: 0,
-                VendorId: VendorId,
+                LoggedInUserId: loggedInUserId(),
             }
 
-            this.props.createPlantAPI(formData, (res) => {
-                if (res.data.Result === true) {
-                    toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
-                    reset();
-                    this.setState({
-                        country: [],
-                        state: [],
-                        city: [],
-                    })
-                    this.toggleDrawer('')
+            this.props.updateClient(updateData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.CLIENT_UPDATE_SUCCESS);
+                    this.cancel();
+                }
+            });
+
+        } else {/** Add new detail for creating supplier master **/
+
+            let formData = {
+                ClientName: values.ClientName,
+                CompanyName: values.CompanyName,
+                ClientEmailId: values.ClientEmailId,
+                MobileNumber: values.MobileNumber,
+                ZipCode: values.ZipCode,
+                PhoneNumber: values.PhoneNumber,
+                Extension: values.Extension,
+                CityId: city.value,
+                LoggedInUserId: loggedInUserId(),
+            }
+            this.props.createClient(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.CLIENT_ADD_SUCCESS);
+                    this.cancel();
                 }
             });
         }
+
     }
+
     /**
     * @method render
     * @description Renders the component
@@ -249,7 +267,7 @@ class AddVendorPlantDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Vendor Plant' : 'Add Vendor Plant'}</h3>
+                                            <h3>{isEditFlag ? 'Update Client' : 'Add Client'}</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}
@@ -260,8 +278,22 @@ class AddVendorPlantDrawer extends Component {
                                 <Row>
                                     <Col md="6">
                                         <Field
-                                            label={`Plant Name`}
-                                            name={"PlantName"}
+                                            label={`Company Name`}
+                                            name={"CompanyName"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required]}
+                                            component={renderText}
+                                            required={true}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            disabled={isEditFlag ? true : false}
+                                        />
+                                    </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label={`Client Name`}
+                                            name={"ClientName"}
                                             type="text"
                                             placeholder={''}
                                             validate={[required]}
@@ -271,26 +303,26 @@ class AddVendorPlantDrawer extends Component {
                                             customClassName={'withBorder'}
                                         />
                                     </Col>
-                                </Row>
-                                <Row>
                                     <Col md="6">
                                         <Field
-                                            label={`Plant Code`}
-                                            name={"PlantCode"}
-                                            type="text"
-                                            placeholder={''}
-                                            //validate={[required]}
-                                            component={renderText}
-                                            //required={true}
-                                            className=""
-                                            customClassName={'withBorder'}
+                                            name="ClientEmailId"
+                                            label="Email Id"
+                                            component={renderEmailInputField}
+                                            isDisabled={false}
+                                            placeholder={'Enter'}
+                                            validate={[required, email, minLength7, maxLength70]}
+                                            required={true}
+                                            maxLength={70}
+                                            isDisabled={this.state.isEditFlag ? true : false}
+                                            customClassName={'withBorderEmail'}
                                         />
                                     </Col>
+
                                     <Col md="6">
                                         <Row>
-                                            <Col className="Phone phoneNumber" md="9">
+                                            <Col className="Phone phoneNumber" md="8">
                                                 <Field
-                                                    label="Phone Number"
+                                                    label="Phone No."
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
@@ -302,57 +334,40 @@ class AddVendorPlantDrawer extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col className="Ext phoneNumber" md="3">
+                                            <Col className="Ext phoneNumber" md="4">
                                                 <Field
-                                                    label="Extension"
+                                                    label="Ex."
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required]}
+                                                    validate={[required, number]}
                                                     component={renderText}
                                                     required={true}
-                                                    maxLength={5}
+                                                    maxLength={3}
                                                     className=""
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
                                         </Row>
-
                                     </Col>
                                 </Row>
+
                                 <Row>
-                                    <Col md="6">
+                                    <Col md='6'>
                                         <Field
-                                            label="Address 1"
-                                            name={"AddressLine1"}
+                                            name="MobileNumber"
+                                            label="Mobile No."
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
                                             component={renderText}
+                                            isDisabled={false}
+                                            validate={[required, number, minLength10]}
                                             required={true}
-                                            maxLength={26}
-                                            className=""
+                                            maxLength={10}
                                             customClassName={'withBorder'}
                                         />
                                     </Col>
-                                    <Col md="6">
-                                        <Field
-                                            label="Address 2"
-                                            name={"AddressLine2"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            maxLength={26}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                        />
-                                    </Col>
-
-                                </Row>
-                                <Row>
-                                    <Col md="6">
+                                    <Col md='6'>
                                         <Field
                                             name="CountryId"
                                             type="text"
@@ -367,8 +382,10 @@ class AddVendorPlantDrawer extends Component {
                                             valueDescription={this.state.country}
                                         />
                                     </Col>
+                                </Row>
+                                <Row>
                                     {(country.length == 0 || country.label == 'India') &&
-                                        <Col md="6">
+                                        <Col md='6'>
                                             <Field
                                                 name="StateId"
                                                 type="text"
@@ -383,11 +400,7 @@ class AddVendorPlantDrawer extends Component {
                                                 valueDescription={this.state.state}
                                             />
                                         </Col>}
-
-                                </Row>
-
-                                <Row>
-                                    <Col md="6">
+                                    <Col md='6'>
                                         <Field
                                             name="CityId"
                                             type="text"
@@ -402,37 +415,38 @@ class AddVendorPlantDrawer extends Component {
                                             valueDescription={this.state.city}
                                         />
                                     </Col>
-                                    <Col md="6">
+
+                                    <Col md='6'>
                                         <Field
                                             label="ZipCode"
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, number, maxLength6]}
+                                            validate={[required, number]}
                                             component={renderText}
                                             required={true}
-                                            //maxLength={6}
-                                            className=""
+                                            maxLength={6}
                                             customClassName={'withBorder'}
                                         />
                                     </Col>
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
-                                        <button
-                                            type="submit"
-                                            className="submit-button mr5 save-btn" >
-                                            <div className={'check-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>
-                                            {isEditFlag ? 'Update' : 'Save'}
-                                        </button>
-
-                                        <button
-                                            type={'button'}
-                                            className="reset mr15 cancel-btn"
-                                            onClick={this.cancel} >
-                                            <div className={'cross-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /></div> {'Cancel'}
-                                        </button>
+                                    <div className="col-md-12  text-right">
+                                        <div className="">
+                                            <button
+                                                type={'button'}
+                                                className="reset mr15 cancel-btn"
+                                                onClick={this.cancel} >
+                                                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="submit-button mr5 save-btn" >
+                                                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' />
+                                                </div> {this.props.isEditFlag ? 'Update' : 'Save'}
+                                            </button>
+                                        </div>
                                     </div>
                                 </Row>
                             </form>
@@ -449,12 +463,24 @@ class AddVendorPlantDrawer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, plant }) {
-    const { countryList, stateList, cityList, } = comman;
-    const { } = plant;
-    let initialValues = {};
+function mapStateToProps({ comman, client }) {
+    const { countryList, stateList, cityList } = comman;
+    const { clientData } = client;
 
-    return { countryList, stateList, cityList, initialValues, }
+    let initialValues = {};
+    if (clientData && clientData !== undefined) {
+        initialValues = {
+            ClientName: clientData.ClientName,
+            CompanyName: clientData.CompanyName,
+            ClientEmailId: clientData.ClientEmailId,
+            MobileNumber: clientData.MobileNumber,
+            ZipCode: clientData.ZipCode,
+            PhoneNumber: clientData.PhoneNumber,
+            Extension: clientData.Extension,
+        }
+    }
+
+    return { countryList, stateList, cityList, initialValues, clientData, }
 }
 
 /**
@@ -464,13 +490,14 @@ function mapStateToProps({ comman, plant }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createPlantAPI,
     fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
-    fetchSupplierCityDataAPI,
+    createClient,
+    updateClient,
+    getClientData,
     getCityByCountry,
 })(reduxForm({
-    form: 'AddVendorPlantDrawer',
+    form: 'AddClientDrawer',
     enableReinitialize: true,
-})(AddVendorPlantDrawer));
+})(AddClientDrawer));

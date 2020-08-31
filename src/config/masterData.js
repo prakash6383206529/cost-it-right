@@ -135,7 +135,7 @@ export const RMDomesticVBCTempData = [
         "VendorLocation": "Vendor Location",
         "Source": "Source Name",
         "SourceLocation": "Source Location",
-        "UOM": "Unit Measurement",
+        "UOM": "Unit Of Measurement",
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",

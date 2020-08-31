@@ -83,15 +83,6 @@ class Main extends Component {
     })
   }
 
-  breadCrumbTrail = (Bread2ndTitle, Bread2ndURL, Bread3rdTitle) => {
-    let breadHeaders = {
-      Bread2ndTitle: Bread2ndTitle,
-      Bread2ndURL: Bread2ndURL,
-      Bread3rdTitle: Bread3rdTitle,
-    }
-    console.log(this.child && this.child.setBreadCrumbs ? this.child.setBreadCrumbs(breadHeaders) : null)
-  }
-
   render() {
     const isLogin = reactLocalStorage.getObject("isUserLoggedIn");
     //console.log("isLogin", isLogin);
@@ -122,15 +113,15 @@ class Main extends Component {
                       </div>
                     </div>
                   </div>
-                  {isLogin && !this.state.visibelPageNotFound && <Breadcrumb onRef={ref => (this.child = ref)} />}
+                  {isLogin && !this.state.visibelPageNotFound && <Breadcrumb {...this.props} />}
                 </div>
               </div>
             </div>}
-            
+
           <div className={isLogin ? 'blue-box' : ''}>
-           
+
             <div className={isLogin ? 'main-section' : ''}>
-              {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} breadCrumbTrail={this.breadCrumbTrail} />}
+              {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} />}
 
               <div className={isLogin ? 'content-page' : ''}>
                 <div className={isLogin ? 'middleContainer' : ''}>
