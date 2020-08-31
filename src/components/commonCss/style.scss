@@ -1224,3 +1224,17 @@ button.user-btn.pull-right {
   opacity: 1;
   border: none;
 }
+
+.react-bs-table-container.client-table {
+  position: relative;
+}
+
+.client-table .react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-8 {
+  display: none;
+}
+
+.client-table .react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-4 {
+  position: absolute;
+  right: 70px;
+  top: -44px;
+}

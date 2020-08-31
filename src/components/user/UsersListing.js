@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import {
 	getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI,
-	activeInactiveUser, getLeftMenu,
+	activeInactiveUser, getLeftMenu, getLoginPageInit,
 } from '../../actions/auth/AuthActions';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import { required } from "../../helper/validation";
@@ -41,10 +41,17 @@ class UsersListing extends Component {
 			EditAccessibility: false,
 			DeleteAccessibility: false,
 			ActivateAccessibility: false,
+			IsLoginEmailConfigure: true,
 		}
 	}
 
 	componentWillMount() {
+
+		this.props.getLoginPageInit(res => {
+			let Data = res.data.Data;
+			this.setState({ IsLoginEmailConfigure: Data.IsLoginEmailConfigure })
+		})
+
 		let ModuleId = reactLocalStorage.get('ModuleId');
 		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
 			const { leftMenuData } = this.props;
@@ -495,7 +502,7 @@ class UsersListing extends Component {
 					pagination>
 					{/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
 					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
-					<TableHeaderColumn dataField="UserName" width={'150'} dataSort={true}>User name</TableHeaderColumn>
+					{!this.state.IsLoginEmailConfigure ? <TableHeaderColumn dataField="UserName" width={'150'} dataSort={true}>User name</TableHeaderColumn> : null}
 					<TableHeaderColumn dataField="EmailAddress" columnTitle width={'200'} dataSort={true}>Email Id</TableHeaderColumn>
 					<TableHeaderColumn dataField="Mobile" width={'140'} dataSort={false}>Mobile No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="PhoneNumber" dataSort={false}>Phone No.</TableHeaderColumn>
@@ -552,6 +559,7 @@ export default connect(mapStateToProps, {
 	getAllRoleAPI,
 	activeInactiveUser,
 	getLeftMenu,
+	getLoginPageInit,
 })(reduxForm({
 	form: 'UsersListing',
 	onSubmitFail: errors => {

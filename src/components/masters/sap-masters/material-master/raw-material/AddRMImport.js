@@ -1037,9 +1037,9 @@ class AddRMImport extends Component {
                                                         name={"Source"}
                                                         type="text"
                                                         placeholder={'Enter'}
-                                                        validate={[required]}
+                                                        //validate={[required]}
                                                         component={renderText}
-                                                        required={true}
+                                                        //required={true}
                                                         disabled={false}
                                                         className=" "
                                                         customClassName=" withBorder"
@@ -1054,8 +1054,8 @@ class AddRMImport extends Component {
                                                         placeholder={'-Location-'}
                                                         options={this.renderListing('SourceLocation')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
-                                                        required={true}
+                                                        //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
+                                                        //required={true}
                                                         handleChangeDescription={this.handleSourceSupplierCity}
                                                         valueDescription={this.state.sourceLocation}
                                                     />
@@ -1086,10 +1086,10 @@ class AddRMImport extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    {!isEditFlag && <div
+                                                    {/* {!isEditFlag && <div
                                                         onClick={this.uomToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>}
+                                                    </div>} */}
                                                 </div>
                                             </Col>
                                             <Col md="3">

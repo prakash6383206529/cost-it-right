@@ -51,9 +51,9 @@ class PermissionsTabIndex extends Component {
     componentDidMount() {
         this.props.getActionHeadsSelectList(() => {
             setTimeout(() => {
-                const { isEditFlag, } = this.props;
+                const { isEditFlag, isNewRole } = this.props;
                 console.log('isEditFlag', isEditFlag)
-                if (isEditFlag == false) {
+                if (isEditFlag == false && isNewRole) {
                     this.getRolePermission()
                 }
             }, 500)
@@ -62,8 +62,8 @@ class PermissionsTabIndex extends Component {
     }
 
     getRolePermission = () => {
-        const { isEditFlag, } = this.props;
-        if (isEditFlag == false) {
+        const { isEditFlag, isNewRole } = this.props;
+        if (isEditFlag == false && isNewRole) {
             console.log('New call')
             this.setState({ isLoader: true });
             this.props.getModuleActionInitNew((res) => {
@@ -83,7 +83,7 @@ class PermissionsTabIndex extends Component {
     getUpdatedData = (data) => {
         setTimeout(() => {
             this.updateTabs(data)
-        }, 1000)
+        }, 2000)
     }
 
     /**
@@ -140,7 +140,6 @@ class PermissionsTabIndex extends Component {
     }
 
     render() {
-        const { moduleSelectList, actionSelectList, loading } = this.props;
         const { isLoader, } = this.state;
 
         return (

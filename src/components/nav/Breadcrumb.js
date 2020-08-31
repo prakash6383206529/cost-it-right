@@ -1,12 +1,16 @@
 import React, { Component } from "react";
-import MetisMenu from 'react-metismenu';
+import { connect } from "react-redux";
+import { reactLocalStorage } from 'reactjs-localstorage';
 import "./Breadcrumb.scss";
 
 class Breadcrumb extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			data: {}
+			data: {},
+			secondTitle: '',
+			secondURL: '',
+			ThirdTitle: '',
 		}
 	}
 
@@ -15,11 +19,25 @@ class Breadcrumb extends Component {
     * @description Called after rendering the component
     */
 	componentDidMount() {
-		this.props.onRef(this)
+
 	}
 
-	setBreadCrumbs = (data) => {
-		this.setState({ data })
+	componentWillReceiveProps(prevProps) {
+		if (prevProps.location != this.props.location || prevProps.leftMenuData != this.props.leftMenuData) {
+			const { location, leftMenuData, menusData } = prevProps;
+			if (location) {
+				const ModuleID = reactLocalStorage.get('ModuleId');
+				const breadObj = leftMenuData && leftMenuData.find(el => el.NavigationURL == location.pathname);
+				const menuObj = menusData && menusData.find(el => el.ModuleId == ModuleID);
+				const cleanURL = menuObj && menuObj.NavigationURL.replace('/', '')
+				//console.log('location', location.pathname, breadObj && breadObj)
+				this.setState({
+					secondTitle: menuObj && menuObj.ModuleName,
+					secondURL: cleanURL,
+					ThirdTitle: breadObj && breadObj.PageName,
+				})
+			}
+		}
 	}
 
 	displayTitle = () => {
@@ -29,23 +47,15 @@ class Breadcrumb extends Component {
 	}
 
 	render() {
-		const { data } = this.state;
-		let secondTitle = '';
-		if (data.Bread2ndTitle == 'Dashboard' || data.Bread2ndTitle == 'Dashboard' || data.Bread2ndTitle == 'Audit') {
-			secondTitle = 'Dashboard';
-		} else if (data.Bread2ndTitle == 'Masters' || data.Bread2ndTitle == 'Raw Material' || data.Bread2ndTitle == 'BOP' || data.Bread2ndTitle == 'Part' ||
-			data.Bread2ndTitle == 'Machine' || data.Bread2ndTitle == 'Vendor' || data.Bread2ndTitle == 'Client' ||
-			data.Bread2ndTitle == 'Plant') {
-			secondTitle = 'Masters';
-		} else if (data.Bread2ndTitle == 'Additional Masters' || data.Bread2ndTitle == 'Overhead and Profits' || data.Bread2ndTitle == 'Labour' || data.Bread2ndTitle == 'Reason' ||
-			data.Bread2ndTitle == 'Operation' || data.Bread2ndTitle == 'Fuel and Power' || data.Bread2ndTitle == 'UOM' ||
-			data.Bread2ndTitle == 'Volume' || data.Bread2ndTitle == 'Exchange Rate' || data.Bread2ndTitle == 'Freight' ||
-			data.Bread2ndTitle == 'Interest Rate' || data.Bread2ndTitle == 'Tax') {
-			secondTitle = 'Additional Master';
-		} else if (data.Bread2ndTitle == 'Technology' || data.Bread2ndTitle == 'Sheet Metal') {
-			secondTitle = 'Costing';
-		} else if (data.Bread2ndTitle == 'Users' || data.Bread2ndTitle == 'User') {
-			secondTitle = 'Users';
+		const { secondTitle, } = this.state;
+
+		let url = this.state.secondURL;
+
+		if (secondTitle == 'Master') {
+			url = 'raw-material-master'
+		}
+		if (secondTitle == 'Additional Masters') {
+			url = 'reason-master'
 		}
 
 		return (
@@ -56,8 +66,8 @@ class Breadcrumb extends Component {
 							<div className="bread-inner">
 								<ul className="bread-list d-inline-flex">
 									<li><a href="/">Home</a></li>
-									<li><a href={`${data.Bread2ndURL}`}>{secondTitle}</a></li>
-									<li className="active"><a href={`${data.Bread3rdTitle}`}>{this.displayTitle()}</a></li>
+									<li><a href={`/${url}`}>{this.state.secondTitle}</a></li>
+									<li className="active">{this.state.ThirdTitle}</li>
 								</ul>
 							</div>
 						</div>
@@ -68,4 +78,24 @@ class Breadcrumb extends Component {
 	}
 }
 
-export default Breadcrumb;
+
+/**
+ * @name mapStateToProps
+ * @desc map state containing organisation details from the api to props
+ * @return object{}
+ */
+function mapStateToProps({ auth }) {
+	const { leftMenuData, menusData, moduleSelectList, } = auth
+	return { leftMenuData, menusData, moduleSelectList }
+}
+
+/**
+ * @method connect
+ * @description connect with redux
+* @param {function} mapStateToProps
+* @param {function} mapDispatchToProps
+*/
+export default connect(mapStateToProps,
+	{
+
+	})(Breadcrumb);
