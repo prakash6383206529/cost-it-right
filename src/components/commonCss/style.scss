@@ -1165,3 +1165,17 @@ button.user-btn.pull-right {
 .role-footer{
   margin-bottom: -45px;
 }
+.file-uploadsection{
+  border: 1px dashed #316bd1;
+  position: relative;
+  margin: 15px;
+  padding: 15px; text-align: center;
+  input[type="file"] {position: absolute;
+    height: 57px;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;}
+}

@@ -250,7 +250,7 @@ class BulkUpload extends Component {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{isEditFlag ? '' : `${messageLabel} Bulk Upload`}</h3>
+                                        <h3>{isEditFlag ? '' : `${messageLabel} `}</h3>
                                     </div>
                                     <div
                                         onClick={(e) => this.toggleDrawer(e)}
@@ -291,14 +291,15 @@ class BulkUpload extends Component {
                                     />
                                 </div>
 
-                                <div className="input-group mt25 col-md-12 input-withouticon" >
-                                    <label>Choose upload file</label>
+                                <div className="input-group mt25 col-md-12 input-withouticon " >
+                                   <div className="file-uploadsection">
+                                    <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload</label>
                                     <input
                                         type="file"
                                         name="File"
                                         onChange={this.fileHandler}
                                         //accept="xls/*"
-                                        className="" />
+                                        className="" placeholder="bbb" /></div>
                                 </div>
 
                             </Row>

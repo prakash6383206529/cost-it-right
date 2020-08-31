@@ -180,6 +180,9 @@ a:hover {
     background-color: #1d59af;
   }
 }
+.blue-text{  color: #316bd1;
+  padding: 5px;
+  font-weight: 600;}
 .apply{width: 100px;}
 .reset {
   height: 32px;
@@ -1087,7 +1090,7 @@ p {
   margin-left: 205px;
   overflow: auto;
   padding: 21px 15px 15px 15px;
-  min-height: 588px;
+  // min-height: 588px;
   margin-top: 0 ;
   background-color: #FFFFFF;
   height: calc(100vh - 169px);
@@ -1858,4 +1861,13 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 5px 0;
+}
+ul.bread-list.d-inline-flex{
+  li.active {
+    font-size: 14px;
+    position: relative;
+    padding: 3px 13px;
+    display: inline-block;
+    color: #256bd1;
+}
 }
