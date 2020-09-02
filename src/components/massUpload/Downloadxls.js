@@ -196,13 +196,13 @@ class Downloadxls extends React.Component {
                 <>
                     {costingHead == 'ZBC' ?
 
-                        <ExcelFile filename={`${fileName}ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}>Download ZBC</button>}>
+                        <ExcelFile filename={`${fileName}ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img src={require('../../assests/images/download.png')}></img> Download ZBC</button>}>
                             {fileName ? this.renderZBCSwitch(fileName) : ''}
                         </ExcelFile>
 
                         :
 
-                        <ExcelFile filename={`${fileName}VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}>Download VBC</button>}>
+                        <ExcelFile filename={`${fileName}VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img src={require('../../assests/images/download.png')}></img> Download VBC</button>}>
                             {fileName ? this.renderVBCSwitch(fileName) : ''}
                         </ExcelFile>
 
@@ -213,7 +213,7 @@ class Downloadxls extends React.Component {
 
         // Display download button Apart from ZBC and VBC
         return (
-            <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}>Download File</button>}>
+            <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img src={require('../../assests/images/download.png')}></img> Download File</button>}>
                 {fileName ? this.renderSwitch(fileName) : ''}
             </ExcelFile>
         );

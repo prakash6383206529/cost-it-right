@@ -283,7 +283,9 @@ a:hover {
 .blurPlus-icon-square {
   width: 43px;
   height: 35px;
-  background: transparent url("../../assests/images/BlurPlusIcon.svg") 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/bluradd.png") 0% 0% no-repeat padding-box;
+  margin-top: 8px;
+  background-position: center right;
 }
 
 .plus,
@@ -649,6 +651,9 @@ a:hover {
 }
 
 /* Grid Table Css */
+.small-drawer{ width: 330px; }
+.larger-drawer{ width: 600px;}
+.medium-drawer{ width: 430px;}
 
 /* Drawer Css */
 .drawer-wrapper {

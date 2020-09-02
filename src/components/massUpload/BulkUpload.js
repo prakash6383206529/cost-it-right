@@ -34,6 +34,7 @@ class BulkUpload extends Component {
             faildRecords: false,
             failedData: [],
             costingHead: 'ZBC',
+            uploadfileName:"",
         }
     }
 
@@ -132,7 +133,8 @@ class BulkUpload extends Component {
                     this.setState({
                         cols: resp.cols,
                         rows: resp.rows,
-                        fileData: fileData
+                        fileData: fileData,
+                        uploadfileName:uploadfileName,
                     });
                 }
             });
@@ -257,7 +259,7 @@ class BulkUpload extends Component {
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                 <Container>
-                    <div className={'drawer-wrapper'}>
+                    <div className={'drawer-wrapper '}>
                         <form
                             noValidate
                             className="form"
@@ -298,7 +300,7 @@ class BulkUpload extends Component {
                                     </Label>
                                     </Col>}
 
-                                <div className="input-group mt25 col-md-12 input-withouticon" >
+                                <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                                     <Downloadxls
                                         isZBCVBCTemplate={isZBCVBCTemplate}
                                         fileName={fileName}
@@ -309,17 +311,19 @@ class BulkUpload extends Component {
 
                                 <div className="input-group mt25 col-md-12 input-withouticon " >
                                    <div className="file-uploadsection">
-                                    <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload</label>
+                                    <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img src={require('../../assests/images/uploadcloud.png')} ></img> </label>
                                     <input
                                         type="file"
                                         name="File"
                                         onChange={this.fileHandler}
                                         //accept="xls/*"
-                                        className="" placeholder="bbb" /></div>
+                                        className="" placeholder="bbb" />
+                                        <p> { this.uploadfileName}</p>
+                                        </div>
                                 </div>
 
                             </Row>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
+                            <Row className=" justify-content-between">
                                 <div className="col-sm-12  bluefooter-butn1 text-right">
                                     <button
                                         type={'button'}

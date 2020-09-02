@@ -720,7 +720,7 @@ class AddOverhead extends Component {
                                         </Row>
 
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-sm-12 text-center bluefooter-butn">
+                                            <div className="col-sm-12 text-right bluefooter-butn">
                                                 <button
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
