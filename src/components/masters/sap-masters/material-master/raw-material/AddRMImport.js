@@ -1265,11 +1265,6 @@ class AddRMImport extends Component {
                             </div>
                         </div>
                     </div>
-                    {/* <RMImportListing
-                        onRef={ref => (this.child = ref)}
-                        getDetails={this.getDetails}
-                        formToggle={this.formToggle}
-                        isShowForm={this.state.isShowForm} /> */}
                 </div>
 
                 {isRMDrawerOpen && <AddSpecification
@@ -1278,6 +1273,8 @@ class AddRMImport extends Component {
                     isEditFlag={false}
                     ID={''}
                     anchor={'right'}
+                    AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                    EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
                 />}
                 {isOpenGrade && <AddGrade
                     isOpen={isOpenGrade}
@@ -1292,6 +1289,8 @@ class AddRMImport extends Component {
                     isEditFlag={false}
                     ID={''}
                     anchor={'right'}
+                    AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                    EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
                 />}
                 {isOpenCategory && <AddCategory
                     isOpen={isOpenCategory}

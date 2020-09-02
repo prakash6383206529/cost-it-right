@@ -151,7 +151,7 @@ class ViewUserDetails extends Component {
 	* @description Renders the component
 	*/
   render() {
-    const { UserId, registerUserData, EditAccessibility } = this.props;
+    const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
     const { isPermissionOpen, isTechnologyOpen } = this.state;
 
     const address = registerUserData ? `${registerUserData.AddressLine1}, ${registerUserData.AddressLine2}, 
@@ -211,10 +211,10 @@ class ViewUserDetails extends Component {
                     <div className={'left-details'}>Email ID:</div>
                     <div className={'right-details'}>{registerUserData ? registerUserData.EmailAddress : ''}</div>
                   </Col>
-                  <Col md={'12'}>
+                  {!IsLoginEmailConfigure && <Col md={'12'}>
                     <div className={'left-details'}>User Name</div>
                     <div className={'right-details'}>{registerUserData ? registerUserData.UserName : ''}</div>
-                  </Col>
+                  </Col>}
                   <Col md={'12'}>
                     <div className={'left-details'}>Password</div>
                     <div className={'right-details'}>

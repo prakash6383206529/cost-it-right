@@ -75,7 +75,38 @@ class AddVendorDrawer extends Component {
     * @description called
     */
     handleVendorType = (e) => {
-        this.setState({ selectedVendorType: e });
+
+        const { supplierData, isEditFlag } = this.props;
+        if (isEditFlag) {
+
+            //DefaultIds Get in Edit Mode.
+            let DefaultVendorTypeIds = [];
+            supplierData && supplierData.VendorTypes && supplierData.VendorTypes.map((item, index) => {
+                DefaultVendorTypeIds.push(item.VendorTypeId)
+            })
+
+            //Selected Vendor Type IDs.
+            let SelectedVendorTypeIds = [];
+            e && e.map((item, index) => {
+                SelectedVendorTypeIds.push(item.Value)
+            })
+
+            //Removed Vendor Type Id's
+            let removedVendorTypeIds = DefaultVendorTypeIds.filter(x => !SelectedVendorTypeIds.includes(x));
+
+            if (removedVendorTypeIds.length == 0) {
+                this.setState({ selectedVendorType: e });
+            } else {
+                toastr.warning("You cann't removed existed Vendor Type.");
+                return false;
+            }
+
+        } else {
+            this.setState({ selectedVendorType: e });
+        }
+
+
+
     };
 
     checkVendorSelection = () => {
@@ -426,7 +457,7 @@ class AddVendorDrawer extends Component {
                                             component={renderMultiSelectField}
                                             mendatory={true}
                                             className="multiselect-with-border"
-                                            disabled={this.state.isEditFlag ? true : false}
+                                            disabled={false}
                                         />
                                     </Col>
                                     <Col md="6">

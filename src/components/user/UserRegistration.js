@@ -778,7 +778,7 @@ class UserRegistration extends Component {
                       <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
                     </div>
                   </div>
-                  {this.state.isEditFlag && <div className="col-md-6">
+                  {this.state.isEditFlag && !this.state.isShowPwdField && <div className="col-md-6">
                     <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
                   </div>}
                 </div>
@@ -944,10 +944,10 @@ class UserRegistration extends Component {
                         name={"AddressLine1"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required]}
+                        //validate={[required]}
                         component={renderText}
-                        required={true}
-                        maxLength={26}
+                        //required={true}
+                        maxLength={45}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -957,10 +957,10 @@ class UserRegistration extends Component {
                         name={"AddressLine2"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required]}
+                        //validate={[required]}
                         component={renderText}
-                        required={true}
-                        maxLength={26}
+                        //required={true}
+                        maxLength={45}
                         customClassName={'withBorder'}
                       />
                     </div>

@@ -17,7 +17,7 @@ import RMImportListing from './RMImportListing';
 
 import { checkPermission } from '../../../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { RAW_MATERIAL } from '../../../../../config/constants';
+import { RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../../../config/constants';
 import { loggedInUserId } from '../../../../../helper';
 import { getLeftMenu, } from '../../../../../actions/auth/AuthActions';
 
@@ -41,6 +41,10 @@ class RowMaterialMaster extends Component {
             DeleteAccessibility: false,
             DownloadAccessibility: false,
             BulkUploadAccessibility: false,
+
+            AddAccessibilityRMANDGRADE: false,
+            EditAccessibilityRMANDGRADE: false,
+
         }
     }
 
@@ -51,7 +55,9 @@ class RowMaterialMaster extends Component {
             if (leftMenuData != undefined) {
                 let Data = leftMenuData;
                 const accessData = Data && Data.find(el => el.PageName == RAW_MATERIAL)
+                const accessDataRMANDGRADE = Data && Data.find(el => el.PageName == RAW_MATERIAL_NAME_AND_GRADE)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+                const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
 
                 if (permmisionData != undefined) {
                     this.setState({
@@ -61,6 +67,8 @@ class RowMaterialMaster extends Component {
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                        AddAccessibilityRMANDGRADE: permmisionDataRMANDGRADE && permmisionDataRMANDGRADE.Add ? permmisionDataRMANDGRADE.Add : false,
+                        EditAccessibilityRMANDGRADE: permmisionDataRMANDGRADE && permmisionDataRMANDGRADE.Edit ? permmisionDataRMANDGRADE.Edit : false,
                     })
                 }
             }
@@ -104,12 +112,15 @@ class RowMaterialMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isRMDomesticForm, isRMImportForm, data, ViewRMAccessibility } = this.state;
+        const { isRMDomesticForm, isRMImportForm, data, ViewRMAccessibility, AddAccessibilityRMANDGRADE,
+            EditAccessibilityRMANDGRADE, } = this.state;
 
         if (isRMDomesticForm === true) {
             return <AddRMDomestic
                 data={data}
                 hideForm={this.hideForm}
+                AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
+                EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
             />
         }
 
@@ -117,6 +128,8 @@ class RowMaterialMaster extends Component {
             return <AddRMImport
                 data={data}
                 hideForm={this.hideForm}
+                AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
+                EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
             />
         }
 
@@ -191,6 +204,8 @@ class RowMaterialMaster extends Component {
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            AddAccessibilityRMANDGRADE={this.state.AddAccessibilityRMANDGRADE}
+                                            EditAccessibilityRMANDGRADE={this.state.EditAccessibilityRMANDGRADE}
                                         />
                                     </TabPane>}
 

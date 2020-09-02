@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
-import { required, maxLength25, minLength3 } from "../../helper/validation";
+import { required, maxLength25, minLength3, getJsDateFromExcel } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
 import {
     bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
@@ -10,6 +10,7 @@ import {
 } from '../../actions/master/Material';
 import { fuelBulkUpload } from '../../actions/master/Fuel';
 import { vendorBulkUpload } from '../../actions/master/Supplier';
+import { overheadBulkUpload, profitBulkUpload } from '../../actions/master/OverheadProfit';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { loggedInUserId } from "../../helper/auth";
@@ -118,6 +119,9 @@ class BulkUpload extends Component {
                                 // CreatedBy: loggedInUserId(),
                             }
                             val.map((el, i) => {
+                                if (fileHeads[i] == 'EffectiveDate' && typeof el == 'number') {
+                                    el = getJsDateFromExcel(el)
+                                }
                                 obj[fileHeads[i]] = el;
                             })
                             fileData.push(obj)
@@ -212,6 +216,18 @@ class BulkUpload extends Component {
         } else if (fileName == 'Fuel') {
 
             this.props.fuelBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'Overhead') {
+
+            this.props.overheadBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'Profit') {
+
+            this.props.profitBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -351,6 +367,8 @@ export default connect(mapStateToProps, {
     bulkUploadRMDomesticVBC,
     bulkUploadRMImportZBC,
     bulkUploadRMImportVBC,
+    overheadBulkUpload,
+    profitBulkUpload,
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

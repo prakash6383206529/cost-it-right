@@ -400,7 +400,7 @@ class RMDomesticListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
+        return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
 
     /**

@@ -527,6 +527,7 @@ class UsersListing extends Component {
 						closeUserDetails={this.closeUserDetails}
 						EditAccessibility={EditAccessibility}
 						anchor={'right'}
+						IsLoginEmailConfigure={this.state.IsLoginEmailConfigure}
 					/>}
 			</ >
 		);

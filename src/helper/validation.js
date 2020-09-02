@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
 
@@ -234,3 +236,7 @@ export const isGuid = (value) => {
     var match = regex.exec(value);
     return match != null;
 }
+
+export const getJsDateFromExcel = excelDate => {
+    return moment((excelDate - (25567 + 2)) * 86400 * 1000).format('DD-MM-YYYY');
+};

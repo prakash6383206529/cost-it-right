@@ -4,12 +4,17 @@ import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button
 import classnames from 'classnames';
 import AddOverhead from './AddOverhead';
 import AddProfit from './AddProfit';
+import OverheadListing from './OverheadListing';
+import ProfitListing from './ProfitListing';
 
 class OverheadProfit extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: '1'
+            activeTab: '1',
+            isOverheadForm: false,
+            isProfitForm: false,
+            data: {},
         }
     }
 
@@ -25,14 +30,49 @@ class OverheadProfit extends Component {
         }
     }
 
+    displayOverheadForm = () => {
+        this.setState({ isOverheadForm: true, isProfitForm: false, })
+    }
+
+    displayProfitForm = () => {
+        this.setState({ isProfitForm: true, isOverheadForm: false, })
+    }
+
+    hideForm = () => {
+        this.setState({ isOverheadForm: false, isProfitForm: false, data: {} })
+    }
+
+    getOverHeadDetails = (data) => {
+        this.setState({ isOverheadForm: true, data: data })
+    }
+
+    getProfitDetails = (data) => {
+        this.setState({ isProfitForm: true, data: data })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag } = this.state;
+        const { isOpen, isEditFlag, isOverheadForm, isProfitForm, data } = this.state;
+
+        if (isOverheadForm == true) {
+            return <AddOverhead
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
+        if (isProfitForm == true) {
+            return <AddProfit
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
         return (
-            <Container>
+            <>
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
@@ -60,19 +100,25 @@ class OverheadProfit extends Component {
 
                                 {this.state.activeTab == 1 &&
                                     <TabPane tabId="1">
-                                        <AddOverhead />
+                                        <OverheadListing
+                                            formToggle={this.displayOverheadForm}
+                                            getDetails={this.getOverHeadDetails}
+                                        />
                                     </TabPane>}
 
                                 {this.state.activeTab == 2 &&
                                     <TabPane tabId="2">
-                                        <AddProfit />
+                                        <ProfitListing
+                                            formToggle={this.displayProfitForm}
+                                            getDetails={this.getProfitDetails}
+                                        />
                                     </TabPane>}
                             </TabContent>
                         </div>
                     </Col>
                 </Row>
 
-            </Container >
+            </ >
         );
     }
 }

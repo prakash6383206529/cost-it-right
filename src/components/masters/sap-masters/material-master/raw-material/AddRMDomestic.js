@@ -1292,6 +1292,8 @@ class AddRMDomestic extends Component {
                     isEditFlag={false}
                     ID={''}
                     anchor={'right'}
+                    AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                    EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
                 />}
                 {isOpenGrade && <AddGrade
                     isOpen={isOpenGrade}
@@ -1306,6 +1308,8 @@ class AddRMDomestic extends Component {
                     isEditFlag={false}
                     ID={''}
                     anchor={'right'}
+                    AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                    EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
                 />}
                 {isOpenCategory && <AddCategory
                     isOpen={isOpenCategory}

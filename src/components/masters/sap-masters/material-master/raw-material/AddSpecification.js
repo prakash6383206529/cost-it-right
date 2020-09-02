@@ -284,7 +284,8 @@ class AddSpecification extends Component {
     */
     render() {
         const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer } = this.state;
-        const { handleSubmit, isEditFlag, specificationData } = this.props;
+        const { handleSubmit, isEditFlag, specificationData, AddAccessibilityRMANDGRADE,
+            EditAccessibilityRMANDGRADE, } = this.props;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -310,54 +311,54 @@ class AddSpecification extends Component {
                                     <Row>
                                         <Col md="12">
                                             <div className="d-flex">
-                                            <Field
-                                                name="RawMaterialName"
-                                                type="text"
-                                                label="Raw Material"
-                                                component={searchableSelect}
-                                                placeholder={'Select Raw Material'}
-                                                options={this.renderListing('RawMaterialName')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleRawMaterial}
-                                                valueDescription={this.state.RawMaterial}
-                                                disabled={isEditFlag ? true : false}
-                                                className="w-100"
-                                            />
-                                        
-                                            {isEditFlag ?
-                                                <button className="Edit drawer-edit ml5" type={'button'} onClick={() => this.rawMaterialToggler(specificationData.RawMaterialId)} />
-                                                :
-                                                <div
-                                                    onClick={() => this.rawMaterialToggler('')}
-                                                    className={'plus-icon-square mt30  right'}>
-                                                </div>
-                                            }
+                                                <Field
+                                                    name="RawMaterialName"
+                                                    type="text"
+                                                    label="Raw Material"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select Raw Material'}
+                                                    options={this.renderListing('RawMaterialName')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleRawMaterial}
+                                                    valueDescription={this.state.RawMaterial}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className="w-100"
+                                                />
+
+                                                {isEditFlag ?
+                                                    EditAccessibilityRMANDGRADE && <button className="Edit drawer-edit ml5" type={'button'} onClick={() => this.rawMaterialToggler(specificationData.RawMaterialId)} />
+                                                    :
+                                                    AddAccessibilityRMANDGRADE && <div
+                                                        onClick={() => this.rawMaterialToggler('')}
+                                                        className={'plus-icon-square mt30  right'}>
+                                                    </div>
+                                                }
                                             </div>
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col md="12">
-                                        <div className="d-flex">
-                                            <Field
-                                                name="MaterialTypeId"
-                                                type="text"
-                                                label="Material"
-                                                component={searchableSelect}
-                                                placeholder={'Select Material'}
-                                                options={this.renderListing('material')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.material == null || this.state.material.length == 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleMaterialChange}
-                                                valueDescription={this.state.material}
-                                            />
-                                       
-                                            <div
-                                                onClick={this.materialToggler}
-                                                className={'plus-icon-square mt30  right'}>
-                                            </div>
+                                            <div className="d-flex">
+                                                <Field
+                                                    name="MaterialTypeId"
+                                                    type="text"
+                                                    label="Material"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select Material'}
+                                                    options={this.renderListing('material')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.material == null || this.state.material.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleMaterialChange}
+                                                    valueDescription={this.state.material}
+                                                />
+
+                                                <div
+                                                    onClick={this.materialToggler}
+                                                    className={'plus-icon-square mt30  right'}>
+                                                </div>
                                             </div>
                                         </Col>
                                         <Col md="12">
@@ -377,33 +378,33 @@ class AddSpecification extends Component {
                                     </Row>
                                     <Row>
                                         <Col md="12">
-                                        <div className="d-flex">
-                                            <Field
-                                                name="GradeId"
-                                                type="text"
-                                                label="RM Grade"
-                                                component={searchableSelect}
-                                                placeholder={'Select RM Grade'}
-                                                options={this.renderListing('RMGrade')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleGrade}
-                                                valueDescription={this.state.RMGrade}
-                                            />
-                                      
-                                            {isEditFlag ?
-                                                <button className="Edit drawer-edit" type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
-                                                :
-                                                (this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ?
-                                                    <div className={'plus-icon-square blurPlus-icon-square right mt30'}>
-                                                    </div>
+                                            <div className="d-flex">
+                                                <Field
+                                                    name="GradeId"
+                                                    type="text"
+                                                    label="RM Grade"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select RM Grade'}
+                                                    options={this.renderListing('RMGrade')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleGrade}
+                                                    valueDescription={this.state.RMGrade}
+                                                />
+
+                                                {isEditFlag ?
+                                                    EditAccessibilityRMANDGRADE && <button className="Edit drawer-edit" type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
                                                     :
-                                                    <div
-                                                        onClick={() => this.gradeToggler('')}
-                                                        className={'plus-icon-square right'}>
-                                                    </div>
-                                            }
+                                                    ((this.state.RawMaterial == null || this.state.RawMaterial.length == 0) && AddAccessibilityRMANDGRADE) ?
+                                                        <div className={'plus-icon-square blurPlus-icon-square right mt30'}>
+                                                        </div>
+                                                        :
+                                                        AddAccessibilityRMANDGRADE && <div
+                                                            onClick={() => this.gradeToggler('')}
+                                                            className={'plus-icon-square right'}>
+                                                        </div>
+                                                }
                                             </div>
                                         </Col>
                                     </Row>

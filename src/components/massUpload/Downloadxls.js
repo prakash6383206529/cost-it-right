@@ -1,11 +1,10 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
-import { Row, Col } from 'reactstrap';
 import {
     Fuel, OverheadAndProfit, RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
     RMImportZBC, RMImportZBCTempData, RMImportVBC, RMImportVBCTempData,
-    RMSpecification, RMSpecificationXLTempData, Vendor, VendorTempData, Plant,
-    Bought_Out_Parts, Processes, MachineClass, Labour, Operation,
+    RMSpecification, RMSpecificationXLTempData, Vendor, VendorTempData, Overhead, OverheadTempData,
+    Profit, ProfitTempData, Plant, Bought_Out_Parts, Processes, MachineClass, Labour, Operation,
     OtherOperation, Power, MHR,
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable } from "../../helper";
@@ -45,8 +44,10 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(RMSpecification, RMSpecificationXLTempData);
             case 'Vendor':
                 return this.returnExcelColumn(Vendor, VendorTempData);
-            case 'Plant':
-                return this.returnExcelColumn(Plant);
+            case 'Overhead':
+                return this.returnExcelColumn(Overhead, OverheadTempData);
+            case 'Profit':
+                return this.returnExcelColumn(Profit, ProfitTempData);
             case 'BOP':
                 return this.returnExcelColumn(Bought_Out_Parts);
             case 'Processes':
@@ -61,8 +62,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
                 return this.returnExcelColumn(Power);
-            case 'OverheadAndProfit':
-                return this.returnExcelColumn(OverheadAndProfit);
             case 'MHR':
                 return this.returnExcelColumn(MHR);
             case 'Fuel':
@@ -83,8 +82,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(RMDomesticZBC, RMDomesticZBCTempData);
             case 'RMImport':
                 return this.returnExcelColumn(RMImportZBC, RMImportZBCTempData);
-            case 'Plant':
-                return this.returnExcelColumn(Plant);
             case 'BOP':
                 return this.returnExcelColumn(Bought_Out_Parts);
             case 'Processes':
@@ -99,8 +96,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
                 return this.returnExcelColumn(Power);
-            case 'OverheadAndProfit':
-                return this.returnExcelColumn(OverheadAndProfit);
             case 'MHR':
                 return this.returnExcelColumn(MHR);
             case 'Fuel':
@@ -121,8 +116,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(this.checkVendorPlantConfig(RMDomesticVBC), RMDomesticVBCTempData);
             case 'RMImport':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
-            case 'Plant':
-                return this.returnExcelColumn(Plant);
             case 'BOP':
                 return this.returnExcelColumn(Bought_Out_Parts);
             case 'Processes':
@@ -137,8 +130,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
                 return this.returnExcelColumn(Power);
-            case 'OverheadAndProfit':
-                return this.returnExcelColumn(OverheadAndProfit);
             case 'MHR':
                 return this.returnExcelColumn(MHR);
             case 'Fuel':
@@ -191,7 +182,7 @@ class Downloadxls extends React.Component {
         }
 
         // Download file:- Called when Apart from ZBC & VBC failed
-        if (isFailedFlag && (fileName == 'RMSpecification' || fileName == 'Vendor')) {
+        if (isFailedFlag && (fileName == 'RMSpecification' || fileName == 'Vendor' || fileName == 'Overhead' || fileName == 'Profit')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}
