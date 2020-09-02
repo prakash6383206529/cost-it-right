@@ -3,9 +3,12 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../../actions/master/Comman';
-import { getVendorListByVendorType } from '../../../../actions/master/Material';
-import { getProfitDataList, deleteOverhead, activeInactiveProfit, } from '../../../../actions/master/OverheadProfit';
+import {
+    getProfitDataList, deleteProfit, activeInactiveProfit, fetchModelTypeAPI,
+    getVendorWithVendorCodeSelectList,
+    getProfitVendorFilterByModelSelectList,
+    getProfitModelFilterByVendorSelectList,
+} from '../../../../actions/master/OverheadProfit';
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -15,6 +18,7 @@ import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
+import BulkUpload from '../../../massUpload/BulkUpload';
 
 class ProfitListing extends Component {
     constructor(props) {
@@ -29,6 +33,8 @@ class ProfitListing extends Component {
             ModelType: [],
             vendorName: [],
             overheadAppli: [],
+
+            isBulkUpload: false,
         }
     }
 
@@ -38,9 +44,7 @@ class ProfitListing extends Component {
     */
     componentDidMount() {
         this.props.fetchModelTypeAPI('--Model Types--', res => { });
-        this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-        this.props.getVendorListByVendorType(false, () => { })
-        this.props.onRef(this)
+        this.props.getVendorWithVendorCodeSelectList()
         this.getDataList(null, null, null, null)
     }
 
@@ -100,7 +104,7 @@ class ProfitListing extends Component {
     * @description confirm delete
     */
     confirmDelete = (ID) => {
-        this.props.deleteOverhead(ID, (res) => {
+        this.props.deleteProfit(ID, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
                 this.getDataList(null, null, null, null)
@@ -205,9 +209,13 @@ class ProfitListing extends Component {
     */
     handleModelTypeChange = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ ModelType: newValue, });
+            this.setState({ ModelType: newValue, }, () => {
+                const { ModelType } = this.state;
+                this.props.getProfitVendorFilterByModelSelectList(ModelType.value, () => { })
+            });
         } else {
             this.setState({ ModelType: [], })
+            this.props.getVendorWithVendorCodeSelectList()
         }
     };
 
@@ -217,9 +225,13 @@ class ProfitListing extends Component {
     */
     handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ vendorName: newValue });
+            this.setState({ vendorName: newValue }, () => {
+                const { vendorName } = this.state;
+                this.props.getProfitModelFilterByVendorSelectList(vendorName.value, () => { })
+            });
         } else {
             this.setState({ vendorName: [] })
+            this.props.fetchModelTypeAPI('--Model Types--', res => { });
         }
     };
 
@@ -240,7 +252,7 @@ class ProfitListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { vendorListByVendorType, modelTypes, costingHead } = this.props;
+        const { filterOverheadSelectList } = this.props;
         const temp = [];
 
         if (label === 'costingHead') {
@@ -249,23 +261,10 @@ class ProfitListing extends Component {
                 { label: 'VBC', value: 'VBC' },
             ]
             return tempObj;
-            // modelTypes && modelTypes.map(item => {
-            //     if (item.Value == 0) return false;
-            //     temp.push({ label: item.Text, value: item.Value })
-            // });
-            //return temp;
         }
 
         if (label === 'ModelType') {
-            modelTypes && modelTypes.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-        if (label === 'OverheadApplicability') {
-            costingHead && costingHead.map(item => {
+            filterOverheadSelectList && filterOverheadSelectList.modelTypeSelectList && filterOverheadSelectList.modelTypeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -273,7 +272,7 @@ class ProfitListing extends Component {
         }
 
         if (label === 'VendorNameList') {
-            vendorListByVendorType && vendorListByVendorType.map(item => {
+            filterOverheadSelectList && filterOverheadSelectList.VendorsSelectList && filterOverheadSelectList.VendorsSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -338,15 +337,16 @@ class ProfitListing extends Component {
 
 	/**
 	* @method resetFilter
-	* @description Reset user filter
+	* @description Reset filter
 	*/
     resetFilter = () => {
         this.setState({
             costingHead: [],
             ModelType: [],
             vendorName: [],
-            overheadAppli: [],
         }, () => {
+            this.props.fetchModelTypeAPI('--Model Types--', res => { });
+            this.props.getVendorWithVendorCodeSelectList()
             this.getDataList(null, null, null, null)
         })
 
@@ -354,6 +354,16 @@ class ProfitListing extends Component {
 
     formToggle = () => {
         this.props.formToggle()
+    }
+
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+            this.getDataList(null, null, null, null)
+        })
     }
 
     /**
@@ -370,7 +380,7 @@ class ProfitListing extends Component {
     */
     render() {
         const { handleSubmit } = this.props;
-        const { isEditFlag } = this.state;
+        const { isEditFlag, isBulkUpload, } = this.state;
 
         const options = {
             clearSearch: true,
@@ -384,7 +394,7 @@ class ProfitListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
-                        <Col md="10" className="filter-block">
+                        <Col md="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -435,22 +445,6 @@ class ProfitListing extends Component {
                                         disabled={isEditFlag ? true : false}
                                     />
                                 </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="OverheadApplicability"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Overhead-'}
-                                        options={this.renderListing('OverheadApplicability')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.overheadAppli == null || this.state.overheadAppli.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleOverheadChange}
-                                        valueDescription={this.state.overheadAppli}
-                                    //disabled={isEditFlag ? true : false}
-                                    />
-                                </div>
 
                                 <div className="flex-fill">
                                     <button
@@ -473,16 +467,19 @@ class ProfitListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="2" className="search-user-block">
+                        <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>
-                                    }
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.bulkToggle}>
+                                        <div className={'upload'}></div>Bulk Upload</button>
+                                    <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD</button>
                                 </div>
                             </div>
                         </Col>
@@ -501,9 +498,9 @@ class ProfitListing extends Component {
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" >{this.renderVendor()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" width={150} columnTitle={true} dataAlign="center" >{this.renderVendor()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="center" >{this.renderModelType()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProfitApplicabilityType" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadAppli()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProfitPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
@@ -513,6 +510,15 @@ class ProfitListing extends Component {
                             <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="ProfitId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
+                        {isBulkUpload && <BulkUpload
+                            isOpen={isBulkUpload}
+                            closeDrawer={this.closeBulkUploadDrawer}
+                            isEditFlag={false}
+                            isZBCVBCTemplate={false}
+                            fileName={'Profit'}
+                            messageLabel={'Profit'}
+                            anchor={'right'}
+                        />}
                     </Col>
                 </Row>
             </div >
@@ -526,13 +532,11 @@ class ProfitListing extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, overheadProfit, } = state;
+    const { overheadProfit, } = state;
 
-    const { modelTypes, costingHead, } = comman;
+    const { filterOverheadSelectList, } = overheadProfit;
 
-    const { vendorListByVendorType } = material;
-
-    return { modelTypes, costingHead, vendorListByVendorType, }
+    return { filterOverheadSelectList, }
 
 }
 
@@ -544,11 +548,12 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getProfitDataList,
-    deleteOverhead,
-    fetchModelTypeAPI,
-    fetchCostingHeadsAPI,
-    getVendorListByVendorType,
+    deleteProfit,
     activeInactiveProfit,
+    fetchModelTypeAPI,
+    getVendorWithVendorCodeSelectList,
+    getProfitVendorFilterByModelSelectList,
+    getProfitModelFilterByVendorSelectList,
 })(reduxForm({
     form: 'ProfitListing',
     enableReinitialize: true,

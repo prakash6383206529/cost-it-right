@@ -235,6 +235,7 @@ export const API = {
   vendorBulkUpload: `${BASE_URL}/vendor/bulk-upload-for-vendor-json`,
   getAllVendorSelectList: `${BASE_URL}/vendor/all-vendor-select-list`,
   getVendorTypeByVendorSelectList: `${BASE_URL}/vendor/vendor-type-by-vendor-select-list`,
+  getVendorWithVendorCodeSelectList: `${BASE_URL}/vendor/vbc-vendor-with-code-select-list`,
 
   //BOP DOMESTIC
   createBOPDomestic: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-domestic`,
@@ -325,15 +326,26 @@ export const API = {
   updateOverhead: `${BASE_URL}/masters-overhead-and-profit/update-overhead`,
   getOverheadData: `${BASE_URL}/masters-overhead-and-profit/get`,
   getOverheadDataList: `${BASE_URL}/masters-overhead-and-profit/get-all-overhead-by-filter`,
+  deleteOverhead: `${BASE_URL}/masters-overhead-and-profit/delete-overhead`,
   activeInactiveOverhead: `${BASE_URL}/masters-overhead-and-profit/active-inactive-overhead`,
+  fileUploadOverHead: `${BASE_URL}/masters-overhead-and-profit/overhead-file-upload`,
+  fileDeleteOverhead: `${BASE_URL}/masters-overhead-and-profit/delete-overhead-file`,
+  overheadBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-overhead-json`,
+  getVendorFilterByModelTypeSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-vendor-with-code-by-model-type-select-list`,
+  getModelTypeFilterByVendorSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-model-type-by-vendor-select-list`,
 
   createProfit: `${BASE_URL}/masters-overhead-and-profit/create-profit`,
   updateProfit: `${BASE_URL}/masters-overhead-and-profit/update-profit`,
   getProfitData: `${BASE_URL}/masters-overhead-and-profit/get-profit`,
+  deleteProfit: `${BASE_URL}/masters-overhead-and-profit/delete-profit`,
   getProfitDataList: `${BASE_URL}/masters-overhead-and-profit/get-all-profit-by-filter`,
-  deleteOverhead: `${BASE_URL}/masters-overhead-and-profit/delete`,
   activeInactiveProfit: `${BASE_URL}/masters-overhead-and-profit/active-inactive-profit`,
   getOverheadProfitComboDataAPI: `${BASE_URL}/configuration-master/get-overhead-and-profit-combo-select-list`,
+  fileUploadProfit: `${BASE_URL}/masters-overhead-and-profit/profit-file-upload`,
+  fileDeleteProfit: `${BASE_URL}/masters-overhead-and-profit/delete-profit-file`,
+  profitBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-profit-json`,
+  getProfitVendorFilterByModelSelectList: `${BASE_URL}/masters-overhead-and-profit/profit-vendor-with-code-by-model-type-select-list`,
+  getProfitModelFilterByVendorSelectList: `${BASE_URL}/masters-overhead-and-profit/profit-model-type-by-vendor-select-list`,
 
   //Api's for depreciation master
   createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation-type`,
@@ -682,6 +694,7 @@ export const GET_RADIO_SUPPLIER_TYPE_SUCCESS = 'GET_RADIO_SUPPLIER_TYPE_SUCCESS'
 export const GET_VENDOR_TYPE_SELECTLIST_SUCCESS = 'GET_VENDOR_TYPE_SELECTLIST_SUCCESS';
 export const GET_ALL_VENDOR_SELECTLIST_SUCCESS = 'GET_ALL_VENDOR_SELECTLIST_SUCCESS';
 export const GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR = 'GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR';
+export const GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST';
 
 //BOM MASTER
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
@@ -781,6 +794,10 @@ export const GET_LABOUR_DATA_SUCCESS = 'GET_LABOUR_DATA_SUCCESS';
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS';
 export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS';
 export const GET_OVERHEAD_PROFIT_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_DATA_SUCCESS';
+export const GET_MODEL_TYPE_SELECTLIST = 'GET_MODEL_TYPE_SELECTLIST';
+export const GET_VENDOR_FILTER_WITH_VENDOR_CODE_SELECTLIST = 'GET_VENDOR_FILTER_WITH_VENDOR_CODE_SELECTLIST';
+export const GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST = 'GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST';
+export const GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST = 'GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST';
 
 //DEPRECIATION
 export const CREATE_DEPRICIATION_SUCCESS = 'CREATE_LABOUR_SUCCESS';
@@ -968,6 +985,7 @@ export const ROLE = 'Role';
 export const DEPARTMENT = 'Department';
 export const LEVELS = 'Levels';
 export const RAW_MATERIAL = 'Raw Material';
+export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade';
 export const BOP = 'BOP';
 export const PART = 'Part';
 export const MACHINE = 'Machine';

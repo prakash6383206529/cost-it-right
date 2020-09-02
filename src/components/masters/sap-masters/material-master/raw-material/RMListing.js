@@ -182,6 +182,7 @@ class RMListing extends Component {
                             // exportCSV
                             ignoreSinglePage
                             ref={'table'}
+                            className={'RM-table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="MaterialType" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>

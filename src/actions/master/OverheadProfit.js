@@ -7,6 +7,10 @@ import {
     GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS,
     GET_OVERHEAD_PROFIT_DATA_SUCCESS,
     CREATE_SUCCESS,
+    GET_MODEL_TYPE_SELECTLIST,
+    GET_VENDOR_FILTER_WITH_VENDOR_CODE_SELECTLIST,
+    GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST,
+    GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -226,12 +230,29 @@ export function getProfitDataList(data, callback) {
 
 /**
  * @method deleteOverhead
- * @description delete Overhead and Profit
+ * @description delete Overhead
  */
 export function deleteOverhead(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.deleteOverhead}/${Id}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteProfit
+ * @description delete Profit
+ */
+export function deleteProfit(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteProfit}/${Id}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -272,5 +293,248 @@ export function activeInactiveProfit(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method fileUploadOverHead
+ * @description File Upload Over Head
+ */
+export function fileUploadOverHead(data, callback) {
+    return (dispatch) => {
+        let multipartHeaders = {
+            'Content-Type': 'multipart/form-data;'
+        };
+        const request = axios.post(API.fileUploadOverHead, data, headers);
+        request.then((response) => {
+            if (response && response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fileUploadProfit
+ * @description File Upload Profit
+ */
+export function fileUploadProfit(data, callback) {
+    return (dispatch) => {
+        let multipartHeaders = {
+            'Content-Type': 'multipart/form-data;'
+        };
+        const request = axios.post(API.fileUploadProfit, data, headers);
+        request.then((response) => {
+            if (response && response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fileDeleteOverhead
+ * @description delete Overhead file API
+ */
+export function fileDeleteOverhead(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.fileDeleteOverhead}/${data.Id}/${data.DeletedBy}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method fileDeleteProfit
+ * @description delete Profit file API
+ */
+export function fileDeleteProfit(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.fileDeleteProfit}/${data.Id}/${data.DeletedBy}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method overheadBulkUpload
+ * @description create Overhead by Bulk Upload
+ */
+export function overheadBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.overheadBulkUpload, data, headers);
+        request.then((response) => {
+            if (response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method profitBulkUpload
+ * @description create Profit by Bulk Upload
+ */
+export function profitBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.profitBulkUpload, data, headers);
+        request.then((response) => {
+            if (response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fetchModelTypeAPI
+ * @description Used to fetch MODEL TYPES
+ */
+export function fetchModelTypeAPI(modelTypeHeading, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getModelTypes}?text=${modelTypeHeading}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MODEL_TYPE_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorWithVendorCodeSelectList
+ * @description GET VENDOR WITH VENDOR CODE SELECTLIST
+ */
+export function getVendorWithVendorCodeSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_VENDOR_FILTER_WITH_VENDOR_CODE_SELECTLIST,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorFilterByModelTypeSelectList
+ * @description GET VENDOR BY MODELTYPE IN FILTER IN OVERHEAD
+ */
+export function getVendorFilterByModelTypeSelectList(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getVendorFilterByModelTypeSelectList}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getModelTypeFilterByVendorSelectList
+ * @description GET MODELTYPE BY VENDOR IN FILTER IN OVERHEAD
+ */
+export function getModelTypeFilterByVendorSelectList(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getModelTypeFilterByVendorSelectList}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getProfitVendorFilterByModelSelectList
+ * @description GET VENDOR BY MODELTYPE IN FILTER IN PROFIT
+ */
+export function getProfitVendorFilterByModelSelectList(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getProfitVendorFilterByModelSelectList}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VENDOR_FILTER_BY_MODELTYPE_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getProfitModelFilterByVendorSelectList
+ * @description GET MODELTYPE BY VENDOR IN FILTER IN PROFIT
+ */
+export function getProfitModelFilterByVendorSelectList(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getProfitModelFilterByVendorSelectList}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MODELTYPE_FILTER_BY_VENDOR_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
     };
 }

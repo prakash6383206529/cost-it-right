@@ -412,6 +412,8 @@ class SpecificationListing extends Component {
                     isEditFlag={isEditFlag}
                     ID={ID}
                     anchor={'right'}
+                    AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                    EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
                 />}
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}

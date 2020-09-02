@@ -1,3 +1,4 @@
+import moment from 'moment';
 /**
  * master listing used in Mass Upload
  * 
@@ -97,7 +98,7 @@ export const RMDomesticZBCTempData = [
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",
-        "EffectiveDate": "DD-MM-YYYY",
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
 
@@ -139,7 +140,7 @@ export const RMDomesticVBCTempData = [
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",
-        "EffectiveDate": "DD-MM-YYYY",
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
 
@@ -186,7 +187,7 @@ export const RMImportZBCTempData = [
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",
-        "EffectiveDate": "DD-MM-YYYY",
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
 
@@ -230,7 +231,7 @@ export const RMImportVBCTempData = [
         "BasicRate": "0",
         "ScrapRate": "0",
         "Remark": "Remark Content",
-        "EffectiveDate": "DD-MM-YYYY",
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
 
@@ -283,6 +284,62 @@ export const VendorTempData = [
         'City': 'City',
         'State': 'State',
         'Country': 'Country',
+    }
+]
+
+export const Overhead = [
+    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'OverheadMachiningCCPercentage', value: 'OverheadMachiningCCPercentage', },
+    { label: 'OverheadBOPPercentage', value: 'OverheadBOPPercentage', },
+    { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const OverheadTempData = [
+    {
+        'CostingHead': 'CostingHead',
+        'ModelType': 'ModelType',
+        'OverheadApplicability': 'OverheadApplicability',
+        'OverheadPercentage': 'OverheadPercentage',
+        'OverheadMachiningCCPercentage': 'OverheadMachiningCCPercentage',
+        'OverheadBOPPercentage': 'OverheadBOPPercentage',
+        'OverheadRMPercentage': 'OverheadRMPercentage',
+        'VendorName': 'VendorName',
+        'VendorCode': 'VendorCode',
+        'Remark': 'Remark',
+    }
+]
+
+export const Profit = [
+    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'ProfitApplicability', value: 'ProfitApplicability', },
+    { label: 'ProfitPercentage', value: 'ProfitPercentage', },
+    { label: 'ProfitMachiningCCPercentage', value: 'ProfitMachiningCCPercentage', },
+    { label: 'ProfitBOPPercentage', value: 'ProfitBOPPercentage', },
+    { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const ProfitTempData = [
+    {
+        'CostingHead': 'CostingHead',
+        'ModelType': 'ModelType',
+        'ProfitApplicability': 'ProfitApplicability',
+        'ProfitPercentage': 'ProfitPercentage',
+        'ProfitMachiningCCPercentage': 'ProfitMachiningCCPercentage',
+        'ProfitBOPPercentage': 'ProfitBOPPercentage',
+        'ProfitRMPercentage': 'ProfitRMPercentage',
+        'VendorName': 'VendorName',
+        'VendorCode': 'VendorCode',
+        'Remark': 'Remark',
     }
 ]
 
@@ -380,20 +437,6 @@ export const Power = [
     { label: 'Division', value: 'Division', },
     { label: 'PercentFCA', value: 'PercentFCA', },
     { label: 'PowerRateing', value: 'PowerRateing', },
-]
-
-export const OverheadAndProfit = [
-    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
-    { label: 'ProfitPercentage', value: 'ProfitPercentage', },
-    { label: 'OverheadMachiningCCPercentage', value: 'OverheadMachiningCCPercentage', },
-    { label: 'ProfitMachiningCCPercentage', value: 'ProfitMachiningCCPercentage', },
-    { label: 'SupplierCode', value: 'SupplierCode', },
-    { label: 'TechnologyName', value: 'TechnologyName', },
-    { label: 'SupplierName', value: 'SupplierName', },
-    { label: 'OverheadTypeName', value: 'OverheadTypeName', },
-    { label: 'ProfitTypeName', value: 'ProfitTypeName', },
-    { label: 'CostingModelNmae', value: 'CostingModelNmae', },
-    { label: 'PlantName', value: 'PlantName', },
 ]
 
 export const MHR = [
