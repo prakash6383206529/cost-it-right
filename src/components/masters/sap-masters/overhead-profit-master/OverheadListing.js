@@ -18,7 +18,6 @@ import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
-import BulkUpload from '../../../massUpload/BulkUpload';
 
 class OverheadListing extends Component {
     constructor(props) {
@@ -123,14 +122,23 @@ class OverheadListing extends Component {
     }
 
     /**
+    * @method dashFormatter
+    * @description Renders dash
+    */
+    dashFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell == null ? '-' : cell;
+    }
+
+    /**
     * @method buttonFormatter
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -140,7 +148,15 @@ class OverheadListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
+        let headText = '';
+        if (!cell && row.VendorName != '-') {
+            headText = 'Zero Based';
+        } else if (cell && row.VendorName != '-') {
+            headText = 'Vendor Based';
+        } else if ((cell || cell == null) && row.ClientName != '-') {
+            headText = 'Client Based';
+        }
+        return headText;
     }
 
     /**
@@ -171,6 +187,9 @@ class OverheadListing extends Component {
     renderVendor = () => {
         return <>Vendor <br />Name </>
     }
+    renderClient = () => {
+        return <>Client <br />Name </>
+    }
     renderModelType = () => {
         return <>Model <br />Type </>
     }
@@ -181,13 +200,13 @@ class OverheadListing extends Component {
         return <>Overhead <br />Applicability (%)</>
     }
     renderOverheadCC = () => {
-        return <>Overhead <br />CC (%)</>
+        return <>Overhead <br /> on CC (%)</>
     }
     renderOverheadRM = () => {
-        return <>Overhead <br />RM (%)</>
+        return <>Overhead <br /> on RM (%)</>
     }
     renderOverheadBOP = () => {
-        return <>Overhead <br />BOP (%)</>
+        return <>Overhead <br />on BOP (%)</>
     }
 
     /**
@@ -341,16 +360,6 @@ class OverheadListing extends Component {
         this.props.formToggle()
     }
 
-    bulkToggle = () => {
-        this.setState({ isBulkUpload: true })
-    }
-
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getDataList(null, null, null, null)
-        })
-    }
-
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -364,8 +373,8 @@ class OverheadListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
-        const { isEditFlag, isBulkUpload } = this.state;
+        const { handleSubmit, AddAccessibility, } = this.props;
+        const { isEditFlag, } = this.state;
 
         const options = {
             clearSearch: true,
@@ -454,16 +463,11 @@ class OverheadListing extends Component {
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>
-                                    <button
+                                    {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
                                         onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>
+                                        <div className={'plus'}></div>ADD</button>}
                                 </div>
                             </div>
                         </Col>
@@ -474,35 +478,28 @@ class OverheadListing extends Component {
                     <Col>
                         <BootstrapTable
                             data={this.state.tableData}
-                            striped={true}
+                            striped={false}
+                            bordered={false}
                             hover={true}
                             options={options}
                             search
-                            // exportCSV
+                            //exportCSV
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={150} columnTitle={true} dataAlign="center" >{this.renderVendor()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ClientName" width={150} columnTitle={true} dataAlign="center" >{this.renderClient()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="center" >{this.renderModelType()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadApplicabilityType" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadAppli()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadCC()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadRM()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadBOP()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="OverheadApplicabilityType" width={150} columnTitle={true} dataAlign="center" >{this.renderOverheadAppli()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="OverheadPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter} >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
-                        {isBulkUpload && <BulkUpload
-                            isOpen={isBulkUpload}
-                            closeDrawer={this.closeBulkUploadDrawer}
-                            isEditFlag={false}
-                            isZBCVBCTemplate={false}
-                            fileName={'Overhead'}
-                            messageLabel={'Overhead'}
-                            anchor={'right'}
-                        />}
                     </Col>
                 </Row>
             </div >

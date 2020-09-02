@@ -33,8 +33,6 @@ class ProfitListing extends Component {
             ModelType: [],
             vendorName: [],
             overheadAppli: [],
-
-            isBulkUpload: false,
         }
     }
 
@@ -125,14 +123,23 @@ class ProfitListing extends Component {
     }
 
     /**
+    * @method dashFormatter
+    * @description Renders dash
+    */
+    dashFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell == null ? '-' : cell;
+    }
+
+    /**
     * @method buttonFormatter
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -142,10 +149,22 @@ class ProfitListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
+        let headText = '';
+        if (!cell && row.VendorName != '-') {
+            headText = 'Zero Based';
+        } else if (cell && row.VendorName != '-') {
+            headText = 'Vendor Based';
+        } else if ((cell || cell == null) && row.ClientName != '-') {
+            headText = 'Client Based';
+        }
+        return headText;
     }
+
     renderVendor = () => {
         return <>Vendor <br />Name </>
+    }
+    renderClient = () => {
+        return <>Client <br />Name </>
     }
     renderModelType = () => {
         return <>Model <br />Type </>
@@ -157,13 +176,13 @@ class ProfitListing extends Component {
         return <>Profit  <br />Applicability (%)</>
     }
     renderOverheadCC = () => {
-        return <>Profit  <br />CC (%)</>
+        return <>Profit  <br />on CC (%)</>
     }
     renderOverheadRM = () => {
-        return <>Profit  <br />RM (%)</>
+        return <>Profit  <br />on RM (%)</>
     }
     renderOverheadBOP = () => {
-        return <>Profit  <br />BOP (%)</>
+        return <>Profit  <br />on BOP (%)</>
     }
 
     /**
@@ -332,7 +351,7 @@ class ProfitListing extends Component {
         const vendorNameTemp = vendorName ? vendorName.value : null;
         const OverheadAppliTemp = overheadAppli ? overheadAppli.value : null;
 
-        this.getDataList(costingHeadTemp, ModelTypeTemp, vendorNameTemp, OverheadAppliTemp)
+        this.getDataList(costingHeadTemp, vendorNameTemp, OverheadAppliTemp, ModelTypeTemp,)
     }
 
 	/**
@@ -356,16 +375,6 @@ class ProfitListing extends Component {
         this.props.formToggle()
     }
 
-    bulkToggle = () => {
-        this.setState({ isBulkUpload: true })
-    }
-
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getDataList(null, null, null, null)
-        })
-    }
-
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -379,8 +388,8 @@ class ProfitListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
-        const { isEditFlag, isBulkUpload, } = this.state;
+        const { handleSubmit, AddAccessibility } = this.props;
+        const { isEditFlag, } = this.state;
 
         const options = {
             clearSearch: true,
@@ -470,16 +479,11 @@ class ProfitListing extends Component {
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>
-                                    <button
+                                    {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
                                         onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>
+                                        <div className={'plus'}></div>ADD</button>}
                                 </div>
                             </div>
                         </Col>
@@ -490,7 +494,8 @@ class ProfitListing extends Component {
                     <Col>
                         <BootstrapTable
                             data={this.state.tableData}
-                            striped={true}
+                            striped={false}
+                            bordered={false}
                             hover={true}
                             options={options}
                             search
@@ -501,24 +506,16 @@ class ProfitListing extends Component {
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={150} columnTitle={true} dataAlign="center" >{this.renderVendor()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ClientName" width={150} columnTitle={true} dataAlign="center" >{this.renderClient()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="center" >{this.renderModelType()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProfitApplicabilityType" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadAppli()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProfitPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProfitMachiningCCPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadCC()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProfitRMPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadRM()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProfitBOPPercentage" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadBOP()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProfitPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadAppliPercent()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProfitMachiningCCPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProfitRMPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProfitBOPPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} dataField="ProfitId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
-                        {isBulkUpload && <BulkUpload
-                            isOpen={isBulkUpload}
-                            closeDrawer={this.closeBulkUploadDrawer}
-                            isEditFlag={false}
-                            isZBCVBCTemplate={false}
-                            fileName={'Profit'}
-                            messageLabel={'Profit'}
-                            anchor={'right'}
-                        />}
                     </Col>
                 </Row>
             </div >

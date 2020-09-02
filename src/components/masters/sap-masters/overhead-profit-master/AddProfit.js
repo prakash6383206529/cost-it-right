@@ -2,13 +2,13 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../../helper/validation";
+import { required, checkForNull, maxLength100, getVendorCode } from "../../../../helper/validation";
 import {
     renderText, renderSelectField, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField
 } from "../../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../../actions/master/Comman';
-import { getVendorListByVendorType } from '../../../../actions/master/Material';
+import { getVendorWithVendorCodeSelectList } from '../../../../actions/master/Supplier';
 import {
     createProfit, updateProfit, getProfitData, fileUploadProfit,
     fileDeleteProfit,
@@ -18,12 +18,10 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { loggedInUserId, userDetails } from "../../../../helper/auth";
-import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import { FILE_URL } from '../../../../config/constants';
-import ProfitListing from './ProfitListing';
 const selector = formValueSelector('AddProfit');
 
 class AddProfit extends Component {
@@ -39,6 +37,7 @@ class AddProfit extends Component {
 
             ModelType: [],
             vendorName: [],
+            client: [],
 
             overheadAppli: [],
 
@@ -48,7 +47,12 @@ class AddProfit extends Component {
             isRM: false,
             isCC: false,
             isBOP: false,
-            isOverheadPercent: false
+            isOverheadPercent: false,
+
+            isHideOverhead: false,
+            isHideRM: false,
+            isHideCC: false,
+            isHideBOP: false,
         }
     }
 
@@ -59,7 +63,7 @@ class AddProfit extends Component {
     componentDidMount() {
         this.props.fetchModelTypeAPI('--Model Types--', res => { });
         this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-        this.props.getVendorListByVendorType(false, () => { })
+        this.props.getVendorWithVendorCodeSelectList()
         this.props.getClientSelectList(() => { })
         this.getDetails();
     }
@@ -73,9 +77,6 @@ class AddProfit extends Component {
             IsVendor: vendorFlag,
             costingHead: costingHeadFlag,
             vendorName: [],
-        }, () => {
-            const { IsVendor } = this.state;
-            this.props.getVendorListByVendorType(IsVendor, () => { })
         });
     }
 
@@ -119,17 +120,16 @@ class AddProfit extends Component {
 
                     const Data = res.data.Data;
 
-                    this.props.getVendorListByVendorType(Data.IsVendor, () => { })
-
                     setTimeout(() => {
-                        const { modelTypes, costingHead, vendorListByVendorType } = this.props;
+                        const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
 
                         const modelObj = modelTypes && modelTypes.find(item => item.Value == Data.ModelTypeId)
-                        const AppliObj = costingHead && costingHead.find(item => item.Value == Data.OverheadApplicabilityId)
-                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value == Data.VendorId)
+                        const AppliObj = costingHead && costingHead.find(item => item.Value == Data.ProfitApplicabilityId)
+                        const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value == Data.VendorId)
+                        const clientObj = clientSelectList && clientSelectList.find(item => item.Value == Data.ClientId)
 
                         let Head = '';
-                        if (Data.IsVendor == true) {
+                        if (Data.IsVendor == true && Data.VendorId != null) {
                             Head = 'vendor';
                         } else if (Data.IsClient == true) {
                             Head = 'client';
@@ -144,10 +144,11 @@ class AddProfit extends Component {
                             costingHead: Head,
                             ModelType: modelObj && modelObj != undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
                             vendorName: vendorObj && vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            client: clientObj && clientObj != undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
                             overheadAppli: AppliObj && AppliObj != undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
                             remarks: Data.Remark,
                             files: Data.Attachements,
-                        })
+                        }, () => this.checkOverheadFields())
                     }, 500)
                 }
             })
@@ -161,7 +162,7 @@ class AddProfit extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { vendorListByVendorType, modelTypes, costingHead, clientSelectList } = this.props;
+        const { vendorWithVendorCodeSelectList, modelTypes, costingHead, clientSelectList } = this.props;
         const temp = [];
 
         if (label === 'ModelType') {
@@ -181,7 +182,7 @@ class AddProfit extends Component {
         }
 
         if (label === 'VendorNameList') {
-            vendorListByVendorType && vendorListByVendorType.map(item => {
+            vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -210,6 +211,36 @@ class AddProfit extends Component {
     };
 
     /**
+    * @method handleClient
+    * @description called
+    */
+    handleClient = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ client: newValue });
+        } else {
+            this.setState({ client: [] })
+        }
+    };
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.filedObj != this.props.filedObj) {
+            const { filedObj } = this.props;
+            const ProfitPercentage = filedObj && filedObj.ProfitPercentage != undefined && filedObj.ProfitPercentage != '' ? true : false;
+            const ProfitRMPercentage = filedObj && filedObj.ProfitRMPercentage != undefined && filedObj.ProfitRMPercentage != '' ? true : false;
+            const ProfitMachiningCCPercentage = filedObj && filedObj.ProfitMachiningCCPercentage != undefined && filedObj.ProfitMachiningCCPercentage != '' ? true : false;
+            const ProfitBOPPercentage = filedObj && filedObj.ProfitBOPPercentage != undefined && filedObj.ProfitBOPPercentage != '' ? true : false;
+            if (ProfitPercentage) {
+                this.setState({ isRM: true, isCC: true, isBOP: true, })
+            } else if (ProfitRMPercentage || ProfitMachiningCCPercentage || ProfitBOPPercentage) {
+                this.setState({ isOverheadPercent: true })
+            } else {
+                this.checkOverheadFields()
+            }
+
+        }
+    }
+
+    /**
     * @method handleOverheadChange
     * @description called
     */
@@ -220,35 +251,121 @@ class AddProfit extends Component {
                 this.checkOverheadFields()
             });
         } else {
-            this.setState({ overheadAppli: [], isRM: false, isCC: false, isBOP: false, isOverheadPercent: false })
+            this.setState({
+                overheadAppli: [],
+                isRM: false,
+                isCC: false,
+                isBOP: false,
+                isOverheadPercent: false,
+                sHideOverhead: false,
+                isHideBOP: false,
+                isHideCC: false,
+                isHideRM: false,
+            })
         }
     };
 
     resetFields = () => {
-        this.props.change('ProfitPercentage', 0)
-        this.props.change('ProfitMachiningCCPercentage', 0)
-        this.props.change('ProfitBOPPercentage', 0)
-        this.props.change('ProfitRMPercentage', 0)
+        this.props.change('ProfitPercentage', '')
+        this.props.change('ProfitMachiningCCPercentage', '')
+        this.props.change('ProfitBOPPercentage', '')
+        this.props.change('ProfitRMPercentage', '')
     }
 
     checkOverheadFields = () => {
         const { overheadAppli } = this.state;
-        if (overheadAppli.label == 'RM') {
-            this.setState({ isRM: false, isCC: true, isBOP: true, isOverheadPercent: true })
-        } else if (overheadAppli.label == 'CC') {
-            this.setState({ isRM: true, isCC: false, isBOP: true, isOverheadPercent: true })
-        } else if (overheadAppli.label == 'BOP') {
-            this.setState({ isRM: true, isBOP: false, isCC: true, isOverheadPercent: true })
-        } else if (overheadAppli.label == 'Fixed') {
-            this.setState({ isRM: true, isCC: true, isBOP: true, isOverheadPercent: true })
-        } else if (overheadAppli.label == 'RM + CC') {
-            this.setState({ isRM: false, isCC: false, isBOP: true, isOverheadPercent: false })
-        } else if (overheadAppli.label == 'RM + BOP') {
-            this.setState({ isRM: false, isCC: true, isBOP: false, isOverheadPercent: false })
-        } else if (overheadAppli.label == 'BOP + CC') {
-            this.setState({ isRM: true, isBOP: false, isCC: false, isOverheadPercent: false })
-        } else if (overheadAppli.label == 'RM + CC + BOP') {
-            this.setState({ isRM: false, isCC: false, isBOP: false, isOverheadPercent: false })
+
+        switch (overheadAppli.label) {
+            case 'RM':
+                return this.setState({
+                    isRM: false,
+                    isCC: true,
+                    isBOP: true,
+                    isOverheadPercent: true,
+                    isHideOverhead: true,
+                    isHideRM: false,
+                    isHideCC: true,
+                    isHideBOP: true,
+                })
+            case 'CC':
+                return this.setState({
+                    isRM: true,
+                    isCC: false,
+                    isBOP: true,
+                    isOverheadPercent: true,
+                    isHideOverhead: true,
+                    isHideRM: true,
+                    isHideCC: false,
+                    isHideBOP: true,
+                })
+            case 'BOP':
+                return this.setState({
+                    isRM: true,
+                    isBOP: false,
+                    isCC: true,
+                    isOverheadPercent: true,
+                    isHideOverhead: true,
+                    isHideRM: true,
+                    isHideCC: true,
+                    isHideBOP: false,
+                })
+            case 'Fixed':
+                return this.setState({
+                    isRM: true,
+                    isCC: true,
+                    isBOP: true,
+                    isOverheadPercent: true,
+                    isHideOverhead: true,
+                    isHideRM: true,
+                    isHideCC: true,
+                    isHideBOP: true,
+                })
+            case 'RM + CC':
+                return this.setState({
+                    isRM: false,
+                    isCC: false,
+                    isBOP: true,
+                    isOverheadPercent: false,
+                    isHideOverhead: false,
+                    isHideBOP: true,
+                    isHideRM: false,
+                    isHideCC: false,
+                })
+            case 'RM + BOP':
+                return this.setState({
+                    isRM: false,
+                    isCC: true,
+                    isBOP: false,
+                    isOverheadPercent: false,
+                    isHideOverhead: false,
+                    isHideCC: true,
+                    isHideRM: false,
+                    isHideBOP: false,
+                })
+            case 'BOP + CC':
+                return this.setState({
+                    isRM: true,
+                    isBOP: false,
+                    isCC: false,
+                    isOverheadPercent: false,
+                    isHideOverhead: false,
+                    isHideRM: true,
+                    isHideBOP: false,
+                    isHideCC: false,
+                })
+            case 'RM + CC + BOP':
+                return this.setState({
+                    isRM: false,
+                    isCC: false,
+                    isBOP: false,
+                    isOverheadPercent: false,
+                    isHideOverhead: false,
+                    isHideBOP: false,
+                    isHideCC: false,
+                    isHideRM: false,
+                })
+            default:
+                return 'foo';
         }
     }
 
@@ -372,7 +489,7 @@ class AddProfit extends Component {
             })
             let requestData = {
                 ProfitId: ProfitID,
-                VendorName: IsVendor ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName,
+                VendorName: IsVendor ? (costingHead == 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
                 IsClient: costingHead == 'client' ? true : false,
                 ClientName: costingHead == 'client' ? client.label : '',
                 ProfitApplicabilityType: overheadAppli.label,
@@ -383,8 +500,8 @@ class AddProfit extends Component {
                 ProfitBOPPercentage: values.ProfitBOPPercentage,
                 ProfitRMPercentage: values.ProfitRMPercentage,
                 Remark: remarks,
-                VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-                VendorCode: IsVendor ? '' : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+                VendorId: IsVendor ? (costingHead == 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+                VendorCode: IsVendor ? (costingHead == 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
                 ClientId: costingHead == 'client' ? client.value : '',
                 ProfitApplicabilityId: overheadAppli.value,
                 ModelTypeId: ModelType.value,
@@ -405,13 +522,13 @@ class AddProfit extends Component {
 
             const formData = {
                 IsVendor: IsVendor,
-                ProfitPercentage: !isOverheadPercent ? values.ProfitPercentage : 0,
-                ProfitMachiningCCPercentage: !isCC ? values.ProfitMachiningCCPercentage : 0,
-                ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : 0,
-                ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : 0,
+                ProfitPercentage: !isOverheadPercent ? values.ProfitPercentage : '',
+                ProfitMachiningCCPercentage: !isCC ? values.ProfitMachiningCCPercentage : '',
+                ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
+                ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
                 Remark: remarks,
-                VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-                VendorCode: IsVendor ? '' : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+                VendorId: IsVendor ? (costingHead == 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+                VendorCode: IsVendor ? (costingHead == 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
                 ClientId: costingHead == 'client' ? client.value : '',
                 ProfitApplicabilityId: overheadAppli.value,
                 ModelTypeId: ModelType.value,
@@ -436,7 +553,8 @@ class AddProfit extends Component {
     */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { isRM, isCC, isBOP, isOverheadPercent, files, errors, isEditFlag, costingHead, } = this.state;
+        const { isRM, isCC, isBOP, isOverheadPercent, files, errors, isEditFlag, costingHead,
+            isHideOverhead, isHideBOP, isHideRM, isHideCC } = this.state;
 
         const previewStyle = {
             display: 'inline',
@@ -483,6 +601,7 @@ class AddProfit extends Component {
                                                         name="costingHead"
                                                         checked={costingHead == 'zero' ? true : false}
                                                         onClick={() => this.onPressVendor(false, 'zero')}
+                                                        disabled={isEditFlag ? true : false}
                                                     />{' '}
                                                         Zero Based
                                                     </Label>
@@ -492,6 +611,7 @@ class AddProfit extends Component {
                                                         name="costingHead"
                                                         checked={costingHead == 'vendor' ? true : false}
                                                         onClick={() => this.onPressVendor(true, 'vendor')}
+                                                        disabled={isEditFlag ? true : false}
                                                     />{' '}
                                                         Vendor Based
                                                     </Label>
@@ -501,6 +621,7 @@ class AddProfit extends Component {
                                                         name="costingHead"
                                                         checked={costingHead == 'client' ? true : false}
                                                         onClick={() => this.onPressVendor(true, 'client')}
+                                                        disabled={isEditFlag ? true : false}
                                                     />{' '}
                                                         Client Based
                                                     </Label>
@@ -559,7 +680,6 @@ class AddProfit extends Component {
                                                 </Col>}
 
                                         </Row>
-
                                         <Row>
                                             <Col md="3">
                                                 <Field
@@ -577,69 +697,66 @@ class AddProfit extends Component {
                                                 //disabled={isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            {!isHideOverhead && <Col md="3">
                                                 <Field
                                                     label={`Profit (%)`}
                                                     name={"ProfitPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={!isOverheadPercent ? [required] : []}
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleCalculation}
-                                                    required={true}
+                                                    required={!isOverheadPercent ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
                                                     disabled={isOverheadPercent ? true : false}
                                                 />
-                                            </Col>
-                                            <Col md="3">
+                                            </Col>}
+                                            {!isHideRM && <Col md="3">
                                                 <Field
                                                     label={`Profit RM (%)`}
                                                     name={"ProfitRMPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={!isRM ? [required] : []}
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleCalculation}
-                                                    required={true}
+                                                    required={!isRM ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
                                                     disabled={isRM ? true : false}
                                                 />
-                                            </Col>
-                                            <Col md="3">
+                                            </Col>}
+                                            {!isHideCC && <Col md="3">
                                                 <Field
                                                     label={`Profit CC (Machining) (%)`}
                                                     name={"ProfitMachiningCCPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={!isCC ? [required] : []}
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleCalculation}
-                                                    required={true}
+                                                    required={!isCC ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
                                                     disabled={isCC ? true : false}
                                                 />
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="3">
+                                            </Col>}
+                                            {!isHideBOP && <Col md="3">
                                                 <Field
                                                     label={`Profit BOP (%)`}
                                                     name={"ProfitBOPPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={!isBOP ? [required] : []}
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleCalculation}
-                                                    required={true}
+                                                    required={!isBOP ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
                                                     disabled={isBOP ? true : false}
                                                 />
-                                            </Col>
+                                            </Col>}
                                         </Row>
 
                                         <Row>
@@ -741,27 +858,29 @@ class AddProfit extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, overheadProfit, client, } = state;
+    const { comman, supplier, overheadProfit, client, } = state;
+    const filedObj = selector(state, 'ProfitPercentage', 'ProfitRMPercentage', 'ProfitMachiningCCPercentage',
+        'ProfitBOPPercentage')
 
     const { modelTypes, costingHead, } = comman;
     const { overheadProfitData, } = overheadProfit;
     const { clientSelectList } = client;
-    const { vendorListByVendorType } = material;
+    const { vendorWithVendorCodeSelectList } = supplier;
 
     let initialValues = {};
     if (overheadProfitData && overheadProfitData != undefined) {
         initialValues = {
-            OverheadPercentage: overheadProfitData.OverheadPercentage,
-            OverheadRMPercentage: overheadProfitData.OverheadRMPercentage,
-            OverheadMachiningCCPercentage: overheadProfitData.OverheadMachiningCCPercentage,
-            OverheadBOPPercentage: overheadProfitData.OverheadBOPPercentage,
+            ProfitPercentage: overheadProfitData.ProfitPercentage != 0 ? overheadProfitData.ProfitPercentage : '',
+            ProfitRMPercentage: overheadProfitData.ProfitRMPercentage != 0 ? overheadProfitData.ProfitRMPercentage : '',
+            ProfitMachiningCCPercentage: overheadProfitData.ProfitMachiningCCPercentage != 0 ? overheadProfitData.ProfitMachiningCCPercentage : '',
+            ProfitBOPPercentage: overheadProfitData.ProfitBOPPercentage != 0 ? overheadProfitData.ProfitBOPPercentage : '',
             Remark: overheadProfitData.Remark,
         }
     }
 
     return {
-        modelTypes, costingHead, vendorListByVendorType, overheadProfitData, clientSelectList,
-        initialValues,
+        modelTypes, costingHead, vendorWithVendorCodeSelectList, overheadProfitData, clientSelectList,
+        filedObj, initialValues,
     }
 
 }
@@ -775,7 +894,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     fetchModelTypeAPI,
     fetchCostingHeadsAPI,
-    getVendorListByVendorType,
+    getVendorWithVendorCodeSelectList,
     getClientSelectList,
     createProfit,
     updateProfit,
