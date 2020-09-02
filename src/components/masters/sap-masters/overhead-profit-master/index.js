@@ -6,6 +6,11 @@ import AddOverhead from './AddOverhead';
 import AddProfit from './AddProfit';
 import OverheadListing from './OverheadListing';
 import ProfitListing from './ProfitListing';
+import { OVERHEAD_AND_PROFIT } from '../../../../config/constants';
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 class OverheadProfit extends Component {
     constructor(props) {
@@ -15,7 +20,32 @@ class OverheadProfit extends Component {
             isOverheadForm: false,
             isProfitForm: false,
             data: {},
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
         }
+    }
+
+    componentDidMount() {
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData != undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName == OVERHEAD_AND_PROFIT)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData != undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    })
+                }
+            }
+        })
     }
 
     /**
@@ -103,6 +133,9 @@ class OverheadProfit extends Component {
                                         <OverheadListing
                                             formToggle={this.displayOverheadForm}
                                             getDetails={this.getOverHeadDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
                                         />
                                     </TabPane>}
 
@@ -111,6 +144,9 @@ class OverheadProfit extends Component {
                                         <ProfitListing
                                             formToggle={this.displayProfitForm}
                                             getDetails={this.getProfitDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
                                         />
                                     </TabPane>}
                             </TabContent>
@@ -128,13 +164,15 @@ class OverheadProfit extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ overheadProfit }) {
+function mapStateToProps({ overheadProfit, auth }) {
     const { loading } = overheadProfit;
-    return { loading }
+    const { leftMenuData } = auth;
+    return { loading, leftMenuData }
 }
 
 
-export default connect(mapStateToProps, {
-
-})(OverheadProfit);
+export default connect(mapStateToProps,
+    {
+        getLeftMenu,
+    })(OverheadProfit);
 

@@ -34,7 +34,7 @@ class BulkUpload extends Component {
             faildRecords: false,
             failedData: [],
             costingHead: 'ZBC',
-            uploadfileName:"",
+            uploadfileName: "",
         }
     }
 
@@ -92,6 +92,7 @@ class BulkUpload extends Component {
         let fileObj = event.target.files[0];
         let fileHeads = [];
         let uploadfileName = fileObj.name;
+        //console.log('uploadfileName: ', uploadfileName);
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
@@ -134,7 +135,7 @@ class BulkUpload extends Component {
                         cols: resp.cols,
                         rows: resp.rows,
                         fileData: fileData,
-                        uploadfileName:uploadfileName,
+                        uploadfileName: uploadfileName,
                     });
                 }
             });
@@ -163,7 +164,7 @@ class BulkUpload extends Component {
             }
 
         }
-        //this.toggleDrawer('')
+        this.toggleDrawer('')
     }
 
 
@@ -268,7 +269,7 @@ class BulkUpload extends Component {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{isEditFlag ? '' : `${messageLabel} `}</h3>
+                                        <h3>{isEditFlag ? '' : `${messageLabel} Bulk Upload `}</h3>
                                     </div>
                                     <div
                                         onClick={(e) => this.toggleDrawer(e)}
@@ -280,23 +281,23 @@ class BulkUpload extends Component {
                             <Row>
                                 {isZBCVBCTemplate &&
                                     <Col md="12">
-                                        <Label sm={2} className={'pl0 pr0'} check>
+                                        <Label sm={4} className={'pl0 pr0'} check>
                                             <input
                                                 type="radio"
                                                 name="costingHead"
                                                 checked={costingHead == 'ZBC' ? true : false}
                                                 onClick={() => this.onPressHeads('ZBC')}
                                             />{' '}
-                                        ZBC
+                                        Zero Based
                                     </Label>
-                                        <Label sm={2} className={'pl0 pr0'} check>
+                                        <Label sm={4} className={'pl0 pr0'} check>
                                             <input
                                                 type="radio"
                                                 name="costingHead"
                                                 checked={costingHead == 'VBC' ? true : false}
                                                 onClick={() => this.onPressHeads('VBC')}
                                             />{' '}
-                                        VBC
+                                        Vendor Based
                                     </Label>
                                     </Col>}
 
@@ -310,16 +311,16 @@ class BulkUpload extends Component {
                                 </div>
 
                                 <div className="input-group mt25 col-md-12 input-withouticon " >
-                                   <div className="file-uploadsection">
-                                    <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img src={require('../../assests/images/uploadcloud.png')} ></img> </label>
-                                    <input
-                                        type="file"
-                                        name="File"
-                                        onChange={this.fileHandler}
-                                        //accept="xls/*"
-                                        className="" placeholder="bbb" />
-                                        <p> { this.uploadfileName}</p>
-                                        </div>
+                                    <div className="file-uploadsection">
+                                        <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img src={require('../../assests/images/uploadcloud.png')} ></img> </label>
+                                        <input
+                                            type="file"
+                                            name="File"
+                                            onChange={this.fileHandler}
+                                            //accept="xls/*"
+                                            className="" placeholder="bbb" />
+                                        <p> {this.state.uploadfileName}</p>
+                                    </div>
                                 </div>
 
                             </Row>

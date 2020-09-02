@@ -47,7 +47,12 @@ class AddOverhead extends Component {
             isRM: false,
             isCC: false,
             isBOP: false,
-            isOverheadPercent: false
+            isOverheadPercent: false,
+
+            isHideOverhead: false,
+            isHideRM: false,
+            isHideCC: false,
+            isHideBOP: false,
         }
     }
 
@@ -116,14 +121,15 @@ class AddOverhead extends Component {
                     const Data = res.data.Data;
 
                     setTimeout(() => {
-                        const { modelTypes, costingHead, vendorWithVendorCodeSelectList } = this.props;
+                        const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
 
                         const modelObj = modelTypes && modelTypes.find(item => item.Value == Data.ModelTypeId)
                         const AppliObj = costingHead && costingHead.find(item => item.Value == Data.OverheadApplicabilityId)
                         const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value == Data.VendorId)
+                        const clientObj = clientSelectList && clientSelectList.find(item => item.Value == Data.ClientId)
 
                         let Head = '';
-                        if (Data.IsVendor == true) {
+                        if (Data.IsVendor == true && Data.VendorId != null) {
                             Head = 'vendor';
                         } else if (Data.IsClient == true) {
                             Head = 'client';
@@ -138,10 +144,11 @@ class AddOverhead extends Component {
                             costingHead: Head,
                             ModelType: modelObj && modelObj != undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
                             vendorName: vendorObj && vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            client: clientObj && clientObj != undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
                             overheadAppli: AppliObj && AppliObj != undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
                             remarks: Data.Remark,
                             files: Data.Attachements,
-                        })
+                        }, () => this.checkOverheadFields())
                     }, 500)
                 }
             })
@@ -215,6 +222,24 @@ class AddOverhead extends Component {
         }
     };
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.filedObj != this.props.filedObj) {
+            const { filedObj } = this.props;
+            const OverheadPercentage = filedObj && filedObj.OverheadPercentage != undefined && filedObj.OverheadPercentage != '' ? true : false;
+            const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage != undefined && filedObj.OverheadRMPercentage != '' ? true : false;
+            const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage != undefined && filedObj.OverheadMachiningCCPercentage != '' ? true : false;
+            const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage != undefined && filedObj.OverheadBOPPercentage != '' ? true : false;
+            if (OverheadPercentage) {
+                this.setState({ isRM: true, isCC: true, isBOP: true, })
+            } else if (OverheadRMPercentage || OverheadMachiningCCPercentage || OverheadBOPPercentage) {
+                this.setState({ isOverheadPercent: true })
+            } else {
+                this.checkOverheadFields()
+            }
+
+        }
+    }
+
     /**
     * @method handleOverheadChange
     * @description called
@@ -226,35 +251,121 @@ class AddOverhead extends Component {
                 this.checkOverheadFields()
             });
         } else {
-            this.setState({ overheadAppli: [], isRM: false, isCC: false, isBOP: false, isOverheadPercent: false })
+            this.setState({
+                overheadAppli: [],
+                isRM: false,
+                isCC: false,
+                isBOP: false,
+                isOverheadPercent: false,
+                isHideOverhead: false,
+                isHideBOP: false,
+                isHideCC: false,
+                isHideRM: false,
+            })
         }
     };
 
     resetFields = () => {
-        this.props.change('OverheadPercentage', 0)
-        this.props.change('OverheadMachiningCCPercentage', 0)
-        this.props.change('OverheadBOPPercentage', 0)
-        this.props.change('OverheadRMPercentage', 0)
+        this.props.change('OverheadPercentage', '')
+        this.props.change('OverheadMachiningCCPercentage', '')
+        this.props.change('OverheadBOPPercentage', '')
+        this.props.change('OverheadRMPercentage', '')
     }
 
     checkOverheadFields = () => {
         const { overheadAppli } = this.state;
-        if (overheadAppli.label == 'RM') {
-            this.setState({ isRM: false, isCC: true, isBOP: true, isOverheadPercent: true })
-        } else if (overheadAppli.label == 'CC') {
-            this.setState({ isRM: true, isCC: false, isBOP: true, isOverheadPercent: true })
-        } else if (overheadAppli.label == 'BOP') {
-            this.setState({ isRM: true, isBOP: false, isCC: true, isOverheadPercent: true })
-        } else if (overheadAppli.label == 'Fixed') {
-            this.setState({ isRM: true, isCC: true, isBOP: true, isOverheadPercent: true })
-        } else if (overheadAppli.label == 'RM + CC') {
-            this.setState({ isRM: false, isCC: false, isBOP: true, isOverheadPercent: false })
-        } else if (overheadAppli.label == 'RM + BOP') {
-            this.setState({ isRM: false, isCC: true, isBOP: false, isOverheadPercent: false })
-        } else if (overheadAppli.label == 'BOP + CC') {
-            this.setState({ isRM: true, isBOP: false, isCC: false, isOverheadPercent: false })
-        } else if (overheadAppli.label == 'RM + CC + BOP') {
-            this.setState({ isRM: false, isCC: false, isBOP: false, isOverheadPercent: false })
+
+        switch (overheadAppli.label) {
+            case 'RM':
+                return this.setState({
+                    isRM: false,
+                    isCC: true,
+                    isBOP: true,
+                    isOverheadPercent: true,
+                    isHideOverhead: true,
+                    isHideRM: false,
+                    isHideCC: true,
+                    isHideBOP: true,
+                })
+            case 'CC':
+                return this.setState({
+                    isRM: true,
+                    isCC: false,
+                    isBOP: true,
+                    isOverheadPercent: true,
+                    isHideOverhead: true,
+                    isHideRM: true,
+                    isHideCC: false,
+                    isHideBOP: true,
+                })
+            case 'BOP':
+                return this.setState({
+                    isRM: true,
+                    isBOP: false,
+                    isCC: true,
+                    isOverheadPercent: true,
+                    isHideOverhead: true,
+                    isHideRM: true,
+                    isHideCC: true,
+                    isHideBOP: false,
+                })
+            case 'Fixed':
+                return this.setState({
+                    isRM: true,
+                    isCC: true,
+                    isBOP: true,
+                    isOverheadPercent: true,
+                    isHideOverhead: true,
+                    isHideRM: true,
+                    isHideCC: true,
+                    isHideBOP: true,
+                })
+            case 'RM + CC':
+                return this.setState({
+                    isRM: false,
+                    isCC: false,
+                    isBOP: true,
+                    isOverheadPercent: false,
+                    isHideOverhead: false,
+                    isHideBOP: true,
+                    isHideRM: false,
+                    isHideCC: false,
+                })
+            case 'RM + BOP':
+                return this.setState({
+                    isRM: false,
+                    isCC: true,
+                    isBOP: false,
+                    isOverheadPercent: false,
+                    isHideOverhead: false,
+                    isHideCC: true,
+                    isHideRM: false,
+                    isHideBOP: false,
+                })
+            case 'BOP + CC':
+                return this.setState({
+                    isRM: true,
+                    isBOP: false,
+                    isCC: false,
+                    isOverheadPercent: false,
+                    isHideOverhead: false,
+                    isHideRM: true,
+                    isHideBOP: false,
+                    isHideCC: false,
+                })
+            case 'RM + CC + BOP':
+                return this.setState({
+                    isRM: false,
+                    isCC: false,
+                    isBOP: false,
+                    isOverheadPercent: false,
+                    isHideOverhead: false,
+                    isHideBOP: false,
+                    isHideCC: false,
+                    isHideRM: false,
+                })
+            default:
+                return 'foo';
         }
     }
 
@@ -377,7 +488,7 @@ class AddOverhead extends Component {
             })
             let requestData = {
                 OverheadId: OverheadID,
-                VendorName: IsVendor ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName,
+                VendorName: IsVendor ? (costingHead == 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
                 IsClient: costingHead == 'client' ? true : false,
                 ClientName: costingHead == 'client' ? client.label : '',
                 OverheadApplicabilityType: overheadAppli.label,
@@ -388,8 +499,8 @@ class AddOverhead extends Component {
                 OverheadBOPPercentage: values.OverheadBOPPercentage,
                 OverheadRMPercentage: values.OverheadRMPercentage,
                 Remark: remarks,
-                VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-                VendorCode: IsVendor ? getVendorCode(vendorName.label) : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+                VendorId: IsVendor ? (costingHead == 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+                VendorCode: IsVendor ? (costingHead == 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
                 ClientId: costingHead == 'client' ? client.value : '',
                 OverheadApplicabilityId: overheadAppli.value,
                 ModelTypeId: ModelType.value,
@@ -411,13 +522,13 @@ class AddOverhead extends Component {
             const formData = {
                 EAttachementEntityName: 0,
                 IsVendor: IsVendor,
-                OverheadPercentage: !isOverheadPercent ? values.OverheadPercentage : 0,
-                OverheadMachiningCCPercentage: !isCC ? values.OverheadMachiningCCPercentage : 0,
-                OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : 0,
-                OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : 0,
+                OverheadPercentage: !isOverheadPercent ? values.OverheadPercentage : '',
+                OverheadMachiningCCPercentage: !isCC ? values.OverheadMachiningCCPercentage : '',
+                OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : '',
+                OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : '',
                 Remark: remarks,
-                VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-                VendorCode: IsVendor ? getVendorCode(vendorName.label) : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+                VendorId: IsVendor ? (costingHead == 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+                VendorCode: IsVendor ? (costingHead == 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
                 ClientId: costingHead == 'client' ? client.value : '',
                 OverheadApplicabilityId: overheadAppli.value,
                 ModelTypeId: ModelType.value,
@@ -442,7 +553,8 @@ class AddOverhead extends Component {
     */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead } = this.state;
+        const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
+            isHideOverhead, isHideBOP, isHideRM, isHideCC } = this.state;
 
         const previewStyle = {
             display: 'inline',
@@ -588,69 +700,66 @@ class AddOverhead extends Component {
                                                 //disabled={isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            {!isHideOverhead && <Col md="3">
                                                 <Field
                                                     label={`Overhead (%)`}
                                                     name={"OverheadPercentage"}
                                                     type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    placeholder={!isOverheadPercent ? 'Enter' : ''}
+                                                    validate={!isOverheadPercent ? [required] : []}
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleCalculation}
-                                                    required={true}
+                                                    required={!isOverheadPercent ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
                                                     disabled={isOverheadPercent ? true : false}
                                                 />
-                                            </Col>
-                                            <Col md="3">
+                                            </Col>}
+                                            {!isHideRM && <Col md="3">
                                                 <Field
-                                                    label={`Overhead RM (%)`}
+                                                    label={`Overhead on RM (%)`}
                                                     name={"OverheadRMPercentage"}
                                                     type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    placeholder={!isRM ? 'Enter' : ''}
+                                                    validate={!isRM ? [required] : []}
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleCalculation}
-                                                    required={true}
+                                                    required={!isRM ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
                                                     disabled={isRM ? true : false}
                                                 />
-                                            </Col>
-                                            <Col md="3">
+                                            </Col>}
+                                            {!isHideCC && <Col md="3">
                                                 <Field
-                                                    label={`Overhead CC (Machining) (%)`}
+                                                    label={`Overhead on CC (Machining) (%)`}
                                                     name={"OverheadMachiningCCPercentage"}
                                                     type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    placeholder={!isCC ? 'Enter' : ''}
+                                                    validate={!isCC ? [required] : []}
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleCalculation}
-                                                    required={true}
+                                                    required={!isCC ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
                                                     disabled={isCC ? true : false}
                                                 />
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="3">
+                                            </Col>}
+                                            {!isHideBOP && <Col md="3">
                                                 <Field
-                                                    label={`Overhead BOP (%)`}
+                                                    label={`Overhead on BOP (%)`}
                                                     name={"OverheadBOPPercentage"}
                                                     type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    placeholder={!isBOP ? 'Enter' : ''}
+                                                    validate={!isBOP ? [required] : []}
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleCalculation}
-                                                    required={true}
+                                                    required={!isBOP ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
                                                     disabled={isBOP ? true : false}
                                                 />
-                                            </Col>
+                                            </Col>}
                                         </Row>
 
                                         <Row>
@@ -752,28 +861,29 @@ class AddOverhead extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, overheadProfit, client, supplier } = state;
+    const { comman, overheadProfit, client, supplier } = state;
+    const filedObj = selector(state, 'OverheadPercentage', 'OverheadRMPercentage', 'OverheadMachiningCCPercentage',
+        'OverheadBOPPercentage')
 
     const { modelTypes, costingHead, } = comman;
     const { overheadProfitData, } = overheadProfit;
     const { clientSelectList } = client;
-    const { vendorListByVendorType } = material;
     const { vendorWithVendorCodeSelectList } = supplier;
 
     let initialValues = {};
     if (overheadProfitData && overheadProfitData != undefined) {
         initialValues = {
-            OverheadPercentage: overheadProfitData.OverheadPercentage,
-            OverheadRMPercentage: overheadProfitData.OverheadRMPercentage,
-            OverheadMachiningCCPercentage: overheadProfitData.OverheadMachiningCCPercentage,
-            OverheadBOPPercentage: overheadProfitData.OverheadBOPPercentage,
+            OverheadPercentage: overheadProfitData.OverheadPercentage != 0 ? overheadProfitData.OverheadPercentage : '',
+            OverheadRMPercentage: overheadProfitData.OverheadRMPercentage != 0 ? overheadProfitData.OverheadRMPercentage : '',
+            OverheadMachiningCCPercentage: overheadProfitData.OverheadMachiningCCPercentage != 0 ? overheadProfitData.OverheadMachiningCCPercentage : '',
+            OverheadBOPPercentage: overheadProfitData.OverheadBOPPercentage != 0 ? overheadProfitData.OverheadBOPPercentage : '',
             Remark: overheadProfitData.Remark,
         }
     }
 
     return {
-        modelTypes, costingHead, vendorListByVendorType, overheadProfitData, clientSelectList,
-        vendorWithVendorCodeSelectList, initialValues,
+        modelTypes, costingHead, overheadProfitData, clientSelectList,
+        vendorWithVendorCodeSelectList, filedObj, initialValues,
     }
 
 }

@@ -979,7 +979,6 @@ export const REPORTS_AND_ANALYTICS = 'Reports And Analytics';
 export const USERS = 'Users';
 export const AUDIT = 'Audit';
 
-
 //PAGE NAMES
 export const USER = 'User';
 export const ROLE = 'Role';
@@ -987,9 +986,10 @@ export const DEPARTMENT = 'Department';
 export const LEVELS = 'Levels';
 export const RAW_MATERIAL = 'Raw Material';
 export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade';
-export const BOP = 'BOP';
-export const PART = 'Part';
-export const MACHINE = 'Machine';
 export const VENDOR = 'Vendor';
 export const CLIENT = 'Client';
 export const PLANT = 'Plant';
+export const MACHINE = 'Machine';
+export const PART = 'Part';
+export const BOP = 'BOP';
+export const OVERHEAD_AND_PROFIT = 'Overhead and Profits';

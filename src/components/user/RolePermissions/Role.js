@@ -145,6 +145,21 @@ class Role extends Component {
 	}
 
 	/**
+	* @method confirmUpdate
+	* @description confirm Update
+	*/
+	confirmUpdate = (updateData) => {
+		this.setState({ isLoader: true })
+		this.props.updateRoleAPI(updateData, (res) => {
+			if (res.data.Result) {
+				toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
+				this.clearForm()
+			}
+			this.setState({ isLoader: false })
+		})
+	}
+
+	/**
 	 * @name onSubmit
 	 * @param values
 	 * @desc Submit the signup form values.
@@ -153,7 +168,6 @@ class Role extends Component {
 	onSubmit(values) {
 		const { isEditFlag, Modules, RoleId } = this.state;
 
-		this.setState({ isLoader: true })
 		let userDetail = userDetails()
 
 		if (isEditFlag) {
@@ -168,13 +182,15 @@ class Role extends Component {
 				CreatedBy: loggedInUserId(),
 				Modules: Modules
 			}
-			this.props.updateRoleAPI(updateData, (res) => {
-				if (res.data.Result) {
-					toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
-					this.clearForm()
-				}
-				this.setState({ isLoader: false })
-			})
+
+			const toastrConfirmOptions = {
+				onOk: () => {
+					this.confirmUpdate(updateData)
+				},
+				onCancel: () => this.clearForm()
+			};
+			return toastr.confirm(`${MESSAGES.ROLE_UPDATE_ALERT}`, toastrConfirmOptions);
+
 
 		} else {
 			// Add new role
@@ -186,6 +202,7 @@ class Role extends Component {
 				Modules: Modules
 			}
 
+			this.setState({ isLoader: true })
 			this.props.addRoleAPI(formData, (res) => {
 				if (res && res.data && res.data.Result) {
 					toastr.success(MESSAGES.ADD_ROLE_SUCCESSFULLY)
