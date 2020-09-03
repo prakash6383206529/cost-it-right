@@ -10,14 +10,21 @@ import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getOperationsDataList, deleteOperationAPI, getOperationSelectList, } from '../../../../actions/master/OtherOperation';
 import {
-    getTechnologySelectList, getPlantSelectList, getPlantBySupplier,
-    getUOMSelectList,
-} from '../../../../actions/master/Comman';
-import { getVendorListByVendorType, } from '../../../../actions/master/Material';
+    getOperationsDataList, deleteOperationAPI, getOperationSelectList,
+    getVendorWithVendorCodeSelectList, getTechnologySelectList,
+    getVendorListByTechnology,
+    getOperationListByTechnology,
+    getTechnologyListByOperation,
+    getVendorListByOperation,
+    getTechnologyListByVendor,
+    getOperationListByVendor,
+} from '../../../../actions/master/OtherOperation';
+import { getPlantSelectList, getPlantBySupplier, getUOMSelectList, } from '../../../../actions/master/Comman';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
+import AddOperation from './AddOperation';
+import BulkUpload from '../../../massUpload/BulkUpload';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -27,14 +34,16 @@ class OperationListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isEditFlag: false,
-            isOpen: false,
             tableData: [],
 
             costingHead: [],
             selectedTechnology: [],
             vendorName: [],
             operationName: [],
+
+            data: { isEditFlag: false, ID: '' },
+            toggleForm: false,
+            isBulkUpload: false,
         }
     }
 
@@ -49,8 +58,8 @@ class OperationListing extends Component {
     componentDidMount() {
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
+        this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
-        this.props.onRef(this)
     }
 
     // Get updated Supplier's list after any action performed.
@@ -88,16 +97,17 @@ class OperationListing extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { technologySelectList, vendorListByVendorType, operationSelectList } = this.props;
+        const { filterOperation } = this.props;
         const temp = [];
 
         if (label === 'technology') {
-            technologySelectList && technologySelectList.map(item => {
+            filterOperation && filterOperation.technology && filterOperation.technology.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
+
         if (label === 'costingHead') {
             let tempObj = [
                 { label: 'ZBC', value: 'ZBC' },
@@ -105,15 +115,17 @@ class OperationListing extends Component {
             ]
             return tempObj;
         }
+
         if (label === 'OperationNameList') {
-            operationSelectList && operationSelectList.map(item => {
+            filterOperation && filterOperation.operations && filterOperation.operations.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
+
         if (label === 'VendorList') {
-            vendorListByVendorType && vendorListByVendorType.map(item => {
+            filterOperation && filterOperation.vendors && filterOperation.vendors.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -126,11 +138,10 @@ class OperationListing extends Component {
 	* @description confirm edit item
 	*/
     editItemDetails = (Id) => {
-        let requestData = {
-            isEditFlag: true,
-            ID: Id,
-        }
-        this.props.getDetail(requestData)
+        this.setState({
+            data: { isEditFlag: true, ID: Id },
+            toggleForm: true,
+        })
     }
 
 	/**
@@ -209,9 +220,15 @@ class OperationListing extends Component {
     */
     handleTechnology = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ selectedTechnology: newValue, });
+            this.setState({ selectedTechnology: newValue, }, () => {
+                const { selectedTechnology } = this.state;
+                this.props.getVendorListByTechnology(selectedTechnology.value, () => { })
+                this.props.getOperationListByTechnology(selectedTechnology.value, () => { })
+            });
         } else {
             this.setState({ selectedTechnology: [], })
+            this.props.getOperationSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList()
         }
     };
 
@@ -221,9 +238,15 @@ class OperationListing extends Component {
     */
     handleOperationName = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ operationName: newValue });
+            this.setState({ operationName: newValue }, () => {
+                const { operationName } = this.state;
+                this.props.getTechnologyListByOperation(operationName.value, () => { })
+                this.props.getVendorListByOperation(operationName.value, () => { })
+            });
         } else {
             this.setState({ operationName: [] })
+            this.props.getTechnologySelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList()
         }
     };
 
@@ -233,9 +256,15 @@ class OperationListing extends Component {
     */
     handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ vendorName: newValue });
+            this.setState({ vendorName: newValue }, () => {
+                const { vendorName } = this.state;
+                this.props.getTechnologyListByVendor(vendorName.value, () => { })
+                this.props.getOperationListByVendor(vendorName.value, () => { })
+            });
         } else {
             this.setState({ vendorName: [] })
+            this.props.getTechnologySelectList(() => { })
+            this.props.getOperationSelectList(() => { })
         }
     };
 
@@ -315,7 +344,7 @@ class OperationListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
+        return cell ? 'Vendor Based' : 'Zero Based';
     }
 
     onExportToCSV = (row) => {
@@ -356,12 +385,34 @@ class OperationListing extends Component {
             selectedTechnology: [],
             operationName: [],
         }, () => {
+            this.props.getTechnologySelectList(() => { })
+            this.props.getOperationSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList()
             this.getTableListData(null, null, null, null)
         })
     }
 
     formToggle = () => {
-        this.props.formToggle()
+        this.setState({ toggleForm: true })
+    }
+
+    hideForm = () => {
+        this.setState({
+            toggleForm: false,
+            data: { isEditFlag: false, ID: '' }
+        }, () => {
+            this.getTableListData(null, null, null, null)
+        })
+    }
+
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+            this.getTableListData(null, null, null, null)
+        })
     }
 
 	/**
@@ -372,13 +423,23 @@ class OperationListing extends Component {
 	*/
     onSubmit(values) {
     }
+
 	/**
 	* @method render
 	* @description Renders the component
 	*/
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag } = this.state;
+        const { toggleForm, data, isBulkUpload } = this.state;
+
+        if (toggleForm) {
+            return (
+                <AddOperation
+                    hideForm={this.hideForm}
+                    data={data}
+                />
+            )
+        }
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -393,6 +454,8 @@ class OperationListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                    <div class="col-sm-4"><h3>Operation</h3></div>
+                    <hr />
                     <Row className="pt-30">
                         <Col md="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -403,14 +466,13 @@ class OperationListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Select-'}
+                                        placeholder={'-Costing Head-'}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.costingHead == null || this.state.costingHead.length == 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleHeadChange}
                                         valueDescription={this.state.costingHead}
-                                    //disabled={isEditFlag ? true : false}
                                     />
                                 </div>
                                 <div className="flex-fill">
@@ -419,14 +481,13 @@ class OperationListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Select-'}
+                                        placeholder={'-technology-'}
                                         options={this.renderListing('technology')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length == 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleTechnology}
                                         valueDescription={this.state.selectedTechnology}
-                                    //disabled={isEditFlag ? true : false}
                                     />
                                 </div>
                                 <div className="flex-fill">
@@ -435,14 +496,13 @@ class OperationListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Select-'}
+                                        placeholder={'-operation-'}
                                         options={this.renderListing('OperationNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.operationName == null || this.state.operationName.length == 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleOperationName}
                                         valueDescription={this.state.operationName}
-                                        disabled={isEditFlag ? true : false}
                                     />
                                 </div>
                                 <div className="flex-fill">
@@ -451,14 +511,13 @@ class OperationListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Select-'}
+                                        placeholder={'-vendors-'}
                                         options={this.renderListing('VendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleVendorName}
                                         valueDescription={this.state.vendorName}
-                                        disabled={isEditFlag ? true : false}
                                     />
                                 </div>
 
@@ -486,13 +545,16 @@ class OperationListing extends Component {
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>
-                                    }
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.bulkToggle}>
+                                        <div className={'upload'}></div>Bulk Upload</button>
+                                    <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD</button>
                                 </div>
                             </div>
                         </Col>
@@ -512,18 +574,27 @@ class OperationListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} dataAlign="center" >{'Technology'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="OperationName" width={100} columnTitle={true} dataAlign="center" >{this.renderOperationName()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="OperationCode" width={100} columnTitle={true} dataAlign="center" >{this.renderOperationCode()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="center" >{'Plant'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" >{this.renderVendorName()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="UnitOfMeasurement" width={100} columnTitle={true} dataAlign="center" >{'UOM'}</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                    <TableHeaderColumn dataField="CostingHead" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Technology" width={150} columnTitle={true} dataAlign="center" >{'Technology'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="OperationName" columnTitle={true} dataAlign="center" >{this.renderOperationName()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="OperationCode" columnTitle={true} dataAlign="center" >{this.renderOperationCode()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Plants" width={150} columnTitle={true} dataAlign="center" >{'Plant'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" >{this.renderVendorName()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="UnitOfMeasurement" columnTitle={true} dataAlign="center" >{'UOM'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" >{'Rate'}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                     <TableHeaderColumn className="action" dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
+                {isBulkUpload && <BulkUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    fileName={'Operation'}
+                    isZBCVBCTemplate={true}
+                    messageLabel={'Operation'}
+                    anchor={'right'}
+                />}
             </ >
         );
     }
@@ -534,11 +605,9 @@ class OperationListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, material, otherOperation }) {
-    const { loading, technologySelectList } = comman;
-    const { vendorListByVendorType } = material;
-    const { operationSelectList } = otherOperation;
-    return { loading, vendorListByVendorType, technologySelectList, operationSelectList };
+function mapStateToProps({ otherOperation }) {
+    const { loading, filterOperation } = otherOperation;
+    return { loading, filterOperation };
 }
 
 /**
@@ -551,8 +620,14 @@ export default connect(mapStateToProps, {
     getTechnologySelectList,
     getOperationsDataList,
     deleteOperationAPI,
-    getVendorListByVendorType,
+    getVendorWithVendorCodeSelectList,
     getOperationSelectList,
+    getVendorListByTechnology,
+    getOperationListByTechnology,
+    getTechnologyListByOperation,
+    getVendorListByOperation,
+    getTechnologyListByVendor,
+    getOperationListByVendor,
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

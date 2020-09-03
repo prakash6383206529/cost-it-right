@@ -1,10 +1,14 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
 import {
-    Fuel, OverheadAndProfit, RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
+    Fuel,
+    RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
     RMImportZBC, RMImportZBCTempData, RMImportVBC, RMImportVBCTempData,
-    RMSpecification, RMSpecificationXLTempData, Vendor, VendorTempData, Overhead, OverheadTempData,
-    Profit, ProfitTempData, Plant, Bought_Out_Parts, Processes, MachineClass, Labour, Operation,
+    RMSpecification, RMSpecificationXLTempData,
+    Vendor, VendorTempData,
+    Overhead, OverheadTempData, Profit, ProfitTempData,
+    ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
+    Bought_Out_Parts, Processes, MachineClass, Labour,
     OtherOperation, Power, MHR,
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable } from "../../helper";
@@ -56,8 +60,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(MachineClass);
             case 'Labour':
                 return this.returnExcelColumn(Labour);
-            case 'Operation':
-                return this.returnExcelColumn(Operation);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
@@ -82,6 +84,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(RMDomesticZBC, RMDomesticZBCTempData);
             case 'RMImport':
                 return this.returnExcelColumn(RMImportZBC, RMImportZBCTempData);
+            case 'Operation':
+                return this.returnExcelColumn(ZBCOperation, ZBCOperationTempData);
             case 'BOP':
                 return this.returnExcelColumn(Bought_Out_Parts);
             case 'Processes':
@@ -90,8 +94,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(MachineClass);
             case 'Labour':
                 return this.returnExcelColumn(Labour);
-            case 'Operation':
-                return this.returnExcelColumn(Operation);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
@@ -116,6 +118,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(this.checkVendorPlantConfig(RMDomesticVBC), RMDomesticVBCTempData);
             case 'RMImport':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
+            case 'Operation':
+                return this.returnExcelColumn(VBCOperation, VBCOperationTempData);
             case 'BOP':
                 return this.returnExcelColumn(Bought_Out_Parts);
             case 'Processes':
@@ -124,8 +128,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(MachineClass);
             case 'Labour':
                 return this.returnExcelColumn(Labour);
-            case 'Operation':
-                return this.returnExcelColumn(Operation);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
@@ -164,7 +166,7 @@ class Downloadxls extends React.Component {
         const { failedData, isFailedFlag, fileName, isZBCVBCTemplate, costingHead } = this.props;
 
         // Download file:- Called when ZBC upload failed   hideElement={true}
-        if (isFailedFlag && costingHead == 'ZBC' && (fileName == 'RMDomestic' || fileName == 'RMImport')) {
+        if (isFailedFlag && costingHead == 'ZBC' && (fileName == 'RMDomestic' || fileName == 'RMImport' || fileName == 'Operation')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderZBCSwitch(fileName)}
@@ -173,7 +175,7 @@ class Downloadxls extends React.Component {
         }
 
         // Download file:- Called when VBC upload failed
-        if (isFailedFlag && costingHead == 'VBC' && (fileName == 'RMDomestic' || fileName == 'RMImport')) {
+        if (isFailedFlag && costingHead == 'VBC' && (fileName == 'RMDomestic' || fileName == 'RMImport' || fileName == 'Operation')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderVBCSwitch(fileName)}

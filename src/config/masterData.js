@@ -315,6 +315,64 @@ export const OverheadTempData = [
     }
 ]
 
+export const ZBCOperation = [
+    { label: 'Technology', value: 'Technology', },
+    { label: 'OperationName', value: 'OperationName', },
+    { label: 'OperationCode', value: 'OperationCode', },
+    { label: 'Description', value: 'Description', },
+    { label: 'Plant', value: 'Plant', },
+    { label: 'UOM', value: 'UOM', },
+    { label: 'Rate', value: 'Rate', },
+    { label: 'LabourRate', value: 'LabourRate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const ZBCOperationTempData = [
+    {
+        'Technology': 'Technology',
+        'OperationName': 'Operation Name',
+        'OperationCode': 'Operation Code',
+        'Description': 'Description',
+        'Plant': 'Plant',
+        'UOM': 'Unit of Measurement',
+        'Rate': 0,
+        'LabourRate': 0,
+        'Remark': 'Remark',
+    }
+]
+
+export const VBCOperation = [
+    { label: 'Technology', value: 'Technology', },
+    { label: 'OperationName', value: 'OperationName', },
+    { label: 'OperationCode', value: 'OperationCode', },
+    { label: 'Description', value: 'Description', },
+    { label: 'Plant', value: 'Plant', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'VendorPlant', value: 'VendorPlant', },
+    { label: 'UOM', value: 'UOM', },
+    { label: 'Rate', value: 'Rate', },
+    { label: 'LabourRate', value: 'LabourRate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const VBCOperationTempData = [
+    {
+        'Technology': 'Technology',
+        'OperationName': 'OperationName',
+        'OperationCode': 'OperationCode',
+        'Description': 'Description',
+        'Plant': 'Plant',
+        'VendorName': 'VendorName',
+        'VendorCode': 'VendorCode',
+        'VendorPlant': 'VendorPlant',
+        'UOM': 'Unit of Measurement',
+        'Rate': 0,
+        'LabourRate': 0,
+        'Remark': 'Remark',
+    }
+]
+
 export const Profit = [
     { label: 'CostingHead', value: 'CostingHead', },
     { label: 'ModelType', value: 'ModelType', },
@@ -392,13 +450,6 @@ export const Labour = [
     { label: 'IsContractBase', value: 'IsContractBase', },
     { label: 'PlantName', value: 'PlantName', },
     { label: 'CityName', value: 'CityName', },
-]
-
-export const Operation = [
-    { label: 'OperationName', value: 'OperationName', },
-    { label: 'OperationCode', value: 'OperationCode', },
-    { label: 'Description', value: 'Description', },
-    { label: 'BasicOperationRate', value: 'BasicOperationRate', },
 ]
 
 export const OtherOperation = [

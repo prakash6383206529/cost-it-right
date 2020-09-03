@@ -298,6 +298,16 @@ export const API = {
   getOperationDataAPI: `${BASE_URL}/masters-operation/get-operation`,
   deleteOperationAPI: `${BASE_URL}/masters-operation/delete-operation`,
   getOperationSelectList: `${BASE_URL}/configuration/select-list-get-operation`,
+  fileUploadOperation: `${BASE_URL}/masters-operation/operation-file-upload`,
+  fileDeleteOperation: `${BASE_URL}/masters-operation/delete-operation-file`,
+  checkAndGetOperationCode: `${BASE_URL}/masters-operation/check-operation-code-is-unique`,
+
+  getVendorListByTechnology: `${BASE_URL}/masters-operation/get-operation-vendor-by-technology-select-list`,
+  getOperationListByTechnology: `${BASE_URL}/masters-operation/get-operation-by-technology-select-list`,
+  getTechnologyListByOperation: `${BASE_URL}/masters-operation/get-operation-technology-by-operation-select-list`,
+  getVendorListByOperation: `${BASE_URL}/masters-operation/get-operation-vendor-by-operation-select-list`,
+  getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
+  getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
 
   //Api's for fright master
   createFreightAPI: `${BASE_URL}/masters-freight/create`,
@@ -770,6 +780,8 @@ export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANT
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS';
 export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS';
 export const GET_OPERATION_SELECTLIST_SUCCESS = 'GET_OPERATION_SELECTLIST_SUCCESS';
+export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST';
+export const GET_INITIAL_TECHNOLOGY_SELECTLIST = 'GET_INITIAL_TECHNOLOGY_SELECTLIST';
 
 //FREIGHT MASTER
 export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS';

@@ -16,6 +16,8 @@ import {
     GET_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
     GET_OPERATION_SELECTLIST_SUCCESS,
+    GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+    GET_INITIAL_TECHNOLOGY_SELECTLIST,
 } from '../../config/constants';
 import {
     apiErrors
@@ -351,6 +353,62 @@ export function deleteOperationAPI(OperationId, callback) {
 }
 
 /**
+ * @method fileUploadOperation
+ * @description File Upload Over Head
+ */
+export function fileUploadOperation(data, callback) {
+    return (dispatch) => {
+        let multipartHeaders = {
+            'Content-Type': 'multipart/form-data;'
+        };
+        const request = axios.post(API.fileUploadOperation, data, headers);
+        request.then((response) => {
+            if (response && response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method checkAndGetOperationCode
+ * @description CHECK AND GET OPERATION CODE
+ */
+export function checkAndGetOperationCode(code, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}`, headers);
+        request.then((response) => {
+            if (response && response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fileDeleteOperation
+ * @description delete Operation file API
+ */
+export function fileDeleteOperation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.fileDeleteOperation}/${data.Id}/${data.DeletedBy}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
  * @method getCostSummaryOtherOperation
  * @description get all other operation for cost summary 
  */
@@ -375,7 +433,6 @@ export function getCEDOtherOperationBySupplierID(supplierId, callback) {
     };
 }
 
-
 /**
  * @method getOperationSelectList
  * @description get all operation list
@@ -397,5 +454,185 @@ export function getOperationSelectList(callback) {
                 callback(error);
                 apiErrors(error);
             });
+    };
+}
+
+/**
+ * @method getVendorWithVendorCodeSelectList
+ * @description GET VENDOR WITH VENDOR CODE SELECTLIST
+ */
+export function getVendorWithVendorCodeSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getTechnologySelectList
+* @description OPERATION FILTER TECHNOLOGY SELECTLIST INITIAL
+*/
+export function getTechnologySelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getTechnologySelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_TECHNOLOGY_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorListByTechnology
+ * @description get Vendor list by Technology
+ */
+export function getVendorListByTechnology(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getVendorListByTechnology}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getOperationListByTechnology
+ * @description get Vendor list by Technology
+ */
+export function getOperationListByTechnology(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getOperationListByTechnology}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OPERATION_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getTechnologyListByOperation
+ * @description get Vendor list by Operation
+ */
+export function getTechnologyListByOperation(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getTechnologyListByOperation}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_TECHNOLOGY_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorListByOperation
+ * @description get Vendor list by Operation
+ */
+export function getVendorListByOperation(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getVendorListByOperation}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getTechnologyListByVendor
+ * @description get Technology list by Vendor
+ */
+export function getTechnologyListByVendor(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getTechnologyListByVendor}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_TECHNOLOGY_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getOperationListByVendor
+ * @description get Operation list by Vendor
+ */
+export function getOperationListByVendor(ID, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getOperationListByVendor}/${ID}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OPERATION_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

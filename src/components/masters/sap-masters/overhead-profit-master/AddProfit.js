@@ -714,7 +714,7 @@ class AddProfit extends Component {
                                             </Col>}
                                             {!isHideRM && <Col md="3">
                                                 <Field
-                                                    label={`Profit RM (%)`}
+                                                    label={`Profit on RM (%)`}
                                                     name={"ProfitRMPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
@@ -729,7 +729,7 @@ class AddProfit extends Component {
                                             </Col>}
                                             {!isHideCC && <Col md="3">
                                                 <Field
-                                                    label={`Profit CC (Machining) (%)`}
+                                                    label={`Profit on CC (Machining) (%)`}
                                                     name={"ProfitMachiningCCPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
@@ -744,7 +744,7 @@ class AddProfit extends Component {
                                             </Col>}
                                             {!isHideBOP && <Col md="3">
                                                 <Field
-                                                    label={`Profit BOP (%)`}
+                                                    label={`Profit on BOP (%)`}
                                                     name={"ProfitBOPPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
@@ -826,16 +826,17 @@ class AddProfit extends Component {
                                         </Row>
 
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-sm-12 text-center">
+                                            <div className="col-sm-12 text-right bluefooter-butn">
                                                 <button
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
                                                     onClick={this.cancel} >
-                                                    {'Cancel'}
+                                                    <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="submit-button mr5 save-btn" >
+                                                    <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                                     {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>

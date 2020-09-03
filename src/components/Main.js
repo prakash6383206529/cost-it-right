@@ -25,7 +25,7 @@ import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
 //import OperationMaster from './masters/sap-masters/operation';
 import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
-import OperationMaster from './masters/sap-masters/operation/AddOperation';
+import OperationListing from './masters/sap-masters/operation/OperationListing';
 import MaterialMaster from './masters/sap-masters/material-master/raw-material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourMaster from './masters/sap-masters/labour-master';
@@ -175,7 +175,7 @@ class Main extends Component {
 
                     <Route path="/power-master" component={AuthMiddleware(PowerMaster)} />
 
-                    <Route path="/operation-master" component={AuthMiddleware(OperationMaster)} />
+                    <Route path="/operation-master" component={AuthMiddleware(OperationListing)} />
 
                     <Route path="/material-master" component={AuthMiddleware(MaterialMaster)} />
 
