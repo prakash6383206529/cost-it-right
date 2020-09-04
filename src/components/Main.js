@@ -36,7 +36,7 @@ import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegi
 //import MachineTypeMaster from './masters/sap-masters/machine-type-master';
 import MachineMaster from './masters/sap-masters/machine-master';
 import PowerMaster from './masters/sap-masters/power-master';
-import ReasonMaster from './masters/sap-masters/reason-master/AddReason';
+import ReasonListing from "./masters/sap-masters/reason-master/ReasonListing";
 import VolumeMaster from './masters/sap-masters/volume-master/AddVolume';
 import ClientMaster from './masters/sap-masters/client-master/AddClient';
 import LeftMenu from './nav/Leftsidemenu';
@@ -45,8 +45,6 @@ import Breadcrumb from './nav/Breadcrumb';
 import Costing from './costing';
 import { showUserData } from '../actions';
 import AuthMiddleware from '../AuthMiddleware';
-
-import { isUserLoggedIn } from '../helper/auth';
 
 class Main extends Component {
   constructor(props) {
@@ -193,7 +191,7 @@ class Main extends Component {
 
                     <Route path="/part-bom-register" component={AuthMiddleware(PartBOMRegister)} />
 
-                    <Route path="/reason-master" component={AuthMiddleware(ReasonMaster)} />
+                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing)} />
 
                     <Route path="/volume-master" component={AuthMiddleware(VolumeMaster)} />
 

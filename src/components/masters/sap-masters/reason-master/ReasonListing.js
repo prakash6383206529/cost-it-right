@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
@@ -12,7 +12,12 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
+import AddReason from './AddReason';
+import { REASON } from '../../../../config/constants';
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -23,22 +28,37 @@ class ReasonListing extends Component {
         super(props);
         this.state = {
             isEditFlag: false,
-            isOpen: false,
+            isOpenDrawer: false,
+            ID: '',
             tableData: [],
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
         }
     }
 
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
-    }
-
     componentDidMount() {
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData != undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName == REASON)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData != undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    })
+                }
+            }
+        })
+
         this.getTableListData()
-        this.props.onRef(this)
     }
 
     // Get updated Supplier's list after any action performed.
@@ -70,11 +90,7 @@ class ReasonListing extends Component {
 	* @description confirm edit item
 	*/
     editItemDetails = (Id) => {
-        let requestData = {
-            isEditFlag: true,
-            ID: Id,
-        }
-        this.props.getDetail(requestData)
+        this.setState({ isEditFlag: true, isOpenDrawer: true, ID: Id })
     }
 
 	/**
@@ -109,10 +125,11 @@ class ReasonListing extends Component {
 	* @description Renders buttons
 	*/
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility } = this.state;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
             </>
         )
     }
@@ -125,7 +142,6 @@ class ReasonListing extends Component {
         return (
             <>
                 <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
                         checked={cell}
@@ -149,11 +165,11 @@ class ReasonListing extends Component {
         }
         this.props.activeInactiveReasonStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
-                    toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
-                } else {
-                    toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
-                }
+                // if (cell == true) {
+                //     toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+                // } else {
+                //     toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+                // }
                 this.getTableListData()
             }
         })
@@ -191,7 +207,17 @@ class ReasonListing extends Component {
     }
 
     formToggle = () => {
-        this.props.formToggle()
+        this.setState({ isOpenDrawer: true })
+    }
+
+    closeVendorDrawer = (e = '') => {
+        this.setState({
+            isOpenDrawer: false,
+            isEditFlag: false,
+            ID: '',
+        }, () => {
+            this.getTableListData()
+        })
     }
 
 	/**
@@ -200,7 +226,7 @@ class ReasonListing extends Component {
 	*/
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag } = this.state;
+        const { isEditFlag, isOpenDrawer, AddAccessibility, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -215,15 +241,15 @@ class ReasonListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
                 <Col md="12" className="search-user-block">
-                    <div className="d-flex justify-content-end bd-highlight w100">
+                    <div class="col-sm-4"><h3>Reason</h3></div>
+                    <hr />
+                    <div className="d-flex justify-content-end bd-highlight w100 mb15">
                         <div>
-                            {!this.props.isShowForm &&
-                                <button
-                                    type="button"
-                                    className={'user-btn'}
-                                    onClick={this.formToggle}>
-                                    <div className={'plus'}></div>ADD REASON</button>
-                            }
+                            {AddAccessibility && <button
+                                type="button"
+                                className={'user-btn'}
+                                onClick={this.formToggle}>
+                                <div className={'plus'}></div>ADD REASON</button>}
                         </div>
                     </div>
                 </Col>
@@ -240,11 +266,18 @@ class ReasonListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="Reason" dataAlign="center" dataSort={true}>Reason</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="ReasonId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
+                {isOpenDrawer && <AddReason
+                    isOpen={isOpenDrawer}
+                    closeDrawer={this.closeVendorDrawer}
+                    isEditFlag={isEditFlag}
+                    ID={this.state.ID}
+                    anchor={'right'}
+                />}
             </ >
         );
     }
@@ -255,10 +288,10 @@ class ReasonListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ reason }) {
+function mapStateToProps({ reason, auth }) {
     const { loading, } = reason;
-
-    return { loading };
+    const { leftMenuData } = auth;
+    return { loading, leftMenuData };
 }
 
 
@@ -273,6 +306,7 @@ export default connect(mapStateToProps, {
     getAllReasonAPI,
     deleteReasonAPI,
     activeInactiveReasonStatus,
+    getLeftMenu,
 })(reduxForm({
     form: 'ReasonListing',
     onSubmitFail: errors => {

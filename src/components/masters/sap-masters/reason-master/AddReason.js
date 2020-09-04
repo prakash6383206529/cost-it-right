@@ -8,16 +8,15 @@ import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message'
 import { loggedInUserId } from '../../../../helper/auth';
-import ReasonListing from './ReasonListing';
 import $ from 'jquery';
+import Drawer from '@material-ui/core/Drawer';
 
 class AddReason extends Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
         this.state = {
-            IsActive: false,
-            isEditFlag: false,
+            IsActive: true,
             ReasonId: '',
         }
     }
@@ -27,7 +26,7 @@ class AddReason extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-
+        this.getDetail()
     }
 
     /**
@@ -40,18 +39,17 @@ class AddReason extends Component {
 
     /**
     * @method getDetail
-    * @description used to get user detail
+    * @description used to get Reason detail
     */
-    getDetail = (data) => {
-        if (data && data.isEditFlag) {
+    getDetail = () => {
+        const { isEditFlag, ID } = this.props;
+        if (isEditFlag) {
             this.setState({
                 isLoader: true,
-                isEditFlag: true,
-                isShowForm: true,
-                ReasonId: data.ID,
+                ReasonId: ID,
             })
             $('html, body').animate({ scrollTop: 0 }, 'slow');
-            this.props.getReasonAPI(data.ID, res => {
+            this.props.getReasonAPI(ID, res => {
                 if (res && res.data && res.data.Data) {
                     const Data = res.data.Data;
                     this.setState({ IsActive: Data.IsActive })
@@ -60,28 +58,27 @@ class AddReason extends Component {
         }
     }
 
-    formToggle = () => {
-        this.setState({
-            isShowForm: !this.state.isShowForm
-        })
-    }
+    toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
 
-    clearForm = () => {
-        const { reset } = this.props;
-        reset();
-        this.setState({
-            IsActive: false,
-            isShowForm: false,
-            isEditFlag: false,
-        })
-    }
+        this.props.closeDrawer('')
+    };
 
     /**
     * @method cancel
     * @description used to Reset form
     */
     cancel = () => {
-        this.clearForm()
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            IsActive: true,
+            isEditFlag: false,
+        })
+        this.props.setEmptyReason();
+        this.toggleDrawer('')
     }
 
     /**
@@ -89,8 +86,8 @@ class AddReason extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ReasonId, isEditFlag } = this.state;
-        const { reset } = this.props;
+        const { ReasonId, } = this.state;
+        const { isEditFlag } = this.props;
 
         /** Update detail of the existing UOM  */
         if (isEditFlag) {
@@ -102,12 +99,8 @@ class AddReason extends Component {
                 CreatedDate: '',
             }
             this.props.updateReasonAPI(formData, (res) => {
-                //if (res & res.data && res.data.Result) {
                 toastr.success(MESSAGES.UPDATE_REASON_SUCESS);
-                this.clearForm()
-                this.props.setEmptyReason();
-                this.child.getUpdatedData();
-                //}
+                this.cancel()
             });
         } else {
 
@@ -119,9 +112,7 @@ class AddReason extends Component {
             this.props.createReasonAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.REASON_ADD_SUCCESS);
-                    this.clearForm()
-                    this.props.setEmptyReason();
-                    this.child.getUpdatedData();
+                    this.cancel()
                 }
             });
         }
@@ -135,90 +126,83 @@ class AddReason extends Component {
     render() {
         const { handleSubmit, isEditFlag, reset, pristine, submitting } = this.props;
         return (
-            <div>
-                {/* {isLoader && <Loader />} */}
-                <div className="login-container signup-form">
-                    <div className="row">
-                        {this.state.isShowForm &&
-                            <div className="col-md-12">
-                                <div className="shadow-lgg login-formg pt-30">
-                                    <div className="row">
-                                        <div className="col-md-6">
-                                            <div className="form-heading mb-0">
-                                                <h2>{this.state.isEditFlag ? 'Update Reason Master' : 'Add Reason Master'}</h2>
-                                            </div>
-                                        </div>
+            <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                <Container>
+                    <div className={'drawer-wrapper'}>
+                        <form
+                            noValidate
+                            className="form"
+                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                        >
+                            <Row className="drawer-heading">
+                                <Col>
+                                    <div className={'header-wrapper left'}>
+                                        <h3>{isEditFlag ? 'UPDATE REASON' : 'ADD REASON'}</h3>
                                     </div>
-                                    <form
-                                        noValidate
-                                        className="form"
-                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                    >
-                                        <Row>
+                                    <div
+                                        onClick={(e) => this.toggleDrawer(e)}
+                                        className={'close-button right'}>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row>
 
-                                            <Col md="6">
-                                                <Field
-                                                    label={`Reason`}
-                                                    name={"Reason"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                    disabled={this.state.isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="6">
-                                                <Col className={'pull-right'}>
-                                                    <label
-                                                        className="custom-checkbox pull-right"
-                                                        onChange={this.activeHandler}
-                                                    >
-                                                        Status
-                                                <input type="checkbox" checked={this.state.IsActive} />
-                                                        <span
-                                                            className=" before-box"
-                                                            checked={this.state.IsActive}
-                                                            onChange={this.activeHandler}
-                                                        />
-                                                    </label>
-                                                </Col>
-                                            </Col>
-                                        </Row>
+                                <Col md="6">
+                                    <Field
+                                        label={`Reason`}
+                                        name={"Reason"}
+                                        type="text"
+                                        placeholder={''}
+                                        validate={[required]}
+                                        component={renderText}
+                                        required={true}
+                                        className=" "
+                                        customClassName=" withBorder"
+                                        disabled={this.state.isEditFlag ? true : false}
+                                    />
+                                </Col>
+                                <Col md="6">
+                                    <Col className={'pull-right'}>
+                                        <label
+                                            className="custom-checkbox pull-right"
+                                            onChange={this.activeHandler}
+                                        >
+                                            Status
+                                                <input
+                                                type="checkbox"
+                                                checked={this.state.IsActive}
+                                                disabled={isEditFlag ? true : false}
+                                            />
+                                            <span
+                                                className=" before-box"
+                                                checked={this.state.IsActive}
+                                                onChange={this.activeHandler}
+                                            />
+                                        </label>
+                                    </Col>
+                                </Col>
+                            </Row>
 
-                                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-md-12">
-                                                <div className="text-center ">
-                                                    <input
-                                                        //disabled={pristine || submitting}
-                                                        onClick={this.cancel}
-                                                        type="button"
-                                                        value="Cancel"
-                                                        className="reset mr15 cancel-btn"
-                                                    />
-                                                    <input
-                                                        //disabled={isSubmitted ? true : false}
-                                                        type="submit"
-                                                        value={this.state.isEditFlag ? 'Update' : 'Save'}
-                                                        className="submit-button mr5 save-btn"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </Row>
-                                    </form>
+                            <Row className="sf-btn-footer no-gutters justify-content-between">
+                                <div className="col-sm-12 text-right bluefooter-butn">
+                                    <button
+                                        type={'button'}
+                                        className="reset mr15 cancel-btn"
+                                        onClick={this.cancel} >
+                                        <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="submit-button mr5 save-btn" >
+                                        <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                        {isEditFlag ? 'Update' : 'Save'}
+                                    </button>
                                 </div>
-                            </div>}
+                            </Row>
+                        </form>
                     </div>
-                </div>
-                <ReasonListing
-                    onRef={ref => (this.child = ref)}
-                    getDetail={this.getDetail}
-                    formToggle={this.formToggle}
-                    isShowForm={this.state.isShowForm}
-                />
-            </div>
+                </Container>
+            </Drawer>
         );
     }
 }

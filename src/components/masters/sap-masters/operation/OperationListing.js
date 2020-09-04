@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
@@ -20,11 +20,14 @@ import {
     getTechnologyListByVendor,
     getOperationListByVendor,
 } from '../../../../actions/master/OtherOperation';
-import { getPlantSelectList, getPlantBySupplier, getUOMSelectList, } from '../../../../actions/master/Comman';
 import Switch from "react-switch";
-import { loggedInUserId } from '../../../../helper/auth';
 import AddOperation from './AddOperation';
 import BulkUpload from '../../../massUpload/BulkUpload';
+import { OPERATION } from '../../../../config/constants';
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -44,6 +47,12 @@ class OperationListing extends Component {
             data: { isEditFlag: false, ID: '' },
             toggleForm: false,
             isBulkUpload: false,
+
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
+            BulkUploadAccessibility: false,
         }
     }
 
@@ -56,6 +65,27 @@ class OperationListing extends Component {
     }
 
     componentDidMount() {
+
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData != undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName == OPERATION)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData != undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    })
+                }
+            }
+        })
+
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
@@ -176,10 +206,11 @@ class OperationListing extends Component {
 	* @description Renders buttons
 	*/
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -430,7 +461,7 @@ class OperationListing extends Component {
 	*/
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { toggleForm, data, isBulkUpload } = this.state;
+        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
 
         if (toggleForm) {
             return (
@@ -545,16 +576,16 @@ class OperationListing extends Component {
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button
+                                    {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
                                         onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>
-                                    <button
+                                        <div className={'upload'}></div>Bulk Upload</button>}
+                                    {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
                                         onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>
+                                        <div className={'plus'}></div>ADD</button>}
                                 </div>
                             </div>
                         </Col>
@@ -605,9 +636,10 @@ class OperationListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ otherOperation }) {
+function mapStateToProps({ otherOperation, auth }) {
     const { loading, filterOperation } = otherOperation;
-    return { loading, filterOperation };
+    const { leftMenuData } = auth;
+    return { loading, filterOperation, leftMenuData };
 }
 
 /**
@@ -628,6 +660,7 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
+    getLeftMenu,
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

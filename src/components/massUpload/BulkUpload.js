@@ -11,6 +11,7 @@ import {
 import { fuelBulkUpload } from '../../actions/master/Fuel';
 import { vendorBulkUpload } from '../../actions/master/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../../actions/master/OverheadProfit';
+import { operationZBCBulkUpload, operationVBCBulkUpload } from '../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { loggedInUserId } from "../../helper/auth";
@@ -216,6 +217,18 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
+        } else if (fileName == 'Operation' && costingHead == 'ZBC') {
+
+            this.props.operationZBCBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'Operation' && costingHead == 'VBC') {
+
+            this.props.operationVBCBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
         } else if (fileName == 'Fuel') {
 
             this.props.fuelBulkUpload(uploadData, (res) => {
@@ -375,6 +388,8 @@ export default connect(mapStateToProps, {
     bulkUploadRMImportVBC,
     overheadBulkUpload,
     profitBulkUpload,
+    operationZBCBulkUpload,
+    operationVBCBulkUpload,
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

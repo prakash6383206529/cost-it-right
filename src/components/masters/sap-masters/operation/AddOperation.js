@@ -19,7 +19,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId, userDetails } from "../../../../helper/auth";
-import OperationListing from './OperationListing';
 import Switch from "react-switch";
 import $ from 'jquery';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
@@ -27,6 +26,7 @@ import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
+import { reactLocalStorage } from "reactjs-localstorage";
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -53,7 +53,6 @@ class AddOperation extends Component {
             isOpenVendor: false,
             isOpenUOM: false,
             OperationId: '',
-            isOperationCodeConfigurable: true,
         }
     }
 
@@ -66,21 +65,24 @@ class AddOperation extends Component {
     }
 
     /**
-   * @method componentDidMount
-   * @description called after render the component
-   */
+     * @method componentDidMount
+     * @description called after render the component
+     */
     componentDidMount() {
         const { data } = this.props;
+        let initialConfigureData = reactLocalStorage.getObject('InitialConfiguration')
+
         this.props.getTechnologySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getDetail()
-        if (this.state.isOperationCodeConfigurable && data.isEditFlag == false) {
+        if (initialConfigureData && initialConfigureData.IsOperationCodeConfigure && data.isEditFlag == false) {
             this.props.checkAndGetOperationCode('', res => {
                 let Data = res.data.DynamicData;
                 this.props.change('OperationCode', Data.OperationCode)
             })
         }
+
     }
 
     componentDidUpdate(prevProps) {
@@ -302,11 +304,9 @@ class AddOperation extends Component {
 
     checkUniqCode = (e) => {
         this.props.checkAndGetOperationCode(e.target.value, res => {
-            let Data = res.data.DynamicData;
-            if (res.data.Result == false) {
+            if (res && res.data && res.data.Result == false) {
                 toastr.warning(res.data.Message);
                 $('input[name="OperationCode"]').focus()
-                //this.props.change('OperationCode', Data.OperationCode)
             }
         })
     }

@@ -10,7 +10,11 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
+import { UOM } from '../../../../config/constants';
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 class UOMMaster extends Component {
     constructor(props) {
@@ -20,6 +24,11 @@ class UOMMaster extends Component {
             isEditFlag: false,
             uomId: '',
             dataList: [],
+
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
         }
     }
 
@@ -28,6 +37,25 @@ class UOMMaster extends Component {
      * @description  called before rendering the component
      */
     componentDidMount() {
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData != undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName == UOM)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData != undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    })
+                }
+            }
+        })
+
         this.getUOMDataList()
     }
 
@@ -105,9 +133,10 @@ class UOMMaster extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility } = this.state;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
                 {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
             </>
         )
@@ -159,7 +188,7 @@ class UOMMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, uomId } = this.state;
+        const { isOpen, isEditFlag, uomId, AddAccessibility } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -170,19 +199,20 @@ class UOMMaster extends Component {
             //paginationSize: 2,
         };
         return (
-            <Container >
+            < >
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col md={12}>
                         <h3>{`Unit of Measurement Master`}</h3>
                     </Col> <hr />
-                    <Col md={12} className='text-right mb15'>
-                        <button
-                            type={'button'}
-                            className={'user-btn'}
-                            onClick={this.openModel}>
-                            <div className={'plus'}></div>{`ADD UOM`}</button>
-                    </Col>
+                    {AddAccessibility &&
+                        <Col md={12} className='text-right mb15'>
+                            <button
+                                type={'button'}
+                                className={'user-btn'}
+                                onClick={this.openModel}>
+                                <div className={'plus'}></div>{`ADD UOM`}</button>
+                        </Col>}
                 </Row>
 
 
@@ -218,7 +248,7 @@ class UOMMaster extends Component {
                         anchor={'right'}
                     />
                 )}
-            </Container >
+            </ >
         );
     }
 }
@@ -228,9 +258,10 @@ class UOMMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ unitOfMeasrement }) {
+function mapStateToProps({ unitOfMeasrement, auth }) {
     const { unitOfMeasurementList, loading } = unitOfMeasrement;
-    return { unitOfMeasurementList, loading }
+    const { leftMenuData } = auth;
+    return { unitOfMeasurementList, leftMenuData, loading }
 }
 
 export default connect(
@@ -238,6 +269,7 @@ export default connect(
     getUnitOfMeasurementAPI,
     deleteUnitOfMeasurementAPI,
     activeInactiveUOM,
+    getLeftMenu,
 }
 )(UOMMaster);
 

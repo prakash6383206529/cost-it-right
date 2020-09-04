@@ -636,3 +636,39 @@ export function getOperationListByVendor(ID, callback) {
         });
     };
 }
+
+/**
+ * @method operationZBCBulkUpload
+ * @description create ZBC Opration by Bulk Upload
+ */
+export function operationZBCBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.operationZBCBulkUpload, data, headers);
+        request.then((response) => {
+            if (response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method operationVBCBulkUpload
+ * @description create VBC Opration by Bulk Upload
+ */
+export function operationVBCBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.operationVBCBulkUpload, data, headers);
+        request.then((response) => {
+            if (response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

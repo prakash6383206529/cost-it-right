@@ -34,6 +34,7 @@ class Login extends Component {
     this.props.getLoginPageInit(res => {
       let Data = res.data.Data;
       this.setState({ IsLoginEmailConfigure: Data.IsLoginEmailConfigure })
+      reactLocalStorage.setObject('InitialConfiguration', Data)
     })
 
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');

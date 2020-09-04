@@ -301,6 +301,8 @@ export const API = {
   fileUploadOperation: `${BASE_URL}/masters-operation/operation-file-upload`,
   fileDeleteOperation: `${BASE_URL}/masters-operation/delete-operation-file`,
   checkAndGetOperationCode: `${BASE_URL}/masters-operation/check-operation-code-is-unique`,
+  operationZBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-zbc-json`,
+  operationVBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-vbc-json`,
 
   getVendorListByTechnology: `${BASE_URL}/masters-operation/get-operation-vendor-by-technology-select-list`,
   getOperationListByTechnology: `${BASE_URL}/masters-operation/get-operation-by-technology-select-list`,
@@ -1005,3 +1007,6 @@ export const MACHINE = 'Machine';
 export const PART = 'Part';
 export const BOP = 'BOP';
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits';
+export const OPERATION = 'Operation';
+export const UOM = 'UOM';
+export const REASON = 'Reason';
