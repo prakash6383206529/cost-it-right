@@ -28,7 +28,7 @@ import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationListing from './masters/sap-masters/operation/OperationListing';
 import MaterialMaster from './masters/sap-masters/material-master/raw-material';
 import FreightMaster from './masters/sap-masters/freight-master';
-import LabourMaster from './masters/sap-masters/labour-master';
+import LabourListing from './masters/sap-masters/labour-master/LabourListing';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import DepreciationMaster from './masters/sap-masters/depreciation-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
@@ -179,7 +179,7 @@ class Main extends Component {
 
                     <Route path="/freight-master" component={AuthMiddleware(FreightMaster)} />
 
-                    <Route path="/labour-master" component={AuthMiddleware(LabourMaster)} />
+                    <Route path="/labour-master" component={AuthMiddleware(LabourListing)} />
 
                     <Route path="/overhead-profits-master" component={AuthMiddleware(OverheadProfit)} />
 

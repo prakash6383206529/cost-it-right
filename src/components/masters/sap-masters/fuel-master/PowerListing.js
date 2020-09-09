@@ -4,7 +4,12 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, Table, Button } from 'reactstrap';
 import { } from '../../../../actions/master/Material';
 import { required } from "../../../../helper/validation";
-import { } from '../../../../actions/master/Comman';
+import {
+    getPowerDetailDataList, getVendorPowerDetailDataList, getFuelComboData, getPlantListByState,
+    getZBCPlantList, getStateSelectList, deletePowerDetail, deleteVendorPowerDetail,
+} from '../../../../actions/master/Fuel';
+import { getPlantBySupplier } from '../../../../actions/master/Comman';
+import { getVendorWithVendorCodeSelectList, } from '../../../../actions/master/Supplier';
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -13,10 +18,8 @@ import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import InputRange from 'react-input-range';
-import 'react-input-range/lib/css/index.css'
+import Switch from "react-switch";
 import moment from 'moment';
-import BulkUpload from '../../../massUpload/BulkUpload';
 
 class PowerListing extends Component {
     constructor(props) {
@@ -24,12 +27,13 @@ class PowerListing extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            IsVendor: false,
             tableData: [],
-            RawMaterial: [],
-            RMGrade: [],
+
+            StateName: [],
+            plant: [],
             vendorName: [],
-            value: { min: 10, max: 150 },
-            isBulkUpload: false,
+            vendorPlant: [],
         }
     }
 
@@ -38,44 +42,61 @@ class PowerListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.getDataList(null, null, null)
+        this.props.getZBCPlantList(() => { })
+        this.props.getStateSelectList(() => { })
+        this.props.getVendorWithVendorCodeSelectList();
+        this.getDataList()
     }
 
-    // Get updated Table data list after any action performed.
-    getUpdatedData = () => {
-        this.getDataList(null, null, null)
-    }
+    getDataList = () => {
+        const { StateName, plant, vendorName, vendorPlant } = this.state;
+        if (!this.state.IsVendor) {
 
-    getDataList = (materialId = null, gradeId = null, vendorId = null) => {
-        // const { value } = this.state;
-        // const filterData = {
-        //     material_id: materialId,
-        //     grade_id: gradeId,
-        //     vendor_id: vendorId,
-        //     net_landed_min_range: value.min,
-        //     net_landed_max_range: value.max,
-        // }
-        // this.props.getRMDomesticDataList(filterData, (res) => {
-        //     if (res && res.status == 200) {
-        //         let Data = res.data.DataList;
-        //         this.setState({ tableData: Data })
-        //     } else if (res && res.response && res.response.status == 412) {
-        //         this.setState({ tableData: [] })
-        //     } else {
-        //         this.setState({ tableData: [] })
-        //     }
-        // })
+            const filterData = {
+                plantID: plant ? plant.value : '',
+                stateID: StateName ? StateName.value : '',
+            }
+            this.props.getPowerDetailDataList(filterData, (res) => {
+                if (res && res.status == 200) {
+                    let Data = res.data.DataList;
+                    this.setState({ tableData: Data })
+                } else if (res && res.response && res.response.status == 412) {
+                    this.setState({ tableData: [] })
+                } else {
+                    this.setState({ tableData: [] })
+                }
+            })
+
+        } else {
+
+            const filterData = {
+                vendorID: vendorName && vendorName != undefined ? vendorName.value : '',
+                plantID: vendorPlant && vendorPlant != undefined ? vendorPlant.value : '',
+            }
+            this.props.getVendorPowerDetailDataList(filterData, (res) => {
+                if (res && res.status == 200) {
+                    let Data = res.data.DataList;
+                    this.setState({ tableData: Data })
+                } else if (res && res.response && res.response.status == 412) {
+                    this.setState({ tableData: [] })
+                } else {
+                    this.setState({ tableData: [] })
+                }
+            })
+
+        }
+
     }
 
     /**
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    editItemDetails = (Id) => {
         let data = {
             isEditFlag: true,
             Id: Id,
-            IsVendor: rowData.CostingHead,
+            IsVendor: this.state.IsVendor,
         }
         this.props.getDetails(data);
     }
@@ -91,7 +112,7 @@ class PowerListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.POWER_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -99,12 +120,21 @@ class PowerListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        // this.props.deleteRawMaterialAPI(ID, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-        //         this.getDataList(null, null, null)
-        //     }
-        // });
+        if (this.state.IsVendor) {
+            this.props.deleteVendorPowerDetail(ID, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.DELETE_POWER_SUCCESS);
+                    this.getDataList()
+                }
+            });
+        } else {
+            this.props.deletePowerDetail(ID, (res) => {
+                if (res.data.Result === true) {
+                    toastr.success(MESSAGES.DELETE_POWER_SUCCESS);
+                    this.getDataList()
+                }
+            });
+        }
     }
 
     /**
@@ -124,10 +154,11 @@ class PowerListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { DeleteAccessibility, EditAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -178,41 +209,115 @@ class PowerListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { } = this.props;
+        const { plantSelectList, stateSelectList, vendorWithVendorCodeSelectList, filterPlantList } = this.props;
         const temp = [];
-        // if (label === 'material') {
-        //     rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
-        //         if (item.Value == 0) return false;
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     });
-        //     return temp;
-        // }
+
+        if (label === 'state') {
+            stateSelectList && stateSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'VendorNameList') {
+            vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'VendorPlant') {
+            filterPlantList && filterPlantList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
 
     }
 
     /**
-    * @method handleRMChange
-    * @description  used to handle row material selection
+    * @method onPressVendor
+    * @description Used for Vendor checked
     */
-    handleRMChange = (newValue, actionMeta) => {
+    onPressVendor = () => {
+        this.setState({
+            IsVendor: !this.state.IsVendor,
+        }, () => {
+            this.getDataList()
+        });
+    }
+
+    /**
+    * @method handleState
+    * @description  STATE FILTER
+    */
+    handleState = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RawMaterial: newValue });
+            this.setState({ StateName: newValue }, () => {
+                const { StateName } = this.state;
+                this.props.getPlantListByState(StateName.value, () => { })
+            });
         } else {
-            this.setState({ RawMaterial: [], });
+            this.setState({ StateName: [], });
         }
     }
+
+    /**
+    * @method handlePlant
+    * @description  PLANT FILTER
+    */
+    handlePlant = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ plant: newValue });
+        } else {
+            this.setState({ plant: [], });
+        }
+    }
+
+    /**
+    * @method handleVendorName
+    * @description called
+    */
+    handleVendorName = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
+                const { vendorName } = this.state;
+                this.props.getPlantBySupplier(vendorName.value, () => { })
+            });
+        } else {
+            this.setState({ vendorName: [], selectedVendorPlants: [], })
+            this.props.getPlantBySupplier('', () => { })
+        }
+    };
+
+    /**
+    * @method handleVendorPlant
+    * @description called
+    */
+    handleVendorPlant = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ vendorPlant: newValue, }, () => {
+                const { vendorPlant } = this.state;
+            });
+        } else {
+            this.setState({ vendorPlant: [], })
+        }
+    };
 
     /**
 	* @method filterList
 	* @description Filter user listing on the basis of role and department
 	*/
     filterList = () => {
-        // const { RawMaterial, RMGrade, vendorName } = this.state;
-        // const RMid = RawMaterial ? RawMaterial.value : null;
-        // const RMGradeid = RMGrade ? RMGrade.value : null;
-        // const Vendorid = vendorName ? vendorName.value : null;
-
-        // this.getDataList(RMid, RMGradeid, Vendorid)
+        this.getDataList()
     }
 
 	/**
@@ -220,26 +325,20 @@ class PowerListing extends Component {
 	* @description Reset user filter
 	*/
     resetFilter = () => {
-        // this.setState({
-        //     RawMaterial: [],
-        //     RMGrade: [],
-        //     vendorName: [],
-        //     value: { min: 10, max: 150 },
-        // }, () => {
-        //     this.getDataList(null, null, null)
-        // })
+        this.setState({
+            StateName: [],
+            plant: [],
+            vendorName: [],
+            vendorPlant: [],
+        }, () => {
+            this.props.getPlantListByState('', () => { })
+            this.props.getPlantBySupplier('', () => { })
+            this.getDataList()
+        })
     }
 
     formToggle = () => {
         this.props.formToggle()
-    }
-
-    bulkToggle = () => {
-        this.setState({ isBulkUpload: true })
-    }
-
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false })
     }
 
     /**
@@ -255,8 +354,8 @@ class PowerListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
-        const { isBulkUpload } = this.state;
+        const { handleSubmit, AddAccessibility } = this.props;
+        const { isEditFlag, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -269,26 +368,103 @@ class PowerListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
+                        <Col md="3" className="switch mb15">
+                            <label className="switch-level">
+                                <div className={'left-title'}>Zero Based</div>
+                                <Switch
+                                    onChange={this.onPressVendor}
+                                    checked={this.state.IsVendor}
+                                    id="normal-switch"
+                                    disabled={isEditFlag ? true : false}
+                                    background="#4DC771"
+                                    onColor="#4DC771"
+                                    onHandleColor="#ffffff"
+                                    offColor="#4DC771"
+                                    id="normal-switch"
+                                    uncheckedIcon={false}
+                                    checkedIcon={false}
+                                    height={20}
+                                    width={46}
+                                />
+                                <div className={'right-title'}>Vendor Based</div>
+                            </label>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col md="9" className="filter-block ">
-                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
+                            <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="RawMaterialId"
-                                        type="text"
-                                        label={''}
-                                        component={searchableSelect}
-                                        placeholder={'Raw Material'}
-                                        options={this.renderListing('material')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleRMChange}
-                                        valueDescription={this.state.RawMaterial}
-                                    />
-                                </div>
-                                
-
+                                {!this.state.IsVendor &&
+                                    <>
+                                        <div className="flex-fill">
+                                            <Field
+                                                name="state"
+                                                type="text"
+                                                label={''}
+                                                component={searchableSelect}
+                                                placeholder={'--- Select State ---'}
+                                                options={this.renderListing('state')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                                                //required={true}
+                                                handleChangeDescription={this.handleState}
+                                                valueDescription={this.state.StateName}
+                                                disabled={false}
+                                            />
+                                        </div>
+                                        <div className="flex-fill">
+                                            <Field
+                                                name="plant"
+                                                type="text"
+                                                label={''}
+                                                component={searchableSelect}
+                                                placeholder={'--Select Plant'}
+                                                options={this.renderListing('plant')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
+                                                //required={true}
+                                                handleChangeDescription={this.handlePlant}
+                                                valueDescription={this.state.plant}
+                                            />
+                                        </div>
+                                    </>}
+                                {this.state.IsVendor &&
+                                    <>
+                                        <div className="flex-fill">
+                                            <Field
+                                                name="VendorName"
+                                                type="text"
+                                                label={''}
+                                                component={searchableSelect}
+                                                placeholder={'--Vendor Name--'}
+                                                options={this.renderListing('VendorNameList')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleVendorName}
+                                                valueDescription={this.state.vendorName}
+                                                disabled={isEditFlag ? true : false}
+                                                className="fullinput-icon"
+                                            />
+                                        </div>
+                                        <div className="flex-fill">
+                                            <Field
+                                                name="VendorPlant"
+                                                type="text"
+                                                label={''}
+                                                component={searchableSelect}
+                                                placeholder={'--Vendor Plant--'}
+                                                options={this.renderListing('VendorPlant')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.vendorPlant == null || this.state.vendorPlant.length == 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleVendorPlant}
+                                                valueDescription={this.state.vendorPlant}
+                                                disabled={isEditFlag ? true : false}
+                                                className="fullinput-icon"
+                                            />
+                                        </div>
+                                    </>}
                                 <div className="flex-fill">
                                     <button
                                         type="button"
@@ -298,7 +474,6 @@ class PowerListing extends Component {
                                     >
                                         {'Reset'}
                                     </button>
-
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -308,25 +483,18 @@ class PowerListing extends Component {
                                         {'Apply'}
                                     </button>
                                 </div>
-                            </div> */}
+                            </div>
                         </Col>
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-
                                     <>
-                                        <button
-                                            type="button"
-                                            className={'user-btn mr5'}
-                                            onClick={this.bulkToggle}>
-                                            <div className={'upload'}></div>Bulk Upload</button>
-                                        <button
+                                        {AddAccessibility && <button
                                             type="button"
                                             className={'user-btn'}
                                             onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>
+                                            <div className={'plus'}></div>ADD</button>}
                                     </>
-
                                 </div>
                             </div>
                         </Col>
@@ -335,31 +503,47 @@ class PowerListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <BootstrapTable
-                            data={this.state.tableData}
-                            striped={true}
-                            hover={true}
-                            options={options}
-                            search
-                            // exportCSV
-                            ignoreSinglePage
-                            ref={'table'}
-                            pagination>
-                            <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Costing Head'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="RawMaterialId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
+
+                        {/* ZBC POWER LISTING */}
+                        {!this.state.IsVendor &&
+                            <BootstrapTable
+                                data={this.state.tableData}
+                                striped={true}
+                                hover={true}
+                                options={options}
+                                search
+                                // exportCSV
+                                ignoreSinglePage
+                                ref={'table'}
+                                pagination>
+                                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                                <TableHeaderColumn dataField="StateName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NetPowerCostPerUnit" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
+                                <TableHeaderColumn width={100} dataField="PowerId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            </BootstrapTable>}
+
+                        {/* VENDOR POWER LISTING */}
+                        {this.state.IsVendor &&
+                            <BootstrapTable
+                                data={this.state.tableData}
+                                striped={true}
+                                hover={true}
+                                options={options}
+                                search
+                                // exportCSV
+                                ignoreSinglePage
+                                ref={'table'}
+                                pagination>
+                                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="VendorPlantName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NetPowerCostPerUnit" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
+                                <TableHeaderColumn width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            </BootstrapTable>}
+
                     </Col>
                 </Row>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'RMDomestic'}
-                    messageLabel={'RM Domestic'}
-                    anchor={'right'}
-                />}
             </div >
         );
     }
@@ -370,20 +554,30 @@ class PowerListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material, comman }) {
-    const { rawMaterialNameSelectList, gradeSelectListByRMID } = material;
-    const { supplierSelectList, } = comman;
-    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectListByRMID }
+function mapStateToProps({ fuel, comman, supplier }) {
+    const { plantSelectList, stateSelectList } = fuel;
+    const { vendorWithVendorCodeSelectList } = supplier;
+    const { filterPlantList, } = comman;
+    return { vendorWithVendorCodeSelectList, filterPlantList, plantSelectList, stateSelectList }
 }
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-
+    getPowerDetailDataList,
+    getVendorPowerDetailDataList,
+    getFuelComboData,
+    getPlantListByState,
+    getZBCPlantList,
+    getStateSelectList,
+    getVendorWithVendorCodeSelectList,
+    getPlantBySupplier,
+    deletePowerDetail,
+    deleteVendorPowerDetail,
 })(reduxForm({
     form: 'PowerListing',
     enableReinitialize: true,

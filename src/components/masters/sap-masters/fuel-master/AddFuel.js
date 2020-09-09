@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../../helper/validation";
+import { required, checkForNull, decimalLength2 } from "../../../../helper/validation";
 import {
     renderText, renderSelectField, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField, focusOnError,
@@ -87,29 +87,25 @@ class AddFuel extends Component {
                         const { fuelComboSelectList } = this.props;
 
                         const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => item.Value == Data.FuelId)
-                        const UOMObj = fuelComboSelectList && fuelComboSelectList.States.find(item => item.Value == Data.StateId)
-                        //const StateObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value == Data.UnitOfMeasurementId)
+                        //const StateObj = fuelComboSelectList && fuelComboSelectList.States.find(item => item.Value == Data.StateId)
+                        const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value == Data.UnitOfMeasurementId)
 
-                        let rateGridArray = [
-                            {
-                                StateLabel: Data.StateName,
-                                StateId: Data.StateId,
-                                effectiveDate: moment(Data.EffectiveDate).format('DD/MM/YYYY'),
-                                Rate: Data.Rate,
+                        let rateGridArray = Data && Data.FuelDetatils.map((item) => {
+                            return {
+                                Id: item.Id,
+                                StateLabel: item.StateName,
+                                StateId: item.StateId,
+                                //effectiveDate: moment(item.EffectiveDate).format('DD/MM/YYYY'),
+                                effectiveDate: moment(item.EffectiveDate)._d,
+                                Rate: item.Rate,
                             }
-                        ];
-                        // Data && Data.Plant.map((item) => {
-                        //     rateGridArray.push({ Text: item.PlantName, Value: item.PlantId })
-                        //     return rateGridArray;
-                        // })
+                        })
 
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
-                            isShowForm: true,
-                            IsVendor: Data.IsVendor,
-                            fuel: { label: fuelObj.Text, value: fuelObj.Value },
-                            UOM: { label: UOMObj.Text, value: UOMObj.Value },
+                            fuel: fuelObj && fuelObj != undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
+                            UOM: UOMObj && UOMObj != undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
                             rateGrid: rateGridArray,
                         })
                     }, 200)
@@ -161,7 +157,6 @@ class AddFuel extends Component {
         }
     };
 
-
     rateTableHandler = () => {
         const { StateName, rateGrid, effectiveDate, } = this.state;
         if (StateName.length == 0 || effectiveDate == '') {
@@ -173,9 +168,11 @@ class AddFuel extends Component {
         const tempArray = [];
 
         tempArray.push(...rateGrid, {
+            Id: '',
             StateLabel: StateName ? StateName.label : '',
             StateId: StateName ? StateName.value : '',
-            effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+            //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+            effectiveDate: effectiveDate,
             Rate: Rate,
         })
 
@@ -199,9 +196,11 @@ class AddFuel extends Component {
 
         let tempData = rateGrid[rateGridEditIndex];
         tempData = {
+            Id: tempData.Id,
             StateLabel: StateName.label,
             StateId: StateName.value,
-            effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+            //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+            effectiveDate: effectiveDate,
             Rate: Rate,
         }
 
@@ -239,7 +238,8 @@ class AddFuel extends Component {
         this.setState({
             rateGridEditIndex: index,
             isEditIndex: true,
-            effectiveDate: new Date(moment(tempData.effectiveDate).format('DD/MM/YYYY')),
+            //effectiveDate: new Date(moment(tempData.effectiveDate).format('DD/MM/YYYY')),
+            effectiveDate: tempData.effectiveDate,
             StateName: { label: tempData.StateLabel, value: tempData.StateId },
         }, () => this.props.change('Rate', tempData.Rate))
     }
@@ -325,34 +325,20 @@ class AddFuel extends Component {
     * @method cancel
     * @description used to Reset form
     */
-    clearForm = () => {
+    cancel = () => {
         const { reset } = this.props;
         reset();
         this.setState({
-            RawMaterial: [],
-            remarks: '',
-            isShowForm: false,
+            FuelDetailId: '',
+            fuel: [],
+            UOM: [],
+            StateName: [],
+            effectiveDate: '',
+            rateGrid: [],
             isEditFlag: false,
-            IsVendor: false,
         })
-        //this.props.getRawMaterialDetailsAPI('', false, res => { })
+        this.props.getFuelDetailData('', res => { })
         this.props.hideForm()
-    }
-
-    /**
-    * @method cancel
-    * @description used to Reset form
-    */
-    cancel = () => {
-        this.clearForm()
-    }
-
-    /**
-    * @method resetForm
-    * @description used to Reset form
-    */
-    resetForm = () => {
-        this.clearForm()
     }
 
     /**
@@ -361,53 +347,50 @@ class AddFuel extends Component {
     */
     onSubmit = (values) => {
         const { isEditFlag, rateGrid, fuel, UOM, StateName, FuelDetailId } = this.state;
-        const { reset } = this.props;
 
-        // let plantArray = [];
-        // selectedPlants && selectedPlants.map((item) => {
-        //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-        //     return plantArray;
-        // })
+        if (rateGrid.length == 0) {
+            toastr.warning('Rate should not be empty.');
+            return false;
+        }
+
+        let fuelDetailArray = rateGrid && rateGrid.map((item) => {
+            return {
+                Id: item.Id,
+                Rate: item.Rate,
+                EffectiveDate: item.effectiveDate,
+                StateId: item.StateId
+            }
+        })
 
         if (isEditFlag) {
             let requestData = {
                 FuelDetailId: FuelDetailId,
-                StateName: StateName.label,
-                FuelName: fuel.label,
-                UnitOfMeasurementName: UOM.label,
-                CreatedDate: '',
-                CreatedBy: loggedInUserId(),
-                IsActive: true,
-                StateId: rateGrid[0].StateName,
-                Rate: rateGrid[0].Rate,
-                EffectiveDate: rateGrid[0].effectiveDate,
                 LoggedInUserId: loggedInUserId(),
                 FuelId: fuel.value,
                 UnitOfMeasurementId: UOM.value,
+                FuelDetatils: fuelDetailArray,
             }
 
             this.props.updateFuelDetail(requestData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
-                    this.clearForm();
+                    this.cancel();
                 }
             })
 
         } else {
 
             const formData = {
-                Rate: rateGrid[0].Rate,
-                EffectiveDate: rateGrid[0].effectiveDate,
-                StateId: rateGrid[0].StateId,
                 LoggedInUserId: loggedInUserId(),
                 FuelId: fuel.value,
                 UnitOfMeasurementId: UOM.value,
+                FuelDetatils: fuelDetailArray,
             }
 
             this.props.createFuelDetail(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
-                    this.clearForm();
+                    this.cancel();
                 }
             });
         }
@@ -470,10 +453,10 @@ class AddFuel extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.fuelToggler}
                                                         className={'plus-icon-square  right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -532,7 +515,7 @@ class AddFuel extends Component {
                                                     name={"Rate"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
+                                                    validate={[decimalLength2]}
                                                     component={renderNumberInputField}
                                                     //required={true}
                                                     className=""
@@ -574,12 +557,11 @@ class AddFuel extends Component {
                                                                 className={'btn btn-primary mt30 pull-left mr5'}
                                                                 onClick={this.updateRateGrid}
                                                             >Update</button>
-
-                                                            <button
+                                                            {/* <button
                                                                 type="button"
-                                                                className={'cancel-btn mt30 pull-left'}
+                                                                className={'btn btn-secondary mt30 pull-left'}
                                                                 onClick={this.resetRateGridData}
-                                                            >Cancel</button>
+                                                            >Cancel</button> */}
                                                         </>
                                                         :
                                                         <button
@@ -608,7 +590,8 @@ class AddFuel extends Component {
                                                                     <tr key={index}>
                                                                         <td>{item.StateLabel}</td>
                                                                         <td>{item.Rate}</td>
-                                                                        <td>{item.effectiveDate}</td>
+                                                                        {/* <td>{item.effectiveDate}</td> */}
+                                                                        <td>{moment(item.effectiveDate).format('DD/MM/YYYY')}</td>
                                                                         <td>
                                                                             <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
                                                                             <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
@@ -628,11 +611,12 @@ class AddFuel extends Component {
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
                                                     onClick={this.cancel} >
-                                                    {'Cancel'}
+                                                    <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="submit-button mr5 save-btn" >
+                                                    <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                                     {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>

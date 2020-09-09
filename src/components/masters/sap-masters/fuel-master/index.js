@@ -4,12 +4,15 @@ import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import classnames from 'classnames';
-
-import { getRowMaterialDataAPI } from '../../../../actions/master/Material';
 import AddFuel from './AddFuel';
 import AddPower from './AddPower';
 import FuelListing from './FuelListing';
 import PowerListing from './PowerListing';
+import { FUEL_AND_POWER } from '../../../../config/constants';
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 class FuelMaster extends Component {
     constructor(props) {
@@ -21,7 +24,35 @@ class FuelMaster extends Component {
             isFuelForm: false,
             isPowerForm: false,
             data: {},
+
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
+            BulkUploadAccessibility: false,
         }
+    }
+
+    componentDidMount() {
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData != undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName == FUEL_AND_POWER)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData != undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    })
+                }
+            }
+        })
     }
 
     /**
@@ -37,11 +68,11 @@ class FuelMaster extends Component {
     }
 
     displayFuelForm = () => {
-        this.setState({ isFuelForm: true, })
+        this.setState({ isFuelForm: true, isPowerForm: false, data: {} })
     }
 
     displayPowerForm = () => {
-        this.setState({ isPowerForm: true, })
+        this.setState({ isPowerForm: true, isFuelForm: false, data: {} })
     }
 
     hideForm = () => {
@@ -78,7 +109,7 @@ class FuelMaster extends Component {
         }
 
         return (
-            <Container>
+            <>
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
@@ -110,6 +141,10 @@ class FuelMaster extends Component {
                                         <FuelListing
                                             formToggle={this.displayFuelForm}
                                             getDetails={this.getDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         />
                                     </TabPane>}
 
@@ -118,6 +153,10 @@ class FuelMaster extends Component {
                                         <PowerListing
                                             formToggle={this.displayPowerForm}
                                             getDetails={this.getDetailsPower}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         />
                                     </TabPane>}
 
@@ -126,7 +165,7 @@ class FuelMaster extends Component {
                     </Col>
                 </Row>
 
-            </Container >
+            </ >
         );
     }
 }
@@ -136,14 +175,15 @@ class FuelMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-    // const { partsListing ,loading } = part;
-    // console.log('partsListing: ', partsListing);
-    // return { partsListing, loading }
+function mapStateToProps({ auth }) {
+    const { leftMenuData, loading } = auth;
+    return { leftMenuData, loading }
 }
 
 
 export default connect(
-    mapStateToProps, { getRowMaterialDataAPI }
+    mapStateToProps, {
+    getLeftMenu
+}
 )(FuelMaster);
 

@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
-import { Row, Col, Table, Button } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { } from '../../../../actions/master/Comman';
-import { getFuelDetailDataList, } from '../../../../actions/master/Fuel';
+import {
+    getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI,
+    getStateListByFuel,
+    getFuelListByState,
+} from '../../../../actions/master/Fuel';
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
 import moment from 'moment';
 import BulkUpload from '../../../massUpload/BulkUpload';
@@ -22,14 +24,11 @@ class FuelListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
             isEditFlag: false,
             tableData: [],
-            RawMaterial: [],
-            RMGrade: [],
-            vendorName: [],
-            value: { min: 10, max: 150 },
             isBulkUpload: false,
+            fuel: [],
+            StateName: [],
         }
     }
 
@@ -38,24 +37,16 @@ class FuelListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.getDataList()
+        this.props.getFuelComboData(() => { })
+        this.getDataList('', '')
     }
 
-    // Get updated Table data list after any action performed.
-    getUpdatedData = () => {
-        this.getDataList()
-    }
-
-    getDataList = () => {
-        const { value } = this.state;
-        // const filterData = {
-        //     material_id: materialId,
-        //     grade_id: gradeId,
-        //     vendor_id: vendorId,
-        //     net_landed_min_range: value.min,
-        //     net_landed_max_range: value.max,
-        // }
-        this.props.getFuelDetailDataList((res) => {
+    getDataList = (fuelName = '', stateName = '') => {
+        const filterData = {
+            fuelName: fuelName,
+            stateName: stateName,
+        }
+        this.props.getFuelDetailDataList(filterData, (res) => {
             if (res && res.status == 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -69,13 +60,12 @@ class FuelListing extends Component {
 
     /**
     * @method editItemDetails
-    * @description edit material type
+    * @description Edit Fuel
     */
     editItemDetails = (Id, rowData) => {
         let data = {
             isEditFlag: true,
             Id: Id,
-            //IsVendor: rowData.CostingHead,
         }
         this.props.getDetails(data);
     }
@@ -91,17 +81,17 @@ class FuelListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.FUEL_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
     * @method confirmDelete
-    * @description confirm delete Raw Material details
+    * @description confirm delete Fuel details
     */
     confirmDelete = (ID) => {
-        // this.props.deleteRawMaterialAPI(ID, (res) => {
+        // this.props.deleteFuelDetailAPI(ID, (res) => {
         //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+        //         toastr.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
         //         this.getDataList()
         //     }
         // });
@@ -124,20 +114,13 @@ class FuelListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
                 {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
             </>
         )
-    }
-
-    /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
     }
 
     /**
@@ -178,41 +161,65 @@ class FuelListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { } = this.props;
+        const { fuelComboSelectList } = this.props;
         const temp = [];
-        // if (label === 'material') {
-        //     rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
-        //         if (item.Value == 0) return false;
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     });
-        //     return temp;
-        // }
+        if (label === 'fuel') {
+            fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'state') {
+            fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
 
     }
 
     /**
-    * @method handleRMChange
-    * @description  used to handle row material selection
+    * @method handleFuel
+    * @description called
     */
-    handleRMChange = (newValue, actionMeta) => {
+    handleFuel = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ RawMaterial: newValue });
+            this.setState({ fuel: newValue, }, () => {
+                const { fuel } = this.state;
+                this.props.getStateListByFuel(fuel.value, () => { })
+            })
         } else {
-            this.setState({ RawMaterial: [], });
+            this.setState({ fuel: [] })
         }
-    }
+    };
+
+    /**
+    * @method handleState
+    * @description called
+    */
+    handleState = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ StateName: newValue, }, () => {
+                const { StateName } = this.state;
+                this.props.getFuelListByState(StateName.value, () => { })
+            })
+        } else {
+            this.setState({ StateName: [] })
+        }
+    };
 
     /**
 	* @method filterList
 	* @description Filter user listing on the basis of role and department
 	*/
     filterList = () => {
-        // const { RawMaterial, RMGrade, vendorName } = this.state;
-        // const RMid = RawMaterial ? RawMaterial.value : null;
-        // const RMGradeid = RMGrade ? RMGrade.value : null;
-        // const Vendorid = vendorName ? vendorName.value : null;
+        const { StateName, fuel } = this.state;
+        const fuelID = fuel ? fuel.value : null;
+        const stateId = StateName ? StateName.value : null;
 
-        // this.getDataList()
+        this.getDataList(fuelID, stateId)
     }
 
 	/**
@@ -220,14 +227,13 @@ class FuelListing extends Component {
 	* @description Reset user filter
 	*/
     resetFilter = () => {
-        // this.setState({
-        //     RawMaterial: [],
-        //     RMGrade: [],
-        //     vendorName: [],
-        //     value: { min: 10, max: 150 },
-        // }, () => {
-        //     this.getDataList()
-        // })
+        this.setState({
+            fuel: [],
+            StateName: [],
+        }, () => {
+            this.props.getFuelComboData(() => { })
+            this.getDataList('', '')
+        })
     }
 
     formToggle = () => {
@@ -239,23 +245,21 @@ class FuelListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false })
+        this.setState({ isBulkUpload: false }, () => this.getDataList('', ''))
     }
 
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
-
-    }
+    onSubmit = (values) => { }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
         const options = {
             clearSearch: true,
@@ -269,25 +273,42 @@ class FuelListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
-                        <Col md="9" className="filter-block ">
-                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
+                        <Col md="9" className="filter-block">
+                            <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="RawMaterialId"
+                                        name="Fuel"
                                         type="text"
-                                        label={''}
+                                        label=""
                                         component={searchableSelect}
-                                        placeholder={'Raw Material'}
-                                        options={this.renderListing('material')}
+                                        placeholder={'--- Select Fuel ---'}
+                                        options={this.renderListing('fuel')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleRMChange}
-                                        valueDescription={this.state.RawMaterial}
+                                        //validate={(this.state.fuel == null || this.state.fuel.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleFuel}
+                                        valueDescription={this.state.fuel}
+                                        disabled={false}
                                     />
                                 </div>
-                                
+                                <div className="flex-fill">
+                                    <Field
+                                        name="state"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'--- Select State ---'}
+                                        options={this.renderListing('state')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleState}
+                                        valueDescription={this.state.StateName}
+                                        disabled={false}
+                                    />
+                                </div>
+
 
                                 <div className="flex-fill">
                                     <button
@@ -298,7 +319,6 @@ class FuelListing extends Component {
                                     >
                                         {'Reset'}
                                     </button>
-
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -308,25 +328,21 @@ class FuelListing extends Component {
                                         {'Apply'}
                                     </button>
                                 </div>
-                            </div> */}
+                            </div>
                         </Col>
                         <Col md="3" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-
-                                    <>
-                                        <button
-                                            type="button"
-                                            className={'user-btn mr5'}
-                                            onClick={this.bulkToggle}>
-                                            <div className={'plus'}></div></button>
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>
-                                    </>
-
+                                    {BulkUploadAccessibility && <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.bulkToggle}>
+                                        <div className={'upload'}></div>Bulk Upload</button>}
+                                    {AddAccessibility && <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD</button>}
                                 </div>
                             </div>
                         </Col>
@@ -345,13 +361,13 @@ class FuelListing extends Component {
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="FuelName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Fuel'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="UnitOfMeasurementName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="StateName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
@@ -374,10 +390,9 @@ class FuelListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material, comman }) {
-    const { rawMaterialNameSelectList, gradeSelectListByRMID } = material;
-    const { supplierSelectList, } = comman;
-    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectListByRMID }
+function mapStateToProps({ fuel }) {
+    const { fuelComboSelectList } = fuel;
+    return { fuelComboSelectList, }
 }
 
 /**
@@ -388,6 +403,10 @@ function mapStateToProps({ material, comman }) {
 */
 export default connect(mapStateToProps, {
     getFuelDetailDataList,
+    getFuelComboData,
+    deleteFuelDetailAPI,
+    getStateListByFuel,
+    getFuelListByState,
 })(reduxForm({
     form: 'FuelListing',
     enableReinitialize: true,

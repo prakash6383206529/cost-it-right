@@ -265,6 +265,13 @@ class AddProfit extends Component {
         }
     };
 
+    handlePercent = (e) => {
+        if (e.target.value > 100) {
+            toastr.warning('Profit Percent can not be greater than 100.')
+            $('input[name="ProfitPercentage"]').focus()
+        }
+    }
+
     resetFields = () => {
         this.props.change('ProfitPercentage', '')
         this.props.change('ProfitMachiningCCPercentage', '')
@@ -705,7 +712,7 @@ class AddProfit extends Component {
                                                     placeholder={'Enter'}
                                                     validate={!isOverheadPercent ? [required] : []}
                                                     component={renderNumberInputField}
-                                                    //onChange={this.handleCalculation}
+                                                    onBlur={this.handlePercent}
                                                     required={!isOverheadPercent ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"

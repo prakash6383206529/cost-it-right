@@ -9,6 +9,12 @@ import {
     GET_FUEL_FAILURE,
     GET_FUEL_DETAIL_SUCCESS,
     GET_FULE_COMBO_SUCCESS,
+    GET_STATELIST_BY_FUEL,
+    GET_FULELIST_BY_STATE,
+    GET_PLANT_SELECTLIST_BY_STATE,
+    GET_ZBC_PLANT_SELECTLIST,
+    GET_STATE_SELECTLIST,
+    GET_ZBC_POWER_DATA_SUCCESS,
 } from '../../config/constants';
 
 const initialState = {
@@ -76,6 +82,54 @@ export default function fuelReducer(state = initialState, action) {
                 loading: false,
                 error: false,
                 fuelComboSelectList: action.payload
+            };
+        }
+        case GET_STATELIST_BY_FUEL: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                fuelComboSelectList: { ...state.fuelComboSelectList, States: action.payload }
+            };
+        }
+        case GET_FULELIST_BY_STATE: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                fuelComboSelectList: { ...state.fuelComboSelectList, Fuels: action.payload }
+            };
+        }
+        case GET_PLANT_SELECTLIST_BY_STATE: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                plantSelectList: action.payload,
+            };
+        }
+        case GET_ZBC_PLANT_SELECTLIST: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                plantSelectList: action.payload,
+            };
+        }
+        case GET_STATE_SELECTLIST: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                stateSelectList: action.payload,
+            };
+        }
+        case GET_ZBC_POWER_DATA_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                powerData: action.payload,
             };
         }
         case GET_FUEL_FAILURE:

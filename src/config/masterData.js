@@ -373,6 +373,24 @@ export const VBCOperationTempData = [
     }
 ]
 
+export const Fuel = [
+    { label: 'FuelName', value: 'FuelName', },
+    { label: 'State', value: 'State', },
+    { label: 'Rate', value: 'Rate', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'UOM', value: 'UOM', },
+]
+
+export const FuelTempData = [
+    {
+        'FuelName': 'FuelName',
+        'State': 'State',
+        'Rate': 'Rate',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'UOM': 'UOM',
+    }
+]
+
 export const Profit = [
     { label: 'CostingHead', value: 'CostingHead', },
     { label: 'ModelType', value: 'ModelType', },
@@ -534,15 +552,6 @@ export const MHR = [
     { label: 'CalculatedMHRCost', value: 'CalculatedMHRCost', },
     { label: 'Efficiency', value: 'Efficiency', },
 ]
-
-export const Fuel = [
-    { label: 'Fuel Name', value: 'FuelName', },
-    { label: 'State', value: 'State', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'Effective Date', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM', },
-]
-
 
 export const EAccessType = [
     { label: '--Select EAccess Type--', value: '', },

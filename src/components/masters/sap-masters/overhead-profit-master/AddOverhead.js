@@ -229,6 +229,7 @@ class AddOverhead extends Component {
             const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage != undefined && filedObj.OverheadRMPercentage != '' ? true : false;
             const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage != undefined && filedObj.OverheadMachiningCCPercentage != '' ? true : false;
             const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage != undefined && filedObj.OverheadBOPPercentage != '' ? true : false;
+
             if (OverheadPercentage) {
                 this.setState({ isRM: true, isCC: true, isBOP: true, })
             } else if (OverheadRMPercentage || OverheadMachiningCCPercentage || OverheadBOPPercentage) {
@@ -264,6 +265,13 @@ class AddOverhead extends Component {
             })
         }
     };
+
+    handlePercent = (e) => {
+        if (e.target.value > 100) {
+            toastr.warning('Overhead Percent can not be greater than 100.')
+            $('input[name="OverheadPercentage"]').focus()
+        }
+    }
 
     resetFields = () => {
         this.props.change('OverheadPercentage', '')
@@ -708,7 +716,7 @@ class AddOverhead extends Component {
                                                     placeholder={!isOverheadPercent ? 'Enter' : ''}
                                                     validate={!isOverheadPercent ? [required] : []}
                                                     component={renderNumberInputField}
-                                                    //onChange={this.handleCalculation}
+                                                    onBlur={this.handlePercent}
                                                     required={!isOverheadPercent ? true : false}
                                                     className=""
                                                     customClassName=" withBorder"
@@ -801,6 +809,7 @@ class AddOverhead extends Component {
                                                             inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
                                                         }}
                                                         classNames="draper-drop"
+
                                                     />}
                                             </Col>
                                             <Col md="3">

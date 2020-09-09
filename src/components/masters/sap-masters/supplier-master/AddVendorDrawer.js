@@ -237,7 +237,6 @@ class AddVendorDrawer extends Component {
             this.setState({
                 isLoader: true,
                 isEditFlag: true,
-                isShowForm: true,
                 VendorId: ID,
             })
             $('html, body').animate({ scrollTop: 0 }, 'slow');
@@ -288,7 +287,11 @@ class AddVendorDrawer extends Component {
         this.props.closeDrawer('')
     };
 
-    clearForm = () => {
+    /**
+    * @method cancel
+    * @description used to Reset form
+    */
+    cancel = () => {
         const { reset } = this.props;
         reset();
         this.setState({
@@ -298,21 +301,10 @@ class AddVendorDrawer extends Component {
             country: [],
             state: [],
             city: [],
-            isShowForm: false,
             isEditFlag: false,
         })
-        this.toggleDrawer('')
-    }
-
-    /**
-    * @method cancel
-    * @description used to Reset form
-    */
-    cancel = () => {
-        const { reset } = this.props;
-        reset();
-        this.clearForm();
         this.props.getSupplierByIdAPI('', false, () => { })
+        this.toggleDrawer('')
     }
 
     /**
@@ -381,8 +373,7 @@ class AddVendorDrawer extends Component {
             this.props.updateSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-                    this.clearForm()
-                    //this.child.getUpdatedData();
+                    this.cancel()
                 }
             });
         } else {/** Add new detail for creating supplier master **/
@@ -406,8 +397,7 @@ class AddVendorDrawer extends Component {
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                    this.clearForm();
-                    //this.child.getUpdatedData();
+                    this.cancel();
                 }
             });
         }
@@ -421,12 +411,11 @@ class AddVendorDrawer extends Component {
     render() {
         const { handleSubmit, isEditFlag, reset } = this.props;
         const { country, isOpenVendorPlant } = this.state;
-        //console.log('sssssssssssss', this.checkVendorType())
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container >
-                        <div className={'drawer-wrapper'}>
+                        <div className={`drawer-wrapper WIDTH-700`}>
                             <form
                                 noValidate
                                 className="form"

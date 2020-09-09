@@ -273,7 +273,7 @@ class BulkUpload extends Component {
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                 <Container>
-                    <div className={'drawer-wrapper '}>
+                    <div className={'drawer-wrapper WIDTH-400'}>
                         <form
                             noValidate
                             className="form"

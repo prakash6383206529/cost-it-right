@@ -87,7 +87,7 @@ export const MESSAGES = {
   MATERIAL_UPDATE_SUCCESS: 'Raw Material has been updated successfully',
 
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
-  LABOUR_ADDED_SUCCESS: 'Labour added successfully',
+
 
   //OVERHEAD AND PROFIT
   OVERHEAD_ADDED_SUCCESS: 'Overhead created successfully',
@@ -127,7 +127,11 @@ export const MESSAGES = {
   DELETE_BOP_SUCCESS: 'Bought out part deleted successfully',
   DELETE_FREIGHT_SUCCESS: 'Freight deleted successfully',
   UPDATE_FREIGHT_SUCESS: 'Freight updated successfully',
+
+  //LABOUR MASTER
+  LABOUR_ADDED_SUCCESS: 'Labour added successfully',
   DELETE_LABOUR_SUCCESS: 'Labour deleted successfully',
+  LABOUR_DELETE_ALERT: 'Are you sure you want to delete Labour?',
   UPDATE_LABOUR_SUCCESS: 'Labour updated successfully',
 
   //SUPPLIER OR VENDOR
@@ -152,9 +156,12 @@ export const MESSAGES = {
   DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
   DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
   POWER_DETAIL_ADD_SUCCESS: 'Power detail added successfully',
+
   POWER_ADD_SUCCESS: 'Power added successfully',
+  UPDATE_POWER_DETAIL_SUCESS: 'Power detail updated successfully',
   POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',
   POWER_DETAIL_DELETE_ALERT: 'Are you sure you want to delete Power Detail?',
+  DELETE_POWER_SUCCESS: 'Power detail deleted successfully',
 
   INTEREST_RATE_ADDED_SUCCESS: 'Suppiler interest rate added successfully',
   DELETE_INTEREST_RATE_SUCCESS: 'Supplier interest rate deleted successfully',

@@ -268,11 +268,30 @@ export const API = {
   getFuelAPI: `${BASE_URL}/masters-fuel/get-fuel`,
   getAllFuelAPI: `${BASE_URL}/masters-fuel/get-all-fuel`,
   getFuelDetailData: `${BASE_URL}/masters-fuel/get-fuel-details`,
-  getFuelDetailDataList: `${BASE_URL}/masters-fuel/get-all-fuel-details`,
+  getFuelDetailDataList: `${BASE_URL}/masters-fuel/get-all-fuel-details-by-filter`,
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
   getFuelComboData: `${BASE_URL}/configuration-master/get-fuel-details-combo-select-list`,
+  getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
+  getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
   fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-details-json`,
+
+  //POWER MASTER
+  createPowerDetail: `${BASE_URL}/masters-power/create-power-detail`,
+  getPowerDetailData: `${BASE_URL}/masters-power/get-power-detail`,
+  updatePowerDetail: `${BASE_URL}/masters-power/update-power-detail`,
+  deletePowerDetail: `${BASE_URL}/masters-power/delete-power-detail`,
+  getPowerDetailDataList: `${BASE_URL}/masters-power/get-all-power-details`,
+  getPlantListByState: `${BASE_URL}/masters-fuel/get-plant-by-state-select-list`,
+  getDieselRateByStateAndUOM: `${BASE_URL}/masters-fuel/get-fuel-rate-by-state-uom`,
+  getZBCPlantList: `${BASE_URL}/masters-fuel/get-all-zbc-plant-select-list`,
+  getStateSelectList: `${BASE_URL}/masters-fuel/get-all-state-select-list`,
+
+  createVendorPowerDetail: `${BASE_URL}/masters-power/create-vendor-power-details`,
+  updateVendorPowerDetail: `${BASE_URL}/masters-power/update-vendor-power-detail`,
+  getVendorPowerDetailData: `${BASE_URL}/masters-power/get-vendor-power-detail`,
+  deleteVendorPowerDetail: `${BASE_URL}/masters-power/delete-vendor-power-detail`,
+  getVendorPowerDetailDataList: `${BASE_URL}/masters-power/get-all-vender-power-details`,
 
   //API's for other operations
   getOtherOperationsAPI: `${BASE_URL}/masters-other-operation/get-all-other-operation`,
@@ -749,6 +768,12 @@ export const CREATE_FUEL_DETAIL_SUCCESS = 'CREATE_FUEL_DETAIL_SUCCESS';
 export const GET_FUEL_DETAIL_SUCCESS = 'GET_FUEL_DETAIL_SUCCESS';
 export const GET_FUEL__DETAIL_DATA_SUCCESS = 'GET_FUEL_DETAIL_DATA_SUCCESS';
 export const GET_FULE_COMBO_SUCCESS = 'GET_FULE_COMBO_SUCCESS';
+export const GET_STATELIST_BY_FUEL = 'GET_STATELIST_BY_FUEL';
+export const GET_FULELIST_BY_STATE = 'GET_FULELIST_BY_STATE';
+export const GET_PLANT_SELECTLIST_BY_STATE = 'GET_PLANT_SELECTLIST_BY_STATE';
+export const GET_ZBC_PLANT_SELECTLIST = 'GET_ZBC_PLANT_SELECTLIST';
+export const GET_STATE_SELECTLIST = 'GET_STATE_SELECTLIST';
+export const GET_ZBC_POWER_DATA_SUCCESS = 'GET_ZBC_POWER_DATA_SUCCESS';
 
 //OTHER OPERATION MASTER
 export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS';
@@ -976,7 +1001,6 @@ export const CONTRACT = 'Contract';
 export const SEMI_SKILLED = 'Semi-Skilled';
 export const UNSKILLED = 'Unskilled';
 
-
 //POWER LIST ENUMS
 export const SOLAR_POWER = 'Solar Power';
 export const HYDRO_POWER = 'Hydro Power';
@@ -1008,5 +1032,7 @@ export const PART = 'Part';
 export const BOP = 'BOP';
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits';
 export const OPERATION = 'Operation';
+export const LABOUR = 'Labour';
 export const UOM = 'UOM';
 export const REASON = 'Reason';
+export const FUEL_AND_POWER = 'Fuel and Power';

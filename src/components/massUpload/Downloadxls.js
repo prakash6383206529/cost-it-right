@@ -1,7 +1,7 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
 import {
-    Fuel,
+    Fuel, FuelTempData,
     RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
     RMImportZBC, RMImportZBCTempData, RMImportVBC, RMImportVBCTempData,
     RMSpecification, RMSpecificationXLTempData,
@@ -50,6 +50,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Vendor, VendorTempData);
             case 'Overhead':
                 return this.returnExcelColumn(Overhead, OverheadTempData);
+            case 'Fuel':
+                return this.returnExcelColumn(Fuel, FuelTempData);
             case 'Profit':
                 return this.returnExcelColumn(Profit, ProfitTempData);
             case 'BOP':
@@ -66,8 +68,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Power);
             case 'MHR':
                 return this.returnExcelColumn(MHR);
-            case 'Fuel':
-                return this.returnExcelColumn(Fuel);
             default:
                 return 'foo';
         }
@@ -100,8 +100,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Power);
             case 'MHR':
                 return this.returnExcelColumn(MHR);
-            case 'Fuel':
-                return this.returnExcelColumn(Fuel);
             default:
                 return 'foo';
         }
@@ -134,8 +132,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Power);
             case 'MHR':
                 return this.returnExcelColumn(MHR);
-            case 'Fuel':
-                return this.returnExcelColumn(Fuel);
             default:
                 return 'foo';
         }
@@ -184,7 +180,7 @@ class Downloadxls extends React.Component {
         }
 
         // Download file:- Called when Apart from ZBC & VBC failed
-        if (isFailedFlag && (fileName == 'RMSpecification' || fileName == 'Vendor' || fileName == 'Overhead' || fileName == 'Profit')) {
+        if (isFailedFlag && (fileName == 'RMSpecification' || fileName == 'Vendor' || fileName == 'Overhead' || fileName == 'Fuel')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}

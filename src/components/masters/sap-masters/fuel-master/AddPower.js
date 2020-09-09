@@ -2,17 +2,21 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../../helper/validation";
+import { required, checkForNull, maxLength100, trimTwoDecimalPlace, getVendorCode } from "../../../../helper/validation";
 import {
     renderText, renderSelectField, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField, focusOnError,
 } from "../../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../../actions/master/Comman';
-import { getVendorListByVendorType, } from '../../../../actions/master/Material';
-import axios from 'axios';
+import { getVendorWithVendorCodeSelectList, } from '../../../../actions/master/Supplier';
+import {
+    getFuelComboData, createPowerDetail, updatePowerDetail, getPlantListByState,
+    createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
+    getPowerDetailData, getVendorPowerDetailData,
+} from '../../../../actions/master/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { GENERATOR_DIESEL, WIND_POWER } from '../../../../config/constants';
+import { GENERATOR_DIESEL, } from '../../../../config/constants';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
 import Switch from "react-switch";
@@ -21,6 +25,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
+import moment from 'moment';
 const selector = formValueSelector('AddPower');
 
 class AddPower extends Component {
@@ -29,7 +34,7 @@ class AddPower extends Component {
         this.child = React.createRef();
         this.state = {
             isEditFlag: false,
-            PowerID: '',
+            PowerDetailID: '',
             IsVendor: false,
 
             StateName: [],
@@ -42,12 +47,18 @@ class AddPower extends Component {
             isEditIndex: false,
 
             vendorName: [],
+            VendorCode: '',
             selectedVendorPlants: [],
             vendorLocation: [],
 
             isOpenVendor: false,
 
+            source: [],
             UOM: [],
+            isCostPerUnitConfigurable: false,
+            checkPowerContribution: false,
+            isAddedSEB: false,
+            isEditSEBIndex: false,
         }
     }
 
@@ -65,16 +76,113 @@ class AddPower extends Component {
      * @description Called after rendering the component
      */
     componentDidMount() {
-        const { data } = this.props;
-        this.getDetails(data);
+        this.props.getPlantListByState('', () => { })
+        this.props.getPlantBySupplier('', () => { })
         this.props.getPowerTypeSelectList(() => { })
+        this.props.getFuelComboData(() => { })
         this.props.getUOMSelectList(() => { })
-        this.props.getVendorListByVendorType(true, () => { })
+        this.props.getVendorWithVendorCodeSelectList();
+        this.getDetails();
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.fieldsObj != prevProps.fieldsObj) {
+            this.SEBPowerCalculation()
             this.selfPowerCalculation()
+            this.powerContributionCalculation()
+        }
+    }
+
+    /**
+     * @method SEBPowerCalculation
+     * @description USED TO CALCULATE SEB POWER CALCULATION
+     */
+    SEBPowerCalculation = () => {
+        const { source, isCostPerUnitConfigurable, } = this.state;
+        const { fieldsObj } = this.props;
+
+        const MinDemandKWPerMonth = fieldsObj && fieldsObj.MinDemandKWPerMonth != undefined ? checkForNull(fieldsObj.MinDemandKWPerMonth) : 0;
+        const DemandChargesPerKW = fieldsObj && fieldsObj.DemandChargesPerKW != undefined ? checkForNull(fieldsObj.DemandChargesPerKW) : 0;
+        const AvgUnitConsumptionPerMonth = fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth != undefined ? checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) : 0;
+        const MaxDemandChargesKW = fieldsObj && fieldsObj.MaxDemandChargesKW != undefined ? checkForNull(fieldsObj.MaxDemandChargesKW) : 0;
+
+        const MeterRentAndOtherChargesPerAnnum = fieldsObj && fieldsObj.MeterRentAndOtherChargesPerAnnum != undefined ? checkForNull(fieldsObj.MeterRentAndOtherChargesPerAnnum) : 0;
+        const DutyChargesAndFCA = fieldsObj && fieldsObj.DutyChargesAndFCA != undefined ? checkForNull(fieldsObj.DutyChargesAndFCA) : 0;
+
+        if (fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth != undefined) {
+            this.props.change('UnitConsumptionPerAnnum', checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) * 12)
+        }
+
+        //Formula for SEB COST PER UNIT calculation
+        if (!isCostPerUnitConfigurable) {
+            const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth;
+            this.props.change('SEBCostPerUnit', trimTwoDecimalPlace(SEBCostPerUnit))
+        }
+
+        //Formula for TOTAL UNIT CHARGES calculation
+        const UnitConsumptionPerAnnum = fieldsObj && fieldsObj.UnitConsumptionPerAnnum != undefined ? checkForNull(fieldsObj.UnitConsumptionPerAnnum) : 0;
+        const SEBCostPerUnit = fieldsObj && fieldsObj.SEBCostPerUnit != undefined ? checkForNull(fieldsObj.SEBCostPerUnit) : 0;
+
+        const TotalUnitCharges = ((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum
+        this.props.change('TotalUnitCharges', trimTwoDecimalPlace(TotalUnitCharges))
+    }
+
+    /**
+     * @method selfPowerCalculation
+     * @description USED TO CALCULATE SELF GENERATED POWER CALCULATION
+     */
+    selfPowerCalculation = () => {
+        const { source, isCostPerUnitConfigurable, } = this.state;
+        const { fieldsObj } = this.props;
+
+        //CALCULATION OF SELF GENERATOR COST PER UNIT
+        if (source && source.value == GENERATOR_DIESEL) {
+            const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement != undefined ? checkForNull(fieldsObj.CostPerUnitOfMeasurement) : 0;
+            const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel != undefined ? checkForNull(fieldsObj.UnitGeneratedPerUnitOfFuel) : 0;
+            const SelfGeneratedCostPerUnit = CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel;
+            this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
+        } else {
+            const AnnualCost = fieldsObj && fieldsObj.AnnualCost != undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
+            const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum != undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
+            const SelfGeneratedCostPerUnit = AnnualCost / UnitGeneratedPerAnnum;
+            this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
+        }
+
+    }
+
+    /**
+     * @method powerContributionCalculation
+     * @description USED TO CALCULATE TOTAL POWER CONTRIBUTION SHOULD NOT BE GREATER THAN 100%
+     */
+    powerContributionCalculation = () => {
+        const { powerGrid, isEditIndex, isEditSEBIndex, powerGridEditIndex } = this.state;
+        const { fieldsObj } = this.props;
+
+        //POWER CONTIRBUTION FIELDS
+        const electricBoardPowerContribution = fieldsObj && fieldsObj.SEBPowerContributaion != undefined ? checkForNull(fieldsObj.SEBPowerContributaion) : 0;
+        const selfGeneratorPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution != undefined ? checkForNull(fieldsObj.SelfPowerContribution) : 0;
+
+        //CALCULATION FOR POWER CONTRIBUTION 100%
+        const totalContributionFromGrid = powerGrid && powerGrid.reduce((accummlator, el) => {
+            return accummlator + checkForNull(el.PowerContributionPercentage);
+        }, 0)
+
+        let powerContributionTotal = 0;
+        if (isEditIndex) {
+            let rowObj = powerGrid && powerGrid.find((el, index) => index == powerGridEditIndex)
+            powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
+        } else if (isEditSEBIndex) {
+            let rowObj = powerGrid && powerGrid.find((el, index) => index == powerGridEditIndex)
+            powerContributionTotal = electricBoardPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
+        } else {
+            powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
+        }
+
+        if (powerContributionTotal > 100) {
+            this.setState({ checkPowerContribution: true })
+            toastr.warning('Power contribution should not be greater than 100%.')
+        } else {
+            this.setState({ checkPowerContribution: false })
         }
     }
 
@@ -82,59 +190,115 @@ class AddPower extends Component {
     * @method getDetails
     * @description Used to get Details
     */
-    getDetails = (data) => {
-        // if (data && data.isEditFlag) {
-        //     this.setState({
-        //         isEditFlag: false,
-        //         isLoader: true,
-        //         isShowForm: true,
-        //         RawMaterialID: data.Id,
-        //     })
-        //     $('html, body').animate({ scrollTop: 0 }, 'slow');
-        //     this.props.getRawMaterialDetailsAPI(data, true, res => {
-        //         if (res && res.data && res.data.Result) {
+    getDetails = () => {
+        const { data } = this.props;
+        if (data && data.isEditFlag && data.IsVendor) {
+            console.log('vendor power detail')
+            this.setState({
+                isEditFlag: false,
+                isLoader: true,
+                PowerDetailID: data.Id,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getVendorPowerDetailData(data.Id, res => {
+                if (res && res.data && res.data.Result) {
 
-        //             const Data = res.data.Data;
+                    const Data = res.data.Data;
+                    console.log('Data: ', Data);
+                    this.props.getPlantBySupplier(Data.VendorId, () => { })
 
-        //             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+                    setTimeout(() => {
+                        const { vendorWithVendorCodeSelectList } = this.props;
 
-        //             setTimeout(() => {
-        //                 const { gradeSelectListByRMID, rmSpecification, cityList, categoryList,
-        //                     filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
-        //                     vendorListByVendorType } = this.props;
+                        const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value == Data.VendorId)
 
-        //                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
+                        let tempVendorPlant = Data && Data.VendorPlants.map((item) => {
+                            return { Text: item.VendorPlantName, Value: item.VendorPlantId }
+                        })
 
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            IsVendor: Data.IsVendor,
+                            VendorCode: Data.VendorCode,
+                            selectedVendorPlants: tempVendorPlant,
+                            vendorName: vendorObj && vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                        })
+                        this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
+                    }, 200)
+                }
+            })
 
-        //                 let plantArray = [];
-        //                 Data && Data.Plant.map((item) => {
-        //                     plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-        //                     return plantArray;
-        //                 })
+        } else if (data && data.isEditFlag && data.IsVendor == false) {
+            console.log('power detail')
+            this.setState({
+                isEditFlag: false,
+                isLoader: true,
+                PowerDetailID: data.Id,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getPowerDetailData(data.Id, res => {
+                if (res && res.data && res.data.Result) {
+                    const { powerGrid } = this.state;
+                    const Data = res.data.Data;
+                    console.log('Data: ', Data);
+                    this.props.getPlantListByState(Data.StateId, () => { })
 
-        //                 let tempArr = [];
-        //                 let tempFiles = [];
+                    let tempArray = [];
+                    if (Data.SEBChargesDetails.length > 0) {
+                        tempArray.push(...powerGrid, {
+                            PowerSEBPCId: Data.SEBChargesDetails[0].PowerSEBPCId,
+                            PowerSGPCId: '',
+                            SourcePowerType: 'SEB',
+                            AssetCost: '',
+                            AnnualCost: '',
+                            UnitGeneratedPerAnnum: '',
+                            CostPerUnit: Data.SEBChargesDetails[0].TotalUnitCharges,
+                            PowerContributionPercentage: Data.SEBChargesDetails[0].PowerContributaionPersentage,
+                            UnitOfMeasurementId: '',
+                            UnitOfMeasurementName: '',
+                            CostPerUnitOfMeasurement: 0,
+                            UnitGeneratedPerUnitOfFuel: 0,
+                            OtherCharges: 0,
+                            isSelfPowerGenerator: false,
+                        })
+                    }
 
-        //                 this.setState({
-        //                     isEditFlag: true,
-        //                     isLoader: false,
-        //                     isShowForm: true,
-        //                     IsVendor: Data.IsVendor,
-        //                     RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value },
-        //                     effectiveDate: new Date(Data.EffectiveDate),
-        //                     remarks: Data.Remark,
-        //                 })
-        //             }, 200)
-        //         }
-        //     })
-        // } else {
-        //     this.setState({
-        //         isEditFlag: false,
-        //         isLoader: false,
-        //         RawMaterialID: '',
-        //     })
-        //     this.props.getRawMaterialDetailsAPI('', false, res => { })
-        // }
+                    if (Data.SGChargesDetails.length > 0) {
+                        let selfPowerArray = Data && Data.SGChargesDetails.map((item) => item)
+                        tempArray.push(...powerGrid, ...selfPowerArray)
+                    }
+
+                    setTimeout(() => {
+                        const { fuelComboSelectList, } = this.props;
+
+                        const stateObj = fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.find(item => item.Value == Data.StateId)
+
+                        let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            IsVendor: Data.IsVendor,
+                            isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
+                            selectedPlants: plantArray,
+                            StateName: stateObj && stateObj != undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
+                            effectiveDate: moment(Data.SEBChargesDetails[0].EffectiveDate)._d,
+                            powerGrid: tempArray,
+                        })
+                    }, 200)
+                }
+            })
+
+        } else {
+            this.setState({
+                isEditFlag: false,
+                isLoader: false,
+                PowerDetailID: '',
+            })
+            this.props.getPowerDetailData('', () => { })
+            //this.props.getVendorPowerDetailData('', () => { })
+        }
     }
 
     /**
@@ -147,8 +311,7 @@ class AddPower extends Component {
             vendorName: [],
             selectedVendorPlants: [],
         }, () => {
-            const { IsVendor } = this.state;
-            this.props.getVendorListByVendorType(true, () => { })
+            this.props.getVendorWithVendorCodeSelectList()
         });
     }
 
@@ -160,10 +323,13 @@ class AddPower extends Component {
         if (newValue && newValue != '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
                 const { vendorName } = this.state;
+                const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
+                this.setState({ VendorCode: result })
                 this.props.getPlantBySupplier(vendorName.value, () => { })
             });
         } else {
             this.setState({ vendorName: [], selectedVendorPlants: [], })
+            this.props.getPlantBySupplier('', () => { })
         }
     };
 
@@ -173,9 +339,12 @@ class AddPower extends Component {
 
     closeVendorDrawer = (e = '') => {
         this.setState({ isOpenVendor: false }, () => {
-            const { IsVendor } = this.state;
-            this.props.getVendorListByVendorType(true, () => { })
+            this.props.getVendorWithVendorCodeSelectList()
         })
+    }
+
+    handleVendorPlant = (e) => {
+        this.setState({ selectedVendorPlants: e })
     }
 
     /**
@@ -184,9 +353,13 @@ class AddPower extends Component {
     */
     handleState = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ StateName: newValue, })
+            this.setState({ StateName: newValue, }, () => {
+                const { StateName } = this.state;
+                this.props.getPlantListByState(StateName.value, () => { })
+            })
         } else {
-            this.setState({ StateName: [] })
+            this.setState({ StateName: [], selectedPlants: [] })
+            this.props.getPlantListByState('', () => { })
         }
     };
 
@@ -208,7 +381,6 @@ class AddPower extends Component {
         });
     };
 
-
     /**
     * @method handleSource
     * @description called
@@ -227,34 +399,85 @@ class AddPower extends Component {
     */
     handleUOM = (newValue, actionMeta) => {
         if (newValue && newValue != '') {
-            this.setState({ UOM: newValue, })
+            this.setState({ UOM: newValue, }, () => {
+                const { StateName, UOM } = this.state;
+                let data = { StateID: StateName.value, UOMID: UOM.value }
+                this.props.getDieselRateByStateAndUOM(data, (res) => {
+                    let DynamicData = res.data.DynamicData;
+                    this.props.change('CostPerUnitOfMeasurement', DynamicData.FuelRate)
+                })
+            })
         } else {
             this.setState({ UOM: [] })
         }
     };
 
-    selfPowerCalculation = () => {
-        const { source } = this.state;
+    /**
+    * @method powerSEBTableHandler
+    * @description USED TO SET SEB
+    */
+    powerSEBTableHandler = (isSelfGenerator) => {
+        const { powerGrid, } = this.state;
         const { fieldsObj } = this.props;
 
-        const AssetCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AssetCost : 0;
-        const PowerContributionPercentage = fieldsObj && fieldsObj != undefined ? fieldsObj.PowerContributionPercentage : 0;
+        const TotalUnitCharges = fieldsObj && fieldsObj != undefined ? fieldsObj.TotalUnitCharges : 0;
+        const SEBPowerContributaion = fieldsObj && fieldsObj != undefined ? fieldsObj.SEBPowerContributaion : 0;
 
-        if (source && source.value == WIND_POWER) {
-            const CostPerUnitOfMeasurement = fieldsObj && fieldsObj != undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
-            const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
-            const CostPerUnit = CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel;
-            this.props.change('CostPerUnit', CostPerUnit)
-        } else {
-            const AnnualCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AnnualCost : 0;
-            const UnitGeneratedPerAnnum = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
-            const CostPerUnit = AnnualCost / UnitGeneratedPerAnnum;
-            this.props.change('CostPerUnit', CostPerUnit)
-        }
+        const tempArray = [];
+
+        tempArray.push(...powerGrid, {
+            PowerSEBPCId: '',
+            PowerSGPCId: '',
+            SourcePowerType: 'SEB',
+            AssetCost: '',
+            AnnualCost: '',
+            UnitGeneratedPerAnnum: '',
+            CostPerUnit: TotalUnitCharges,
+            PowerContributionPercentage: SEBPowerContributaion,
+            UnitOfMeasurementId: '',
+            UnitOfMeasurementName: '',
+            CostPerUnitOfMeasurement: 0,
+            UnitGeneratedPerUnitOfFuel: 0,
+            OtherCharges: 0,
+            isSelfPowerGenerator: isSelfGenerator,
+        })
+
+        this.setState({
+            powerGrid: tempArray,
+            isAddedSEB: true,
+        });
     }
 
+    /**
+    * @method updateSEBGrid
+    * @description Used to handle updateProcessGrid
+    */
+    updateSEBGrid = () => {
+        const { powerGrid, powerGridEditIndex } = this.state;
+        const { fieldsObj } = this.props;
 
-    powerTableHandler = () => {
+        const TotalUnitCharges = fieldsObj && fieldsObj != undefined ? fieldsObj.TotalUnitCharges : 0;
+        const SEBPowerContributaion = fieldsObj && fieldsObj != undefined ? fieldsObj.SEBPowerContributaion : 0;
+
+        let tempArray = [];
+
+        let tempData = powerGrid[powerGridEditIndex];
+        tempData = { ...tempData, CostPerUnit: TotalUnitCharges, PowerContributionPercentage: SEBPowerContributaion, }
+
+        tempArray = Object.assign([...powerGrid], { [powerGridEditIndex]: tempData })
+
+        this.setState({
+            powerGrid: tempArray,
+            powerGridEditIndex: '',
+            isEditSEBIndex: false,
+            isAddedSEB: true,
+        }, () => {
+            //this.props.change('SEBCostPerUnit', 0)
+            //this.props.change('SEBPowerContributaion', 0)
+        });
+    };
+
+    powerTableHandler = (isSelfGenerator) => {
         const { source, UOM, powerGrid, } = this.state;
         const { fieldsObj } = this.props;
 
@@ -263,13 +486,13 @@ class AddPower extends Component {
             return false;
         }
 
-        const AssetCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AssetCost : 0;
-        const AnnualCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AnnualCost : 0;
-        const UnitGeneratedPerAnnum = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
-        const CostPerUnit = fieldsObj && fieldsObj != undefined ? fieldsObj.CostPerUnit : 0;
-        const PowerContributionPercentage = fieldsObj && fieldsObj != undefined ? fieldsObj.PowerContributionPercentage : 0;
-        const CostPerUnitOfMeasurement = fieldsObj && fieldsObj != undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
-        const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
+        const AssetCost = fieldsObj && fieldsObj.AssetCost != undefined ? fieldsObj.AssetCost : 0;
+        const AnnualCost = fieldsObj && fieldsObj.AnnualCost != undefined ? fieldsObj.AnnualCost : 0;
+        const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum != undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
+        const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj.SelfGeneratedCostPerUnit != undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
+        const SelfPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution != undefined ? fieldsObj.SelfPowerContribution : 0;
+        const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement != undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+        const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel != undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
         const tempArray = [];
 
@@ -279,13 +502,14 @@ class AddPower extends Component {
             AssetCost: AssetCost,
             AnnualCost: AnnualCost,
             UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
-            CostPerUnit: CostPerUnit,
-            PowerContributionPercentage: PowerContributionPercentage,
-            UnitOfMeasurementId: source && source.value == WIND_POWER ? UOM.value : '',
-            UnitOfMeasurementName: source && source.value == WIND_POWER ? UOM.label : '',
-            CostPerUnitOfMeasurement: source && source.value == WIND_POWER ? CostPerUnitOfMeasurement : 0,
-            UnitGeneratedPerUnitOfFuel: source && source.value == WIND_POWER ? UnitGeneratedPerUnitOfFuel : 0,
-            OtherCharges: 0
+            CostPerUnit: SelfGeneratedCostPerUnit,
+            PowerContributionPercentage: SelfPowerContribution,
+            UnitOfMeasurementId: source && source.value == GENERATOR_DIESEL ? UOM.value : '',
+            UnitOfMeasurementName: source && source.value == GENERATOR_DIESEL ? UOM.label : '',
+            CostPerUnitOfMeasurement: source && source.value == GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+            UnitGeneratedPerUnitOfFuel: source && source.value == GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+            OtherCharges: 0,
+            isSelfPowerGenerator: isSelfGenerator,
         })
 
         this.setState({
@@ -296,8 +520,8 @@ class AddPower extends Component {
             this.props.change('AssetCost', 0)
             this.props.change('AnnualCost', 0)
             this.props.change('UnitGeneratedPerAnnum', 0)
-            this.props.change('CostPerUnit', 0)
-            this.props.change('PowerContributionPercentage', 0)
+            this.props.change('SelfGeneratedCostPerUnit', 0)
+            this.props.change('SelfPowerContribution', 0)
             this.props.change('CostPerUnitOfMeasurement', 0)
             this.props.change('UnitGeneratedPerUnitOfFuel', 0)
         });
@@ -315,8 +539,8 @@ class AddPower extends Component {
         const AssetCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AssetCost : 0;
         const AnnualCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AnnualCost : 0;
         const UnitGeneratedPerAnnum = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
-        const CostPerUnit = fieldsObj && fieldsObj != undefined ? fieldsObj.CostPerUnit : 0;
-        const PowerContributionPercentage = fieldsObj && fieldsObj != undefined ? fieldsObj.PowerContributionPercentage : 0;
+        const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj != undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
+        const SelfPowerContribution = fieldsObj && fieldsObj != undefined ? fieldsObj.SelfPowerContribution : 0;
         const CostPerUnitOfMeasurement = fieldsObj && fieldsObj != undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
         const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
@@ -329,12 +553,12 @@ class AddPower extends Component {
             AssetCost: AssetCost,
             AnnualCost: AnnualCost,
             UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
-            CostPerUnit: CostPerUnit,
-            PowerContributionPercentage: PowerContributionPercentage,
-            UnitOfMeasurementId: source && source.value == WIND_POWER ? UOM.value : '',
-            UnitOfMeasurementName: source && source.value == WIND_POWER ? UOM.label : '',
-            CostPerUnitOfMeasurement: source && source.value == WIND_POWER ? CostPerUnitOfMeasurement : 0,
-            UnitGeneratedPerUnitOfFuel: source && source.value == WIND_POWER ? UnitGeneratedPerUnitOfFuel : 0,
+            CostPerUnit: SelfGeneratedCostPerUnit,
+            PowerContributionPercentage: SelfPowerContribution,
+            UnitOfMeasurementId: source && source.value == GENERATOR_DIESEL ? UOM.value : '',
+            UnitOfMeasurementName: source && source.value == GENERATOR_DIESEL ? UOM.label : '',
+            CostPerUnitOfMeasurement: source && source.value == GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+            UnitGeneratedPerUnitOfFuel: source && source.value == GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
             OtherCharges: 0
         }
 
@@ -350,8 +574,8 @@ class AddPower extends Component {
             this.props.change('AssetCost', 0)
             this.props.change('AnnualCost', 0)
             this.props.change('UnitGeneratedPerAnnum', 0)
-            this.props.change('CostPerUnit', 0)
-            this.props.change('PowerContributionPercentage', 0)
+            this.props.change('SelfGeneratedCostPerUnit', 0)
+            this.props.change('SelfPowerContribution', 0)
             this.props.change('CostPerUnitOfMeasurement', 0)
             this.props.change('UnitGeneratedPerUnitOfFuel', 0)
         });
@@ -371,8 +595,8 @@ class AddPower extends Component {
             this.props.change('AssetCost', 0)
             this.props.change('AnnualCost', 0)
             this.props.change('UnitGeneratedPerAnnum', 0)
-            this.props.change('CostPerUnit', 0)
-            this.props.change('PowerContributionPercentage', 0)
+            this.props.change('SelfGeneratedCostPerUnit', 0)
+            this.props.change('SelfPowerContribution', 0)
             this.props.change('CostPerUnitOfMeasurement', 0)
             this.props.change('UnitGeneratedPerUnitOfFuel', 0)
         });
@@ -382,24 +606,40 @@ class AddPower extends Component {
     * @method editItemDetails
     * @description used to Reset form
     */
-    editItemDetails = (index) => {
+    editItemDetails = (index, sourceType) => {
         const { powerGrid } = this.state;
+        const { fuelComboSelectList } = this.props;
         const tempData = powerGrid[index];
 
-        this.setState({
-            powerGridEditIndex: index,
-            isEditIndex: true,
-            source: { label: tempData.SourcePowerType, value: tempData.SourcePowerType },
-            UOM: tempData.SourcePowerType == WIND_POWER ? { label: tempData.UnitOfMeasurementName, value: tempData.UnitOfMeasurementId } : [],
-        }, () => {
-            this.props.change('AssetCost', tempData.AssetCost)
-            this.props.change('AnnualCost', tempData.AnnualCost)
-            this.props.change('UnitGeneratedPerAnnum', tempData.UnitGeneratedPerAnnum)
-            this.props.change('CostPerUnit', tempData.CostPerUnit)
-            this.props.change('PowerContributionPercentage', tempData.PowerContributionPercentage)
-            this.props.change('CostPerUnitOfMeasurement', tempData.CostPerUnitOfMeasurement)
-            this.props.change('UnitGeneratedPerUnitOfFuel', tempData.UnitGeneratedPerUnitOfFuel)
-        });
+        if (tempData.SourcePowerType == 'SEB') {
+
+            this.setState({
+                powerGridEditIndex: index,
+                isEditSEBIndex: true,
+                isAddedSEB: false,
+            }, () => {
+                this.props.change('SEBCostPerUnit', tempData.CostPerUnit)
+                this.props.change('SEBPowerContributaion', tempData.PowerContributionPercentage)
+            });
+
+        } else {
+            let UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(el => el.Value == tempData.UnitOfMeasurementId)
+            this.setState({
+                powerGridEditIndex: index,
+                isEditIndex: true,
+                isEditSEBIndex: false,
+                source: { label: tempData.SourcePowerType, value: tempData.SourcePowerType },
+                UOM: (UOMObj && UOMObj != undefined && tempData.SourcePowerType == GENERATOR_DIESEL) ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+            }, () => {
+                this.props.change('AssetCost', tempData.AssetCost)
+                this.props.change('AnnualCost', tempData.AnnualCost)
+                this.props.change('UnitGeneratedPerAnnum', tempData.UnitGeneratedPerAnnum)
+                this.props.change('SelfGeneratedCostPerUnit', tempData.CostPerUnit)
+                this.props.change('SelfPowerContribution', tempData.PowerContributionPercentage)
+                this.props.change('CostPerUnitOfMeasurement', tempData.CostPerUnitOfMeasurement)
+                this.props.change('UnitGeneratedPerUnitOfFuel', tempData.UnitGeneratedPerUnitOfFuel)
+            });
+        }
     }
 
     /**
@@ -425,15 +665,18 @@ class AddPower extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { powerTypeSelectList, UOMSelectList, vendorListByVendorType, filterPlantList, } = this.props;
+        const { powerTypeSelectList, vendorWithVendorCodeSelectList, filterPlantList,
+            fuelComboSelectList, plantSelectList } = this.props;
         const temp = [];
+
         if (label === 'VendorNameList') {
-            vendorListByVendorType && vendorListByVendorType.map(item => {
+            vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
+
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
                 if (item.Value == 0) return false;
@@ -441,10 +684,29 @@ class AddPower extends Component {
             });
             return temp;
         }
-        if (label === 'UOM') {
-            UOMSelectList && UOMSelectList.map(item => {
+
+        if (label === 'state') {
+            fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'UOM') {
+            fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.map(item => {
+                if (item.Value == 0) return false;
+                if (item.Text == 'Liter') {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
             });
             return temp;
         }
@@ -458,44 +720,30 @@ class AddPower extends Component {
         }
     }
 
-    formToggle = () => {
-        this.setState({
-            isShowForm: !this.state.isShowForm
-        })
-    }
-
-    /**
-    * @method cancel
-    * @description used to Reset form
-    */
-    clearForm = () => {
-        const { reset } = this.props;
-        reset();
-        this.setState({
-            RawMaterial: [],
-            remarks: '',
-            isShowForm: false,
-            isEditFlag: false,
-            IsVendor: false,
-        })
-        //this.props.getRawMaterialDetailsAPI('', false, res => { })
-        this.props.hideForm()
-    }
-
     /**
     * @method cancel
     * @description used to Reset form
     */
     cancel = () => {
-        this.clearForm()
-    }
-
-    /**
-    * @method resetForm
-    * @description used to Reset form
-    */
-    resetForm = () => {
-        this.clearForm()
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            StateName: [],
+            selectedPlants: [],
+            effectiveDate: new Date(),
+            powerGridEditIndex: '',
+            powerGrid: [],
+            isEditIndex: false,
+            vendorName: [],
+            selectedVendorPlants: [],
+            vendorLocation: [],
+            isOpenVendor: false,
+            UOM: [],
+            isEditFlag: false,
+            IsVendor: false,
+        })
+        this.getDetails();
+        this.props.hideForm()
     }
 
     /**
@@ -503,38 +751,139 @@ class AddPower extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { isEditFlag } = this.state;
-        const { reset } = this.props;
+        const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
+            source, effectiveDate, vendorName, selectedVendorPlants } = this.state;
 
-        // let plantArray = [];
-        // selectedPlants && selectedPlants.map((item) => {
-        //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-        //     return plantArray;
-        // })
+        let plantArray = selectedPlants && selectedPlants.map((item) => {
+            return { PlantName: item.Text, PlantId: item.Value, }
+        })
+
+        let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => {
+            return { VendorPlantName: item.Text, VendorPlantId: item.Value, }
+        })
+
+        if (IsVendor && vendorPlantArray.length == 0) return false;
+
+        const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
+            return accummlator + checkForNull(el.CostPerUnit);
+        }, 0)
+
+        let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType != 'SEB')
 
         if (isEditFlag) {
-            let requestData = {
 
+            if (IsVendor) {
+
+                let vendorDetailData = {
+                    PowerDetailId: PowerDetailID,
+                    VendorId: vendorName.value,
+                    VendorName: vendorName.label,
+                    VendorCode: VendorCode,
+                    VendorPlants: vendorPlantArray,
+                    NetPowerCostPerUnit: values.NetPowerCostPerUnit,
+                    IsVendor: IsVendor,
+                    IsActive: true,
+                    CreatedDate: '',
+                    LoggedInUserId: loggedInUserId(),
+                }
+                this.props.updateVendorPowerDetail(vendorDetailData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
+                        this.cancel();
+                    }
+                })
+
+            } else {
+
+                let requestData = {
+                    PowerId: PowerDetailID,
+                    IsVendor: IsVendor,
+                    Plants: plantArray,
+                    StateId: StateName.value,
+                    StateName: StateName.label,
+                    IsActive: true,
+                    NetPowerCostPerUnit: NetPowerCostPerUnit,
+                    SEBChargesDetails: [
+                        {
+                            PowerSEBPCId: '',
+                            MinDemandKWPerMonth: values.MinDemandKWPerMonth,
+                            DemandChargesPerKW: values.DemandChargesPerKW,
+                            AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
+                            UnitConsumptionPerAnnum: values.UnitConsumptionPerAnnum,
+                            MaxDemandChargesKW: values.MaxDemandChargesKW,
+                            CostPerUnit: values.SEBCostPerUnit,
+                            MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
+                            DutyChargesAndFCA: values.DutyChargesAndFCA,
+                            TotalUnitCharges: values.TotalUnitCharges,
+                            PowerContributaionPersentage: values.SEBPowerContributaion,
+                            OtherCharges: 0,
+                            EffectiveDate: effectiveDate,
+                        }
+                    ],
+                    SGChargesDetails: selfGridDataArray,
+                    LoggedInUserId: loggedInUserId(),
+                }
+                this.props.updatePowerDetail(requestData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
+                        this.cancel();
+                    }
+                })
             }
-            // this.props.updateRMDomesticAPI(requestData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-            //         this.clearForm();
-            //     }
-            // })
 
         } else {
 
-            const formData = {
+            if (IsVendor) {
 
+                const vendorPowerData = {
+                    VendorId: vendorName.value,
+                    VendorPlants: vendorPlantArray,
+                    NetPowerCostPerUnit: values.NetPowerCostPerUnit,
+                    IsVendor: IsVendor,
+                    LoggedInUserId: loggedInUserId(),
+                }
+                this.props.createVendorPowerDetail(vendorPowerData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
+                        this.cancel();
+                    }
+                });
+
+            } else {
+
+                const formData = {
+                    IsVendor: IsVendor,
+                    Plants: plantArray,
+                    StateId: StateName.value,
+                    NetPowerCostPerUnit: NetPowerCostPerUnit,
+                    SEBChargesDetails: [
+                        {
+                            PowerSEBPCId: '',
+                            MinDemandKWPerMonth: values.MinDemandKWPerMonth,
+                            DemandChargesPerKW: values.DemandChargesPerKW,
+                            AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
+                            UnitConsumptionPerAnnum: values.UnitConsumptionPerAnnum,
+                            MaxDemandChargesKW: values.MaxDemandChargesKW,
+                            CostPerUnit: values.SEBCostPerUnit,
+                            MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
+                            DutyChargesAndFCA: values.DutyChargesAndFCA,
+                            TotalUnitCharges: values.TotalUnitCharges,
+                            PowerContributaionPersentage: values.SEBPowerContributaion,
+                            OtherCharges: 0,
+                            EffectiveDate: effectiveDate,
+                        }
+                    ],
+                    SGChargesDetails: selfGridDataArray,
+                    LoggedInUserId: loggedInUserId(),
+                }
+
+                this.props.createPowerDetail(formData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
+                        this.cancel();
+                    }
+                });
             }
-
-            // this.props.createRMDomestic(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-            //         this.clearForm();
-            //     }
-            // });
         }
     }
 
@@ -544,7 +893,8 @@ class AddPower extends Component {
     */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
-        const { files, errors, isOpenUOM, isEditFlag, source, isOpenVendor, } = this.state;
+        const { files, errors, isOpenUOM, isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable,
+            checkPowerContribution, } = this.state;
 
         return (
             <>
@@ -574,6 +924,15 @@ class AddPower extends Component {
                                                         checked={this.state.IsVendor}
                                                         id="normal-switch"
                                                         disabled={isEditFlag ? true : false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        id="normal-switch"
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        height={20}
+                                                        width={46}
                                                     />
                                                     <div className={'right-title'}>Vendor Based</div>
                                                 </label>
@@ -583,26 +942,29 @@ class AddPower extends Component {
                                         <Row>
                                             {this.state.IsVendor &&
                                                 <>
-                                                    <Col md="2">
-                                                        <Field
-                                                            name="VendorName"
-                                                            type="text"
-                                                            label="Vendor Name"
-                                                            component={searchableSelect}
-                                                            placeholder={'--select--'}
-                                                            options={this.renderListing('VendorNameList')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleVendorName}
-                                                            valueDescription={this.state.vendorName}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </Col>
-                                                    <Col md="1">
-                                                        <div
-                                                            onClick={this.vendorToggler}
-                                                            className={'plus-icon-square mt30 mr15 right'}>
+                                                    <Col md="3">
+                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                            <div className="fullinput-icon">
+                                                                <Field
+                                                                    name="VendorName"
+                                                                    type="text"
+                                                                    label="Vendor Name"
+                                                                    component={searchableSelect}
+                                                                    placeholder={'--select--'}
+                                                                    options={this.renderListing('VendorNameList')}
+                                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                                    validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                                    required={true}
+                                                                    handleChangeDescription={this.handleVendorName}
+                                                                    valueDescription={this.state.vendorName}
+                                                                    disabled={isEditFlag ? true : false}
+                                                                    className="fullinput-icon"
+                                                                />
+                                                            </div>
+                                                            {!isEditFlag && <div
+                                                                onClick={this.vendorToggler}
+                                                                className={'plus-icon-square right'}>
+                                                            </div>}
                                                         </div>
                                                     </Col>
                                                     <Col md="3">
@@ -618,7 +980,7 @@ class AddPower extends Component {
                                                             component={renderMultiSelectField}
                                                             mendatory={true}
                                                             className="multiselect-with-border"
-                                                            disabled={isEditFlag ? true : false}
+                                                            disabled={false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -664,7 +1026,7 @@ class AddPower extends Component {
                                                                     required={true}
                                                                     handleChangeDescription={this.handleState}
                                                                     valueDescription={this.state.StateName}
-                                                                    disabled={false}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -677,14 +1039,14 @@ class AddPower extends Component {
                                                                     name="Plant"
                                                                     placeholder="--Select--"
                                                                     selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
-                                                                    options={this.renderListing('technology')}
+                                                                    options={this.renderListing('plant')}
                                                                     selectionChanged={this.handlePlants}
                                                                     optionValue={option => option.Value}
                                                                     optionLabel={option => option.Text}
                                                                     component={renderMultiSelectField}
                                                                     mendatory={true}
                                                                     className="multiselect-with-border"
-                                                                //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -706,11 +1068,12 @@ class AddPower extends Component {
                                                                     name={"MinDemandKWPerMonth"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
-                                                                    validate={[required]}
+                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
                                                                     component={renderNumberInputField}
-                                                                    required={true}
+                                                                    required={!isCostPerUnitConfigurable ? true : false}
                                                                     className=""
                                                                     customClassName=" withBorder"
+                                                                    disabled={false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -723,11 +1086,12 @@ class AddPower extends Component {
                                                                     name={"DemandChargesPerKW"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
-                                                                    validate={[required]}
+                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
                                                                     component={renderNumberInputField}
-                                                                    required={true}
+                                                                    required={!isCostPerUnitConfigurable ? true : false}
                                                                     className=""
                                                                     customClassName=" withBorder"
+                                                                    disabled={false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -740,11 +1104,12 @@ class AddPower extends Component {
                                                                     name={"AvgUnitConsumptionPerMonth"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
-                                                                    validate={[required]}
+                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
                                                                     component={renderNumberInputField}
-                                                                    required={true}
+                                                                    required={!isCostPerUnitConfigurable ? true : false}
                                                                     className=""
                                                                     customClassName=" withBorder"
+                                                                    disabled={false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -762,7 +1127,7 @@ class AddPower extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={true}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -775,9 +1140,9 @@ class AddPower extends Component {
                                                                     name={"MaxDemandChargesKW"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
-                                                                    validate={[required]}
+                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
                                                                     component={renderNumberInputField}
-                                                                    required={true}
+                                                                    required={!isCostPerUnitConfigurable ? true : false}
                                                                     className=""
                                                                     customClassName=" withBorder"
                                                                     disabled={false}
@@ -790,7 +1155,7 @@ class AddPower extends Component {
                                                             <div className="fullinput-icon">
                                                                 <Field
                                                                     label={`Cost/Unit`}
-                                                                    name={"CostPerUnit"}
+                                                                    name={"SEBCostPerUnit"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
                                                                     validate={[required]}
@@ -798,7 +1163,7 @@ class AddPower extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={false}
+                                                                    disabled={!isCostPerUnitConfigurable ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -863,7 +1228,7 @@ class AddPower extends Component {
                                                                 <div className="form-group">
                                                                     <label>
                                                                         Effective Date
-                                                    {/* <span className="asterisk-required">*</span> */}
+                                                                    {/* <span className="asterisk-required">*</span> */}
                                                                     </label>
                                                                     <div className="inputbox date-section">
                                                                         <DatePicker
@@ -880,7 +1245,7 @@ class AddPower extends Component {
                                                                             autoComplete={'off'}
                                                                             disabledKeyboardNavigation
                                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                                            disabled={false}
+                                                                            disabled={isEditFlag ? true : false}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -892,7 +1257,7 @@ class AddPower extends Component {
                                                             <div className="fullinput-icon">
                                                                 <Field
                                                                     label={`Power Contribution %`}
-                                                                    name={"PowerContributaionPersentage"}
+                                                                    name={"SEBPowerContributaion"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
                                                                     validate={[required]}
@@ -900,9 +1265,36 @@ class AddPower extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={false}
+                                                                    disabled={this.state.isAddedSEB ? true : false}
                                                                 />
                                                             </div>
+                                                        </div>
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <div>
+                                                            {this.state.isEditSEBIndex ?
+                                                                <>
+                                                                    <button
+                                                                        type="button"
+                                                                        className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
+                                                                        onClick={this.updateSEBGrid}
+                                                                        disabled={checkPowerContribution ? true : false}
+                                                                    >Update</button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className={'cancel-btn mt30 pull-left'}
+                                                                        onClick={() => this.setState({ isEditSEBIndex: false })}
+                                                                    >Cancel</button>
+                                                                </>
+                                                                :
+                                                                <button
+                                                                    type="button"
+                                                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
+                                                                    disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
+                                                                    onClick={() => this.powerSEBTableHandler(false)}>
+                                                                    <div className={'plus'}></div>ADD</button>
+                                                            }
+
                                                         </div>
                                                     </Col>
                                                 </Row>
@@ -969,7 +1361,7 @@ class AddPower extends Component {
                                                             </div>
                                                         </div>
                                                     </Col>
-                                                    {source && source.value == 'Wind Power' &&
+                                                    {source && source.value == GENERATOR_DIESEL &&
                                                         <>
                                                             <Col md="3">
                                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -1052,7 +1444,7 @@ class AddPower extends Component {
                                                             <div className="fullinput-icon">
                                                                 <Field
                                                                     label={`Cost/Unit`}
-                                                                    name={"CostPerUnit"}
+                                                                    name={"SelfGeneratedCostPerUnit"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
                                                                     //validate={[required]}
@@ -1070,7 +1462,7 @@ class AddPower extends Component {
                                                             <div className="fullinput-icon">
                                                                 <Field
                                                                     label={`Power contribution`}
-                                                                    name={"PowerContributionPercentage"}
+                                                                    name={"SelfPowerContribution"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
                                                                     //validate={[required]}
@@ -1089,8 +1481,9 @@ class AddPower extends Component {
                                                                 <>
                                                                     <button
                                                                         type="button"
-                                                                        className={'btn btn-primary mt30 pull-left mr5'}
+                                                                        className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
                                                                         onClick={this.updatePowerGrid}
+                                                                        disabled={checkPowerContribution ? true : false}
                                                                     >Update</button>
 
                                                                     <button
@@ -1102,8 +1495,9 @@ class AddPower extends Component {
                                                                 :
                                                                 <button
                                                                     type="button"
-                                                                    className={'user-btn mt30 pull-left'}
-                                                                    onClick={this.powerTableHandler}>
+                                                                    className={`${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
+                                                                    disabled={checkPowerContribution ? true : false}
+                                                                    onClick={() => this.powerTableHandler(true)}>
                                                                     <div className={'plus'}></div>ADD</button>}
 
                                                         </div>
@@ -1128,7 +1522,7 @@ class AddPower extends Component {
                                                                                 <td>{item.CostPerUnit}</td>
                                                                                 <td>{item.PowerContributionPercentage}</td>
                                                                                 <td>
-                                                                                    <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                                                                    <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                                                                     <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
                                                                                 </td>
                                                                             </tr>
@@ -1142,21 +1536,24 @@ class AddPower extends Component {
                                                 </Row>
                                             </>
                                         }
+
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
                                             <div className="col-sm-12 text-right bluefooter-butn">
                                                 <button
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
                                                     onClick={this.cancel} >
-                                                    {'Cancel'}
+                                                    <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="submit-button mr5 save-btn" >
+                                                    <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                                     {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>
                                         </Row>
+
                                     </form>
                                 </div>
                             </div>
@@ -1181,25 +1578,36 @@ class AddPower extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, } = state;
+    const { comman, fuel, supplier } = state;
     const fieldsObj = selector(state, 'MinDemandKWPerMonth', 'DemandChargesPerKW', 'AvgUnitConsumptionPerMonth',
-        'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'CostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
-        'DutyChargesAndFCA', 'TotalUnitCharges', 'PowerContributaionPersentage', 'AssetCost', 'AnnualCost',
-        'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'CostPerUnit',
-        'PowerContributionPercentage');
+        'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'SEBCostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
+        'DutyChargesAndFCA', 'TotalUnitCharges', 'SEBPowerContributaion', 'AssetCost', 'AnnualCost',
+        'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'SelfGeneratedCostPerUnit',
+        'SelfPowerContribution');
 
     const { powerTypeSelectList, UOMSelectList, filterPlantList, } = comman;
-    const { vendorListByVendorType } = material;
+    const { vendorWithVendorCodeSelectList } = supplier;
+    const { fuelComboSelectList, plantSelectList, powerData } = fuel;
     let initialValues = {};
-    // if (rawMaterialDetails && rawMaterialDetails != undefined) {
-    //     initialValues = {
-    //         Source: rawMaterialDetails.Source,
-    //     }
-    // }
+    if (powerData && powerData.SEBChargesDetails && powerData.SEBChargesDetails.length > 0) {
+        initialValues = {
+            MinDemandKWPerMonth: powerData && powerData.SEBChargesDetails[0].MinDemandKWPerMonth,
+            DemandChargesPerKW: powerData && powerData.SEBChargesDetails[0].DemandChargesPerKW,
+            AvgUnitConsumptionPerMonth: powerData && powerData.SEBChargesDetails[0].AvgUnitConsumptionPerMonth,
+            UnitConsumptionPerAnnum: powerData && powerData.SEBChargesDetails[0].UnitConsumptionPerAnnum,
+            MaxDemandChargesKW: powerData && powerData.SEBChargesDetails[0].MaxDemandChargesKW,
+            //SEBCostPerUnit: powerData && powerData.SEBChargesDetails[0].CostPerUnit,
+            MeterRentAndOtherChargesPerAnnum: powerData && powerData.SEBChargesDetails[0].MeterRentAndOtherChargesPerAnnum,
+            DutyChargesAndFCA: powerData && powerData.SEBChargesDetails[0].DutyChargesAndFCA,
+            TotalUnitCharges: powerData && powerData.SEBChargesDetails[0].TotalUnitCharges,
+            //effectiveDate: powerData && powerData.SEBChargesDetails[0].EffectiveDate,
+            SEBPowerContributaion: powerData && powerData.SEBChargesDetails[0].PowerContributaionPersentage,
+        }
+    }
 
     return {
-        vendorListByVendorType, powerTypeSelectList, UOMSelectList, filterPlantList,
-        initialValues, fieldsObj,
+        vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
+        fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj,
     }
 }
 
@@ -1213,7 +1621,16 @@ export default connect(mapStateToProps, {
     getPowerTypeSelectList,
     getUOMSelectList,
     getPlantBySupplier,
-    getVendorListByVendorType,
+    getFuelComboData,
+    createPowerDetail,
+    updatePowerDetail,
+    createVendorPowerDetail,
+    updateVendorPowerDetail,
+    getPlantListByState,
+    getDieselRateByStateAndUOM,
+    getVendorWithVendorCodeSelectList,
+    getPowerDetailData,
+    getVendorPowerDetailData,
 })(reduxForm({
     form: 'AddPower',
     enableReinitialize: true,

@@ -183,24 +183,22 @@ class AddMachineTypeDrawer extends Component {
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-center ">
-                                            <input
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
-                                                className="reset mr15 cancel-btn"
-                                            />
-                                            <input
-                                                //disabled={isSubmitted ? true : false}
-                                                type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
-                                            />
-                                        </div>
+                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                        <button
+                                            type={'button'}
+                                            className="reset mr15 cancel-btn"
+                                            onClick={this.cancel} >
+                                            <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="submit-button mr5 save-btn" >
+                                            <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                            {isEditFlag ? 'Update' : 'Save'}
+                                        </button>
                                     </div>
                                 </Row>
+
                             </form>
                         </div>
                     </Container>
