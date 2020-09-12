@@ -121,9 +121,14 @@ export const MESSAGES = {
   PLANT_DEACTIVE_ALERT: 'Are you sure you want to deactivate?',
   PLANT_ACTIVE_ALERT: 'Are you sure you want to activate?',
 
+  //PROCESS
   DELETE_PROCESS_SUCCESS: 'Process deleted successfully',
   UPDATE_PROCESS_SUCCESS: 'Process updated successfully',
   PROCESS_ADD_SUCCESS: 'Process added successfully',
+  PROCESS_DELETE_ALERT: 'Are you sure you want to delete Process?',
+  PROCESS_DELETE_SUCCESSFULLY: 'Process has been deleted successfully.',
+
+
   DELETE_BOP_SUCCESS: 'Bought out part deleted successfully',
   DELETE_FREIGHT_SUCCESS: 'Freight deleted successfully',
   UPDATE_FREIGHT_SUCESS: 'Freight updated successfully',

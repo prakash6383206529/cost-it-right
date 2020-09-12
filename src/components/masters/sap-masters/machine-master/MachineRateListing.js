@@ -7,11 +7,17 @@ import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { } from '../../../../actions/master/MachineMaster';
+import {
+    getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList,
+    getInitialVendorWithVendorCodeSelectList,
+} from '../../../../actions/master/Process';
+import { getTechnologySelectList, getPlantSelectList, } from '../../../../actions/master/Comman';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { Redirect } from 'react-router-dom';
+import BulkUpload from '../../../massUpload/BulkUpload';
 
 
 class MachineRateListing extends Component {
@@ -23,6 +29,14 @@ class MachineRateListing extends Component {
             isMachineRateForm: false,
             tableData: [],
 
+            costingHead: [],
+            plant: [],
+            technology: [],
+            vendorName: [],
+            processName: [],
+            machineType: [],
+
+            isBulkUpload: false,
         }
     }
 
@@ -31,13 +45,12 @@ class MachineRateListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        //this.props.onRef(this)
-        this.getDataList(null, null, null, null)
-    }
-
-    // Get updated Table data list after any action performed.
-    getUpdatedData = () => {
-        this.getDataList(null, null, null, null)
+        this.props.getTechnologySelectList(() => { })
+        this.props.getInitialPlantSelectList(() => { })
+        this.props.getInitialVendorWithVendorCodeSelectList(() => { })
+        this.props.getInitialMachineTypeSelectList(() => { })
+        this.props.getInitialProcessesSelectList(() => { })
+        this.getDataList()
     }
 
     getDataList = (bopFor = null, CategoryId = null, vendorId = null, plantId = null,) => {
@@ -58,6 +71,138 @@ class MachineRateListing extends Component {
         //     }
         // })
     }
+
+    /**
+    * @method renderListing
+    * @description Used to show type of listing
+    */
+    renderListing = (label) => {
+        const { technologySelectList, filterSelectList } = this.props;
+        const temp = [];
+
+        if (label === 'costingHead') {
+            let tempObj = [
+                { label: 'ZBC', value: 'ZBC' },
+                { label: 'VBC', value: 'VBC' },
+            ]
+            return tempObj;
+        }
+
+        if (label === 'plant') {
+            filterSelectList && filterSelectList.plants && filterSelectList.plants.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'technology') {
+            technologySelectList && technologySelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'VendorNameList') {
+            filterSelectList && filterSelectList.vendor && filterSelectList.vendor.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'ProcessNameList') {
+            filterSelectList && filterSelectList.processList && filterSelectList.processList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'MachineTypeList') {
+            filterSelectList && filterSelectList.machineTypes && filterSelectList.machineTypes.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+    }
+
+    /**
+    * @method handleHeadChange
+    * @description called
+    */
+    handleHeadChange = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ costingHead: newValue, });
+        } else {
+            this.setState({ costingHead: [], })
+        }
+    };
+
+    /**
+    * @method handlePlant
+    * @description  PLANT FILTER
+    */
+    handlePlant = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ plant: newValue });
+        } else {
+            this.setState({ plant: [], });
+        }
+    }
+
+    /**
+    * @method handleTechnology
+    * @description called
+    */
+    handleTechnology = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ technology: newValue, });
+        } else {
+            this.setState({ technology: [], })
+        }
+    };
+
+    /**
+    * @method handleVendorName
+    * @description called
+    */
+    handleVendorName = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ vendorName: newValue, }, () => {
+                const { vendorName } = this.state;
+            });
+        } else {
+            this.setState({ vendorName: [], })
+        }
+    };
+
+    /**
+    * @method handleProcessName
+    * @description called
+    */
+    handleProcessName = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ processName: newValue });
+        } else {
+            this.setState({ processName: [] })
+        }
+    };
+
+    /**
+    * @method handleMachineType
+    * @description called
+    */
+    handleMachineType = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ machineType: newValue });
+        } else {
+            this.setState({ machineType: [], })
+        }
+    };
 
     /**
     * @method editItemDetails
@@ -157,19 +302,15 @@ class MachineRateListing extends Component {
         return <>Costing <br />Head </>
     }
 
-
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-
-
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
     }
 
-
-
-
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+            this.getDataList()
+        })
+    }
 
     /**
 	* @method filterList
@@ -190,9 +331,8 @@ class MachineRateListing extends Component {
         //     RawMaterial: [],
         //     RMGrade: [],
         //     vendorName: [],
-        //     value: { min: 10, max: 150 },
         // }, () => {
-        //     this.getDataList(null, null, null, null)
+        //     this.getDataList()
         // })
 
     }
@@ -215,7 +355,7 @@ class MachineRateListing extends Component {
     */
     render() {
         const { handleSubmit } = this.props;
-        const { isMachineRateForm } = this.state;
+        const { isMachineRateForm, isBulkUpload, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -232,10 +372,99 @@ class MachineRateListing extends Component {
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
-
+                                    <Field
+                                        name="costingHead"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-Head-'}
+                                        options={this.renderListing('costingHead')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.costingHead == null || this.state.costingHead.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleHeadChange}
+                                        valueDescription={this.state.costingHead}
+                                    />
                                 </div>
-
-
+                                <div className="flex-fill">
+                                    <Field
+                                        name="plant"
+                                        type="text"
+                                        label={''}
+                                        component={searchableSelect}
+                                        placeholder={'-Plant-'}
+                                        options={this.renderListing('plant')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handlePlant}
+                                        valueDescription={this.state.plant}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="technology"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-technology-'}
+                                        options={this.renderListing('technology')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleTechnology}
+                                        valueDescription={this.state.technology}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="VendorName"
+                                        type="text"
+                                        label={''}
+                                        component={searchableSelect}
+                                        placeholder={'-Vendor-'}
+                                        options={this.renderListing('VendorNameList')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleVendorName}
+                                        valueDescription={this.state.vendorName}
+                                        disabled={false}
+                                        className="fullinput-icon"
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="ProcessName"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-Process-'}
+                                        options={this.renderListing('ProcessNameList')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleProcessName}
+                                        valueDescription={this.state.processName}
+                                        disabled={false}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="MachineType"
+                                        type="text"
+                                        label=''
+                                        component={searchableSelect}
+                                        placeholder={'-Machine-'}
+                                        options={this.renderListing('MachineTypeList')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleMachineType}
+                                        valueDescription={this.state.machineType}
+                                        disabled={false}
+                                    />
+                                </div>
                                 <div className="flex-fill">
                                     <button
                                         type="button"
@@ -260,6 +489,11 @@ class MachineRateListing extends Component {
                         <Col md="2" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.bulkToggle}>
+                                        <div className={'upload'}></div>Bulk Upload</button>
                                     <button
                                         type="button"
                                         className={'user-btn'}
@@ -290,6 +524,15 @@ class MachineRateListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
+                {isBulkUpload && <BulkUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    fileName={'Machine'}
+                    isZBCVBCTemplate={true}
+                    messageLabel={'Machine'}
+                    anchor={'right'}
+                />}
             </div >
         );
     }
@@ -300,9 +543,11 @@ class MachineRateListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-
-    return {}
+function mapStateToProps(state) {
+    const { comman, process, machine, } = state;
+    const { technologySelectList, } = comman;
+    const { filterSelectList } = process;
+    return { technologySelectList, filterSelectList }
 }
 
 /**
@@ -312,7 +557,11 @@ function mapStateToProps({ }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-
+    getTechnologySelectList,
+    getInitialPlantSelectList,
+    getInitialVendorWithVendorCodeSelectList,
+    getInitialMachineTypeSelectList,
+    getInitialProcessesSelectList,
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

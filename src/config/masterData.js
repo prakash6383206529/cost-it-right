@@ -254,9 +254,12 @@ export const RMSpecificationXLTempData = [
 ]
 
 export const Vendor = [
-    { label: 'VendorType', value: 'VendorType', },
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'RawMaterialVendor', value: 'RawMaterialVendor', },
+    { label: 'LabourVendor', value: 'LabourVendor', },
+    { label: 'VBCVendor', value: 'VBCVendor', },
+    { label: 'BOPVendor', value: 'BOPVendor', },
     { label: 'VendorEmail', value: 'VendorEmail', },
     { label: 'MobileNumber', value: 'MobileNumber', },
     { label: 'AddressLine1', value: 'AddressLine1', },
@@ -271,9 +274,12 @@ export const Vendor = [
 
 export const VendorTempData = [
     {
-        'VendorType': 'Vendor Type Name',
         'VendorName': 'Vendor Name',
         'VendorCode': 'Vendor Code',
+        'RawMaterialVendor': 'YES OR NO',
+        'LabourVendor': 'YES OR NO',
+        'VBCVendor': 'YES OR NO',
+        'BOPVendor': 'YES OR NO',
         'VendorEmail': 'Vendor Email',
         'MobileNumber': 'Mobile Number',
         'AddressLine1': 'Address',
@@ -419,6 +425,30 @@ export const ProfitTempData = [
     }
 ]
 
+export const Labour = [
+    { label: 'EmploymentTerms', value: 'EmploymentTerms', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'State', value: 'State', },
+    { label: 'Plant', value: 'Plant', },
+    { label: 'MachineType', value: 'MachineType', },
+    { label: 'LabourType', value: 'LabourType', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'LabourRate', value: 'LabourRate', },
+]
+
+export const LabourTempData = [
+    {
+        'EmploymentTerms': 'Employ or Contractual',
+        'VendorName': 'Vendor Name',
+        'State': 'State',
+        'Plant': 'Plant',
+        'MachineType': 'Machine Type',
+        'LabourType': 'Labour Type',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'LabourRate': 0,
+    }
+]
+
 export const Plant = [
     { label: 'PlantName', value: 'PlantName', },
     { label: 'PlantTitle', value: 'PlantTitle', },
@@ -459,15 +489,6 @@ export const MachineClass = [
     { label: 'MachineClassName', value: 'MachineClassName', },
     { label: 'LabourTypeNames', value: 'LabourTypeNames', },
     { label: 'MachineCapacity', value: 'MachineCapacity', },
-]
-
-export const Labour = [
-    { label: 'TechnologyName', value: 'TechnologyName', },
-    { label: 'LabourTypeName', value: 'LabourTypeName', },
-    { label: 'LabourRate', value: 'LabourRate', },
-    { label: 'IsContractBase', value: 'IsContractBase', },
-    { label: 'PlantName', value: 'PlantName', },
-    { label: 'CityName', value: 'CityName', },
 ]
 
 export const OtherOperation = [

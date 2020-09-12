@@ -10,7 +10,9 @@ import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { } from '../../../../actions/master/Labour';
+import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../../../../actions/master/Labour';
+import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../../../../actions/master/Fuel';
+import { getMachineTypeSelectList, } from '../../../../actions/master/MachineMaster';
 import Switch from "react-switch";
 import AddLabour from './AddLabour';
 import BulkUpload from '../../../massUpload/BulkUpload';
@@ -19,6 +21,7 @@ import { checkPermission } from '../../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
+import moment from 'moment';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -30,6 +33,7 @@ class LabourListing extends Component {
         this.state = {
             tableData: [],
 
+            EmploymentTerms: [],
             vendorName: [],
             stateName: [],
 
@@ -37,11 +41,11 @@ class LabourListing extends Component {
             toggleForm: false,
             isBulkUpload: false,
 
-            ViewAccessibility: true,
-            AddAccessibility: true,
-            EditAccessibility: true,
-            DeleteAccessibility: true,
-            BulkUploadAccessibility: true,
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
+            BulkUploadAccessibility: false,
         }
     }
 
@@ -60,52 +64,51 @@ class LabourListing extends Component {
             const { leftMenuData } = this.props;
             if (leftMenuData != undefined) {
                 let Data = leftMenuData;
-                // const accessData = Data && Data.find(el => el.PageName == LABOUR)
-                // const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+                const accessData = Data && Data.find(el => el.PageName == LABOUR)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                // if (permmisionData != undefined) {
-                //     this.setState({
-                //         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                //         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                //         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                //         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                //         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                //     })
-                // }
+                if (permmisionData != undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    })
+                }
             }
         })
 
-        this.getTableListData(null, null, null, null)
-    }
-
-    // Get updated Supplier's list after any action performed.
-    getUpdatedData = () => {
-        this.getTableListData(null, null, null, null)
+        this.props.getZBCPlantList(() => { })
+        this.props.getStateSelectList(() => { })
+        this.props.getMachineTypeSelectList(() => { })
+        this.getTableListData()
     }
 
 	/**
 	* @method getTableListData
-	* @description Get user list data
+	* @description Get Data List
 	*/
-    getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null) => {
+    getTableListData = (employment_terms = '', state = '', plant = '', labour_type = '', machine_type = '') => {
         let filterData = {
-            operation_for: operation_for,
-            operation_Name_id: operation_Name_id,
-            technology_id: technology_id,
-            vendor_id: vendor_id,
+            employment_terms: employment_terms,
+            state: state,
+            plant: plant,
+            labour_type: labour_type,
+            machine_type: machine_type,
         }
-        // this.props.getOperationsDataList(filterData, res => {
-        //     if (res.status == 204 && res.data == '') {
-        //         this.setState({ tableData: [], })
-        //     } else if (res && res.data && res.data.DataList) {
-        //         let Data = res.data.DataList;
-        //         this.setState({
-        //             tableData: Data,
-        //         })
-        //     } else {
+        this.props.getLabourDataList(filterData, res => {
+            if (res.status == 204 && res.data == '') {
+                this.setState({ tableData: [], })
+            } else if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                this.setState({
+                    tableData: Data,
+                })
+            } else {
 
-        //     }
-        // });
+            }
+        });
     }
 
 	/**
@@ -113,11 +116,43 @@ class LabourListing extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { filterOperation } = this.props;
+        const { plantSelectList, stateSelectList, machineTypeSelectList, labourTypeByPlantSelectList } = this.props;
         const temp = [];
 
-        if (label === 'VendorList') {
-            filterOperation && filterOperation.vendors && filterOperation.vendors.map(item => {
+        if (label === 'EmploymentTerms') {
+            let tempObj = [
+                { label: 'Employed', value: 'Employed' },
+                { label: 'Contractual', value: 'Contractual' },
+            ]
+            return tempObj;
+        }
+
+        if (label === 'state') {
+            stateSelectList && stateSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'MachineTypeList') {
+            machineTypeSelectList && machineTypeSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'labourList') {
+            labourTypeByPlantSelectList && labourTypeByPlantSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -147,7 +182,7 @@ class LabourListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(MESSAGES.OPERATION_DELETE_ALERT, toastrConfirmOptions);
+        return toastr.confirm(MESSAGES.LABOUR_DELETE_ALERT, toastrConfirmOptions);
     }
 
 	/**
@@ -155,12 +190,12 @@ class LabourListing extends Component {
 	* @description confirm delete item
 	*/
     confirmDeleteItem = (ID) => {
-        // this.props.deleteOperationAPI(ID, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_OPERATION_SUCCESS);
-        //         this.getTableListData(null, null, null, null)
-        //     }
-        // });
+        this.props.deleteLabour(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_LABOUR_SUCCESS);
+                this.getTableListData(null, null, null, null)
+            }
+        });
     }
 
 	/**
@@ -172,7 +207,7 @@ class LabourListing extends Component {
         return (
             <>
                 {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(row.LabourDetailsId)} />}
             </>
         )
     }
@@ -196,21 +231,71 @@ class LabourListing extends Component {
     }
 
     /**
-    * @method handleVendorName
+    * @method handleHeadChange
     * @description called
     */
-    handleVendorName = (newValue, actionMeta) => {
-        // if (newValue && newValue != '') {
-        //     this.setState({ vendorName: newValue }, () => {
-        //         const { vendorName } = this.state;
-        //         this.props.getTechnologyListByVendor(vendorName.value, () => { })
-        //         this.props.getOperationListByVendor(vendorName.value, () => { })
-        //     });
-        // } else {
-        //     this.setState({ vendorName: [] })
-        //     this.props.getTechnologySelectList(() => { })
-        //     this.props.getOperationSelectList(() => { })
-        // }
+    handleHeadChange = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ EmploymentTerms: newValue, });
+        } else {
+            this.setState({ EmploymentTerms: '', })
+        }
+    };
+
+
+    /**
+    * @method handleState
+    * @description  STATE FILTER
+    */
+    handleState = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ StateName: newValue }, () => {
+                const { StateName } = this.state;
+                this.props.getPlantListByState(StateName.value, () => { })
+            });
+        } else {
+            this.setState({ StateName: [], });
+            this.props.getZBCPlantList(() => { })
+        }
+    }
+
+    /**
+        * @method handlePlant
+        * @description  PLANT FILTER
+        */
+    handlePlant = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ plant: newValue }, () => {
+                const { plant } = this.state;
+                this.props.getLabourTypeByPlantSelectList(plant.value, () => { })
+            });
+        } else {
+            this.setState({ plant: [], });
+        }
+    }
+
+    /**
+    * @method labourHandler
+    * @description called
+    */
+    labourHandler = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ labourType: newValue });
+        } else {
+            this.setState({ labourType: [] })
+        }
+    };
+
+    /**
+    * @method handleMachineType
+    * @description called
+    */
+    handleMachineType = (newValue, actionMeta) => {
+        if (newValue && newValue != '') {
+            this.setState({ machineType: newValue });
+        } else {
+            this.setState({ machineType: [], })
+        }
     };
 
 
@@ -222,7 +307,6 @@ class LabourListing extends Component {
         return (
             <>
                 <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
                         checked={cell}
@@ -237,7 +321,6 @@ class LabourListing extends Component {
             </>
         )
     }
-
 
 	/**
 	* @method indexFormatter
@@ -259,25 +342,28 @@ class LabourListing extends Component {
         return <>Sr. <br />No. </>
     }
 
-    renderCostingHead = () => {
-        return <>Costing <br />Head </>
-    }
-    renderOperationName = () => {
-        return <>Operation <br />Name </>
-    }
-    renderOperationCode = () => {
-        return <>Operation <br />Code </>
-    }
-    renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
+        return cell ? 'Contractual' : 'Employed';
+    }
+
+    /**
+    * @method dashFormatter
+    * @description Renders Costing head
+    */
+    dashFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != 'NA' ? cell : '-';
+    }
+
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
     onExportToCSV = (row) => {
@@ -299,12 +385,13 @@ class LabourListing extends Component {
 	* @description Filter user listing on the basis of role and department
 	*/
     filterList = () => {
-        // const { costingHead, selectedTechnology, vendorName, operationName, } = this.state;
-        // const costingHeadTemp = costingHead ? costingHead.value : null;
-        // const operationNameTemp = operationName ? operationName.value : null;
-        // const technologyTemp = selectedTechnology ? selectedTechnology.value : null;
-        // const vendorNameTemp = vendorName ? vendorName.value : null;
-        // this.getTableListData(costingHeadTemp, operationNameTemp, technologyTemp, vendorNameTemp)
+        const { EmploymentTerms, StateName, plant, labourType, machineType } = this.state;
+        const ETerms = EmploymentTerms ? EmploymentTerms.value : '';
+        const State = StateName ? StateName.value : '';
+        const Plant = plant ? plant.value : '';
+        const labour = labourType ? labourType.value : '';
+        const machine = machineType ? machineType.value : '';
+        this.getTableListData(ETerms, State, Plant, labour, machine)
     }
 
 	/**
@@ -312,36 +399,53 @@ class LabourListing extends Component {
 	* @description Reset user filter
 	*/
     resetFilter = () => {
-        // this.setState({
-        //     costingHead: [],
-        //     vendorName: [],
-        //     selectedTechnology: [],
-        //     operationName: [],
-        // }, () => {
-        //     this.props.getTechnologySelectList(() => { })
-        //     this.props.getOperationSelectList(() => { })
-        //     this.props.getVendorWithVendorCodeSelectList()
-        //     this.getTableListData(null, null, null, null)
-        // })
+        this.setState({
+            EmploymentTerms: [],
+            StateName: [],
+            plant: [],
+            labourType: [],
+            machineType: [],
+        }, () => {
+            this.props.getZBCPlantList(() => { })
+            this.props.getStateSelectList(() => { })
+            this.props.getMachineTypeSelectList(() => { })
+            this.getTableListData()
+        })
     }
 
+    /**
+	* @method formToggle
+	* @description OPEN ADD FORM
+	*/
     formToggle = () => {
         this.setState({ toggleForm: true })
     }
 
+    /**
+	* @method hideForm
+	* @description HIDE ADD FORM
+	*/
     hideForm = () => {
         this.setState({
             toggleForm: false,
             data: { isEditFlag: false, ID: '' }
         }, () => {
-            this.getTableListData(null, null, null, null)
+            this.getTableListData()
         })
     }
 
+    /**
+	* @method bulkToggle
+	* @description OPEN BULK UPLOAD DRAWER
+	*/
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
 
+    /**
+	* @method closeBulkUploadDrawer
+	* @description CLOSED BULK UPLOAD DRAWER
+	*/
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
             this.getTableListData(null, null, null, null)
@@ -393,23 +497,83 @@ class LabourListing extends Component {
                         <Col md="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-
                                 <div className="flex-fill">
-                                    {/* <Field
-                                        name="vendorName"
+                                    <Field
+                                        name="Employment Terms"
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-vendors-'}
-                                        options={this.renderListing('VendorList')}
+                                        placeholder={'-Employment-'}
+                                        options={this.renderListing('EmploymentTerms')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                        validate={(this.state.EmploymentTerms == null || this.state.EmploymentTerms.length == 0) ? [required] : []}
                                         required={true}
-                                        handleChangeDescription={this.handleVendorName}
-                                        valueDescription={this.state.vendorName}
-                                    /> */}
+                                        handleChangeDescription={this.handleHeadChange}
+                                        valueDescription={this.state.EmploymentTerms}
+                                    />
                                 </div>
-
+                                <div className="flex-fill">
+                                    <Field
+                                        name="state"
+                                        type="text"
+                                        label={''}
+                                        component={searchableSelect}
+                                        placeholder={'--State--'}
+                                        options={this.renderListing('state')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleState}
+                                        valueDescription={this.state.StateName}
+                                        disabled={false}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="plant"
+                                        type="text"
+                                        label={''}
+                                        component={searchableSelect}
+                                        placeholder={'--Plant--'}
+                                        options={this.renderListing('plant')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handlePlant}
+                                        valueDescription={this.state.plant}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="LabourTypeIds"
+                                        type="text"
+                                        label=''
+                                        component={searchableSelect}
+                                        placeholder={'--Labour--'}
+                                        options={this.renderListing('labourList')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.labourHandler}
+                                        valueDescription={this.state.labourType}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="MachineType"
+                                        type="text"
+                                        label=''
+                                        component={searchableSelect}
+                                        placeholder={'Machine Type'}
+                                        options={this.renderListing('MachineTypeList')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleMachineType}
+                                        valueDescription={this.state.machineType}
+                                        disabled={false}
+                                    />
+                                </div>
                                 <div className="flex-fill">
                                     <button
                                         type="button"
@@ -463,23 +627,22 @@ class LabourListing extends Component {
                     tableHeaderClass='my-custom-header'
                     pagination>
                     {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="CostingHead" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Technology" width={150} columnTitle={true} dataAlign="center" >{'Technology'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="OperationName" columnTitle={true} dataAlign="center" >{this.renderOperationName()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="OperationCode" columnTitle={true} dataAlign="center" >{this.renderOperationCode()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plants" width={150} columnTitle={true} dataAlign="center" >{'Plant'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" >{this.renderVendorName()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="UnitOfMeasurement" columnTitle={true} dataAlign="center" >{'UOM'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" >{'Rate'}</TableHeaderColumn>
-                    {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
-                    <TableHeaderColumn className="action" dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn dataField="IsContractBase" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{'Employment Terms '}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{'Vendor Name'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Plant" columnTitle={true} dataAlign="center" >{'Plant'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="State" columnTitle={true} dataAlign="center" >{'State'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="MachineType" columnTitle={true} dataAlign="center" >{'Machine Type'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="LabourType" columnTitle={true} dataAlign="center" >{'Labour Type'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="LabourRate" columnTitle={true} dataAlign="center" >{'Rate Per Person/Annum'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="LabourId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
                     fileName={'Labour'}
-                    isZBCVBCTemplate={true}
+                    isZBCVBCTemplate={false}
                     messageLabel={'Labour'}
                     anchor={'right'}
                 />}
@@ -493,10 +656,12 @@ class LabourListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ labour, auth }) {
-    const { loading, } = labour;
+function mapStateToProps({ labour, auth, fuel, machine, }) {
+    const { loading, labourTypeByPlantSelectList } = labour;
+    const { plantSelectList, stateSelectList } = fuel;
+    const { machineTypeSelectList, } = machine;
     const { leftMenuData } = auth;
-    return { loading, leftMenuData };
+    return { loading, leftMenuData, plantSelectList, stateSelectList, labourTypeByPlantSelectList, machineTypeSelectList, };
 }
 
 /**
@@ -506,6 +671,13 @@ function mapStateToProps({ labour, auth }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
+    getLabourDataList,
+    deleteLabour,
+    getPlantListByState,
+    getZBCPlantList,
+    getStateSelectList,
+    getMachineTypeSelectList,
+    getLabourTypeByPlantSelectList,
     getLeftMenu,
 })(reduxForm({
     form: 'LabourListing',

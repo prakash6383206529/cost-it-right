@@ -23,7 +23,7 @@ import OtherOperationMaster from './masters/sap-masters/other-operation';
 import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
 //import MHRMaster from './masters/sap-masters/mhr-master';
 //import OperationMaster from './masters/sap-masters/operation';
-import ProcessMaster from './masters/sap-masters/process-master';
+//import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationListing from './masters/sap-masters/operation/OperationListing';
 import MaterialMaster from './masters/sap-masters/material-master/raw-material';
@@ -157,7 +157,7 @@ class Main extends Component {
 
                     <Route path="/bop-master" component={AuthMiddleware(BOPMaster)} />
 
-                    <Route path="/process-master" component={AuthMiddleware(ProcessMaster)} />
+                    {/* <Route path="/process-master" component={AuthMiddleware(ProcessMaster)} /> */}
 
                     <Route path="/other-operation" component={AuthMiddleware(OtherOperationMaster)} />
 

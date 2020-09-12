@@ -345,12 +345,16 @@ export const API = {
   updateAdditionalFreightByIdAPI: `${BASE_URL}/masters-additional-freight/update`,
   getAdditionalFreightBySupplier: `${BASE_URL}/costing-sheet-metal/get-costing-addtional-freight`,
 
-  //Api's for labour master
-  createLabourAPI: `${BASE_URL}/masters-labour/create`,
-  getLabourAPI: `${BASE_URL}/masters-labour/get`,
-  getAllLabourAPI: `${BASE_URL}/masters-labour/get-all`,
-  updateLabourAPI: `${BASE_URL}/masters-labour/update`,
-  deleteLabourAPI: `${BASE_URL}/masters-labour/delete`,
+  //LABOUR MASTER
+  createLabour: `${BASE_URL}/masters-labour/create`,
+  getLabourData: `${BASE_URL}/masters-labour/get`,
+  getLabourDataList: `${BASE_URL}/masters-labour/get-all-by-filter`,
+  updateLabour: `${BASE_URL}/masters-labour/update`,
+  deleteLabour: `${BASE_URL}/masters-labour/delete-individual`,
+  labourTypeVendorSelectList: `${BASE_URL}/vendor/vendor-labour-type-select-list`,
+  getLabourTypeByPlantSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-plant-select-list`,
+  labourBulkUpload: `${BASE_URL}/masters-labour/bulk-upload-for-labour-details-vbc-json`,
+  getLabourTypeByMachineTypeSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-machine-type-select-list`,
 
   //OVERHEAD AND PROFIT API'S
   createOverhead: `${BASE_URL}/masters-overhead-and-profit/create-overhead`,
@@ -556,8 +560,16 @@ export const API = {
   deleteMachineAPI: `${BASE_URL}/masters-machine/delete`,
   getMachineDataAPI: `${BASE_URL}/masters-machine/get`,
   updateMachineAPI: `${BASE_URL}/masters-machine/update`,
-  getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
+  getMachineSelectList: `${BASE_URL}/configuration/select-list-get-machine`,
+
   createProcess: `${BASE_URL}/masters-machine/create-process`,
+  getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
+  deleteProcess: `${BASE_URL}/masters-machine/delete-process`,
+  getProcessData: `${BASE_URL}/masters-machine/get-process`,
+  getProcessDataList: `${BASE_URL}/masters-machine/get-all-process-by-filter`,
+  updateProcess: `${BASE_URL}/masters-machine/update-process`,
+  getMachineSelectListByPlant: `${BASE_URL}/masters-machine/get-machine-select-list-by-plant`,
+  getPlantSelectListByMachine: `${BASE_URL}/masters-machine/get-plant-select-list-by-machine`,
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
@@ -754,6 +766,13 @@ export const GET_PROCESS_LIST_SUCCESS = 'GET_PROCESS_LIST_SUCCESS';
 export const GET_PROCESS_LIST_FAILURE = 'GET_PROCESS_LIST_FAILURE';
 export const GET_PROCESS_UNIT_DATA_SUCCESS = 'GET_PROCESS_UNIT_DATA_SUCCESS';
 export const GET_PROCESS_DATA_SUCCESS = 'GET_PROCESS_DATA_SUCCESS';
+export const GET_INITIAL_PLANT_SELECTLIST_SUCCESS = 'GET_INITIAL_PLANT_SELECTLIST_SUCCESS';
+//export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST';
+export const GET_INITIAL_MACHINE_TYPE_SELECTLIST = 'GET_INITIAL_MACHINE_TYPE_SELECTLIST';
+export const GET_INITIAL_MACHINE_LIST_SUCCESS = 'GET_INITIAL_MACHINE_LIST_SUCCESS';
+export const GET_INITIAL_PROCESSES_LIST_SUCCESS = 'GET_INITIAL_PROCESSES_LIST_SUCCESS';
+export const GET_MACHINE_LIST_BY_PLANT = 'GET_MACHINE_LIST_BY_PLANT';
+export const GET_PLANT_LIST_BY_MACHINE = 'GET_PLANT_LIST_BY_MACHINE';
 
 //FUEL MASTER
 export const CREATE_FUEL_SUCCESS = 'CREATE_FUEL_SUCCESS';
@@ -828,6 +847,9 @@ export const CREATE_LABOUR_FAILURE = 'CREATE_LABOUR_FAILURE';
 export const GET_LABOUR_SUCCESS = 'GET_LABOUR_SUCCESS';
 export const GET_LABOUR_FAILURE = 'GET_LABOUR_FAILURE';
 export const GET_LABOUR_DATA_SUCCESS = 'GET_LABOUR_DATA_SUCCESS';
+export const LABOUR_TYPE_VENDOR_SELECTLIST = 'LABOUR_TYPE_VENDOR_SELECTLIST';
+export const GET_LABOUR_TYPE_BY_PLANT_SELECTLIST = 'GET_LABOUR_TYPE_BY_PLANT_SELECTLIST';
+export const GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST = 'GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST';
 
 //OVERHEAD AND PROFIT
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS';
@@ -960,6 +982,7 @@ export const GET_MACHINE_TYPE_SELECTLIST = 'GET_MACHINE_TYPE_SELECTLIST';
 //MACHINE
 export const GET_MACHINE_DATALIST_SUCCESS = 'GET_MACHINE_DATALIST_SUCCESS';
 export const GET_MACHINE_DATA_SUCCESS = 'GET_MACHINE_DATA_SUCCESS';
+export const GET_MACHINE_LIST_SUCCESS = 'GET_MACHINE_LIST_SUCCESS';
 export const GET_DEPRECIATION_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_SELECTLIST_SUCCESS';
 
 //POWER MASTER

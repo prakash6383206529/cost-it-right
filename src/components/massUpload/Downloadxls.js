@@ -6,9 +6,10 @@ import {
     RMImportZBC, RMImportZBCTempData, RMImportVBC, RMImportVBCTempData,
     RMSpecification, RMSpecificationXLTempData,
     Vendor, VendorTempData,
+    Labour, LabourTempData,
     Overhead, OverheadTempData, Profit, ProfitTempData,
     ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
-    Bought_Out_Parts, Processes, MachineClass, Labour,
+    Bought_Out_Parts, Processes, MachineClass,
     OtherOperation, Power, MHR,
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable } from "../../helper";
@@ -54,14 +55,14 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Fuel, FuelTempData);
             case 'Profit':
                 return this.returnExcelColumn(Profit, ProfitTempData);
+            case 'Labour':
+                return this.returnExcelColumn(Labour, LabourTempData);
             case 'BOP':
                 return this.returnExcelColumn(Bought_Out_Parts);
             case 'Processes':
                 return this.returnExcelColumn(Processes);
             case 'MachineClass':
                 return this.returnExcelColumn(MachineClass);
-            case 'Labour':
-                return this.returnExcelColumn(Labour);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
@@ -92,8 +93,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Processes);
             case 'MachineClass':
                 return this.returnExcelColumn(MachineClass);
-            case 'Labour':
-                return this.returnExcelColumn(Labour);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
@@ -124,8 +123,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Processes);
             case 'MachineClass':
                 return this.returnExcelColumn(MachineClass);
-            case 'Labour':
-                return this.returnExcelColumn(Labour);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             case 'Power':
@@ -180,7 +177,7 @@ class Downloadxls extends React.Component {
         }
 
         // Download file:- Called when Apart from ZBC & VBC failed
-        if (isFailedFlag && (fileName == 'RMSpecification' || fileName == 'Vendor' || fileName == 'Overhead' || fileName == 'Fuel')) {
+        if (isFailedFlag && (fileName == 'RMSpecification' || fileName == 'Vendor' || fileName == 'Overhead' || fileName == 'Fuel' || fileName == 'Labour')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}

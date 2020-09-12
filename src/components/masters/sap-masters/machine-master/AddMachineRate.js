@@ -742,26 +742,28 @@ class AddMachineRate extends Component {
                                                     customClassName="withBorder"
                                                 />
                                             </Col>
-                                            <Col md="2">
-                                                <Field
-                                                    name="MachineType"
-                                                    type="text"
-                                                    label="Machine Type"
-                                                    component={searchableSelect}
-                                                    placeholder={'--select--'}
-                                                    options={this.renderListing('MachineTypeList')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleMachineType}
-                                                    valueDescription={this.state.machineType}
-                                                    disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="1">
-                                                <div
-                                                    onClick={this.machineTypeToggler}
-                                                    className={'plus-icon-square mt30 mr15 right'}>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="MachineType"
+                                                            type="text"
+                                                            label="Machine Type"
+                                                            component={searchableSelect}
+                                                            placeholder={'--select--'}
+                                                            options={this.renderListing('MachineTypeList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleMachineType}
+                                                            valueDescription={this.state.machineType}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        onClick={this.machineTypeToggler}
+                                                        className={'plus-icon-square mr5 right'}>
+                                                    </div>
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -813,26 +815,28 @@ class AddMachineRate extends Component {
                                                     title={'Process:'}
                                                     customClass={'Personal-Details'} />
                                             </Col>
-                                            <Col md="2">
-                                                <Field
-                                                    name="ProcessName"
-                                                    type="text"
-                                                    label="Process Name"
-                                                    component={searchableSelect}
-                                                    placeholder={'--select--'}
-                                                    options={this.renderListing('ProcessNameList')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
-                                                    //required={true}
-                                                    handleChangeDescription={this.handleProcessName}
-                                                    valueDescription={this.state.processName}
-                                                    disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="1">
-                                                <div
-                                                    onClick={this.processToggler}
-                                                    className={'plus-icon-square mt30 mr15 right'}>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="ProcessName"
+                                                            type="text"
+                                                            label="Process Name"
+                                                            component={searchableSelect}
+                                                            placeholder={'--select--'}
+                                                            options={this.renderListing('ProcessNameList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
+                                                            //required={true}
+                                                            handleChangeDescription={this.handleProcessName}
+                                                            valueDescription={this.state.processName}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        onClick={this.processToggler}
+                                                        className={'plus-icon-square mr5 right'}>
+                                                    </div>
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -927,16 +931,17 @@ class AddMachineRate extends Component {
                                         </Row>
 
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-sm-12 text-center">
+                                            <div className="col-sm-12 text-right bluefooter-butn">
                                                 <button
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
                                                     onClick={this.cancel} >
-                                                    {'Cancel'}
+                                                    <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="submit-button mr5 save-btn" >
+                                                    <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                                     {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>
@@ -958,6 +963,7 @@ class AddMachineRate extends Component {
                     isOpen={isOpenProcessDrawer}
                     closeDrawer={this.closeProcessDrawer}
                     isEditFlag={false}
+                    isMachineShow={false}
                     ID={''}
                     anchor={'right'}
                 />}

@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import MachineRateListing from './MachineRateListing';
 import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
+import ProcessListing from './ProcessListing';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -13,6 +14,7 @@ class MachineMaster extends Component {
             activeTab: '1',
             isMachineRateForm: false,
             isAddMoreDetails: false,
+            isProcessForm: false,
             data: {},
         }
     }
@@ -116,7 +118,7 @@ class MachineMaster extends Component {
 
                                 {this.state.activeTab == 2 &&
                                     <TabPane tabId="2">
-                                        {/* <AddBOPImport /> */}
+                                        <ProcessListing />
                                     </TabPane>}
                             </TabContent>
                         </div>

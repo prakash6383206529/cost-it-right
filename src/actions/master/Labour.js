@@ -7,7 +7,10 @@ import {
     CREATE_LABOUR_FAILURE,
     GET_LABOUR_SUCCESS,
     GET_LABOUR_FAILURE,
-    GET_LABOUR_DATA_SUCCESS
+    GET_LABOUR_DATA_SUCCESS,
+    LABOUR_TYPE_VENDOR_SELECTLIST,
+    GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
+    GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
 } from '../../config/constants';
 import {
     apiErrors
@@ -21,76 +24,57 @@ const headers = {
 };
 
 /**
- * @method createLabourAPI
- * @description create labour master
+ * @method createLabour
+ * @description create labour
  */
-export function createLabourAPI(data, callback) {
+export function createLabour(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createLabourAPI, data, headers);
+        const request = axios.post(API.createLabour, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: CREATE_LABOUR_SUCCESS,
-                    payload: response.data.Data
-                });
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_LABOUR_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
 }
 
 /**
- * @method getLabourDetailAPI
+ * @method getLabourDataList
  * @description get labour list
  */
-export function getLabourDetailAPI() {
+export function getLabourDataList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(API.getAllLabourAPI, headers);
+        const queryParams = `employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}`;
+        const request = axios.get(`${API.getLabourDataList}?${queryParams}`, headers);
         request.then((response) => {
-            dispatch({
-                type: GET_LABOUR_SUCCESS,
-                payload: response.data.DataList,
-            });
-
+            callback(response)
         }).catch((error) => {
-            dispatch({
-                type: GET_LABOUR_FAILURE
-            });
+            dispatch({ type: GET_LABOUR_FAILURE });
             apiErrors(error);
         });
     };
 }
 
 /**
- * @method getLabourByIdAPI
- * @description get one labour based on id
+ * @method getLabourData
+ * @description GET LABOUR DATA
  */
-export function getLabourByIdAPI(labourId, isEditFlag, callback) {
+export function getLabourData(labourId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (isEditFlag) {
-            axios.get(`${API.getLabourAPI}/${labourId}`, headers)
+        if (labourId != '') {
+            axios.get(`${API.getLabourData}/${labourId}`, headers)
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
                             type: GET_LABOUR_DATA_SUCCESS,
-                            payload: response.data.Data[0],
+                            payload: response.data.Data,
                         });
                         callback(response);
-                    } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
                     }
-                    callback(response);
                 }).catch((error) => {
                     apiErrors(error);
                     dispatch({ type: API_FAILURE });
@@ -106,13 +90,13 @@ export function getLabourByIdAPI(labourId, isEditFlag, callback) {
 }
 
 /**
- * @method deleteLabourAPI
+ * @method deleteLabour
  * @description delete labour
  */
-export function deleteLabourAPI(Id, callback) {
+export function deleteLabour(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteLabourAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteLabour}/${Id}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -123,18 +107,122 @@ export function deleteLabourAPI(Id, callback) {
 }
 
 /**
- * @method updateLabourAPI
+ * @method updateLabour
  * @description update labour
  */
-export function updateLabourAPI(requestData, callback) {
+export function updateLabour(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateLabourAPI}`, requestData, headers)
+        axios.put(`${API.updateLabour}`, requestData, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method labourTypeVendorSelectList
+ * @description LABOUR TYPE VENDOR SELECT LIST
+ */
+export function labourTypeVendorSelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.labourTypeVendorSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: LABOUR_TYPE_VENDOR_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getLabourTypeByPlantSelectList
+ * @description GET LABOUR TYPE BY PLANT
+ */
+export function getLabourTypeByPlantSelectList(ID, callback) {
+    return (dispatch) => {
+        if (ID != '') {
+            const request = axios.get(`${API.getLabourTypeByPlantSelectList}/${ID}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
+                payload: [],
+            });
+            callback();
+        }
+    };
+}
+
+
+/**
+ * @method getLabourTypeByMachineTypeSelectList
+ * @description GET LABOUR TYPE BY MACHINE TYPE
+ */
+export function getLabourTypeByMachineTypeSelectList(ID, callback) {
+    return (dispatch) => {
+        if (ID != '') {
+            const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}/${ID}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
+                payload: [],
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method labourBulkUpload
+ * @description create Labour by Bulk Upload
+ */
+export function labourBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.labourBulkUpload, data, headers);
+        request.then((response) => {
+            if (response.status == 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

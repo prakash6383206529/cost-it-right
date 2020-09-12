@@ -7,7 +7,14 @@ import {
     CREATE_PROCESS_FAILURE,
     GET_PROCESS_LIST_SUCCESS,
     GET_PROCESS_LIST_FAILURE,
-    GET_PROCESS_UNIT_DATA_SUCCESS
+    GET_PROCESS_UNIT_DATA_SUCCESS,
+    GET_INITIAL_PLANT_SELECTLIST_SUCCESS,
+    GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+    GET_INITIAL_MACHINE_TYPE_SELECTLIST,
+    GET_INITIAL_PROCESSES_LIST_SUCCESS,
+    GET_INITIAL_MACHINE_LIST_SUCCESS,
+    GET_MACHINE_LIST_BY_PLANT,
+    GET_PLANT_LIST_BY_MACHINE,
 } from '../../config/constants';
 import {
     apiErrors
@@ -21,67 +28,71 @@ const headers = {
 };
 
 /**
- * @method createProcessAPI
- * @description create process
+ * @method createProcess
+ * @description create Process
  */
-export function createProcessAPI(data, callback) {
+export function createProcess(data, callback) {
     return (dispatch) => {
-        // dispatch({
-        //     type:  API_REQUEST,
-        // });
-        const request = axios.post(API.createProcessAPI, data, headers);
+        const request = axios.post(API.createProcess, data, headers);
         request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: CREATE_PROCESS_SUCCESS,
-                    payload: response.data.Data
-                });
+            if (response.data.Result == true) {
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_PROCESS_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
 }
 
 /**
- * @method getProcessDataAPI
- * @description get process list
+ * @method getProcessCode
+ * @description USED TO GET PROCESS CODE
  */
-export function getProcessDataAPI() {
+export function getProcessCode(value, callback) {
     return (dispatch) => {
-        const request = axios.get(API.getAllProcessAPI, headers);
+        const request = axios.get(`${API.getProcessCode}?processName=${value}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getProcessDataList
+ * @description GET PROCESS DATALIST
+ */
+export function getProcessDataList(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getProcessDataList}?plant_id=${data.plant_id}&machine_id=${data.machine_id}`, headers);
         request.then((response) => {
             dispatch({
                 type: GET_PROCESS_LIST_SUCCESS,
                 payload: response.data.DataList,
             });
-
+            callback(response)
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
 }
 
 /**
- * @method deleteFuelDetailsAPI
- * @description delete UOM 
+ * @method deleteProcess
+ * @description DELETE PROCESS
  */
-export function deleteProcessAPI(index, Id, callback) {
+export function deleteProcess(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProcessAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteProcess}/${Id}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -91,16 +102,15 @@ export function deleteProcessAPI(index, Id, callback) {
     };
 }
 
-
 /**
- * @method getOneUnitOfProcessAPI
- * @description get one Process based on id
+ * @method getProcessData
+ * @description GET PROCESS DATA
  */
-export function getProcessUnitAPI(processId, isEditFlag, callback) {
+export function getProcessData(processId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (isEditFlag) {
-            axios.get(`${API.getProcessAPI}/${processId}`, headers)
+        if (processId != '') {
+            axios.get(`${API.getProcessData}/${processId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -108,10 +118,7 @@ export function getProcessUnitAPI(processId, isEditFlag, callback) {
                             payload: response.data.Data,
                         });
                         callback(response);
-                    } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
                     }
-                    callback(response);
                 }).catch((error) => {
                     apiErrors(error);
                     dispatch({ type: API_FAILURE });
@@ -127,18 +134,182 @@ export function getProcessUnitAPI(processId, isEditFlag, callback) {
 }
 
 /**
- * @method updateUnitOfMeasurementAPI
- * @description update UOM
+ * @method updateProcess
+ * @description UPDATE PROCESS
  */
-export function updateProcessAPI(processId, request, callback) {
+export function updateProcess(request, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateProcessAPI}`, request, headers)
+        axios.put(`${API.updateProcess}`, request, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+* @method getInitialPlantSelectList
+* @description GET INITIAL ALL PLANTS IN SELECTLIST
+*/
+export function getInitialPlantSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlantSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_PLANT_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getInitialVendorWithVendorCodeSelectList
+ * @description GET VENDOR WITH VENDOR CODE SELECTLIST
+ */
+export function getInitialVendorWithVendorCodeSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getInitialMachineTypeSelectList
+ * @description GET INTIAL ALL MACHINE TYPE IN SELECTLIST
+ */
+export function getInitialMachineTypeSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMachineTypeSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_MACHINE_TYPE_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getInitialMachineSelectList
+ * @description GET MACHINE SELECTLIST
+ */
+export function getInitialMachineSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const id = '802da383-4745-420d-9186-2dbe42f00f5b';
+        const request = axios.get(`${API.getMachineSelectList}/${id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_MACHINE_LIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getInitialProcessesSelectList
+ * @description Get Processes select list in process grid
+ */
+export function getInitialProcessesSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getProcessesSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_PROCESSES_LIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getMachineSelectListByPlant
+ * @description GET MACHINE SELECTLIST BY PLANT 
+ */
+export function getMachineSelectListByPlant(Id, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMachineSelectListByPlant}/${Id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MACHINE_LIST_BY_PLANT,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getPlantSelectListByMachine
+ * @description GET PLANT SELECTLIST BY MACHINE
+ */
+export function getPlantSelectListByMachine(Id, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlantSelectListByMachine}/${Id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PLANT_LIST_BY_MACHINE,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

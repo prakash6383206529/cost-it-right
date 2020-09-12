@@ -9,6 +9,7 @@ import {
     bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../../actions/master/Material';
 import { fuelBulkUpload } from '../../actions/master/Fuel';
+import { labourBulkUpload } from '../../actions/master/Labour';
 import { vendorBulkUpload } from '../../actions/master/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../../actions/master/OverheadProfit';
 import { operationZBCBulkUpload, operationVBCBulkUpload } from '../../actions/master/OtherOperation';
@@ -103,9 +104,9 @@ class BulkUpload extends Component {
 
             let data = new FormData()
             data.append('file', fileObj)
-            if (fileName == 'RMDomestic') {
-                this.props.bulkfileUploadRM(data, res => { }); //temp for file upload in folder on server
-            }
+            // if (fileName == 'RMDomestic') {
+            //     this.props.bulkfileUploadRM(data, res => { }); //temp for file upload in folder on server
+            // }
             ExcelRenderer(fileObj, (err, resp) => {
                 if (err) {
                     console.log(err);
@@ -244,6 +245,12 @@ class BulkUpload extends Component {
         } else if (fileName == 'Profit') {
 
             this.props.profitBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName == 'Labour') {
+
+            this.props.labourBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -390,6 +397,7 @@ export default connect(mapStateToProps, {
     profitBulkUpload,
     operationZBCBulkUpload,
     operationVBCBulkUpload,
+    labourBulkUpload,
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

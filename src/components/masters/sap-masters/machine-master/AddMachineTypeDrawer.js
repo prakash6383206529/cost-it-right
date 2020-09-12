@@ -53,10 +53,12 @@ class AddMachineTypeDrawer extends Component {
     renderListing = (label) => {
         const { labourTypeSelectList } = this.props;
         const temp = [];
+
         if (label === 'labourList') {
-            labourTypeSelectList && labourTypeSelectList.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
+            labourTypeSelectList && labourTypeSelectList.map(item => {
+                if (item.Value == 0) return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
             return temp;
         }
 
@@ -66,12 +68,8 @@ class AddMachineTypeDrawer extends Component {
     * @method labourHandler
     * @description called
     */
-    labourHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ labourType: newValue });
-        } else {
-            this.setState({ labourType: [] })
-        }
+    labourHandler = (e) => {
+        this.setState({ labourType: e });
     };
 
     /**
@@ -92,6 +90,8 @@ class AddMachineTypeDrawer extends Component {
     onSubmit = (values) => {
         const { labourType } = this.state;
 
+        let labourTypeIds = labourType && labourType.map(el => el.Value)
+
         /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
             const { supplierId } = this.props;
@@ -105,11 +105,12 @@ class AddMachineTypeDrawer extends Component {
             //         this.toggleDrawer('')
             //     }
             // });
+
         } else {/** Add new detail for creating supplier master **/
             let formData = {
                 MachineType: values.MachineType,
                 LoggedInUserId: loggedInUserId(),
-                LabourTypeIds: [labourType.value]
+                LabourTypeIds: labourTypeIds
             }
 
             this.props.createMachineType(formData, (res) => {
@@ -166,17 +167,18 @@ class AddMachineTypeDrawer extends Component {
                                     </Col>
                                     <Col md="12">
                                         <Field
-                                            name="LabourTypeIds"
-                                            type="text"
                                             label="Labour Type"
-                                            component={searchableSelect}
-                                            placeholder={'Select Labour'}
+                                            name="LabourTypeIds"
+                                            placeholder="--Select--"
+                                            selection={(this.state.labourType == null || this.state.labourType.length == 0) ? [] : this.state.labourType}
                                             options={this.renderListing('labourList')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.labourHandler}
-                                            valueDescription={this.state.labourType}
+                                            selectionChanged={this.labourHandler}
+                                            optionValue={option => option.Value}
+                                            optionLabel={option => option.Text}
+                                            component={renderMultiSelectField}
+                                            mendatory={true}
+                                            className="multiselect-with-border"
+                                            disabled={false}
                                         />
                                     </Col>
 

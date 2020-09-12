@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
-import {
-    renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
-    searchableSelect
-} from "../../../layout/FormInputs";
-import { getProcessCode, getMachineTypeSelectList, createProcess, } from '../../../../actions/master/MachineMaster';
+import { Container, Row, Col, } from 'reactstrap';
+import { required, number, } from "../../../../helper/validation";
+import { renderText, renderMultiSelectField, searchableSelect } from "../../../layout/FormInputs";
+import { getMachineSelectList, } from '../../../../actions/master/MachineMaster';
+import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../../../../actions/master/Process';
 import { getPlantSelectList, } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -21,15 +19,8 @@ class AddProcessDrawer extends Component {
         this.state = {
             selectedPlants: [],
             selectedMachine: [],
+            ProcessId: '',
         }
-    }
-
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
     }
 
     /**
@@ -38,8 +29,30 @@ class AddProcessDrawer extends Component {
    */
     componentDidMount() {
         this.props.getPlantSelectList(() => { })
-        this.props.getMachineTypeSelectList(() => { })
+        this.props.getMachineSelectList(() => { })
+        this.getData()
+    }
 
+    /**
+    * @method getData
+    * @description Used to get process data
+    */
+    getData = () => {
+        const { isEditFlag, ID } = this.props;
+        if (isEditFlag) {
+            this.props.getProcessData(ID, res => {
+                let Data = res.data.Data;
+
+                let PlantArray = Data && Data.Plants.map(el => ({ Text: el.PlantName, Value: el.PlantId }))
+                let MachineArray = Data && Data.Machines.map(el => ({ Text: el.Machine, Value: el.MachineId }))
+
+                this.setState({
+                    ProcessId: Data.ProcessId,
+                    selectedPlants: PlantArray,
+                    selectedMachine: MachineArray,
+                })
+            })
+        }
     }
 
     toggleDrawer = (event) => {
@@ -50,7 +63,6 @@ class AddProcessDrawer extends Component {
     };
 
     checkProcessCode = (e) => {
-        console.log('triggered >>>>>>>>>>>>', e.target.value)
         const value = e.target.value;
         this.props.getProcessCode(value, res => {
             if (res && res.data && res.data.Result) {
@@ -81,10 +93,10 @@ class AddProcessDrawer extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { plantSelectList, machineTypeSelectList } = this.props;
+        const { plantSelectList, machineSelectList } = this.props;
         const temp = [];
         if (label === 'machine') {
-            machineTypeSelectList && machineTypeSelectList.map(item => {
+            machineSelectList && machineSelectList.map(item => {
                 if (item.Value == 0) return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
@@ -108,7 +120,6 @@ class AddProcessDrawer extends Component {
         const { reset } = this.props;
         reset();
         this.toggleDrawer('')
-        //this.props.getRMSpecificationDataAPI('', res => { });
     }
 
     /**
@@ -117,38 +128,38 @@ class AddProcessDrawer extends Component {
     */
     onSubmit = (values) => {
         const { selectedPlants, selectedMachine } = this.state;
+        const { isEditFlag, isMachineShow, ID } = this.props;
 
-        let plantArray = [];
-        selectedPlants && selectedPlants.map((item) => {
-            plantArray.push(item.Value)
-            return plantArray;
-        })
+        let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, }))
 
-        let machineArray = [];
-        selectedMachine && selectedMachine.map((item) => {
-            machineArray.push(item.Value)
-            return machineArray;
-        })
+        let machineArray = selectedMachine && selectedMachine.map(item => ({ Machine: item.Text, MachineId: item.Value, }))
 
         /** Update existing detail of supplier master **/
-        if (this.props.isEditFlag) {
+        if (isEditFlag) {
 
             let formData = {
-
+                ProcessId: ID,
+                ProcessName: values.ProcessName,
+                ProcessCode: values.ProcessCode,
+                Plants: plantArray,
+                Machines: isMachineShow ? machineArray : [],
+                LoggedInUserId: loggedInUserId(),
             }
 
-            // this.props.updateSupplierAPI(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-            //         this.toggleDrawer('')
-            //     }
-            // });
+            this.props.updateProcess(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_PROCESS_SUCCESS);
+                    this.toggleDrawer('')
+                }
+            });
+
         } else {/** Add new detail for creating supplier master **/
+
             let formData = {
                 ProcessName: values.ProcessName,
                 ProcessCode: values.ProcessCode,
-                PlantIds: plantArray,
-                MachineIds: machineArray,
+                Plants: plantArray,
+                Machines: isMachineShow ? machineArray : [],
                 LoggedInUserId: loggedInUserId(),
             }
 
@@ -167,7 +178,7 @@ class AddProcessDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, isMachineShow, reset } = this.props;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -203,6 +214,7 @@ class AddProcessDrawer extends Component {
                                             required={true}
                                             className=" "
                                             customClassName=" withBorder"
+                                            disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
                                     <Col md="12">
@@ -216,6 +228,7 @@ class AddProcessDrawer extends Component {
                                             required={true}
                                             className=" "
                                             customClassName=" withBorder"
+                                            disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
                                     <Col md="12">
@@ -231,10 +244,10 @@ class AddProcessDrawer extends Component {
                                             component={renderMultiSelectField}
                                             mendatory={true}
                                             className="multiselect-with-border"
-                                            disabled={isEditFlag ? true : false}
+                                            disabled={false}
                                         />
                                     </Col>
-                                    <Col md="12">
+                                    {isMachineShow && <Col md="12">
                                         <Field
                                             label="Machine"
                                             name="Machine"
@@ -247,29 +260,26 @@ class AddProcessDrawer extends Component {
                                             component={renderMultiSelectField}
                                             mendatory={true}
                                             className="multiselect-with-border"
-                                            disabled={isEditFlag ? true : false}
+                                            disabled={false}
                                         />
-                                    </Col>
+                                    </Col>}
 
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-center ">
-                                            <input
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
-                                                className="reset mr15 cancel-btn"
-                                            />
-                                            <input
-                                                //disabled={isSubmitted ? true : false}
-                                                type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
-                                            />
-                                        </div>
+                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                        <button
+                                            type={'button'}
+                                            className="reset mr15 cancel-btn"
+                                            onClick={this.cancel} >
+                                            <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="submit-button mr5 save-btn" >
+                                            <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                            {isEditFlag ? 'Update' : 'Save'}
+                                        </button>
                                     </div>
                                 </Row>
                             </form>
@@ -286,17 +296,19 @@ class AddProcessDrawer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, machine }) {
+function mapStateToProps({ comman, machine, process }) {
     const { plantSelectList } = comman;
-    const { machineTypeSelectList } = machine;
+    const { machineSelectList } = machine;
+    const { processUnitData } = process;
 
     let initialValues = {};
-    // if (supplierData && supplierData !== undefined) {
-    //     initialValues = {
-    //         VendorName: supplierData.VendorName,
-    //     }
-    // }
-    return { plantSelectList, machineTypeSelectList, initialValues }
+    if (processUnitData && processUnitData !== undefined) {
+        initialValues = {
+            ProcessName: processUnitData.ProcessName,
+            ProcessCode: processUnitData.ProcessCode,
+        }
+    }
+    return { plantSelectList, machineSelectList, processUnitData, initialValues }
 }
 
 /**
@@ -307,9 +319,11 @@ function mapStateToProps({ comman, machine }) {
 */
 export default connect(mapStateToProps, {
     getProcessCode,
-    getPlantSelectList,
-    getMachineTypeSelectList,
     createProcess,
+    updateProcess,
+    getProcessData,
+    getPlantSelectList,
+    getMachineSelectList,
 })(reduxForm({
     form: 'AddProcessDrawer',
     enableReinitialize: true,
