@@ -193,7 +193,6 @@ class AddPower extends Component {
     getDetails = () => {
         const { data } = this.props;
         if (data && data.isEditFlag && data.IsVendor) {
-            console.log('vendor power detail')
             this.setState({
                 isEditFlag: false,
                 isLoader: true,
@@ -204,7 +203,6 @@ class AddPower extends Component {
                 if (res && res.data && res.data.Result) {
 
                     const Data = res.data.Data;
-                    console.log('Data: ', Data);
                     this.props.getPlantBySupplier(Data.VendorId, () => { })
 
                     setTimeout(() => {
@@ -230,7 +228,6 @@ class AddPower extends Component {
             })
 
         } else if (data && data.isEditFlag && data.IsVendor == false) {
-            console.log('power detail')
             this.setState({
                 isEditFlag: false,
                 isLoader: true,
@@ -241,7 +238,6 @@ class AddPower extends Component {
                 if (res && res.data && res.data.Result) {
                     const { powerGrid } = this.state;
                     const Data = res.data.Data;
-                    console.log('Data: ', Data);
                     this.props.getPlantListByState(Data.StateId, () => { })
 
                     let tempArray = [];
@@ -1635,7 +1631,6 @@ export default connect(mapStateToProps, {
     form: 'AddPower',
     enableReinitialize: true,
     onSubmitFail: errors => {
-        console.log('errors', errors)
         focusOnError(errors);
     },
 })(AddPower));

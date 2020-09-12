@@ -298,7 +298,6 @@ class OtherOperationGrid extends Component {
     */
 
     processHandler = (value, index, type) => {
-        console.log(">>>>", value, index, type)
         //this.setState({ processSelected: newValue });
     };
 
@@ -307,35 +306,10 @@ class OtherOperationGrid extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log("values grid other ops", values)
         const totalCost = this.calculateGrandTotal()
         const { costingId, PartId, isEditCEDFlag, initialValues } = this.props;
         let formData = {}
-        // if (isEditCEDFlag) {
-        //     formData = {
-        //         CostingOtherOperationDetailId: initialValues.CostingOtherOperationDetailId,
-        //         OtherOperations: initialValues.OtherOperations,
-        //         CostingId: initialValues.CostingId,
-        //         PartId: initialValues.PartId,
-        //         SurfaceTreatmentCost: totalCost,
-        //         AssySurfaceTreatmentCost: totalCost,
-        //         GrandTotal: totalCost,
-        //         IsActive: true,
-        //         CreatedDate: initialValues.CreatedDate,
-        //         CreatedBy: initialValues.CreatedBy,
-        //         DisplayCreatedDate: initialValues.DisplayCreatedDate,
-        //         LinkedOperations: values.LinkedOperations
-        //     }
-        //     console.log("form data edit", formData)
-        //     this.props.updateCostingOtherOperation(formData, res => {
-        //         if (res.data.Result) {
-        //             toastr.success(MESSAGES.UPDATE_COSTING_OTHER_OPERATION_SUCCESS);
-        //             this.props.onCancelOperationGrid()
-        //         } else {
-        //             toastr.error(res.data.Message);
-        //         }
-        //     })
-        // } else {
+
         formData = {
             CostingId: costingId,
             PartId: PartId,
@@ -349,7 +323,6 @@ class OtherOperationGrid extends Component {
             LinkedOperations: values.LinkedOperations
         }
 
-        console.log("form data", formData)
         this.props.saveOtherOpsCosting(formData, res => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.SAVE_OTHER_OPERATION_SUCCESS);
@@ -358,7 +331,6 @@ class OtherOperationGrid extends Component {
                 toastr.error(res.data.Message);
             }
         })
-        //}
     }
 
 

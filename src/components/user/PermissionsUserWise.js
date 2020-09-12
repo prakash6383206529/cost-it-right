@@ -452,7 +452,6 @@ class PermissionsUserWise extends Component {
         //let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
 
         let tempArray = actionData.filter(item => item.IsChecked == true)
-        //console.log('tempArray', tempArray.length)
         if (actionData && actionData != undefined) {
             return tempArray.length == actionSelectList.length - 1 ? true : false;
         }
@@ -463,7 +462,6 @@ class PermissionsUserWise extends Component {
         const { moduleSelectList, actionSelectList } = this.props;
 
         //let actionRows = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
-        //console.log('actionRows', parentIndex, actionRows)
         let checkedActions = actionRows.filter(item => item.IsChecked == true)
 
         let tempArray = [];
@@ -564,7 +562,6 @@ class PermissionsUserWise extends Component {
             Modules: Modules,
         }
 
-        console.log('formData', formData)
         this.props.setUserAdditionalPermission(formData, (res) => {
             if (res && res.data && res.data.Result) {
                 toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)

@@ -185,7 +185,6 @@ class AddAssemblyPart extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log("values", values)
         const { country, state, city, PlantId, isEditFlag } = this.state;
         const { reset } = this.props;
         const userDetail = userDetails();

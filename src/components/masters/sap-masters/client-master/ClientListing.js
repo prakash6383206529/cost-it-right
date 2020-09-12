@@ -68,10 +68,10 @@ class ClientListing extends Component {
         this.getTableListData(null, null)
     }
 
-	/**
-	* @method getTableListData
-	* @description Get user list data
-	*/
+    /**
+    * @method getTableListData
+    * @description Get user list data
+    */
     getTableListData = (clientName = null, companyName = null) => {
         let filterData = {
             clientName: clientName,
@@ -91,7 +91,7 @@ class ClientListing extends Component {
         });
     }
 
-	/**
+    /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
@@ -101,10 +101,10 @@ class ClientListing extends Component {
 
     }
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         this.setState({
             isOpenVendor: true,
@@ -113,10 +113,10 @@ class ClientListing extends Component {
         })
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete Item.
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete Item.
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -127,10 +127,10 @@ class ClientListing extends Component {
         return toastr.confirm(MESSAGES.CLIENT_DELETE_ALERT, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete item
+    */
     confirmDeleteItem = (ID) => {
         this.props.deleteClient(ID, (res) => {
             if (res.data.Result === true) {
@@ -140,10 +140,10 @@ class ClientListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
@@ -184,10 +184,10 @@ class ClientListing extends Component {
         }
     };
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -208,10 +208,10 @@ class ClientListing extends Component {
         )
     }
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -229,7 +229,6 @@ class ClientListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
         // ...
         return this.state.userData; // must return the data which you want to be exported
     }
@@ -242,18 +241,18 @@ class ClientListing extends Component {
         );
     }
 
-	/**
-	* @method filterList
-	* @description Filter DATALIST
-	*/
+    /**
+    * @method filterList
+    * @description Filter DATALIST
+    */
     filterList = () => {
         this.getTableListData(null, null)
     }
 
-	/**
-	* @method resetFilter
-	* @description RESET FILTERS
-	*/
+    /**
+    * @method resetFilter
+    * @description RESET FILTERS
+    */
     resetFilter = () => {
         this.getTableListData(null, null)
     }
@@ -272,18 +271,18 @@ class ClientListing extends Component {
         })
     }
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
     onSubmit(values) {
     }
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
         const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
@@ -380,7 +379,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'ClientListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

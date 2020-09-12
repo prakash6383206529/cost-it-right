@@ -80,7 +80,6 @@ class AddMHR extends Component {
     * @description Used to get Data
     */
     getData = (Data) => {
-        console.log('Data', Data)
         const { fuelDataList, MachineTypeSelectList, MachineByMachineTypeSelectList, powerList, fuelList } = this.props;
 
         let fuelObj = fuelDataList && fuelDataList.find(item => item.FuelDetailId == Data.FuelDetailId)

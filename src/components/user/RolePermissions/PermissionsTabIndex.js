@@ -44,15 +44,14 @@ class PermissionsTabIndex extends Component {
         };
     }
 
-	/**
-	* @method componentDidMount
-	* @description used to called after mounting component
-	*/
+    /**
+    * @method componentDidMount
+    * @description used to called after mounting component
+    */
     componentDidMount() {
         this.props.getActionHeadsSelectList(() => {
             setTimeout(() => {
                 const { isEditFlag, isNewRole } = this.props;
-                console.log('isEditFlag', isEditFlag)
                 if (isEditFlag == false && isNewRole) {
                     this.getRolePermission()
                 }
@@ -64,7 +63,6 @@ class PermissionsTabIndex extends Component {
     getRolePermission = () => {
         const { isEditFlag, isNewRole } = this.props;
         if (isEditFlag == false && isNewRole) {
-            console.log('New call')
             this.setState({ isLoader: true });
             this.props.getModuleActionInitNew((res) => {
                 if (res && res.data && res.data.Data) {
@@ -77,9 +75,9 @@ class PermissionsTabIndex extends Component {
     }
 
     /**
-	* @method getUpdatedData
-	* @description get updated data after updatesuccess
-	*/
+    * @method getUpdatedData
+    * @description get updated data after updatesuccess
+    */
     getUpdatedData = (data) => {
         setTimeout(() => {
             this.updateTabs(data)
@@ -87,9 +85,9 @@ class PermissionsTabIndex extends Component {
     }
 
     /**
-	* @method updateTabs
-	* @description get updated tabs data after update success
-	*/
+    * @method updateTabs
+    * @description get updated tabs data after update success
+    */
     updateTabs = (Data) => {
         let dashboardObj = Data && Data.filter(el => el.ModuleName == DASHBOARD_AND_AUDIT)
         let masterObj = Data && Data.filter(el => el.ModuleName == MASTERS)
@@ -123,7 +121,7 @@ class PermissionsTabIndex extends Component {
         })
     }
 
-	/**
+    /**
     * @method toggle
     * @description toggling the tabs
     */

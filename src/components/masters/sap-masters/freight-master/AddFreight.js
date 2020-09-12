@@ -48,7 +48,6 @@ class AddFreight extends Component {
         const { freightId, isEditFlag, FreightType } = this.props;
         if (isEditFlag) {
             if (FreightType == 1) {
-                console.log("iffffffffffff")
                 /** Get unit detail of the Freight  */
                 this.setState({ freightType: 'Freight' }, () => {
                     this.props.getFreightByIdAPI(freightId, true, res => {
@@ -62,7 +61,6 @@ class AddFreight extends Component {
                     })
                 })
             } else {
-                console.log("elsssssssssssssss")
                 /** Get unit detail of the Additional Freight  */
                 this.setState({ freightType: 'Packaging' }, () => {
                     this.props.getAdditionalFreightByIdAPI(freightId, true, res => {
@@ -307,7 +305,6 @@ class AddFreight extends Component {
         } else {
 
             if (this.state.freightType === 'Freight') {
-                console.log('this.state.freightType: ', this.state.freightType);
                 let freighformData = {
                     IsOtherSource: false,
                     FreightTypeId: 1,
@@ -332,7 +329,6 @@ class AddFreight extends Component {
                     CreatedBy: loginUserId,
                 }
 
-                console.log('values: ', freighformData);
                 this.props.createFreightAPI(freighformData, (res) => {
                     if (res.data.Result) {
                         toastr.success(MESSAGES.FREIGHT_ADDED_SUCCESS);
@@ -345,7 +341,6 @@ class AddFreight extends Component {
             }
 
             if (this.state.freightType === 'Packaging') {
-                console.log('this.state.freightType: ', this.state.freightType);
                 let packagingformData = {
                     IsOtherSource: false,
                     FreightTypeId: 2,
@@ -367,7 +362,6 @@ class AddFreight extends Component {
                     CreatedBy: loginUserId,
                 }
 
-                console.log('values: ', packagingformData);
                 this.props.createAdditionalFreightAPI(packagingformData, (res) => {
                     if (res.data.Result) {
                         toastr.success(MESSAGES.ADDITIONAL_FREIGHT_ADD_SUCCESS);
@@ -947,7 +941,6 @@ function mapStateToProps(state, ownProps) {
     const { freightData, PackagingData } = freight;
     let initialValues = {};
     if (ownProps.FreightType == 1) {
-        console.log('111111')
         initialValues = {
             SourceSupplierId: freightData.SourceSupplierId,
             SourceSupplierPlantId: freightData.SourceSupplierPlantId,
@@ -973,7 +966,6 @@ function mapStateToProps(state, ownProps) {
     }
 
     if (ownProps.FreightType == 2) {
-        console.log('22222')
         initialValues = {
             SourceSupplierId: PackagingData.SourceSupplierId,
             SourceSupplierPlantId: PackagingData.SourceSupplierPlantId,

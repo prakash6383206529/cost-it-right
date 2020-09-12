@@ -195,7 +195,6 @@ class CostSummary extends Component {
     }
 
     columnCalculation = (Content, CostingHeads) => {
-        //console.log("Content >>>", Content)
         const RMCostingHeadObj = CostingHeads.find(item => item.Value == Content.RMCostingHeadsId)
         const WIPCostingHeadObj = CostingHeads.find(item => item.Value == Content.WIPCostingHeadsId)
         const PaymentTermCostingHeadObj = CostingHeads.find(item => item.Value == Content.PaymentTermsCostingHeadsId)
@@ -927,7 +926,6 @@ class CostSummary extends Component {
     * @description Used for handle heads calculation like RM, RM + CC and RM + CC + BOP like wise
     */
     HeadsCalculation = (HeadType, Content) => {
-        console.log("HeadType", HeadType, Content)
         let total = 0;
         const TotalConversionCost = this.calculateTotalConversionCost(Content)
 

@@ -84,7 +84,6 @@ class AddSupplier extends Component {
             }
             return false;
         })
-        //console.log('isContent', isContent)
         return (isContent && isContent.Text) ? true : false;
     }
 
@@ -380,7 +379,6 @@ class AddSupplier extends Component {
     render() {
         const { handleSubmit, reset } = this.props;
         const { country, selectedVendorType, isOpenVendorPlant, } = this.state;
-        //console.log('this.checkVendorSelection()', this.checkVendorSelection())
         return (
             <div className="container-fluid">
                 {/* {isLoader && <Loader />} */}

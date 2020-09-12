@@ -114,12 +114,10 @@ export function updateReasonAPI(requestData, callback) {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.updateReasonAPI}`, requestData, headers)
             .then((response) => {
-                //console.log(response.data.Result)
                 if (response.data.Result) {
                     callback(response);
                 }
             }).catch((error) => {
-                console.log('error', error)
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });

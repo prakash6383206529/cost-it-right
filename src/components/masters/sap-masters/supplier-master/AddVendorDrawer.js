@@ -117,7 +117,6 @@ class AddVendorDrawer extends Component {
             }
             return false;
         })
-        //console.log('isContent', isContent)
         return (isContent && isContent.Text) ? true : false;
     }
 

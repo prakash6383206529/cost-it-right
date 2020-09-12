@@ -367,9 +367,9 @@ class UserRegistration extends Component {
   }
 
   /**
- 	* @method setInitialModuleData
- 	* @description SET INITIAL MODULE DATA FROM PERMISSION TAB
- 	*/
+    * @method setInitialModuleData
+    * @description SET INITIAL MODULE DATA FROM PERMISSION TAB
+    */
   setInitialModuleData = (data) => {
     this.setState({ Modules: data })
   }
@@ -612,7 +612,6 @@ class UserRegistration extends Component {
    * @returns {{}}
    */
   onSubmit(values) {
-    //console.log("signup values", values)
     const { reset, registerUserData } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
       oldTechnologyLevelGrid, UserId } = this.state;
@@ -695,7 +694,7 @@ class UserRegistration extends Component {
         isTechnologyUpdate = true;
       }
 
-      console.log('checks', isDepartmentUpdate, isRoleUpdate, isPermissionUpdate, isTechnologyUpdate);
+      //console.log('checks', isDepartmentUpdate, isRoleUpdate, isPermissionUpdate, isTechnologyUpdate);
 
       if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
 
@@ -1310,7 +1309,6 @@ export default connect(mapStateToProps, {
   validate,
   form: 'Signup',
   onSubmitFail: errors => {
-    //console.log('Register errors', errors)
     focusOnError(errors);
   },
   enableReinitialize: true,

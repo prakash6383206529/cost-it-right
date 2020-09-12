@@ -41,10 +41,10 @@ class ZBCPlantListing extends Component {
         //this.props.onRef(this)
     }
 
-	/**
-	* @method getTableListData
-	* @description Get user list data
-	*/
+    /**
+    * @method getTableListData
+    * @description Get user list data
+    */
     getTableListData = () => {
         this.props.getPlantDataAPI(false, (res) => {
             if (res && res.data && res.status === 200) {
@@ -54,10 +54,10 @@ class ZBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         this.setState({
             isOpenVendor: true,
@@ -66,10 +66,10 @@ class ZBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete part
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete part
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -80,10 +80,10 @@ class ZBCPlantListing extends Component {
         return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete user item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete user item
+    */
     confirmDeleteItem = (ID) => {
         this.props.deletePlantAPI(ID, (res) => {
             if (res.data.Result === true) {
@@ -93,10 +93,10 @@ class ZBCPlantListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
@@ -135,10 +135,10 @@ class ZBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         const { ActivateAccessibility } = this.props;
         if (ActivateAccessibility) {
@@ -173,10 +173,10 @@ class ZBCPlantListing extends Component {
         }
     }
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -190,8 +190,6 @@ class ZBCPlantListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
-        // ...
         return this.state.userData; // must return the data which you want to be exported
     }
 
@@ -279,10 +277,10 @@ class ZBCPlantListing extends Component {
         }
     };
 
-	/**
-	* @method filterList
-	* @description FILTER DATALIST
-	*/
+    /**
+    * @method filterList
+    * @description FILTER DATALIST
+    */
     filterList = () => {
         const { country, state, city, } = this.state;
         let filterData = {
@@ -305,10 +303,10 @@ class ZBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({ country: [], state: [], city: [], }, () => {
             this.props.fetchStateDataAPI(0, () => { })
@@ -331,19 +329,19 @@ class ZBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
     onSubmit(values) {
     }
 
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, AddAccessibility, } = this.props;
         const { isEditFlag, isOpenVendor, isBulkUpload } = this.state;
@@ -512,7 +510,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'ZBCPlantListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

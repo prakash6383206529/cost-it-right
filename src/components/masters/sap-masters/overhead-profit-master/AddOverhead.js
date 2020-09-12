@@ -412,7 +412,6 @@ class AddOverhead extends Component {
         }
 
         if (status == 'rejected_file_type') {
-            //console.log('rejected_file_type', status, meta, file)
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
@@ -420,11 +419,10 @@ class AddOverhead extends Component {
     renderImages = () => {
         this.state.files && this.state.files.map(f => {
             const withOutTild = f.FileURL.replace('~', '')
-            //console.log('withOutTild', withOutTild)
             const fileURL = `${FILE_URL}${withOutTild}`;
             return (
                 <div className={'attachment-wrapper images'}>
-                    <img src={fileURL} />
+                    <img src={fileURL} alt={''} />
                     <button
                         type="button"
                         onClick={() => this.deleteFile(f.FileId)}>X</button>
@@ -434,7 +432,6 @@ class AddOverhead extends Component {
     }
 
     deleteFile = (FileId, OriginalFileName) => {
-        //console.log('removed', FileId, OriginalFileName)
         if (FileId != null) {
             let deleteData = {
                 Id: FileId,

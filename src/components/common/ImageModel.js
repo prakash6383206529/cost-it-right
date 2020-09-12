@@ -24,7 +24,6 @@ class ImageModel extends React.Component {
 
   render() {
     const { modelData } = this.props;
-    console.log("model data", modelData)
     return (
       <div>
         <Modal width="100%" height="100%" isOpen={this.props.modalVisible} toggle={this.toggle} className={this.props.className}>

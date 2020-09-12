@@ -19,7 +19,6 @@ export function formatLoginResult(res) {
             Permissions: res.Data.Permissions,
             IsVendorPlantConfigurable: res.Data.IsVendorPlantConfigurable,
         };
-        //console.log("userObj", userObj)
         return userObj;
     }
     return null;
@@ -33,7 +32,6 @@ export function formatAddress(address, city, state, country, zipCode) {
 
 
 export function formatCloneOpportunityListData(cloneOpportunityListApiData, cloneOpportunityListStoreData) {
-    // console.log("opportunityLISTApiData Nilesh => " + JSON.stringify(cloneOpportunityListApiData));
     let cloneOpportunityListUpdatedStoreData = cloneOpportunityListStoreData;
     let cloneListValue = [];
     let defaultObj = {
@@ -49,8 +47,6 @@ export function formatCloneOpportunityListData(cloneOpportunityListApiData, clon
             obj['value'] = val._id
             cloneListValue.push(obj);
         })
-        // console.log("cloneListValue =>" + JSON.stringify(cloneListValue));
-
         return cloneListValue;
     }
     return cloneListValue;
@@ -59,8 +55,6 @@ export function formatCloneOpportunityListData(cloneOpportunityListApiData, clon
 
 
 export function formatGetPlanResult(result) {
-    console.log(result.data.data, 'result.data.data');
-
     const planList = result.data.data.reduce((acc, current) => {
         const x = acc.find(item => item.code === current.code);
         if (!x) {

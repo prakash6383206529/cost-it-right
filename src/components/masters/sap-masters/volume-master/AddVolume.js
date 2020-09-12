@@ -167,14 +167,13 @@ class AddVolume extends Component {
     };
 
     setStartDate = (date) => {
-        console.log('date', new Date(date).getFullYear())
         this.setState({ year: date })
     }
 
     /**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -189,7 +188,6 @@ class AddVolume extends Component {
     }
 
     deleteItem = (ID, index) => {
-        console.log('clicked', ID, index)
         const { tableData } = this.state;
         // let filterData = tableData.filter(item => {
         //     if (item.Month == ID) return false;

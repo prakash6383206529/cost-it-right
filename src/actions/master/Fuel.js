@@ -386,7 +386,6 @@ export function updateVendorPowerDetail(data, callback) {
  * @description GET POWER DETAIL DATALIST
  */
 export function getPowerDetailDataList(data, callback) {
-    console.log('data: ', data);
     let plantID = data && data.plantID == undefined ? null : data.plantID;
     let stateID = data && data.stateID == undefined ? null : data.stateID;
     return (dispatch) => {

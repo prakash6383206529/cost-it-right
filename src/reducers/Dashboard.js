@@ -37,9 +37,6 @@ const initialState = {
 };
 
 export default function dashboardReducer(state = initialState, action) {
-    //console.log('initialState: ', initialState)
-    //console.log('action: ', action);
-
     switch (action.type) {
         case RESET_APP:
             {
@@ -68,14 +65,13 @@ export default function dashboardReducer(state = initialState, action) {
                 chartData: action.payload
             };
         case GET_IN_APP_NOTIFICATION_LIST_SUCCESS:
-        //console.log('inAppNotificationsList in reducer',action.payload)
-        if (action.loadMore) {
-            const List = {
-                inAppNotificationsList: [...state.matchingNotificationListData.inAppNotificationsList, ...action.payload.inAppNotificationsList],
-                currentPage: action.payload.currentPage,
-                nextPage: action.payload.nextPage,
-                totalRecords: action.payload.totalRecords,
-            };
+            if (action.loadMore) {
+                const List = {
+                    inAppNotificationsList: [...state.matchingNotificationListData.inAppNotificationsList, ...action.payload.inAppNotificationsList],
+                    currentPage: action.payload.currentPage,
+                    nextPage: action.payload.nextPage,
+                    totalRecords: action.payload.totalRecords,
+                };
                 state.matchingNotificationListData = List;
             } else {
                 state.matchingNotificationListData = action.payload;

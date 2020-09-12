@@ -97,10 +97,10 @@ class OperationListing extends Component {
         this.getTableListData(null, null, null, null)
     }
 
-	/**
-	* @method getTableListData
-	* @description Get user list data
-	*/
+    /**
+    * @method getTableListData
+    * @description Get user list data
+    */
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null) => {
         let filterData = {
             operation_for: operation_for,
@@ -122,7 +122,7 @@ class OperationListing extends Component {
         });
     }
 
-	/**
+    /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
@@ -163,10 +163,10 @@ class OperationListing extends Component {
         }
     }
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         this.setState({
             data: { isEditFlag: true, ID: Id },
@@ -174,10 +174,10 @@ class OperationListing extends Component {
         })
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete Item.
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete Item.
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -188,10 +188,10 @@ class OperationListing extends Component {
         return toastr.confirm(MESSAGES.OPERATION_DELETE_ALERT, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete item
+    */
     confirmDeleteItem = (ID) => {
         this.props.deleteOperationAPI(ID, (res) => {
             if (res.data.Result === true) {
@@ -201,10 +201,10 @@ class OperationListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
@@ -312,10 +312,10 @@ class OperationListing extends Component {
     };
 
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -337,10 +337,10 @@ class OperationListing extends Component {
     }
 
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -379,7 +379,6 @@ class OperationListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
         // ...
         return this.state.userData; // must return the data which you want to be exported
     }
@@ -392,10 +391,10 @@ class OperationListing extends Component {
         );
     }
 
-	/**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    /**
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         const { costingHead, selectedTechnology, vendorName, operationName, } = this.state;
         const costingHeadTemp = costingHead ? costingHead.value : null;
@@ -405,10 +404,10 @@ class OperationListing extends Component {
         this.getTableListData(costingHeadTemp, operationNameTemp, technologyTemp, vendorNameTemp)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             costingHead: [],
@@ -446,19 +445,19 @@ class OperationListing extends Component {
         })
     }
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
     onSubmit(values) {
     }
 
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
         const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
@@ -664,7 +663,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

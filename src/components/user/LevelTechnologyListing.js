@@ -98,8 +98,7 @@ class LevelTechnologyListing extends Component {
 	}
 
 	afterSearch = (searchText, result) => {
-		//console.log('search', searchText, result)
-		//...
+
 	}
 
 	/**

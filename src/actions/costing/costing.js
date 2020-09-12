@@ -183,7 +183,6 @@ export function getCostingByCostingId(costingId, supplier, callback) {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getCostingByCostingId}/${costingId}`, headers);
         request.then((response) => {
-            //console.log('res >>>>>>>>>>', response)
             if (response.data.Result) {
                 dispatch({
                     type: GET_COSTING_BY_COSTINGID,
@@ -191,12 +190,9 @@ export function getCostingByCostingId(costingId, supplier, callback) {
                     supplier: supplier,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            //callback(error);
             apiErrors(error);
         });
     };
@@ -285,9 +281,7 @@ export function getCostingOverHeadProByModelType(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
-            console.log("error head", error)
             dispatch({ type: API_FAILURE });
-            //apiErrors(error);
             callback(error.response);
         });
     };
@@ -302,7 +296,6 @@ export function saveCosting(data, callback) {
         const request = axios.post(API.saveCosting, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                console.log("ressssss", response)
                 // dispatch({
                 //     type: SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY,
                 //     payload: response.data.Data,
@@ -394,7 +387,6 @@ export function getCostingFreight(data, callback) {
         // dispatch({ type: API_REQUEST });
         const request = axios.post(`${API.getCostingFreight}`, data, headers);
         request.then((response) => {
-            console.log("response freight", response)
             if (response.data.Result) {
                 dispatch({
                     type: GET_FREIGHT_AMOUNT_DATA_SUCCESS,

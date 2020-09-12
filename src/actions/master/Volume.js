@@ -85,7 +85,6 @@ export function getVolumeData(VolumeId, callback) {
 export function getVolumeDataList(filterData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        console.log('filterData', filterData)
         const QueryParams = `costing_head=${filterData.costing_head}&year=${filterData.year}&month=${filterData.month}&vendor_id=${filterData.vendor_id}&plant_id=${filterData.plant_id}`
         axios.get(`${API.getVolumeDataList}?${QueryParams}`, { headers })
             .then((response) => {

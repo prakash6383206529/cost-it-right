@@ -38,22 +38,13 @@ export function getInterestRateAPI(callback) {
                     });
                     callback(response);
                 }
-                // else if (response.status == 204) {
-                //     toastr.error(response.statusText);
-                // } else {
-                //     toastr.error(MESSAGES.SOME_ERROR);
-                // }
             }).catch((error) => {
-                console.log("interest error", error)
-                dispatch({
-                    type: API_FAILURE
-                });
+                dispatch({ type: API_FAILURE });
                 callback(error);
                 apiErrors(error);
             });
     };
 }
-
 
 /**
  * @method fetchRMCategoryAPI

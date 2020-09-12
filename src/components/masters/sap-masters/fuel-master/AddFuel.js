@@ -683,7 +683,6 @@ export default connect(mapStateToProps, {
     form: 'AddFuel',
     enableReinitialize: true,
     onSubmitFail: errors => {
-        console.log('errors', errors)
         focusOnError(errors);
     },
 })(AddFuel));

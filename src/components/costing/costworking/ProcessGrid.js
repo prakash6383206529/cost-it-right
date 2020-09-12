@@ -284,7 +284,7 @@ class ProcessGrid extends Component {
     * @description Used to handle process
     */
     processHandler = (value, index, type) => {
-        console.log(">>>>", value, index, type)
+
     };
 
     setRowData = item => {

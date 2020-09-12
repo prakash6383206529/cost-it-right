@@ -83,29 +83,12 @@ class AddInterestRate extends Component {
         values.CreatedBy = loginUserId;
 
         if (this.props.isEditFlag) {
-            // console.log('values', values);
-            // const { uomId } = this.props;
-            // this.setState({ isSubmitted: true });
-            // let formData = {
-            //     Name: values.Name,
-            //     Title: values.Title,
-            //     Description: values.Description,
-            //     Id: uomId
-            // }
-            // this.props.updateUnitOfMeasurementAPI(uomId, formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
-            //         this.toggleModel();
-            //         this.props.getUnitOfMeasurementAPI(res => { });
-            //     } else {
-            //         toastr.error(MESSAGES.SOME_ERROR);
-            //     }
-            // });
+
         } else {
             this.props.createInterestRateAPI(values, (res) => {
                 if (res.data.Result === true) {
                     toastr.success(MESSAGES.OVERHEAD_PROFIT_ADDED_SUCCESS);
-                    { zthis.toggleModel() }
+                    { this.toggleModel() }
                 } else {
                     toastr.error(res.data.message);
                 }
@@ -427,15 +410,9 @@ class AddInterestRate extends Component {
 function mapStateToProps({ interestRate }) {
     if (interestRate && interestRate.interestRateComboData) {
         const { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements } = interestRate.interestRateComboData;
-        // console.log('technologyList: ', technologyList, technologyList);
-        // let initialValues = {};
-        // if (technologyList !== undefined && uniOfMeasurementList !== undefined) {
-        //     initialValues = {
-        //         technologyList,
-        //         uniOfMeasurementList
-        //     }
-        // }
-        return { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements };
+        let initialValues = {};
+
+        return { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, initialValues, UnitOfMeasurements };
     }
 }
 

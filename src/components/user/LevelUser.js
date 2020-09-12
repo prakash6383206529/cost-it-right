@@ -111,7 +111,6 @@ class LevelUser extends Component {
      */
     onSubmit(values) {
         const { technology, level, user } = this.state;
-        console.log("level values", values)
 
         // if (technology.length == 0 || level.length == 0 || user.length == 0) {
         //     return false;
@@ -123,7 +122,7 @@ class LevelUser extends Component {
             UserId: user.value,
             TechnologyId: technology.value,
         }
-        console.log('formData', formData)
+
         this.props.assignUserLevelAPI(formData, (res) => {
             if (res.data.Result) {
                 toastr.success(MESSAGES.ADD_LEVEL_USER_SUCCESSFULLY)
@@ -251,7 +250,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'LevelUser',
     onSubmitFail: errors => {
-        console.log('ddd', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

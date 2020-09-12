@@ -1165,7 +1165,6 @@ export function bulkUploadRMDomesticVBC(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadRMDomesticVBC, data, headers);
         request.then((response) => {
-            console.log('res bulk', response)
             if (response.status == 200) {
                 callback(response);
             }

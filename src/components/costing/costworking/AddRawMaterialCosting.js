@@ -42,7 +42,6 @@ class AddRawMaterialCosting extends Component {
    * @description Used to Submit the form
    */
     onSubmit = (values) => {
-        console.log('value', values);
 
         /** Update detail of the existing UOM  */
         // if (this.props.isEditFlag) {

@@ -98,7 +98,6 @@ class AddMachineType extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log('values', values)
         const { selectedLabourIds, IsActive } = this.state;
         const { MachineTypeId, isEditFlag } = this.props;
 

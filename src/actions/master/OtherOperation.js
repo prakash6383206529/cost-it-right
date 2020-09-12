@@ -256,7 +256,6 @@ export function deleteCEDotherOperationAPI(Id, callback) {
 export function getOperationsDataList(filterData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        console.log('filterData', filterData)
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}`, { headers })
             .then((response) => {

@@ -205,7 +205,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'LevelTechnology',
     onSubmitFail: errors => {
-        console.log('ddd', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

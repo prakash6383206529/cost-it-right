@@ -6,19 +6,7 @@ import {
     API_FAILURE,
     API_SUCCESS,
     LOGIN_SUCCESS,
-    UPDATE_PASSWORD_SUCCESS,
     REGISTER_SUCCESS,
-    FORGOT_PASSWORD_SUCCESS,
-    UPDATE_INTRO_STATUS,
-    VERIFY_OTP_SUCCESS,
-    RESEND_OTP_SUCCESS,
-    SOCIAL_MEDIA_LOGIN_SUCCESS,
-    LOGOUT_SUCCESS,
-    UPDATE_USER_ACCOUNT_DETAIL_SUCCESS,
-    SOCIAL_USER_DATA,
-    FETCH_USER_DATA,
-    INTERNAL_ROUTE_ID,
-    SEND_MESSAGE_SUCCESS,
     GET_ROLE_SUCCESS,
     GET_DEPARTMENT_SUCCESS,
     GET_LEVEL_USER_SUCCESS,
@@ -110,26 +98,6 @@ export default function authReducer(state = initialState, action) {
                 error: false,
                 loading: false
             };
-        // 		case UPDATE_PASSWORD_SUCCESS:
-        // 			return {
-        // 				...state,
-        // 				error: false,
-        // 				loading: false
-        // 			};
-
-        // 		case SOCIAL_MEDIA_LOGIN_SUCCESS:
-        // 			return {
-        // 				...state,
-        // 				userData: action.payload,
-        // 				error: '',
-        // 				loading: false
-        // 			};
-        // 		case UPDATE_USER_ACCOUNT_DETAIL_SUCCESS:
-        // 			return {
-        // 				...state,
-        // 				userData: action.payload,
-        // 				loading: false
-        // 			};
         case REGISTER_SUCCESS:
             return {
                 ...state,
@@ -255,58 +223,6 @@ export default function authReducer(state = initialState, action) {
                 error: true,
                 leftMenuData: action.payload
             };
-        // 		case FORGOT_PASSWORD_SUCCESS:
-        // 			return {
-        // 				...state,
-        // 				loading: false
-        // 			};
-        // 		case VERIFY_OTP_SUCCESS:
-        // 			return {
-        // 				...state,
-        // 				loading: false
-        // 			};
-
-        // 		case RESEND_OTP_SUCCESS:
-        // 			return {
-        // 				...state,
-        // 				loading: false
-        // 			};
-
-        // 		case FETCH_USER_DATA:
-        // 			{
-        // 				return {
-        // 					...state,
-        // 					userData: {
-        // 						...state.userData,
-        // 						...action.payload
-        // 					}
-        // 				};
-        // 			}
-        // 		case UPDATE_INTRO_STATUS:
-        // 			return {
-        // 				...state,
-        // 				isIntroShowed: action.payload,
-        // 			};
-        // 		case LOGOUT_SUCCESS:
-        // 			return {
-        // 				...state,
-        // 				loading: false
-        // 			};
-        // 		case SOCIAL_USER_DATA:
-        // 			return {
-        // 				...state,
-        // 				socialUserData: action.payload,
-        // 				loading: false
-        // 			};
-        // 		// case INTERNAL_ROUTE_ID:
-        // 		// 	return {
-        // 		// 		...state,
-        // 		// 		internalRouteID: action.payload,
-        // 		// 	};	
-        // 		case SEND_MESSAGE_SUCCESS :
-        // 			return {
-
-        // 			}
         default:
             return state;
     }

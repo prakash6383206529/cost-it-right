@@ -89,7 +89,6 @@ class AddOperation extends Component {
         if (prevProps.filedObj != this.props.filedObj) {
             const { filedObj } = this.props;
             if (filedObj && filedObj != undefined && filedObj.length > 4) {
-                console.log('filedObj', filedObj)
             }
         }
     }
@@ -340,7 +339,6 @@ class AddOperation extends Component {
         }
 
         if (status == 'rejected_file_type') {
-            //console.log('rejected_file_type', status, meta, file)
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
@@ -348,11 +346,10 @@ class AddOperation extends Component {
     renderImages = () => {
         this.state.files && this.state.files.map(f => {
             const withOutTild = f.FileURL.replace('~', '')
-            //console.log('withOutTild', withOutTild)
             const fileURL = `${FILE_URL}${withOutTild}`;
             return (
                 <div className={'attachment-wrapper images'}>
-                    <img src={fileURL} />
+                    <img src={fileURL} alt={''} />
                     <button
                         type="button"
                         onClick={() => this.deleteFile(f.FileId)}>X</button>
@@ -362,7 +359,6 @@ class AddOperation extends Component {
     }
 
     deleteFile = (FileId, OriginalFileName) => {
-        //console.log('removed', FileId, OriginalFileName)
         if (FileId != null) {
             let deleteData = {
                 Id: FileId,

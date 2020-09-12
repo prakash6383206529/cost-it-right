@@ -46,7 +46,6 @@ class CategoryMaster extends Component {
      * @description  Category type detail edit section
      */
     editCategory = (CategoryId) => {
-        console.log('CategoryId', CategoryId)
         this.setState({
             isOpen: true,
             ID: CategoryId,

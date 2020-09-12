@@ -10,7 +10,6 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 * @param res
 */
 export const apiErrors = (res) => {
-    console.log('apiErrors=> ', res, res.response);
     const response = res ? res.response : undefined;
 
     if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
@@ -239,7 +238,7 @@ export function renderOptionList(categoriesMaster) {
 }
 
 export function renderAction(menuData = [], Master = '', actionKey = '') {
-    console.log('HI')
+
 }
 
 export function machineRateCalculation(Data) {

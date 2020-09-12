@@ -58,7 +58,6 @@ export function createPlantAPI(data, callback) {
  * @description get process list
  */
 export function getPlantDataAPI(isVe, callback) {
-    console.log('isVendor', isVe)
     return (dispatch) => {
         const request = axios.get(`${API.getAllPlantAPI}?isVendor=${isVe}`, headers);
         request.then((response) => {
@@ -164,7 +163,6 @@ export function activeInactiveStatus(requestData, callback) {
  * @description get process list
  */
 export function getFilteredPlantList(filterData, callback) {
-    console.log('filterData', filterData)
     return (dispatch) => {
         const qParams = `country_id=${filterData.country}&state_id=${filterData.state}&city_id=${filterData.city}&is_vendor=${filterData.is_vendor}`
         const request = axios.get(`${API.getFilteredPlantList}?${qParams}`, headers);

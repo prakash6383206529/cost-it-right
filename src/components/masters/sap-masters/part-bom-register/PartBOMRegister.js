@@ -657,7 +657,6 @@ class PartBOMRegister extends Component {
     * @description Used to handle Child Part
     */
     ChildPartHandler = (value, index, type) => {
-        console.log(">>>>", value, index, type)
         this.props.getOnePartsAPI(value, true, res => {
             const { partData } = this.props;
             if (partData && partData != undefined) {
@@ -679,7 +678,7 @@ class PartBOMRegister extends Component {
     * @description Used to handle process
     */
     newPartRMTypeHandler = (value, index, type) => {
-        console.log(" newPartRMTypeHandler ", value, index, type)
+
     };
 
     /**
@@ -687,7 +686,7 @@ class PartBOMRegister extends Component {
     * @description Used to handle process
     */
     uomChildHandler = (value, index, type) => {
-        console.log(" uomChildHandler ", value, index, type)
+
     };
 
     /**
@@ -850,8 +849,6 @@ class PartBOMRegister extends Component {
                 IsChildPart: true,
                 BOMNumber: AssemblyPartData.BOMNumber
             }
-
-            console.log('formData1', updateData)
 
             /** Add new detail of the BOM  */
             this.props.updateAssemblyPartAPI(updateData, (res) => {
@@ -1267,7 +1264,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'PartBOMRegister',
     onSubmitFail: errors => {
-        console.log('errorsssss', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

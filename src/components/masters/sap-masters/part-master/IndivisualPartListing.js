@@ -40,10 +40,10 @@ class IndivisualPartListing extends Component {
         this.getTableListData()
     }
 
-	/**
-	* @method getTableListData
-	* @description Get user list data
-	*/
+    /**
+    * @method getTableListData
+    * @description Get user list data
+    */
     getTableListData = () => {
         this.props.getPartDataList((res) => {
             if (res.status == 204 && res.data == '') {
@@ -59,10 +59,10 @@ class IndivisualPartListing extends Component {
         })
     }
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         let requestData = {
             isEditFlag: true,
@@ -71,10 +71,10 @@ class IndivisualPartListing extends Component {
         this.props.getDetails(requestData)
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete part
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete part
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -85,10 +85,10 @@ class IndivisualPartListing extends Component {
         return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete user item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete user item
+    */
     confirmDeleteItem = (ID) => {
         this.props.deletePart(ID, (res) => {
             if (res.data.Result === true) {
@@ -98,10 +98,10 @@ class IndivisualPartListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -129,10 +129,10 @@ class IndivisualPartListing extends Component {
         // })
     }
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -153,10 +153,10 @@ class IndivisualPartListing extends Component {
         )
     }
 
-	/**
-	* @method checkIsVendorFormatter
-	* @description Renders IsVendor
-	*/
+    /**
+    * @method checkIsVendorFormatter
+    * @description Renders IsVendor
+    */
     checkIsVendorFormatter = (cell, row, enumObject, rowIndex) => {
 
         return (
@@ -168,10 +168,10 @@ class IndivisualPartListing extends Component {
 
 
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -193,8 +193,6 @@ class IndivisualPartListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
-        // ...
         return this.state.userData; // must return the data which you want to be exported
     }
 
@@ -224,18 +222,18 @@ class IndivisualPartListing extends Component {
     }
 
 
-	/**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    /**
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
 
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
 
     }
@@ -244,18 +242,18 @@ class IndivisualPartListing extends Component {
         this.props.formToggle()
     }
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
     onSubmit(values) {
     }
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
         const { isOpen, isEditFlag, editIndex, PartId, departmentType, roleType } = this.state;
@@ -357,7 +355,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'IndivisualPartListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

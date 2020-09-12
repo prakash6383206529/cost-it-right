@@ -83,7 +83,6 @@ class Main extends Component {
 
   render() {
     const isLogin = reactLocalStorage.getObject("isUserLoggedIn");
-    //console.log("isLogin", isLogin);
 
     return (
       <Suspense fallback={<Loader />}>

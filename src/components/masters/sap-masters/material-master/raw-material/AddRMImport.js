@@ -603,7 +603,6 @@ class AddRMImport extends Component {
         const { isEditFlag, files, } = this.state;
 
         if (status == 'removed') {
-            console.log('removed')
             const removedFileName = file.name;
             let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
             this.setState({ files: tempArr })
@@ -621,7 +620,6 @@ class AddRMImport extends Component {
         }
 
         if (status == 'rejected_file_type') {
-            console.log('rejected_file_type', status, meta, file)
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
@@ -629,11 +627,10 @@ class AddRMImport extends Component {
     renderImages = () => {
         this.state.files && this.state.files.map(f => {
             const withOutTild = f.FileURL.replace('~', '')
-            console.log('withOutTild', withOutTild)
             const fileURL = `${FILE_URL}${withOutTild}`;
             return (
                 <div className={'attachment-wrapper images'}>
-                    <img src={fileURL} />
+                    <img src={fileURL} alt={''} />
                     <button
                         type="button"
                         onClick={() => this.deleteFile(f.FileId)}>X</button>

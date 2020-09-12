@@ -175,7 +175,6 @@ class AddVendorPlantDrawer extends Component {
             }
             return false;
         })
-        //console.log('isContent', isContent)
         return (isContent == null || isContent == undefined) ? true : false;
     }
 

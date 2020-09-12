@@ -95,10 +95,10 @@ class VendorListing extends Component {
         this.getTableListData(null, null, null)
     }
 
-	/**
-	* @method getTableListData
-	* @description GET VENDOR DATA LIST
-	*/
+    /**
+    * @method getTableListData
+    * @description GET VENDOR DATA LIST
+    */
     getTableListData = (vendorType = null, vendorName = null, country = null) => {
         let filterData = {
             vendor_type: vendorType,
@@ -119,7 +119,7 @@ class VendorListing extends Component {
         });
     }
 
-	/**
+    /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
@@ -151,7 +151,7 @@ class VendorListing extends Component {
     }
 
 
-	/**
+    /**
      * @method roleHandler
      * @description Used to handle 
      */
@@ -159,10 +159,10 @@ class VendorListing extends Component {
     //     this.setState({ role: newValue });
     // };
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         let requestData = {
             isEditFlag: true,
@@ -176,10 +176,10 @@ class VendorListing extends Component {
         })
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete Item.
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete Item.
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -190,10 +190,10 @@ class VendorListing extends Component {
         return toastr.confirm(`Are you sure you want to delete this supplier?`, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete item
+    */
     confirmDeleteItem = (ID) => {
         this.props.deleteSupplierAPI(ID, (res) => {
             if (res.data.Result === true) {
@@ -203,10 +203,10 @@ class VendorListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
@@ -281,10 +281,10 @@ class VendorListing extends Component {
         }
     };
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         const { ActivateAccessibility } = this.state;
         if (ActivateAccessibility) {
@@ -319,10 +319,10 @@ class VendorListing extends Component {
     }
 
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -336,8 +336,6 @@ class VendorListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
-        // ...
         return this.state.userData; // must return the data which you want to be exported
     }
 
@@ -359,10 +357,10 @@ class VendorListing extends Component {
         })
     }
 
-	/**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    /**
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         const { vendorType, vendorName, country } = this.state;
         const vType = vendorType && vendorType != null ? vendorType.value : null;
@@ -371,10 +369,10 @@ class VendorListing extends Component {
         this.getTableListData(vType, vName, Country)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             vendorType: [],
@@ -402,18 +400,18 @@ class VendorListing extends Component {
         })
     }
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
     onSubmit(values) {
     }
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
@@ -604,7 +602,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'VendorListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

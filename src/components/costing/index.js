@@ -125,7 +125,6 @@ class Costing extends Component {
                             obj = {}
                         }
                     })
-                    console.log("customData", fileData)
                     this.setState({
                         cols: resp.cols,
                         rows: resp.rows,

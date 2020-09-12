@@ -15,9 +15,9 @@ class Breadcrumb extends Component {
 	}
 
 	/**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
+	* @method componentDidMount
+	* @description Called after rendering the component
+	*/
 	componentDidMount() {
 
 	}
@@ -30,7 +30,6 @@ class Breadcrumb extends Component {
 				const breadObj = leftMenuData && leftMenuData.find(el => el.NavigationURL == location.pathname);
 				const menuObj = menusData && menusData.find(el => el.ModuleId == ModuleID);
 				const cleanURL = menuObj && menuObj.NavigationURL.replace('/', '')
-				//console.log('location', location.pathname, breadObj && breadObj)
 				this.setState({
 					secondTitle: menuObj && menuObj.ModuleName,
 					secondURL: cleanURL,

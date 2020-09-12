@@ -39,10 +39,10 @@ class VBCPlantListing extends Component {
         this.props.fetchCountryDataAPI(() => { })
     }
 
-	/**
-	* @method getTableListData
-	* @description Get user list data
-	*/
+    /**
+    * @method getTableListData
+    * @description Get user list data
+    */
     getTableListData = () => {
         this.props.getPlantDataAPI(true, (res) => {
             if (res && res.data && res.status === 200) {
@@ -52,10 +52,10 @@ class VBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         this.setState({
             isOpenVendor: true,
@@ -64,10 +64,10 @@ class VBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete part
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete part
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -78,10 +78,10 @@ class VBCPlantListing extends Component {
         return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete user item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete user item
+    */
     confirmDeleteItem = (Id) => {
         this.props.deletePlantAPI(Id, (res) => {
             if (res.data.Result === true) {
@@ -91,10 +91,10 @@ class VBCPlantListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
@@ -133,10 +133,10 @@ class VBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         const { ActivateAccessibility } = this.props;
         if (ActivateAccessibility) {
@@ -171,10 +171,10 @@ class VBCPlantListing extends Component {
         }
     }
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -188,8 +188,6 @@ class VBCPlantListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
-        // ...
         return this.state.userData; // must return the data which you want to be exported
     }
 
@@ -330,19 +328,19 @@ class VBCPlantListing extends Component {
         })
     }
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
     onSubmit(values) {
     }
 
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, AddAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
@@ -514,7 +512,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'ZBCPlantListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

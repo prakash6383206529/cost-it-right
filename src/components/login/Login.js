@@ -51,7 +51,6 @@ class Login extends Component {
    * @param values
    */
   onSubmit(values) {
-    //console.log("value", values)
 
     this.props.loginUserAPI(values, (res) => {
       if (res && res.data && res.data.Result) {

@@ -85,10 +85,10 @@ class LabourListing extends Component {
         this.getTableListData()
     }
 
-	/**
-	* @method getTableListData
-	* @description Get Data List
-	*/
+    /**
+    * @method getTableListData
+    * @description Get Data List
+    */
     getTableListData = (employment_terms = '', state = '', plant = '', labour_type = '', machine_type = '') => {
         let filterData = {
             employment_terms: employment_terms,
@@ -111,7 +111,7 @@ class LabourListing extends Component {
         });
     }
 
-	/**
+    /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
@@ -160,10 +160,10 @@ class LabourListing extends Component {
         }
     }
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         this.setState({
             data: { isEditFlag: true, ID: Id },
@@ -171,10 +171,10 @@ class LabourListing extends Component {
         })
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete Item.
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete Item.
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -185,10 +185,10 @@ class LabourListing extends Component {
         return toastr.confirm(MESSAGES.LABOUR_DELETE_ALERT, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete item
+    */
     confirmDeleteItem = (ID) => {
         this.props.deleteLabour(ID, (res) => {
             if (res.data.Result === true) {
@@ -198,10 +198,10 @@ class LabourListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
@@ -299,10 +299,10 @@ class LabourListing extends Component {
     };
 
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -322,10 +322,10 @@ class LabourListing extends Component {
         )
     }
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -367,7 +367,6 @@ class LabourListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
         // ...
         return this.state.userData; // must return the data which you want to be exported
     }
@@ -380,10 +379,10 @@ class LabourListing extends Component {
         );
     }
 
-	/**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    /**
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         const { EmploymentTerms, StateName, plant, labourType, machineType } = this.state;
         const ETerms = EmploymentTerms ? EmploymentTerms.value : '';
@@ -394,10 +393,10 @@ class LabourListing extends Component {
         this.getTableListData(ETerms, State, Plant, labour, machine)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             EmploymentTerms: [],
@@ -414,17 +413,17 @@ class LabourListing extends Component {
     }
 
     /**
-	* @method formToggle
-	* @description OPEN ADD FORM
-	*/
+    * @method formToggle
+    * @description OPEN ADD FORM
+    */
     formToggle = () => {
         this.setState({ toggleForm: true })
     }
 
     /**
-	* @method hideForm
-	* @description HIDE ADD FORM
-	*/
+    * @method hideForm
+    * @description HIDE ADD FORM
+    */
     hideForm = () => {
         this.setState({
             toggleForm: false,
@@ -435,36 +434,36 @@ class LabourListing extends Component {
     }
 
     /**
-	* @method bulkToggle
-	* @description OPEN BULK UPLOAD DRAWER
-	*/
+    * @method bulkToggle
+    * @description OPEN BULK UPLOAD DRAWER
+    */
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
 
     /**
-	* @method closeBulkUploadDrawer
-	* @description CLOSED BULK UPLOAD DRAWER
-	*/
+    * @method closeBulkUploadDrawer
+    * @description CLOSED BULK UPLOAD DRAWER
+    */
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
             this.getTableListData(null, null, null, null)
         })
     }
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
     onSubmit(values) {
     }
 
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
         const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
@@ -682,7 +681,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'LabourListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

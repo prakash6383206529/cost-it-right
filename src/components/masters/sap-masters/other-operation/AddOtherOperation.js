@@ -112,7 +112,6 @@ class AddOtherOperation extends Component {
     * @description Used to technology handle
     */
     technologyHandler = (e) => {
-        console.log('clicked')
         this.setState({ technologyValue: this.props.Technologies[0].value });
     }
 

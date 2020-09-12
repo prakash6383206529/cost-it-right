@@ -308,10 +308,6 @@ class AddRMDomestic extends Component {
                         const specObj = rmSpecification && rmSpecification.find(item => item.Value == Data.RMSpec)
                         const categoryObj = categoryList && categoryList.find(item => item.Value == Data.Category)
 
-                        console.log('materialNameObj', materialNameObj)
-                        console.log('gradeObj', gradeObj)
-                        console.log('specObj', specObj)
-
                         let plantArray = [];
                         Data && Data.Plant.map((item) => {
                             plantArray.push({ Text: item.PlantName, Value: item.PlantId })
@@ -643,7 +639,6 @@ class AddRMDomestic extends Component {
         }
 
         if (status == 'rejected_file_type') {
-            console.log('rejected_file_type', status, meta, file)
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
@@ -651,11 +646,10 @@ class AddRMDomestic extends Component {
     renderImages = () => {
         this.state.files && this.state.files.map(f => {
             const withOutTild = f.FileURL.replace('~', '')
-            console.log('withOutTild', withOutTild)
             const fileURL = `${FILE_URL}${withOutTild}`;
             return (
                 <div className={'attachment-wrapper images'}>
-                    <img src={fileURL} />
+                    <img src={fileURL} alt={''} />
                     <button
                         type="button"
                         onClick={() => this.deleteFile(f.FileId)}>X</button>
@@ -665,7 +659,6 @@ class AddRMDomestic extends Component {
     }
 
     deleteFile = (FileId, OriginalFileName) => {
-        console.log('removed', FileId, OriginalFileName)
         if (FileId != null) {
             let deleteData = {
                 Id: FileId,
@@ -718,7 +711,6 @@ class AddRMDomestic extends Component {
             let updatedFiles = files.map((file) => {
                 return { ...file, ContextId: RawMaterialID }
             })
-            //console.log('updatedFiles', updatedFiles)
             let requestData = {
                 RawMaterialId: RawMaterialID,
                 IsVendor: IsVendor,
@@ -1413,7 +1405,6 @@ export default connect(mapStateToProps, {
     form: 'AddRMDomestic',
     enableReinitialize: true,
     onSubmitFail: errors => {
-        console.log('errors', errors)
         focusOnError(errors);
     },
 })(AddRMDomestic));

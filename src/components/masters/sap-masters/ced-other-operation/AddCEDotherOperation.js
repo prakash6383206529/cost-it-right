@@ -155,7 +155,6 @@ class AddCEDotherOperation extends Component {
     * @description Used to handle supplier
     */
     supplierHandler = (e) => {
-        console.log('clicked')
         this.setState({ SupplierId: e.target.value });
     }
 

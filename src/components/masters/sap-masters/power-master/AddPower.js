@@ -230,7 +230,6 @@ class AddPower extends Component {
     */
     costCalculation = () => {
         const { fieldsObj } = this.props;
-        console.log('fieldsObj', fieldsObj)
         const totalCost = fieldsObj.FuelCostPerUnit * fieldsObj.TotalUnitCharge;
         this.props.change('NetPowerCost', trimFourDecimalPlace(totalCost))
     }

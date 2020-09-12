@@ -24,7 +24,6 @@ class CEDotherOperations extends Component {
      * @description  called before rendering the component
      */
     componentDidMount() {
-        console.log("dfsdfsdfsdfsdf");
         const { supplierIdForCEDOtherOps } = this.props;
         this.props.getCEDOtherOperationBySupplierID(supplierIdForCEDOtherOps, () => { });
     }

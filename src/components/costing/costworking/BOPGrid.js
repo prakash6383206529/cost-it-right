@@ -193,7 +193,6 @@ class BOPGrid extends Component {
     }
 
     setRowData = item => {
-        console.log('item BOP', item)
         const { GridselectedIndex } = this.state;
 
         this.props.change(`LinkedBoughtOutParts[${GridselectedIndex}]['BoughtOutPartId']`, item.BoughtOutPartId);

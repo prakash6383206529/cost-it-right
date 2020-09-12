@@ -33,7 +33,6 @@ class MapComponent extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
-        // console.log('this.props.userCurrentLatitude', this.props.userCurrentLatitude);
 
         if ((this.props.mapData && this.props.mapData.length > 0 && this.props.mapData[0].loc[0] !== 0 && this.props.mapData[0].loc[0] !== '0' && this.props.mapData[0].loc[0] !== '' &&
             this.props.mapData[0].loc[0] !== 'undefined' && this.props.userCurrentLatitude !== undefined) &&
@@ -70,7 +69,6 @@ class MapComponent extends Component {
     * @description called when props changed
     */
     componentWillReceiveProps(nextprops) {
-        //console.log('nextprops.mapData.length',nextprops.mapData.length)
         if (nextprops.mapData.length > 0) {
             const initialRegion = {
                 latitude: parseFloat(nextprops.mapData[0].loc[0]),
@@ -142,14 +140,14 @@ class MapComponent extends Component {
                 isOpen: false,
                 selected: '',
             }), {
-                    onToggleOpen: ({ isOpen }) => () => ({
-                        isOpen: !isOpen,
-                    }),
-                    showInfo: ({ showInfo, isOpen }) => (a) => ({
-                        isOpen: !isOpen,
-                        showInfoIndex: a
-                    })
+                onToggleOpen: ({ isOpen }) => () => ({
+                    isOpen: !isOpen,
                 }),
+                showInfo: ({ showInfo, isOpen }) => (a) => ({
+                    isOpen: !isOpen,
+                    showInfoIndex: a
+                })
+            }),
             withProps({
                 googleMapURL: process.env.REACT_APP_GOOGLE_MAP_URL,
                 loadingElement: <div className="loading-element" />,
@@ -162,7 +160,6 @@ class MapComponent extends Component {
             <GoogleMap className="google-map" defaultZoom={12} defaultCenter={{ lat: defaultCenters.lat, lng: defaultCenters.lng }}>
                 {/* <Spiderfy> */}
                 {mapData && mapData.map((item, i) => {
-                    // console.log('item on map', item)
                     var icon = '../../images/mapletter.png';
                     if (item.loc) {
                         return <Marker key={i}
@@ -195,7 +192,6 @@ class MapComponent extends Component {
 */
 function mapStateToProps({ auth }) {
     const { userData } = auth;
-    // console.log('userData', userData);
     return {
         userData,
     };

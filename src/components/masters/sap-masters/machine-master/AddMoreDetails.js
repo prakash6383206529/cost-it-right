@@ -103,7 +103,6 @@ class AddMoreDetails extends Component {
         this.props.getLabourTypeSelectList(() => { })
 
         if (data && data != undefined) {
-            console.log('data', data)
 
         }
     }

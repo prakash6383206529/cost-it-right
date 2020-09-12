@@ -66,10 +66,10 @@ class ReasonListing extends Component {
         this.getTableListData()
     }
 
-	/**
-	* @method getTableListData
-	* @description Get user list data
-	*/
+    /**
+    * @method getTableListData
+    * @description Get user list data
+    */
     getTableListData = () => {
         this.props.getAllReasonAPI(res => {
             if (res.status == 204 && res.data == '') {
@@ -85,18 +85,18 @@ class ReasonListing extends Component {
         });
     }
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         this.setState({ isEditFlag: true, isOpenDrawer: true, ID: Id })
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete Item.
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete Item.
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -107,10 +107,10 @@ class ReasonListing extends Component {
         return toastr.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete item
+    */
     confirmDeleteItem = (ID) => {
         this.props.deleteReasonAPI(ID, (res) => {
             if (res.data.Result === true) {
@@ -120,10 +120,10 @@ class ReasonListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         const { EditAccessibility } = this.state;
         return (
@@ -134,10 +134,10 @@ class ReasonListing extends Component {
         )
     }
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -176,10 +176,10 @@ class ReasonListing extends Component {
     }
 
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -193,8 +193,6 @@ class ReasonListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
-        // ...
         return this.state.userData; // must return the data which you want to be exported
     }
 
@@ -220,10 +218,10 @@ class ReasonListing extends Component {
         })
     }
 
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
         const { isEditFlag, isOpenDrawer, AddAccessibility, } = this.state;
@@ -310,7 +308,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'ReasonListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

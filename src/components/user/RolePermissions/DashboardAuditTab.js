@@ -27,9 +27,9 @@ class DashboardAuditTab extends Component {
     }
 
     /**
-	* @method componentDidMount
-	* @description used to called after mounting component
-	*/
+    * @method componentDidMount
+    * @description used to called after mounting component
+    */
     componentDidMount() {
 
     }
@@ -64,14 +64,13 @@ class DashboardAuditTab extends Component {
 
     //Below code for Table rendering...... 
 
-	/**
-	* @method renderActionHeads
-	* @description used to add more permission for user
-	*/
+    /**
+    * @method renderActionHeads
+    * @description used to add more permission for user
+    */
     renderActionHeads = (actionHeads) => {
         const { actionData } = this.state;
         let actionNames = actionData && actionData.find(el => el.ModuleName == DASHBOARD_AND_AUDIT)
-        //console.log('actionNames', actionNames)
         if (actionNames != undefined) {
             return actionHeads && actionHeads.map((item, index) => {
                 if (item.Value == 0) return false;
@@ -87,10 +86,10 @@ class DashboardAuditTab extends Component {
         }
     }
 
-	/**
-	* @method moduleHandler
-	* @description used to checked module
-	*/
+    /**
+    * @method moduleHandler
+    * @description used to checked module
+    */
     moduleHandler = (index) => {
         //alert('hi')
         const { Modules, checkedAll } = this.state;
@@ -122,9 +121,9 @@ class DashboardAuditTab extends Component {
     }
 
     /**
-	* @method isCheckModule
-	* @description used to select module's action row (Horizontally)
-	*/
+    * @method isCheckModule
+    * @description used to select module's action row (Horizontally)
+    */
     isCheckModule = (actionData) => {
         let tempArray = actionData && actionData.filter(item => item.IsChecked == true)
         if (actionData && actionData != undefined) {
@@ -132,10 +131,10 @@ class DashboardAuditTab extends Component {
         }
     }
 
-	/**
-	* @method isCheckAll
-	* @description used to select module's action row (Horizontally)
-	*/
+    /**
+    * @method isCheckAll
+    * @description used to select module's action row (Horizontally)
+    */
     isCheckAll = (parentIndex, actionData) => {
         const { Modules, actionSelectList } = this.state;
 
@@ -171,10 +170,10 @@ class DashboardAuditTab extends Component {
         }
     }
 
-	/**
-	* @method renderAction
-	* @description used to render row of actions
-	*/
+    /**
+    * @method renderAction
+    * @description used to render row of actions
+    */
     renderAction = (actions, parentIndex) => {
         const { actionSelectList } = this.state;
 
@@ -207,10 +206,10 @@ class DashboardAuditTab extends Component {
         })
     }
 
-	/**
-	* @method actionCheckHandler
-	* @description Used to check/uncheck action's checkbox
-	*/
+    /**
+    * @method actionCheckHandler
+    * @description Used to check/uncheck action's checkbox
+    */
     actionCheckHandler = (parentIndex, childIndex) => {
         const { Modules } = this.state;
 
@@ -243,10 +242,10 @@ class DashboardAuditTab extends Component {
         this.props.permissions(Modules, DASHBOARD_AND_AUDIT)
     }
 
-	/**
-	* @method cancel
-	* @description used to cancel role edit
-	*/
+    /**
+    * @method cancel
+    * @description used to cancel role edit
+    */
     cancel = () => {
 
     }

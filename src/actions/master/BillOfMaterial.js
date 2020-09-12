@@ -203,9 +203,7 @@ export function checkCostingExistForPart(PartId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             const response = error ? error.response : undefined;
-            console.log("response >>>", response)
             callback(response.data.Message);
-            //apiErrors(error);
         });
     };
 }

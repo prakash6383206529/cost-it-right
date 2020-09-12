@@ -104,7 +104,6 @@ class AddFreightModal extends Component {
     }
 
     onSubmit = (values) => {
-        console.log("freight values", values)
         this.props.onCancelFreight(values.txtTotalCost)
     }
 

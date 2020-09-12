@@ -350,8 +350,6 @@ class UsersListing extends Component {
 	}
 
 	onExportToCSV = (row) => {
-		console.log('row', row)
-		// ...
 		return this.state.userData; // must return the data which you want to be exported
 	}
 
@@ -564,7 +562,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
 	form: 'UsersListing',
 	onSubmitFail: errors => {
-		//console.log('Register errors', errors)
 		focusOnError(errors);
 	},
 	enableReinitialize: true,

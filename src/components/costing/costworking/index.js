@@ -515,7 +515,6 @@ class CostWorking extends Component {
      */
     QuantityHandler = (e, Quantity, index) => {
         const { getCostingDetailData } = this.props;
-        console.log(e.target.value, Quantity, index)
 
         this.setState({
             Quantity: e.target.value

@@ -94,7 +94,6 @@ class BulkUpload extends Component {
         let fileObj = event.target.files[0];
         let fileHeads = [];
         let uploadfileName = fileObj.name;
-        //console.log('uploadfileName: ', uploadfileName);
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
@@ -132,7 +131,6 @@ class BulkUpload extends Component {
                             obj = {}
                         }
                     })
-                    //console.log("customData", fileData)
                     this.setState({
                         cols: resp.cols,
                         rows: resp.rows,

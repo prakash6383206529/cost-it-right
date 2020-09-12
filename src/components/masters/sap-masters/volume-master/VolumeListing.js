@@ -56,10 +56,10 @@ class VolumeListing extends Component {
         this.getTableListData(null, null, null, null, null)
     }
 
-	/**
-	* @method getTableListData
-	* @description Get user list data
-	*/
+    /**
+    * @method getTableListData
+    * @description Get user list data
+    */
     getTableListData = (costing_head = null, year = null, month = null, vendor_id = null, plant_id = null) => {
         let filterData = {
             costing_head: costing_head,
@@ -82,7 +82,7 @@ class VolumeListing extends Component {
         });
     }
 
-	/**
+    /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
@@ -126,10 +126,10 @@ class VolumeListing extends Component {
         }
     }
 
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+    /**
+    * @method editItemDetails
+    * @description confirm edit item
+    */
     editItemDetails = (Id) => {
         let requestData = {
             isEditFlag: true,
@@ -138,10 +138,10 @@ class VolumeListing extends Component {
         this.props.getDetail(requestData)
     }
 
-	/**
-	* @method deleteItem
-	* @description confirm delete Item.
-	*/
+    /**
+    * @method deleteItem
+    * @description confirm delete Item.
+    */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
@@ -152,10 +152,10 @@ class VolumeListing extends Component {
         return toastr.confirm(MESSAGES.VOLUME_DELETE_ALERT, toastrConfirmOptions);
     }
 
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete item
-	*/
+    /**
+    * @method confirmDeleteItem
+    * @description confirm delete item
+    */
     confirmDeleteItem = (ID) => {
         this.props.deleteVolume(ID, (res) => {
             if (res.data.Result === true) {
@@ -165,10 +165,10 @@ class VolumeListing extends Component {
         });
     }
 
-	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -257,10 +257,10 @@ class VolumeListing extends Component {
         }
     };
 
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -281,10 +281,10 @@ class VolumeListing extends Component {
         )
     }
 
-	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
     indexFormatter = (cell, row, enumObject, rowIndex) => {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
@@ -323,8 +323,6 @@ class VolumeListing extends Component {
     }
 
     onExportToCSV = (row) => {
-        console.log('row', row)
-        // ...
         return this.state.userData; // must return the data which you want to be exported
     }
 
@@ -336,10 +334,10 @@ class VolumeListing extends Component {
         );
     }
 
-	/**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    /**
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         const { costingHead, year, month, vendorName, plant } = this.state;
         const costingHeadTemp = costingHead ? costingHead.value : null;
@@ -350,10 +348,10 @@ class VolumeListing extends Component {
         this.getTableListData(costingHeadTemp, yearTemp, monthTemp, vendorNameTemp, plantTemp)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             costingHead: [],
@@ -370,18 +368,18 @@ class VolumeListing extends Component {
         this.props.formToggle()
     }
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
+    /**
+    * @name onSubmit
+    * @param values
+    * @desc Submit the signup form values.
+    * @returns {{}}
+    */
     onSubmit(values) {
     }
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+    /**
+    * @method render
+    * @description Renders the component
+    */
     render() {
         const { handleSubmit, pristine, submitting, } = this.props;
         const { isOpen, isEditFlag } = this.state;
@@ -578,7 +576,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'VolumeListing',
     onSubmitFail: errors => {
-        //console.log('Register errors', errors)
         focusOnError(errors);
     },
     enableReinitialize: true,

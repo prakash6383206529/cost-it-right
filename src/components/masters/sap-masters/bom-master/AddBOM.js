@@ -95,7 +95,6 @@ class AddBOM extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        console.log("values", values)
         const { selectedParts, materialType, selectedUOM, assyPartNo, ChildPart, plantID } = this.state;
         let plantArray = [];
         selectedParts && selectedParts.map((item, i) => {
@@ -127,10 +126,8 @@ class AddBOM extends Component {
             PartType: materialType.label,
             IsActive: true
         }
-        console.log("formData1", formData)
 
         if (assyPartNo.hasOwnProperty('value') && ChildPart.hasOwnProperty('value')) {
-            console.log("if >>>>", assyPartNo, ChildPart)
             if (assyPartNo.value == ChildPart.value) {
                 formData.PartId = assyPartNo.value;
                 formData.PartNumber = assyPartNo.label;
@@ -139,7 +136,6 @@ class AddBOM extends Component {
                 formData.PartNumber = ChildPart.label;
             }
         }
-        console.log("formData2", formData)
 
         this.props.createBOMAPI(formData, (res) => {
             if (res.data.Result === true) {
@@ -156,14 +152,8 @@ class AddBOM extends Component {
     * @description Used show type of listing
     */
     renderTypeOfListing = (label) => {
-        const { uniOfMeasurementList, partList, materialTypeList, rowMaterialDetail, plantList } = this.props;
+        const { uniOfMeasurementList, partList, rowMaterialDetail, plantList } = this.props;
         const temp = [];
-        // if (label === 'material') {
-        //     materialTypeList && materialTypeList.map(item =>
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     );
-        //     return temp;
-        // }
         if (label === 'material') {
             rowMaterialDetail && rowMaterialDetail.map(item =>
                 temp.push({ label: item.RawMaterialName, value: item.RawMaterialId })

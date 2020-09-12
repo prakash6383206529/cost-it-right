@@ -113,7 +113,7 @@ class AddChildDrawer extends Component {
             let formData = {
 
             }
-            console.log('formData', formData)
+
             // this.props.createSupplierAPI(formData, (res) => {
             //     if (res.data.Result) {
             //         toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);

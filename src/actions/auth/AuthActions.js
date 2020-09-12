@@ -57,7 +57,6 @@ export function loginUserAPI(requestData, callback) {
         axios.post(API.login, requestData, { headers })
             .then((response) => {
                 if (response && response.data && response.data.Result) {
-                    //console.log("login res", response)
                     dispatch(getLoginSuccess(response));
                     callback(response);
                 }
@@ -109,90 +108,6 @@ export function logoutUserAPI(requestData, callback) {
             });
     };
 }
-
-/**
- * @method socialLoginAPI
- * @description get data from social Media
- */
-// export function socialLoginAPI(requestData, callback) {
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.post(API.socialMediaLogin, requestData, { headers })
-//             .then((response) => {
-//                 dispatch(getSocialMediaLoginSuccess(response));
-//                 callback(response);
-//             }).catch((error) => {
-//                 dispatch(getSocialMediaLoginFailure(error));
-//                 apiErrors(error);
-//                 callback(error);
-//                 // console.log("Social Response Error", error.response);
-//             });
-//     };
-// }
-
-// /**
-//  * @method getSocialMediaLoginSuccess
-//  * @description return object containing action type
-//  */
-// export function getSocialMediaLoginSuccess(data) {
-//     return {
-//         type: SOCIAL_MEDIA_LOGIN_SUCCESS,
-//         payload: formatLoginResult(data),
-//     };
-// }
-
-// /**
-//  * @method getSocialMediaLoginFailure
-//  * @description return object containing action type
-//  */
-// export function getSocialMediaLoginFailure() {
-//     return {
-//         type: AUTH_API_FAILURE
-//     };
-// }
-
-
-// /**
-//  * @method forgotPasswordAPI
-//  * @description Register user by email
-//  */
-// export function forgotPasswordAPI(requestData, callback) {
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.post(API.forgotPassword, requestData, { headers })
-//             .then((response) => {
-//                 callback(response);
-//                 dispatch(getForgotPasswordSuccess(response));
-//             })
-//             .catch((error) => {
-//                 dispatch(getForgotPasswordFailure(error));
-//                 apiErrors(error);
-//                 callback(error);
-//             });
-//     };
-// }
-
-// /**
-//  * @method getForgotPasswordSuccess
-//  * @description return object containing action type
-//  */
-// export function getForgotPasswordSuccess(data) {
-//     return {
-//         type: FORGOT_PASSWORD_SUCCESS,
-//         data,
-//     };
-// }
-
-
-// /**
-//  * @method getForgotPasswordFailure
-//  * @description return object containing action type
-//  */
-// export function getForgotPasswordFailure() {
-//     return {
-//         type: AUTH_API_FAILURE
-//     };
-// }
 
 /**
  * @method registerUserAPI
@@ -269,14 +184,12 @@ export function getAllUserDataAPI(data, callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}`, { headers })
             .then((response) => {
-                console.log('response', response)
                 dispatch({
                     type: GET_USER_DATA_SUCCESS,
                     payload: response.data.DataList,
                 });
                 callback(response);
             }).catch((error) => {
-                console.log('error', error)
                 dispatch({ type: API_FAILURE });
                 callback(error);
                 apiErrors(error);
@@ -354,12 +267,10 @@ export function updateUserAPI(requestData, callback) {
         dispatch({ type: AUTH_API_REQUEST });
         axios.put(API.updateUserAPI, requestData, { headers })
             .then((response) => {
-                console.log('>>>>>>', response)
                 dispatch({ type: API_SUCCESS });
                 callback(response);
             })
             .catch((error) => {
-                console.log('>>>>>>', error)
                 callback(error);
                 dispatch({ type: AUTH_API_FAILURE });
                 apiErrors(error);
@@ -844,7 +755,6 @@ export function setApprovalLevelForTechnology(requestData, callback) {
         dispatch({ type: AUTH_API_REQUEST });
         axios.post(API.setApprovalLevelForTechnology, requestData, { headers })
             .then((response) => {
-                console.log('response >>>', response)
                 if (response.data.Result) {
                     callback(response);
                 }
@@ -1322,113 +1232,6 @@ export function getLeftMenu(ModuleId, UserId, callback) {
 }
 
 
-// /**
-//  * @method verifyOtpAPI
-//  * @description Verify otp sent on email
-//  */
-// export function verifyOtpAPI(requestData, callback) {
-
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.post(API.verifyOtp, requestData, { headers })
-//             .then((response) => {
-//                 dispatch({ type: VERIFY_OTP_SUCCESS });
-//                 callback(response);
-//             })
-//             .catch((error) => {
-//                 dispatch({ type: AUTH_API_FAILURE });
-//                 apiErrors(error);
-//             });
-//     };
-// }
-
-// /**
-//  * @method resendOtpAPI
-//  * @description  Resned Verification code if expired or not found
-//  */
-// export function resendOtpAPI(requestData, callback) {
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.get(`${API.resendOtp}?email=${requestData.email}&registrationType=${requestData.registrationType}`, { headers })
-//             .then((response) => {
-//                 callback(response);
-//                 dispatch({ type: RESEND_OTP_SUCCESS });
-//             })
-//             .catch((error) => {
-//                 dispatch({ type: AUTH_API_FAILURE });
-//                 apiErrors(error);
-//             });
-//     };
-// }
-
-// /**
-//  * @method updatePasswordAPI
-//  * @description update Password
-//  */
-// export function updatePasswordAPI(requestData, callback) {
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.put(API.updatePassword, requestData, { headers })
-//             .then((response) => {
-//                 callback(response);
-//                 dispatch(getUpdatePasswordSuccess(response));
-//             })
-//             .catch((error) => {
-//                 dispatch({
-//                     type: AUTH_API_FAILURE,
-//                 });
-//                 apiErrors(error);
-//                 callback(error);
-//             });
-//     };
-// }
-
-// /**
-//  * @method getUpdatePasswordSuccess
-//  * @description return object containing action type
-//  */
-// export function getUpdatePasswordSuccess(data) {
-//     return {
-//         type: UPDATE_PASSWORD_SUCCESS,
-//     };
-// }
-
-
-// /**
-//  * @method updatePasswordAPI
-//  * @description update Password
-//  */
-// export function updateUserAccountDetailsAPI(requestData, callback) {
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.post(API.updateUserAccountDetail, requestData, { headers })
-//             .then((response) => {
-//                 callback(response);
-//                 // console.log("updateUserAccountDetailsAPI", response);
-//                 dispatch({
-//                     type: UPDATE_USER_ACCOUNT_DETAIL_SUCCESS,
-//                     payload: formatLoginResult(response)
-//                 });
-//             })
-//             .catch((error) => {
-//                 // console.log("updateUserAccountDetailsAPI error", error);
-//                 dispatch({ type: AUTH_API_FAILURE });
-//                 apiErrors(error);
-//             });
-//     };
-// }
-
-// /**
-//  * @method socialLoginValues
-//  * @description return new logged in user data
-//  */
-// export function getsocialLoginValuesAPI(data) {
-//     // console.log(data);
-//     return {
-//         type: SOCIAL_USER_DATA,
-//         payload: data
-//     };
-// }
 
 export function showUserData(data) {
     return {
@@ -1436,39 +1239,3 @@ export function showUserData(data) {
         payload: (data),
     }
 }
-
-// /**
-//  * @method getEditExperienceType
-//  * @description edit experience type
-//  */
-// // export function internalRouteANDID(data) {
-// //    console.log('data: ', data);
-// //     return (dispatch) => {
-// //         dispatch({
-// //             type: INTERNAL_ROUTE_ID,
-// //             payload: data
-// //         });
-// //     }
-// // }
-
-// /**
-// * @method contactUsAPI
-// * @description send contact us message
-// */
-// export function contactUsAPI(requestData, callback) {
-//     return (dispatch) => {
-//         dispatch({ type: AUTH_API_REQUEST });
-//         axios.post(API.contactUs, requestData, { headers })
-//             .then((response) => {
-//                 dispatch({
-//                     type: SEND_MESSAGE_SUCCESS
-//                 });
-//                 callback(response);
-//             }).catch((error) => {
-//                 dispatch({
-//                     type: AUTH_API_FAILURE,
-//                 });
-//                 apiErrors(error);
-//             });
-//     };
-// }
