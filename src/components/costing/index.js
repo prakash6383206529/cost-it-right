@@ -1,20 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from 'reactstrap';
-import { Loader } from '../common/Loader';
+import { reduxForm } from "redux-form";
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import { CONSTANT } from '../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
 import classnames from 'classnames';
-import CostSummary from './costsummary';
-import CostWorking from './costworking';
-import DynamicCostSummary from './costsummary/DynamicIndex';
 import { getCostingBySupplier } from '../../actions/costing/CostWorking';
 import { fetchPlantDataAPI } from '../../actions/master/Comman';
 import { uploadBOMxlsAPI } from '../../actions/master/BillOfMaterial';
-import { OutTable, ExcelRenderer } from 'react-excel-renderer';
-import { searchableSelect } from '../../components/layout/FormInputs'
-import { loggedInUserId } from "../../helper/auth";
 
 class Costing extends Component {
     constructor(props) {
@@ -23,14 +15,6 @@ class Costing extends Component {
             isOpen: false,
             isEditFlag: false,
             activeTab: '1',
-            supplierId: '',
-            plantId: '',
-            partId: '',
-            isShowFileUpload: false,
-            cols: [],
-            rows: [],
-            fileData: [],
-            uploadBOMplantID: [],
         }
     }
 
@@ -54,23 +38,6 @@ class Costing extends Component {
         }
     }
 
-    supplierCosting = (reqData) => {
-        const loginUserId = loggedInUserId();
-        this.setState({
-            activeTab: '2',
-            supplierId: reqData.supplierId,
-            plantId: reqData.plantId,
-            partId: reqData.partId,
-        }, () => {
-            const Data = {
-                supplierId: this.state.supplierId,
-                partId: this.state.partId,
-                loggedInUserId: loginUserId,
-            }
-            this.props.getCostingBySupplier(Data, (res) => { console.log('res', res) })
-        });
-    }
-
     /**
     * @method toggleUpload
     * @description toggling the file upload tabs
@@ -82,153 +49,12 @@ class Costing extends Component {
     }
 
     /**
-     * @method fileChangedHandler
-     * @description called for profile pic change
-     */
-    fileHandler = event => {
-        const { uploadBOMplantID } = this.state;
-        let fileObj = event.target.files[0];
-        let fileHeads = [];
-        let fileName = fileObj.name;
-        let fileType = fileName.substr(fileName.indexOf('.'));
-
-        //pass the fileObj as parameter
-        if (fileType != '.xls' || fileName != 'BOM.xls') {
-            if (fileName != 'BOM.xls') {
-                toastr.warning('File name should be BOM.xls')
-            }
-            if (fileType != '.xls') {
-                toastr.warning('File type should be .xls')
-            }
-        } else {
-            ExcelRenderer(fileObj, (err, resp) => {
-                if (err) {
-                    console.log(err);
-                } else {
-
-                    fileHeads = resp.rows[0];
-                    // fileHeads = ["SerialNumber", "BillNumber", "AssemblyBOMPartNumber", "PartNumber", "MaterialDescription",
-                    //     "MaterialTypeName", "UnitOfMeasurementName", "Quantity", "AssemblyPartNumberMark", "BOMLevel", "EcoNumber",
-                    //     "RevisionNumber"]
-
-                    let fileData = [];
-                    resp.rows.map((val, index) => {
-                        if (index > 0) {
-                            let obj = {
-                                PlantId: uploadBOMplantID.value,
-                                CreatedBy: loggedInUserId(),
-                            }
-                            val.map((el, i) => {
-                                obj[fileHeads[i]] = el
-                            })
-                            fileData.push(obj)
-                            obj = {}
-                        }
-                    })
-                    this.setState({
-                        cols: resp.cols,
-                        rows: resp.rows,
-                        fileData: fileData
-                    });
-                }
-            });
-        }
-    }
-
-    UploadBOMHandler = () => {
-        const { fileData } = this.state;
-        this.props.uploadBOMxlsAPI(fileData, () => {
-            toastr.success('BOM has been uploaded successfully.')
-        });
-    }
-
-    /**
-    * @method BOMplantHandler
-    * @description Used to handle plant
-    */
-    BOMplantHandler = (newValue, actionMeta) => {
-        this.setState({ uploadBOMplantID: newValue });
-    };
-
-    /**
-    * @method renderTypeOfListing
-    * @description Used to show type of listing
-    */
-    renderTypeOfListing = (label) => {
-        const { plantList } = this.props;
-        const temp = [];
-
-        if (label === 'plant') {
-            plantList && plantList.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-    }
-
-    fileUploadSection = () => {
-        const { isShowFileUpload, rows, uploadBOMplantID } = this.state;
-        return (
-            <div>
-                <Row>
-                    <Col>
-                        <button onClick={this.toggleUpload} className={'btn btn-primary pull-right'}>{!isShowFileUpload ? 'Show Upload Panel' : 'Hide Upload Panel'}</button>
-                    </Col>
-                </Row>
-                {isShowFileUpload && <Row>
-                    <hr />
-                    <Col md="4" className={'mt20'}>
-                        <Field
-                            id="PlantId"
-                            name="PlantId"
-                            type="text"
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            label="Plant"
-                            component={searchableSelect}
-                            //validate={[required, maxLength50]}
-                            options={this.renderTypeOfListing('plant')}
-                            //options={options}
-                            required={true}
-                            handleChangeDescription={this.BOMplantHandler}
-                            valueDescription={this.state.uploadBOMplantID}
-                        />
-                    </Col>
-                    <Col md="3" className={'mt20'}>
-                        <label>Choose BOM upload file</label>
-                        <input
-                            type="file"
-                            name="bomFile"
-                            onChange={this.fileHandler}
-                            //accept="xls/*"
-                            className="" />
-                    </Col>
-                    <Col md="2" className={'mt40'}>
-                        <button
-                            onClick={this.UploadBOMHandler}
-                            disabled={uploadBOMplantID && uploadBOMplantID.hasOwnProperty('value') ? false : true}
-                            className={'btn btn-primary pull-right'}>Save</button>
-                    </Col>
-                    <Col md="3" className={'mt40'}>
-                        {/* <button
-                            onClick={this.downloadBOM}
-                            className={'btn btn-primary pull-right'}>Download BOM Format</button> */}
-                    </Col>
-                    <hr />
-                </Row>}
-            </div>
-        )
-    }
-
-
-    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, supplierId, plantId, partId, isShowFileUpload } = this.state;
         return (
-            <Container>
-                {/* {this.props.loading && <Loader />} */}
+            <>
                 <Row>
                     <Col>
                         <h3 className={'mt20'}>{`${CONSTANT.COSTING} Summary`}</h3>
@@ -238,11 +64,6 @@ class Costing extends Component {
                 <Row>
                     <Col>
                         <Nav tabs className="subtabs">
-                            {/* <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                Dynamic Cost Summary
-                                </NavLink>
-                        </NavItem> */}
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                     Cost Summary
@@ -256,31 +77,16 @@ class Costing extends Component {
                             </NavItem>
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
-                            {/* <TabPane tabId="1">
-                            {this.fileUploadSection()}
-                            <Col>
-                                <DynamicCostSummary
-                                    supplierCosting={this.supplierCosting} />
-                            </Col>
-                        </TabPane> */}
                             <TabPane tabId="1">
-                                {this.fileUploadSection()}
-
-                                <CostSummary
-                                    supplierCosting={this.supplierCosting} />
-
+                                COST SUMMARY
                             </TabPane>
                             <TabPane tabId="2">
-                                <CostWorking
-                                    supplierId={supplierId}
-                                    plantId={plantId}
-                                    toggle={this.toggle}
-                                    partId={partId} />
+                                COST WORKING
                             </TabPane>
                         </TabContent>
                     </Col>
                 </Row>
-            </Container >
+            </ >
         );
     }
 }

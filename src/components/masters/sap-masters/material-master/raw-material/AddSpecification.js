@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
-import { renderText, renderSelectField, searchableSelect } from "../../../../layout/FormInputs";
+import { renderText, searchableSelect } from "../../../../layout/FormInputs";
 import {
     createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
     getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
@@ -62,15 +62,15 @@ class AddSpecification extends Component {
                     setTimeout(() => {
                         const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectList } = this.props;
 
-                        let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterialId)
-                        let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Value == Data.MaterialId)
-                        let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Value == Data.GradeId)
+                        let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterialId)
+                        let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Value === Data.MaterialId)
+                        let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Value === Data.GradeId)
 
                         this.setDensity(Data.MaterialId);
                         this.setState({
-                            RawMaterial: tempObj1 && tempObj1 != undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
-                            material: tempObj2 && tempObj2 != undefined ? { label: tempObj2.Text, value: tempObj2.Value } : [],
-                            RMGrade: tempObj3 && tempObj3 != undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+                            RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+                            material: tempObj2 && tempObj2 !== undefined ? { label: tempObj2.Text, value: tempObj2.Value } : [],
+                            RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
                         })
                     }, 500)
 
@@ -86,7 +86,7 @@ class AddSpecification extends Component {
     * @description  used to raw material change
     */
     handleRawMaterial = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
                 const { RawMaterial } = this.state;
                 this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
@@ -102,7 +102,7 @@ class AddSpecification extends Component {
     * @description  used to material change and get grade's
     */
     handleMaterialChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ material: newValue }, () => {
                 const { material } = this.state;
                 this.setDensity(material.value);
@@ -127,7 +127,7 @@ class AddSpecification extends Component {
     * @description  used to handle type of listing change
     */
     handleGrade = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RMGrade: newValue });
         } else {
             this.setState({ RMGrade: [], });
@@ -319,7 +319,7 @@ class AddSpecification extends Component {
                                                     placeholder={'Select Raw Material'}
                                                     options={this.renderListing('RawMaterialName')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                                    validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.handleRawMaterial}
                                                     valueDescription={this.state.RawMaterial}
@@ -349,7 +349,7 @@ class AddSpecification extends Component {
                                                     placeholder={'Select Material'}
                                                     options={this.renderListing('material')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.material == null || this.state.material.length == 0) ? [required] : []}
+                                                    validate={(this.state.material == null || this.state.material.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.handleMaterialChange}
                                                     valueDescription={this.state.material}
@@ -387,7 +387,7 @@ class AddSpecification extends Component {
                                                     placeholder={'Select RM Grade'}
                                                     options={this.renderListing('RMGrade')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                                    validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.handleGrade}
                                                     valueDescription={this.state.RMGrade}
@@ -396,7 +396,7 @@ class AddSpecification extends Component {
                                                 {isEditFlag ?
                                                     EditAccessibilityRMANDGRADE && <button className="Edit drawer-edit" type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
                                                     :
-                                                    ((this.state.RawMaterial == null || this.state.RawMaterial.length == 0) && AddAccessibilityRMANDGRADE) ?
+                                                    ((this.state.RawMaterial == null || this.state.RawMaterial.length === 0) && AddAccessibilityRMANDGRADE) ?
                                                         <div className={'plus-icon-square blurPlus-icon-square right mt30'}>
                                                         </div>
                                                         :
@@ -433,12 +433,12 @@ class AddSpecification extends Component {
                                                     type={'button'}
                                                     className="reset mr15 cancel-btn"
                                                     onClick={this.cancel} >
-                                                    <div className={'cross-icon'}> <img src={require('../../../../../assests/images/times.png')} ></img></div> {'Cancel'}
+                                                    <div className={'cross-icon'}> <img alt={''} src={require('../../../../../assests/images/times.png')} ></img></div> {'Cancel'}
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="submit-button mr5 save-btn" >
-                                                    <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} ></img>
+                                                    <div className={'check-icon'}><img alt={''} src={require('../../../../../assests/images/check.png')} ></img>
                                                     </div> {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>
@@ -486,7 +486,7 @@ function mapStateToProps({ comman, costWorking, material }) {
     const { MaterialSelectList } = costWorking;
 
     let initialValues = {};
-    if (specificationData && specificationData != undefined) {
+    if (specificationData && specificationData !== undefined) {
         initialValues = {
             Specification: specificationData.Specification,
         }
@@ -510,7 +510,6 @@ export default connect(mapStateToProps, {
     getMaterialTypeSelectList,
     updateRMSpecificationAPI,
     getRMSpecificationDataAPI,
-    updateRMSpecificationAPI,
     getRowMaterialDataAPI,
     getRawMaterialNameChild,
     getMaterialTypeDataAPI,

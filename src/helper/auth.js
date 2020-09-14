@@ -3,7 +3,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 
 export function isUserLoggedIn() {
     const isLoggedIn = reactLocalStorage.getObject("isUserLoggedIn");
-    if (isLoggedIn == true) {
+    if (isLoggedIn === true) {
         return true;
     } else {
         return false;
@@ -17,7 +17,7 @@ export function userDetails() {
 
 export function loggedInUserId() {
     const isLoggedIn = reactLocalStorage.getObject("isUserLoggedIn");
-    if (isLoggedIn == true) {
+    if (isLoggedIn === true) {
         const userDetail = reactLocalStorage.getObject("userDetail");
         return userDetail.LoggedInUserId;
     } else {

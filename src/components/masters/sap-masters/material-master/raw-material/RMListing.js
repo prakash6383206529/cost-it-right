@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Table, Button } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import AddMaterialType from './AddMaterialType';
 import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../../../../../actions/master/Material';
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -79,7 +78,7 @@ class RMListing extends Component {
     */
     confirmDelete = (ID) => {
         this.props.deleteMaterialTypeAPI(ID, (res) => {
-            if (res.status == 417 && res.data.Result == false) {
+            if (res.status === 417 && res.data.Result === false) {
                 toastr.warning(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
@@ -108,7 +107,7 @@ class RMListing extends Component {
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
         let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -148,7 +147,7 @@ class RMListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { AddAccessibility, } = this.props;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -213,7 +212,6 @@ function mapStateToProps({ material }) {
     const { rawMaterialTypeDataList } = material;
     return { rawMaterialTypeDataList }
 }
-
 
 export default connect(
     mapStateToProps, {

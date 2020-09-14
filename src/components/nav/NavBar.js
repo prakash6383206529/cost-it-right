@@ -1,13 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
-import { Link, Redirect } from "react-router-dom";
-import {
-  Collapse, Navbar, NavbarToggler, Nav, NavItem, NavLink, Dropdown, DropdownToggle,
-  DropdownItem, DropdownMenu
-} from "reactstrap";
+import { Link, } from "react-router-dom";
+import { NavbarToggler, Nav, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { isUserLoggedIn, userDetails, loggedInUserId } from '../../helper/auth';
+import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser,
 } from '../../actions';
@@ -30,10 +27,7 @@ class SideBar extends Component {
     const loginUserId = loggedInUserId();
     this.props.getModuleSelectList(() => { })
     if (loginUserId != null) {
-      this.props.getMenuByUser(loginUserId, () => {
-        const { menusData } = this.props;
-        //reactLocalStorage.set('ModuleId', menusData[0].ModuleId);
-      })
+      this.props.getMenuByUser(loginUserId, () => { })
     }
   }
 
@@ -42,11 +36,7 @@ class SideBar extends Component {
   * @description used to called after mounting component
   */
   componentDidMount() {
-    // const loginUserId = loggedInUserId();
-    // this.props.getModuleSelectList(() => { })
-    // if (loginUserId != null) {
-    //   this.props.getMenuByUser(loginUserId, () => { })
-    // }
+
   }
 
   /**
@@ -130,9 +120,8 @@ class SideBar extends Component {
   */
   setLeftMenu = (ModuleId) => {
     reactLocalStorage.set('ModuleId', ModuleId);
-    //this.setState({ isLoader: true })
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { location, leftMenuData } = this.props;
+      const { location, } = this.props;
       if (location && location.state) {
         this.setState({ activeURL: location.pathname })
       }
@@ -147,7 +136,7 @@ class SideBar extends Component {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
+        if (el.ModuleName === module) {
           return (
             <Link
               className="nav-link"
@@ -175,7 +164,7 @@ class SideBar extends Component {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
+        if (el.ModuleName === module) {
           return (
             <>
               <Link
@@ -204,7 +193,7 @@ class SideBar extends Component {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
+        if (el.ModuleName === module) {
           return (
             <>
               <Link
@@ -235,7 +224,7 @@ class SideBar extends Component {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
+        if (el.ModuleName === module) {
           return (
             <Link
               className="nav-link"
@@ -263,7 +252,7 @@ class SideBar extends Component {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
+        if (el.ModuleName === module) {
           return (
             <Link
               className="nav-link"
@@ -291,7 +280,7 @@ class SideBar extends Component {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
+        if (el.ModuleName === module) {
           return (
             <Link
               className="nav-link"
@@ -319,7 +308,7 @@ class SideBar extends Component {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
+        if (el.ModuleName === module) {
           return (
             <Link
               className="nav-link"
@@ -347,7 +336,7 @@ class SideBar extends Component {
     const { menusData } = this.props;
     return (
       menusData && menusData.map((el, i) => {
-        if (el.ModuleName == module) {
+        if (el.ModuleName === module) {
           return (
             <Link
               className="nav-link"
@@ -368,7 +357,7 @@ class SideBar extends Component {
   }
 
   render() {
-    const { userData, menusData, moduleSelectList, loading } = this.props;
+    const { userData, moduleSelectList, } = this.props;
     const { isLoader } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
@@ -432,7 +421,7 @@ class SideBar extends Component {
                             {
                               isLoggedIn ?
                                 <>
-                                  <img className="img-xs rounded-circle" src={require('../../assests/images/user.png')} />
+                                  <img className="img-xs rounded-circle" alt={''} src={require('../../assests/images/user.png')} />
                                   {userData.Name}
                                 </>
                                 :
@@ -489,8 +478,8 @@ function mapStateToProps({ auth }) {
 }
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */

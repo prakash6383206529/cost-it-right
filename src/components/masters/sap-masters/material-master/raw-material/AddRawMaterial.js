@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
-import { renderText, renderSelectField } from "../../../../layout/FormInputs";
+import { renderText, } from "../../../../layout/FormInputs";
 import {
     createRawMaterialNameChild, getRawMaterialChildById,
     updateRawMaterialChildName
 } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
-import { CONSTANT } from '../../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
@@ -166,7 +165,7 @@ function mapStateToProps({ material }) {
     const { rawMaterialData } = material;
 
     let initialValues = {};
-    if (rawMaterialData && rawMaterialData != undefined) {
+    if (rawMaterialData && rawMaterialData !== undefined) {
         initialValues = {
             RawMaterialName: rawMaterialData.RawMaterialName,
         }

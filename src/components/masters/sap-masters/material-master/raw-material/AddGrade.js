@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../../../helper/validation";
-import { renderText, renderSelectField } from "../../../../layout/FormInputs";
+import { renderText, } from "../../../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI } from '../../../../../actions/master/Material';
 import { getMaterialTypeSelectList } from '../../../../../actions/costing/CostWorking';
 import { getRawMaterialSelectList } from '../../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
-import { CONSTANT } from '../../../../../helper/AllConastant';
 import { loggedInUserId } from "../../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
@@ -181,7 +180,7 @@ function mapStateToProps({ comman, costWorking, material }) {
     const { gradeData } = material;
     let initialValues = {};
 
-    if (gradeData && gradeData != undefined) {
+    if (gradeData && gradeData !== undefined) {
         initialValues = {
             Grade: gradeData.Grade,
         }

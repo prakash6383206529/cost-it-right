@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
-import { Row, Col, Table, Button } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild,
     getGradeSelectList, getRMGradeSelectListByRawMaterial, getVendorListByVendorType,
@@ -18,7 +18,6 @@ import { } from '../../../../../actions/master/Comman';
 import { searchableSelect } from "../../../../layout/FormInputs";
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -48,6 +47,10 @@ class RMDomesticListing extends Component {
         this.getInitialRange()
     }
 
+    /**
+    * @method getInitialRange
+    * @description GET INTIAL RANGE OF MIN AND MAX VALUES FOR SLIDER
+    */
     getInitialRange = () => {
         const { value } = this.state;
         const filterData = {
@@ -58,7 +61,7 @@ class RMDomesticListing extends Component {
             net_landed_max_range: value.max,
         }
         this.props.getRMDomesticDataList(filterData, (res) => {
-            if (res && res.status == 200) {
+            if (res && res.status === 200) {
                 let DynamicData = res.data.DynamicData;
                 this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
             }
@@ -70,21 +73,27 @@ class RMDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        //this.props.onRef(this)
         this.props.getRawMaterialNameChild(() => { })
         this.props.getGradeSelectList(() => { })
         this.props.getVendorListByVendorType(false, () => { })
 
         this.props.getRawMaterialFilterSelectList(() => { })
 
-        this.getDataList(null, null, null)
+        this.getDataList()
     }
 
-    // Get updated Table data list after any action performed.
+    /**
+    * @method hideForm
+    * @description Get updated Table data list after any action performed.
+    */
     getUpdatedData = () => {
-        this.getDataList(null, null, null)
+        this.getDataList()
     }
 
+    /**
+    * @method hideForm
+    * @description HIDE DOMESTIC, IMPORT FORMS
+    */
     getDataList = (materialId = null, gradeId = null, vendorId = null) => {
         const { value } = this.state;
         const filterData = {
@@ -95,14 +104,14 @@ class RMDomesticListing extends Component {
             net_landed_max_range: value.max,
         }
         this.props.getRMDomesticDataList(filterData, (res) => {
-            if (res && res.status == 200) {
+            if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 let DynamicData = res.data.DynamicData;
                 this.setState({
                     tableData: Data,
                     maxRange: DynamicData.MaxRange,
                 })
-            } else if (res && res.response && res.response.status == 412) {
+            } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [], maxRange: 0, })
             } else {
                 this.setState({ tableData: [], maxRange: 0, })
@@ -143,12 +152,11 @@ class RMDomesticListing extends Component {
     */
     confirmDelete = (ID) => {
         this.props.deleteRawMaterialAPI(ID, (res) => {
-            if (res.status == 417 && res.data.Result == false) {
+            if (res.status === 417 && res.data.Result === false) {
                 toastr.warning(res.data.Message)
-                //toastr.warning('The specification is associated in the system. Please remove the association to delete')
             } else if (res && res.data && res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-                this.getDataList(null, null, null)
+                this.getDataList()
             }
         });
     }
@@ -196,7 +204,7 @@ class RMDomesticListing extends Component {
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
         let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -257,8 +265,7 @@ class RMDomesticListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType,
-            filterRMSelectList } = this.props;
+        const { filterRMSelectList } = this.props;
         const temp = [];
         if (label === 'material') {
             filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
@@ -289,21 +296,17 @@ class RMDomesticListing extends Component {
     * @description  used to handle row material selection
     */
     handleRMChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({
                 RawMaterial: newValue,
-                //RMGrade: [],
             }, () => {
                 const { RawMaterial } = this.state;
                 this.props.getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { })
                 this.props.getVendorFilterByRawMaterialSelectList(RawMaterial.value, res => { })
-
-                //this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
             });
         } else {
             this.setState({
                 RawMaterial: [],
-                //RMGrade: [],
             }, () => {
                 this.props.getGradeSelectList(res => { });
             });
@@ -316,7 +319,7 @@ class RMDomesticListing extends Component {
     * @description  used to handle row material grade selection
     */
     handleGradeChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RMGrade: newValue }, () => {
                 const { RMGrade } = this.state;
                 this.props.getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { })
@@ -332,7 +335,7 @@ class RMDomesticListing extends Component {
      * @description called
      */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue }, () => {
                 const { vendorName } = this.state;
                 this.props.getRawMaterialFilterByVendorSelectList(vendorName.value, () => { })
@@ -344,9 +347,9 @@ class RMDomesticListing extends Component {
     };
 
     /**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         const { RawMaterial, RMGrade, vendorName } = this.state;
         const RMid = RawMaterial ? RawMaterial.value : null;
@@ -356,10 +359,10 @@ class RMDomesticListing extends Component {
         this.getDataList(RMid, RMGradeid, Vendorid)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             RawMaterial: [],

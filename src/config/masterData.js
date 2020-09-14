@@ -58,6 +58,9 @@ export const Masters = [
     },
 ];
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const RMDomesticZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
@@ -102,6 +105,9 @@ export const RMDomesticZBCTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const RMDomesticVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
@@ -144,6 +150,9 @@ export const RMDomesticVBCTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const RMImportZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
@@ -191,6 +200,9 @@ export const RMImportZBCTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const RMImportVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
@@ -235,12 +247,14 @@ export const RMImportVBCTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const RMSpecification = [
     { label: "RawMaterialName", value: "RawMaterialName" },
     { label: "Material", value: "Material" },
     { label: "RMGrade", value: "RMGrade" },
     { label: "Specification", value: "Specification" },
-    //{ label: "Plant", value: "Plant" },
 ]
 
 export const RMSpecificationXLTempData = [
@@ -249,10 +263,12 @@ export const RMSpecificationXLTempData = [
         "Material": "Plastic",
         "RMGrade": "A1",
         "Specification": "Aluminium Wired",
-        //"Plant": "Plant Name"
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Vendor = [
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', },
@@ -293,6 +309,9 @@ export const VendorTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Overhead = [
     { label: 'CostingHead', value: 'CostingHead', },
     { label: 'ModelType', value: 'ModelType', },
@@ -321,6 +340,9 @@ export const OverheadTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const ZBCOperation = [
     { label: 'Technology', value: 'Technology', },
     { label: 'OperationName', value: 'OperationName', },
@@ -347,6 +369,9 @@ export const ZBCOperationTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const VBCOperation = [
     { label: 'Technology', value: 'Technology', },
     { label: 'OperationName', value: 'OperationName', },
@@ -379,6 +404,9 @@ export const VBCOperationTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Fuel = [
     { label: 'FuelName', value: 'FuelName', },
     { label: 'State', value: 'State', },
@@ -397,6 +425,9 @@ export const FuelTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Profit = [
     { label: 'CostingHead', value: 'CostingHead', },
     { label: 'ModelType', value: 'ModelType', },
@@ -425,6 +456,9 @@ export const ProfitTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Labour = [
     { label: 'EmploymentTerms', value: 'EmploymentTerms', },
     { label: 'VendorName', value: 'VendorName', },
@@ -449,6 +483,9 @@ export const LabourTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Plant = [
     { label: 'PlantName', value: 'PlantName', },
     { label: 'PlantTitle', value: 'PlantTitle', },
@@ -462,6 +499,9 @@ export const Plant = [
     { label: 'IsPlantForZBC', value: 'IsPlantForZBC', },
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Bought_Out_Parts = [
     { label: 'BasicRate', value: 'BasicRate', },
     { label: 'Quantity', value: 'Quantity', },
@@ -478,6 +518,9 @@ export const Bought_Out_Parts = [
     { label: 'PlantName', value: 'PlantName', },
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Processes = [
     { label: 'ProcessName', value: 'ProcessName', },
     { label: 'ProcessCode', value: 'ProcessCode', },
@@ -485,12 +528,18 @@ export const Processes = [
     { label: 'BasicProcessRate', value: 'BasicProcessRate', },
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const MachineClass = [
     { label: 'MachineClassName', value: 'MachineClassName', },
     { label: 'LabourTypeNames', value: 'LabourTypeNames', },
     { label: 'MachineCapacity', value: 'MachineCapacity', },
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const OtherOperation = [
     { label: 'Rate', value: 'Rate', },
     { label: 'OtherOperationName', value: 'OtherOperationName', },
@@ -503,6 +552,9 @@ export const OtherOperation = [
     { label: 'PlantName', value: 'PlantName', },
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Power = [
     { label: 'PowerChargesType', value: 'PowerChargesType', },
     { label: 'PowerType', value: 'PowerType', },
@@ -529,6 +581,9 @@ export const Power = [
     { label: 'PowerRateing', value: 'PowerRateing', },
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const MHR = [
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: 'SupplierName', value: 'SupplierName', },

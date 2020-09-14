@@ -15,20 +15,16 @@ class Breadcrumb extends Component {
 	}
 
 	/**
-	* @method componentDidMount
-	* @description Called after rendering the component
+	* @method UNSAFE_componentWillReceiveProps
+	* @description CALLED WHEN CHANGED IN PROPS
 	*/
-	componentDidMount() {
-
-	}
-
-	componentWillReceiveProps(prevProps) {
-		if (prevProps.location != this.props.location || prevProps.leftMenuData != this.props.leftMenuData) {
+	UNSAFE_componentWillReceiveProps(prevProps) {
+		if (prevProps.location !== this.props.location || prevProps.leftMenuData !== this.props.leftMenuData) {
 			const { location, leftMenuData, menusData } = prevProps;
 			if (location) {
 				const ModuleID = reactLocalStorage.get('ModuleId');
-				const breadObj = leftMenuData && leftMenuData.find(el => el.NavigationURL == location.pathname);
-				const menuObj = menusData && menusData.find(el => el.ModuleId == ModuleID);
+				const breadObj = leftMenuData && leftMenuData.find(el => el.NavigationURL === location.pathname);
+				const menuObj = menusData && menusData.find(el => el.ModuleId === ModuleID);
 				const cleanURL = menuObj && menuObj.NavigationURL.replace('/', '')
 				this.setState({
 					secondTitle: menuObj && menuObj.ModuleName,
@@ -39,21 +35,15 @@ class Breadcrumb extends Component {
 		}
 	}
 
-	displayTitle = () => {
-		const { data } = this.state;
-		const titleWithDash = data && data.Bread3rdTitle ? data.Bread3rdTitle.replace('/', '') : ''
-		return titleWithDash && titleWithDash != '' ? titleWithDash.replace('-', ' ') : ''
-	}
-
 	render() {
 		const { secondTitle, } = this.state;
 
 		let url = this.state.secondURL;
 
-		if (secondTitle == 'Master') {
+		if (secondTitle === 'Master') {
 			url = 'raw-material-master'
 		}
-		if (secondTitle == 'Additional Masters') {
+		if (secondTitle === 'Additional Masters') {
 			url = 'reason-master'
 		}
 
@@ -77,20 +67,19 @@ class Breadcrumb extends Component {
 	}
 }
 
-
 /**
- * @name mapStateToProps
- * @desc map state containing organisation details from the api to props
- * @return object{}
- */
+* @name mapStateToProps
+* @desc map state containing organisation details from the api to props
+* @return object{}
+*/
 function mapStateToProps({ auth }) {
 	const { leftMenuData, menusData, moduleSelectList, } = auth
 	return { leftMenuData, menusData, moduleSelectList }
 }
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */

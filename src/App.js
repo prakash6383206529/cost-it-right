@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import Main from './components/Main.js';
-import { BrowserRouter, Route, Switch, browserHistory } from "react-router-dom";
+import { BrowserRouter, Route, } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { toastr } from "react-redux-toastr";
 import { MESSAGES } from '../src/config/message';
@@ -15,14 +15,10 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
-
-  }
-
   /**
-   * @method logUserIn
-   * @description After user successfully login, flag used internally.
-   */
+  * @method logUserIn
+  * @description After user successfully login, flag used internally.
+  */
   logUserIn = () => {
     this.setState({ isUserLoggedIn: true });
     reactLocalStorage.setObject("isUserLoggedIn", true);

@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import "./LeftMenu.scss";
 
-
 class Leftmenu extends Component {
 	constructor(props) {
 		super(props);
@@ -18,14 +17,6 @@ class Leftmenu extends Component {
 	componentWillMount() {
 		const ModuleId = reactLocalStorage.get('ModuleId')
 		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => { })
-	}
-
-	componentDidMount() {
-		// const { location } = this.props;
-		// if (location && location.state) {
-		// 	const ModuleId = location.state.ModuleId;
-		// 	this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => { })
-		// }
 	}
 
 	setModuleId = (ModuleId) => {
@@ -43,14 +34,14 @@ class Leftmenu extends Component {
 						{
 							leftMenuData && leftMenuData.map((item, i) => {
 								if (
-									item.PageName == 'Raw Material Name and Grade' ||
-									item.PageName == 'Role' ||
-									item.PageName == 'Permisson' ||
-									item.PageName == 'Levels' ||
-									item.PageName == 'Department'
+									item.PageName === 'Raw Material Name and Grade' ||
+									item.PageName === 'Role' ||
+									item.PageName === 'Permisson' ||
+									item.PageName === 'Levels' ||
+									item.PageName === 'Department'
 								) return false;
 								return (
-									<li className={`${activeURL == item.NavigationURL ? 'active' : null} mb5`}>
+									<li className={`${activeURL === item.NavigationURL ? 'active' : null} mb5`}>
 										<Link
 											onClick={() => this.setModuleId(ModuleId)}
 											to={{

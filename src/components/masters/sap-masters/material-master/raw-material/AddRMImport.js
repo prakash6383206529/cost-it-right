@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, checkForNull, maxLength100, getVendorCode } from "../../../../../helper/validation";
+import { Row, Col, } from 'reactstrap';
+import { required, maxLength100, getVendorCode } from "../../../../../helper/validation";
 import {
-    renderText, renderSelectField, renderNumberInputField, searchableSelect,
+    renderText, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField
 } from "../../../../layout/FormInputs";
 import {
@@ -15,12 +15,9 @@ import {
 import {
     createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
     getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic,
-    fileDeleteRMDomestic,
 } from '../../../../../actions/master/Material';
-import RMImportListing from './RMImportListing';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
-import { CONSTANT } from '../../../../../helper/AllConastant'
 import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../../helper/auth";
 import Switch from "react-switch";
 import AddSpecification from './AddSpecification';
@@ -110,7 +107,7 @@ class AddRMImport extends Component {
     * @description  used to handle row material selection
     */
     handleRMChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RawMaterial: newValue }, () => {
                 const { RawMaterial } = this.state;
                 this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
@@ -126,7 +123,7 @@ class AddRMImport extends Component {
     * @description  used to handle row material grade selection
         */
     handleGradeChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RMGrade: newValue, RMSpec: [], }, () => {
                 const { RMGrade } = this.state;
                 this.props.fetchSpecificationDataAPI(RMGrade.value, res => { });
@@ -145,7 +142,7 @@ class AddRMImport extends Component {
     * @description  used to handle row material grade selection
     */
     handleSpecChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RMSpec: newValue })
         } else {
             this.setState({ RMSpec: [] })
@@ -181,13 +178,12 @@ class AddRMImport extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
                 const { vendorName } = this.state;
                 const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
                 this.setState({ VendorCode: result })
                 this.props.getPlantBySupplier(vendorName.value, () => { })
-                //this.props.getCityBySupplier(vendorName.value, () => { })
             });
         } else {
             this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
@@ -207,7 +203,7 @@ class AddRMImport extends Component {
     * @description called
     */
     handleVendorLocation = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorLocation: newValue, });
         } else {
             this.setState({ vendorLocation: [], })
@@ -219,7 +215,7 @@ class AddRMImport extends Component {
     * @description called
     */
     handleSourceSupplierCity = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ sourceLocation: newValue, });
         } else {
             this.setState({ sourceLocation: [], })
@@ -231,7 +227,7 @@ class AddRMImport extends Component {
     * @description called
     */
     handleUOM = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ UOM: newValue, })
         } else {
             this.setState({ UOM: [] })
@@ -243,7 +239,7 @@ class AddRMImport extends Component {
     * @description called
     */
     handleCurrency = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ currency: newValue, })
         } else {
             this.setState({ currency: [] })
@@ -304,14 +300,13 @@ class AddRMImport extends Component {
 
                     setTimeout(() => {
                         const { gradeSelectList, rmSpecification, cityList, categoryList,
-                            filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
-                            vendorListByVendorType, currencySelectList, } = this.props;
+                            rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, currencySelectList, } = this.props;
 
-                        const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value == Data.RawMaterial)
-                        const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value == Data.RMGrade)
-                        const specObj = rmSpecification && rmSpecification.find(item => item.Value == Data.RMSpec)
-                        const categoryObj = categoryList && categoryList.find(item => item.Value == Data.Category)
-                        const currencyObj = currencySelectList && currencySelectList.find(item => item.Text == Data.Currency)
+                        const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
+                        const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
+                        const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
+                        const categoryObj = categoryList && categoryList.find(item => item.Value === Data.Category)
+                        const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
 
                         let plantArray = [];
                         Data && Data.Plant.map((item) => {
@@ -319,7 +314,7 @@ class AddRMImport extends Component {
                             return plantArray;
                         })
 
-                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value == Data.Vendor)
+                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.Vendor)
 
                         let vendorPlantArray = [];
                         Data && Data.VendorPlant.map((item) => {
@@ -328,28 +323,26 @@ class AddRMImport extends Component {
                         })
 
                         //const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
-                        const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
-                        const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value == Data.UOM)
+                        const sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
+                        const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
                             isShowForm: true,
                             IsVendor: Data.IsVendor,
-                            RawMaterial: materialNameObj != undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
-                            RMGrade: gradeObj != undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                            RMSpec: specObj != undefined ? { label: specObj.Text, value: specObj.Value } : [],
-                            Category: categoryObj != undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
+                            RawMaterial: materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
+                            RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
+                            RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                            Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                             selectedPlants: plantArray,
-                            vendorName: vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
-                            //VendorCode: Data.VendorCode,
+                            vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
                             selectedVendorPlants: vendorPlantArray,
-                            //vendorLocation: vendorLocationObj != undefined ? { label: vendorLocationObj.Text, value: vendorLocationObj.Value } : [],
                             HasDifferentSource: Data.HasDifferentSource,
-                            sourceLocation: sourceLocationObj != undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-                            UOM: UOMObj != undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                            sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
+                            UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
                             effectiveDate: Data.EffectiveDate ? new Date(Data.EffectiveDate) : new Date(),
-                            currency: currencyObj != undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
+                            currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                             remarks: Data.Remark,
                             files: Data.FileList,
                         })
@@ -593,14 +586,13 @@ class AddRMImport extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
-        const { isEditFlag, RawMaterialID } = this.state;
         return { url: 'https://httpbin.org/post', }
 
     }
 
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
-        const { isEditFlag, files, } = this.state;
+        const { files, } = this.state;
 
         if (status == 'removed') {
             const removedFileName = file.name;
@@ -672,9 +664,8 @@ class AddRMImport extends Component {
     */
     onSubmit = (values) => {
         const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
-            selectedVendorPlants, vendorLocation, HasDifferentSource, sourceLocation, UOM, currency,
+            selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
             effectiveDate, remarks, RawMaterialID, isEditFlag, files, } = this.state;
-        const { reset } = this.props;
 
         let plantArray = [];
         selectedPlants && selectedPlants.map((item) => {
@@ -710,7 +701,6 @@ class AddRMImport extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
                     this.clearForm();
-                    //this.child.getUpdatedData();
                 }
             })
 
@@ -723,7 +713,6 @@ class AddRMImport extends Component {
                 RMSpec: RMSpec.value,
                 Category: Category.value,
                 Vendor: vendorName.value,
-                //VendorLocation: vendorLocation.value,
                 HasDifferentSource: HasDifferentSource,
                 Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
                 SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
@@ -733,7 +722,7 @@ class AddRMImport extends Component {
                 NetLandedCost: values.NetLandedCost,
                 Remark: remarks,
                 LoggedInUserId: loggedInUserId(),
-                Plant: IsVendor == false ? plantArray : [],
+                Plant: IsVendor === false ? plantArray : [],
                 VendorPlant: checkVendorPlantConfigurable() ? (IsVendor ? vendorPlantArray : []) : [],
                 VendorCode: VendorCode,
                 Attachements: files,
@@ -745,7 +734,6 @@ class AddRMImport extends Component {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
                     this.clearForm();
-                    //this.child.getUpdatedData();
                 }
             });
         }
@@ -756,15 +744,9 @@ class AddRMImport extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { files, errors, isRMDrawerOpen, isOpenGrade, isOpenSpecification,
+        const { handleSubmit, } = this.props;
+        const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
             isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
-
-        const previewStyle = {
-            display: 'inline',
-            width: 100,
-            height: 100,
-        };
 
         return (
             <>
@@ -798,7 +780,6 @@ class AddRMImport extends Component {
                                                         onColor="#4DC771"
                                                         onHandleColor="#ffffff"
                                                         offColor="#4DC771"
-                                                        id="normal-switch"
                                                         uncheckedIcon={false}
                                                         checkedIcon={false}
                                                         height={20}
@@ -825,7 +806,7 @@ class AddRMImport extends Component {
                                                             placeholder={'-Raw Material-'}
                                                             options={this.renderListing('material')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                                            validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleRMChange}
                                                             valueDescription={this.state.RawMaterial}
@@ -849,14 +830,14 @@ class AddRMImport extends Component {
                                                             placeholder={'-RM Grade-'}
                                                             options={this.renderListing('grade')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                                            validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleGradeChange}
                                                             valueDescription={this.state.RMGrade}
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    {(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ?
+                                                    {(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ?
                                                         <div className={'plus-icon-square blurPlus-icon-square right'}>
                                                         </div>
                                                         :
@@ -878,7 +859,7 @@ class AddRMImport extends Component {
                                                             placeholder={'-RM Spec-'}
                                                             options={this.renderListing('specification')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.RMSpec == null || this.state.RMSpec.length == 0) ? [required] : []}
+                                                            validate={(this.state.RMSpec == null || this.state.RMSpec.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleSpecChange}
                                                             valueDescription={this.state.RMSpec}
@@ -902,17 +883,13 @@ class AddRMImport extends Component {
                                                             placeholder={'-Category-'}
                                                             options={this.renderListing('category')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.Category == null || this.state.Category.length == 0) ? [required] : []}
+                                                            validate={(this.state.Category == null || this.state.Category.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleCategoryChange}
                                                             valueDescription={this.state.Category}
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    {/* <div
-                                                        onClick={this.categoryToggler}
-                                                        className={'plus-icon-square  right'}>
-                                                    </div> */}
                                                 </div>
                                             </Col>
                                         </Row>
@@ -923,7 +900,7 @@ class AddRMImport extends Component {
                                                         label="Plant"
                                                         name="SourceSupplierPlantId"
                                                         placeholder="-Select-"
-                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                                         options={this.renderListing('plant')}
                                                         selectionChanged={this.handleSourceSupplierPlant}
                                                         optionValue={option => option.Value}
@@ -955,7 +932,7 @@ class AddRMImport extends Component {
                                                             placeholder={'-Vendor-'}
                                                             options={this.renderListing('VendorNameList')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                            validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleVendorName}
                                                             valueDescription={this.state.vendorName}
@@ -985,22 +962,6 @@ class AddRMImport extends Component {
                                                         disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>}
-                                            {/* <Col md="3">
-                                                <Field
-                                                    name="DestinationSupplierCityId"
-                                                    type="text"
-                                                    label="Vendor Location"
-                                                    component={searchableSelect}
-                                                    placeholder={'-Location-'}
-                                                    options={this.renderListing('VendorLocation')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.vendorLocation == null || this.state.vendorLocation.length == 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleVendorLocation}
-                                                    valueDescription={this.state.vendorLocation}
-                                                    disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col> */}
 
                                         </Row>
 
@@ -1076,7 +1037,7 @@ class AddRMImport extends Component {
                                                             placeholder={'-UOM-'}
                                                             options={this.renderListing('uom')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                                                            validate={(this.state.UOM == null || this.state.UOM.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleUOM}
                                                             valueDescription={this.state.UOM}
@@ -1098,7 +1059,7 @@ class AddRMImport extends Component {
                                                     placeholder={'-Currency-'}
                                                     options={this.renderListing('currency')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.currency == null || this.state.currency.length == 0) ? [required] : []}
+                                                    validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.handleCurrency}
                                                     valueDescription={this.state.currency}
@@ -1197,7 +1158,7 @@ class AddRMImport extends Component {
                                                     rows="10"
                                                 />
                                             </Col>
-                                            <Col md="6">
+                                            <Col md="3">
                                                 <label>Upload Files (upload up to 3 files)</label>
                                                 {this.state.files.length >= 3 ? '' :
                                                     <Dropzone
@@ -1216,6 +1177,8 @@ class AddRMImport extends Component {
                                                         }}
                                                         classNames="draper-drop"
                                                     />}
+                                            </Col>
+                                            <Col md="3">
                                                 <div className={'attachment-wrapper'}>
                                                     {
                                                         this.state.files && this.state.files.map(f => {
@@ -1224,12 +1187,14 @@ class AddRMImport extends Component {
                                                             return (
                                                                 <div className={'attachment images'}>
                                                                     <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
+                                                                    </a> */}
                                                                     {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => this.deleteFile(f.FileId, f.FileName)}>X</button>
+
+                                                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../../assests/images/red-cross.png')}></img>
                                                                 </div>
                                                             )
                                                         })
@@ -1237,6 +1202,7 @@ class AddRMImport extends Component {
                                                 </div>
                                             </Col>
                                         </Row>
+
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
                                             <div className="col-sm-12 text-right bluefooter-butn">
                                                 <button
@@ -1252,9 +1218,6 @@ class AddRMImport extends Component {
                                                     </div> {isEditFlag ? 'Update' : 'Save'}
                                                 </button>
                                             </div>
-
-
-
                                         </Row>
 
                                     </form>
@@ -1264,52 +1227,64 @@ class AddRMImport extends Component {
                     </div>
                 </div>
 
-                {isRMDrawerOpen && <AddSpecification
-                    isOpen={isRMDrawerOpen}
-                    closeDrawer={this.closeRMDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                    AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
-                    EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
-                />}
-                {isOpenGrade && <AddGrade
-                    isOpen={isOpenGrade}
-                    closeDrawer={this.closeGradeDrawer}
-                    isEditFlag={false}
-                    RawMaterial={this.state.RawMaterial}
-                    anchor={'right'}
-                />}
-                {isOpenSpecification && <AddSpecification
-                    isOpen={isOpenSpecification}
-                    closeDrawer={this.closeSpecDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                    AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
-                    EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
-                />}
-                {isOpenCategory && <AddCategory
-                    isOpen={isOpenCategory}
-                    closeDrawer={this.closeCategoryDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                />}
-                {isOpenVendor && <AddVendorDrawer
-                    isOpen={isOpenVendor}
-                    closeDrawer={this.closeVendorDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                />}
-                {isOpenUOM && <AddUOM
-                    isOpen={isOpenUOM}
-                    closeDrawer={this.closeUOMDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                />}
+                {
+                    isRMDrawerOpen && <AddSpecification
+                        isOpen={isRMDrawerOpen}
+                        closeDrawer={this.closeRMDrawer}
+                        isEditFlag={false}
+                        ID={''}
+                        anchor={'right'}
+                        AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                        EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
+                    />
+                }
+                {
+                    isOpenGrade && <AddGrade
+                        isOpen={isOpenGrade}
+                        closeDrawer={this.closeGradeDrawer}
+                        isEditFlag={false}
+                        RawMaterial={this.state.RawMaterial}
+                        anchor={'right'}
+                    />
+                }
+                {
+                    isOpenSpecification && <AddSpecification
+                        isOpen={isOpenSpecification}
+                        closeDrawer={this.closeSpecDrawer}
+                        isEditFlag={false}
+                        ID={''}
+                        anchor={'right'}
+                        AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                        EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
+                    />
+                }
+                {
+                    isOpenCategory && <AddCategory
+                        isOpen={isOpenCategory}
+                        closeDrawer={this.closeCategoryDrawer}
+                        isEditFlag={false}
+                        ID={''}
+                        anchor={'right'}
+                    />
+                }
+                {
+                    isOpenVendor && <AddVendorDrawer
+                        isOpen={isOpenVendor}
+                        closeDrawer={this.closeVendorDrawer}
+                        isEditFlag={false}
+                        ID={''}
+                        anchor={'right'}
+                    />
+                }
+                {
+                    isOpenUOM && <AddUOM
+                        isOpen={isOpenUOM}
+                        closeDrawer={this.closeUOMDrawer}
+                        isEditFlag={false}
+                        ID={''}
+                        anchor={'right'}
+                    />
+                }
             </>
         );
     }
@@ -1321,7 +1296,7 @@ class AddRMImport extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, costWorking } = state;
+    const { comman, material, } = state;
     const fieldsObj = selector(state, 'BasicRate',);
 
     const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
@@ -1333,7 +1308,7 @@ function mapStateToProps(state) {
         gradeSelectList, vendorListByVendorType } = material;
 
     let initialValues = {};
-    if (rawMaterialDetails && rawMaterialDetails != undefined) {
+    if (rawMaterialDetails && rawMaterialDetails !== undefined) {
         initialValues = {
             Source: rawMaterialDetails.Source,
             BasicRate: rawMaterialDetails.BasicRatePerUOM,

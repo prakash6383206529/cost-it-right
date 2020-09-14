@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Row, Col, Table, Button } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import {
     getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial,
     getGradeSelectList, getRawMaterialNameChild,
@@ -9,12 +9,10 @@ import {
     getGradeFilterByRawMaterialSelectList,
     getRawMaterialFilterByGradeSelectList,
 } from '../../../../../actions/master/Material';
-import { } from '../../../../../actions/costing/CostWorking';
 import { searchableSelect } from "../../../../layout/FormInputs";
 import { required } from "../../../../../helper/validation";
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -55,7 +53,7 @@ class SpecificationListing extends Component {
             GradeId: gradeId
         }
         this.props.getRMSpecificationDataList(data, res => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ specificationData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -103,7 +101,7 @@ class SpecificationListing extends Component {
     * @description  used to handle type of listing change
     */
     handleGrade = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RMGrade: newValue }, () => {
                 const { RMGrade } = this.state;
                 this.props.getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { })
@@ -118,7 +116,7 @@ class SpecificationListing extends Component {
     * @description  used to material change and get grade's
     */
     handleMaterialChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
                 const { RawMaterial } = this.state;
                 this.props.getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { })
@@ -171,7 +169,7 @@ class SpecificationListing extends Component {
     */
     confirmDelete = (ID) => {
         this.props.deleteRMSpecificationAPI(ID, (res) => {
-            if (res.status == 417 && res.data.Result == false) {
+            if (res.status === 417 && res.data.Result === false) {
                 //toastr.warning(res.data.Message)
                 toastr.warning('The specification is associated in the system. Please remove the association to delete')
             } else if (res && res.data && res.data.Result === true) {
@@ -216,7 +214,7 @@ class SpecificationListing extends Component {
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
         let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -325,7 +323,7 @@ class SpecificationListing extends Component {
                                         placeholder={'-Raw Material-'}
                                         options={this.renderListing('material')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleMaterialChange}
                                         valueDescription={this.state.RawMaterial}
@@ -341,7 +339,7 @@ class SpecificationListing extends Component {
                                         placeholder={'-RM Grade-'}
                                         options={this.renderListing('grade')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleGrade}
                                         valueDescription={this.state.RMGrade}

@@ -68,12 +68,12 @@ export const validateEmail = value => {
 }
 
 export const email = value =>
-    value && !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(value)
+    value && !/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(value)
         ? 'Please enter a valid email address.'
         : undefined;
 
 export const website = value =>
-    value && !/^[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/i.test(value)
+    value && !/^[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/i.test(value)
         ? 'Please enter a valid website.'
         : undefined;
 
@@ -98,7 +98,7 @@ export const alphabetsOnlyForName = value =>
         ? 'Please enter a valid name.' : undefined;
 
 export const specialName = value =>
-    value && /[^A-Za-z\'\s\.\,\@\_\-]+$/i.test(value)
+    value && /[^A-Za-z'\s.,@_-]+$/i.test(value)
         ? 'Please enter a valid name.' : undefined;
 
 export const validatePassword = value => {
@@ -159,7 +159,7 @@ export const getNameBetweenBraces = (name) => {
 }
 
 export const getSupplierCode = (name) => {
-    if (name != '') {
+    if (name !== '') {
         const firstIndex = name.indexOf('-(');
         const lastIndex = name.lastIndexOf(')');
         const supplierCode = name.substring(firstIndex + 2, lastIndex);
@@ -170,7 +170,7 @@ export const getSupplierCode = (name) => {
 }
 
 export const getVendorCode = (name) => {
-    if (name != '') {
+    if (name !== '') {
         const firstIndex = name.indexOf('(');
         const lastIndex = name.lastIndexOf(')');
         const supplierCode = name.substring(firstIndex + 1, lastIndex);
@@ -181,7 +181,7 @@ export const getVendorCode = (name) => {
 }
 
 export const checkForNull = (ele) => {
-    const number = (ele == null || isNaN(Number(ele)) || ele == undefined || ele == Infinity) ? 0 : Number(ele);
+    const number = (ele == null || isNaN(Number(ele)) || ele === undefined || ele === Infinity) ? 0 : Number(ele);
     return number
 }
 

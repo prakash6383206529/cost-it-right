@@ -554,7 +554,7 @@ export const API = {
   getDepreciationSelectList: `${BASE_URL}/configuration/select-list-get-depreciation`,
   getShiftTypeSelectList: `${BASE_URL}/configuration/select-list-get-shifts`,
 
-  //MACHINE
+  //MACHINE & PROCESS
   createMachineAPI: `${BASE_URL}/masters-machine/create`,
   getMachineListAPI: `${BASE_URL}/masters-machine/get-all`,
   deleteMachineAPI: `${BASE_URL}/masters-machine/delete`,

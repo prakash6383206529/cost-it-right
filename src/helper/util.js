@@ -1,6 +1,5 @@
 import { toastr } from "react-redux-toastr";
 import Moment from 'moment';
-import axios from 'axios';
 import { MESSAGES } from '../config/message';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -43,15 +42,19 @@ export const apiErrors = (res) => {
 
 }
 
-/**
- * Create all the helper functions and classes inside helper folder
- * import them inside index.js
- * export and use them
- */
+/** 
+* @method  capitalizeFirstLetter
+* @desc CAPILIZE FIRST LETTER
+* @param res
+*/
 export function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+/** 
+* @method  formatDate
+* @desc FORMATTED DATE
+*/
 export function formatDate(date) {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct',
         'Nov', 'Dec'];
@@ -61,22 +64,45 @@ export function formatDate(date) {
     return day + ' ' + monthNames[monthIndex] + ' ' + year;
 }
 
+/** 
+* @method  convertISOToUtcDate
+* @desc CONVERT ISO TO UTC DATE
+* @param res
+*/
 export function convertISOToUtcDate(date) {
     return Moment.utc(date).format('MM/DD/YYYY');
 }
 
+/** 
+* @method  convertISOToUtcForTime
+* @desc CONVERT ISO TO TIME
+* @param res
+*/
 export function convertISOToUtcForTime(date) {
     return Moment.utc(date).format('hh:mm A');
 }
 
+/** 
+* @method stripHtml
+* @desc STRIP HTML FROM STRING
+* @param res
+*/
 export function stripHtml(text) {
     return text.replace(/<[^>]+>/g, '');
 }
 
+/** 
+* @method convertDate
+* @desc CONVERT INTO DATE TIME
+*/
 export function convertDate(date) {
     return Moment(date).format('DD-MMM-YYYY hh:mm A');
 }
 
+/** 
+* @method displayDateTimeFormate
+* @desc DISPLAY DATE TIME FORMATE
+*/
 export function displayDateTimeFormate(date) {
     const currentDate = Moment();
     const dateObj = Moment(date);
@@ -106,17 +132,6 @@ export function displayDateTimeFormate(date) {
     }
 }
 
-export function checkFollowStatus(id, myfollowingList) {
-    if (myfollowingList != undefined) {
-        const isIdExist = myfollowingList.includes(id);
-        if (isIdExist === false) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-}
-
 //let showConnectionAlert = true;
 export function requestError(error) {
     // if (error.code === 'ECONNABORTED' && showConnectionAlert) {
@@ -133,6 +148,10 @@ export function requestError(error) {
     // }
 }
 
+/**
+* @method validateText
+* @descriptin RETURN TEXT
+**/
 export function validateText(text) {
     let newText = '';
     const numbers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ';
@@ -144,11 +163,9 @@ export function validateText(text) {
     return newText;
 }
 
-
 /**
 * @method displayValue
 * @descriptin Used to display value otherwise show N/A
-* 
 **/
 export const displayValue = (value) => {
     if (typeof value !== 'undefined' && typeof value !== 'object' && value.trim() !== '') {
@@ -158,6 +175,10 @@ export const displayValue = (value) => {
     }
 };
 
+/**
+* @method onLogout
+* @descriptin LOGOUT THEN REDIRECT TO LOGIN PAGE
+**/
 function onLogout() {
     reactLocalStorage.setObject("isUserLoggedIn", false);
     reactLocalStorage.setObject("userDetail", {});
@@ -167,6 +188,10 @@ function onLogout() {
     }, 100)
 }
 
+/**
+* @method convertObjectToArray
+* @descriptin CONVER OBJECT TO ARRAY
+**/
 export const convertObjectToArray = (valueArray) => {
     let tempArray = [];
     valueArray.map((val) => {
@@ -176,11 +201,18 @@ export const convertObjectToArray = (valueArray) => {
 
 };
 
+/**
+* @method getFileExtension
+* @descriptin GET FILE EXTENSION
+**/
 export const getFileExtension = (filename) => {
     return filename.split('.').pop();
 };
 
-
+/**
+* @method stringToArray
+* @descriptin CONVER STRING TO ARRAY
+**/
 export const stringToArray = (str) => {
     let convertedArray = [];
     if (typeof str != undefined && typeof str == 'string') {
@@ -190,10 +222,18 @@ export const stringToArray = (str) => {
     return convertedArray;
 };
 
+/**
+* @method displayTitle
+* @descriptin DISPLAY TITLE
+**/
 export const displayTitle = (text) => {
     return text.replace(/\r?\n|\r/g, "");
 };
 
+/**
+* @method formatAddress
+* @descriptin FORMAT ADDRESS
+**/
 export const formatAddress = (address, city, state, country, zipCode) => {
     const formatedAddress = [address, city, state, country, zipCode];
     const res = formatedAddress.filter(Boolean).join(', ');
@@ -220,12 +260,22 @@ export function displayPublishOnDate(date) {
     }
 }
 
+/**
+ * @description GET DAY DIFF
+ * @param checkNumberOfDayDiff
+ * @returns {string}
+ */
 export function checkNumberOfDayDiff(date1, date2) {
     let dt1 = new Date(date1);
     let dt2 = new Date(date2);
     return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
 }
 
+/**
+ * @description GET OPTION LIST
+ * @param renderOptionList
+ * @returns {string}
+ */
 export function renderOptionList(categoriesMaster) {
     let categoryArray = [];
     categoriesMaster.map((val) => {
@@ -241,6 +291,11 @@ export function renderAction(menuData = [], Master = '', actionKey = '') {
 
 }
 
+/**
+ * @description GET MACHINE RATE
+ * @param machineRateCalculation
+ * @returns {string}
+ */
 export function machineRateCalculation(Data) {
 
     const MachineRateCost = Data.RateOfInterest +
@@ -257,7 +312,7 @@ export function machineRateCalculation(Data) {
 }
 
 /**
- * function for get uploaded file extention
+ * @description function for get uploaded file extention
  * @param url
  * @returns {string}
  */
@@ -275,6 +330,11 @@ export function getFileExtention(url) {
     return ext.toUpperCase() + ' ';
 }
 
+/**
+ * @description function for get token header
+ * @param customTokenHeader
+ * @returns {string}
+ */
 export function customTokenHeader() {
     const userObj = reactLocalStorage.getObject('userResponse');
     const customHeader = {
@@ -285,6 +345,11 @@ export function customTokenHeader() {
     return customHeader;
 }
 
+/**
+ * @description CHECK PERMISSION AND PRIVILEGE 
+ * @param checkPermission
+ * @returns {string}
+ */
 export function checkPermission(Data) {
     let setAccessibleData = {
         Add: false,
@@ -297,25 +362,25 @@ export function checkPermission(Data) {
     }
 
     Data && Data.map((item) => {
-        if (item.ActionName == 'Add' && item.IsChecked == true) {
+        if (item.ActionName === 'Add' && item.IsChecked === true) {
             setAccessibleData.Add = true;
         }
-        if (item.ActionName == 'Edit' && item.IsChecked == true) {
+        if (item.ActionName === 'Edit' && item.IsChecked === true) {
             setAccessibleData.Edit = true;
         }
-        if (item.ActionName == 'Delete' && item.IsChecked == true) {
+        if (item.ActionName === 'Delete' && item.IsChecked === true) {
             setAccessibleData.Delete = true;
         }
-        if (item.ActionName == 'View' && item.IsChecked == true) {
+        if (item.ActionName === 'View' && item.IsChecked === true) {
             setAccessibleData.View = true;
         }
-        if (item.ActionName == 'Download' && item.IsChecked == true) {
+        if (item.ActionName === 'Download' && item.IsChecked === true) {
             setAccessibleData.Download = true;
         }
-        if (item.ActionName == 'Bulk Upload' && item.IsChecked == true) {
+        if (item.ActionName === 'Bulk Upload' && item.IsChecked === true) {
             setAccessibleData.BulkUpload = true;
         }
-        if (item.ActionName == 'Activate' && item.IsChecked == true) {
+        if (item.ActionName === 'Activate' && item.IsChecked === true) {
             setAccessibleData.Activate = true;
         }
     })

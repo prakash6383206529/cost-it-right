@@ -5,8 +5,7 @@ import AddRMDomestic from './AddRMDomestic';
 import RMListing from './RMListing';
 import SpecificationListing from './SpecificationListing';
 
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
-import { Loader } from '../../../../common/Loader';
+import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import classnames from 'classnames';
 
@@ -48,18 +47,22 @@ class RowMaterialMaster extends Component {
         }
     }
 
+    /**
+    * @method componentDidMount
+    * @description SET PERMISSION FOR ADD, VIEW, EDIT, DELETE, DOWNLOAD AND BULKUPLOAD
+    */
     componentDidMount() {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == RAW_MATERIAL)
-                const accessDataRMANDGRADE = Data && Data.find(el => el.PageName == RAW_MATERIAL_NAME_AND_GRADE)
+                const accessData = Data && Data.find(el => el.PageName === RAW_MATERIAL)
+                const accessDataRMANDGRADE = Data && Data.find(el => el.PageName === RAW_MATERIAL_NAME_AND_GRADE)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
                 const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         ViewRMAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -87,22 +90,44 @@ class RowMaterialMaster extends Component {
         }
     }
 
+    /**
+    * @method displayDomesticForm
+    * @description DISPLAY DOMESTIC FORM
+    */
     displayDomesticForm = () => {
         this.setState({ isRMDomesticForm: true, })
     }
 
+    /**
+    * @method displayImportForm
+    * @description DISPLAY IMPORT FORM
+    */
     displayImportForm = () => {
         this.setState({ isRMImportForm: true, })
     }
 
+    /**
+    * @method hideForm
+    * @description HIDE DOMESTIC, IMPORT FORMS
+    */
     hideForm = () => {
         this.setState({ isRMDomesticForm: false, isRMImportForm: false, data: {} })
     }
 
+    /**
+    * @method getDetails
+    * @description GET DETAILS FOR DOMESTIC FORM IN EDIT MODE
+    * @param DATA CONTAINS ID AND EDIT FLAG
+    */
     getDetails = (data) => {
         this.setState({ isRMDomesticForm: true, data: data })
     }
 
+    /**
+    * @method getDetailsImport
+    * @description GET DETAILS FOR IMPORT FORM IN EDIT MODE
+    * @param DATA CONTAINS ID AND EDIT FLAG
+    */
     getDetailsImport = (data) => {
         this.setState({ isRMImportForm: true, data: data })
     }
@@ -135,7 +160,6 @@ class RowMaterialMaster extends Component {
 
         return (
             <Container fluid>
-                {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
                         <h1>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER}`}</h1>
@@ -215,7 +239,6 @@ class RowMaterialMaster extends Component {
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
-                                        //BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         />
                                     </TabPane>}
 

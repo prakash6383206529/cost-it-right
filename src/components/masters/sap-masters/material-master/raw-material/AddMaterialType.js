@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required, decimalLengthFour } from "../../../../../helper/validation";
 import { renderText, renderNumberInputField } from "../../../../layout/FormInputs";
 import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
-import { CONSTANT } from '../../../../../helper/AllConastant';
 import { loggedInUserId } from "../../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
@@ -170,20 +169,20 @@ class AddMaterialType extends Component {
                                                 className="submit-button mr5 save-btn"
                                             /> */}
                                             <button
-                        onClick={this.cancel}
-                        type="submit"
-                        value="CANCEL"
-                        className="reset mr15 cancel-btn">
+                                                onClick={this.cancel}
+                                                type="submit"
+                                                value="CANCEL"
+                                                className="reset mr15 cancel-btn">
 
-                        <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
-                      <button
-                        type="submit"
-                        // disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"
-                      >	<div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' />
-                        </div>
-                        {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
-                      </button>
+                                                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
+                                            <button
+                                                type="submit"
+                                                // disabled={isSubmitted ? true : false}
+                                                className="btn-primary save-btn"
+                                            >	<div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' />
+                                                </div>
+                                                {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
+                                            </button>
                                         </div>
                                     </div>
                                 </Row>
@@ -205,7 +204,7 @@ class AddMaterialType extends Component {
 function mapStateToProps({ material }) {
     const { materialTypeData } = material;
     let initialValues = {};
-    if (materialTypeData && materialTypeData != undefined) {
+    if (materialTypeData && materialTypeData !== undefined) {
         initialValues = {
             MaterialType: materialTypeData.MaterialType,
             CalculatedDensityValue: materialTypeData.Density,

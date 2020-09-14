@@ -32,7 +32,6 @@ export function formatAddress(address, city, state, country, zipCode) {
 
 
 export function formatCloneOpportunityListData(cloneOpportunityListApiData, cloneOpportunityListStoreData) {
-    let cloneOpportunityListUpdatedStoreData = cloneOpportunityListStoreData;
     let cloneListValue = [];
     let defaultObj = {
         label: 'Select',

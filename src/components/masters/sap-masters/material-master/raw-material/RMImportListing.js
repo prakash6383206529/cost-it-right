@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
-import { Row, Col, Table, Button } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild,
     getGradeSelectList, getRMGradeSelectListByRawMaterial,
@@ -18,7 +18,6 @@ import { getSupplierList } from '../../../../../actions/master/Comman';
 import { searchableSelect } from "../../../../layout/FormInputs";
 import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -48,6 +47,10 @@ class RMImportListing extends Component {
         this.getInitialRange()
     }
 
+    /**
+    * @method getInitialRange
+    * @description GET INTIAL RANGE OF MIN AND MAX VALUES FOR SLIDER
+    */
     getInitialRange = () => {
         const { value } = this.state;
         const filterData = {
@@ -58,7 +61,7 @@ class RMImportListing extends Component {
             net_landed_max_range: value.max,
         }
         this.props.getRMImportDataList(filterData, (res) => {
-            if (res && res.status == 200) {
+            if (res && res.status === 200) {
                 let DynamicData = res.data.DynamicData;
                 this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
             }
@@ -78,12 +81,12 @@ class RMImportListing extends Component {
 
         this.props.getRawMaterialFilterSelectList(() => { })
 
-        this.getDataList(null, null, null)
+        this.getDataList()
     }
 
     // Get updated Table data list after any action performed.
     getUpdatedData = () => {
-        this.getDataList(null, null, null)
+        this.getDataList()
     }
 
     getDataList = (materialId = null, gradeId = null, vendorId = null) => {
@@ -96,14 +99,14 @@ class RMImportListing extends Component {
             net_landed_max_range: value.max,
         }
         this.props.getRMImportDataList(filterData, (res) => {
-            if (res && res.status == 200) {
+            if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 let DynamicData = res.data.DynamicData;
                 this.setState({
                     tableData: Data,
                     maxRange: DynamicData.MaxRange,
                 })
-            } else if (res && res.response && res.response.status == 412) {
+            } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [], maxRange: 0, })
             } else {
                 this.setState({ tableData: [], maxRange: 0, })
@@ -144,7 +147,7 @@ class RMImportListing extends Component {
     */
     confirmDelete = (ID) => {
         this.props.deleteRawMaterialAPI(ID, (res) => {
-            if (res.status == 417 && res.data.Result == false) {
+            if (res.status === 417 && res.data.Result === false) {
                 toastr.warning(res.data.Message)
                 //toastr.warning('The specification is associated in the system. Please remove the association to delete')
             } else if (res && res.data && res.data.Result === true) {
@@ -205,7 +208,7 @@ class RMImportListing extends Component {
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
         let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -258,7 +261,7 @@ class RMImportListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { filterRMSelectList, supplierSelectList } = this.props;
+        const { filterRMSelectList, } = this.props;
         const temp = [];
         if (label === 'material') {
             filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
@@ -289,13 +292,12 @@ class RMImportListing extends Component {
     * @description  used to handle row material selection
     */
     handleRMChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
                 const { RawMaterial } = this.state;
                 this.props.getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { })
                 this.props.getVendorFilterByRawMaterialSelectList(RawMaterial.value, res => { })
 
-                //this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
             });
         } else {
             this.setState({ RawMaterial: [], RMGrade: [] }, () => {
@@ -310,7 +312,7 @@ class RMImportListing extends Component {
     * @description  used to handle row material grade selection
     */
     handleGradeChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ RMGrade: newValue }, () => {
                 const { RMGrade } = this.state;
                 this.props.getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { })
@@ -326,7 +328,7 @@ class RMImportListing extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue }, () => {
                 const { vendorName } = this.state;
                 this.props.getRawMaterialFilterByVendorSelectList(vendorName.value, () => { })
@@ -338,9 +340,9 @@ class RMImportListing extends Component {
     };
 
     /**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         const { RawMaterial, RMGrade, vendorName } = this.state;
         const RMid = RawMaterial ? RawMaterial.value : null;
@@ -350,10 +352,10 @@ class RMImportListing extends Component {
         this.getDataList(RMid, RMGradeid, Vendorid)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             RawMaterial: [],
@@ -362,9 +364,8 @@ class RMImportListing extends Component {
             value: { min: 0, max: 0 },
         }, () => {
             this.getInitialRange()
-            this.getDataList(null, null, null)
+            this.getDataList()
             this.props.getRawMaterialFilterSelectList(() => { })
-            //this.props.getGradeSelectList(() => { });
         })
 
     }
@@ -380,7 +381,7 @@ class RMImportListing extends Component {
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
             this.getInitialRange()
-            this.getDataList(null, null, null)
+            this.getDataList()
         })
     }
 
@@ -445,7 +446,7 @@ class RMImportListing extends Component {
                                         placeholder={'Raw Material'}
                                         options={this.renderListing('material')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length == 0) ? [required] : []}
+                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleRMChange}
                                         valueDescription={this.state.RawMaterial}
@@ -460,7 +461,7 @@ class RMImportListing extends Component {
                                         placeholder={'RM Grade'}
                                         options={this.renderListing('grade')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length == 0) ? [required] : []}
+                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleGradeChange}
                                         valueDescription={this.state.RMGrade}
@@ -475,7 +476,7 @@ class RMImportListing extends Component {
                                         placeholder={'-Vendor-'}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleVendorName}
                                         valueDescription={this.state.vendorName}

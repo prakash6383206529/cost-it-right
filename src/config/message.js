@@ -39,8 +39,6 @@ export const MESSAGES = {
 
   //CATEGORY (RAW MATERIAL)
   CATEGORY_ADD_SUCCESS: 'Category created successfully',
-  CATEGORY_DELETE_ALERT: 'Are you sure you want to delete Category?',
-  DELETE_CATEGORY_SUCCESS: 'Category has been deleted successfully.',
 
   //OTHER OPERATION
   OTHER_OPERATION_ADD_SUCCESS: 'Other Operation added successfully',
@@ -84,10 +82,8 @@ export const MESSAGES = {
   MATERIAL_UPDATE_SUCCESS: 'Raw Material updated successfully',
   MATERIAL_DELETE_ALERT: 'Are you sure you want to delete Raw Material?',
   DELETE_MATERIAL_SUCCESS: 'Raw Material has been deleted successfully.',
-  MATERIAL_UPDATE_SUCCESS: 'Raw Material has been updated successfully',
 
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
-
 
   //OVERHEAD AND PROFIT
   OVERHEAD_ADDED_SUCCESS: 'Overhead created successfully',
@@ -161,10 +157,13 @@ export const MESSAGES = {
   DELETE_FUEL_DETAIL_SUCCESS: 'Fuel detail deleted successfully',
   DELETE_FUEL_TYPE_SUCCESS: 'Fuel type deleted successfully',
   POWER_DETAIL_ADD_SUCCESS: 'Power detail added successfully',
+  POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',
+  POWER_DELETE_SUCCESS: 'Power has been deleted successfully.',
+  POWER_ADDED_SUCCESS: 'Power added successfully',
+  UPDATE_POWER_SUCESS: 'Power has been updated successfully.',
 
   POWER_ADD_SUCCESS: 'Power added successfully',
   UPDATE_POWER_DETAIL_SUCESS: 'Power detail updated successfully',
-  POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',
   POWER_DETAIL_DELETE_ALERT: 'Are you sure you want to delete Power Detail?',
   DELETE_POWER_SUCCESS: 'Power detail deleted successfully',
 
@@ -193,12 +192,6 @@ export const MESSAGES = {
   MACHINE_TYPE_ADD_SUCCESS: 'Machine Class has been added successfully.',
   UPDATE_MACHINE_TYPE_SUCESS: 'Machine Class has been updated successfully.',
   MACHINE_ADD_SUCCESS: 'Machine has been added successfully.',
-
-  //POWER MASTER
-  POWER_DELETE_ALERT: 'Are you sure you want to delete Power?',
-  POWER_DELETE_SUCCESS: 'Power has been deleted successfully.',
-  POWER_ADDED_SUCCESS: 'Power added successfully',
-  UPDATE_POWER_SUCESS: 'Power has been updated successfully.',
 
   //REASON MASTER
   REASON_ADD_SUCCESS: 'Reason has been added successfully.',
@@ -262,9 +255,6 @@ export const MESSAGES = {
   ADD_PRIVILEGE_PAGE_ROLEWISE_SUCCESSFULLY: 'Privilege page role wise added successfully.',
   ADD_PRIVILEGE_PAGE_USERWISE_SUCCESSFULLY: 'Privilege page user wise added successfully.',
   ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY: 'Additional permission has been added successfully.',
-
-  //REASON
-  REASON_DELETE_ALERT: 'Are you sure you want to delete Reason?',
 
   //MHR
   MHR_DELETE_ALERT: 'Are you sure you want to delete Machine Rate?',
