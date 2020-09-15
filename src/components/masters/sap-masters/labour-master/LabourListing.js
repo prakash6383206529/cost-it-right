@@ -49,14 +49,6 @@ class LabourListing extends Component {
         }
     }
 
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
-    }
-
     componentDidMount() {
 
         let ModuleId = reactLocalStorage.get('ModuleId');

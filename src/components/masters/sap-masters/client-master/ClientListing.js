@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
-import { required } from "../../../../helper/validation";
+import { reduxForm } from "redux-form";
+import { Row, Col, } from 'reactstrap';
+import { focusOnError, } from "../../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getClientDataList, deleteClient } from '../../../../actions/master/Client';
-import { } from '../../../../actions/master/Comman';
-import Switch from "react-switch";
-import { Years, Months } from '../../../../config/masterData';
 import AddClientDrawer from './AddClientDrawer';
 
 import { checkPermission } from '../../../../helper/util';
@@ -47,12 +42,12 @@ class ClientListing extends Component {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == CLIENT)
+                const accessData = Data && Data.find(el => el.PageName === CLIENT)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
@@ -78,7 +73,7 @@ class ClientListing extends Component {
             companyName: companyName,
         }
         this.props.getClientDataList(filterData, res => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -89,16 +84,6 @@ class ClientListing extends Component {
 
             }
         });
-    }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { } = this.props;
-        const temp = [];
-
     }
 
     /**
@@ -154,59 +139,17 @@ class ClientListing extends Component {
         )
     }
 
-    handleChange = (cell, row, enumObject, rowIndex) => {
-        let data = {
-            Id: row.VendorId,
-            ModifiedBy: loggedInUserId(),
-            IsActive: !cell, //Status of the user.
-        }
-        // this.props.activeInactiveVendorStatus(data, res => {
-        //     if (res && res.data && res.data.Result) {
-        //         if (cell == true) {
-        //             toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-        //         } else {
-        //             toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-        //         }
-        //         this.getTableListData(null, null)
-        //     }
-        // })
-    }
-
     /**
     * @method handlePlant
     * @description called
     */
     handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ plant: newValue });
         } else {
             this.setState({ plant: [] })
         }
     };
-
-    /**
-    * @method statusButtonFormatter
-    * @description Renders buttons
-    */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
-    }
 
     /**
     * @method indexFormatter
@@ -216,7 +159,7 @@ class ClientListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -284,7 +227,7 @@ class ClientListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
+        const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
         const options = {
             clearSearch: true,
@@ -331,16 +274,12 @@ class ClientListing extends Component {
                     tableHeaderClass='my-custom-header client-table'
                     className={'client-table'}
                     pagination>
-                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="CompanyName" dataAlign="center" >{'Company'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ClientName" dataAlign="center" >{'Client Name'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ClientEmailId" dataAlign="center" >{'Email Id'}</TableHeaderColumn>
-                    {/* <TableHeaderColumn dataField="PhoneNumber" dataAlign="center" >{'Phone Number'}</TableHeaderColumn> */}
-                    {/* <TableHeaderColumn dataField="MobileNumber" dataAlign="center" >{'Mobile No.'}</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="CountryName" dataAlign="center" >{'Country'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="StateName" dataAlign="center" >{'State'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="CityName" dataAlign="center" >{'City'}</TableHeaderColumn>
-                    {/* <TableHeaderColumn dataField="ZipCode" dataAlign="center" >{'ZipCode'}</TableHeaderColumn> */}
                     <TableHeaderColumn className="action" dataField="ClientId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
                 {isOpenVendor && <AddClientDrawer

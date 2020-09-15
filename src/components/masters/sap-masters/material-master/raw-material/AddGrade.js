@@ -21,16 +21,6 @@ class AddGrade extends Component {
     }
 
     /**
-    * @method componentWillMount
-    * @description call before rendering the component
-    */
-    componentWillMount() {
-        // RESOLVED ON 28-08-2020
-        //this.props.getRawMaterialSelectList(res => { }); 
-        //this.props.getMaterialTypeSelectList(() => { })
-    }
-
-    /**
     * @method componentDidMount
     * @description Called after rendering the component
     */

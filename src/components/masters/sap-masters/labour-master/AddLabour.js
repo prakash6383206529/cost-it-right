@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Table } from 'reactstrap';
-import { required, number, upper, maxLength100, getVendorCode, decimalLength2, checkForNull } from "../../../../helper/validation";
-import {
-    renderText, renderMultiSelectField, searchableSelect, renderNumberInputField, renderTextAreaField
-} from "../../../layout/FormInputs";
+import { Row, Col, Table } from 'reactstrap';
+import { required, number, decimalLength2, checkForNull } from "../../../../helper/validation";
+import { renderText, searchableSelect, } from "../../../layout/FormInputs";
 import { getFuelComboData, getPlantListByState, } from '../../../../actions/master/Fuel';
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList } from '../../../../actions/master/Labour';
 import { getMachineTypeSelectList, } from '../../../../actions/master/MachineMaster';
@@ -17,7 +15,6 @@ import Switch from "react-switch";
 import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { reactLocalStorage } from "reactjs-localstorage";
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer';
 import NoContentFound from '../../../common/NoContentFound';
 import moment from 'moment';
@@ -45,14 +42,6 @@ class AddLabour extends Component {
 
             isOpenMachineType: false,
         }
-    }
-
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
     }
 
     /**
@@ -90,14 +79,13 @@ class AddLabour extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
 
-                    let plantArray = Data && Data.Plants.map((item) => ({ label: item.PlantName, value: item.PlantId }))
                     this.props.getPlantListByState(Data.StateId, () => { })
 
                     setTimeout(() => {
                         const { fuelComboSelectList, VendorLabourTypeSelectList, plantSelectList } = this.props;
-                        let stateObj = fuelComboSelectList && fuelComboSelectList.States.find(el => el.Value == Data.StateId)
-                        const vendorObj = VendorLabourTypeSelectList && VendorLabourTypeSelectList.find(item => item.Value == Data.VendorId)
-                        const plantObj = plantSelectList && plantSelectList.find(item => item.Value == Data.Plants[0].PlantId)
+                        let stateObj = fuelComboSelectList && fuelComboSelectList.States.find(el => el.Value === Data.StateId)
+                        const vendorObj = VendorLabourTypeSelectList && VendorLabourTypeSelectList.find(item => item.Value === Data.VendorId)
+                        const plantObj = plantSelectList && plantSelectList.find(item => item.Value === Data.Plants[0].PlantId)
 
                         let GridArray = Data && Data.LabourDetails.map((item) => {
                             return {
@@ -116,9 +104,9 @@ class AddLabour extends Component {
                             isLoader: false,
                             IsVendor: Data.IsVendor,
                             IsEmployeContractual: Data.IsContractBase,
-                            vendorName: Data.IsContractBase ? (vendorObj && vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : []) : [],
-                            StateName: stateObj && stateObj != undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
-                            selectedPlants: plantObj && plantObj != undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+                            vendorName: Data.IsContractBase ? (vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : []) : [],
+                            StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
+                            selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
                             gridTable: GridArray,
                         })
                     }, 500)
@@ -297,19 +285,19 @@ class AddLabour extends Component {
         const { machineType, labourType, gridTable, effectiveDate } = this.state;
         const { fieldsObj } = this.props;
 
-        if (machineType.length == 0 || labourType.length == 0) {
+        if (machineType.length === 0 || labourType.length === 0) {
             toastr.warning('Fields should not be empty');
             return false;
         }
 
         //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-        const isExist = gridTable.findIndex(el => (el.MachineTypeId == machineType.value && el.LabourTypeId == labourType.value))
-        if (isExist != -1) {
+        const isExist = gridTable.findIndex(el => (el.MachineTypeId === machineType.value && el.LabourTypeId === labourType.value))
+        if (isExist !== -1) {
             toastr.warning('Already added, Please check the values.')
             return false;
         }
 
-        const LabourRate = fieldsObj && fieldsObj != undefined ? checkForNull(fieldsObj) : 0;
+        const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
         const tempArray = [];
 
         tempArray.push(...gridTable, {
@@ -338,17 +326,17 @@ class AddLabour extends Component {
     updateGrid = () => {
         const { machineType, labourType, gridTable, effectiveDate, gridEditIndex } = this.state;
         const { fieldsObj } = this.props;
-        const LabourRate = fieldsObj && fieldsObj != undefined ? checkForNull(fieldsObj) : 0;
+        const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
 
         //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
         let skipEditedItem = gridTable.filter((el, i) => {
-            if (i == gridEditIndex) return false;
+            if (i === gridEditIndex) return false;
             return true;
         })
 
         //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
-        const isExist = skipEditedItem.findIndex(el => (el.MachineTypeId == machineType.value && el.LabourTypeId == labourType.value))
-        if (isExist != -1) {
+        const isExist = skipEditedItem.findIndex(el => (el.MachineTypeId === machineType.value && el.LabourTypeId === labourType.value))
+        if (isExist !== -1) {
             toastr.warning('Already added, Please check the values.')
             return false;
         }

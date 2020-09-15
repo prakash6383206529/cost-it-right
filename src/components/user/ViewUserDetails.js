@@ -26,7 +26,7 @@ class ViewUserDetails extends Component {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.getUserDataAPI(this.props.UserId, (res) => {
       if (res && res.data && res.data.Data) { }
     })
@@ -53,7 +53,7 @@ class ViewUserDetails extends Component {
     })
   }
 
-	/**
+  /**
  * @method getUsersTechnologyLevelData
  * @description used to get users technology level listing
  */
@@ -71,10 +71,10 @@ class ViewUserDetails extends Component {
     })
   }
 
-	/**
-	* @method renderAction
-	* @description used to render row of actions
-	*/
+  /**
+  * @method renderAction
+  * @description used to render row of actions
+  */
   renderAction = (actions, parentIndex) => {
     const { actionSelectList } = this.props;
 
@@ -111,10 +111,10 @@ class ViewUserDetails extends Component {
     this.props.closeUserDetails()
   };
 
-	/**
-	 * @method permissionToggle
-	 * @description used to render row of actions
-	 */
+  /**
+   * @method permissionToggle
+   * @description used to render row of actions
+   */
   permissionToggle = () => {
     this.setState({
       isPermissionOpen: !this.state.isPermissionOpen,
@@ -128,10 +128,10 @@ class ViewUserDetails extends Component {
     })
   }
 
-	/**
-	 * @method permissionToggle
-	 * @description used to render row of actions
-	 */
+  /**
+   * @method permissionToggle
+   * @description used to render row of actions
+   */
   technologyToggle = () => {
     this.setState({
       isTechnologyOpen: !this.state.isTechnologyOpen,
@@ -146,10 +146,10 @@ class ViewUserDetails extends Component {
   }
 
 
-	/**
-	* @method render
-	* @description Renders the component
-	*/
+  /**
+  * @method render
+  * @description Renders the component
+  */
   render() {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
     const { isPermissionOpen, isTechnologyOpen } = this.state;

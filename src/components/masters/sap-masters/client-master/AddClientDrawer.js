@@ -2,18 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70, minLength10 } from "../../../../helper/validation";
-import {
-    renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
-    searchableSelect
-} from "../../../layout/FormInputs";
+import { required, number, email, minLength7, maxLength70, minLength10 } from "../../../../helper/validation";
+import { renderText, renderEmailInputField, searchableSelect } from "../../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../../../../actions/master/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../helper/auth";
-import $ from 'jquery';
+import { loggedInUserId, } from "../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
 class AddClientDrawer extends Component {
@@ -31,14 +26,6 @@ class AddClientDrawer extends Component {
     }
 
     /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
-    }
-
-    /**
     * @method componentDidMount
     * @description called after render the component
     */
@@ -49,7 +36,7 @@ class AddClientDrawer extends Component {
 
     getAllCityData = () => {
         const { country } = this.state;
-        if (country && country.label != 'India') {
+        if (country && country.label !== 'India') {
             this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
         } else {
             this.props.fetchStateDataAPI(country.value, () => { })
@@ -61,7 +48,7 @@ class AddClientDrawer extends Component {
     * @description Used to handle country
     */
     countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ country: newValue, state: [], city: [] }, () => {
                 this.getAllCityData()
             });
@@ -75,7 +62,7 @@ class AddClientDrawer extends Component {
     * @description Used to handle state
     */
     stateHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ state: newValue, city: [], }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
@@ -91,7 +78,7 @@ class AddClientDrawer extends Component {
     * @description Used to handle City
     */
     cityHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ city: newValue });
         } else {
             this.setState({ city: [] });
@@ -108,21 +95,21 @@ class AddClientDrawer extends Component {
 
         if (label === 'country') {
             countryList && countryList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'state') {
             stateList && stateList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'city') {
             cityList && cityList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -151,15 +138,15 @@ class AddClientDrawer extends Component {
                     setTimeout(() => {
                         const { countryList, stateList, cityList } = this.props;
 
-                        const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
-                        const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
+                        const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
+                        const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
 
                         this.setState({
                             isLoader: false,
-                            country: CountryObj && CountryObj != undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-                            state: StateObj && StateObj != undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-                            city: CityObj && CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
+                            state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
+                            city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
                         })
                     }, 500)
 
@@ -199,7 +186,7 @@ class AddClientDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ClientId, city, } = this.state;
+        const { city, } = this.state;
         const { isEditFlag, ID } = this.props;
 
         /** Update existing detail of supplier master **/
@@ -252,7 +239,7 @@ class AddClientDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, } = this.props;
         const { country } = this.state;
         return (
             <div>
@@ -308,7 +295,6 @@ class AddClientDrawer extends Component {
                                             name="ClientEmailId"
                                             label="Email Id"
                                             component={renderEmailInputField}
-                                            isDisabled={false}
                                             placeholder={'Enter'}
                                             validate={[required, email, minLength7, maxLength70]}
                                             required={true}
@@ -376,7 +362,7 @@ class AddClientDrawer extends Component {
                                             placeholder={'Select Country'}
                                             options={this.renderListing('country')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                                            validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.countryHandler}
                                             valueDescription={this.state.country}
@@ -384,7 +370,7 @@ class AddClientDrawer extends Component {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    {(country.length == 0 || country.label == 'India') &&
+                                    {(country.length === 0 || country.label === 'India') &&
                                         <Col md='6'>
                                             <Field
                                                 name="StateId"
@@ -394,7 +380,7 @@ class AddClientDrawer extends Component {
                                                 placeholder={'Select State'}
                                                 options={this.renderListing('state')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.stateHandler}
                                                 valueDescription={this.state.state}
@@ -409,7 +395,7 @@ class AddClientDrawer extends Component {
                                             placeholder={'Select City'}
                                             options={this.renderListing('city')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                            validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.cityHandler}
                                             valueDescription={this.state.city}

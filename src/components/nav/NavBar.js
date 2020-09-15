@@ -23,7 +23,7 @@ class SideBar extends Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const loginUserId = loggedInUserId();
     this.props.getModuleSelectList(() => { })
     if (loginUserId != null) {

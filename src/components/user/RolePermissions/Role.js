@@ -39,7 +39,7 @@ class Role extends Component {
 	* @method componentDidMount
 	* @description used to called after mounting component
 	*/
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 		const { data } = this.props;
 		if (data && data.isEditFlag) {
 			this.getRoleDetail()
@@ -74,9 +74,9 @@ class Role extends Component {
 	}
 
 	/**
- 	* @method toggle
- 	* @description toggling the tabs
- 	*/
+	  * @method toggle
+	  * @description toggling the tabs
+	  */
 	toggle = (tab) => {
 		if (this.state.activeTab !== tab) {
 			this.setState({
@@ -86,9 +86,9 @@ class Role extends Component {
 	}
 
 	/**
- 	* @method setInitialModuleData
- 	* @description SET INITIAL MODULE DATA FROM PERMISSION TAB
- 	*/
+	  * @method setInitialModuleData
+	  * @description SET INITIAL MODULE DATA FROM PERMISSION TAB
+	  */
 	setInitialModuleData = (data) => {
 		this.setState({ Modules: data })
 	}

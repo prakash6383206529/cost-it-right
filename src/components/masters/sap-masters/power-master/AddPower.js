@@ -33,7 +33,7 @@ class AddPower extends Component {
     * @method componentDidMount
     * @description Called after rendering the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getPowerTypeSelectList(() => { })
         this.props.getChargeTypeSelectList(() => { })
         this.props.getPowerSupplierTypeSelectList(() => { })

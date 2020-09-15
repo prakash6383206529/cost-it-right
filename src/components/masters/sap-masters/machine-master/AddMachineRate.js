@@ -1,34 +1,34 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Table } from 'reactstrap';
+import { Row, Col, Table } from 'reactstrap';
 import { required, checkForNull, maxLength100 } from "../../../../helper/validation";
 import {
-    renderText, renderSelectField, renderNumberInputField, searchableSelect,
-    renderMultiSelectField, renderTextAreaField
+    renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
+    renderMultiSelectField,
 } from "../../../layout/FormInputs";
 import {
     getTechnologySelectList, getPlantSelectList, getPlantBySupplier, getUOMSelectList,
 } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
-import { getMachineTypeSelectList, getProcessesSelectList } from '../../../../actions/master/MachineMaster';
+import {
+    createMachine, updateMachine, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
+    checkAndGetMachineNumber, getMachineData,
+} from '../../../../actions/master/MachineMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../helper/auth";
+import { loggedInUserId, userDetails } from "../../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import { FILE_URL } from '../../../../config/constants';
-import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-import AddUOM from '../uom-master/AddUOM';
 import HeaderTitle from '../../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../../common/NoContentFound';
+import { reactLocalStorage } from "reactjs-localstorage";
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -36,7 +36,7 @@ class AddMachineRate extends Component {
         super(props);
         this.child = React.createRef();
         this.state = {
-            BOPID: '',
+            MachineID: '',
             isEditFlag: false,
             IsVendor: false,
 
@@ -56,6 +56,10 @@ class AddMachineRate extends Component {
             isEditIndex: false,
             machineRate: '',
 
+            remarks: '',
+            files: [],
+            isConfigurableMachineNumber: false,
+
         }
     }
 
@@ -63,9 +67,11 @@ class AddMachineRate extends Component {
     * @method componentWillMount
     * @description Called before render the component
     */
-    componentWillMount() {
-
-
+    UNSAFE_componentWillMount() {
+        let initialConfigureData = reactLocalStorage.getObject('InitialConfiguration')
+        this.setState({
+            isConfigurableMachineNumber: initialConfigureData.IsMachineNumberConfigure
+        })
     }
 
     /**
@@ -79,6 +85,15 @@ class AddMachineRate extends Component {
         this.props.getMachineTypeSelectList(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getProcessesSelectList(() => { })
+
+        if (this.state.isConfigurableMachineNumber) {
+            this.props.checkAndGetMachineNumber('', res => {
+                let Data = res.data.DynamicData;
+                this.props.change('MachineNumber', Data.MachineNumber)
+            })
+        }
+
+        this.getDetails()
     }
 
     componentWillUnmount() {
@@ -93,6 +108,72 @@ class AddMachineRate extends Component {
     }
 
     /**
+    * @method getDetails
+    * @description Used to get Details
+    */
+    getDetails = () => {
+        const { data } = this.props
+        if (data && data.isEditFlag) {
+            this.setState({
+                isEditFlag: false,
+                isLoader: true,
+                MachineID: data.Id,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getMachineData(data.Id, res => {
+                if (res && res.data && res.data.Result) {
+
+                    const Data = res.data.Data;
+
+                    this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+                    if (Data.IsVendor) {
+                        this.props.getPlantBySupplier(Data.VendorId, () => { })
+                    }
+
+                    setTimeout(() => {
+                        const { vendorListByVendorType, machineTypeSelectList, } = this.props;
+
+                        let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
+                        let plantArray = Data && Data.Plant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+
+                        let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
+                            return {
+                                processName: el.ProcessName,
+                                ProcessId: el.ProcessId,
+                                UOM: 'Kal add karwana h.',
+                                UnitOfMeasurementId: el.UnitOfMeasurementId,
+                                MachineRate: el.MachineRate,
+                            }
+                        })
+
+                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorId)
+
+                        let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+
+                        const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === Data.MachineTypeId)
+
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            IsVendor: Data.IsVendor,
+                            selectedTechnology: technologyArray,
+                            selectedPlants: plantArray,
+                            vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            selectedVendorPlants: vendorPlantArray,
+                            machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+                            processGrid: MachineProcessArray,
+                            remarks: Data.Remark,
+                            files: [],
+                        })
+                    }, 100)
+                }
+            })
+        } else {
+            this.props.getMachineData('', res => { })
+        }
+    }
+
+    /**
     * @method onPressVendor
     * @description Used for Vendor checked
     */
@@ -104,7 +185,6 @@ class AddMachineRate extends Component {
             vendorLocation: [],
             selectedPlants: [],
         }, () => {
-            const { IsVendor } = this.state;
             this.props.getVendorListByVendorType(true, () => { })
         });
     }
@@ -117,9 +197,6 @@ class AddMachineRate extends Component {
         this.setState({ selectedTechnology: e })
     }
 
-
-
-
     /**
     * @method handleMessageChange
     * @description used remarks handler
@@ -131,141 +208,58 @@ class AddMachineRate extends Component {
     }
 
     /**
-    * @method getDetails
-    * @description Used to get Details
-    */
-    getDetails = (data) => {
-        // if (data && data.isEditFlag) {
-        //     this.setState({
-        //         isEditFlag: false,
-        //         isLoader: true,
-        //         isShowForm: true,
-        //         BOPID: data.Id,
-        //     })
-        //     $('html, body').animate({ scrollTop: 0 }, 'slow');
-        //     this.props.getBOPDomesticById(data.Id, res => {
-        //         if (res && res.data && res.data.Result) {
-
-        //             const Data = res.data.Data;
-
-        //             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
-        //             this.props.getPlantBySupplier(Data.Vendor, () => { })
-
-        //             setTimeout(() => {
-        //                 const { gradeSelectListByRMID, rmSpecification, cityList, bopCategorySelectList,
-        //                     filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
-        //                     vendorListByVendorType } = this.props;
-
-        //                 const categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value == Data.Category)
-
-        //                 let plantArray = [];
-        //                 Data && Data.Plant.map((item) => {
-        //                     plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-        //                     return plantArray;
-        //                 })
-
-        //                 const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value == Data.Vendor)
-
-        //                 let vendorPlantArray = [];
-        //                 Data && Data.VendorPlant.map((item) => {
-        //                     vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
-        //                     return vendorPlantArray;
-        //                 })
-
-        //                 const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
-        //                 const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
-
-        //                 let tempArr = [];
-        //                 let tempFiles = [];
-
-        //                 this.setState({
-        //                     isEditFlag: true,
-        //                     isLoader: false,
-        //                     isShowForm: true,
-        //                     IsVendor: Data.IsVendor,
-        //                     BOPCategory: { label: categoryObj.Text, value: categoryObj.Value },
-        //                     selectedPlants: plantArray,
-        //                     vendorName: { label: vendorObj.Text, value: vendorObj.Value },
-        //                     selectedVendorPlants: vendorPlantArray,
-        //                     vendorLocation: { label: vendorLocationObj.Text, value: vendorLocationObj.Value },
-        //                     sourceLocation: { label: sourceLocationObj.Text, value: sourceLocationObj.Value },
-        //                     remarks: Data.Remark,
-        //                 })
-        //             }, 200)
-        //         }
-        //     })
-        // } else {
-        //     this.props.getBOPDomesticById('', res => { })
-        // }
-    }
-
-    /**
     * @method renderListing
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { technologySelectList, vendorListByVendorType, plantSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList,
+        const { technologySelectList, vendorListByVendorType, plantSelectList, filterPlantList,
             UOMSelectList, machineTypeSelectList, processSelectList, } = this.props;
         const temp = [];
         if (label === 'technology') {
             technologySelectList && technologySelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
             vendorListByVendorType && vendorListByVendorType.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'MachineTypeList') {
             machineTypeSelectList && machineTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'ProcessNameList') {
             processSelectList && processSelectList.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'VendorLocation') {
-            filterCityListBySupplier && filterCityListBySupplier.map(item => {
-                if (item.Value == 0) return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'SourceLocation') {
-            cityList && cityList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'UOM') {
             UOMSelectList && UOMSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -293,13 +287,14 @@ class AddMachineRate extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
                 const { vendorName } = this.state;
                 this.props.getPlantBySupplier(vendorName.value, () => { })
             });
         } else {
             this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+            this.props.getPlantBySupplier('', () => { })
         }
     };
 
@@ -324,7 +319,7 @@ class AddMachineRate extends Component {
     * @description called
     */
     handleMachineType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ machineType: newValue });
         } else {
             this.setState({ machineType: [], })
@@ -350,7 +345,7 @@ class AddMachineRate extends Component {
     * @description called
     */
     handleProcessName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ processName: newValue });
         } else {
             this.setState({ processName: [] })
@@ -372,7 +367,7 @@ class AddMachineRate extends Component {
     * @description called
     */
     handleUOM = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ UOM: newValue });
         } else {
             this.setState({ UOM: [] })
@@ -385,23 +380,37 @@ class AddMachineRate extends Component {
     }
 
     processTableHandler = () => {
-        const { processName, UOM, processGrid, machineRate, } = this.state;
+        const { processName, UOM, processGrid, } = this.state;
+        const { fieldsObj } = this.props;
         const tempArray = [];
+
+        if (processName.length === 0 || UOM.length === 0) {
+            toastr.warning('Fields should not be empty');
+            return false;
+        }
+
+        //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+        const isExist = processGrid.findIndex(el => (el.processNameId === processName.value && el.UOMId === UOM.value))
+        if (isExist !== -1) {
+            toastr.warning('Already added, Please check the values.')
+            return false;
+        }
+
+        const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
 
         tempArray.push(...processGrid, {
             processName: processName.label,
-            processNameId: processName.value,
+            ProcessId: processName.value,
             UOM: UOM.label,
-            UOMId: UOM.value,
-            machineRate: machineRate,
+            UnitOfMeasurementId: UOM.value,
+            MachineRate: MachineRate,
         })
 
         this.setState({
             processGrid: tempArray,
             processName: [],
             UOM: [],
-            machineRate: '',
-        }, () => this.props.change('MachineRate', ''));
+        }, () => this.props.change('MachineRate', 0));
     }
 
     /**
@@ -409,16 +418,32 @@ class AddMachineRate extends Component {
   * @description Used to handle updateProcessGrid
   */
     updateProcessGrid = () => {
-        const { processName, UOM, processGrid, machineRate, processGridEditIndex } = this.state;
+        const { processName, UOM, processGrid, processGridEditIndex } = this.state;
+        const { fieldsObj } = this.props;
         let tempArray = [];
+
+        //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
+        let skipEditedItem = processGrid.filter((el, i) => {
+            if (i === processGridEditIndex) return false;
+            return true;
+        })
+
+        //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
+        const isExist = skipEditedItem.findIndex(el => (el.ProcessId === processName.value && el.UnitOfMeasurementId === UOM.value))
+        if (isExist !== -1) {
+            toastr.warning('Already added, Please check the values.')
+            return false;
+        }
+
+        const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
 
         let tempData = processGrid[processGridEditIndex];
         tempData = {
             processName: processName.label,
-            processNameId: processName.value,
+            ProcessId: processName.value,
             UOM: UOM.label,
-            UOMId: UOM.value,
-            machineRate: machineRate,
+            UnitOfMeasurementId: UOM.value,
+            MachineRate: MachineRate,
         }
 
         tempArray = Object.assign([...processGrid], { [processGridEditIndex]: tempData })
@@ -427,10 +452,9 @@ class AddMachineRate extends Component {
             processGrid: tempArray,
             processName: [],
             UOM: [],
-            machineRate: '',
             processGridEditIndex: '',
             isEditIndex: false,
-        }, () => this.props.change('MachineRate', ''));
+        }, () => this.props.change('MachineRate', 0));
     };
 
     /**
@@ -441,10 +465,9 @@ class AddMachineRate extends Component {
         this.setState({
             processName: [],
             UOM: [],
-            machineRate: '',
             processGridEditIndex: '',
             isEditIndex: false,
-        });
+        }, () => () => this.props.change('MachineRate', 0));
     };
 
     /**
@@ -458,9 +481,9 @@ class AddMachineRate extends Component {
         this.setState({
             processGridEditIndex: index,
             isEditIndex: true,
-            processName: { label: tempData.processName, value: tempData.processNameId },
-            UOM: { label: tempData.UOM, value: tempData.UOMId },
-        }, () => this.props.change('MachineRate', tempData.machineRate))
+            processName: { label: tempData.processName, value: tempData.ProcessId },
+            UOM: { label: tempData.UOM, value: tempData.UnitOfMeasurementId },
+        }, () => this.props.change('MachineRate', tempData.MachineRate))
     }
 
     /**
@@ -471,21 +494,19 @@ class AddMachineRate extends Component {
         const { processGrid } = this.state;
 
         let tempData = processGrid.filter((item, i) => {
-            if (i == index) {
+            if (i === index) {
                 return false;
             }
             return true;
         });
 
-        this.setState({
-            processGrid: tempData
-        })
+        this.setState({ processGrid: tempData })
     }
 
     handleCalculation = () => {
         const { fieldsObj } = this.props
-        const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces != undefined ? fieldsObj.NumberOfPieces : 0;
-        const BasicRate = fieldsObj && fieldsObj.BasicRate != undefined ? fieldsObj.BasicRate : 0;
+        const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
+        const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
         const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
         this.props.change('NetLandedCost', NetLandedCost)
     }
@@ -500,6 +521,19 @@ class AddMachineRate extends Component {
         });
     };
 
+    /**
+    * @method checkUniqNumber
+    * @description CHECK UNIQ MACHINE NUMBER
+    */
+    checkUniqNumber = (e) => {
+        this.props.checkAndGetMachineNumber(e.target.value, res => {
+            if (res && res.data && res.data.Result === false) {
+                toastr.warning(res.data.Message);
+                $('input[name="MachineNumber"]').focus()
+            }
+        })
+    }
+
     formToggle = () => {
         this.setState({
             isShowForm: !this.state.isShowForm
@@ -510,7 +544,7 @@ class AddMachineRate extends Component {
     * @method cancel
     * @description used to Reset form
     */
-    clearForm = () => {
+    cancel = () => {
         const { reset } = this.props;
         reset();
         this.setState({
@@ -519,25 +553,81 @@ class AddMachineRate extends Component {
             IsVendor: false,
         })
         this.props.hideForm()
-        //this.props.getRawMaterialDetailsAPI('', false, res => { })
     }
 
-    /**
-    * @method cancel
-    * @description used to Reset form
-    */
-    cancel = () => {
-        this.clearForm()
+    // specify upload params and url for your files
+    getUploadParams = ({ file, meta }) => {
+        return { url: 'https://httpbin.org/post', }
+
     }
 
-    /**
-    * @method resetForm
-    * @description used to Reset form
-    */
-    resetForm = () => {
-        this.clearForm()
+    // called every time a file's `status` changes
+    handleChangeStatus = ({ meta, file }, status) => {
+        const { files, } = this.state;
+
+        if (status === 'removed') {
+            const removedFileName = file.name;
+            let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
+            this.setState({ files: tempArr })
+        }
+
+        if (status === 'done') {
+            let data = new FormData()
+            data.append('file', file)
+            this.props.fileUploadMachine(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state;
+                files.push(Data)
+                this.setState({ files: files })
+            })
+        }
+
+        if (status === 'rejected_file_type') {
+            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        }
     }
 
+    renderImages = () => {
+        this.state.files && this.state.files.map(f => {
+            const withOutTild = f.FileURL.replace('~', '')
+            const fileURL = `${FILE_URL}${withOutTild}`;
+            return (
+                <div className={'attachment-wrapper images'}>
+                    <img src={fileURL} alt={''} />
+                    <button
+                        type="button"
+                        onClick={() => this.deleteFile(f.FileId)}>X</button>
+                </div>
+            )
+        })
+    }
+
+    deleteFile = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            this.props.fileDeleteMachine(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = this.state.files.filter(item => item.FileId !== FileId)
+                this.setState({ files: tempArr })
+            })
+        }
+        if (FileId == null) {
+            let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+            this.setState({ files: tempArr })
+        }
+    }
+
+    Preview = ({ meta }) => {
+        const { name, percent, status } = meta
+        return (
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {/* {Math.round(percent)}% */}
+            </span>
+        )
+    }
 
 
     /**
@@ -545,48 +635,58 @@ class AddMachineRate extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, remarks, BOPID, isEditFlag, files, effectiveDate, receivedFiles } = this.state;
-        const { reset } = this.props;
+        const { IsVendor, isEditFlag, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants, remarks,
+            machineType, files, processGrid, } = this.state;
+        const userDetail = userDetails()
 
-        // let plantArray = [];
-        // selectedPlants && selectedPlants.map((item) => {
-        //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-        //     return plantArray;
-        // })
+        let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
-        // let vendorPlantArray = [];
-        // selectedVendorPlants && selectedVendorPlants.map((item) => {
-        //     vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-        //     return vendorPlantArray;
-        // })
+        let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
+
+        let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
         if (isEditFlag) {
+            let updatedFiles = files.map((file) => {
+                return { ...file, ContextId: '' }
+            })
 
             let requestData = {
 
             }
 
-            // this.props.updateBOPDomestic(requestData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
-            //         this.clearForm();
-            //         this.child.getUpdatedData();
-            //     }
-            // })
+            this.props.updateMachine(requestData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+                    this.cancel();
+                }
+            })
 
         } else {
 
             const formData = {
-
+                IsVendor: IsVendor,
+                VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+                MachineNumber: values.MachineNumber,
+                MachineName: values.MachineName,
+                MachineTypeId: machineType.value,
+                TonnageCapacity: values.TonnageCapacity,
+                Description: values.Description,
+                IsActive: true,
+                LoggedInUserId: loggedInUserId(),
+                MachineProcessRates: processGrid,
+                Technology: technologyArray,
+                Plant: plantArray,
+                VendorPlant: vendorPlantArray,
+                Remark: remarks,
+                Attachements: files,
             }
 
-            // this.props.createBOPDomestic(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.BOP_ADD_SUCCESS);
-            //         this.clearForm();
-            //         this.child.getUpdatedData();
-            //     }
-            // });
+            this.props.createMachine(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.MACHINE_ADD_SUCCESS);
+                    this.cancel();
+                }
+            });
         }
     }
 
@@ -595,14 +695,8 @@ class AddMachineRate extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { files, errors, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
-
-        const previewStyle = {
-            display: 'inline',
-            width: 100,
-            height: 100,
-        };
+        const { handleSubmit, } = this.props;
+        const { files, isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
 
         return (
             <>
@@ -632,6 +726,14 @@ class AddMachineRate extends Component {
                                                         checked={this.state.IsVendor}
                                                         id="normal-switch"
                                                         disabled={isEditFlag ? true : false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        height={20}
+                                                        width={46}
                                                     />
                                                     <div className={'right-title'}>Vendor Based</div>
                                                 </label>
@@ -649,7 +751,7 @@ class AddMachineRate extends Component {
                                                     label="Technology"
                                                     name="technology"
                                                     placeholder="--Select--"
-                                                    selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length == 0) ? [] : this.state.selectedTechnology}
+                                                    selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                                                     options={this.renderListing('technology')}
                                                     selectionChanged={this.handleTechnology}
                                                     optionValue={option => option.Value}
@@ -670,7 +772,7 @@ class AddMachineRate extends Component {
                                                         placeholder={'--select--'}
                                                         options={this.renderListing('VendorNameList')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                                         required={true}
                                                         handleChangeDescription={this.handleVendorName}
                                                         valueDescription={this.state.vendorName}
@@ -683,7 +785,7 @@ class AddMachineRate extends Component {
                                                         label="Vendor Plant"
                                                         name="VendorPlant"
                                                         placeholder="--- Plant ---"
-                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
                                                         options={this.renderListing('VendorPlant')}
                                                         selectionChanged={this.handleVendorPlant}
                                                         optionValue={option => option.Value}
@@ -700,7 +802,7 @@ class AddMachineRate extends Component {
                                                         label="Plant"
                                                         name="Plant"
                                                         placeholder="--Select--"
-                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                                         options={this.renderListing('plant')}
                                                         selectionChanged={this.handlePlants}
                                                         optionValue={option => option.Value}
@@ -720,7 +822,8 @@ class AddMachineRate extends Component {
                                                     validate={[required]}
                                                     component={renderText}
                                                     required={true}
-                                                    disabled={isEditFlag ? true : false}
+                                                    onBlur={this.checkUniqNumber}
+                                                    disabled={(isEditFlag || isConfigurableMachineNumber) ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
                                                 />
@@ -753,17 +856,17 @@ class AddMachineRate extends Component {
                                                             placeholder={'--select--'}
                                                             options={this.renderListing('MachineTypeList')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
+                                                            validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleMachineType}
                                                             valueDescription={this.state.machineType}
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.machineTypeToggler}
                                                         className={'plus-icon-square mr5 right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -833,10 +936,10 @@ class AddMachineRate extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.processToggler}
                                                         className={'plus-icon-square mr5 right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -914,7 +1017,7 @@ class AddMachineRate extends Component {
                                                                     <tr key={index}>
                                                                         <td>{item.processName}</td>
                                                                         <td>{item.UOM}</td>
-                                                                        <td>{item.machineRate}</td>
+                                                                        <td>{item.MachineRate}</td>
                                                                         <td>
                                                                             <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
                                                                             <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
@@ -924,10 +1027,76 @@ class AddMachineRate extends Component {
                                                             })
                                                         }
                                                     </tbody>
-                                                    {this.state.processGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                                    {this.state.processGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                 </Table>
                                             </Col>
+                                        </Row>
 
+                                        <Row>
+                                            <Col md="12" className="filter-block">
+                                                <div className=" flex-fills mb-2">
+                                                    <h5>{'Remarks & Attachment'}</h5>
+                                                </div>
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={'Remarks'}
+                                                    name={`Remark`}
+                                                    placeholder="Type here..."
+                                                    value={this.state.remarks}
+                                                    className=""
+                                                    customClassName=" textAreaWithBorder"
+                                                    onChange={this.handleMessageChange}
+                                                    validate={[required, maxLength100]}
+                                                    required={true}
+                                                    component={renderTextAreaField}
+                                                    maxLength="5000"
+                                                    rows="6"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <label>Upload Files (upload up to 3 files)</label>
+                                                {this.state.files.length >= 3 ? '' :
+                                                    <Dropzone
+                                                        getUploadParams={this.getUploadParams}
+                                                        onChangeStatus={this.handleChangeStatus}
+                                                        PreviewComponent={this.Preview}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                                        initialFiles={this.state.initialFiles}
+                                                        maxFiles={3}
+                                                        maxSizeBytes={2000000}
+                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                                                        styles={{
+                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                                                        }}
+                                                        classNames="draper-drop"
+                                                    />}
+                                            </Col>
+                                            <Col md="3">
+                                                <div className={'attachment-wrapper'}>
+                                                    {
+                                                        this.state.files && this.state.files.map(f => {
+                                                            const withOutTild = f.FileURL.replace('~', '')
+                                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                                            return (
+                                                                <div className={'attachment images'}>
+                                                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
+                                                                    </a> */}
+                                                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                                                        <img src={fileURL} height={50} width={100} />
+                                                                    </div> */}
+
+                                                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../assests/images/red-cross.png')}></img>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
+                                            </Col>
                                         </Row>
 
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -979,29 +1148,27 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
     const { comman, material, machine, } = state;
-    const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity',);
+    const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate');
 
     const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
-    const { machineTypeSelectList, processSelectList } = machine;
+    const { machineTypeSelectList, processSelectList, machineData } = machine;
     const { vendorListByVendorType } = material;
 
     let initialValues = {};
-    // if (bopData && bopData != undefined) {
-    //     initialValues = {
-    //         BoughtOutPartNumber: bopData.BoughtOutPartNumber,
-    //         BoughtOutPartName: bopData.BoughtOutPartName,
-    //         Specification: bopData.Specification,
-    //         Source: bopData.Source,
-    //         BasicRate: bopData.BasicRatePerUOM,
-    //         NumberOfPieces: bopData.NumberOfPieces,
-    //         NetLandedCost: bopData.NetLandedCost,
-    //         Remark: bopData.Remark,
-    //     }
-    // }
+
+    if (machineData && machineData !== undefined) {
+        initialValues = {
+            MachineNumber: machineData.MachineNumber,
+            MachineName: machineData.MachineName,
+            TonnageCapacity: machineData.TonnageCapacity,
+            Description: machineData.Description,
+            Remark: machineData.Remark,
+        }
+    }
 
     return {
         vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
-        machineTypeSelectList, processSelectList, fieldsObj, initialValues,
+        machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues,
     }
 
 }
@@ -1020,6 +1187,12 @@ export default connect(mapStateToProps, {
     getUOMSelectList,
     getMachineTypeSelectList,
     getProcessesSelectList,
+    fileUploadMachine,
+    fileDeleteMachine,
+    checkAndGetMachineNumber,
+    createMachine,
+    updateMachine,
+    getMachineData,
 })(reduxForm({
     form: 'AddMachineRate',
     enableReinitialize: true,

@@ -46,7 +46,7 @@ class AddSupplier extends Component {
     * @method componentWillMount
     * @description called before render the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getVendorTypesSelectList()
         this.props.getVendorPlantSelectList(() => { })
         this.props.fetchCountryDataAPI(() => { })

@@ -32,7 +32,7 @@ class AddVendorPlantDrawer extends Component {
     * @method componentWillMount
     * @description called before render the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.fetchCountryDataAPI(() => { })
     }
 

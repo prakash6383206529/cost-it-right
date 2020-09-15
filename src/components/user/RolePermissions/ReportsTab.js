@@ -27,15 +27,15 @@ class ReportsTab extends Component {
     }
 
     /**
-	* @method componentDidMount
-	* @description used to called after mounting component
-	*/
+    * @method componentDidMount
+    * @description used to called after mounting component
+    */
     componentDidMount() {
 
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data != this.state.data) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (nextProps.data !== this.state.data) {
             const { data, actionData, actionSelectList } = nextProps;
             this.setState({
                 actionData: actionData,
@@ -64,10 +64,10 @@ class ReportsTab extends Component {
 
     //Below code for Table rendering...... 
 
-	/**
-	* @method renderActionHeads
-	* @description used to add more permission for user
-	*/
+    /**
+    * @method renderActionHeads
+    * @description used to add more permission for user
+    */
     renderActionHeads = (actionHeads) => {
         const { actionData } = this.state;
         let actionNames = actionData && actionData.find(el => el.ModuleName == REPORTS_AND_ANALYTICS)
@@ -86,10 +86,10 @@ class ReportsTab extends Component {
         }
     }
 
-	/**
-	* @method moduleHandler
-	* @description used to checked module
-	*/
+    /**
+    * @method moduleHandler
+    * @description used to checked module
+    */
     moduleHandler = (index) => {
         //alert('hi')
         const { Modules, checkedAll } = this.state;
@@ -121,9 +121,9 @@ class ReportsTab extends Component {
     }
 
     /**
-	* @method isCheckModule
-	* @description used to select module's action row (Horizontally)
-	*/
+    * @method isCheckModule
+    * @description used to select module's action row (Horizontally)
+    */
     isCheckModule = (actionData) => {
         let tempArray = actionData && actionData.filter(item => item.IsChecked == true)
         if (actionData && actionData != undefined) {
@@ -131,10 +131,10 @@ class ReportsTab extends Component {
         }
     }
 
-	/**
-	* @method isCheckAll
-	* @description used to select module's action row (Horizontally)
-	*/
+    /**
+    * @method isCheckAll
+    * @description used to select module's action row (Horizontally)
+    */
     isCheckAll = (parentIndex, actionData) => {
         const { Modules, actionSelectList } = this.state;
 
@@ -170,10 +170,10 @@ class ReportsTab extends Component {
         }
     }
 
-	/**
-	* @method renderAction
-	* @description used to render row of actions
-	*/
+    /**
+    * @method renderAction
+    * @description used to render row of actions
+    */
     renderAction = (actions, parentIndex) => {
         const { actionSelectList } = this.state;
 
@@ -206,10 +206,10 @@ class ReportsTab extends Component {
         })
     }
 
-	/**
-	* @method actionCheckHandler
-	* @description Used to check/uncheck action's checkbox
-	*/
+    /**
+    * @method actionCheckHandler
+    * @description Used to check/uncheck action's checkbox
+    */
     actionCheckHandler = (parentIndex, childIndex) => {
         const { Modules } = this.state;
 
@@ -242,10 +242,10 @@ class ReportsTab extends Component {
         this.props.permissions(Modules, REPORTS_AND_ANALYTICS)
     }
 
-	/**
-	* @method cancel
-	* @description used to cancel role edit
-	*/
+    /**
+    * @method cancel
+    * @description used to cancel role edit
+    */
     cancel = () => {
 
     }

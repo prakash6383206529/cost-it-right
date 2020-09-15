@@ -1,11 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../../helper/validation";
+import { Row, Col, Table } from 'reactstrap';
+import { required, checkForNull } from "../../../../helper/validation";
 import {
-    renderText, renderSelectField, renderNumberInputField, searchableSelect,
-    renderMultiSelectField, renderTextAreaField
+    renderText, renderNumberInputField, searchableSelect, renderMultiSelectField,
 } from "../../../layout/FormInputs";
 import {
     getTechnologySelectList, getPlantSelectList, getPlantBySupplier, getUOMSelectList,
@@ -18,14 +17,10 @@ import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
 import Switch from "react-switch";
-import Dropzone from 'react-dropzone-uploader';
-import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../../config/constants';
-import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-import AddUOM from '../uom-master/AddUOM';
 import HeaderTitle from '../../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
@@ -81,7 +76,7 @@ class AddMoreDetails extends Component {
     * @method componentWillMount
     * @description Called before render the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
 
 
     }
@@ -102,13 +97,13 @@ class AddMoreDetails extends Component {
         this.props.getDepreciationTypeSelectList(() => { })
         this.props.getLabourTypeSelectList(() => { })
 
-        if (data && data != undefined) {
+        if (data && data !== undefined) {
 
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data != this.props.data) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (nextProps.data !== this.props.data) {
             const { fieldsObj, machineType, selectedPlants } = nextProps.data;
             this.props.change('MachineName', fieldsObj.MachineName)
             this.props.change('MachineNumber', fieldsObj.MachineNumber)
@@ -141,9 +136,6 @@ class AddMoreDetails extends Component {
     handleTechnology = (e) => {
         this.setState({ selectedTechnology: e })
     }
-
-
-
 
     /**
     * @method handleMessageChange
@@ -236,63 +228,63 @@ class AddMoreDetails extends Component {
         const temp = [];
         if (label === 'technology') {
             technologySelectList && technologySelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'MachineTypeList') {
             machineTypeSelectList && machineTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'ProcessNameList') {
             processSelectList && processSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'ShiftType') {
             ShiftTypeSelectList && ShiftTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'DepreciationType') {
             DepreciationTypeSelectList && DepreciationTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'labourList') {
             labourTypeSelectList && labourTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'UOM') {
             UOMSelectList && UOMSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -320,7 +312,7 @@ class AddMoreDetails extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
                 const { vendorName } = this.state;
                 this.props.getPlantBySupplier(vendorName.value, () => { })
@@ -351,7 +343,7 @@ class AddMoreDetails extends Component {
     * @description called
     */
     handleMachineType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ machineType: newValue });
         } else {
             this.setState({ machineType: [], })
@@ -369,7 +361,7 @@ class AddMoreDetails extends Component {
     }
 
     handleShiftType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ shiftType: newValue });
         } else {
             this.setState({ shiftType: [], })
@@ -381,7 +373,7 @@ class AddMoreDetails extends Component {
     }
 
     handleDereciationType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ depreciationType: newValue });
         } else {
             this.setState({ depreciationType: [], })
@@ -389,7 +381,7 @@ class AddMoreDetails extends Component {
     }
 
     handleFuelType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ fuelType: newValue });
         } else {
             this.setState({ fuelType: [], })
@@ -401,7 +393,7 @@ class AddMoreDetails extends Component {
     * @description called
     */
     handleProcessName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ processName: newValue });
         } else {
             this.setState({ processName: [] })
@@ -423,7 +415,7 @@ class AddMoreDetails extends Component {
     * @description called
     */
     handleUOM = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ UOM: newValue });
         } else {
             this.setState({ UOM: [] })
@@ -499,7 +491,7 @@ class AddMoreDetails extends Component {
     * @description called
     */
     labourHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ labourType: newValue });
         } else {
             this.setState({ labourType: [] })
@@ -515,8 +507,8 @@ class AddMoreDetails extends Component {
 
     handleLabourCalculation = () => {
         const { fieldsObj } = this.props
-        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum != undefined ? fieldsObj.LabourCostPerAnnum : 0;
-        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour != undefined ? fieldsObj.NumberOfLabour : 0;
+        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum !== undefined ? fieldsObj.LabourCostPerAnnum : 0;
+        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour !== undefined ? fieldsObj.NumberOfLabour : 0;
         const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
         this.props.change('LabourCost', TotalLabourCost)
     }
@@ -524,8 +516,8 @@ class AddMoreDetails extends Component {
     labourTableHandler = () => {
         const { labourType, labourGrid } = this.state;
         const { fieldsObj } = this.props
-        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum != undefined ? fieldsObj.LabourCostPerAnnum : 0;
-        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour != undefined ? fieldsObj.NumberOfLabour : 0;
+        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum !== undefined ? fieldsObj.LabourCostPerAnnum : 0;
+        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour !== undefined ? fieldsObj.NumberOfLabour : 0;
         const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
         const tempArray = [];
 
@@ -550,8 +542,8 @@ class AddMoreDetails extends Component {
     updateLabourGrid = () => {
         const { labourType, labourGrid, labourGridEditIndex } = this.state;
         const { fieldsObj } = this.props
-        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum != undefined ? fieldsObj.LabourCostPerAnnum : 0;
-        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour != undefined ? fieldsObj.NumberOfLabour : 0;
+        const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum !== undefined ? fieldsObj.LabourCostPerAnnum : 0;
+        const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour !== undefined ? fieldsObj.NumberOfLabour : 0;
         const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
 
         let tempArray = [];
@@ -618,7 +610,7 @@ class AddMoreDetails extends Component {
         const { labourGrid } = this.state;
 
         let tempData = labourGrid.filter((item, i) => {
-            if (i == index) {
+            if (i === index) {
                 return false;
             }
             return true;
@@ -631,17 +623,16 @@ class AddMoreDetails extends Component {
 
     calculateTotalLabourCost = () => {
         const { labourGrid } = this.state;
-        let cost = 0;
-        labourGrid && labourGrid.map(item => {
-            cost = cost + item.LabourCost;
-        })
+        let cost = labourGrid && labourGrid.reduce((accumulator, item) => {
+            return accumulator + item.LabourCost;
+        }, 0)
         return cost;
     }
 
     handleProcessCalculation = () => {
         const { fieldsObj } = this.props
-        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours != undefined ? fieldsObj.OutputPerHours : 0;
-        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear != undefined ? fieldsObj.OutputPerYear : 0;
+        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
+        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
 
         this.props.change('OutputPerYear', OutputPerHours * 10)
         this.props.change('MachineRate', 1000 / OutputPerYear)
@@ -651,9 +642,9 @@ class AddMoreDetails extends Component {
         const { processName, UOM, processGrid, } = this.state;
         const { fieldsObj } = this.props
 
-        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours != undefined ? fieldsObj.OutputPerHours : 0;
-        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear != undefined ? fieldsObj.OutputPerYear : 0;
-        const MachineRate = fieldsObj && fieldsObj.MachineRate != undefined ? fieldsObj.MachineRate : 0;
+        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
+        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
+        const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : 0;
 
         const tempArray = [];
 
@@ -686,9 +677,9 @@ class AddMoreDetails extends Component {
         const { processName, UOM, processGrid, processGridEditIndex } = this.state;
         const { fieldsObj } = this.props
 
-        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours != undefined ? fieldsObj.OutputPerHours : 0;
-        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear != undefined ? fieldsObj.OutputPerYear : 0;
-        const MachineRate = fieldsObj && fieldsObj.MachineRate != undefined ? fieldsObj.MachineRate : 0;
+        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
+        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
+        const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : 0;
         let tempArray = [];
 
         let tempData = processGrid[processGridEditIndex];
@@ -762,7 +753,7 @@ class AddMoreDetails extends Component {
         const { processGrid } = this.state;
 
         let tempData = processGrid.filter((item, i) => {
-            if (i == index) {
+            if (i === index) {
                 return false;
             }
             return true;
@@ -776,8 +767,8 @@ class AddMoreDetails extends Component {
 
     handleCalculation = () => {
         const { fieldsObj } = this.props
-        const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces != undefined ? fieldsObj.NumberOfPieces : 0;
-        const BasicRate = fieldsObj && fieldsObj.BasicRate != undefined ? fieldsObj.BasicRate : 0;
+        const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
+        const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
         const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
         this.props.change('NetLandedCost', NetLandedCost)
     }
@@ -877,14 +868,8 @@ class AddMoreDetails extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
+        const { handleSubmit, } = this.props;
         const { files, errors, isEditFlag, isOpenMachineType, isMoreDetails, isOpenProcessDrawer, } = this.state;
-
-        const previewStyle = {
-            display: 'inline',
-            width: 100,
-            height: 100,
-        };
 
         return (
             <>
@@ -931,7 +916,7 @@ class AddMoreDetails extends Component {
                                                     label="Plant"
                                                     name="Plant"
                                                     placeholder="--Select--"
-                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                                     options={this.renderListing('plant')}
                                                     selectionChanged={this.handlePlants}
                                                     optionValue={option => option.Value}
@@ -973,26 +958,28 @@ class AddMoreDetails extends Component {
                                         </Row>
 
                                         <Row>
-                                            <Col md="2">
-                                                <Field
-                                                    name="MachineType"
-                                                    type="text"
-                                                    label="Machine Type"
-                                                    component={searchableSelect}
-                                                    placeholder={'--select--'}
-                                                    options={this.renderListing('MachineTypeList')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleMachineType}
-                                                    valueDescription={this.state.machineType}
-                                                    disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="1">
-                                                <div
-                                                    onClick={this.machineTypeToggler}
-                                                    className={'plus-icon-square mt30 mr15 right'}>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="MachineType"
+                                                            type="text"
+                                                            label="Machine Type"
+                                                            component={searchableSelect}
+                                                            placeholder={'--select--'}
+                                                            options={this.renderListing('MachineTypeList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleMachineType}
+                                                            valueDescription={this.state.machineType}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        onClick={this.machineTypeToggler}
+                                                        className={'plus-icon-square mr5 right'}>
+                                                    </div>
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -1205,7 +1192,7 @@ class AddMoreDetails extends Component {
                                                     placeholder={'--select--'}
                                                     options={this.renderListing('ShiftType')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.shiftType == null || this.state.shiftType.length == 0) ? [required] : []}
+                                                    validate={(this.state.shiftType == null || this.state.shiftType.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.handleShiftType}
                                                     valueDescription={this.state.shiftType}
@@ -1240,24 +1227,26 @@ class AddMoreDetails extends Component {
                                                     customClassName="withBorder"
                                                 />
                                             </Col>
-                                            <Col md="2">
-                                                <Field
-                                                    label={`Efficiency (%)`}
-                                                    name={"EfficiencyPercentage"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
-                                                    required={true}
-                                                    disabled={false}
-                                                    className=" "
-                                                    customClassName="withBorder"
-                                                />
-                                            </Col>
-                                            <Col md="1">
-                                                <div
-                                                    onClick={this.efficiencyCalculationToggler}
-                                                    className={'plus-icon-square mt30 mr15 right'}>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            label={`Efficiency (%)`}
+                                                            name={"EfficiencyPercentage"}
+                                                            type="text"
+                                                            placeholder={'Enter'}
+                                                            validate={[required]}
+                                                            component={renderNumberInputField}
+                                                            required={true}
+                                                            disabled={false}
+                                                            className=" "
+                                                            customClassName="withBorder"
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        onClick={this.efficiencyCalculationToggler}
+                                                        className={'plus-icon-square mr5 right'}>
+                                                    </div>
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -1291,7 +1280,7 @@ class AddMoreDetails extends Component {
                                                     placeholder={'--select--'}
                                                     options={this.renderListing('DepreciationType')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.depreciationType == null || this.state.depreciationType.length == 0) ? [required] : []}
+                                                    validate={(this.state.depreciationType == null || this.state.depreciationType.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.handleDereciationType}
                                                     valueDescription={this.state.depreciationType}
@@ -1617,7 +1606,7 @@ class AddMoreDetails extends Component {
                                                             placeholder={'--select--'}
                                                             options={this.renderListing('FuelSelectList')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.fuelType == null || this.state.fuelType.length == 0) ? [required] : []}
+                                                            validate={(this.state.fuelType == null || this.state.fuelType.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleFuelType}
                                                             valueDescription={this.state.fuelType}
@@ -1757,7 +1746,7 @@ class AddMoreDetails extends Component {
                                                     placeholder={'Select Labour'}
                                                     options={this.renderListing('labourList')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
+                                                    validate={(this.state.labourType == null || this.state.labourType.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.labourHandler}
                                                     valueDescription={this.state.labourType}
@@ -1868,7 +1857,7 @@ class AddMoreDetails extends Component {
                                                             </tr>
                                                         }
                                                     </tbody>
-                                                    {this.state.labourGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                                    {this.state.labourGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                 </Table>
                                             </Col>
                                         </Row>
@@ -1879,26 +1868,28 @@ class AddMoreDetails extends Component {
                                                     title={'Process:'}
                                                     customClass={'Personal-Details'} />
                                             </Col>
-                                            <Col md="2">
-                                                <Field
-                                                    name="ProcessName"
-                                                    type="text"
-                                                    label="Process Name"
-                                                    component={searchableSelect}
-                                                    placeholder={'--select--'}
-                                                    options={this.renderListing('ProcessNameList')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
-                                                    //required={true}
-                                                    handleChangeDescription={this.handleProcessName}
-                                                    valueDescription={this.state.processName}
-                                                    disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            <Col md="1">
-                                                <div
-                                                    onClick={this.processToggler}
-                                                    className={'plus-icon-square mt30 mr15 right'}>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="ProcessName"
+                                                            type="text"
+                                                            label="Process Name"
+                                                            component={searchableSelect}
+                                                            placeholder={'--select--'}
+                                                            options={this.renderListing('ProcessNameList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
+                                                            //required={true}
+                                                            handleChangeDescription={this.handleProcessName}
+                                                            valueDescription={this.state.processName}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        onClick={this.processToggler}
+                                                        className={'plus-icon-square mr5 right'}>
+                                                    </div>
                                                 </div>
                                             </Col>
                                             <Col md="2">
@@ -2018,7 +2009,7 @@ class AddMoreDetails extends Component {
                                                             })
                                                         }
                                                     </tbody>
-                                                    {this.state.processGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                                    {this.state.processGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                 </Table>
                                             </Col>
 
@@ -2040,6 +2031,7 @@ class AddMoreDetails extends Component {
                                                 </button>
                                             </div>
                                         </Row>
+
                                     </form>
                                 </div>
                             </div>

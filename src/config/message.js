@@ -105,8 +105,6 @@ export const MESSAGES = {
   DEPRECIATION_DELETE_SUCCESS: 'Depreciation deleted successfully',
   DEPRECIATION_UPDATE_SUCCESS: 'Depreciation has been updated successfully',
 
-
-
   //PLANT
   DELETE_PLANT_SUCCESS: 'Plant deleted successfully',
   UPDATE_PLANT_SUCESS: 'Plant updated successfully',
@@ -184,14 +182,15 @@ export const MESSAGES = {
 
   //MACHINE MASTER
   DELETE_MACHINE_SUCCESS: 'Machine has been deleted successfully.',
-  DELETE_MACHINE_TYPE_SUCCESS: 'Machine Type has been deleted successfully.',
   MACHINE_DELETE_ALERT: 'Are you sure you want to delete Machine?',
-  MACHINE_TYPE_DELETE_ALERT: 'Are you sure you want to delete Machine Type?',
+  UPDATE_MACHINE_SUCCESS: 'Machine has been updated successfully.',
 
   //MACHINE TYPE
   MACHINE_TYPE_ADD_SUCCESS: 'Machine Class has been added successfully.',
   UPDATE_MACHINE_TYPE_SUCESS: 'Machine Class has been updated successfully.',
   MACHINE_ADD_SUCCESS: 'Machine has been added successfully.',
+  DELETE_MACHINE_TYPE_SUCCESS: 'Machine Type has been deleted successfully.',
+  MACHINE_TYPE_DELETE_ALERT: 'Are you sure you want to delete Machine Type?',
 
   //REASON MASTER
   REASON_ADD_SUCCESS: 'Reason has been added successfully.',

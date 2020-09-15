@@ -22,7 +22,7 @@ class AddMachineType extends Component {
         }
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getLabourTypeSelectList((res) => { })
     }
 

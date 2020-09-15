@@ -34,8 +34,8 @@ class DashboardAuditTab extends Component {
 
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data != this.state.data) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (nextProps.data !== this.state.data) {
             const { data, actionData, actionSelectList } = nextProps;
             this.setState({
                 actionData: actionData,

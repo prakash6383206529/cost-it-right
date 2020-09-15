@@ -3,7 +3,6 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    DATA_FAILURE,
     CREATE_SUCCESS,
     CREATE_FAILURE,
     CREATE_MACHINE_TYPE_SUCCESS,
@@ -16,8 +15,6 @@ import {
     GET_MACHINE_LIST_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
-import { MESSAGES } from '../../config/message';
-import { toastr } from 'react-redux-toastr'
 
 const headers = {
     'Content-Type': 'application/json',
@@ -52,7 +49,7 @@ export function getMachineTypeListAPI(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getMachineTypeListAPI, { headers })
             .then((response) => {
-                if (response.data.Result == true) {
+                if (response.data.Result === true) {
                     dispatch({
                         type: GET_MACHINE_TYPE_DATALIST_SUCCESS,
                         payload: response.data.DataList,
@@ -77,7 +74,7 @@ export function getMachineTypeDataAPI(ID, callback) {
         if (ID != '') {
             axios.get(`${API.getMachineTypeDataAPI}/${ID}`, headers)
                 .then((response) => {
-                    if (response.data.Result == true) {
+                    if (response.data.Result === true) {
                         dispatch({
                             type: GET_MACHINE_TYPE_DATA_SUCCESS,
                             payload: response.data.Data,
@@ -133,14 +130,14 @@ export function updateMachineTypeAPI(requestData, callback) {
 }
 
 /**
- * @method createMachineAPI
- * @description create Machine Type 
+ * @method createMachine
+ * @description create Machine
  */
-export function createMachineAPI(data, callback) {
+export function createMachine(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMachineAPI, data, headers);
+        const request = axios.post(API.createMachine, data, headers);
         request.then((response) => {
-            if (response.data.Result == true) {
+            if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
                 callback(response);
             }
@@ -152,15 +149,16 @@ export function createMachineAPI(data, callback) {
 }
 
 /**
- * @method getMachineListAPI
- * @description get all operation list
+ * @method getMachineDataList
+ * @description GET DATALIST
  */
-export function getMachineListAPI(callback) {
+export function getMachineDataList(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getMachineListAPI, { headers })
+        const queryParams = `costing_head=${data.costing_head}&technology_id=${data.technology_id}&vendor_id=${data.vendor_id}&machine_type_id=${data.machine_type_id}&process_id=${data.process_id}&plant_id=${data.plant_id}`
+        axios.get(`${API.getMachineDataList}?${queryParams}`, { headers })
             .then((response) => {
-                if (response.data.Result == true) {
+                if (response.data.Result === true) {
                     dispatch({
                         type: GET_MACHINE_DATALIST_SUCCESS,
                         payload: response.data.DataList,
@@ -176,16 +174,16 @@ export function getMachineListAPI(callback) {
 }
 
 /**
- * @method getMachineDataAPI
+ * @method getMachineData
  * @description Get Machine data
  */
-export function getMachineDataAPI(ID, callback) {
+export function getMachineData(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (ID != '') {
-            axios.get(`${API.getMachineDataAPI}/${ID}`, headers)
+        if (ID !== '') {
+            axios.get(`${API.getMachineData}/${ID}`, headers)
                 .then((response) => {
-                    if (response.data.Result == true) {
+                    if (response.data.Result === true) {
                         dispatch({
                             type: GET_MACHINE_DATA_SUCCESS,
                             payload: response.data.Data,
@@ -224,13 +222,13 @@ export function deleteMachineAPI(Id, callback) {
 }
 
 /**
- * @method updateMachineAPI
- * @description update Machine Type details
+ * @method updateMachine
+ * @description update Machine details
  */
-export function updateMachineAPI(requestData, callback) {
+export function updateMachine(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMachineAPI}`, requestData, headers)
+        axios.put(`${API.updateMachine}`, requestData, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -314,3 +312,55 @@ export function getMachineSelectList(callback) {
     };
 }
 
+/**
+ * @method fileUploadMachine
+ * @description File Upload Machine
+ */
+export function fileUploadMachine(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.fileUploadMachine, data, headers);
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fileDeleteMachine
+ * @description delete Machine file
+ */
+export function fileDeleteMachine(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.fileDeleteMachine}/${data.Id}/${data.DeletedBy}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method checkAndGetMachineNumber
+ * @description CHECK AND GET MACHINE NUMBER
+ */
+export function checkAndGetMachineNumber(number, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.checkAndGetMachineNumber}?machineNumber=${number}`, headers);
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

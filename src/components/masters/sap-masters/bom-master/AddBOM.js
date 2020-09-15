@@ -31,7 +31,7 @@ class AddBOM extends Component {
     * @method componentWillMount
     * @description called before rendering the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.fetchBOMComboAPI(res => { });
         this.props.fetchPlantDataAPI(() => { })
         this.props.getAllRawMaterialList(() => { });

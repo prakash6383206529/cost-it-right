@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import MachineRateListing from './MachineRateListing';
 import AddMachineRate from './AddMachineRate';
@@ -31,6 +31,10 @@ class MachineMaster extends Component {
         }
     }
 
+    /**
+    * @method displayForm
+    * @description DISPLAY MACHINE FORM
+    */
     displayForm = () => {
         this.setState({
             isMachineRateForm: true,
@@ -38,14 +42,38 @@ class MachineMaster extends Component {
         })
     }
 
+    /**
+    * @method getDetails
+    * @description DISPLAY MACHINE FORM
+    */
+    getDetails = (data) => {
+        this.setState({
+            isMachineRateForm: true,
+            isAddMoreDetails: false,
+            data: data,
+        })
+    }
+
+    /**
+    * @method hideForm
+    * @description HIDE MACHINE FORM
+    */
     hideForm = () => {
         this.setState({ isMachineRateForm: false })
     }
 
+    /**
+    * @method setData
+    * @description SET DATA FOR EDIT MACHINE FORM
+    */
     setData = (data) => {
         this.setState({ data: data })
     }
 
+    /**
+    * @method displayMoreDetailsForm
+    * @description DISPLAY MORE DETAILS FORM
+    */
     displayMoreDetailsForm = () => {
         this.setState({
             isAddMoreDetails: true,
@@ -53,6 +81,10 @@ class MachineMaster extends Component {
         })
     }
 
+    /**
+    * @method hideMoreDetailsForm
+    * @description HIDE MORE DETAILS FORM
+    */
     hideMoreDetailsForm = () => {
         this.setState({
             isAddMoreDetails: false,
@@ -69,6 +101,7 @@ class MachineMaster extends Component {
 
         if (isMachineRateForm === true) {
             return <AddMachineRate
+                data={this.state.data}
                 setData={this.setData}
                 hideForm={this.hideForm}
                 displayMoreDetailsForm={this.displayMoreDetailsForm}
@@ -84,7 +117,6 @@ class MachineMaster extends Component {
 
         return (
             <>
-                {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
                         <h3>{`Machine Master`}</h3>
@@ -113,6 +145,7 @@ class MachineMaster extends Component {
                                     <TabPane tabId="1">
                                         <MachineRateListing
                                             displayForm={this.displayForm}
+                                            getDetails={this.getDetails}
                                         />
                                     </TabPane>}
 
@@ -134,7 +167,7 @@ class MachineMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
+function mapStateToProps() {
 
     return {}
 }

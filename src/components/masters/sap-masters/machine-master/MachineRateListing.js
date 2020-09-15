@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
-import { Row, Col, Table, Button } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
@@ -11,14 +11,13 @@ import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList,
     getInitialVendorWithVendorCodeSelectList,
 } from '../../../../actions/master/Process';
+import { getMachineDataList, } from '../../../../actions/master/MachineMaster';
 import { getTechnologySelectList, getPlantSelectList, } from '../../../../actions/master/Comman';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { Redirect } from 'react-router-dom';
 import BulkUpload from '../../../massUpload/BulkUpload';
-
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -53,23 +52,25 @@ class MachineRateListing extends Component {
         this.getDataList()
     }
 
-    getDataList = (bopFor = null, CategoryId = null, vendorId = null, plantId = null,) => {
+    getDataList = (costing_head = '', technology_id = '', vendor_id = '', machine_type_id = '', process_id = '', plant_id = '') => {
         const filterData = {
-            bop_for: bopFor,
-            category_id: CategoryId,
-            vendor_id: vendorId,
-            plant_id: plantId,
+            costing_head: costing_head,
+            technology_id: technology_id,
+            vendor_id: vendor_id,
+            machine_type_id: machine_type_id,
+            process_id: process_id,
+            plant_id: plant_id,
         }
-        // this.props.getBOPDomesticDataList(filterData, (res) => {
-        //     if (res && res.status == 200) {
-        //         let Data = res.data.DataList;
-        //         this.setState({ tableData: Data })
-        //     } else if (res && res.response && res.response.status == 412) {
-        //         this.setState({ tableData: [] })
-        //     } else {
-        //         this.setState({ tableData: [] })
-        //     }
-        // })
+        this.props.getMachineDataList(filterData, (res) => {
+            if (res && res.status === 200) {
+                let Data = res.data.DataList;
+                this.setState({ tableData: Data })
+            } else if (res && res.response && res.response.status === 412) {
+                this.setState({ tableData: [] })
+            } else {
+                this.setState({ tableData: [] })
+            }
+        })
     }
 
     /**
@@ -90,7 +91,7 @@ class MachineRateListing extends Component {
 
         if (label === 'plant') {
             filterSelectList && filterSelectList.plants && filterSelectList.plants.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -98,7 +99,7 @@ class MachineRateListing extends Component {
 
         if (label === 'technology') {
             technologySelectList && technologySelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -106,7 +107,7 @@ class MachineRateListing extends Component {
 
         if (label === 'VendorNameList') {
             filterSelectList && filterSelectList.vendor && filterSelectList.vendor.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -114,7 +115,7 @@ class MachineRateListing extends Component {
 
         if (label === 'ProcessNameList') {
             filterSelectList && filterSelectList.processList && filterSelectList.processList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -122,7 +123,7 @@ class MachineRateListing extends Component {
 
         if (label === 'MachineTypeList') {
             filterSelectList && filterSelectList.machineTypes && filterSelectList.machineTypes.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -135,7 +136,7 @@ class MachineRateListing extends Component {
     * @description called
     */
     handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ costingHead: newValue, });
         } else {
             this.setState({ costingHead: [], })
@@ -147,7 +148,7 @@ class MachineRateListing extends Component {
     * @description  PLANT FILTER
     */
     handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ plant: newValue });
         } else {
             this.setState({ plant: [], });
@@ -159,7 +160,7 @@ class MachineRateListing extends Component {
     * @description called
     */
     handleTechnology = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ technology: newValue, });
         } else {
             this.setState({ technology: [], })
@@ -171,9 +172,8 @@ class MachineRateListing extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, }, () => {
-                const { vendorName } = this.state;
             });
         } else {
             this.setState({ vendorName: [], })
@@ -185,7 +185,7 @@ class MachineRateListing extends Component {
     * @description called
     */
     handleProcessName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ processName: newValue });
         } else {
             this.setState({ processName: [] })
@@ -197,7 +197,7 @@ class MachineRateListing extends Component {
     * @description called
     */
     handleMachineType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ machineType: newValue });
         } else {
             this.setState({ machineType: [], })
@@ -228,7 +228,7 @@ class MachineRateListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -238,7 +238,7 @@ class MachineRateListing extends Component {
     confirmDelete = (ID) => {
         // this.props.deleteBOPAPI(ID, (res) => {
         //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.BOP_DELETE_SUCCESS);
+        //         toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
         //         this.getDataList(null, null, null, null)
         //     }
         // });
@@ -274,7 +274,15 @@ class MachineRateListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
+        return cell ? 'Vandor Based' : 'Zero Based';
+    }
+
+    /**
+    * @method plantsFormatter
+    * @description Renders Costing head
+    */
+    plantsFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell === 'NA' ? '-' : cell;
     }
 
     /**
@@ -286,7 +294,7 @@ class MachineRateListing extends Component {
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
         let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -313,19 +321,19 @@ class MachineRateListing extends Component {
     }
 
     /**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
 
 
         //this.getDataList(null, null, null, null)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         // this.setState({
         //     RawMaterial: [],
@@ -518,9 +526,16 @@ class MachineRateListing extends Component {
                             ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="RawMaterialId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Technologies" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Technology'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.plantsFormatter} >{'Plants'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineNumber" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Number'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineTypeName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Type'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineTonnage" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Tonnage'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineRate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="MachineId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>
@@ -562,6 +577,7 @@ export default connect(mapStateToProps, {
     getInitialVendorWithVendorCodeSelectList,
     getInitialMachineTypeSelectList,
     getInitialProcessesSelectList,
+    getMachineDataList,
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

@@ -1,24 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
+import { required, number, email, minLength7, maxLength70, minLength10 } from "../../../../helper/validation";
 import {
-    required, number, email, minLength7, maxLength70, upper,
-    maxLength100,
-    minLength10
-} from "../../../../helper/validation";
-import {
-    renderText, renderEmailInputField, searchableSelect, renderNumberInputField, renderTextAreaField
+    renderText, renderEmailInputField, searchableSelect,
 } from "../../../layout/FormInputs";
-import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import { createClient, updateClient, getClientData } from '../../../../actions/master/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
 import ClientListing from './ClientListing';
-import Switch from "react-switch";
 import $ from 'jquery';
 
 class AddClient extends Component {
@@ -37,14 +30,6 @@ class AddClient extends Component {
     }
 
     /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
-    }
-
-    /**
    * @method componentDidMount
    * @description called after render the component
    */
@@ -57,10 +42,10 @@ class AddClient extends Component {
     * @description Used to handle country
     */
     countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ country: newValue, state: [], city: [], }, () => {
                 const { country } = this.state;
-                if (country.label == 'India') {
+                if (country.label === 'India') {
                     this.setState({ showStateCity: true })
                 } else {
                     this.setState({ showStateCity: false })
@@ -77,7 +62,7 @@ class AddClient extends Component {
     * @description Used to handle state
     */
     stateHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ state: newValue }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
@@ -93,7 +78,7 @@ class AddClient extends Component {
     * @description Used to handle City
     */
     cityHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ city: newValue });
         } else {
             this.setState({ city: [] });
@@ -110,21 +95,21 @@ class AddClient extends Component {
 
         if (label === 'country') {
             countryList && countryList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'state') {
             stateList && stateList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'city') {
             cityList && cityList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -134,9 +119,9 @@ class AddClient extends Component {
 
 
     /**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -169,9 +154,9 @@ class AddClient extends Component {
                     setTimeout(() => {
                         const { countryList, stateList, cityList } = this.props;
 
-                        const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
-                        const CityObj = cityList && cityList.find(item => item.Value == Data.CityIdRef)
+                        const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
+                        const CityObj = cityList && cityList.find(item => item.Value === Data.CityIdRef)
 
                         this.setState({
                             isEditFlag: true,
@@ -219,7 +204,6 @@ class AddClient extends Component {
     */
     onSubmit = (values) => {
         const { ClientId, city, } = this.state;
-        const { reset } = this.props;
 
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
@@ -273,17 +257,11 @@ class AddClient extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset } = this.props;
-        const { isEditFlag, country } = this.state;
-
-        const cellEditProp = {
-            mode: 'click',
-            blurToSave: true
-        };
+        const { handleSubmit, } = this.props;
+        const { isEditFlag, } = this.state;
 
         return (
             <div>
-                {/* {isLoader && <Loader />} */}
                 <div className="login-container signup-form">
                     <div className="row">
                         {this.state.isShowForm &&
@@ -334,7 +312,6 @@ class AddClient extends Component {
                                                     name="ClientEmailId"
                                                     label="Email Id"
                                                     component={renderEmailInputField}
-                                                    isDisabled={false}
                                                     placeholder={'Enter'}
                                                     validate={[required, email, minLength7, maxLength70]}
                                                     required={true}
@@ -405,7 +382,7 @@ class AddClient extends Component {
                                                     placeholder={'Select Country'}
                                                     options={this.renderListing('country')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                                                    validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.countryHandler}
                                                     valueDescription={this.state.country}
@@ -422,7 +399,7 @@ class AddClient extends Component {
                                                             placeholder={'Select State'}
                                                             options={this.renderListing('state')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                            validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.stateHandler}
                                                             valueDescription={this.state.state}
@@ -437,7 +414,7 @@ class AddClient extends Component {
                                                             placeholder={'Select City'}
                                                             options={this.renderListing('city')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                                            validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.cityHandler}
                                                             valueDescription={this.state.city}

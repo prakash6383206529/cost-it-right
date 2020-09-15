@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Loader } from "../common/Loader";
-import { } from "reactstrap";
 import { getMenuByUser, getLeftMenu, } from "../../actions";
 import { checkForNull, loggedInUserId } from '../../helper';
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -15,10 +13,10 @@ class Dashboard extends Component {
         }
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getMenuByUser(loggedInUserId(), () => {
             const { menusData } = this.props;
-            if (menusData != undefined) {
+            if (menusData !== undefined) {
                 reactLocalStorage.set('ModuleId', menusData[0].ModuleId);
                 this.props.getLeftMenu(menusData[0].ModuleId, loggedInUserId(), (res) => { })
             }

@@ -27,7 +27,7 @@ class AddDepreciation extends Component {
     * @method componentDidMount
     * @description Called after rendering the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getDepreciationTypeSelectList(() => { })
         this.props.getShiftTypeSelectList(() => { })
     }

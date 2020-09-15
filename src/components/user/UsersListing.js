@@ -45,7 +45,7 @@ class UsersListing extends Component {
 		}
 	}
 
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 
 		this.props.getLoginPageInit(res => {
 			let Data = res.data.Data;
@@ -55,12 +55,12 @@ class UsersListing extends Component {
 		let ModuleId = reactLocalStorage.get('ModuleId');
 		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
 			const { leftMenuData } = this.props;
-			if (leftMenuData != undefined) {
+			if (leftMenuData !== undefined) {
 				let Data = leftMenuData;
-				const userPermissions = Data && Data.find(el => el.PageName == USER)
+				const userPermissions = Data && Data.find(el => el.PageName === USER)
 				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
 
-				if (permmisionData != undefined) {
+				if (permmisionData !== undefined) {
 					this.setState({
 						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
 						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,

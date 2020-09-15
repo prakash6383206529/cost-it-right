@@ -37,14 +37,6 @@ class VolumeListing extends Component {
         }
     }
 
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
-    }
-
     componentDidMount() {
         this.props.getPlantSelectList(() => { })
         this.getTableListData(null, null, null, null, null)

@@ -65,11 +65,10 @@ class AddBOPDomestic extends Component {
     * @method componentWillMount
     * @description Called before render the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getUOMSelectList(() => { })
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPartSelectList(() => { })
-
     }
 
     /**

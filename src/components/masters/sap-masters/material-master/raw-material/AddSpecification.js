@@ -38,7 +38,7 @@ class AddSpecification extends Component {
     * @method componentWillMount
     * @description Called before render the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getRawMaterialNameChild(() => { })
         this.props.getMaterialTypeSelectList(() => { })
     }

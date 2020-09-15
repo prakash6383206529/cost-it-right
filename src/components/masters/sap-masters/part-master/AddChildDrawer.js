@@ -28,14 +28,6 @@ class AddChildDrawer extends Component {
     }
 
     /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    componentWillMount() {
-
-    }
-
-    /**
    * @method componentDidMount
    * @description called after render the component
    */

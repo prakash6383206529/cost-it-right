@@ -14,7 +14,7 @@ class Leftmenu extends Component {
 		};
 	}
 
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 		const ModuleId = reactLocalStorage.get('ModuleId')
 		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => { })
 	}
@@ -41,7 +41,7 @@ class Leftmenu extends Component {
 									item.PageName === 'Department'
 								) return false;
 								return (
-									<li className={`${activeURL === item.NavigationURL ? 'active' : null} mb5`}>
+									<li key={i} className={`${activeURL === item.NavigationURL ? 'active' : null} mb5`}>
 										<Link
 											onClick={() => this.setModuleId(ModuleId)}
 											to={{

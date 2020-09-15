@@ -32,7 +32,7 @@ class AddOtherOperation extends Component {
     * @method componentWillMount
     * @description called before rendering the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getOtherOperationData(() => {
             const { Technologies } = this.props;
             this.setState({ technologyValue: Technologies && Technologies.length > 0 ? Technologies[0].Value : '' })

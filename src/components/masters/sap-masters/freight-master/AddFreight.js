@@ -36,7 +36,7 @@ class AddFreight extends Component {
     * @method componentWillMount
     * @description called before rendering the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.fetchFreightComboAPI(res => { });
     }
 

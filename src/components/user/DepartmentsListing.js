@@ -29,7 +29,7 @@ class DepartmentsListing extends Component {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     let ModuleId = reactLocalStorage.get('ModuleId');
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       const { leftMenuData } = this.props;

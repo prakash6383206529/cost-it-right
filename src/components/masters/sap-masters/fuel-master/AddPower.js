@@ -63,15 +63,6 @@ class AddPower extends Component {
     }
 
     /**
-    * @method componentWillMount
-    * @description Called before render the component
-    */
-    componentWillMount() {
-
-
-    }
-
-    /**
      * @method componentDidMount
      * @description Called after rendering the component
      */

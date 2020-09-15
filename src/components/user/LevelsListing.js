@@ -30,16 +30,16 @@ class LevelsListing extends Component {
 		}
 	}
 
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 		let ModuleId = reactLocalStorage.get('ModuleId');
 		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
 			const { leftMenuData } = this.props;
-			if (leftMenuData != undefined) {
+			if (leftMenuData !== undefined) {
 				let Data = leftMenuData;
-				const accessData = Data && Data.find(el => el.PageName == LEVELS)
+				const accessData = Data && Data.find(el => el.PageName === LEVELS)
 				const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-				if (permmisionData != undefined) {
+				if (permmisionData !== undefined) {
 					this.setState({
 						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
 						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,

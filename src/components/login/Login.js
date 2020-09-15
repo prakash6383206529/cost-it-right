@@ -29,7 +29,7 @@ class Login extends Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
 
     this.props.getLoginPageInit(res => {
       let Data = res.data.Data;

@@ -43,7 +43,7 @@ class RMDomesticListing extends Component {
         }
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.getInitialRange()
     }
 

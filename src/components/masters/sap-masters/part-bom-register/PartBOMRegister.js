@@ -492,7 +492,7 @@ class PartBOMRegister extends Component {
     * @method componentWillMount
     * @description Called before rendering the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.fetchPartComboAPI(res => { });
         this.props.getAllBOMAPI(res => { });
         this.props.fetchBOMComboAPI(res => { });

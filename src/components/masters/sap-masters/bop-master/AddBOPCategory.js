@@ -20,14 +20,6 @@ class AddBOPCategory extends Component {
     }
 
     /**
-    * @method componentWillMount
-    * @description call before rendering the component
-    */
-    componentWillMount() {
-
-    }
-
-    /**
     * @method componentDidMount
     * @description Called after rendering the component
     */

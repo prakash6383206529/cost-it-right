@@ -5,12 +5,12 @@ import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength5, minLength6, maxLength25, maxLength11, maxLength12, required, email,
+  minLength3, minLength6, maxLength25, maxLength11, maxLength12, required, email,
   minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10
 } from "../../helper/validation";
 import {
   renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
-  searchableSelect, renderNumberInputField
+  searchableSelect,
 } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
@@ -26,7 +26,6 @@ import { Table, Button } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
 import NoContentFound from "../common/NoContentFound";
-import Switch from "react-switch";
 import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -72,7 +71,7 @@ class UserRegistration extends Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.getLoginPageInit(res => {
       let Data = res.data.Data;
       this.setState({ IsLoginEmailConfigure: Data.IsLoginEmailConfigure })
@@ -197,7 +196,7 @@ class UserRegistration extends Component {
 
     if (label === 'city') {
       cityList && cityList.map(item => {
-        if (item.Value == 0) return false;
+        if (item.Value === 0) return false;
         temp.push({ label: item.Text, value: item.Value })
       });
       return temp;
@@ -232,7 +231,7 @@ class UserRegistration extends Component {
     * @description Used to handle 
     */
   roleHandler = (newValue, actionMeta) => {
-    if (newValue && newValue != '') {
+    if (newValue && newValue !== '') {
 
       this.setState({ role: newValue, Modules: [], IsShowAdditionalPermission: false, }, () => {
         const { role } = this.state;
@@ -272,7 +271,7 @@ class UserRegistration extends Component {
         isShowPwdField: data.passwordFlag ? true : false,
         UserId: data.UserId,
       })
-      if (data.passwordFlag == false) {
+      if (data.passwordFlag === false) {
         $('html, body').animate({ scrollTop: 0 }, 'slow');
       }
 
@@ -284,17 +283,17 @@ class UserRegistration extends Component {
           setTimeout(() => {
             const { roleList, departmentList, cityList } = this.props;
 
-            const RoleObj = roleList && roleList.find(item => item.RoleId == Data.RoleId)
-            const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId == Data.DepartmentId)
-            const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
+            const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
+            const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
+            const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
 
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsShowAdditionalPermission: Data.IsAdditionalAccess,
-              department: DepartmentObj != undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
-              role: RoleObj != undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
-              city: CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+              department: DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
+              role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
+              city: CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
             })
 
             if (Data.IsAdditionalAccess) {
@@ -384,17 +383,17 @@ class UserRegistration extends Component {
     let temp111 = data;
 
     let isAnyChildChecked = data && data.map((item, i) => {
-      let index = item.Actions.findIndex(el => el.IsChecked == true)
-      if (index != -1) {
+      let index = item.Actions.findIndex(el => el.IsChecked === true)
+      if (index !== -1) {
         temp111[i].IsChecked = true;
         tempArray.push(index)
       }
     })
 
-    let isParentChecked = temp111.findIndex(el => el.IsChecked == true)
-    const isAvailable = Modules && Modules.findIndex(a => a.ModuleName == ModuleName)
-    if (isAvailable != -1 && Modules) {
-      let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked != -1 ? true : false, Pages: temp111, }) })
+    let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
+    const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
+    if (isAvailable !== -1 && Modules) {
+      let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked !== -1 ? true : false, Pages: temp111, }) })
       this.setState({ Modules: tempArray })
     }
   }
@@ -405,7 +404,7 @@ class UserRegistration extends Component {
    */
   getRoleDetail = (RoleId) => {
     const { IsShowAdditionalPermission } = this.state;
-    if (RoleId != '') {
+    if (RoleId !== '') {
       this.props.getRoleDataAPI(RoleId, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -416,7 +415,7 @@ class UserRegistration extends Component {
             oldModules: Data.Modules,
             isLoader: false,
           }, () => {
-            if (IsShowAdditionalPermission == true) {
+            if (IsShowAdditionalPermission === true) {
               this.child.getUpdatedData(Data.Modules)
             }
           })
@@ -431,7 +430,7 @@ class UserRegistration extends Component {
    * @description Used to handle 
    */
   technologyHandler = (newValue, actionMeta) => {
-    if (newValue && newValue != '') {
+    if (newValue && newValue !== '') {
       this.setState({ technology: newValue });
     } else {
       this.setState({ technology: [] });
@@ -443,7 +442,7 @@ class UserRegistration extends Component {
   * @description Used to handle 
   */
   levelHandler = (newValue, actionMeta) => {
-    if (newValue && newValue != '') {
+    if (newValue && newValue !== '') {
       this.setState({ level: newValue });
     } else {
       this.setState({ level: [] });
@@ -459,9 +458,9 @@ class UserRegistration extends Component {
     const tempArray = [];
 
     const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return el.TechnologyId == technology.value && el.LevelId == level.value
+      return el.TechnologyId === technology.value && el.LevelId === level.value
     })
-    if (isExistTechnology != -1) {
+    if (isExistTechnology !== -1) {
       toastr.warning('Technology and Level already allowed.')
       return false;
     }
@@ -544,7 +543,7 @@ class UserRegistration extends Component {
     const { TechnologyLevelGrid } = this.state;
 
     let tempData = TechnologyLevelGrid.filter((item, i) => {
-      if (i == index) {
+      if (i === index) {
         return false;
       }
       return true;
@@ -677,8 +676,8 @@ class UserRegistration extends Component {
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
       }
 
-      const isDepartmentUpdate = (registerUserData.DepartmentId != department.value) ? true : false;
-      const isRoleUpdate = (registerUserData.RoleId != role.value) ? true : false;
+      const isDepartmentUpdate = (registerUserData.DepartmentId !== department.value) ? true : false;
+      const isRoleUpdate = (registerUserData.RoleId !== role.value) ? true : false;
       let isPermissionUpdate = false;
       let isTechnologyUpdate = false;
 
@@ -750,7 +749,6 @@ class UserRegistration extends Component {
         this.setState({ isSubmitted: false, })
 
         if (res && res.data && res.data.Result) {
-          const newUserId = res.data.Identity;
           toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
           this.cancel();
 
@@ -761,8 +759,8 @@ class UserRegistration extends Component {
   }
 
   render() {
-    const { handleSubmit, pristine, submitting, reset, actionSelectList, loading } = this.props;
-    const { isLoader, isSubmitted } = this.state;
+    const { handleSubmit, loading } = this.props;
+    const { isSubmitted } = this.state;
     return (
       <div>
         {loading && <Loader />}
@@ -871,7 +869,6 @@ class UserRegistration extends Component {
                         name="EmailAddress"
                         label="Email ID"
                         component={renderEmailInputField}
-                        isDisabled={false}
                         placeholder={'Enter'}
                         validate={[required, email, minLength7, maxLength70]}
                         required={true}
@@ -1007,7 +1004,7 @@ class UserRegistration extends Component {
                         placeholder={'Select role'}
                         options={this.searchableSelectType('role')}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
+                        validate={(this.state.role == null || this.state.role.length === 0) ? [required] : []}
                         required={true}
                         handleChangeDescription={this.roleHandler}
                         valueDescription={this.state.role}
@@ -1022,7 +1019,7 @@ class UserRegistration extends Component {
                         placeholder={'Select department'}
                         options={this.searchableSelectType('department')}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
+                        validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}
                         required={true}
                         handleChangeDescription={this.departmentHandler}
                         valueDescription={this.state.department}
@@ -1174,7 +1171,7 @@ class UserRegistration extends Component {
                             })
                           }
                         </tbody>
-                        {this.state.TechnologyLevelGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                        {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                       </Table>
                     </div>
                   </div>
@@ -1193,14 +1190,14 @@ class UserRegistration extends Component {
                       type="submit"
                       value="CANCEL"
                       className="reset mr15 cancel-btn">
-                      <div className={'cross-icon'}><img src={require('../../assests/images/times.png')}></img></div>
+                      <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
                       CANCEL
                       </button>
 
                     <button
                       type="submit"
                       disabled={isSubmitted ? true : false}
-                      className="btn-primary save-btn"><div className={'check-icon'}><img src={require('../../assests/images/check.png')}></img></div>
+                      className="btn-primary save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
                       {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                     </button>
                   </div>

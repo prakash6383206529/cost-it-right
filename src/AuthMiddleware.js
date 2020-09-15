@@ -13,7 +13,7 @@ export default function (ComposedComponent) {
             }
         }
 
-        componentWillMount() {
+        UNSAFE_componentWillMount() {
             if (this.props.authenticated == false) {
                 this.setState({ redirectToLogin: true })
                 return false;

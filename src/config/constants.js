@@ -555,12 +555,15 @@ export const API = {
   getShiftTypeSelectList: `${BASE_URL}/configuration/select-list-get-shifts`,
 
   //MACHINE & PROCESS
-  createMachineAPI: `${BASE_URL}/masters-machine/create`,
-  getMachineListAPI: `${BASE_URL}/masters-machine/get-all`,
+  createMachine: `${BASE_URL}/masters-machine/create-machine`,
+  getMachineDataList: `${BASE_URL}/masters-machine/get-machine-list-by-filter`,
   deleteMachineAPI: `${BASE_URL}/masters-machine/delete`,
-  getMachineDataAPI: `${BASE_URL}/masters-machine/get`,
-  updateMachineAPI: `${BASE_URL}/masters-machine/update`,
+  getMachineData: `${BASE_URL}/masters-machine/get-machine`,
+  updateMachine: `${BASE_URL}/masters-machine/update-machine`,
   getMachineSelectList: `${BASE_URL}/configuration/select-list-get-machine`,
+  fileUploadMachine: `${BASE_URL}/masters-machine/machines-file-upload`,
+  fileDeleteMachine: `${BASE_URL}/masters-machine/delete-machine-attachment-file`,
+  checkAndGetMachineNumber: `${BASE_URL}/masters-machine/check-machine-number-is-unique`,
 
   createProcess: `${BASE_URL}/masters-machine/create-process`,
   getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,

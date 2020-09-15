@@ -60,7 +60,7 @@ class AddOperation extends Component {
     * @method componentWillMount
     * @description called before render the component
     */
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.getUOMSelectList(() => { })
     }
 
@@ -303,7 +303,7 @@ class AddOperation extends Component {
 
     checkUniqCode = (e) => {
         this.props.checkAndGetOperationCode(e.target.value, res => {
-            if (res && res.data && res.data.Result == false) {
+            if (res && res.data && res.data.Result === false) {
                 toastr.warning(res.data.Message);
                 $('input[name="OperationCode"]').focus()
             }
@@ -525,7 +525,6 @@ class AddOperation extends Component {
                                                     onColor="#4DC771"
                                                     onHandleColor="#ffffff"
                                                     offColor="#4DC771"
-                                                    id="normal-switch"
                                                     uncheckedIcon={false}
                                                     checkedIcon={false}
                                                     height={20}
