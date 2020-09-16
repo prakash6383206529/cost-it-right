@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import {
 	getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI,
 	activeInactiveUser, getLeftMenu, getLoginPageInit,
 } from '../../actions/auth/AuthActions';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
-import { required } from "../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
-import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
@@ -78,7 +76,6 @@ class UsersListing extends Component {
 		//Get Department Listing
 		this.props.getAllDepartmentAPI((res) => {
 			if (res && res.data && res.data.DataList) {
-				const { departmentType } = this.state;
 				let Data = res.data.DataList;
 				let obj = {}
 				Data && Data.map((el, i) => {
@@ -124,7 +121,7 @@ class UsersListing extends Component {
 			RoleId: roleId,
 		}
 		this.props.getAllUserDataAPI(data, res => {
-			if (res.status == 204 && res.data == '') {
+			if (res.status === 204 && res.data === '') {
 				this.setState({ userData: [], })
 			} else if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
@@ -145,14 +142,14 @@ class UsersListing extends Component {
 		const { roleList, departmentList } = this.props;
 		const temp = [];
 
-		if (label == 'role') {
+		if (label === 'role') {
 			roleList && roleList.map(item =>
 				temp.push({ label: item.RoleName, value: item.RoleId })
 			);
 			return temp;
 		}
 
-		if (label == 'department') {
+		if (label === 'department') {
 			departmentList && departmentList.map(item =>
 				temp.push({ label: item.DepartmentName, value: item.DepartmentId })
 			);
@@ -223,7 +220,7 @@ class UsersListing extends Component {
 	*/
 	buttonFormatter = (cell, row, enumObject, rowIndex) => {
 		const { EditAccessibility } = this.state;
-		if (cell == loggedInUserId()) return null;
+		if (cell === loggedInUserId()) return null;
 		return (
 			<div className="text-right">
 				{EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cell, false)} />}
@@ -270,7 +267,7 @@ class UsersListing extends Component {
 	*/
 	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
 		const { ActivateAccessibility } = this.state;
-		if (row.UserId == loggedInUserId()) return null;
+		if (row.UserId === loggedInUserId()) return null;
 		if (ActivateAccessibility) {
 			return (
 				<>
@@ -341,7 +338,7 @@ class UsersListing extends Component {
 		let currentPage = this.refs.table.state.currPage;
 		let sizePerPage = this.refs.table.state.sizePerPage;
 		let serialNumber = '';
-		if (currentPage == 1) {
+		if (currentPage === 1) {
 			serialNumber = rowIndex + 1;
 		} else {
 			serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -404,8 +401,8 @@ class UsersListing extends Component {
 	* @description Renders the component
 	*/
 	render() {
-		const { handleSubmit, pristine, submitting, } = this.props;
-		const { isEditFlag, EditAccessibility, departmentType, roleType, AddAccessibility } = this.state;
+		const { handleSubmit, } = this.props;
+		const { EditAccessibility, departmentType, roleType, AddAccessibility } = this.state;
 		const options = {
 			clearSearch: true,
 			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -424,30 +421,34 @@ class UsersListing extends Component {
 						<Col md="8" className="filter-block">
 							<div className="d-inline-flex justify-content-start align-items-top w100">
 								<div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-								<div className="flex-fill"> <Field
-									name="DepartmentId"
-									type="text"
-									component={searchableSelect}
-									placeholder={'Department'}
-									options={this.searchableSelectType('department')}
-									//onKeyUp={(e) => this.changeItemDesc(e)}
-									//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
-									//required={true}
-									handleChangeDescription={this.departmentHandler}
-									valueDescription={this.state.department}
-								/></div>
-								<div className="flex-fill"><Field
-									name="RoleId"
-									type="text"
-									component={searchableSelect}
-									placeholder={'Role'}
-									options={this.searchableSelectType('role')}
-									//onKeyUp={(e) => this.changeItemDesc(e)}
-									//validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
-									//required={true}
-									handleChangeDescription={this.roleHandler}
-									valueDescription={this.state.role}
-								/></div>
+								<div className="flex-fill">
+									<Field
+										name="DepartmentId"
+										type="text"
+										component={searchableSelect}
+										placeholder={'Department'}
+										options={this.searchableSelectType('department')}
+										//onKeyUp={(e) => this.changeItemDesc(e)}
+										//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
+										//required={true}
+										handleChangeDescription={this.departmentHandler}
+										valueDescription={this.state.department}
+									/>
+								</div>
+								<div className="flex-fill">
+									<Field
+										name="RoleId"
+										type="text"
+										component={searchableSelect}
+										placeholder={'Role'}
+										options={this.searchableSelectType('role')}
+										//onKeyUp={(e) => this.changeItemDesc(e)}
+										//validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
+										//required={true}
+										handleChangeDescription={this.roleHandler}
+										valueDescription={this.state.role}
+									/>
+								</div>
 								<div className="flex-fill">
 									<button
 										type="button"
@@ -457,8 +458,7 @@ class UsersListing extends Component {
 									>
 										{'Reset'}
 									</button>
-									{/* </Col>
-                        <Col md="2"> */}
+
 									<button
 										type="button"
 										//disabled={pristine || submitting}

@@ -191,6 +191,8 @@ export const MESSAGES = {
   MACHINE_ADD_SUCCESS: 'Machine has been added successfully.',
   DELETE_MACHINE_TYPE_SUCCESS: 'Machine Type has been deleted successfully.',
   MACHINE_TYPE_DELETE_ALERT: 'Are you sure you want to delete Machine Type?',
+  MACHINE_DETAILS_ADD_SUCCESS: 'Machine Details has been added successfully.',
+  UPDATE_MACHINE_DETAILS_SUCCESS: 'Machine Details has been updated successfully.',
 
   //REASON MASTER
   REASON_ADD_SUCCESS: 'Reason has been added successfully.',

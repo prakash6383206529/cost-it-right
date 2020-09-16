@@ -38,10 +38,12 @@ class Login extends Component {
     })
 
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
-    if (isLoggedIn == true) {
+    if (isLoggedIn === true) {
       this.setState({
         isRedirect: true
       })
+    } else {
+      reactLocalStorage.setObject('isUserLoggedIn', false);
     }
 
   }
@@ -71,7 +73,7 @@ class Login extends Component {
     const { handleSubmit } = this.props;
     const { isLoader, isSubmitted, isRedirect, IsLoginEmailConfigure } = this.state;
 
-    if (isRedirect == true) {
+    if (isRedirect === true) {
       return <Redirect
         to={{
           pathname: "/",

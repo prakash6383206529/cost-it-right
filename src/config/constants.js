@@ -557,13 +557,19 @@ export const API = {
   //MACHINE & PROCESS
   createMachine: `${BASE_URL}/masters-machine/create-machine`,
   getMachineDataList: `${BASE_URL}/masters-machine/get-machine-list-by-filter`,
-  deleteMachineAPI: `${BASE_URL}/masters-machine/delete`,
+  deleteMachine: `${BASE_URL}/masters-machine/delete-machine`,
   getMachineData: `${BASE_URL}/masters-machine/get-machine`,
   updateMachine: `${BASE_URL}/masters-machine/update-machine`,
   getMachineSelectList: `${BASE_URL}/configuration/select-list-get-machine`,
   fileUploadMachine: `${BASE_URL}/masters-machine/machines-file-upload`,
   fileDeleteMachine: `${BASE_URL}/masters-machine/delete-machine-attachment-file`,
   checkAndGetMachineNumber: `${BASE_URL}/masters-machine/check-machine-number-is-unique`,
+  getFuelUnitCost: `${BASE_URL}/masters-machine/get-fuel-unit-cost`,
+  getLabourCost: `${BASE_URL}/masters-machine/get-labour-cost`,
+  getPowerCostUnit: `${BASE_URL}/masters-machine/get-zbc-power-cost`,
+
+  createMachineDetails: `${BASE_URL}/masters-machine/create-machine-details`,
+  updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
 
   createProcess: `${BASE_URL}/masters-machine/create-process`,
   getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
@@ -1062,3 +1068,7 @@ export const LABOUR = 'Labour';
 export const UOM = 'UOM';
 export const REASON = 'Reason';
 export const FUEL_AND_POWER = 'Fuel and Power';
+
+//DEPRECIATION TYPE ENUMS
+export const SLM = 'SLM';
+export const WDM = 'WDM';

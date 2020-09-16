@@ -16,7 +16,9 @@ export const apiErrors = (res) => {
     } else if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
     } else if (response) {
-        if (response.status && response.status === 302) {
+        if (response.status && response.status === 417) {
+            toastr.error(response.data.Message);
+        } else if (response.status && response.status === 302) {
             toastr.warning(response.data.Message);                      //used for not able to delete associated ID's 
         } else if (response.status && response.status === 400) {
             toastr.error('Something went wrong please try again.');
@@ -386,4 +388,13 @@ export function checkPermission(Data) {
     })
 
     return setAccessibleData;
+}
+
+/**
+ * @description CHECK PERMISSION AND PRIVILEGE 
+ * @param checkPermission
+ * @returns {string}
+ */
+export function calculatePercentage(value) {
+    return value / 100
 }

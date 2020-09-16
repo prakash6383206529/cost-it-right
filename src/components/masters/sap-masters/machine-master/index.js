@@ -15,7 +15,10 @@ class MachineMaster extends Component {
             isMachineRateForm: false,
             isAddMoreDetails: false,
             isProcessForm: false,
+            isMoreDetailsComplete: false,
+            processGrid: [],
             data: {},
+            editDetails: {},
         }
     }
 
@@ -50,8 +53,16 @@ class MachineMaster extends Component {
         this.setState({
             isMachineRateForm: true,
             isAddMoreDetails: false,
-            data: data,
+            editDetails: data,
         })
+    }
+
+    /**
+    * @method setData
+    * @description SET DATA FOR EDIT MACHINE FORM
+    */
+    setData = (data = {}) => {
+        this.setState({ data: data })
     }
 
     /**
@@ -59,15 +70,7 @@ class MachineMaster extends Component {
     * @description HIDE MACHINE FORM
     */
     hideForm = () => {
-        this.setState({ isMachineRateForm: false })
-    }
-
-    /**
-    * @method setData
-    * @description SET DATA FOR EDIT MACHINE FORM
-    */
-    setData = (data) => {
-        this.setState({ data: data })
+        this.setState({ isMachineRateForm: false, data: {}, editDetails: {} })
     }
 
     /**
@@ -85,10 +88,12 @@ class MachineMaster extends Component {
     * @method hideMoreDetailsForm
     * @description HIDE MORE DETAILS FORM
     */
-    hideMoreDetailsForm = () => {
+    hideMoreDetailsForm = (isMoreDetailsComplete, processGrid) => {
         this.setState({
             isAddMoreDetails: false,
             isMachineRateForm: true,
+            isMoreDetailsComplete: isMoreDetailsComplete,
+            processGrid: processGrid,
         })
     }
 
@@ -97,10 +102,13 @@ class MachineMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isMachineRateForm, isAddMoreDetails } = this.state;
+        const { isMachineRateForm, isAddMoreDetails, isMoreDetailsComplete, processGrid } = this.state;
 
         if (isMachineRateForm === true) {
             return <AddMachineRate
+                editDetails={this.state.editDetails}
+                isMoreDetailsComplete={isMoreDetailsComplete}
+                moreDetailsProcessGrid={processGrid}
                 data={this.state.data}
                 setData={this.setData}
                 hideForm={this.hideForm}

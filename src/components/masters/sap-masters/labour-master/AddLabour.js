@@ -226,7 +226,7 @@ class AddLabour extends Component {
     * @description called
     */
     handlePlants = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ selectedPlants: newValue, })
         } else {
             this.setState({ selectedPlants: [] })
@@ -238,7 +238,7 @@ class AddLabour extends Component {
     * @description called
     */
     handleMachineType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ machineType: newValue }, () => {
                 const { machineType } = this.state;
                 this.props.getLabourTypeByMachineTypeSelectList(machineType.value, () => { })
@@ -264,7 +264,7 @@ class AddLabour extends Component {
     * @description called
     */
     labourHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ labourType: newValue });
         } else {
             this.setState({ labourType: [] })
@@ -528,7 +528,6 @@ class AddLabour extends Component {
                                                     onColor="#4DC771"
                                                     onHandleColor="#ffffff"
                                                     offColor="#4DC771"
-                                                    id="normal-switch"
                                                     uncheckedIcon={false}
                                                     checkedIcon={false}
                                                     height={20}
@@ -549,7 +548,6 @@ class AddLabour extends Component {
                                                     onColor="#4DC771"
                                                     onHandleColor="#ffffff"
                                                     offColor="#A9A9A9"
-                                                    id="normal-switch"
                                                     uncheckedIcon={false}
                                                     checkedIcon={false}
                                                     height={20}
@@ -578,7 +576,7 @@ class AddLabour extends Component {
                                                             placeholder={'--select--'}
                                                             options={this.renderListing('VendorNameList')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                            validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleVendorName}
                                                             valueDescription={this.state.vendorName}
@@ -596,7 +594,7 @@ class AddLabour extends Component {
                                                 placeholder={'--- Select ---'}
                                                 options={this.renderListing('state')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                                                validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handleState}
                                                 valueDescription={this.state.StateName}
@@ -612,7 +610,7 @@ class AddLabour extends Component {
                                                 placeholder={'--- Select ---'}
                                                 options={this.renderListing('plant')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [required] : []}
+                                                validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handlePlants}
                                                 valueDescription={this.state.selectedPlants}

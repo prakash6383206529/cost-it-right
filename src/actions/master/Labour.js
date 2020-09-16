@@ -3,9 +3,6 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_LABOUR_SUCCESS,
-    CREATE_LABOUR_FAILURE,
-    GET_LABOUR_SUCCESS,
     GET_LABOUR_FAILURE,
     GET_LABOUR_DATA_SUCCESS,
     LABOUR_TYPE_VENDOR_SELECTLIST,
@@ -15,8 +12,6 @@ import {
 import {
     apiErrors
 } from '../../helper/util';
-import { toastr } from 'react-redux-toastr'
-import { MESSAGES } from '../../config/message';
 
 const headers = {
     'Content-Type': 'application/json',
@@ -65,7 +60,7 @@ export function getLabourDataList(data, callback) {
 export function getLabourData(labourId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (labourId != '') {
+        if (labourId !== '') {
             axios.get(`${API.getLabourData}/${labourId}`, headers)
                 .then((response) => {
                     if (response.data.Result) {
@@ -152,7 +147,7 @@ export function labourTypeVendorSelectList(callback) {
  */
 export function getLabourTypeByPlantSelectList(ID, callback) {
     return (dispatch) => {
-        if (ID != '') {
+        if (ID !== '') {
             const request = axios.get(`${API.getLabourTypeByPlantSelectList}/${ID}`, headers);
             request.then((response) => {
                 if (response.data.Result) {
@@ -184,7 +179,7 @@ export function getLabourTypeByPlantSelectList(ID, callback) {
  */
 export function getLabourTypeByMachineTypeSelectList(ID, callback) {
     return (dispatch) => {
-        if (ID != '') {
+        if (ID !== '') {
             const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}/${ID}`, headers);
             request.then((response) => {
                 if (response.data.Result) {
@@ -217,7 +212,7 @@ export function labourBulkUpload(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.labourBulkUpload, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {

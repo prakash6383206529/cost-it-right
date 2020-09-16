@@ -2,29 +2,36 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull } from "../../../../helper/validation";
+import { required, checkForNull, number, trimTwoDecimalPlace } from "../../../../helper/validation";
 import {
-    renderText, renderNumberInputField, searchableSelect, renderMultiSelectField,
+    renderText, renderNumberInputField, searchableSelect,
 } from "../../../layout/FormInputs";
 import {
     getTechnologySelectList, getPlantSelectList, getPlantBySupplier, getUOMSelectList,
-    getShiftTypeSelectList, getDepreciationTypeSelectList, getLabourTypeSelectList,
+    getShiftTypeSelectList, getDepreciationTypeSelectList,
 } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
-import { getMachineTypeSelectList, getProcessesSelectList } from '../../../../actions/master/MachineMaster';
+import {
+    createMachineDetails, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList,
+    getFuelUnitCost, getLabourCost, getPowerCostUnit,
+} from '../../../../actions/master/MachineMaster';
+import { getLabourTypeByMachineTypeSelectList } from '../../../../actions/master/Labour';
+import { getFuelComboData, } from '../../../../actions/master/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../helper/auth";
+import { loggedInUserId, userDetails } from "../../../../helper/auth";
 import Switch from "react-switch";
 import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL } from '../../../../config/constants';
+import { FILE_URL, WDM, SLM } from '../../../../config/constants';
 import HeaderTitle from '../../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../../common/NoContentFound';
+import { calculatePercentage } from '../../../../helper';
+import EfficiencyDrawer from './EfficiencyDrawer';
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
@@ -32,18 +39,19 @@ class AddMoreDetails extends Component {
         super(props);
         this.child = React.createRef();
         this.state = {
-            BOPID: '',
+            MachineId: '',
             isEditFlag: false,
             IsPurchased: false,
-            isMoreDetails: false,
+            isMoreDetailsComplete: false,
 
             selectedTechnology: [],
-            vendorName: [],
-            selectedVendorPlants: [],
             selectedPlants: [],
 
             machineType: [],
             isOpenMachineType: false,
+
+            isOpenAvailability: false,
+            WorkingHrPrYr: 0,
 
             shiftType: [],
 
@@ -78,7 +86,6 @@ class AddMoreDetails extends Component {
     */
     UNSAFE_componentWillMount() {
 
-
     }
 
     /**
@@ -95,7 +102,8 @@ class AddMoreDetails extends Component {
         this.props.getProcessesSelectList(() => { })
         this.props.getShiftTypeSelectList(() => { })
         this.props.getDepreciationTypeSelectList(() => { })
-        this.props.getLabourTypeSelectList(() => { })
+        this.props.getLabourTypeByMachineTypeSelectList('', () => { })
+        this.props.getFuelComboData(() => { })
 
         if (data && data !== undefined) {
 
@@ -111,6 +119,10 @@ class AddMoreDetails extends Component {
             this.setState({
                 selectedPlants: selectedPlants,
                 machineType: machineType,
+            }, () => {
+                if (machineType && machineType.value) {
+                    this.props.getLabourTypeByMachineTypeSelectList(machineType.value, () => { })
+                }
             })
         }
 
@@ -121,12 +133,7 @@ class AddMoreDetails extends Component {
     * @description Used for Vendor checked
     */
     onPressOwnership = () => {
-        this.setState({
-            IsPurchased: !this.state.IsPurchased,
-        }, () => {
-            //const { IsVendor } = this.state;
-            //this.props.getVendorListByVendorType(true, () => { })
-        });
+        this.setState({ IsPurchased: !this.state.IsPurchased, });
     }
 
     /**
@@ -199,13 +206,8 @@ class AddMoreDetails extends Component {
         //                     isEditFlag: true,
         //                     isLoader: false,
         //                     isShowForm: true,
-        //                     IsVendor: Data.IsVendor,
         //                     BOPCategory: { label: categoryObj.Text, value: categoryObj.Value },
         //                     selectedPlants: plantArray,
-        //                     vendorName: { label: vendorObj.Text, value: vendorObj.Value },
-        //                     selectedVendorPlants: vendorPlantArray,
-        //                     vendorLocation: { label: vendorLocationObj.Text, value: vendorLocationObj.Value },
-        //                     sourceLocation: { label: sourceLocationObj.Text, value: sourceLocationObj.Value },
         //                     remarks: Data.Remark,
         //                 })
         //             }, 200)
@@ -221,9 +223,9 @@ class AddMoreDetails extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { technologySelectList, plantSelectList, plantList, filterPlantList,
+        const { technologySelectList, plantSelectList, filterPlantList,
             UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
-            DepreciationTypeSelectList, labourTypeSelectList, } = this.props;
+            DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelComboSelectList, } = this.props;
 
         const temp = [];
         if (label === 'technology') {
@@ -243,7 +245,7 @@ class AddMoreDetails extends Component {
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
@@ -276,7 +278,14 @@ class AddMoreDetails extends Component {
             return temp;
         }
         if (label === 'labourList') {
-            labourTypeSelectList && labourTypeSelectList.map(item => {
+            labourTypeByMachineTypeSelectList && labourTypeByMachineTypeSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'fuel') {
+            fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -292,51 +301,16 @@ class AddMoreDetails extends Component {
     }
 
     /**
-    * @method handlePartAssembly
-    * @description Used handle Part Assembly
-    */
-    handlePartAssembly = (e) => {
-        this.setState({ selectedPartAssembly: e })
-    }
-
-    /**
-    * @method handlePlant
-    * @description Used handle Plant
-    */
-    handlePlant = (e) => {
-        this.setState({ selectedPlants: e })
-    }
-
-    /**
-    * @method handleVendorName
+    * @method handlePlants
     * @description called
     */
-    handleVendorName = (newValue, actionMeta) => {
+    handlePlants = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
-                const { vendorName } = this.state;
-                this.props.getPlantBySupplier(vendorName.value, () => { })
-            });
+            this.setState({ selectedPlants: newValue, })
         } else {
-            this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+            this.setState({ selectedPlants: [] })
         }
     };
-
-    /**
-     * @method handleVendorPlant
-     * @description called
-     */
-    handleVendorPlant = (e) => {
-        this.setState({ selectedVendorPlants: e })
-    };
-
-    /**
-     * @method handlePlants
-     * @description Used handle Plants
-     */
-    handlePlants = (e) => {
-        this.setState({ selectedPlants: e })
-    }
 
     /**
     * @method handleMachineType
@@ -344,9 +318,13 @@ class AddMoreDetails extends Component {
     */
     handleMachineType = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ machineType: newValue });
+            this.setState({ machineType: newValue }, () => {
+                const { machineType } = this.state;
+                this.props.getLabourTypeByMachineTypeSelectList(machineType.value, () => { })
+            });
         } else {
             this.setState({ machineType: [], })
+            this.props.getLabourTypeByMachineTypeSelectList('', () => { })
         }
     };
 
@@ -369,6 +347,13 @@ class AddMoreDetails extends Component {
     }
 
     efficiencyCalculationToggler = () => {
+        this.setState({ isOpenAvailability: true })
+    }
+
+    closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
+        this.setState({ isOpenAvailability: false }, () => {
+            this.props.change('EfficiencyPercentage', calculatedEfficiency)
+        })
 
     }
 
@@ -382,9 +367,30 @@ class AddMoreDetails extends Component {
 
     handleFuelType = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ fuelType: newValue });
+            this.setState({ fuelType: newValue }, () => {
+                const { fuelType, selectedPlants } = this.state;
+
+                if (selectedPlants) {
+
+                    const data = { fuelId: fuelType.value, plantId: selectedPlants.value }
+                    this.props.getFuelUnitCost(data, res => {
+                        let Data = res.data.DynamicData;
+                        if (res && res.data && res.data.Message !== '') {
+                            toastr.warning(res.data.Message)
+                            this.props.change('FuelCostPerUnit', Data.FuelRatePerUnit)
+                        } else {
+                            this.props.change('FuelCostPerUnit', Data.FuelRatePerUnit)
+                        }
+                    })
+
+                } else {
+                    toastr.warning('Please select plant.')
+                }
+
+            });
         } else {
             this.setState({ fuelType: [], })
+            this.props.change('FuelCostPerUnit', 0)
         }
     }
 
@@ -435,7 +441,6 @@ class AddMoreDetails extends Component {
         });
     };
 
-
     /**
      * @method onPressAnnualMaintenance
      * @description Used for Annual Maintenance
@@ -443,6 +448,9 @@ class AddMoreDetails extends Component {
     onPressAnnualMaintenance = () => {
         this.setState({
             IsAnnualMaintenanceFixed: !this.state.IsAnnualMaintenanceFixed,
+        }, () => {
+            this.props.change('AnnualMaintanceAmount', 0)
+            this.props.change('AnnualMaintancePercentage', 0)
         });
     }
 
@@ -453,6 +461,9 @@ class AddMoreDetails extends Component {
     onPressAnnualConsumable = () => {
         this.setState({
             IsAnnualConsumableFixed: !this.state.IsAnnualConsumableFixed,
+        }, () => {
+            this.props.change('AnnualConsumableAmount', 0)
+            this.props.change('AnnualConsumablePercentage', 0)
         });
     }
 
@@ -463,6 +474,9 @@ class AddMoreDetails extends Component {
     onPressInsurance = () => {
         this.setState({
             IsInsuranceFixed: !this.state.IsInsuranceFixed,
+        }, () => {
+            this.props.change('AnnualInsuranceAmount', 0)
+            this.props.change('AnnualInsurancePercentage', 0)
         });
     }
 
@@ -481,8 +495,26 @@ class AddMoreDetails extends Component {
      * @description Used for Uses Solar Power
      */
     onPressUsesSolarPower = () => {
-        this.setState({
-            IsUsesSolarPower: !this.state.IsUsesSolarPower,
+        this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
+            const { IsUsesSolarPower, selectedPlants } = this.state;
+            if (IsUsesSolarPower) {
+                if (selectedPlants) {
+                    this.props.getPowerCostUnit(selectedPlants.value, res => {
+                        let Data = res.data.DynamicData;
+                        if (res && res.data && res.data.Message !== '') {
+                            toastr.warning(res.data.Message)
+                            this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
+                        } else {
+                            this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
+                        }
+                    })
+                } else {
+                    toastr.warning('Please select plant.')
+                    this.setState({ IsUsesSolarPower: false, })
+                }
+            } else {
+                this.props.change('PowerCostPerUnit', 0)
+            }
         });
     }
 
@@ -492,7 +524,19 @@ class AddMoreDetails extends Component {
     */
     labourHandler = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ labourType: newValue });
+            this.setState({ labourType: newValue }, () => {
+                const { labourType, machineType } = this.state;
+                const data = { labourTypeId: labourType.value, machineTypeId: machineType.value }
+                this.props.getLabourCost(data, res => {
+                    let Data = res.data.DynamicData;
+                    if (res && res.data && res.data.Message !== '') {
+                        toastr.warning(res.data.Message)
+                        this.props.change('LabourCostPerAnnum', Data.LabourCost)
+                    } else {
+                        this.props.change('LabourCostPerAnnum', Data.LabourCost)
+                    }
+                })
+            });
         } else {
             this.setState({ labourType: [] })
         }
@@ -500,11 +544,179 @@ class AddMoreDetails extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.fieldsObj !== prevProps.fieldsObj) {
+            this.totalCost()
+            this.calculateLoanInterest()
+            this.calculateWorkingHrsPerAnnum()
+            this.calculateDepreciation()
+            this.calculateVariableCosts()
+            this.totalMachineCost()
+            this.powerCost()
             this.handleLabourCalculation()
             this.handleProcessCalculation()
         }
     }
 
+    /**
+    * @method totalCost
+    * @description called
+    */
+    totalCost = () => {
+        const { fieldsObj } = this.props
+        const MachineCost = fieldsObj && fieldsObj.MachineCost !== undefined ? checkForNull(fieldsObj.MachineCost) : 0;
+        const AccessoriesCost = fieldsObj && fieldsObj.AccessoriesCost !== undefined ? checkForNull(fieldsObj.AccessoriesCost) : 0;
+        const InstallationCharges = fieldsObj && fieldsObj.InstallationCharges !== undefined ? checkForNull(fieldsObj.InstallationCharges) : 0;
+        this.props.change('TotalCost', MachineCost + AccessoriesCost + InstallationCharges)
+    }
+
+    /**
+    * @method calculateLoanInterest
+    * @description called
+    */
+    calculateLoanInterest = () => {
+        const { fieldsObj } = this.props
+
+        const LoanPercentage = fieldsObj && fieldsObj.LoanPercentage !== undefined ? checkForNull(fieldsObj.LoanPercentage) : 0;
+        const EquityPercentage = fieldsObj && fieldsObj.EquityPercentage !== undefined ? checkForNull(fieldsObj.EquityPercentage) : 0;
+        const RateOfInterestPercentage = fieldsObj && fieldsObj.RateOfInterestPercentage !== undefined ? checkForNull(fieldsObj.RateOfInterestPercentage) : 0;
+        this.props.change('LoanValue', calculatePercentage(LoanPercentage) * checkForNull(fieldsObj.TotalCost))
+        this.props.change('EquityValue', calculatePercentage(EquityPercentage) * checkForNull(fieldsObj.TotalCost))
+        this.props.change('RateOfInterestValue', trimTwoDecimalPlace((calculatePercentage(LoanPercentage) + checkForNull(fieldsObj.TotalCost)) * calculatePercentage(RateOfInterestPercentage)))
+    }
+
+    /**
+    * @method calculateWorkingHrsPerAnnum
+    * @description called
+    */
+    calculateWorkingHrsPerAnnum = () => {
+        const { fieldsObj } = this.props;
+        const { shiftType } = this.state;
+
+        const NumberOfShift = shiftType && shiftType !== undefined ? checkForNull(shiftType.value) : 0;
+
+        const WorkingHoursPerShift = fieldsObj && fieldsObj.WorkingHoursPerShift !== undefined ? checkForNull(fieldsObj.WorkingHoursPerShift) : 0;
+        const NumberOfWorkingDaysPerYear = fieldsObj && fieldsObj.NumberOfWorkingDaysPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingDaysPerYear) : 0;
+        const EfficiencyPercentage = fieldsObj && fieldsObj.EfficiencyPercentage !== undefined ? checkForNull(fieldsObj.EfficiencyPercentage) : 0;
+
+        this.setState({ WorkingHrPrYr: NumberOfShift * WorkingHoursPerShift * NumberOfWorkingDaysPerYear })
+        const workingHrPerYr = WorkingHoursPerShift * NumberOfShift * NumberOfWorkingDaysPerYear * calculatePercentage(EfficiencyPercentage)
+        this.props.change('NumberOfWorkingHoursPerYear', Math.round(workingHrPerYr))
+    }
+
+    /**
+    * @method calculateDepreciation
+    * @description called
+    */
+    calculateDepreciation = () => {
+        const { fieldsObj } = this.props;
+        const { depreciationType } = this.state;
+
+        const TotalCost = fieldsObj && fieldsObj.TotalCost !== undefined ? checkForNull(fieldsObj.TotalCost) : 0;
+        const DepreciationRatePercentage = fieldsObj && fieldsObj.DepreciationRatePercentage !== undefined ? checkForNull(fieldsObj.DepreciationRatePercentage) : 0;
+        const LifeOfAssetPerYear = fieldsObj && fieldsObj.LifeOfAssetPerYear !== undefined ? checkForNull(fieldsObj.LifeOfAssetPerYear) : 0;
+        const CastOfScrap = fieldsObj && fieldsObj.CastOfScrap !== undefined ? checkForNull(fieldsObj.CastOfScrap) : 0;
+
+        let depreciationAmount = 0;
+        if (depreciationType.value === SLM) {
+            //depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear Or (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
+            //depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear;
+            depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage) //TODO
+        }
+
+        if (depreciationType.value === WDM) {
+            depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
+        }
+        this.props.change('DepreciationAmount', Math.round(depreciationAmount))
+    }
+
+    /**
+    * @method calculateVariableCosts
+    * @description called
+    */
+    calculateVariableCosts = () => {
+        const { fieldsObj } = this.props
+        const { IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed } = this.state;
+
+        const MachineCost = fieldsObj && fieldsObj.MachineCost !== undefined ? checkForNull(fieldsObj.MachineCost) : 0;
+        const AccessoriesCost = fieldsObj && fieldsObj.AccessoriesCost !== undefined ? checkForNull(fieldsObj.AccessoriesCost) : 0;
+        const AnnualMaintancePercentage = fieldsObj && fieldsObj.AnnualMaintancePercentage !== undefined ? checkForNull(fieldsObj.AnnualMaintancePercentage) : 0;
+        const AnnualConsumablePercentage = fieldsObj && fieldsObj.AnnualConsumablePercentage !== undefined ? checkForNull(fieldsObj.AnnualConsumablePercentage) : 0;
+        const AnnualInsurancePercentage = fieldsObj && fieldsObj.AnnualInsurancePercentage !== undefined ? checkForNull(fieldsObj.AnnualInsurancePercentage) : 0;
+
+        if (IsAnnualMaintenanceFixed) {
+            const MaintananceCost = (MachineCost + AccessoriesCost) * calculatePercentage(AnnualMaintancePercentage)
+            this.props.change('AnnualMaintanceAmount', trimTwoDecimalPlace(MaintananceCost))
+        }
+
+        if (IsAnnualConsumableFixed) {
+            const ConsumableCost = (MachineCost + AccessoriesCost) * calculatePercentage(AnnualConsumablePercentage)
+            this.props.change('AnnualConsumableAmount', trimTwoDecimalPlace(ConsumableCost))
+        }
+
+        if (IsInsuranceFixed) {
+            const InsuranceCost = (MachineCost + AccessoriesCost) * calculatePercentage(AnnualInsurancePercentage)
+            this.props.change('AnnualInsuranceAmount', trimTwoDecimalPlace(InsuranceCost))
+        }
+
+
+    }
+
+    /**
+    * @method totalMachineCost
+    * @description totalMachineCost per annum calculation
+    */
+    totalMachineCost = () => {
+        const { fieldsObj } = this.props;
+
+        const BuildingCostPerSquareFeet = fieldsObj && fieldsObj.BuildingCostPerSquareFeet !== undefined ? checkForNull(fieldsObj.BuildingCostPerSquareFeet) : 0;
+        const MachineFloorAreaPerSquareFeet = fieldsObj && fieldsObj.MachineFloorAreaPerSquareFeet !== undefined ? checkForNull(fieldsObj.MachineFloorAreaPerSquareFeet) : 0;
+
+        const DepreciationAmount = fieldsObj && fieldsObj.DepreciationAmount !== undefined ? checkForNull(fieldsObj.DepreciationAmount) : 0;
+        const AnnualMaintanceAmount = fieldsObj && fieldsObj.AnnualMaintanceAmount !== undefined ? checkForNull(fieldsObj.AnnualMaintanceAmount) : 0;
+        const AnnualConsumableAmount = fieldsObj && fieldsObj.AnnualConsumableAmount !== undefined ? checkForNull(fieldsObj.AnnualConsumableAmount) : 0;
+        const AnnualInsuranceAmount = fieldsObj && fieldsObj.AnnualInsuranceAmount !== undefined ? checkForNull(fieldsObj.AnnualInsuranceAmount) : 0;
+
+        const anuualAreaCost = BuildingCostPerSquareFeet * MachineFloorAreaPerSquareFeet;
+        const TotalMachineCostPerAnnum = DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + anuualAreaCost;
+
+        this.props.change('AnnualAreaCost', trimTwoDecimalPlace(anuualAreaCost))
+        this.props.change('TotalMachineCostPerAnnum', trimTwoDecimalPlace(TotalMachineCostPerAnnum))
+    }
+
+    /**
+    * @method powerCost
+    * @description powerCost calculation
+    */
+    powerCost = () => {
+        const { fieldsObj } = this.props;
+        const { IsUsesFuel, IsUsesSolarPower } = this.state;
+
+        if (IsUsesFuel) {
+            const FuelCostPerUnit = fieldsObj && fieldsObj.FuelCostPerUnit !== undefined ? checkForNull(fieldsObj.FuelCostPerUnit) : 0;
+            const ConsumptionPerYear = fieldsObj && fieldsObj.ConsumptionPerYear !== undefined ? checkForNull(fieldsObj.ConsumptionPerYear) : 0;
+
+            this.props.change('TotalFuelCostPerYear', trimTwoDecimalPlace(FuelCostPerUnit * ConsumptionPerYear))
+        } else {
+            this.props.change('FuelCostPerUnit', 0)
+            this.props.change('ConsumptionPerYear', 0)
+            this.props.change('TotalFuelCostPerYear', 0)
+
+            if (IsUsesSolarPower) {
+
+                const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
+                const UtilizationFactorPercentage = fieldsObj && fieldsObj.UtilizationFactorPercentage !== undefined ? checkForNull(fieldsObj.UtilizationFactorPercentage) : 0;
+                const PowerRatingPerKW = fieldsObj && fieldsObj.PowerRatingPerKW !== undefined ? checkForNull(fieldsObj.PowerRatingPerKW) : 0;
+                const PowerCostPerUnit = fieldsObj && fieldsObj.PowerCostPerUnit !== undefined ? checkForNull(fieldsObj.PowerCostPerUnit) : 0;
+
+                const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage)
+                this.props.change('TotalPowerCostPerYear', totalPowerCostPrYer)
+            }
+        }
+    }
+
+    /**
+    * @method handleLabourCalculation
+    * @description called
+    */
     handleLabourCalculation = () => {
         const { fieldsObj } = this.props
         const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum !== undefined ? fieldsObj.LabourCostPerAnnum : 0;
@@ -513,9 +725,40 @@ class AddMoreDetails extends Component {
         this.props.change('LabourCost', TotalLabourCost)
     }
 
+    /**
+    * @method handleProcessCalculation
+    * @description called
+    */
+    handleProcessCalculation = () => {
+        const { fieldsObj } = this.props
+        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? checkForNull(fieldsObj.OutputPerHours) : 0;
+        const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
+        const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
+
+        this.props.change('OutputPerYear', OutputPerHours * NumberOfWorkingHoursPerYear)
+        this.props.change('MachineRate', trimTwoDecimalPlace(TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear)))
+    }
+
+    /**
+    * @method labourTableHandler
+    * @description called
+    */
     labourTableHandler = () => {
         const { labourType, labourGrid } = this.state;
         const { fieldsObj } = this.props
+
+        if (labourType.length === 0) {
+            toastr.warning('Fields should not be empty');
+            return false;
+        }
+
+        //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+        const isExist = labourGrid.findIndex(el => (el.labourTypeId === labourType.value))
+        if (isExist !== -1) {
+            toastr.warning('Already added, Please check the values.')
+            return false;
+        }
+
         const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum !== undefined ? fieldsObj.LabourCostPerAnnum : 0;
         const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour !== undefined ? fieldsObj.NumberOfLabour : 0;
         const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
@@ -542,6 +785,20 @@ class AddMoreDetails extends Component {
     updateLabourGrid = () => {
         const { labourType, labourGrid, labourGridEditIndex } = this.state;
         const { fieldsObj } = this.props
+
+        //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
+        let skipEditedItem = labourGrid.filter((el, i) => {
+            if (i === labourGridEditIndex) return false;
+            return true;
+        })
+
+        //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
+        const isExist = skipEditedItem.findIndex(el => (el.labourTypeId === labourType.value))
+        if (isExist !== -1) {
+            toastr.warning('Already added, Please check the values.')
+            return false;
+        }
+
         const LabourPerCost = fieldsObj && fieldsObj.LabourCostPerAnnum !== undefined ? fieldsObj.LabourCostPerAnnum : 0;
         const NumberOfLabour = fieldsObj && fieldsObj.NumberOfLabour !== undefined ? fieldsObj.NumberOfLabour : 0;
         const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour)
@@ -629,18 +886,21 @@ class AddMoreDetails extends Component {
         return cost;
     }
 
-    handleProcessCalculation = () => {
-        const { fieldsObj } = this.props
-        const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
-        const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
-
-        this.props.change('OutputPerYear', OutputPerHours * 10)
-        this.props.change('MachineRate', 1000 / OutputPerYear)
-    }
-
     processTableHandler = () => {
         const { processName, UOM, processGrid, } = this.state;
         const { fieldsObj } = this.props
+
+        if (processName.length === 0 || UOM.length === 0) {
+            toastr.warning('Fields should not be empty');
+            return false;
+        }
+
+        //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+        const isExist = processGrid.findIndex(el => (el.processNameId === processName.value && el.UOMId === UOM.value))
+        if (isExist !== -1) {
+            toastr.warning('Already added, Please check the values.')
+            return false;
+        }
 
         const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
         const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
@@ -650,9 +910,9 @@ class AddMoreDetails extends Component {
 
         tempArray.push(...processGrid, {
             processName: processName.label,
-            processNameId: processName.value,
-            UOM: UOM.label,
-            UOMId: UOM.value,
+            ProcessId: processName.value,
+            UnitOfMeasurement: UOM.label,
+            UnitOfMeasurementId: UOM.value,
             OutputPerHours: OutputPerHours,
             OutputPerYear: OutputPerYear,
             MachineRate: MachineRate,
@@ -663,9 +923,9 @@ class AddMoreDetails extends Component {
             processName: [],
             UOM: [],
         }, () => {
-            this.props.change('OutputPerHours', '')
-            this.props.change('OutputPerYear', '')
-            this.props.change('MachineRate', '')
+            this.props.change('OutputPerHours', 0)
+            this.props.change('OutputPerYear', 0)
+            this.props.change('MachineRate', 0)
         });
     }
 
@@ -677,6 +937,19 @@ class AddMoreDetails extends Component {
         const { processName, UOM, processGrid, processGridEditIndex } = this.state;
         const { fieldsObj } = this.props
 
+        //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
+        let skipEditedItem = processGrid.filter((el, i) => {
+            if (i === processGridEditIndex) return false;
+            return true;
+        })
+
+        //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
+        const isExist = skipEditedItem.findIndex(el => (el.processId === processName.value && el.UnitOfMeasurementId === UOM.value))
+        if (isExist !== -1) {
+            toastr.warning('Already added, Please check the values.')
+            return false;
+        }
+
         const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
         const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
         const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : 0;
@@ -685,9 +958,9 @@ class AddMoreDetails extends Component {
         let tempData = processGrid[processGridEditIndex];
         tempData = {
             processName: processName.label,
-            processNameId: processName.value,
-            UOM: UOM.label,
-            UOMId: UOM.value,
+            processId: processName.value,
+            UnitOfMeasurement: UOM.label,
+            UnitOfMeasurementId: UOM.value,
             OutputPerHours: OutputPerHours,
             OutputPerYear: OutputPerYear,
             MachineRate: MachineRate,
@@ -702,9 +975,9 @@ class AddMoreDetails extends Component {
             processGridEditIndex: '',
             isEditIndex: false,
         }, () => {
-            this.props.change('OutputPerHours', '')
-            this.props.change('OutputPerYear', '')
-            this.props.change('MachineRate', '')
+            this.props.change('OutputPerHours', 0)
+            this.props.change('OutputPerYear', 0)
+            this.props.change('MachineRate', 0)
         });
     };
 
@@ -719,9 +992,9 @@ class AddMoreDetails extends Component {
             processGridEditIndex: '',
             isEditIndex: false,
         }, () => {
-            this.props.change('OutputPerHours', '')
-            this.props.change('OutputPerYear', '')
-            this.props.change('MachineRate', '')
+            this.props.change('OutputPerHours', 0)
+            this.props.change('OutputPerYear', 0)
+            this.props.change('MachineRate', 0)
         });
     };
 
@@ -736,8 +1009,8 @@ class AddMoreDetails extends Component {
         this.setState({
             processGridEditIndex: index,
             isEditIndex: true,
-            processName: { label: tempData.processName, value: tempData.processNameId },
-            UOM: { label: tempData.UOM, value: tempData.UOMId },
+            processName: { label: tempData.processName, value: tempData.processId },
+            UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
         }, () => {
             this.props.change('OutputPerHours', tempData.OutputPerHours)
             this.props.change('OutputPerYear', tempData.OutputPerYear)
@@ -774,25 +1047,7 @@ class AddMoreDetails extends Component {
     }
 
     formToggle = () => {
-        this.setState({
-            isShowForm: !this.state.isShowForm
-        })
-    }
-
-    /**
-    * @method cancel
-    * @description used to Reset form
-    */
-    clearForm = () => {
-        const { reset } = this.props;
-        reset();
-        this.setState({
-            remarks: '',
-            isShowForm: false,
-            IsVendor: false,
-        })
-        this.props.hideMoreDetailsForm()
-        //this.props.getRawMaterialDetailsAPI('', false, res => { })
+        this.setState({ isShowForm: !this.state.isShowForm })
     }
 
     /**
@@ -800,38 +1055,28 @@ class AddMoreDetails extends Component {
     * @description used to Reset form
     */
     cancel = () => {
-        this.clearForm()
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            remarks: '',
+            isShowForm: false,
+        })
+        this.props.hideMoreDetailsForm(this.state.isMoreDetailsComplete, this.state.processGrid)
+        //this.props.getRawMaterialDetailsAPI('', false, res => { })
     }
-
-    /**
-    * @method resetForm
-    * @description used to Reset form
-    */
-    resetForm = () => {
-        this.clearForm()
-    }
-
-
 
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, remarks, BOPID, isEditFlag, files, effectiveDate, receivedFiles } = this.state;
-        const { reset } = this.props;
+        const { isEditFlag, selectedTechnology, selectedPlants, machineType, files, effectiveDate, receivedFiles,
+            IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
+            labourGrid, processGrid } = this.state;
 
-        // let plantArray = [];
-        // selectedPlants && selectedPlants.map((item) => {
-        //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-        //     return plantArray;
-        // })
+        const userDetail = userDetails()
 
-        // let vendorPlantArray = [];
-        // selectedVendorPlants && selectedVendorPlants.map((item) => {
-        //     vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-        //     return vendorPlantArray;
-        // })
+        let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
 
         if (isEditFlag) {
 
@@ -839,27 +1084,92 @@ class AddMoreDetails extends Component {
 
             }
 
-            // this.props.updateBOPDomestic(requestData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
-            //         this.clearForm();
-            //         this.child.getUpdatedData();
-            //     }
-            // })
+            this.props.updateMachineDetails(requestData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
+                    this.cancel();
+                }
+            })
 
         } else {
 
             const formData = {
-
+                Manufacture: values.Manufacture,
+                YearOfManufacturing: values.YearOfManufacturing,
+                MachineCost: values.MachineCost,
+                AccessoriesCost: values.AccessoriesCost,
+                InstallationCharges: values.InstallationCharges,
+                TotalCost: values.TotalCost,
+                MachineIdRef: '',
+                OwnershipIsPurchased: this.state.IsPurchased,
+                DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
+                DepreciationRatePercentage: values.DepreciationRatePercentage,
+                LifeOfAssetPerYear: values.LifeOfAssetPerYear,
+                CastOfScrap: values.CastOfScrap,
+                DateOfPurchase: effectiveDate,
+                DepreciationAmount: values.DepreciationAmount,
+                WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
+                WorkingHoursPerShift: values.WorkingHoursPerShift,
+                NumberOfWorkingDaysPerYear: values.NumberOfWorkingDaysPerYear,
+                EfficiencyPercentage: values.EfficiencyPercentage,
+                NumberOfWorkingHoursPerYear: values.NumberOfWorkingHoursPerYear,
+                LoanPercentage: values.LoanPercentage,
+                LoanValue: values.LoanValue,
+                EquityPercentage: values.EquityPercentage,
+                EquityValue: values.EquityValue,
+                RateOfInterestPercentage: values.RateOfInterestPercentage,
+                RateOfInterestValue: values.RateOfInterestValue,
+                IsMaintanceFixed: IsAnnualMaintenanceFixed,
+                AnnualMaintancePercentage: values.AnnualMaintancePercentage,
+                AnnualMaintanceAmount: values.AnnualMaintanceAmount,
+                IsConsumableFixed: IsAnnualConsumableFixed,
+                AnnualConsumablePercentage: values.AnnualConsumablePercentage,
+                AnnualConsumableAmount: values.AnnualConsumableAmount,
+                IsInsuranceFixed: IsInsuranceFixed,
+                AnnualInsurancePercentage: values.AnnualInsurancePercentage,
+                AnnualInsuranceAmount: values.AnnualInsuranceAmount,
+                BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
+                MachineFloorAreaPerSquareFeet: values.MachineFloorAreaPerSquareFeet,
+                AnnualAreaCost: values.AnnualAreaCost,
+                OtherYearlyCost: values.OtherYearlyCost,
+                TotalMachineCostPerAnnum: values.TotalMachineCostPerAnnum,
+                IsUsesFuel: IsUsesFuel,
+                PowerId: '',
+                UtilizationFactorPercentage: values.UtilizationFactorPercentage,
+                PowerCostPerUnit: values.PowerCostPerUnit,
+                PowerRatingPerKW: values.PowerRatingPerKW,
+                TotalPowerCostPerYear: values.TotalPowerCostPerYear,
+                IsUsesSolarPower: IsUsesSolar,
+                FuleId: fuelType ? fuelType.value : '',
+                FuelCostPerUnit: values.FuelCostPerUnit,
+                ConsumptionPerYear: values.FuelCostPerUnit,
+                TotalFuelCostPerYear: values.TotalFuelCostPerYear,
+                MachineLabourRates: labourGrid,
+                TotalLabourCostPerYear: values.TotalLabourCostPerYear,
+                IsVendor: false,
+                IsDetailedEntry: true,
+                VendorId: userDetail.ZBCSupplierInfo.VendorId,
+                MachineNumber: values.MachineNumber,
+                MachineName: values.MachineName,
+                MachineTypeId: machineType ? machineType.value : '',
+                TonnageCapacity: values.TonnageCapacity,
+                Description: values.Description,
+                IsActive: true,
+                Remark: '',
+                LoggedInUserId: loggedInUserId(),
+                MachineProcessRates: processGrid,
+                Technology: technologyArray,
+                Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+                VendorPlant: [],
+                Attachements: []
             }
 
-            // this.props.createBOPDomestic(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.BOP_ADD_SUCCESS);
-            //         this.clearForm();
-            //         this.child.getUpdatedData();
-            //     }
-            // });
+            this.props.createMachineDetails(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+                    this.setState({ isMoreDetailsComplete: true }, () => this.cancel())
+                }
+            });
         }
     }
 
@@ -869,7 +1179,7 @@ class AddMoreDetails extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { files, errors, isEditFlag, isOpenMachineType, isMoreDetails, isOpenProcessDrawer, } = this.state;
+        const { isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
 
         return (
             <>
@@ -913,17 +1223,17 @@ class AddMoreDetails extends Component {
 
                                             <Col md="3">
                                                 <Field
-                                                    label="Plant"
                                                     name="Plant"
-                                                    placeholder="--Select--"
-                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                                    type="text"
+                                                    label="Plant"
+                                                    component={searchableSelect}
+                                                    placeholder={'--- Select ---'}
                                                     options={this.renderListing('plant')}
-                                                    selectionChanged={this.handlePlants}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    className="multiselect-with-border"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handlePlants}
+                                                    valueDescription={this.state.selectedPlants}
                                                     disabled={isEditFlag ? true : false}
                                                 />
                                             </Col>
@@ -947,9 +1257,9 @@ class AddMoreDetails extends Component {
                                                     name={"MachineName"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    //validate={[required]}
                                                     component={renderText}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -988,9 +1298,9 @@ class AddMoreDetails extends Component {
                                                     name={"Manufacture"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    //validate={[required]}
                                                     component={renderText}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1002,9 +1312,9 @@ class AddMoreDetails extends Component {
                                                     name={"YearOfManufacturing"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderText}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1047,9 +1357,9 @@ class AddMoreDetails extends Component {
                                                     name={"AccessoriesCost"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1061,9 +1371,9 @@ class AddMoreDetails extends Component {
                                                     name={"InstallationCharges"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1097,9 +1407,9 @@ class AddMoreDetails extends Component {
                                                     name={"LoanPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1111,9 +1421,9 @@ class AddMoreDetails extends Component {
                                                     name={"LoanValue"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={true}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1125,9 +1435,9 @@ class AddMoreDetails extends Component {
                                                     name={"EquityPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1139,9 +1449,9 @@ class AddMoreDetails extends Component {
                                                     name={"EquityValue"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={true}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1153,9 +1463,9 @@ class AddMoreDetails extends Component {
                                                     name={"RateOfInterestPercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1167,9 +1477,9 @@ class AddMoreDetails extends Component {
                                                     name={"RateOfInterestValue"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[number]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    //required={true}
                                                     disabled={true}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1205,8 +1515,8 @@ class AddMoreDetails extends Component {
                                                     name={"WorkingHoursPerShift"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[required, number]}
+                                                    component={renderText}
                                                     required={true}
                                                     disabled={false}
                                                     className=" "
@@ -1219,8 +1529,8 @@ class AddMoreDetails extends Component {
                                                     name={"NumberOfWorkingDaysPerYear"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[required, number]}
+                                                    component={renderText}
                                                     required={true}
                                                     disabled={false}
                                                     className=" "
@@ -1235,8 +1545,8 @@ class AddMoreDetails extends Component {
                                                             name={"EfficiencyPercentage"}
                                                             type="text"
                                                             placeholder={'Enter'}
-                                                            validate={[required]}
-                                                            component={renderNumberInputField}
+                                                            validate={[required, number]}
+                                                            component={renderText}
                                                             required={true}
                                                             disabled={false}
                                                             className=" "
@@ -1245,7 +1555,7 @@ class AddMoreDetails extends Component {
                                                     </div>
                                                     <div
                                                         onClick={this.efficiencyCalculationToggler}
-                                                        className={'plus-icon-square mr5 right'}>
+                                                        className={'calculate-icon mr5 right'}>
                                                     </div>
                                                 </div>
                                             </Col>
@@ -1293,37 +1603,38 @@ class AddMoreDetails extends Component {
                                                     name={"DepreciationRatePercentage"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={this.state.depreciationType.value === WDM ? [required] : []}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    required={this.state.depreciationType.value === WDM ? true : false}
                                                     disabled={false}
                                                     className=" "
                                                     customClassName="withBorder"
                                                 />
                                             </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Life Of Assest (Years)`}
-                                                    name={"LifeOfAssetPerYear"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
-                                                    required={true}
-                                                    disabled={false}
-                                                    className=" "
-                                                    customClassName="withBorder"
-                                                />
-                                            </Col>
+                                            {this.state.depreciationType && this.state.depreciationType.value === SLM &&
+                                                <Col md="3">
+                                                    <Field
+                                                        label={`Life Of Assest (Years)`}
+                                                        name={"LifeOfAssetPerYear"}
+                                                        type="text"
+                                                        placeholder={'Enter'}
+                                                        validate={[required]}
+                                                        component={renderNumberInputField}
+                                                        required={true}
+                                                        disabled={false}
+                                                        className=" "
+                                                        customClassName="withBorder"
+                                                    />
+                                                </Col>}
                                             <Col md="3">
                                                 <Field
                                                     label={`Cost Of Scrap (INR)`}
                                                     name={"CastOfScrap"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
-                                                    required={true}
+                                                    validate={[number]}
+                                                    component={renderText}
+                                                    //required={true}
                                                     disabled={false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1333,7 +1644,7 @@ class AddMoreDetails extends Component {
                                                 <div className="form-group">
                                                     <label>
                                                         Date of Purchase
-                                                    <span className="asterisk-required">*</span>
+                                                    {/* <span className="asterisk-required">*</span> */}
                                                     </label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
@@ -1364,7 +1675,7 @@ class AddMoreDetails extends Component {
                                                     validate={[required]}
                                                     component={renderNumberInputField}
                                                     required={true}
-                                                    disabled={false}
+                                                    disabled={true}
                                                     className=" "
                                                     customClassName="withBorder"
                                                 />
@@ -1397,8 +1708,8 @@ class AddMoreDetails extends Component {
                                                         name={"AnnualMaintancePercentage"}
                                                         type="text"
                                                         placeholder={'Enter'}
-                                                        //validate={[required]}
-                                                        component={renderNumberInputField}
+                                                        validate={[number]}
+                                                        component={renderText}
                                                         //required={true}
                                                         disabled={false}
                                                         className=" mt5"
@@ -1411,8 +1722,8 @@ class AddMoreDetails extends Component {
                                                     name={"AnnualMaintanceAmount"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[number]}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={this.state.IsAnnualMaintenanceFixed ? true : false}
                                                     className=" "
@@ -1604,7 +1915,7 @@ class AddMoreDetails extends Component {
                                                             label="Fuel"
                                                             component={searchableSelect}
                                                             placeholder={'--select--'}
-                                                            options={this.renderListing('FuelSelectList')}
+                                                            options={this.renderListing('fuel')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.fuelType == null || this.state.fuelType.length === 0) ? [required] : []}
                                                             required={true}
@@ -1762,7 +2073,7 @@ class AddMoreDetails extends Component {
                                                     component={renderNumberInputField}
                                                     //onChange={this.handleLabourCalculation}
                                                     //required={true}
-                                                    disabled={false}
+                                                    disabled={true}
                                                     className=" "
                                                     customClassName="withBorder"
                                                 />
@@ -1812,11 +2123,18 @@ class AddMoreDetails extends Component {
                                                         >Cancel</button>
                                                     </>
                                                     :
-                                                    <button
-                                                        type="button"
-                                                        className={'user-btn mt30 pull-left'}
-                                                        onClick={this.labourTableHandler}>
-                                                        <div className={'plus'}></div>ADD</button>}
+                                                    <>
+                                                        <button
+                                                            type="button"
+                                                            className={'user-btn mt30 pull-left mr5'}
+                                                            onClick={this.labourTableHandler}>
+                                                            <div className={'plus'}></div>ADD</button>
+                                                        <button
+                                                            type="button"
+                                                            className={'btn secondary-btn mt30 pull-left'}
+                                                            onClick={this.resetLabourGridData}
+                                                        >Reset</button>
+                                                    </>}
                                             </Col>
                                             <Col md="12">
                                                 <Table className="table" size="sm" >
@@ -1996,7 +2314,7 @@ class AddMoreDetails extends Component {
                                                                 return (
                                                                     <tr key={index}>
                                                                         <td>{item.processName}</td>
-                                                                        <td>{item.UOM}</td>
+                                                                        <td>{item.UnitOfMeasurement}</td>
                                                                         <td>{item.OutputPerHours}</td>
                                                                         <td>{item.OutputPerYear}</td>
                                                                         <td>{item.MachineRate}</td>
@@ -2045,6 +2363,14 @@ class AddMoreDetails extends Component {
                     ID={''}
                     anchor={'right'}
                 />}
+                {isOpenAvailability && <EfficiencyDrawer
+                    isOpen={isOpenAvailability}
+                    closeDrawer={this.closeAvailabilityDrawer}
+                    isEditFlag={false}
+                    ID={''}
+                    anchor={'right'}
+                    NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
+                />}
                 {isOpenProcessDrawer && <AddProcessDrawer
                     isOpen={isOpenProcessDrawer}
                     closeDrawer={this.closeProcessDrawer}
@@ -2063,14 +2389,24 @@ class AddMoreDetails extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, machine, } = state;
-    const fieldsObj = selector(state, 'LabourCostPerAnnum', 'NumberOfLabour', 'LabourCost', 'OutputPerHours',
-        'OutputPerYear', 'MachineRate');
+    const { comman, material, machine, labour, fuel } = state;
+    const fieldsObj = selector(state, 'MachineCost', 'AccessoriesCost', 'InstallationCharges', 'LabourCostPerAnnum', 'TotalCost',
+        'LoanPercentage', 'LoanValue', 'EquityPercentage', 'EquityValue', 'RateOfInterestPercentage', 'RateOfInterestValue',
+        'WorkingHoursPerShift', 'NumberOfWorkingDaysPerYear', 'EfficiencyPercentage', 'NumberOfWorkingHoursPerYear',
+        'DepreciationRatePercentage', 'LifeOfAssetPerYear', 'CastOfScrap', 'DepreciationAmount',
+        'AnnualMaintancePercentage', 'AnnualMaintanceAmount', 'AnnualConsumablePercentage', 'AnnualConsumableAmount',
+        'AnnualInsurancePercentage', 'AnnualInsuranceAmount',
+        'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
+        'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear',
+        'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
+        'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate');
 
     const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
-        ShiftTypeSelectList, DepreciationTypeSelectList, labourTypeSelectList, } = comman;
+        ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
     const { machineTypeSelectList, processSelectList } = machine;
+    const { labourTypeByMachineTypeSelectList } = labour;
     const { vendorListByVendorType } = material;
+    const { fuelComboSelectList } = fuel;
 
     let initialValues = {};
     // if (bopData && bopData != undefined) {
@@ -2089,7 +2425,7 @@ function mapStateToProps(state) {
     return {
         vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
         machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-        labourTypeSelectList, fieldsObj, initialValues,
+        labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues,
     }
 
 }
@@ -2110,7 +2446,13 @@ export default connect(mapStateToProps, {
     getProcessesSelectList,
     getShiftTypeSelectList,
     getDepreciationTypeSelectList,
-    getLabourTypeSelectList,
+    getLabourTypeByMachineTypeSelectList,
+    getFuelComboData,
+    getFuelUnitCost,
+    getLabourCost,
+    getPowerCostUnit,
+    createMachineDetails,
+    updateMachineDetails,
 })(reduxForm({
     form: 'AddMoreDetails',
     enableReinitialize: true,

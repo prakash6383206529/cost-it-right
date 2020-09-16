@@ -205,13 +205,13 @@ export function getMachineData(ID, callback) {
 }
 
 /**
- * @method deleteMachineAPI
- * @description delete Machine Type
+ * @method deleteMachine
+ * @description delete Machine
  */
-export function deleteMachineAPI(Id, callback) {
+export function deleteMachine(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteMachineAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteMachine}/${Id}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -362,5 +362,103 @@ export function checkAndGetMachineNumber(number, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getFuelUnitCost
+ * @description GET FUEL UNIT COST
+ */
+export function getFuelUnitCost(data, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const queryParams = `fuelId=${data.fuelId}&plantId=${data.plantId}`
+        axios.get(`${API.getFuelUnitCost}?${queryParams}`, { headers })
+            .then((response) => {
+                if (response.data.Result === true) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+ * @method getLabourCost
+ * @description GET LABOUR COST
+ */
+export function getLabourCost(data, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const queryParams = `labourTypeId=${data.labourTypeId}&machineTypeId=${data.machineTypeId}`
+        axios.get(`${API.getLabourCost}?${queryParams}`, { headers })
+            .then((response) => {
+                if (response.data.Result === true) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+ * @method getPowerCostUnit
+ * @description GET POWER COST UNIT
+ */
+export function getPowerCostUnit(plantId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.get(`${API.getPowerCostUnit}?plantId=${plantId}`, { headers })
+            .then((response) => {
+                if (response.data.Result === true) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+ * @method createMachineDetails
+ * @description create Machine Details
+ */
+export function createMachineDetails(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createMachineDetails, data, headers);
+        request.then((response) => {
+            if (response.data.Result === true) {
+                dispatch({ type: CREATE_SUCCESS, });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: CREATE_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method updateMachineDetails
+ * @description update Machine details
+ */
+export function updateMachineDetails(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateMachineDetails}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }

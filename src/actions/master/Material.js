@@ -1006,7 +1006,7 @@ export function fileUploadRMDomestic(data, callback) {
         };
         const request = axios.post(API.fileUploadRMDomestic, data, headers);
         request.then((response) => {
-            if (response && response.status == 200) {
+            if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -1112,7 +1112,7 @@ export function fileUpdateRMDomestic(data, callback) {
         };
         const request = axios.put(API.fileUpdateRMDomestic, data, headers);
         request.then((response) => {
-            if (response && response.status == 200) {
+            if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -1147,7 +1147,7 @@ export function bulkUploadRMDomesticZBC(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadRMDomesticZBC, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -1165,7 +1165,7 @@ export function bulkUploadRMDomesticVBC(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadRMDomesticVBC, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {

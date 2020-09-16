@@ -11,7 +11,7 @@ import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList,
     getInitialVendorWithVendorCodeSelectList,
 } from '../../../../actions/master/Process';
-import { getMachineDataList, } from '../../../../actions/master/MachineMaster';
+import { getMachineDataList, deleteMachine, } from '../../../../actions/master/MachineMaster';
 import { getTechnologySelectList, getPlantSelectList, } from '../../../../actions/master/Comman';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
@@ -236,12 +236,12 @@ class MachineRateListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        // this.props.deleteBOPAPI(ID, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-        //         this.getDataList(null, null, null, null)
-        //     }
-        // });
+        this.props.deleteMachine(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
+                this.getDataList()
+            }
+        });
     }
 
     /**
@@ -282,7 +282,7 @@ class MachineRateListing extends Component {
     * @description Renders Costing head
     */
     plantsFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell === 'NA' ? '-' : cell;
+        return cell === '' ? '-' : cell;
     }
 
     /**
@@ -578,6 +578,7 @@ export default connect(mapStateToProps, {
     getInitialMachineTypeSelectList,
     getInitialProcessesSelectList,
     getMachineDataList,
+    deleteMachine,
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

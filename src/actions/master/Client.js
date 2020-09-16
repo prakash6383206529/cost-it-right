@@ -7,8 +7,6 @@ import {
     GET_CLIENT_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
-import { MESSAGES } from '../../config/message';
-import { toastr } from 'react-redux-toastr'
 const headers = {
     'Content-Type': 'application/json',
 };
@@ -56,7 +54,7 @@ export function updateClient(requestData, callback) {
 export function getClientData(ClientId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (ClientId != '') {
+        if (ClientId !== '') {
             axios.get(`${API.getClientData}/${ClientId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
@@ -109,6 +107,7 @@ export function deleteClient(ID, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
+                console.log('error: ', error);
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });

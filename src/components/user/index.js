@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import { Container, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
-import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
 import { getLeftMenu, } from '../../actions/auth/AuthActions';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -36,20 +34,20 @@ class User extends Component {
     let ModuleId = reactLocalStorage.get('ModuleId');
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       const { leftMenuData } = this.props;
-      if (leftMenuData != undefined) {
+      if (leftMenuData !== undefined) {
         let Data = leftMenuData;
 
-        const userPermissions = Data && Data.find(el => el.PageName == USER)
-        const rolePermissions = Data && Data.find(el => el.PageName == ROLE)
-        const departmentPermissions = Data && Data.find(el => el.PageName == DEPARTMENT)
-        const levelsPermissions = Data && Data.find(el => el.PageName == LEVELS)
+        const userPermissions = Data && Data.find(el => el.PageName === USER)
+        const rolePermissions = Data && Data.find(el => el.PageName === ROLE)
+        const departmentPermissions = Data && Data.find(el => el.PageName === DEPARTMENT)
+        const levelsPermissions = Data && Data.find(el => el.PageName === LEVELS)
 
         const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
         const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
         const departmentData = departmentPermissions && departmentPermissions.Actions && checkPermission(departmentPermissions.Actions)
         const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
 
-        if (userData != undefined) {
+        if (userData !== undefined) {
           this.setState({
             ViewUserAccessibility: userData && userData.View ? userData.View : false,
             ViewRoleAccessibility: roleData && roleData.View ? roleData.View : false,

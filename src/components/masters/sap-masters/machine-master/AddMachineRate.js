@@ -38,6 +38,7 @@ class AddMachineRate extends Component {
         this.state = {
             MachineID: '',
             isEditFlag: false,
+            isFormHide: false,
             IsVendor: false,
 
             selectedTechnology: [],
@@ -79,6 +80,8 @@ class AddMachineRate extends Component {
      * @description Called after rendering the component
      */
     componentDidMount() {
+        const { data } = this.props;
+
         this.props.getTechnologySelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
         this.props.getPlantSelectList(() => { })
@@ -93,18 +96,45 @@ class AddMachineRate extends Component {
             })
         }
 
+        //USED TO SET PREVIOUS VALUES OF FORM AFTER SUCCESS OR CANCEL OF ADD MORE DETAILS FORM
+        if (data && data !== undefined) {
+            this.setOldValue(data)
+        }
+
+        //GET MACHINE VALUES IN EDIT MODE
         this.getDetails()
     }
 
     componentWillUnmount() {
-        const { selectedPlants, machineType, } = this.state;
+        const { selectedPlants, machineType, selectedTechnology, isFormHide } = this.state;
         const { fieldsObj } = this.props;
         let data = {
             fieldsObj: fieldsObj,
+            selectedTechnology: selectedTechnology,
             selectedPlants: selectedPlants,
             machineType: machineType,
         }
-        this.props.setData(data)
+        if (!isFormHide) {
+            this.props.setData(data)
+        } else {
+            this.props.setData()
+        }
+    }
+
+    /**
+    * @method setOldValue
+    * @description USED TO SET OLD VALUES
+    */
+    setOldValue = (data) => {
+        this.setState({
+            selectedTechnology: data.selectedTechnology,
+            selectedPlants: data.selectedPlants,
+            machineType: data.machineType,
+        })
+        this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
+        this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
+        this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
+        this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
     }
 
     /**
@@ -112,15 +142,15 @@ class AddMachineRate extends Component {
     * @description Used to get Details
     */
     getDetails = () => {
-        const { data } = this.props
-        if (data && data.isEditFlag) {
+        const { editDetails } = this.props
+        if (editDetails && editDetails.isEditFlag) {
             this.setState({
                 isEditFlag: false,
                 isLoader: true,
-                MachineID: data.Id,
+                MachineID: editDetails.Id,
             })
             $('html, body').animate({ scrollTop: 0 }, 'slow');
-            this.props.getMachineData(data.Id, res => {
+            this.props.getMachineData(editDetails.Id, res => {
                 if (res && res.data && res.data.Result) {
 
                     const Data = res.data.Data;
@@ -131,23 +161,22 @@ class AddMachineRate extends Component {
                     }
 
                     setTimeout(() => {
-                        const { vendorListByVendorType, machineTypeSelectList, } = this.props;
+                        const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
                         let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
-                        let plantArray = Data && Data.Plant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
                         let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
                             return {
                                 processName: el.ProcessName,
                                 ProcessId: el.ProcessId,
-                                UOM: 'Kal add karwana h.',
+                                UOM: el.UnitOfMeasurement,
                                 UnitOfMeasurementId: el.UnitOfMeasurementId,
                                 MachineRate: el.MachineRate,
                             }
                         })
 
                         const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorId)
-
+                        const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
                         let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
                         const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === Data.MachineTypeId)
@@ -157,13 +186,13 @@ class AddMachineRate extends Component {
                             isLoader: false,
                             IsVendor: Data.IsVendor,
                             selectedTechnology: technologyArray,
-                            selectedPlants: plantArray,
+                            selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
                             vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
                             selectedVendorPlants: vendorPlantArray,
                             machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
                             processGrid: MachineProcessArray,
                             remarks: Data.Remark,
-                            files: [],
+                            files: Data.Attachements,
                         })
                     }, 100)
                 }
@@ -239,7 +268,7 @@ class AddMachineRate extends Component {
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
@@ -307,12 +336,16 @@ class AddMachineRate extends Component {
     };
 
     /**
-     * @method handlePlants
-     * @description Used handle Plants
-     */
-    handlePlants = (e) => {
-        this.setState({ selectedPlants: e })
-    }
+    * @method handlePlants
+    * @description called
+    */
+    handlePlants = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ selectedPlants: newValue, })
+        } else {
+            this.setState({ selectedPlants: [] })
+        }
+    };
 
     /**
     * @method handleMachineType
@@ -534,12 +567,6 @@ class AddMachineRate extends Component {
         })
     }
 
-    formToggle = () => {
-        this.setState({
-            isShowForm: !this.state.isShowForm
-        })
-    }
-
     /**
     * @method cancel
     * @description used to Reset form
@@ -549,10 +576,11 @@ class AddMachineRate extends Component {
         reset();
         this.setState({
             remarks: '',
-            isShowForm: false,
+            isFormHide: true,
             IsVendor: false,
-        })
-        this.props.hideForm()
+            isEditFlag: false,
+        }, () => this.props.hideForm())
+
     }
 
     // specify upload params and url for your files
@@ -635,11 +663,9 @@ class AddMachineRate extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, isEditFlag, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants, remarks,
+        const { IsVendor, MachineID, isEditFlag, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants, remarks,
             machineType, files, processGrid, } = this.state;
         const userDetail = userDetails()
-
-        let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
         let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
 
@@ -647,11 +673,25 @@ class AddMachineRate extends Component {
 
         if (isEditFlag) {
             let updatedFiles = files.map((file) => {
-                return { ...file, ContextId: '' }
+                return { ...file, ContextId: MachineID }
             })
-
             let requestData = {
-
+                MachineId: MachineID,
+                IsVendor: IsVendor,
+                VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+                MachineNumber: values.MachineNumber,
+                MachineName: values.MachineName,
+                MachineTypeId: machineType.value,
+                TonnageCapacity: values.TonnageCapacity,
+                Description: values.Description,
+                IsActive: true,
+                LoggedInUserId: loggedInUserId(),
+                MachineProcessRates: processGrid,
+                Technology: technologyArray,
+                Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+                VendorPlant: vendorPlantArray,
+                Remark: remarks,
+                Attachements: updatedFiles,
             }
 
             this.props.updateMachine(requestData, (res) => {
@@ -675,7 +715,7 @@ class AddMachineRate extends Component {
                 LoggedInUserId: loggedInUserId(),
                 MachineProcessRates: processGrid,
                 Technology: technologyArray,
-                Plant: plantArray,
+                Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
                 VendorPlant: vendorPlantArray,
                 Remark: remarks,
                 Attachements: files,
@@ -696,7 +736,7 @@ class AddMachineRate extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { files, isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
+        const { isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
 
         return (
             <>
@@ -799,17 +839,17 @@ class AddMachineRate extends Component {
                                             {!this.state.IsVendor &&
                                                 <Col md="3">
                                                     <Field
-                                                        label="Plant"
                                                         name="Plant"
-                                                        placeholder="--Select--"
-                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                                        type="text"
+                                                        label="Plant"
+                                                        component={searchableSelect}
+                                                        placeholder={'--- Select ---'}
                                                         options={this.renderListing('plant')}
-                                                        selectionChanged={this.handlePlants}
-                                                        optionValue={option => option.Value}
-                                                        optionLabel={option => option.Text}
-                                                        component={renderMultiSelectField}
-                                                        mendatory={true}
-                                                        className="multiselect-with-border"
+                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                        validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                                                        required={true}
+                                                        handleChangeDescription={this.handlePlants}
+                                                        valueDescription={this.state.selectedPlants}
                                                         disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>}
@@ -933,7 +973,7 @@ class AddMachineRate extends Component {
                                                             //required={true}
                                                             handleChangeDescription={this.handleProcessName}
                                                             valueDescription={this.state.processName}
-                                                            disabled={isEditFlag ? true : false}
+                                                            disabled={false}
                                                         />
                                                     </div>
                                                     {!isEditFlag && <div
@@ -955,7 +995,7 @@ class AddMachineRate extends Component {
                                                     //required={true}
                                                     handleChangeDescription={this.handleUOM}
                                                     valueDescription={this.state.UOM}
-                                                    disabled={isEditFlag ? true : false}
+                                                    disabled={false}
                                                 />
                                             </Col>
                                             <Col md="3">
@@ -1148,7 +1188,7 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
     const { comman, material, machine, } = state;
-    const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate');
+    const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
     const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
     const { machineTypeSelectList, processSelectList, machineData } = machine;
