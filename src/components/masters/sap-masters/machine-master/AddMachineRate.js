@@ -887,11 +887,20 @@ class AddMachineRate extends Component {
                                                             >Cancel</button>
                                                         </>
                                                         :
+                                                        <>
                                                         <button
                                                             type="button"
-                                                            className={'user-btn mt30 pull-left'}
+                                                            className={'user-btn mt30 pull-left mr-3'}
                                                             onClick={this.processTableHandler}>
-                                                            <div className={'plus'}></div>ADD</button>}
+                                                            <div className={'plus'}></div>ADD</button>
+                                                            <button
+                                                            type="button"
+                                                            className={'reset-btn mt30 pull-left'}
+                                                            onClick={this.resetProcessGridData}
+                                                        >Reset</button>
+                                                        </>
+                                                            }
+
 
 
                                                 </div>
@@ -923,8 +932,14 @@ class AddMachineRate extends Component {
                                                                 )
                                                             })
                                                         }
+                                                         {this.state.processGrid.length == 0 && 
+                                                         <tr>
+                                                             <td colspan="3">
+                                                             <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                                                                 </td> 
+                                                                 </tr>
+                                                                 }
                                                     </tbody>
-                                                    {this.state.processGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                 </Table>
                                             </Col>
 
