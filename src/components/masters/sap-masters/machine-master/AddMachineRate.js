@@ -1066,8 +1066,14 @@ class AddMachineRate extends Component {
                                                                 )
                                                             })
                                                         }
+                                                        {this.state.processGrid.length === 0 &&
+                                                            <tr>
+                                                                <td>
+                                                                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                                                                </td>
+                                                            </tr>
+                                                        }
                                                     </tbody>
-                                                    {this.state.processGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                 </Table>
                                             </Col>
                                         </Row>

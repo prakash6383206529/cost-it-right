@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../../../../actions/master/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI } from '../../../../actions/master/Comman';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../../actions/master/Comman';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
-import BulkUpload from '../../../massUpload/BulkUpload';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -181,7 +179,7 @@ class ZBCPlantListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -211,21 +209,21 @@ class ZBCPlantListing extends Component {
 
         if (label === 'country') {
             countryList && countryList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'state') {
             stateList && stateList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'city') {
             cityList && cityList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -237,7 +235,7 @@ class ZBCPlantListing extends Component {
     * @description Used to handle country
     */
     countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ country: newValue }, () => {
                 const { country } = this.state;
                 this.props.fetchStateDataAPI(country.value, () => { })
@@ -253,7 +251,7 @@ class ZBCPlantListing extends Component {
     * @description Used to handle state
     */
     stateHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ state: newValue }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
@@ -270,7 +268,7 @@ class ZBCPlantListing extends Component {
     * @description Used to handle City
     */
     cityHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ city: newValue });
         } else {
             this.setState({ city: [] });
@@ -290,7 +288,7 @@ class ZBCPlantListing extends Component {
             is_vendor: false,
         }
         this.props.getFilteredPlantList(filterData, (res) => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -343,8 +341,8 @@ class ZBCPlantListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, AddAccessibility, } = this.props;
-        const { isEditFlag, isOpenVendor, isBulkUpload } = this.state;
+        const { handleSubmit, AddAccessibility, } = this.props;
+        const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -457,7 +455,6 @@ class ZBCPlantListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    {/* <TableHeaderColumn dataField="Sr. No." width={'70'} dataFormat={this.indexFormatter} dataSort={true}>Sr. No.</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="PlantName" dataAlign="center" dataSort={true}>Plant Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>
                     <TableHeaderColumn dataField="CountryName" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
@@ -490,7 +487,6 @@ function mapStateToProps({ comman, auth }) {
 
     return { loading, countryList, stateList, cityList };
 }
-
 
 /**
 * @method connect

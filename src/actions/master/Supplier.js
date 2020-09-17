@@ -7,12 +7,10 @@ import {
     CREATE_SUPPLIER_SUCCESS,
     CREATE_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATALIST_SUCCESS,
-    GET_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATA_SUCCESS,
     GET_RADIO_SUPPLIER_TYPE_SUCCESS,
     GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
     GET_ALL_VENDOR_SELECTLIST_SUCCESS,
-    GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR,
     GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
 } from '../../config/constants';
 import {
@@ -195,7 +193,7 @@ export function vendorBulkUpload(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.vendorBulkUpload, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {

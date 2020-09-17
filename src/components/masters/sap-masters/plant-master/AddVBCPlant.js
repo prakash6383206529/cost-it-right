@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, maxLength10 } from "../../../../helper/validation";
-import { userDetails, loggedInUserId } from "../../../../helper/auth";
-import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
+import { required, number, maxLength6, } from "../../../../helper/validation";
+import { loggedInUserId } from "../../../../helper/auth";
+import { renderText, searchableSelect } from "../../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../../../../actions/master/Plant';
 import {
     fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList,
@@ -60,18 +60,18 @@ class AddVBCPlant extends Component {
                     setTimeout(() => {
                         const { countryList, stateList, cityList, supplierSelectList } = this.props;
 
-                        const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
-                        const CityObj = cityList && cityList.find(item => item.Value == Data.CityIdRef)
-                        const VendorObj = supplierSelectList && supplierSelectList.find(item => item.Value == Data.VendorId)
+                        const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
+                        const CityObj = cityList && cityList.find(item => item.Value === Data.CityIdRef)
+                        const VendorObj = supplierSelectList && supplierSelectList.find(item => item.Value === Data.VendorId)
 
                         this.setState({
                             isLoader: false,
                             IsActive: Data.IsActive,
-                            country: CountryObj && CountryObj != undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-                            state: StateObj && StateObj != undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-                            city: CityObj && CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-                            vendor: VendorObj && VendorObj != undefined ? { label: VendorObj.Text, value: VendorObj.Value } : [],
+                            country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
+                            state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
+                            city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            vendor: VendorObj && VendorObj !== undefined ? { label: VendorObj.Text, value: VendorObj.Value } : [],
                         })
                     }, 500)
                 }
@@ -92,7 +92,7 @@ class AddVBCPlant extends Component {
 
         if (label === 'vendors') {
             supplierSelectList && supplierSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -100,21 +100,21 @@ class AddVBCPlant extends Component {
 
         if (label === 'country') {
             countryList && countryList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'state') {
             stateList && stateList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'city') {
             cityList && cityList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -122,14 +122,12 @@ class AddVBCPlant extends Component {
 
     }
 
-
-
     /**
     * @method vendorHandler
     * @description Used to handle Vendor
     */
     vendorHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendor: newValue });
         } else {
             this.setState({ vendor: [] })
@@ -138,7 +136,7 @@ class AddVBCPlant extends Component {
 
     getAllCityData = () => {
         const { country } = this.state;
-        if (country && country.label != 'India') {
+        if (country && country.label !== 'India') {
             this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
         } else {
             this.props.fetchStateDataAPI(country.value, () => { })
@@ -150,7 +148,7 @@ class AddVBCPlant extends Component {
     * @description Used to handle country
     */
     countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ country: newValue, state: [], city: [], }, () => {
                 this.getAllCityData()
             });
@@ -165,7 +163,7 @@ class AddVBCPlant extends Component {
     * @description Used to handle state
     */
     stateHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ state: newValue, city: [], }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
@@ -182,7 +180,7 @@ class AddVBCPlant extends Component {
     * @description Used to handle City
     */
     cityHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ city: newValue });
         } else {
             this.setState({ city: [] });
@@ -219,7 +217,7 @@ class AddVBCPlant extends Component {
     */
     onSubmit = (values) => {
         const { city, vendor, PlantId } = this.state;
-        const { isEditFlag, ID } = this.props;
+        const { isEditFlag } = this.props;
 
         if (isEditFlag) {
             this.setState({ isSubmitted: true });
@@ -277,7 +275,7 @@ class AddVBCPlant extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag } = this.props;
         const { country } = this.state;
         return (
             <>
@@ -310,7 +308,7 @@ class AddVBCPlant extends Component {
                                             placeholder={'Select Vendor'}
                                             options={this.selectType('vendors')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.vendor == null || this.state.vendor.length == 0) ? [required] : []}
+                                            validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.vendorHandler}
                                             valueDescription={this.state.vendor}
@@ -421,13 +419,13 @@ class AddVBCPlant extends Component {
                                             placeholder={'Select Country'}
                                             options={this.selectType('country')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                                            validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.countryHandler}
                                             valueDescription={this.state.country}
                                         />
                                     </Col>
-                                    {(country.length == 0 || country.label == 'India') &&
+                                    {(country.length === 0 || country.label === 'India') &&
                                         <Col md="6">
                                             <Field
                                                 name="StateId"
@@ -437,7 +435,7 @@ class AddVBCPlant extends Component {
                                                 placeholder={'Select State'}
                                                 options={this.selectType('state')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.stateHandler}
                                                 valueDescription={this.state.state}
@@ -456,7 +454,7 @@ class AddVBCPlant extends Component {
                                             placeholder={'Select City'}
                                             options={this.selectType('city')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                            validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.cityHandler}
                                             valueDescription={this.state.city}

@@ -8,13 +8,11 @@ import {
     CREATE_PLANT_FAILURE,
     GET_PLANT_SUCCESS,
     GET_PLANT_UNIT_SUCCESS,
-    GET_PLANT_FAILURE
 } from '../../config/constants';
 import {
     apiErrors
 } from '../../helper/util';
 import { toastr } from 'react-redux-toastr'
-import { MESSAGES } from '../../config/message';
 
 const headers = {
     'Content-Type': 'application/json',
@@ -27,9 +25,6 @@ const headers = {
  */
 export function createPlantAPI(data, callback) {
     return (dispatch) => {
-        // dispatch({
-        //     type:  API_REQUEST,
-        // });
         const request = axios.post(API.createPlantAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
@@ -99,7 +94,7 @@ export function deletePlantAPI(Id, callback) {
 export function getPlantUnitAPI(plantId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (plantId != '') {
+        if (plantId !== '') {
             axios.get(`${API.getPlantAPI}/${plantId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {

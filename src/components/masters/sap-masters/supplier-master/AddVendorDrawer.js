@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
 import {
-    renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
+    renderText, renderEmailInputField, renderMultiSelectField,
     searchableSelect
 } from "../../../layout/FormInputs";
 import {
@@ -17,7 +17,6 @@ import {
 } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId, checkVendorPlantConfigurable } from "../../../../helper/auth";
 import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
@@ -94,7 +93,7 @@ class AddVendorDrawer extends Component {
             //Removed Vendor Type Id's
             let removedVendorTypeIds = DefaultVendorTypeIds.filter(x => !SelectedVendorTypeIds.includes(x));
 
-            if (removedVendorTypeIds.length == 0) {
+            if (removedVendorTypeIds.length === 0) {
                 this.setState({ selectedVendorType: e });
             } else {
                 toastr.warning("You cann't removed existed Vendor Type.");
@@ -112,7 +111,7 @@ class AddVendorDrawer extends Component {
     checkVendorSelection = () => {
         const { selectedVendorType } = this.state;
         let isContent = selectedVendorType && selectedVendorType.find(item => {
-            if (item.Text == 'VBC' || item.Text == 'BOP' || item.Text == 'RAW MATERIAL') {
+            if (item.Text === 'VBC' || item.Text === 'BOP' || item.Text === 'RAW MATERIAL') {
                 return true;
             }
             return false;
@@ -122,7 +121,7 @@ class AddVendorDrawer extends Component {
 
     getAllCityData = () => {
         const { country } = this.state;
-        if (country && country.label != 'India') {
+        if (country && country.label !== 'India') {
             this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
         } else {
             this.props.fetchStateDataAPI(country.value, () => { })
@@ -134,7 +133,7 @@ class AddVendorDrawer extends Component {
     * @description Used to handle country
     */
     countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ country: newValue, state: [], city: [] }, () => {
                 this.getAllCityData()
             });
@@ -148,7 +147,7 @@ class AddVendorDrawer extends Component {
     * @description Used to handle state
     */
     stateHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ state: newValue, city: [] }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
@@ -164,7 +163,7 @@ class AddVendorDrawer extends Component {
     * @description Used to handle city
     */
     cityHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ city: newValue });
         } else {
             this.setState({ city: [] });
@@ -191,35 +190,35 @@ class AddVendorDrawer extends Component {
         const temp = [];
         if (label === 'country') {
             countryList && countryList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'state') {
             stateList && stateList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'city') {
             cityList && cityList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'vendorType') {
             vendorTypeList && vendorTypeList.map((item, i) => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'vendorPlants') {
             vendorPlantSelectList && vendorPlantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
@@ -258,17 +257,17 @@ class AddVendorDrawer extends Component {
                     setTimeout(() => {
                         const { countryList, stateList, cityList } = this.props;
 
-                        const CountryObj = countryList && countryList.find(item => item.Value == Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => item.Value == Data.StateId)
-                        const CityObj = cityList && cityList.find(item => item.Value == Data.CityId)
+                        const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
+                        const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
 
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
                             selectedVendorType: tempArr,
-                            country: CountryObj && CountryObj != undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-                            state: StateObj && StateObj != undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-                            city: CityObj && CityObj != undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
+                            state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
+                            city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
                             existedVendorPlants: tempVendorPlant,
                             selectedVendorPlants: tempVendorPlant,
                         })
@@ -311,9 +310,8 @@ class AddVendorDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, country,
-            state, city, VendorId } = this.state;
-        const { reset, supplierData, vendorPlantSelectList } = this.props;
+        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId } = this.state;
+        const { supplierData, vendorPlantSelectList } = this.props;
 
         let vendorArray = [];
         selectedVendorType && selectedVendorType.map((item) => {
@@ -408,7 +406,7 @@ class AddVendorDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, } = this.props;
         const { country, isOpenVendorPlant } = this.state;
         return (
             <div>
@@ -437,7 +435,7 @@ class AddVendorDrawer extends Component {
                                             label="Vendor Type"
                                             name="VendorType"
                                             placeholder="--Select Vendor--"
-                                            selection={(this.state.selectedVendorType == null || this.state.selectedVendorType.length == 0) ? [] : this.state.selectedVendorType}
+                                            selection={(this.state.selectedVendorType == null || this.state.selectedVendorType.length === 0) ? [] : this.state.selectedVendorType}
                                             options={this.renderListing('vendorType')}
                                             selectionChanged={this.handleVendorType}
                                             optionValue={option => option.Value}
@@ -549,14 +547,14 @@ class AddVendorDrawer extends Component {
                                             placeholder={'Select Country'}
                                             options={this.renderListing('country')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                                            validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.countryHandler}
                                             valueDescription={this.state.country}
                                             disabled={this.state.isEditFlag ? true : false}
                                         />
                                     </Col>
-                                    {(country.length == 0 || country.label == 'India') &&
+                                    {(country.length === 0 || country.label === 'India') &&
                                         <Col md="6">
                                             <Field
                                                 name="StateId"
@@ -566,7 +564,7 @@ class AddVendorDrawer extends Component {
                                                 placeholder={'Select State'}
                                                 options={this.renderListing('state')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                                                validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.stateHandler}
                                                 valueDescription={this.state.state}
@@ -582,7 +580,7 @@ class AddVendorDrawer extends Component {
                                             placeholder={'Select city'}
                                             options={this.renderListing('city')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                                            validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.cityHandler}
                                             valueDescription={this.state.city}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import { Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import ZBCPlantListing from './ZBCPlantListing';
 import VBCPlantListing from './VBCPlantListing';
@@ -30,12 +30,12 @@ class PlantMaster extends Component {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == PLANT)
+                const accessData = Data && Data.find(el => el.PageName === PLANT)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -66,7 +66,6 @@ class PlantMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { } = this.state;
         return (
             <>
                 <Container fluid className="user-page p-0">

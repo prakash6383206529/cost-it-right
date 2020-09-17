@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
@@ -69,12 +69,12 @@ class VendorListing extends Component {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == VENDOR)
+                const accessData = Data && Data.find(el => el.PageName === VENDOR)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -106,7 +106,7 @@ class VendorListing extends Component {
             country: country,
         }
         this.props.getSupplierDataList(filterData, res => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -125,50 +125,36 @@ class VendorListing extends Component {
     */
     renderListing = (label) => {
         const { countryList, vendorTypeList, vendorSelectList } = this.props;
-        const { vendorList } = this.state;
+
         const temp = [];
         if (label === 'country') {
             countryList && countryList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'vendorType') {
             vendorTypeList && vendorTypeList.map((item, i) => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'vendorList') {
             vendorSelectList && vendorSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
     }
 
-
-    /**
-     * @method roleHandler
-     * @description Used to handle 
-     */
-    // roleHandler = (newValue, actionMeta) => {
-    //     this.setState({ role: newValue });
-    // };
-
     /**
     * @method editItemDetails
     * @description confirm edit item
     */
     editItemDetails = (Id) => {
-        let requestData = {
-            isEditFlag: true,
-            ID: Id,
-        }
-        //this.props.getDetail(requestData)
         this.setState({
             isOpenVendor: true,
             isEditFlag: true,
@@ -240,7 +226,7 @@ class VendorListing extends Component {
     * @description Used to handle vendor type
     */
     handleVendorType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorType: newValue, }, () => {
                 const { vendorType } = this.state;
                 this.props.getVendorsByVendorTypeID(vendorType.value, (res) => { })
@@ -257,7 +243,7 @@ class VendorListing extends Component {
     * @description Used to handle vendor name
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, }, () => {
                 const { vendorName } = this.state;
                 this.props.getVendorTypeByVendorSelectList(vendorName.value)
@@ -272,10 +258,8 @@ class VendorListing extends Component {
     * @description Used to handle country
     */
     countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ country: newValue, }, () => {
-                const { country } = this.state;
-            });
+        if (newValue && newValue !== '') {
+            this.setState({ country: newValue, });
         } else {
             this.setState({ country: [], })
         }
@@ -327,7 +311,7 @@ class VendorListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -386,7 +370,6 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
-        //this.props.formToggle()
         this.setState({ isOpenVendor: true })
     }
 
@@ -413,7 +396,7 @@ class VendorListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
+        const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
         const options = {
             clearSearch: true,
@@ -444,7 +427,7 @@ class VendorListing extends Component {
                                         placeholder={'Vendor Type'}
                                         options={this.renderListing('vendorType')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorType == null || this.state.vendorType.length == 0) ? [required] : []}
+                                        validate={(this.state.vendorType == null || this.state.vendorType.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleVendorType}
                                         valueDescription={this.state.vendorType}
@@ -460,29 +443,13 @@ class VendorListing extends Component {
                                         placeholder={'Vendor Name'}
                                         options={this.renderListing('vendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleVendorName}
                                         valueDescription={this.state.vendorName}
                                         disabled={this.state.isEditFlag ? true : false}
                                     />
                                 </div>
-                                {/* <div className="flex-fill">
-                                    <Field
-                                        name="CountryId"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Country'}
-                                        options={this.renderListing('country')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.countryHandler}
-                                        valueDescription={this.state.country}
-                                        disabled={this.state.isEditFlag ? true : false}
-                                    />
-                                </div> */}
 
                                 <div className="flex-fill">
                                     <button
@@ -537,7 +504,6 @@ class VendorListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="VendorType" dataAlign="center" dataSort={true}>Vendor Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="VendorName" dataAlign="center" dataSort={true}>Vendor Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="VendorCode" dataAlign="center" dataSort={true}>Vendor Code</TableHeaderColumn>
@@ -580,7 +546,6 @@ function mapStateToProps({ comman, supplier, auth, }) {
 
     return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList };
 }
-
 
 /**
 * @method connect
