@@ -61,7 +61,7 @@ class Login extends Component {
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();
-
+        //this.setState({ isRedirect: true })
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)

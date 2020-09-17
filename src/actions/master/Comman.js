@@ -868,7 +868,7 @@ export function fetchModelTypeAPI(modelTypeHeading, callback) {
  */
 export function getPlantBySupplier(supplierId, callback) {
     return (dispatch) => {
-        if (supplierId != '') {
+        if (supplierId !== '') {
             dispatch({ type: API_REQUEST });
             const request = axios.get(`${API.getPlantBySupplier}/${supplierId}`, headers);
             request.then((response) => {

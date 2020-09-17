@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isUserLoggedIn: false
+      isUserLoggedIn: false,
     };
   }
 
@@ -34,12 +34,14 @@ class App extends Component {
     reactLocalStorage.setObject("userDetail", {});
     reactLocalStorage.set('ModuleId', '');
     toastr.success(MESSAGES.LOGOUT_SUCCESS);
-    setTimeout(() => {
-      window.location.assign('/login');
-    }, 100)
+
+    //setTimeout(() => {
+    window.location.assign('/login');
+    //}, 100)
   }
 
   render() {
+
     return (
       <BrowserRouter browserHistory>
         <div>

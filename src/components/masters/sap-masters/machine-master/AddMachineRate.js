@@ -772,7 +772,7 @@ class AddMachineRate extends Component {
 
         return (
             <>
-                {(loading || isLoader) && <Loader />}
+                {/* {(loading || isLoader) && <Loader />} */}
                 <div>
                     <div className="login-container signup-form">
                         <div className="row">

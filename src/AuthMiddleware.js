@@ -14,7 +14,7 @@ export default function (ComposedComponent) {
         }
 
         UNSAFE_componentWillMount() {
-            if (this.props.authenticated == false) {
+            if (this.props.authenticated === false) {
                 this.setState({ redirectToLogin: true })
                 return false;
             }
@@ -42,7 +42,7 @@ export default function (ComposedComponent) {
     function mapStateToProps() {
         let isAuthenticated;
 
-        if (reactLocalStorage.getObject("isUserLoggedIn") == true) {
+        if (reactLocalStorage.getObject("isUserLoggedIn") === true) {
             isAuthenticated = true;
         } else {
             isAuthenticated = false;

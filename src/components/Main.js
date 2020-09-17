@@ -82,7 +82,18 @@ class Main extends Component {
   }
 
   render() {
-    const isLogin = reactLocalStorage.getObject("isUserLoggedIn");
+    let isLogin = false;
+    let checkLogin = reactLocalStorage.getObject("isUserLoggedIn");
+
+    if (typeof checkLogin == 'object') {
+      isLogin = false;
+    } if (checkLogin === true) {
+      isLogin = true;
+    } else {
+      isLogin = false;
+    }
+
+    console.log('isLogin: ', isLogin, typeof isLogin);
 
     return (
       <Suspense fallback={<Loader />}>
