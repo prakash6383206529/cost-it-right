@@ -269,7 +269,11 @@ a:hover {
   padding: 0;
   img{width: 16px;}
 }
-
+.edit_pencil_icon {
+  width: 12px;
+  height: 12px;
+  background: transparent url("../../assests/images/WhitePencil-Icon.svg") 0% 0% no-repeat padding-box;
+}
 .plus {
   width: 12px;
   height: 12px;

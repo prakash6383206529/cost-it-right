@@ -149,6 +149,25 @@ export function createMachine(data, callback) {
 }
 
 /**
+ * @method copyMachine
+ * @description Copy Machine
+ */
+export function copyMachine(MachineId, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.copyMachine}/${MachineId}`, headers);
+        request.then((response) => {
+            if (response.data.Result === true) {
+                dispatch({ type: CREATE_SUCCESS, });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: CREATE_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method getMachineDataList
  * @description GET DATALIST
  */
@@ -182,6 +201,36 @@ export function getMachineData(ID, callback) {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
             axios.get(`${API.getMachineData}/${ID}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_MACHINE_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_MACHINE_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method getMachineDetailsData
+ * @description Get Machine Details Data
+ */
+export function getMachineDetailsData(ID, callback) {
+    return (dispatch) => {
+        if (ID !== '') {
+            axios.get(`${API.getMachineDetailsData}/${ID}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -339,6 +388,7 @@ export function fileDeleteMachine(data, callback) {
         dispatch({ type: API_REQUEST });
         axios.delete(`${API.fileDeleteMachine}/${data.Id}/${data.DeletedBy}`, headers)
             .then((response) => {
+                dispatch({ type: CREATE_SUCCESS, });
                 callback(response);
             }).catch((error) => {
                 apiErrors(error);

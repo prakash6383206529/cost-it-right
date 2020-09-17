@@ -556,6 +556,7 @@ export const API = {
 
   //MACHINE & PROCESS
   createMachine: `${BASE_URL}/masters-machine/create-machine`,
+  copyMachine: `${BASE_URL}/masters-machine/copy-machine`,
   getMachineDataList: `${BASE_URL}/masters-machine/get-machine-list-by-filter`,
   deleteMachine: `${BASE_URL}/masters-machine/delete-machine`,
   getMachineData: `${BASE_URL}/masters-machine/get-machine`,
@@ -570,6 +571,7 @@ export const API = {
 
   createMachineDetails: `${BASE_URL}/masters-machine/create-machine-details`,
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
+  getMachineDetailsData: `${BASE_URL}/masters-machine/get-machine-details`,
 
   createProcess: `${BASE_URL}/masters-machine/create-process`,
   getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,

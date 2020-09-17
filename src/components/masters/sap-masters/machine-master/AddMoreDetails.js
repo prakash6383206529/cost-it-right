@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, number, trimTwoDecimalPlace } from "../../../../helper/validation";
+import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100 } from "../../../../helper/validation";
 import {
-    renderText, renderNumberInputField, searchableSelect,
+    renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
 } from "../../../layout/FormInputs";
 import {
     getTechnologySelectList, getPlantSelectList, getPlantBySupplier, getUOMSelectList,
@@ -12,8 +12,8 @@ import {
 } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import {
-    createMachineDetails, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList,
-    getFuelUnitCost, getLabourCost, getPowerCostUnit,
+    createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
+    getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine,
 } from '../../../../actions/master/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../../../../actions/master/Labour';
 import { getFuelComboData, } from '../../../../actions/master/Fuel';
@@ -22,6 +22,8 @@ import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId, userDetails } from "../../../../helper/auth";
 import Switch from "react-switch";
+import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -32,6 +34,8 @@ import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../../common/NoContentFound';
 import { calculatePercentage } from '../../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
+import moment from 'moment';
+import { Loader } from '../../../common/Loader';
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
@@ -42,7 +46,6 @@ class AddMoreDetails extends Component {
             MachineId: '',
             isEditFlag: false,
             IsPurchased: false,
-            isMoreDetailsComplete: false,
 
             selectedTechnology: [],
             selectedPlants: [],
@@ -64,6 +67,7 @@ class AddMoreDetails extends Component {
 
             IsUsesFuel: false,
             IsUsesSolarPower: false,
+            fuelType: [],
 
             labourType: [],
             labourGrid: [],
@@ -77,6 +81,8 @@ class AddMoreDetails extends Component {
             processGridEditIndex: '',
             isEditIndex: false,
 
+            remarks: '',
+            files: [],
         }
     }
 
@@ -93,7 +99,6 @@ class AddMoreDetails extends Component {
      * @description Called after rendering the component
      */
     componentDidMount() {
-        const { data } = this.props;
         this.props.getTechnologySelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
         this.props.getPlantSelectList(() => { })
@@ -104,20 +109,18 @@ class AddMoreDetails extends Component {
         this.props.getDepreciationTypeSelectList(() => { })
         this.props.getLabourTypeByMachineTypeSelectList('', () => { })
         this.props.getFuelComboData(() => { })
-
-        if (data && data !== undefined) {
-
-        }
+        this.getDetails()
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.data !== this.props.data) {
-            const { fieldsObj, machineType, selectedPlants } = nextProps.data;
+            const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
             this.props.change('MachineName', fieldsObj.MachineName)
             this.props.change('MachineNumber', fieldsObj.MachineNumber)
             this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
             this.setState({
                 selectedPlants: selectedPlants,
+                selectedTechnology: selectedTechnology,
                 machineType: machineType,
             }, () => {
                 if (machineType && machineType.value) {
@@ -137,14 +140,6 @@ class AddMoreDetails extends Component {
     }
 
     /**
-    * @method handleTechnology
-    * @description Used handle technology
-    */
-    handleTechnology = (e) => {
-        this.setState({ selectedTechnology: e })
-    }
-
-    /**
     * @method handleMessageChange
     * @description used remarks handler
     */
@@ -158,64 +153,82 @@ class AddMoreDetails extends Component {
     * @method getDetails
     * @description Used to get Details
     */
-    getDetails = (data) => {
-        // if (data && data.isEditFlag) {
-        //     this.setState({
-        //         isEditFlag: false,
-        //         isLoader: true,
-        //         isShowForm: true,
-        //         BOPID: data.Id,
-        //     })
-        //     $('html, body').animate({ scrollTop: 0 }, 'slow');
-        //     this.props.getBOPDomesticById(data.Id, res => {
-        //         if (res && res.data && res.data.Result) {
+    getDetails = () => {
+        const { editDetails } = this.props;
+        if (editDetails && editDetails.isEditFlag) {
+            this.setState({
+                isEditFlag: false,
+                isLoader: true,
+                MachineID: editDetails.Id,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getMachineDetailsData(editDetails.Id, res => {
+                if (res && res.data && res.data.Result) {
 
-        //             const Data = res.data.Data;
+                    const Data = res.data.Data;
 
-        //             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
-        //             this.props.getPlantBySupplier(Data.Vendor, () => { })
+                    this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId, () => { })
 
-        //             setTimeout(() => {
-        //                 const { gradeSelectListByRMID, rmSpecification, cityList, bopCategorySelectList,
-        //                     filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList,
-        //                     vendorListByVendorType } = this.props;
+                    setTimeout(() => {
+                        const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
+                            fuelComboSelectList, } = this.props;
 
-        //                 const categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value == Data.Category)
+                        let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
+                        const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
+                        const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === Data.MachineTypeId)
+                        const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => item.Value == Data.WorkingShift)
+                        const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
+                        const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuleId)
 
-        //                 let plantArray = [];
-        //                 Data && Data.Plant.map((item) => {
-        //                     plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-        //                     return plantArray;
-        //                 })
+                        let LabourArray = Data && Data.MachineLabourRates.map(el => {
+                            return {
+                                labourTypeName: el.LabourTypeName,
+                                labourTypeId: el.LabourTypeId,
+                                LabourCostPerAnnum: el.LabourCostPerAnnum,
+                                NumberOfLabour: el.NumberOfLabour,
+                                LabourCost: el.LabourCost,
+                            }
+                        })
 
-        //                 const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value == Data.Vendor)
+                        let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
+                            return {
+                                processName: el.ProcessName,
+                                ProcessId: el.ProcessId,
+                                UnitOfMeasurement: el.UnitOfMeasurement,
+                                UnitOfMeasurementId: el.UnitOfMeasurementId,
+                                OutputPerHours: el.OutputPerHours,
+                                OutputPerYear: el.OutputPerYear,
+                                MachineRate: el.MachineRate,
+                            }
+                        })
 
-        //                 let vendorPlantArray = [];
-        //                 Data && Data.VendorPlant.map((item) => {
-        //                     vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
-        //                     return vendorPlantArray;
-        //                 })
-
-        //                 const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
-        //                 const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
-
-        //                 let tempArr = [];
-        //                 let tempFiles = [];
-
-        //                 this.setState({
-        //                     isEditFlag: true,
-        //                     isLoader: false,
-        //                     isShowForm: true,
-        //                     BOPCategory: { label: categoryObj.Text, value: categoryObj.Value },
-        //                     selectedPlants: plantArray,
-        //                     remarks: Data.Remark,
-        //                 })
-        //             }, 200)
-        //         }
-        //     })
-        // } else {
-        //     this.props.getBOPDomesticById('', res => { })
-        // }
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            IsPurchased: Data.OwnershipIsPurchased,
+                            selectedTechnology: technologyArray,
+                            selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+                            machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+                            shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
+                            depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
+                            DateOfPurchase: moment(Data.DateOfPurchase)._d,
+                            IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
+                            IsAnnualConsumableFixed: Data.IsConsumableFixed,
+                            IsInsuranceFixed: Data.IsInsuranceFixed,
+                            IsUsesFuel: Data.IsUsesFuel,
+                            IsUsesSolarPower: Data.IsUsesSolarPower,
+                            fuelType: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
+                            labourGrid: LabourArray,
+                            processGrid: MachineProcessArray,
+                            remarks: Data.Remark,
+                            files: Data.Attachements,
+                        })
+                    }, 500)
+                }
+            })
+        } else {
+            this.props.getMachineDetailsData('', res => { })
+        }
     }
 
     /**
@@ -591,7 +604,7 @@ class AddMoreDetails extends Component {
         const { fieldsObj } = this.props;
         const { shiftType } = this.state;
 
-        const NumberOfShift = shiftType && shiftType !== undefined ? checkForNull(shiftType.value) : 0;
+        const NumberOfShift = shiftType.hasOwnProperty('value') ? checkForNull(shiftType.value) : 0;
 
         const WorkingHoursPerShift = fieldsObj && fieldsObj.WorkingHoursPerShift !== undefined ? checkForNull(fieldsObj.WorkingHoursPerShift) : 0;
         const NumberOfWorkingDaysPerYear = fieldsObj && fieldsObj.NumberOfWorkingDaysPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingDaysPerYear) : 0;
@@ -599,6 +612,8 @@ class AddMoreDetails extends Component {
 
         this.setState({ WorkingHrPrYr: NumberOfShift * WorkingHoursPerShift * NumberOfWorkingDaysPerYear })
         const workingHrPerYr = WorkingHoursPerShift * NumberOfShift * NumberOfWorkingDaysPerYear * calculatePercentage(EfficiencyPercentage)
+        console.log('WorkingHoursPerShift: ', workingHrPerYr, WorkingHoursPerShift, NumberOfShift, NumberOfWorkingDaysPerYear, calculatePercentage(EfficiencyPercentage));
+
         this.props.change('NumberOfWorkingHoursPerYear', Math.round(workingHrPerYr))
     }
 
@@ -696,11 +711,11 @@ class AddMoreDetails extends Component {
 
             this.props.change('TotalFuelCostPerYear', trimTwoDecimalPlace(FuelCostPerUnit * ConsumptionPerYear))
         } else {
-            this.props.change('FuelCostPerUnit', 0)
-            this.props.change('ConsumptionPerYear', 0)
-            this.props.change('TotalFuelCostPerYear', 0)
 
             if (IsUsesSolarPower) {
+                this.props.change('FuelCostPerUnit', 0)
+                this.props.change('ConsumptionPerYear', 0)
+                this.props.change('TotalFuelCostPerYear', 0)
 
                 const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
                 const UtilizationFactorPercentage = fieldsObj && fieldsObj.UtilizationFactorPercentage !== undefined ? checkForNull(fieldsObj.UtilizationFactorPercentage) : 0;
@@ -1046,8 +1061,79 @@ class AddMoreDetails extends Component {
         this.props.change('NetLandedCost', NetLandedCost)
     }
 
-    formToggle = () => {
-        this.setState({ isShowForm: !this.state.isShowForm })
+
+    // specify upload params and url for your files
+    getUploadParams = ({ file, meta }) => {
+        return { url: 'https://httpbin.org/post', }
+
+    }
+
+    // called every time a file's `status` changes
+    handleChangeStatus = ({ meta, file }, status) => {
+        const { files, } = this.state;
+
+        if (status === 'removed') {
+            const removedFileName = file.name;
+            let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
+            this.setState({ files: tempArr })
+        }
+
+        if (status === 'done') {
+            let data = new FormData()
+            data.append('file', file)
+            this.props.fileUploadMachine(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state;
+                files.push(Data)
+                this.setState({ files: files })
+            })
+        }
+
+        if (status === 'rejected_file_type') {
+            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        }
+    }
+
+    renderImages = () => {
+        this.state.files && this.state.files.map(f => {
+            const withOutTild = f.FileURL.replace('~', '')
+            const fileURL = `${FILE_URL}${withOutTild}`;
+            return (
+                <div className={'attachment-wrapper images'}>
+                    <img src={fileURL} alt={''} />
+                    <button
+                        type="button"
+                        onClick={() => this.deleteFile(f.FileId)}>X</button>
+                </div>
+            )
+        })
+    }
+
+    deleteFile = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            this.props.fileDeleteMachine(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = this.state.files.filter(item => item.FileId !== FileId)
+                this.setState({ files: tempArr })
+            })
+        }
+        if (FileId == null) {
+            let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+            this.setState({ files: tempArr })
+        }
+    }
+
+    Preview = ({ meta }) => {
+        const { name, percent, status } = meta
+        return (
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {/* {Math.round(percent)}% */}
+            </span>
+        )
     }
 
     /**
@@ -1059,9 +1145,8 @@ class AddMoreDetails extends Component {
         reset();
         this.setState({
             remarks: '',
-            isShowForm: false,
         })
-        this.props.hideMoreDetailsForm(this.state.isMoreDetailsComplete, this.state.processGrid)
+        this.props.hideMoreDetailsForm()
         //this.props.getRawMaterialDetailsAPI('', false, res => { })
     }
 
@@ -1070,20 +1155,104 @@ class AddMoreDetails extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { isEditFlag, selectedTechnology, selectedPlants, machineType, files, effectiveDate, receivedFiles,
+        const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
             IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
             labourGrid, processGrid } = this.state;
+        const { data, editDetails } = this.props;
 
         const userDetail = userDetails()
 
         let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
 
-        if (isEditFlag) {
+        let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
-            let requestData = {
+        let requestData = {
+            MachineId: MachineID,
+            Manufacture: values.Manufacture,
+            YearOfManufacturing: values.YearOfManufacturing,
+            MachineCost: values.MachineCost,
+            AccessoriesCost: values.AccessoriesCost,
+            InstallationCharges: values.InstallationCharges,
+            TotalCost: values.TotalCost,
+            MachineIdRef: "",
+            OwnershipIsPurchased: this.state.IsPurchased,
+            DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
+            DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
+            DepreciationRatePercentage: values.DepreciationRatePercentage,
+            LifeOfAssetPerYear: values.LifeOfAssetPerYear,
+            CastOfScrap: values.CastOfScrap,
+            DateOfPurchase: DateOfPurchase,
+            DepreciationAmount: values.DepreciationAmount,
+            WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
+            WorkingHoursPerShift: values.WorkingHoursPerShift,
+            NumberOfWorkingDaysPerYear: values.NumberOfWorkingDaysPerYear,
+            EfficiencyPercentage: values.EfficiencyPercentage,
+            NumberOfWorkingHoursPerYear: values.NumberOfWorkingHoursPerYear,
+            LoanPercentage: values.LoanPercentage,
+            LoanValue: values.LoanValue,
+            EquityPercentage: values.EquityPercentage,
+            EquityValue: values.EquityValue,
+            RateOfInterestPercentage: values.RateOfInterestPercentage,
+            RateOfInterestValue: values.RateOfInterestValue,
+            IsMaintanceFixed: IsAnnualMaintenanceFixed,
+            AnnualMaintancePercentage: values.AnnualMaintancePercentage,
+            AnnualMaintanceAmount: values.AnnualMaintanceAmount,
+            IsConsumableFixed: IsAnnualConsumableFixed,
+            AnnualConsumablePercentage: values.AnnualConsumablePercentage,
+            AnnualConsumableAmount: values.AnnualConsumableAmount,
+            IsInsuranceFixed: IsInsuranceFixed,
+            AnnualInsurancePercentage: values.AnnualInsurancePercentage,
+            AnnualInsuranceAmount: values.AnnualInsuranceAmount,
+            BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
+            MachineFloorAreaPerSquareFeet: values.MachineFloorAreaPerSquareFeet,
+            AnnualAreaCost: values.AnnualAreaCost,
+            OtherYearlyCost: values.OtherYearlyCost,
+            TotalMachineCostPerAnnum: values.TotalMachineCostPerAnnum,
+            IsUsesFuel: IsUsesFuel,
+            PowerId: '',
+            UtilizationFactorPercentage: values.UtilizationFactorPercentage,
+            PowerCostPerUnit: values.PowerCostPerUnit,
+            PowerRatingPerKW: values.PowerRatingPerKW,
+            TotalPowerCostPerYear: values.TotalPowerCostPerYear,
+            IsUsesSolarPower: IsUsesSolar,
+            FuleId: fuelType ? fuelType.value : '',
+            FuelCostPerUnit: values.FuelCostPerUnit,
+            ConsumptionPerYear: values.ConsumptionPerYear,
+            TotalFuelCostPerYear: values.TotalFuelCostPerYear,
+            MachineLabourRates: labourGrid,
+            TotalLabourCostPerYear: values.TotalLabourCostPerYear,
+            IsVendor: false,
+            IsDetailedEntry: true,
+            VendorId: userDetail.ZBCSupplierInfo.VendorId,
+            MachineNumber: values.MachineNumber,
+            MachineName: values.MachineName,
+            MachineTypeId: machineType ? machineType.value : '',
+            TonnageCapacity: values.TonnageCapacity,
+            Description: data.fieldsObj.Description,
+            IsActive: true,
+            Remark: remarks,
+            LoggedInUserId: loggedInUserId(),
+            MachineProcessRates: processGrid,
+            Technology: technologyArray,
+            Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+            VendorPlant: [],
+            Attachements: updatedFiles,
+        }
 
-            }
+        if (editDetails.isIncompleteMachine) {
 
+            // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+            let MachineData = { ...requestData, MachineId: editDetails.Id }
+            this.props.updateMachineDetails(MachineData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+                    this.cancel();
+                }
+            })
+
+        } else if (isEditFlag) {
+
+            // EXECUTED WHEN:- ADD MACHINE DONE AND EDIT MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
             this.props.updateMachineDetails(requestData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
@@ -1093,6 +1262,7 @@ class AddMoreDetails extends Component {
 
         } else {
 
+            // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
             const formData = {
                 Manufacture: values.Manufacture,
                 YearOfManufacturing: values.YearOfManufacturing,
@@ -1103,10 +1273,11 @@ class AddMoreDetails extends Component {
                 MachineIdRef: '',
                 OwnershipIsPurchased: this.state.IsPurchased,
                 DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
+                DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
                 DepreciationRatePercentage: values.DepreciationRatePercentage,
                 LifeOfAssetPerYear: values.LifeOfAssetPerYear,
                 CastOfScrap: values.CastOfScrap,
-                DateOfPurchase: effectiveDate,
+                DateOfPurchase: DateOfPurchase,
                 DepreciationAmount: values.DepreciationAmount,
                 WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
                 WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -1142,7 +1313,7 @@ class AddMoreDetails extends Component {
                 IsUsesSolarPower: IsUsesSolar,
                 FuleId: fuelType ? fuelType.value : '',
                 FuelCostPerUnit: values.FuelCostPerUnit,
-                ConsumptionPerYear: values.FuelCostPerUnit,
+                ConsumptionPerYear: values.ConsumptionPerYear,
                 TotalFuelCostPerYear: values.TotalFuelCostPerYear,
                 MachineLabourRates: labourGrid,
                 TotalLabourCostPerYear: values.TotalLabourCostPerYear,
@@ -1153,21 +1324,21 @@ class AddMoreDetails extends Component {
                 MachineName: values.MachineName,
                 MachineTypeId: machineType ? machineType.value : '',
                 TonnageCapacity: values.TonnageCapacity,
-                Description: values.Description,
+                Description: data.fieldsObj.Description,
                 IsActive: true,
-                Remark: '',
+                Remark: remarks,
                 LoggedInUserId: loggedInUserId(),
                 MachineProcessRates: processGrid,
                 Technology: technologyArray,
                 Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
                 VendorPlant: [],
-                Attachements: []
+                Attachements: files
             }
 
             this.props.createMachineDetails(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-                    this.setState({ isMoreDetailsComplete: true }, () => this.cancel())
+                    this.cancel()
                 }
             });
         }
@@ -1178,11 +1349,12 @@ class AddMoreDetails extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, } = this.props;
-        const { isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
+        const { handleSubmit, loading } = this.props;
+        const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
 
         return (
             <>
+                {(loading || isLoader) && <Loader />}
                 <div>
                     <div className="login-container signup-form">
                         <div className="row">
@@ -1286,10 +1458,10 @@ class AddMoreDetails extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.machineTypeToggler}
                                                         className={'plus-icon-square mr5 right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -1506,7 +1678,7 @@ class AddMoreDetails extends Component {
                                                     required={true}
                                                     handleChangeDescription={this.handleShiftType}
                                                     valueDescription={this.state.shiftType}
-                                                    disabled={isEditFlag ? true : false}
+                                                    disabled={false}
                                                 />
                                             </Col>
                                             <Col md="3">
@@ -1541,7 +1713,7 @@ class AddMoreDetails extends Component {
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                                     <div className="fullinput-icon">
                                                         <Field
-                                                            label={`Efficiency (%)`}
+                                                            label={`Availability (%)`}
                                                             name={"EfficiencyPercentage"}
                                                             type="text"
                                                             placeholder={'Enter'}
@@ -1594,7 +1766,7 @@ class AddMoreDetails extends Component {
                                                     required={true}
                                                     handleChangeDescription={this.handleDereciationType}
                                                     valueDescription={this.state.depreciationType}
-                                                    disabled={isEditFlag ? true : false}
+                                                    disabled={false}
                                                 />
                                             </Col>
                                             <Col md="3">
@@ -1661,7 +1833,7 @@ class AddMoreDetails extends Component {
                                                             autoComplete={'off'}
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={isEditFlag ? true : false}
+                                                            disabled={false}
                                                         />
                                                     </div>
                                                 </div>
@@ -1696,7 +1868,7 @@ class AddMoreDetails extends Component {
                                                         onChange={this.onPressAnnualMaintenance}
                                                         checked={this.state.IsAnnualMaintenanceFixed}
                                                         id="normal-switch"
-                                                        disabled={isEditFlag ? true : false}
+                                                        disabled={false}
                                                     />
                                                     <div className={'right-title'}>%</div>
                                                 </label>
@@ -1738,7 +1910,7 @@ class AddMoreDetails extends Component {
                                                         onChange={this.onPressAnnualConsumable}
                                                         checked={this.state.IsAnnualConsumableFixed}
                                                         id="normal-switch"
-                                                        disabled={isEditFlag ? true : false}
+                                                        disabled={false}
                                                     />
                                                     <div className={'right-title'}>%</div>
                                                 </label>
@@ -1781,7 +1953,7 @@ class AddMoreDetails extends Component {
                                                         onChange={this.onPressInsurance}
                                                         checked={this.state.IsInsuranceFixed}
                                                         id="normal-switch"
-                                                        disabled={isEditFlag ? true : false}
+                                                        disabled={false}
                                                     />
                                                     <div className={'right-title'}>%</div>
                                                 </label>
@@ -1838,7 +2010,7 @@ class AddMoreDetails extends Component {
                                                     //validate={[required]}
                                                     component={renderNumberInputField}
                                                     //required={true}
-                                                    disabled={false}
+                                                    disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
                                                 />
@@ -1993,7 +2165,7 @@ class AddMoreDetails extends Component {
                                                             //validate={[required]}
                                                             component={renderNumberInputField}
                                                             //required={true}
-                                                            disabled={false}
+                                                            disabled={isEditFlag ? true : false}
                                                             className=" "
                                                             customClassName="withBorder"
                                                         />
@@ -2057,8 +2229,8 @@ class AddMoreDetails extends Component {
                                                     placeholder={'Select Labour'}
                                                     options={this.renderListing('labourList')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.labourType == null || this.state.labourType.length === 0) ? [required] : []}
-                                                    required={true}
+                                                    //validate={(this.state.labourType == null || this.state.labourType.length === 0) ? [required] : []}
+                                                    //required={true}
                                                     handleChangeDescription={this.labourHandler}
                                                     valueDescription={this.state.labourType}
                                                 />
@@ -2201,13 +2373,13 @@ class AddMoreDetails extends Component {
                                                             //required={true}
                                                             handleChangeDescription={this.handleProcessName}
                                                             valueDescription={this.state.processName}
-                                                            disabled={isEditFlag ? true : false}
+                                                            disabled={false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {!isEditFlag && <div
                                                         onClick={this.processToggler}
                                                         className={'plus-icon-square mr5 right'}>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </Col>
                                             <Col md="2">
@@ -2223,7 +2395,7 @@ class AddMoreDetails extends Component {
                                                     //required={true}
                                                     handleChangeDescription={this.handleUOM}
                                                     valueDescription={this.state.UOM}
-                                                    disabled={isEditFlag ? true : false}
+                                                    disabled={false}
                                                 />
                                             </Col>
                                             <Col md="1">
@@ -2333,6 +2505,73 @@ class AddMoreDetails extends Component {
 
                                         </Row>
 
+                                        <Row>
+                                            <Col md="12" className="filter-block">
+                                                <div className=" flex-fills mb-2">
+                                                    <h5>{'Remarks & Attachment'}</h5>
+                                                </div>
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={'Remarks'}
+                                                    name={`Remark`}
+                                                    placeholder="Type here..."
+                                                    value={this.state.remarks}
+                                                    className=""
+                                                    customClassName=" textAreaWithBorder"
+                                                    onChange={this.handleMessageChange}
+                                                    validate={[required, maxLength100]}
+                                                    required={true}
+                                                    component={renderTextAreaField}
+                                                    maxLength="100"
+                                                    rows="6"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <label>Upload Files (upload up to 3 files)</label>
+                                                {this.state.files.length >= 3 ? '' :
+                                                    <Dropzone
+                                                        getUploadParams={this.getUploadParams}
+                                                        onChangeStatus={this.handleChangeStatus}
+                                                        PreviewComponent={this.Preview}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                                        initialFiles={this.state.initialFiles}
+                                                        maxFiles={3}
+                                                        maxSizeBytes={2000000}
+                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                                                        styles={{
+                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                                                        }}
+                                                        classNames="draper-drop"
+                                                    />}
+                                            </Col>
+                                            <Col md="3">
+                                                <div className={'attachment-wrapper'}>
+                                                    {
+                                                        this.state.files && this.state.files.map(f => {
+                                                            const withOutTild = f.FileURL.replace('~', '')
+                                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                                            return (
+                                                                <div className={'attachment images'}>
+                                                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
+                                                                    </a> */}
+                                                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                                                        <img src={fileURL} height={50} width={100} />
+                                                                    </div> */}
+
+                                                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../assests/images/red-cross.png')}></img>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
+                                            </Col>
+                                        </Row>
+
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
                                             <div className="col-sm-12 text-right bluefooter-butn">
                                                 <button
@@ -2403,29 +2642,64 @@ function mapStateToProps(state) {
 
     const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
         ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
-    const { machineTypeSelectList, processSelectList } = machine;
+    const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
     const { labourTypeByMachineTypeSelectList } = labour;
     const { vendorListByVendorType } = material;
     const { fuelComboSelectList } = fuel;
 
     let initialValues = {};
-    // if (bopData && bopData != undefined) {
-    //     initialValues = {
-    //         BoughtOutPartNumber: bopData.BoughtOutPartNumber,
-    //         BoughtOutPartName: bopData.BoughtOutPartName,
-    //         Specification: bopData.Specification,
-    //         Source: bopData.Source,
-    //         BasicRate: bopData.BasicRatePerUOM,
-    //         NumberOfPieces: bopData.NumberOfPieces,
-    //         NetLandedCost: bopData.NetLandedCost,
-    //         Remark: bopData.Remark,
-    //     }
-    // }
+    if (machineData && machineData !== undefined) {
+        initialValues = {
+            MachineNumber: machineData.MachineNumber,
+            MachineName: machineData.MachineName,
+            TonnageCapacity: machineData.TonnageCapacity,
+            Manufacture: machineData.Manufacture,
+            YearOfManufacturing: machineData.YearOfManufacturing,
+            MachineCost: machineData.MachineCost,
+            AccessoriesCost: machineData.AccessoriesCost,
+            InstallationCharges: machineData.InstallationCharges,
+            LabourCostPerAnnum: machineData.LabourCostPerAnnum,
+            TotalCost: machineData.TotalCost,
+            LoanPercentage: machineData.LoanPercentage,
+            LoanValue: machineData.LoanValue,
+            EquityPercentage: machineData.EquityPercentage,
+            EquityValue: machineData.EquityValue,
+            RateOfInterestPercentage: machineData.RateOfInterestPercentage,
+            RateOfInterestValue: machineData.RateOfInterestValue,
+            WorkingHoursPerShift: machineData.WorkingHoursPerShift,
+            NumberOfWorkingDaysPerYear: machineData.NumberOfWorkingDaysPerYear,
+            EfficiencyPercentage: machineData.EfficiencyPercentage,
+            NumberOfWorkingHoursPerYear: machineData.NumberOfWorkingHoursPerYear,
+            DepreciationRatePercentage: machineData.DepreciationRatePercentage,
+            LifeOfAssetPerYear: machineData.LifeOfAssetPerYear,
+            CastOfScrap: machineData.CastOfScrap,
+            DepreciationAmount: machineData.DepreciationAmount,
+            AnnualMaintancePercentage: machineData.AnnualMaintancePercentage,
+            AnnualMaintanceAmount: machineData.AnnualMaintanceAmount,
+            AnnualConsumablePercentage: machineData.AnnualConsumablePercentage,
+            AnnualConsumableAmount: machineData.AnnualConsumableAmount,
+            AnnualInsurancePercentage: machineData.AnnualInsurancePercentage,
+            AnnualInsuranceAmount: machineData.AnnualInsuranceAmount,
+            BuildingCostPerSquareFeet: machineData.BuildingCostPerSquareFeet,
+            MachineFloorAreaPerSquareFeet: machineData.MachineFloorAreaPerSquareFeet,
+            AnnualAreaCost: machineData.AnnualAreaCost,
+            OtherYearlyCost: machineData.OtherYearlyCost,
+            TotalMachineCostPerAnnum: machineData.TotalMachineCostPerAnnum,
+            UtilizationFactorPercentage: machineData.UtilizationFactorPercentage,
+            PowerRatingPerKW: machineData.PowerRatingPerKW,
+            PowerCostPerUnit: machineData.PowerCostPerUnit,
+            TotalPowerCostPerYear: machineData.TotalPowerCostPerYear,
+            FuelCostPerUnit: machineData.FuelCostPerUnit,
+            ConsumptionPerYear: machineData.ConsumptionPerYear,
+            TotalFuelCostPerYear: machineData.TotalFuelCostPerYear,
+            Remark: machineData.Remark,
+        }
+    }
 
     return {
         vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
         machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-        labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues,
+        labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading,
     }
 
 }
@@ -2453,6 +2727,9 @@ export default connect(mapStateToProps, {
     getPowerCostUnit,
     createMachineDetails,
     updateMachineDetails,
+    getMachineDetailsData,
+    fileUploadMachine,
+    fileDeleteMachine,
 })(reduxForm({
     form: 'AddMoreDetails',
     enableReinitialize: true,

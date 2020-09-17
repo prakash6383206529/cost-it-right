@@ -346,7 +346,7 @@ class SideBar extends Component {
                 state: { ModuleId: el.ModuleId, PageName: 'Audit', PageURL: '/audit' }
               }}
             >
-              <img className="" src={require('../../assests/images/men.svg')} alt='men' />
+              <img className="" src={require('../../assests/images/Audit.svg')} alt='men' />
               <span>{el.ModuleName}</span>
             </Link>
           )

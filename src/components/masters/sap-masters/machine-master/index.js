@@ -15,8 +15,6 @@ class MachineMaster extends Component {
             isMachineRateForm: false,
             isAddMoreDetails: false,
             isProcessForm: false,
-            isMoreDetailsComplete: false,
-            processGrid: [],
             data: {},
             editDetails: {},
         }
@@ -42,6 +40,7 @@ class MachineMaster extends Component {
         this.setState({
             isMachineRateForm: true,
             isAddMoreDetails: false,
+            editDetails: { isEditFlag: false }
         })
     }
 
@@ -77,10 +76,11 @@ class MachineMaster extends Component {
     * @method displayMoreDetailsForm
     * @description DISPLAY MORE DETAILS FORM
     */
-    displayMoreDetailsForm = () => {
+    displayMoreDetailsForm = (data = {}) => {
         this.setState({
             isAddMoreDetails: true,
             isMachineRateForm: false,
+            editDetails: data,
         })
     }
 
@@ -88,12 +88,12 @@ class MachineMaster extends Component {
     * @method hideMoreDetailsForm
     * @description HIDE MORE DETAILS FORM
     */
-    hideMoreDetailsForm = (isMoreDetailsComplete, processGrid) => {
+    hideMoreDetailsForm = () => {
         this.setState({
             isAddMoreDetails: false,
-            isMachineRateForm: true,
-            isMoreDetailsComplete: isMoreDetailsComplete,
-            processGrid: processGrid,
+            isMachineRateForm: false,
+            data: {},
+            editDetails: {},
         })
     }
 
@@ -102,13 +102,11 @@ class MachineMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isMachineRateForm, isAddMoreDetails, isMoreDetailsComplete, processGrid } = this.state;
+        const { isMachineRateForm, isAddMoreDetails, } = this.state;
 
         if (isMachineRateForm === true) {
             return <AddMachineRate
                 editDetails={this.state.editDetails}
-                isMoreDetailsComplete={isMoreDetailsComplete}
-                moreDetailsProcessGrid={processGrid}
                 data={this.state.data}
                 setData={this.setData}
                 hideForm={this.hideForm}
@@ -118,6 +116,7 @@ class MachineMaster extends Component {
 
         if (isAddMoreDetails === true) {
             return <AddMoreDetails
+                editDetails={this.state.editDetails}
                 data={this.state.data}
                 hideMoreDetailsForm={this.hideMoreDetailsForm}
             />

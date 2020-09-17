@@ -12,7 +12,7 @@ import {
 } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import {
-    createMachine, updateMachine, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
+    createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
     checkAndGetMachineNumber, getMachineData,
 } from '../../../../actions/master/MachineMaster';
 import { toastr } from 'react-redux-toastr';
@@ -29,6 +29,7 @@ import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../../common/NoContentFound';
 import { reactLocalStorage } from "reactjs-localstorage";
+import { Loader } from '../../../common/Loader';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -40,6 +41,8 @@ class AddMachineRate extends Component {
             isEditFlag: false,
             isFormHide: false,
             IsVendor: false,
+            IsCopied: false,
+            IsDetailedEntry: false,
 
             selectedTechnology: [],
             vendorName: [],
@@ -80,7 +83,7 @@ class AddMachineRate extends Component {
      * @description Called after rendering the component
      */
     componentDidMount() {
-        const { data } = this.props;
+        const { data, editDetails } = this.props;
 
         this.props.getTechnologySelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
@@ -89,7 +92,7 @@ class AddMachineRate extends Component {
         this.props.getUOMSelectList(() => { })
         this.props.getProcessesSelectList(() => { })
 
-        if (this.state.isConfigurableMachineNumber) {
+        if (this.state.isConfigurableMachineNumber && editDetails && editDetails.isEditFlag === false) {
             this.props.checkAndGetMachineNumber('', res => {
                 let Data = res.data.DynamicData;
                 this.props.change('MachineNumber', Data.MachineNumber)
@@ -169,7 +172,7 @@ class AddMachineRate extends Component {
                             return {
                                 processName: el.ProcessName,
                                 ProcessId: el.ProcessId,
-                                UOM: el.UnitOfMeasurement,
+                                UnitOfMeasurement: el.UnitOfMeasurement,
                                 UnitOfMeasurementId: el.UnitOfMeasurementId,
                                 MachineRate: el.MachineRate,
                             }
@@ -185,6 +188,8 @@ class AddMachineRate extends Component {
                             isEditFlag: true,
                             isLoader: false,
                             IsVendor: Data.IsVendor,
+                            IsCopied: Data.IsCopied,
+                            IsDetailedEntry: Data.IsDetailedEntry,
                             selectedTechnology: technologyArray,
                             selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
                             vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
@@ -369,8 +374,17 @@ class AddMachineRate extends Component {
         })
     }
 
-    moreDetailsToggler = () => {
-        this.props.displayMoreDetailsForm()
+    /**
+    * @method moreDetailsToggler
+    * @description called
+    */
+    moreDetailsToggler = (Id, editFlag) => {
+        let data = {
+            isEditFlag: editFlag,
+            Id: Id,
+            isIncompleteMachine: (this.state.isEditFlag && !this.state.IsDetailedEntry) ? true : false,
+        }
+        this.props.displayMoreDetailsForm(data)
     }
 
     /**
@@ -434,7 +448,7 @@ class AddMachineRate extends Component {
         tempArray.push(...processGrid, {
             processName: processName.label,
             ProcessId: processName.value,
-            UOM: UOM.label,
+            UnitOfMeasurement: UOM.label,
             UnitOfMeasurementId: UOM.value,
             MachineRate: MachineRate,
         })
@@ -474,7 +488,7 @@ class AddMachineRate extends Component {
         tempData = {
             processName: processName.label,
             ProcessId: processName.value,
-            UOM: UOM.label,
+            UnitOfMeasurement: UOM.label,
             UnitOfMeasurementId: UOM.value,
             MachineRate: MachineRate,
         }
@@ -663,49 +677,67 @@ class AddMachineRate extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, MachineID, isEditFlag, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants, remarks,
-            machineType, files, processGrid, } = this.state;
+        const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
+            remarks, machineType, files, processGrid, } = this.state;
+        const { machineData } = this.props;
         const userDetail = userDetails()
 
         let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
 
         let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
+        let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
+
         if (isEditFlag) {
-            let updatedFiles = files.map((file) => {
-                return { ...file, ContextId: MachineID }
-            })
-            let requestData = {
-                MachineId: MachineID,
-                IsVendor: IsVendor,
-                VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-                MachineNumber: values.MachineNumber,
-                MachineName: values.MachineName,
-                MachineTypeId: machineType.value,
-                TonnageCapacity: values.TonnageCapacity,
-                Description: values.Description,
-                IsActive: true,
-                LoggedInUserId: loggedInUserId(),
-                MachineProcessRates: processGrid,
-                Technology: technologyArray,
-                Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
-                VendorPlant: vendorPlantArray,
-                Remark: remarks,
-                Attachements: updatedFiles,
-            }
 
-            this.props.updateMachine(requestData, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-                    this.cancel();
+            if (IsDetailedEntry) {
+
+                // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
+                let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
+                this.props.updateMachineDetails(detailedRequestData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+                        this.cancel();
+                    }
+                })
+
+            } else {
+
+                // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
+                let requestData = {
+                    MachineId: MachineID,
+                    IsVendor: IsVendor,
+                    IsDetailedEntry: false,
+                    VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+                    MachineNumber: values.MachineNumber,
+                    MachineName: values.MachineName,
+                    MachineTypeId: machineType.value,
+                    TonnageCapacity: values.TonnageCapacity,
+                    Description: values.Description,
+                    IsActive: true,
+                    LoggedInUserId: loggedInUserId(),
+                    MachineProcessRates: processGrid,
+                    Technology: technologyArray,
+                    Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+                    VendorPlant: vendorPlantArray,
+                    Remark: remarks,
+                    Attachements: updatedFiles,
                 }
-            })
 
+                this.props.updateMachine(requestData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+                        this.cancel();
+                    }
+                })
+            }
         } else {
 
+            // EXECUTED WHEN:- NEW MACHINE WITH BASIC DETAILS
             const formData = {
                 IsVendor: IsVendor,
                 VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+                IsDetailedEntry: false,
                 MachineNumber: values.MachineNumber,
                 MachineName: values.MachineName,
                 MachineTypeId: machineType.value,
@@ -735,11 +767,12 @@ class AddMachineRate extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, } = this.props;
-        const { isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
+        const { handleSubmit, loading } = this.props;
+        const { isLoader, isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied } = this.state;
 
         return (
             <>
+                {(loading || isLoader) && <Loader />}
                 <div>
                     <div className="login-container signup-form">
                         <div className="row">
@@ -850,7 +883,7 @@ class AddMachineRate extends Component {
                                                         required={true}
                                                         handleChangeDescription={this.handlePlants}
                                                         valueDescription={this.state.selectedPlants}
-                                                        disabled={isEditFlag ? true : false}
+                                                        disabled={isEditFlag ? (IsCopied ? false : true) : false}
                                                     />
                                                 </Col>}
                                             <Col md="3">
@@ -941,11 +974,21 @@ class AddMachineRate extends Component {
                                             {!this.state.IsVendor &&
                                                 <Col md="12">
                                                     <div>
-                                                        <button
-                                                            type="button"
-                                                            className={'user-btn'}
-                                                            onClick={this.moreDetailsToggler}>
-                                                            <div className={'plus'}></div>ADD MORE DETAILS</button>
+                                                        {
+                                                            this.state.IsDetailedEntry ?
+
+                                                                <button
+                                                                    type="button"
+                                                                    className={'user-btn'}
+                                                                    onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
+                                                                    <div className={'edit_pencil_icon'}></div>EDIT MORE DETAILS</button>
+                                                                :
+                                                                <button
+                                                                    type="button"
+                                                                    className={'user-btn'}
+                                                                    onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : '', false)}>
+                                                                    <div className={'plus'}></div>ADD MORE DETAILS</button>
+                                                        }
 
                                                     </div>
                                                 </Col>}
@@ -1030,7 +1073,7 @@ class AddMachineRate extends Component {
                                                             >Cancel</button>
                                                         </>
                                                         :
-                                                        <button
+                                                        !this.state.IsDetailedEntry && <button
                                                             type="button"
                                                             className={'user-btn mt30 pull-left'}
                                                             onClick={this.processTableHandler}>
@@ -1056,11 +1099,14 @@ class AddMachineRate extends Component {
                                                                 return (
                                                                     <tr key={index}>
                                                                         <td>{item.processName}</td>
-                                                                        <td>{item.UOM}</td>
+                                                                        <td>{item.UnitOfMeasurement}</td>
                                                                         <td>{item.MachineRate}</td>
                                                                         <td>
-                                                                            <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                                                            {!this.state.IsDetailedEntry &&
+                                                                                <>
+                                                                                    <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                                                                    <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                                                                </>}
                                                                         </td>
                                                                     </tr>
                                                                 )
@@ -1197,7 +1243,7 @@ function mapStateToProps(state) {
     const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
     const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
-    const { machineTypeSelectList, processSelectList, machineData } = machine;
+    const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
     const { vendorListByVendorType } = material;
 
     let initialValues = {};
@@ -1214,7 +1260,7 @@ function mapStateToProps(state) {
 
     return {
         vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
-        machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues,
+        machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading,
     }
 
 }
@@ -1238,6 +1284,7 @@ export default connect(mapStateToProps, {
     checkAndGetMachineNumber,
     createMachine,
     updateMachine,
+    updateMachineDetails,
     getMachineData,
 })(reduxForm({
     form: 'AddMachineRate',

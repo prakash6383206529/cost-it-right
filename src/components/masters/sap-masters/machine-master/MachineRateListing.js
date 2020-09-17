@@ -11,13 +11,14 @@ import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList,
     getInitialVendorWithVendorCodeSelectList,
 } from '../../../../actions/master/Process';
-import { getMachineDataList, deleteMachine, } from '../../../../actions/master/MachineMaster';
+import { getMachineDataList, deleteMachine, copyMachine, } from '../../../../actions/master/MachineMaster';
 import { getTechnologySelectList, getPlantSelectList, } from '../../../../actions/master/Comman';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import BulkUpload from '../../../massUpload/BulkUpload';
+import $ from 'jquery';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -218,6 +219,19 @@ class MachineRateListing extends Component {
     }
 
     /**
+    * @method copyItem
+    * @description edit material type
+    */
+    copyItem = (Id) => {
+        this.props.copyMachine(Id, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.COPY_MACHINE_SUCCESS);
+                this.getDataList()
+            }
+        });
+    }
+
+    /**
     * @method deleteItem
     * @description confirm delete Raw Material details
     */
@@ -264,6 +278,7 @@ class MachineRateListing extends Component {
         return (
             <>
                 <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />
+                <button className="Copy All Costing mr5" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cell)} />
                 <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
             </>
         )
@@ -579,6 +594,7 @@ export default connect(mapStateToProps, {
     getInitialProcessesSelectList,
     getMachineDataList,
     deleteMachine,
+    copyMachine,
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,
