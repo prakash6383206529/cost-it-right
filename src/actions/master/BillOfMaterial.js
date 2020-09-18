@@ -11,12 +11,8 @@ import {
     GET_ASSEMBLY_PART_DATALIST_SUCCESS,
     GET_ASSEMBLY_PART_DATA_SUCCESS,
 } from '../../config/constants';
-import {
-    apiErrors
-} from '../../helper/util';
-import {
-    MESSAGES
-} from '../../config/message';
+import { apiErrors } from '../../helper/util';
+
 import { toastr } from 'react-redux-toastr'
 
 const headers = {
@@ -272,7 +268,7 @@ export function getAssemblyPartDataListAPI(callback) {
 */
 export function getAssemblyPartDetailAPI(PartId, callback) {
     return (dispatch) => {
-        if (PartId != '') {
+        if (PartId !== '') {
             const request = axios.get(`${API.getAssemblyPartDetailAPI}/${PartId}`, headers);
             request.then((response) => {
                 dispatch({

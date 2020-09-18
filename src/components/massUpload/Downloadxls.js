@@ -141,7 +141,7 @@ class Downloadxls extends React.Component {
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
         if (isFailedFlag && (costingHead === 'ZBC' || costingHead === 'ZBC_MACHINE_MORE') && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine')) {
             return (
-                <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
+                <ExcelFile hideElement={true} filename={`${fileName}ZBC`} fileExtension={'.xls'} >
                     {isMachineMoreTemplate ? this.renderZBCSwitch(costingHead) : this.renderZBCSwitch(fileName)}
                 </ExcelFile>
             );
@@ -150,7 +150,7 @@ class Downloadxls extends React.Component {
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
         if (isFailedFlag && costingHead === 'VBC' && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine')) {
             return (
-                <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
+                <ExcelFile hideElement={true} filename={`${fileName}VBC`} fileExtension={'.xls'} >
                     {this.renderVBCSwitch(fileName)}
                 </ExcelFile>
             );

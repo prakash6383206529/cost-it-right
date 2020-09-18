@@ -8,7 +8,6 @@ import Footer from "../components/footer/Footer";
 import Login from './login/Login';
 import NotFoundPage from './common/NotFoundPage';
 import User from './user';
-//import Privilege from './privilege';
 import Dashboard from './dashboard';
 import { Loader } from '../../src/components/common/Loader';
 import PartMaster from './masters/sap-masters/part-master';
@@ -21,19 +20,14 @@ import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
 import OtherOperationMaster from './masters/sap-masters/other-operation';
 import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
-//import MHRMaster from './masters/sap-masters/mhr-master';
-//import OperationMaster from './masters/sap-masters/operation';
-//import ProcessMaster from './masters/sap-masters/process-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationListing from './masters/sap-masters/operation/OperationListing';
 import MaterialMaster from './masters/sap-masters/material-master/raw-material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourListing from './masters/sap-masters/labour-master/LabourListing';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
-import DepreciationMaster from './masters/sap-masters/depreciation-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
 import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
-//import MachineTypeMaster from './masters/sap-masters/machine-type-master';
 import MachineMaster from './masters/sap-masters/machine-master';
 import PowerMaster from './masters/sap-masters/power-master';
 import ReasonListing from "./masters/sap-masters/reason-master/ReasonListing";
@@ -143,8 +137,6 @@ class Main extends Component {
 
                     <Route path="/users" component={AuthMiddleware(User)} />
 
-                    {/* <Route path="/privilege" component={AuthMiddleware(Privilege)} /> */}
-
                     <Route path="/dashboard" component={AuthMiddleware(Dashboard)} />
 
                     {/* <Route path="/PartMasterOld" component={AuthMiddleware(PartMaster)} /> */}
@@ -165,17 +157,11 @@ class Main extends Component {
 
                     <Route path="/bop-master" component={AuthMiddleware(BOPMaster)} />
 
-                    {/* <Route path="/process-master" component={AuthMiddleware(ProcessMaster)} /> */}
-
                     <Route path="/other-operation" component={AuthMiddleware(OtherOperationMaster)} />
 
                     <Route path="/fuel-master" component={AuthMiddleware(FuelMaster)} />
 
                     <Route path="/ced-other-operation" component={AuthMiddleware(CEDoperationMaster)} />
-
-                    {/* <Route path="/mhr-master" component={AuthMiddleware(MHRMaster)} /> */}
-
-                    {/* <Route path="/machine-type-master" component={AuthMiddleware(MachineTypeMaster)} /> */}
 
                     <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
 
@@ -190,8 +176,6 @@ class Main extends Component {
                     <Route path="/labour-master" component={AuthMiddleware(LabourListing)} />
 
                     <Route path="/overhead-profits-master" component={AuthMiddleware(OverheadProfit)} />
-
-                    <Route path="/depreciation-master" component={AuthMiddleware(DepreciationMaster)} />
 
                     <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate)} />
 

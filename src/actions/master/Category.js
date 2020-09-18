@@ -61,7 +61,7 @@ export function createCategoryTypeAPI(data, callback) {
  */
 export function getCategoryTypeDataAPI(CategoryTypeId, callback) {
     return (dispatch) => {
-        if (CategoryTypeId != '') {
+        if (CategoryTypeId !== '') {
             axios.get(`${API.getCategoryTypeDataAPI}/${CategoryTypeId}`, headers)
                 .then((response) => {
                     dispatch({
@@ -168,7 +168,7 @@ export function createCategoryAPI(data, callback) {
  */
 export function getCategoryData(CategoryId, callback) {
     return (dispatch) => {
-        if (CategoryId != '') {
+        if (CategoryId !== '') {
             axios.get(`${API.getCategoryData}/${CategoryId}`, headers)
                 .then((response) => {
                     dispatch({

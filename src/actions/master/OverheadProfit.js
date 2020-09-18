@@ -126,10 +126,10 @@ export function updateProfit(requestData, callback) {
 export function getOverheadData(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (ID != '') {
+        if (ID !== '') {
             axios.get(`${API.getOverheadData}/${ID}`, headers)
                 .then((response) => {
-                    if (response.data.Result == true) {
+                    if (response.data.Result === true) {
                         dispatch({
                             type: GET_OVERHEAD_PROFIT_DATA_SUCCESS,
                             payload: response.data.Data,
@@ -157,10 +157,10 @@ export function getOverheadData(ID, callback) {
 export function getProfitData(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (ID != '') {
+        if (ID !== '') {
             axios.get(`${API.getProfitData}/${ID}`, headers)
                 .then((response) => {
-                    if (response.data.Result == true) {
+                    if (response.data.Result === true) {
                         dispatch({
                             type: GET_OVERHEAD_PROFIT_DATA_SUCCESS,
                             payload: response.data.Data,
@@ -306,7 +306,7 @@ export function fileUploadOverHead(data, callback) {
         };
         const request = axios.post(API.fileUploadOverHead, data, headers);
         request.then((response) => {
-            if (response && response.status == 200) {
+            if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -327,7 +327,7 @@ export function fileUploadProfit(data, callback) {
         };
         const request = axios.post(API.fileUploadProfit, data, headers);
         request.then((response) => {
-            if (response && response.status == 200) {
+            if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -379,7 +379,7 @@ export function overheadBulkUpload(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.overheadBulkUpload, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -397,7 +397,7 @@ export function profitBulkUpload(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.profitBulkUpload, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {

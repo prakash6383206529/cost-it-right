@@ -144,10 +144,11 @@ class ProcessListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -262,7 +263,7 @@ class ProcessListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, AddAccessibility } = this.props;
         const { isOpenProcessDrawer, isEditFlag } = this.state;
         const options = {
             clearSearch: true,
@@ -336,12 +337,11 @@ class ProcessListing extends Component {
                         <Col md="2" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button
+                                    {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
                                         onClick={this.processToggler}>
-                                        <div className={'plus'}></div>ADD</button>
-
+                                        <div className={'plus'}></div>ADD</button>}
                                 </div>
                             </div>
                         </Col>

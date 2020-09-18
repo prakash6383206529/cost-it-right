@@ -287,11 +287,12 @@ class MachineRateListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
                 <button className="Copy All Costing mr5" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -404,7 +405,7 @@ class MachineRateListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
         const { isBulkUpload, } = this.state;
         const options = {
             clearSearch: true,
@@ -539,16 +540,16 @@ class MachineRateListing extends Component {
                         <Col md="2" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button
+                                    {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
                                         onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>
-                                    <button
+                                        <div className={'upload'}></div>Bulk Upload</button>}
+                                    {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
                                         onClick={this.displayForm}>
-                                        <div className={'plus'}></div>ADD</button>
+                                        <div className={'plus'}></div>ADD</button>}
 
                                 </div>
                             </div>

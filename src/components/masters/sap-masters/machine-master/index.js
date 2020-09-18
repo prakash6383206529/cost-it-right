@@ -7,6 +7,12 @@ import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
 
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { MACHINE, } from '../../../../config/constants';
+import { loggedInUserId } from '../../../../helper';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
+
 class MachineMaster extends Component {
     constructor(props) {
         super(props);
@@ -17,7 +23,41 @@ class MachineMaster extends Component {
             isProcessForm: false,
             data: {},
             editDetails: {},
+
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
+            DownloadAccessibility: false,
+            BulkUploadAccessibility: false,
         }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description SET PERMISSION FOR ADD, VIEW, EDIT, DELETE, DOWNLOAD AND BULKUPLOAD
+    */
+    componentDidMount() {
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData !== undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName === MACHINE)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData !== undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    })
+                }
+            }
+        })
     }
 
     /**
@@ -111,6 +151,8 @@ class MachineMaster extends Component {
                 setData={this.setData}
                 hideForm={this.hideForm}
                 displayMoreDetailsForm={this.displayMoreDetailsForm}
+                AddAccessibility={this.state.AddAccessibility}
+                EditAccessibility={this.state.EditAccessibility}
             />
         }
 
@@ -153,12 +195,20 @@ class MachineMaster extends Component {
                                         <MachineRateListing
                                             displayForm={this.displayForm}
                                             getDetails={this.getDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         />
                                     </TabPane>}
 
                                 {this.state.activeTab == 2 &&
                                     <TabPane tabId="2">
-                                        <ProcessListing />
+                                        <ProcessListing
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                        />
                                     </TabPane>}
                             </TabContent>
                         </div>
@@ -174,14 +224,13 @@ class MachineMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps() {
-
-    return {}
+function mapStateToProps({ auth }) {
+    const { leftMenuData, loading } = auth;
+    return { leftMenuData, loading }
 }
 
 
-export default connect(
-    mapStateToProps, {
-}
+export default connect(mapStateToProps,
+    { getLeftMenu, }
 )(MachineMaster);
 

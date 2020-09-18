@@ -8,12 +8,8 @@ import {
     CREATE_SUCCESS,
     GET_INTEREST_RATE_DATA_SUCCESS
 } from '../../config/constants';
-import {
-    apiErrors
-} from '../../helper/util';
-import {
-    MESSAGES
-} from '../../config/message';
+import { apiErrors } from '../../helper/util';
+
 import { toastr } from 'react-redux-toastr'
 
 const headers = {

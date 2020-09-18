@@ -14,8 +14,6 @@ import {
 import {
     apiErrors
 } from '../../helper/util';
-import { MESSAGES } from '../../config/message';
-import { toastr } from 'react-redux-toastr'
 
 const headers = {
     'Content-Type': 'application/json',
@@ -107,7 +105,7 @@ export function getBOPImportDataList(data, callback) {
 export function getBOPDomesticById(bopId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (bopId != '') {
+        if (bopId !== '') {
             axios.get(`${API.getBOPDomesticById}/${bopId}`, headers)
                 .then((response) => {
                     if (response.data.Result) {
@@ -138,7 +136,7 @@ export function getBOPDomesticById(bopId, callback) {
 export function getBOPImportById(bopId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (bopId != '') {
+        if (bopId !== '') {
             axios.get(`${API.getBOPImportById}/${bopId}`, headers)
                 .then((response) => {
                     if (response.data.Result) {

@@ -379,6 +379,12 @@ class AddMachineRate extends Component {
     * @description called
     */
     moreDetailsToggler = (Id, editFlag) => {
+        const { selectedTechnology } = this.state;
+        if (selectedTechnology == null || selectedTechnology.length === 0) {
+            toastr.warning('Technology should not be empty.')
+            return false;
+        }
+
         let data = {
             isEditFlag: editFlag,
             Id: Id,
@@ -772,7 +778,7 @@ class AddMachineRate extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, loading } = this.props;
+        const { handleSubmit, loading, AddAccessibility, EditAccessibility } = this.props;
         const { isLoader, isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied } = this.state;
 
         return (
@@ -982,12 +988,14 @@ class AddMachineRate extends Component {
                                                         {
                                                             this.state.IsDetailedEntry ?
 
+                                                                EditAccessibility &&
                                                                 <button
                                                                     type="button"
                                                                     className={'user-btn'}
                                                                     onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
                                                                     <div className={'edit_pencil_icon'}></div>EDIT MORE DETAILS</button>
                                                                 :
+                                                                AddAccessibility &&
                                                                 <button
                                                                     type="button"
                                                                     className={'user-btn'}

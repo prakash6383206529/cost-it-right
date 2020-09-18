@@ -154,7 +154,7 @@ export function fetchCountryDataAPI(callback) {
 export function fetchStateDataAPI(countryId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (countryId == 0) {
+        if (countryId === 0) {
             dispatch({
                 type: GET_STATE_SUCCESS,
                 payload: []
@@ -192,7 +192,7 @@ export function fetchStateDataAPI(countryId, callback) {
 export function fetchCityDataAPI(stateId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (stateId == 0) {
+        if (stateId === 0) {
             dispatch({
                 type: GET_CITY_SUCCESS,
                 payload: [],
@@ -272,7 +272,7 @@ export function getRawMaterialSelectList(callback) {
 export function fetchRMGradeAPI(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (Id == 0) {
+        if (Id === 0) {
             dispatch({
                 type: GET_GRADE_SUCCESS,
                 payload: []
@@ -331,7 +331,7 @@ export function fetchRMCategoryAPI(callback) {
 export function fetchCategoryAPI(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (Id == 0) {
+        if (Id === 0) {
             dispatch({
                 type: GET_CATEGORY_SUCCESS,
                 payload: []
@@ -602,7 +602,7 @@ export function fetchMaterialComboAPI(callback) {
 export function fetchGradeDataAPI(rowMaterialId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (rowMaterialId == 0) {
+        if (rowMaterialId === 0) {
             dispatch({
                 type: GET_GRADE_SUCCESS,
                 payload: []
@@ -640,7 +640,7 @@ export function fetchGradeDataAPI(rowMaterialId, callback) {
 export function fetchSpecificationDataAPI(rmGradeId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (rmGradeId == 0) {
+        if (rmGradeId === 0) {
             dispatch({
                 type: GET_RM_SPECIFICATION_LIST_SUCCESS,
                 payload: [],
@@ -900,7 +900,7 @@ export function getPlantBySupplier(supplierId, callback) {
  */
 export function getCityBySupplier(SupplierId, callback) {
     return (dispatch) => {
-        if (SupplierId != 0) {
+        if (SupplierId !== 0) {
             dispatch({ type: API_REQUEST });
             const request = axios.get(`${API.getCityBySupplier}/${SupplierId}`, headers);
             request.then((response) => {
@@ -932,7 +932,7 @@ export function getCityBySupplier(SupplierId, callback) {
  */
 export function getPlantByCity(CityId, callback) {
     return (dispatch) => {
-        if (CityId != 0) {
+        if (CityId !== 0) {
             dispatch({ type: API_REQUEST });
             const request = axios.get(`${API.getPlantByCity}/${CityId}`, headers);
             request.then((response) => {
@@ -1210,7 +1210,7 @@ export function getShiftTypeSelectList(callback) {
  */
 export function getMachineSelectListByMachineType(MachineClassId, callback) {
     return (dispatch) => {
-        if (MachineClassId != '') {
+        if (MachineClassId !== '') {
             //dispatch({ type: API_REQUEST });
             const request = axios.get(`${API.getMachineSelectListByMachineType}/${MachineClassId}`, headers);
             request.then((response) => {
