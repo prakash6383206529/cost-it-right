@@ -407,27 +407,6 @@ export const VBCOperationTempData = [
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
-export const Fuel = [
-    { label: 'FuelName', value: 'FuelName', },
-    { label: 'State', value: 'State', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM', },
-]
-
-export const FuelTempData = [
-    {
-        'FuelName': 'FuelName',
-        'State': 'State',
-        'Rate': 'Rate',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'UOM',
-    }
-]
-
-/** 
-* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
-*/
 export const Profit = [
     { label: 'CostingHead', value: 'CostingHead', },
     { label: 'ModelType', value: 'ModelType', },
@@ -480,6 +459,27 @@ export const LabourTempData = [
         'LabourType': 'Labour Type',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         'LabourRate': 0,
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const Fuel = [
+    { label: 'FuelName', value: 'FuelName', },
+    { label: 'State', value: 'State', },
+    { label: 'Rate', value: 'Rate', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'UOM', value: 'UOM', },
+]
+
+export const FuelTempData = [
+    {
+        'FuelName': 'FuelName',
+        'State': 'State',
+        'Rate': 'Rate',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'UOM': 'UOM',
     }
 ]
 
@@ -584,49 +584,196 @@ export const Power = [
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
-export const MHR = [
-    { label: 'TechnologyName', value: 'TechnologyName', },
-    { label: 'SupplierName', value: 'SupplierName', },
-    { label: 'SupplierTypeName', value: 'SupplierTypeName', },
+export const MachineZBC = [
+    { label: 'Technology', value: 'Technology', },
+    { label: 'Plant', value: 'Plant', },
+    { label: 'MachineNo', value: 'MachineNo', },
     { label: 'MachineName', value: 'MachineName', },
-    { label: 'MachineTypeName', value: 'MachineTypeName', },
-    { label: 'DepreciationType', value: 'DepreciationType', },
-    { label: 'PowerType', value: 'PowerType', },
-    { label: 'FuelDetailId', value: 'FuelDetailId', },
-    { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
-    { label: 'PlantName', value: 'PlantName', },
-    { label: 'LabourTypes', value: 'LabourTypes', },
-    { label: 'PUCCharges', value: 'PUCCharges', },
-    { label: 'MaintenanceCharges', value: 'MaintenanceCharges', },
-    { label: 'ServiceCharges', value: 'ServiceCharges', },
-    { label: 'ConsumableCost', value: 'ConsumableCost', },
-    { label: 'OtherCharges', value: 'OtherCharges', },
-    { label: 'TotalMachineCost', value: 'TotalMachineCost', },
-    { label: 'TotalDepreciationCost', value: 'TotalDepreciationCost', },
-    { label: 'PowerRate', value: 'PowerRate', },
-    { label: 'TotalPowerCost', value: 'TotalPowerCost', },
-    { label: 'FuelRate', value: 'FuelRate', },
-    { label: 'TotalFuelCost', value: 'TotalFuelCost', },
-    { label: 'DepreciationType', value: 'DepreciationType', },
-    { label: 'NumberOfSkilledLabour', value: 'NumberOfSkilledLabour', },
-    { label: 'RateSkilledLabour', value: 'RateSkilledLabour', },
-    { label: 'SkilledLabourWorkingDays', value: 'SkilledLabourWorkingDays', },
-    { label: 'NumberOfSemiSkilledLabour', value: 'NumberOfSemiSkilledLabour', },
-    { label: 'RateSemiSkilledLabour', value: 'RateSemiSkilledLabour', },
-    { label: 'SemiSkilledLabourWorkingDays', value: 'SemiSkilledLabourWorkingDays', },
-    { label: 'NumberOfUnskilledLabour', value: 'NumberOfUnskilledLabour', },
-    { label: 'RateUnskilledLabour', value: 'RateUnskilledLabour', },
-    { label: 'UnkilledLabourWorkingDays', value: 'UnkilledLabourWorkingDays', },
-    { label: 'NumberOfContractLabour', value: 'NumberOfContractLabour', },
-    { label: 'RateContractLabour', value: 'RateContractLabour', },
-    { label: 'ContractLabourWorkingDays', value: 'ContractLabourWorkingDays', },
-    { label: 'TotalLabourCost', value: 'TotalLabourCost', },
-    { label: 'IsOtherSource', value: 'IsOtherSource', },
-    { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'WorkingShift', value: 'WorkingShift', },
-    { label: 'NumberOfWorkingDays', value: 'NumberOfWorkingDays', },
-    { label: 'CalculatedMHRCost', value: 'CalculatedMHRCost', },
-    { label: 'Efficiency', value: 'Efficiency', },
+    { label: 'MachineType', value: 'MachineType', },
+    { label: 'MachineCapicityAndTonnage', value: 'MachineCapicityAndTonnage', },
+    { label: 'Description', value: 'Description', },
+    { label: 'ProcessName', value: 'ProcessName', },
+    { label: 'UOM', value: 'UOM', },
+    { label: 'MachineRate', value: 'MachineRate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const MachineZBCTempData = [
+    {
+        'Technology': 'Technology',
+        'Plant': 'Plant',
+        'MachineNo': 'Machine No',
+        'MachineName': 'Machine Name',
+        'MachineType': 'Machine Type',
+        'MachineCapicityAndTonnage': 'Machine Capicity And Tonnage',
+        'Description': 'Description',
+        'ProcessName': 'Process Name',
+        'UOM': 'UOM',
+        'MachineRate': 0,
+        'Remark': 'Remark',
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const MHRMoreZBC = [
+    { label: "Technology", value: "Technology", },
+    { label: "Ownership", value: "Ownership", },
+    { label: "Plant", value: "Plant", },
+    { label: "MachineNo", value: "MachineNo", },
+    { label: "MachineName", value: "MachineName", },
+    { label: "MachineType", value: "MachineType", },
+    { label: "Manufacturer", value: "Manufacturer", },
+    { label: "YearOfManufacturing", value: "YearOfManufacturing", },
+    { label: "MachineCapicityAndTonnage", value: "MachineCapicityAndTonnage", },
+    { label: "MachineCost", value: "MachineCost", },
+    { label: "AccessoriesCost", value: "AccessoriesCost", },
+    { label: "UOM", value: "UOM", },
+    { label: "InstallationCost", value: "InstallationCost", },
+    { label: "TotalCost", value: "TotalCost", },
+    { label: "Loan", value: "Loan", },
+    { label: "LoanValue", value: "LoanValue", },
+    { label: "Equity", value: "Equity", },
+    { label: "EquityValue", value: "EquityValue", },
+    { label: "RateOfInterest", value: "RateOfInterest", },
+    { label: "RateOfInterestValue", value: "RateOfInterestValue", },
+    { label: "NoOfShifts", value: "NoOfShifts", },
+    { label: "WorkingHoursPerShift", value: "WorkingHoursPerShift", },
+    { label: "NoOfWorkingDaysPerYear", value: "NoOfWorkingDaysPerYear", },
+    { label: "Efficiency", value: "Efficiency", },
+    { label: "NoOfWorkingHourPerYear", value: "NoOfWorkingHourPerYear", },
+    { label: "DepreciationType", value: "DepreciationType", },
+    { label: "DepriciationRate", value: "DepriciationRate", },
+    { label: "LifeOfAsset", value: "LifeOfAsset", },
+    { label: "CostOfScrap", value: "CostOfScrap", },
+    { label: "DateOfPurchase", value: "DateOfPurchase", },
+    { label: "DepriciationAmount", value: "DepriciationAmount", },
+    { label: "AnnualMaintance", value: "AnnualMaintance", },
+    { label: "AnnualMaintanaceAmount", value: "AnnualMaintanaceAmount", },
+    { label: "AnnualConsumable", value: "AnnualConsumable", },
+    { label: "AnnualConsumableAmount", value: "AnnualConsumableAmount", },
+    { label: "InsuaranceType", value: "InsuaranceType", },
+    { label: "InsuraceAmount", value: "InsuraceAmount", },
+    { label: "BuildingCostPerSqFt", value: "BuildingCostPerSqFt", },
+    { label: "MachineFloorAreaSqPerFt", value: "MachineFloorAreaSqPerFt", },
+    { label: "AnnualAreaCost", value: "AnnualAreaCost", },
+    { label: "OtherYearlyCost", value: "OtherYearlyCost", },
+    { label: "TotalMachineCostPerAnnum", value: "TotalMachineCostPerAnnum", },
+    { label: "UsesFuel", value: "UsesFuel", },
+    { label: "Fuel", value: "Fuel", },
+    { label: "FuelCostPerUOM", value: "FuelCostPerUOM", },
+    { label: "ConsumptionPerAnnum", value: "ConsumptionPerAnnum", },
+    { label: "UtilizingFactor", value: "UtilizingFactor", },
+    { label: "PowerRatingKW", value: "PowerRatingKW", },
+    { label: "UsesSolarPower", value: "UsesSolarPower", },
+    { label: "TotalPowerCostAnnum", value: "TotalPowerCostAnnum", },
+    { label: "LabourType", value: "LabourType", },
+    { label: "NoOfPeople", value: "NoOfPeople", },
+    { label: "ProcessName", value: "ProcessName", },
+    { label: "OutputPerHoursr", value: "OutputPerHoursr", },
+    { label: "OutputPerAnnum", value: "OutputPerAnnum", },
+    { label: "MachineRate", value: "MachineRate", }
+
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const MHRMoreZBCTempData = [
+    {
+        "Technology": "Technology",
+        "Ownership": "Ownership",
+        "Plant": "Plant",
+        "MachineNo": "MAC-001",
+        "MachineName": "Machine Name",
+        "MachineType": "Machine Type",
+        "Manufacturer": "Manufacturer",
+        "YearOfManufacturing": moment().format('YYYY'),
+        "MachineCapicityAndTonnage": "MachineCapicityAndTonnage",
+        "MachineCost": 0,
+        "AccessoriesCost": 0,
+        "UOM": "UOM",
+        "InstallationCost": 0,
+        "TotalCost": 0,
+        "Loan": 0,
+        "LoanValue": 0,
+        "Equity": "Equity %",
+        "EquityValue": 0,
+        "RateOfInterest": "RateOfInterest",
+        "RateOfInterestValue": 0,
+        "NoOfShifts": "NoOfShifts",
+        "WorkingHoursPerShift": 0,
+        "NoOfWorkingDaysPerYear": 0,
+        "Efficiency": "Availability",
+        "NoOfWorkingHourPerYear": 0,
+        "DepreciationType": "DepreciationType",
+        "DepriciationRate": 0,
+        "LifeOfAsset": 0,
+        "CostOfScrap": 0,
+        "DateOfPurchase": moment().format('DD-MM-YYYY'),
+        "DepriciationAmount": 0,
+        "AnnualMaintance": 0,
+        "AnnualMaintanaceAmount": 0,
+        "AnnualConsumable": 0,
+        "AnnualConsumableAmount": 0,
+        "InsuaranceType": "InsuaranceType",
+        "InsuraceAmount": 0,
+        "BuildingCostPerSqFt": 0,
+        "MachineFloorAreaSqPerFt": 0,
+        "AnnualAreaCost": 0,
+        "OtherYearlyCost": 0,
+        "TotalMachineCostPerAnnum": 0,
+        "UsesFuel": "Uses Fuel",
+        "Fuel": "Fuel",
+        "FuelCostPerUOM": 0,
+        "ConsumptionPerAnnum": 0,
+        "UtilizingFactor": "UtilizingFactor",
+        "PowerRatingKW": "Power Rating KW",
+        "UsesSolarPower": "YES OR NO",
+        "TotalPowerCostAnnum": "TotalPowerCostAnnum",
+        "LabourType": "LabourType",
+        "NoOfPeople": 0,
+        "ProcessName": "Process Name",
+        "OutputPerHoursr": 0,
+        "OutputPerAnnum": 0,
+        "MachineRate": 0,
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const MachineVBC = [
+    { label: 'Technology', value: 'Technology', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'VendorPlantName', value: 'VendorPlantName', },
+    { label: 'MachineNo', value: 'MachineNo', },
+    { label: 'MachineName', value: 'MachineName', },
+    { label: 'MachineType', value: 'MachineType', },
+    { label: 'MachineCapicityAndTonnage', value: 'MachineCapicityAndTonnage', },
+    { label: 'Description', value: 'Description', },
+    { label: 'UOM', value: 'UOM', },
+    { label: 'MachineRate', value: 'MachineRate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const MachineVBCTempData = [
+    {
+        'Technology': 'Technology',
+        'VendorName': 'Vendor Name',
+        'VendorCode': 'Vendor Code',
+        'VendorPlantName': 'Vendor PlantName',
+        'MachineNo': 'Machine No',
+        'MachineName': 'Machine Name',
+        'MachineType': 'Machine Type',
+        'MachineCapicityAndTonnage': 'Machine Capicity And Tonnage',
+        'Description': 'Description',
+        'UOM': 'UOM',
+        'MachineRate': 'Machine Rate',
+        'Remark': 'Remark',
+    }
 ]
 
 export const EAccessType = [

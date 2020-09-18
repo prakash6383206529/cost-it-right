@@ -1237,7 +1237,7 @@ export function bulkUploadRMSpecification(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadRMSpecification, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {

@@ -2,31 +2,31 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required } from "../../../../helper/validation";
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import { } from '../../../../actions/master/MachineMaster';
 import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList,
     getInitialVendorWithVendorCodeSelectList,
+    getMachineTypeSelectListByPlant,
+    getVendorSelectListByTechnology,
+    getMachineTypeSelectListByTechnology,
+    getMachineTypeSelectListByVendor,
+    getProcessSelectListByMachineType,
 } from '../../../../actions/master/Process';
 import { getMachineDataList, deleteMachine, copyMachine, } from '../../../../actions/master/MachineMaster';
-import { getTechnologySelectList, getPlantSelectList, } from '../../../../actions/master/Comman';
+import { getTechnologySelectList, } from '../../../../actions/master/Comman';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import BulkUpload from '../../../massUpload/BulkUpload';
-import $ from 'jquery';
 
 class MachineRateListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
             isEditFlag: false,
-            isMachineRateForm: false,
             tableData: [],
 
             costingHead: [],
@@ -150,7 +150,10 @@ class MachineRateListing extends Component {
     */
     handlePlant = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ plant: newValue });
+            this.setState({ plant: newValue }, () => {
+                const { plant } = this.state;
+                this.props.getMachineTypeSelectListByPlant(plant.value, () => { })
+            });
         } else {
             this.setState({ plant: [], });
         }
@@ -162,7 +165,11 @@ class MachineRateListing extends Component {
     */
     handleTechnology = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ technology: newValue, });
+            this.setState({ technology: newValue, }, () => {
+                const { technology } = this.state;
+                this.props.getVendorSelectListByTechnology(technology.value, () => { })
+                this.props.getMachineTypeSelectListByTechnology(technology.value, () => { })
+            });
         } else {
             this.setState({ technology: [], })
         }
@@ -175,6 +182,8 @@ class MachineRateListing extends Component {
     handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, }, () => {
+                const { vendorName } = this.state;
+                this.props.getMachineTypeSelectListByVendor(vendorName.value, () => { })
             });
         } else {
             this.setState({ vendorName: [], })
@@ -199,7 +208,10 @@ class MachineRateListing extends Component {
     */
     handleMachineType = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ machineType: newValue });
+            this.setState({ machineType: newValue }, () => {
+                const { machineType } = this.state;
+                this.props.getProcessSelectListByMachineType(machineType.value, () => { })
+            });
         } else {
             this.setState({ machineType: [], })
         }
@@ -340,9 +352,16 @@ class MachineRateListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
+        const { costingHead, plant, technology, vendorName, processName, machineType } = this.state;
 
+        const costingId = costingHead ? costingHead.value : '';
+        const technologyId = technology ? technology.value : '';
+        const vendorId = vendorName ? vendorName.value : '';
+        const machineTypeId = machineType ? machineType.value : '';
+        const processId = processName ? processName.value : '';
+        const plantId = plant ? plant.value : '';
 
-        //this.getDataList(null, null, null, null)
+        this.getDataList(costingId, technologyId, vendorId, machineTypeId, processId, plantId)
     }
 
     /**
@@ -350,13 +369,21 @@ class MachineRateListing extends Component {
     * @description Reset user filter
     */
     resetFilter = () => {
-        // this.setState({
-        //     RawMaterial: [],
-        //     RMGrade: [],
-        //     vendorName: [],
-        // }, () => {
-        //     this.getDataList()
-        // })
+        this.setState({
+            costingHead: [],
+            plant: [],
+            technology: [],
+            vendorName: [],
+            processName: [],
+            machineType: [],
+        }, () => {
+            this.props.getTechnologySelectList(() => { })
+            this.props.getInitialPlantSelectList(() => { })
+            this.props.getInitialVendorWithVendorCodeSelectList(() => { })
+            this.props.getInitialMachineTypeSelectList(() => { })
+            this.props.getInitialProcessesSelectList(() => { })
+            this.getDataList()
+        })
 
     }
 
@@ -378,7 +405,7 @@ class MachineRateListing extends Component {
     */
     render() {
         const { handleSubmit } = this.props;
-        const { isMachineRateForm, isBulkUpload, } = this.state;
+        const { isBulkUpload, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -458,22 +485,6 @@ class MachineRateListing extends Component {
                                 </div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="ProcessName"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Process-'}
-                                        options={this.renderListing('ProcessNameList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleProcessName}
-                                        valueDescription={this.state.processName}
-                                        disabled={false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
                                         name="MachineType"
                                         type="text"
                                         label=''
@@ -485,6 +496,22 @@ class MachineRateListing extends Component {
                                         //required={true}
                                         handleChangeDescription={this.handleMachineType}
                                         valueDescription={this.state.machineType}
+                                        disabled={false}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="ProcessName"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-Process-'}
+                                        options={this.renderListing('ProcessNameList')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleProcessName}
+                                        valueDescription={this.state.processName}
                                         disabled={false}
                                     />
                                 </div>
@@ -560,6 +587,7 @@ class MachineRateListing extends Component {
                     isEditFlag={false}
                     fileName={'Machine'}
                     isZBCVBCTemplate={true}
+                    isMachineMoreTemplate={true}
                     messageLabel={'Machine'}
                     anchor={'right'}
                 />}
@@ -595,6 +623,11 @@ export default connect(mapStateToProps, {
     getMachineDataList,
     deleteMachine,
     copyMachine,
+    getMachineTypeSelectListByPlant,
+    getVendorSelectListByTechnology,
+    getMachineTypeSelectListByTechnology,
+    getMachineTypeSelectListByVendor,
+    getProcessSelectListByMachineType,
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

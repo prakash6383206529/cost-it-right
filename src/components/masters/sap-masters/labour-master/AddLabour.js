@@ -441,7 +441,7 @@ class AddLabour extends Component {
             gridTable, } = this.state;
         const userDetail = userDetails()
 
-        if (gridTable && gridTable.length == 0) {
+        if (gridTable && gridTable.length === 0) {
             toastr.warning('Labour Rate entry required.');
             return false;
         }

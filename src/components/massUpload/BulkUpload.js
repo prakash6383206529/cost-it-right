@@ -1,29 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
-import { required, maxLength25, minLength3, getJsDateFromExcel } from "../../helper/validation";
-import { renderText, searchableSelect } from "../layout/FormInputs";
+import { getJsDateFromExcel } from "../../helper/validation";
 import {
     bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
     bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../../actions/master/Material';
+import { bulkUploadMachineZBC, bulkUploadMachineVBC, bulkUploadMachineMoreZBC } from '../../actions/master/MachineMaster';
 import { fuelBulkUpload } from '../../actions/master/Fuel';
 import { labourBulkUpload } from '../../actions/master/Labour';
 import { vendorBulkUpload } from '../../actions/master/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../../actions/master/OverheadProfit';
 import { operationZBCBulkUpload, operationVBCBulkUpload } from '../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../config/message';
 import { loggedInUserId } from "../../helper/auth";
-import { OutTable, ExcelRenderer } from 'react-excel-renderer';
+import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls from './Downloadxls';
-import ReactExport from 'react-export-excel';
-
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -90,14 +84,14 @@ class BulkUpload extends Component {
      * @description called for profile pic change
      */
     fileHandler = event => {
-        const { fileName } = this.props;
+
         let fileObj = event.target.files[0];
         let fileHeads = [];
         let uploadfileName = fileObj.name;
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
-        if (fileType != '.xls' && fileType != '.xlsx') {
+        if (fileType !== '.xls' && fileType !== '.xlsx') {
             toastr.warning('File type should be .xls or .xlsx')
         } else {
 
@@ -122,7 +116,7 @@ class BulkUpload extends Component {
                                 // CreatedBy: loggedInUserId(),
                             }
                             val.map((el, i) => {
-                                if (fileHeads[i] == 'EffectiveDate' && typeof el == 'number') {
+                                if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                                     el = getJsDateFromExcel(el)
                                 }
                                 obj[fileHeads[i]] = el;
@@ -143,14 +137,14 @@ class BulkUpload extends Component {
     }
 
     responseHandler = (res) => {
-        const { messageLabel, fileName } = this.props;
+        const { messageLabel, } = this.props;
         if (res.data.Data) {
             let Data = res.data.Data;
             let DynamicData = res.data.DynamicData;
 
             if (Data.CountSucceeded > 0) {
                 toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
-                if (DynamicData && DynamicData.IsDensityAvailable == false) {
+                if (DynamicData && DynamicData.IsDensityAvailable === false) {
                     this.props.densityAlert()
                 }
             }
@@ -180,75 +174,92 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
         }
 
-        if (fileName == 'RMDomestic' && costingHead == 'ZBC') {
+        if (fileName === 'RMDomestic' && costingHead === 'ZBC') {
 
             this.props.bulkUploadRMDomesticZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'RMDomestic' && costingHead == 'VBC') {
+        } else if (fileName === 'RMDomestic' && costingHead === 'VBC') {
 
             this.props.bulkUploadRMDomesticVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'RMImport' && costingHead == 'ZBC') {
+        } else if (fileName === 'RMImport' && costingHead === 'ZBC') {
 
             this.props.bulkUploadRMImportZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'RMImport' && costingHead == 'VBC') {
+        } else if (fileName === 'RMImport' && costingHead === 'VBC') {
 
             this.props.bulkUploadRMImportVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'RMSpecification') {
+        } else if (fileName === 'RMSpecification') {
 
             this.props.bulkUploadRMSpecification(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'Vendor') {
+        } else if (fileName === 'Vendor') {
 
             this.props.vendorBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'Operation' && costingHead == 'ZBC') {
+        } else if (fileName === 'Operation' && costingHead === 'ZBC') {
 
             this.props.operationZBCBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'Operation' && costingHead == 'VBC') {
+        } else if (fileName === 'Operation' && costingHead === 'VBC') {
 
             this.props.operationVBCBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'Fuel') {
+        } else if (fileName === 'Fuel') {
 
             this.props.fuelBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'Overhead') {
+        } else if (fileName === 'Overhead') {
 
             this.props.overheadBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'Profit') {
+        } else if (fileName === 'Profit') {
 
             this.props.profitBulkUpload(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName == 'Labour') {
+        } else if (fileName === 'Labour') {
 
             this.props.labourBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+        } else if (fileName === 'Machine' && costingHead === 'ZBC') {
+
+            this.props.bulkUploadMachineZBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'Machine' && costingHead === 'VBC') {
+
+            this.props.bulkUploadMachineVBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'Machine' && costingHead === 'ZBC_MACHINE_MORE') {
+
+            this.props.bulkUploadMachineMoreZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -263,7 +274,7 @@ class BulkUpload extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset, fileName, messageLabel, isZBCVBCTemplate = '' } = this.props;
+        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
         const { faildRecords, failedData, costingHead } = this.state;
 
         if (faildRecords) {
@@ -303,7 +314,7 @@ class BulkUpload extends Component {
                                             <input
                                                 type="radio"
                                                 name="costingHead"
-                                                checked={costingHead == 'ZBC' ? true : false}
+                                                checked={costingHead === 'ZBC' ? true : false}
                                                 onClick={() => this.onPressHeads('ZBC')}
                                             />{' '}
                                         Zero Based
@@ -312,16 +323,27 @@ class BulkUpload extends Component {
                                             <input
                                                 type="radio"
                                                 name="costingHead"
-                                                checked={costingHead == 'VBC' ? true : false}
+                                                checked={costingHead === 'VBC' ? true : false}
                                                 onClick={() => this.onPressHeads('VBC')}
                                             />{' '}
                                         Vendor Based
                                     </Label>
+                                        {isMachineMoreTemplate &&
+                                            <Label sm={4} className={'pl0 pr0'} check>
+                                                <input
+                                                    type="radio"
+                                                    name="costingHead"
+                                                    checked={costingHead === 'ZBC_MACHINE_MORE' ? true : false}
+                                                    onClick={() => this.onPressHeads('ZBC_MACHINE_MORE')}
+                                                />{' '}
+                                        ZBC More Details
+                                        </Label>}
                                     </Col>}
 
                                 <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                                     <Downloadxls
                                         isZBCVBCTemplate={isZBCVBCTemplate}
+                                        isMachineMoreTemplate={isMachineMoreTemplate}
                                         fileName={fileName}
                                         isFailedFlag={false}
                                         costingHead={costingHead}
@@ -330,7 +352,7 @@ class BulkUpload extends Component {
 
                                 <div className="input-group mt25 col-md-12 input-withouticon " >
                                     <div className="file-uploadsection">
-                                        <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img src={require('../../assests/images/uploadcloud.png')} ></img> </label>
+                                        <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../assests/images/uploadcloud.png')} ></img> </label>
                                         <input
                                             type="file"
                                             name="File"
@@ -348,12 +370,12 @@ class BulkUpload extends Component {
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={this.cancel} >
-                                        <div className={'cross-icon'}><img src={require('../../assests/images/times.png')}></img></div> {'Cancel'}
+                                        <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div> {'Cancel'}
                                     </button>
                                     <button
                                         type="submit"
                                         className="submit-button mr5 save-btn" >
-                                        <div className={'check-icon'}><img src={require('../../assests/images/check.png')}></img>
+                                        <div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img>
                                         </div> {isEditFlag ? 'Update' : 'Save'}
                                     </button>
                                 </div>
@@ -371,7 +393,7 @@ class BulkUpload extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
+function mapStateToProps() {
 
     return {};
 }
@@ -396,6 +418,9 @@ export default connect(mapStateToProps, {
     operationZBCBulkUpload,
     operationVBCBulkUpload,
     labourBulkUpload,
+    bulkUploadMachineZBC,
+    bulkUploadMachineVBC,
+    bulkUploadMachineMoreZBC,
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

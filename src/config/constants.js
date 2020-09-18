@@ -573,6 +573,10 @@ export const API = {
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
   getMachineDetailsData: `${BASE_URL}/masters-machine/get-machine-details`,
 
+  bulkUploadMachineZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-json`,
+  bulkUploadMachineVBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-vbc-json`,
+  bulkUploadMachineMoreZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-details-json`,
+
   createProcess: `${BASE_URL}/masters-machine/create-process`,
   getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
   deleteProcess: `${BASE_URL}/masters-machine/delete-process`,
@@ -581,6 +585,12 @@ export const API = {
   updateProcess: `${BASE_URL}/masters-machine/update-process`,
   getMachineSelectListByPlant: `${BASE_URL}/masters-machine/get-machine-select-list-by-plant`,
   getPlantSelectListByMachine: `${BASE_URL}/masters-machine/get-plant-select-list-by-machine`,
+
+  getMachineTypeSelectListByPlant: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-plant-id`,
+  getVendorSelectListByTechnology: `${BASE_URL}/masters-machine/get-vendor-select-list-by-technology`,
+  getMachineTypeSelectListByTechnology: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-technology`,
+  getMachineTypeSelectListByVendor: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-vendor`,
+  getProcessSelectListByMachineType: `${BASE_URL}/masters-machine/get-process-select-list-by-machine-type`,
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
@@ -784,6 +794,12 @@ export const GET_INITIAL_MACHINE_LIST_SUCCESS = 'GET_INITIAL_MACHINE_LIST_SUCCES
 export const GET_INITIAL_PROCESSES_LIST_SUCCESS = 'GET_INITIAL_PROCESSES_LIST_SUCCESS';
 export const GET_MACHINE_LIST_BY_PLANT = 'GET_MACHINE_LIST_BY_PLANT';
 export const GET_PLANT_LIST_BY_MACHINE = 'GET_PLANT_LIST_BY_MACHINE';
+
+export const GET_MACHINE_TYPE_LIST_BY_PLANT = 'GET_MACHINE_TYPE_LIST_BY_PLANT';
+export const GET_VENDOR_LIST_BY_TECHNOLOGY = 'GET_VENDOR_LIST_BY_TECHNOLOGY';
+export const GET_MACHINE_TYPE_LIST_BY_TECHNOLOGY = 'GET_MACHINE_TYPE_LIST_BY_TECHNOLOGY';
+export const GET_MACHINE_TYPE_LIST_BY_VENDOR = 'GET_MACHINE_TYPE_LIST_BY_VENDOR';
+export const GET_PROCESS_LIST_BY_MACHINE_TYPE = 'GET_PROCESS_LIST_BY_MACHINE_TYPE';
 
 //FUEL MASTER
 export const CREATE_FUEL_SUCCESS = 'CREATE_FUEL_SUCCESS';

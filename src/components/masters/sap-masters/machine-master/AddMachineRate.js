@@ -179,7 +179,7 @@ class AddMachineRate extends Component {
                         })
 
                         const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorId)
-                        const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
+                        const plantObj = Data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
                         let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
                         const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === Data.MachineTypeId)
@@ -529,7 +529,7 @@ class AddMachineRate extends Component {
             processGridEditIndex: index,
             isEditIndex: true,
             processName: { label: tempData.processName, value: tempData.ProcessId },
-            UOM: { label: tempData.UOM, value: tempData.UnitOfMeasurementId },
+            UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
         }, () => this.props.change('MachineRate', tempData.MachineRate))
     }
 
@@ -682,6 +682,11 @@ class AddMachineRate extends Component {
         const { machineData } = this.props;
         const userDetail = userDetails()
 
+        if (processGrid && processGrid.length === 0) {
+            toastr.warning('Process Rate entry required.');
+            return false;
+        }
+
         let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
 
         let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -718,7 +723,7 @@ class AddMachineRate extends Component {
                     LoggedInUserId: loggedInUserId(),
                     MachineProcessRates: processGrid,
                     Technology: technologyArray,
-                    Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+                    Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
                     VendorPlant: vendorPlantArray,
                     Remark: remarks,
                     Attachements: updatedFiles,
@@ -747,7 +752,7 @@ class AddMachineRate extends Component {
                 LoggedInUserId: loggedInUserId(),
                 MachineProcessRates: processGrid,
                 Technology: technologyArray,
-                Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+                Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
                 VendorPlant: vendorPlantArray,
                 Remark: remarks,
                 Attachements: files,

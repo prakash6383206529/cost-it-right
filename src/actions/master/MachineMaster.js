@@ -187,7 +187,6 @@ export function getMachineDataList(data, callback) {
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
                 callback(error);
-                apiErrors(error);
             });
     };
 }
@@ -510,5 +509,59 @@ export function updateMachineDetails(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method bulkUploadMachineZBC
+ * @description upload bulk MACHINE ZBC
+ */
+export function bulkUploadMachineZBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadMachineZBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadMachineVBC
+ * @description upload bulk MACHINE VBC
+ */
+export function bulkUploadMachineVBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadMachineVBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadMachineMoreZBC
+ * @description upload bulk MACHINE MORE ZBC
+ */
+export function bulkUploadMachineMoreZBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadMachineMoreZBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

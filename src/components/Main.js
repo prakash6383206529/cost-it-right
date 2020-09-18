@@ -93,8 +93,6 @@ class Main extends Component {
       isLogin = false;
     }
 
-    console.log('isLogin: ', isLogin, typeof isLogin);
-
     return (
       <Suspense fallback={<Loader />}>
         <div className="testting">

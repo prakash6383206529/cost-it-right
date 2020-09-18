@@ -212,9 +212,9 @@ class ProcessListing extends Component {
     }
 
     /**
-	* @method filterList
-	* @description GET FILTER DATALIST
-	*/
+    * @method filterList
+    * @description GET FILTER DATALIST
+    */
     filterList = () => {
         const { plant, machine } = this.state;
         const plantId = plant ? plant.value : '';
@@ -223,10 +223,10 @@ class ProcessListing extends Component {
         this.getDataList(plantId, machineId)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             plant: [],
@@ -300,7 +300,7 @@ class ProcessListing extends Component {
                                         type="text"
                                         label=''
                                         component={searchableSelect}
-                                        placeholder={'Machine Type'}
+                                        placeholder={'-Machine-'}
                                         options={this.renderListing('Machine')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.machine == null || this.state.machine.length == 0) ? [required] : []}

@@ -3,10 +3,7 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_PROCESS_SUCCESS,
-    CREATE_PROCESS_FAILURE,
     GET_PROCESS_LIST_SUCCESS,
-    GET_PROCESS_LIST_FAILURE,
     GET_PROCESS_UNIT_DATA_SUCCESS,
     GET_INITIAL_PLANT_SELECTLIST_SUCCESS,
     GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
@@ -15,12 +12,15 @@ import {
     GET_INITIAL_MACHINE_LIST_SUCCESS,
     GET_MACHINE_LIST_BY_PLANT,
     GET_PLANT_LIST_BY_MACHINE,
+    GET_MACHINE_TYPE_LIST_BY_PLANT,
+    GET_VENDOR_LIST_BY_TECHNOLOGY,
+    GET_MACHINE_TYPE_LIST_BY_TECHNOLOGY,
+    GET_MACHINE_TYPE_LIST_BY_VENDOR,
+    GET_PROCESS_LIST_BY_MACHINE_TYPE,
 } from '../../config/constants';
 import {
     apiErrors
 } from '../../helper/util';
-import { toastr } from 'react-redux-toastr'
-import { MESSAGES } from '../../config/message';
 
 const headers = {
     'Content-Type': 'application/json',
@@ -215,7 +215,6 @@ export function getInitialMachineTypeSelectList(callback) {
     };
 }
 
-
 /**
  * @method getInitialMachineSelectList
  * @description GET MACHINE SELECTLIST
@@ -240,7 +239,6 @@ export function getInitialMachineSelectList(callback) {
         });
     };
 }
-
 
 /**
  * @method getInitialProcessesSelectList
@@ -302,6 +300,126 @@ export function getPlantSelectListByMachine(Id, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_PLANT_LIST_BY_MACHINE,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getMachineTypeSelectListByPlant
+ * @description GET MACHINE TYPE SELECTLIST BY PLANT
+ */
+export function getMachineTypeSelectListByPlant(Id, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMachineTypeSelectListByPlant}/${Id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MACHINE_TYPE_LIST_BY_PLANT,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorSelectListByTechnology
+ * @description GET VENDOR SELECTLIST BY TECHNOLOGY
+ */
+export function getVendorSelectListByTechnology(Id, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getVendorSelectListByTechnology}/${Id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VENDOR_LIST_BY_TECHNOLOGY,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getMachineTypeSelectListByTechnology
+ * @description GET MACHINE TYPE SELECTLIST BY TECHNOLOGY
+ */
+export function getMachineTypeSelectListByTechnology(Id, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMachineTypeSelectListByTechnology}/${Id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MACHINE_TYPE_LIST_BY_TECHNOLOGY,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getMachineTypeSelectListByVendor
+ * @description GET MACHINE TYPE SELECTLIST BY VENDOR
+ */
+export function getMachineTypeSelectListByVendor(Id, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMachineTypeSelectListByVendor}/${Id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MACHINE_TYPE_LIST_BY_VENDOR,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getProcessSelectListByMachineType
+ * @description GET PROCESS SELECTLIST BY MACHINE TYPE
+ */
+export function getProcessSelectListByMachineType(Id, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getProcessSelectListByMachineType}/${Id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PROCESS_LIST_BY_MACHINE_TYPE,
                     payload: response.data.SelectList,
                 });
                 callback(response);
