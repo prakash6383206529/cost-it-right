@@ -6,8 +6,6 @@ import {
     GET_VOLUME_DATA_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
-import { MESSAGES } from '../../config/message';
-import { toastr } from 'react-redux-toastr'
 const headers = {
     'Content-Type': 'application/json',
 };
@@ -55,7 +53,7 @@ export function updateVolume(requestData, callback) {
 export function getVolumeData(VolumeId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (VolumeId != '') {
+        if (VolumeId !== '') {
             axios.get(`${API.getVolumeData}/${VolumeId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {

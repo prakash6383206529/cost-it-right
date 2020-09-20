@@ -668,7 +668,7 @@ export function saveOtherOpsCosting(data, callback) {
 }
 
 /**
- * @method fetchMasterDataAPI
+ * @method getMaterialTypeSelectList
  * @description fetch UOM and material type list
  */
 export function getMaterialTypeSelectList() {
@@ -690,7 +690,7 @@ export function getMaterialTypeSelectList() {
 
 
 /**
- * @method fetchMasterDataAPI
+ * @method setCostingDetailRowData
  * @description fetch UOM and material type list
  */
 export function setCostingDetailRowData(data, selectedIndex) {

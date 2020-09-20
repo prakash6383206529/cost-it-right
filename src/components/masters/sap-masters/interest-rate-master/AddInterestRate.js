@@ -4,7 +4,6 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
-//import { fetchMasterDataAPI, getOtherOperationData } from '../../../../actions/master/Comman';
 import { createInterestRateAPI, getInterestRateComboData } from '../../../../actions/master/InterestRateMaster';
 //import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
 import { toastr } from 'react-redux-toastr';
@@ -423,7 +422,6 @@ function mapStateToProps({ interestRate }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    //fetchMasterDataAPI,
     getInterestRateComboData,
     createInterestRateAPI
 })(reduxForm({

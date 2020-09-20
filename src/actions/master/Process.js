@@ -18,9 +18,7 @@ import {
     GET_MACHINE_TYPE_LIST_BY_VENDOR,
     GET_PROCESS_LIST_BY_MACHINE_TYPE,
 } from '../../config/constants';
-import {
-    apiErrors
-} from '../../helper/util';
+import { apiErrors } from '../../helper/util';
 
 const headers = {
     'Content-Type': 'application/json',
@@ -35,7 +33,7 @@ export function createProcess(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.createProcess, data, headers);
         request.then((response) => {
-            if (response.data.Result == true) {
+            if (response.data.Result === true) {
                 callback(response);
             }
         }).catch((error) => {
@@ -109,7 +107,7 @@ export function deleteProcess(Id, callback) {
 export function getProcessData(processId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (processId != '') {
+        if (processId !== '') {
             axios.get(`${API.getProcessData}/${processId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {

@@ -13,7 +13,6 @@ import {
     GET_CED_OTHER_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_FAILURE,
-    GET_OPERATION_SUCCESS,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
     GET_OPERATION_SELECTLIST_SUCCESS,
     GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
@@ -165,7 +164,7 @@ export function getCEDOtherOperationsAPI(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getCEDOtherOperationsAPI, { headers })
             .then((response) => {
-                if (response.data.Result == true) {
+                if (response.data.Result === true) {
                     dispatch({
                         type: GET_CED_OTHER_OPERATION_SUCCESS,
                         payload: response.data.DataList,
@@ -190,10 +189,10 @@ export function getCEDOtherOperationsAPI(callback) {
 export function getCEDoperationDataAPI(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (ID != '') {
+        if (ID !== '') {
             axios.get(`${API.getCEDoperationDataAPI}/${ID}`, headers)
                 .then((response) => {
-                    if (response.data.Result == true) {
+                    if (response.data.Result === true) {
                         dispatch({
                             type: GET_CED_OTHER_OPERATION_DATA_SUCCESS,
                             payload: response.data.Data,
@@ -294,7 +293,7 @@ export function createOperationsAPI(data, callback) {
 export function getOperationDataAPI(OperationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (OperationId != '') {
+        if (OperationId !== '') {
             axios.get(`${API.getOperationDataAPI}/${OperationId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
@@ -362,7 +361,7 @@ export function fileUploadOperation(data, callback) {
         };
         const request = axios.post(API.fileUploadOperation, data, headers);
         request.then((response) => {
-            if (response && response.status == 200) {
+            if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -380,7 +379,7 @@ export function checkAndGetOperationCode(code, callback) {
     return (dispatch) => {
         const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}`, headers);
         request.then((response) => {
-            if (response && response.status == 200) {
+            if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -441,7 +440,7 @@ export function getOperationSelectList(callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(API.getOperationSelectList, { headers })
             .then((response) => {
-                if (response.data.Result == true) {
+                if (response.data.Result === true) {
                     dispatch({
                         type: GET_OPERATION_SELECTLIST_SUCCESS,
                         payload: response.data.SelectList,
@@ -644,7 +643,7 @@ export function operationZBCBulkUpload(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.operationZBCBulkUpload, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -662,7 +661,7 @@ export function operationVBCBulkUpload(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.operationVBCBulkUpload, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {

@@ -9,15 +9,12 @@ import {
     CREATE_CATEGORY_SUCCESS,
     FETCH_CATEGORY_DATA_FAILURE,
     GET_CATEGORY_DATA_SUCCESS,
-    GET_DATA_FAILURE,
     GET_CATEGORY_LIST_SUCCESS,
     GET_CATEGORY_TYPE_LIST_SUCCESS,
     GET_CATEGORY_TYPE_DATA_SUCCESS,
     GET_CATEGORY_MASTER_DATA_SUCCESS,
 } from '../../config/constants';
-import {
-    apiErrors
-} from '../../helper/util';
+import { apiErrors } from '../../helper/util';
 import { toastr } from 'react-redux-toastr'
 
 const headers = {

@@ -3,15 +3,11 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    DATA_FAILURE,
     CREATE_SUCCESS,
-    CREATE_FAILURE,
     GET_POWER_DATALIST_SUCCESS,
     GET_POWER_DATA_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
-import { MESSAGES } from '../../config/message';
-import { toastr } from 'react-redux-toastr'
 
 const headers = {
     'Content-Type': 'application/json',
@@ -26,7 +22,7 @@ export function createPowerAPI(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.createPowerAPI, data, headers);
         request.then((response) => {
-            if (response.data.Result == true) {
+            if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
                 callback(response);
             }
@@ -65,11 +61,11 @@ export function getPowerDataListAPI(callback) {
  */
 export function getPowerDataAPI(PowerId, callback) {
     return (dispatch) => {
-        if (PowerId != '') {
+        if (PowerId !== '') {
             //dispatch({ type: API_REQUEST });
             axios.get(`${API.getPowerDataAPI}/${PowerId}`, headers)
                 .then((response) => {
-                    if (response.data.Result == true) {
+                    if (response.data.Result === true) {
                         dispatch({
                             type: GET_POWER_DATA_SUCCESS,
                             payload: response.data.Data,

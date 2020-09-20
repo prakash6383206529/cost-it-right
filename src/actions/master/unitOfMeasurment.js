@@ -9,7 +9,6 @@ import {
     CREATE_PART_FAILURE,
     CREATE_PART_SUCCESS,
     GET_UOM_SUCCESS,
-    GET_UOM_DATA_FAILURE,
     GET_UNIT_TYPE_SELECTLIST_SUCCESS,
 } from '../../config/constants';
 import {
