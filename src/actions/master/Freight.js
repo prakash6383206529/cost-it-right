@@ -12,9 +12,7 @@ import {
     GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
     GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS,
 } from '../../config/constants';
-import {
-    apiErrors
-} from '../../helper/util';
+import { apiErrors } from '../../helper/util';
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../config/message';
 

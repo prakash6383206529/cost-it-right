@@ -3,10 +3,6 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_FUEL_SUCCESS,
-    CREATE_FUEL_DETAIL_FAILURE,
-    CREATE_FUEL_DETAIL_SUCCESS,
-    CREATE_FUEL_FAILURE,
     GET_FUEL_DATALIST_SUCCESS,
     GET_FUEL_UNIT_DATA_SUCCESS,
     GET_FUEL_FAILURE,
@@ -19,9 +15,7 @@ import {
     GET_STATE_SELECTLIST,
     GET_ZBC_POWER_DATA_SUCCESS,
 } from '../../config/constants';
-import {
-    apiErrors
-} from '../../helper/util';
+import { apiErrors } from '../../helper/util';
 
 const headers = {
     'Content-Type': 'application/json',

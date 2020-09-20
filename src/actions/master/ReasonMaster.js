@@ -4,14 +4,12 @@ import {
     API_REQUEST,
     API_SUCCESS,
     API_FAILURE,
-    DATA_FAILURE,
     CREATE_SUCCESS,
     CREATE_FAILURE,
     GET_REASON_DATA_SUCCESS,
     GET_REASON_SUCCESS,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
-import { MESSAGES } from '../../config/message';
 import { toastr } from 'react-redux-toastr'
 
 const headers = {

@@ -14,11 +14,9 @@ import {
     GET_RAW_MATERIAL_SUCCESS,
     GET_GRADE_SUCCESS,
     GET_SUPPLIER_SUCCESS,
-    GET_SUPPLIER_CITY_SUCCESS,
     GET_TECHNOLOGY_SUCCESS,
     GET_CATEGORY_TYPE_SUCCESS,
     GET_CATEGORY_SUCCESS,
-    GET_FUEL_SUCCESS,
     GET_OTHER_OPERATION_FORMDATA_SUCCESS,
     GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS,
     GET_MHR_COMBO_DATA_SUCCESS,
@@ -30,8 +28,6 @@ import {
     GET_PLANTS_BY_SUPPLIER,
     GET_PLANTS_BY_CITY,
     GET_CITY_BY_SUPPLIER,
-    GET_SOURCE_PLANTS_BY_SOURCE_CITY,
-    GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
     GET_LABOUR_TYPE_SELECTLIST_SUCCESS,
     GET_POWER_TYPE_SELECTLIST_SUCCESS,
     GET_CHARGE_TYPE_SELECTLIST_SUCCESS,
@@ -49,12 +45,8 @@ import {
     GET_PLANT_SELECTLIST_SUCCESS,
     GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
 } from '../../config/constants';
-import {
-    apiErrors
-} from '../../helper/util';
-import {
-    MESSAGES
-} from '../../config/message';
+import { apiErrors } from '../../helper/util';
+import { MESSAGES } from '../../config/message';
 import { toastr } from 'react-redux-toastr'
 
 const headers = {
@@ -62,65 +54,6 @@ const headers = {
     //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
 };
 
-export function fetchMasterDataAPI() {
-    return (dispatch) => {
-        const API1 = axios.get(API.getAllMasterUOMAPI, headers);
-        const API2 = axios.get(API.getMaterialType, headers);
-        const API3 = axios.get(API.getPart, headers);
-        const API4 = axios.get(API.getPlant, headers);
-        //const API5 = axios.get(API.getSupplier, headers);
-        const API5 = axios.get(API.getSupplierCity, headers);
-        const API6 = axios.get(API.getTechnology, headers);
-        const API7 = axios.get(API.getCategoryType, headers);
-        const API8 = axios.get(API.getSupplierCity, headers)
-        Promise.all([API1, API2, API3, API4, API5, API6, API7, API8])
-            .then((response) => {
-                dispatch({
-                    type: GET_UOM_DATA_SUCCESS,
-                    payload: response[0].data.SelectList,
-                });
-
-                dispatch({
-                    type: GET_MATERIAL_TYPE_SUCCESS,
-                    payload: response[1].data.SelectList,
-                });
-
-                dispatch({
-                    type: GET_PART_SUCCESS,
-                    payload: response[2].data.SelectList,
-                });
-                dispatch({
-                    type: GET_PLANT_SUCCESS,
-                    payload: response[3].data.SelectList,
-                });
-                dispatch({
-                    type: GET_SUPPLIER_SUCCESS,
-                    payload: response[4].data.SelectList,
-                });
-                // dispatch({
-                //     type: GET_SUPPLIER_CITY_SUCCESS,
-                //     payload: response[5].data.SelectList,
-                // });
-                dispatch({
-                    type: GET_TECHNOLOGY_SUCCESS,
-                    payload: response[5].data.SelectList,
-                });
-                dispatch({
-                    type: GET_CATEGORY_TYPE_SUCCESS,
-                    payload: response[6].data.SelectList,
-                });
-                dispatch({
-                    type: GET_CITY_SUCCESS,
-                    payload: response[7].data.SelectList,
-                });
-            }).catch((error) => {
-                dispatch({
-                    type: FETCH_MATER_DATA_FAILURE
-                });
-                apiErrors(error);
-            });
-    };
-}
 /**
  * @method fetchCountryDataAPI
  * @description Used to fetch country list

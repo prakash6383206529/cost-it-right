@@ -4,59 +4,23 @@ import {
     API_REQUEST,
     API_FAILURE,
     FETCH_MATER_DATA_FAILURE,
-    GET_UOM_DATA_SUCCESS,
     CREATE_PART_REQUEST,
     CREATE_PART_FAILURE,
     CREATE_PART_SUCCESS,
     GET_ALL_PARTS_SUCCESS,
-    GET_ALL_PARTS_FAILURE,
-    GET_PART_SUCCESS,
     GET_UNIT_PART_DATA_SUCCESS,
-    GET_MATERIAL_TYPE_SUCCESS,
     GET_ALL_NEW_PARTS_SUCCESS,
     GET_UNIT_NEW_PART_DATA_SUCCESS,
     GET_PART_SELECTLIST_SUCCESS,
 } from '../../config/constants';
-import {
-    apiErrors
-} from '../../helper/util';
-import {
-    MESSAGES
-} from '../../config/message';
+import { apiErrors } from '../../helper/util';
+import { MESSAGES } from '../../config/message';
 import { toastr } from 'react-redux-toastr'
 
 const headers = {
     'Content-Type': 'application/json',
     //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
 };
-
-/**
- * @method fetchMasterDataAPI
- * @description fetch UOM and material type list
- */
-export function fetchMasterDataAPI() {
-    return (dispatch) => {
-        const API1 = axios.get(API.getAllMasterUOMAPI, headers);
-        const API2 = axios.get(API.getMaterialType, headers);
-        Promise.all([API1, API2])
-            .then((response) => {
-                dispatch({
-                    type: GET_UOM_DATA_SUCCESS,
-                    payload: response[0].data.SelectList,
-                });
-
-                dispatch({
-                    type: GET_MATERIAL_TYPE_SUCCESS,
-                    payload: response[1].data.SelectList,
-                });
-            }).catch((error) => {
-                dispatch({
-                    type: FETCH_MATER_DATA_FAILURE
-                });
-                apiErrors(error);
-            });
-    };
-}
 
 /**
  * @method getAllPartsAPI
@@ -67,15 +31,11 @@ export function getAllPartsAPI(callback) {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getAllPartsAPI}`, headers);
         request.then((response) => {
-            //if (response.data.Result === true) {
             dispatch({
                 type: GET_ALL_PARTS_SUCCESS,
                 payload: response.data.DataList,
             });
             callback(response);
-            // } else {
-            //     toastr.error(MESSAGES.SOME_ERROR);
-            // }
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE });
             callback(error);
@@ -250,7 +210,7 @@ export function getAllNewPartsAPI(callback) {
 export function getNewPartsDataAPI(PartId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (PartId != '') {
+        if (PartId !== '') {
             axios.get(`${API.getNewPartsDataAPI}/${PartId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
@@ -355,7 +315,7 @@ export function updatePart(requestData, callback) {
 export function getPartData(PartId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (PartId != '') {
+        if (PartId !== '') {
             axios.get(`${API.getPartData}/${PartId}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
