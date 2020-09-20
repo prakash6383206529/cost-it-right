@@ -1,11 +1,11 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Label } from 'reactstrap';
+import { Row, Col, Label } from 'reactstrap';
 import { required, checkForNull, maxLength100, getVendorCode } from "../../../../helper/validation";
 import {
-    renderText, renderSelectField, renderNumberInputField, searchableSelect,
-    renderMultiSelectField, renderTextAreaField
+    renderText, renderNumberInputField, searchableSelect,
+    renderTextAreaField
 } from "../../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../../actions/master/Comman';
 import { getVendorWithVendorCodeSelectList } from '../../../../actions/master/Supplier';
@@ -123,15 +123,15 @@ class AddOverhead extends Component {
                     setTimeout(() => {
                         const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
 
-                        const modelObj = modelTypes && modelTypes.find(item => item.Value == Data.ModelTypeId)
-                        const AppliObj = costingHead && costingHead.find(item => item.Value == Data.OverheadApplicabilityId)
-                        const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value == Data.VendorId)
-                        const clientObj = clientSelectList && clientSelectList.find(item => item.Value == Data.ClientId)
+                        const modelObj = modelTypes && modelTypes.find(item => item.Value === Data.ModelTypeId)
+                        const AppliObj = costingHead && costingHead.find(item => item.Value === Data.OverheadApplicabilityId)
+                        const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
+                        const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
 
                         let Head = '';
-                        if (Data.IsVendor == true && Data.VendorId != null) {
+                        if (Data.IsVendor === true && Data.VendorId != null) {
                             Head = 'vendor';
-                        } else if (Data.IsClient == true) {
+                        } else if (Data.IsClient === true) {
                             Head = 'client';
                         } else {
                             Head = 'zero';
@@ -142,10 +142,10 @@ class AddOverhead extends Component {
                             isLoader: false,
                             IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
                             costingHead: Head,
-                            ModelType: modelObj && modelObj != undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
-                            vendorName: vendorObj && vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
-                            client: clientObj && clientObj != undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
-                            overheadAppli: AppliObj && AppliObj != undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
+                            ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
+                            vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
+                            overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
                             remarks: Data.Remark,
                             files: Data.Attachements,
                         }, () => this.checkOverheadFields())
@@ -167,7 +167,7 @@ class AddOverhead extends Component {
 
         if (label === 'ModelType') {
             modelTypes && modelTypes.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -175,7 +175,7 @@ class AddOverhead extends Component {
 
         if (label === 'OverheadApplicability') {
             costingHead && costingHead.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -183,7 +183,7 @@ class AddOverhead extends Component {
 
         if (label === 'VendorNameList') {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -191,7 +191,7 @@ class AddOverhead extends Component {
 
         if (label === 'ClientList') {
             clientSelectList && clientSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -215,7 +215,7 @@ class AddOverhead extends Component {
     * @description called
     */
     handleClient = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ client: newValue });
         } else {
             this.setState({ client: [] })
@@ -223,13 +223,14 @@ class AddOverhead extends Component {
     };
 
     componentDidUpdate(prevProps) {
-        if (prevProps.filedObj != this.props.filedObj) {
+        if (prevProps.filedObj !== this.props.filedObj) {
             const { filedObj } = this.props;
-            const OverheadPercentage = filedObj && filedObj.OverheadPercentage != undefined && filedObj.OverheadPercentage != '' ? true : false;
-            const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage != undefined && filedObj.OverheadRMPercentage != '' ? true : false;
-            const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage != undefined && filedObj.OverheadMachiningCCPercentage != '' ? true : false;
-            const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage != undefined && filedObj.OverheadBOPPercentage != '' ? true : false;
+            const OverheadPercentage = filedObj && filedObj.OverheadPercentage !== undefined && filedObj.OverheadPercentage !== '' ? true : false;
+            const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage !== undefined && filedObj.OverheadRMPercentage !== '' ? true : false;
+            const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' ? true : false;
+            const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage !== undefined && filedObj.OverheadBOPPercentage !== '' ? true : false;
 
+            console.log('OverheadPercentage: ', OverheadPercentage);
             if (OverheadPercentage) {
                 this.setState({ isRM: true, isCC: true, isBOP: true, })
             } else if (OverheadRMPercentage || OverheadMachiningCCPercentage || OverheadBOPPercentage) {
@@ -247,7 +248,7 @@ class AddOverhead extends Component {
     */
     handleOverheadChange = (newValue, actionMeta) => {
         this.resetFields();
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ overheadAppli: newValue, isRM: false, isCC: false, isBOP: false, isOverheadPercent: false }, () => {
                 this.checkOverheadFields()
             });
@@ -385,22 +386,21 @@ class AddOverhead extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
-        const { isEditFlag, RawMaterialID } = this.state;
         return { url: 'https://httpbin.org/post', }
 
     }
 
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
-        const { isEditFlag, files, } = this.state;
+        const { files, } = this.state;
 
-        if (status == 'removed') {
+        if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
+            let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
             this.setState({ files: tempArr })
         }
 
-        if (status == 'done') {
+        if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
             this.props.fileUploadOverHead(data, (res) => {
@@ -411,7 +411,7 @@ class AddOverhead extends Component {
             })
         }
 
-        if (status == 'rejected_file_type') {
+        if (status === 'rejected_file_type') {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
@@ -439,12 +439,12 @@ class AddOverhead extends Component {
             }
             this.props.fileDeleteOverhead(deleteData, (res) => {
                 toastr.success('File has been deleted successfully.')
-                let tempArr = this.state.files.filter(item => item.FileId != FileId)
+                let tempArr = this.state.files.filter(item => item.FileId !== FileId)
                 this.setState({ files: tempArr })
             })
         }
         if (FileId == null) {
-            let tempArr = this.state.files.filter(item => item.FileName != OriginalFileName)
+            let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
             this.setState({ files: tempArr })
         }
     }
@@ -472,7 +472,6 @@ class AddOverhead extends Component {
             ModelType: [],
             vendorName: [],
             overheadAppli: [],
-            remarks: '',
         })
         this.props.getOverheadData('', res => { })
         this.props.hideForm()
@@ -484,7 +483,7 @@ class AddOverhead extends Component {
     */
     onSubmit = (values) => {
         const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
-            isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, receivedFiles } = this.state;
+            isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, } = this.state;
         const userDetail = userDetails()
 
         if (isEditFlag) {
@@ -493,9 +492,9 @@ class AddOverhead extends Component {
             })
             let requestData = {
                 OverheadId: OverheadID,
-                VendorName: IsVendor ? (costingHead == 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
-                IsClient: costingHead == 'client' ? true : false,
-                ClientName: costingHead == 'client' ? client.label : '',
+                VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
+                IsClient: costingHead === 'client' ? true : false,
+                ClientName: costingHead === 'client' ? client.label : '',
                 OverheadApplicabilityType: overheadAppli.label,
                 ModelType: ModelType.label,
                 IsVendor: IsVendor,
@@ -504,9 +503,9 @@ class AddOverhead extends Component {
                 OverheadBOPPercentage: values.OverheadBOPPercentage,
                 OverheadRMPercentage: values.OverheadRMPercentage,
                 Remark: remarks,
-                VendorId: IsVendor ? (costingHead == 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-                VendorCode: IsVendor ? (costingHead == 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
-                ClientId: costingHead == 'client' ? client.value : '',
+                VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+                VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+                ClientId: costingHead === 'client' ? client.value : '',
                 OverheadApplicabilityId: overheadAppli.value,
                 ModelTypeId: ModelType.value,
                 IsActive: true,
@@ -532,9 +531,9 @@ class AddOverhead extends Component {
                 OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : '',
                 OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : '',
                 Remark: remarks,
-                VendorId: IsVendor ? (costingHead == 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-                VendorCode: IsVendor ? (costingHead == 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
-                ClientId: costingHead == 'client' ? client.value : '',
+                VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+                VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+                ClientId: costingHead === 'client' ? client.value : '',
                 OverheadApplicabilityId: overheadAppli.value,
                 ModelTypeId: ModelType.value,
                 IsActive: true,
@@ -557,15 +556,9 @@ class AddOverhead extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
+        const { handleSubmit, } = this.props;
         const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
             isHideOverhead, isHideBOP, isHideRM, isHideCC } = this.state;
-
-        const previewStyle = {
-            display: 'inline',
-            width: 100,
-            height: 100,
-        };
 
         return (
             <>
@@ -587,25 +580,12 @@ class AddOverhead extends Component {
                                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                     >
                                         <Row>
-                                            {/* <Col md="4" className="switch mb15">
-                                                    <label>
-                                                        <div className={'left-title'}>Zero Based</div>
-                                                        <Switch
-                                                            onChange={this.onPressVendor}
-                                                            checked={this.state.IsVendor}
-                                                            id="normal-switch"
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                        <div className={'right-title'}>Vendor Based</div>
-                                                    </label>
-                                                </Col> */}
-
                                             <Col md="12">
                                                 <Label sm={2} className={'pl0 pr0'} check>
                                                     <input
                                                         type="radio"
                                                         name="costingHead"
-                                                        checked={costingHead == 'zero' ? true : false}
+                                                        checked={costingHead === 'zero' ? true : false}
                                                         onClick={() => this.onPressVendor(false, 'zero')}
                                                         disabled={isEditFlag ? true : false}
                                                     />{' '}
@@ -615,7 +595,7 @@ class AddOverhead extends Component {
                                                     <input
                                                         type="radio"
                                                         name="costingHead"
-                                                        checked={costingHead == 'vendor' ? true : false}
+                                                        checked={costingHead === 'vendor' ? true : false}
                                                         onClick={() => this.onPressVendor(true, 'vendor')}
                                                         disabled={isEditFlag ? true : false}
                                                     />{' '}
@@ -625,7 +605,7 @@ class AddOverhead extends Component {
                                                     <input
                                                         type="radio"
                                                         name="costingHead"
-                                                        checked={costingHead == 'client' ? true : false}
+                                                        checked={costingHead === 'client' ? true : false}
                                                         onClick={() => this.onPressVendor(true, 'client')}
                                                         disabled={isEditFlag ? true : false}
                                                     />{' '}
@@ -644,14 +624,14 @@ class AddOverhead extends Component {
                                                     placeholder={'---Select---'}
                                                     options={this.renderListing('ModelType')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.ModelType == null || this.state.ModelType.length == 0) ? [required] : []}
+                                                    validate={(this.state.ModelType == null || this.state.ModelType.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.handleModelTypeChange}
                                                     valueDescription={this.state.ModelType}
                                                 //disabled={isEditFlag ? true : false}
                                                 />
                                             </Col>
-                                            {this.state.IsVendor && costingHead == 'vendor' &&
+                                            {this.state.IsVendor && costingHead === 'vendor' &&
                                                 <Col md="3">
                                                     <Field
                                                         name="vendorName"
@@ -661,14 +641,14 @@ class AddOverhead extends Component {
                                                         placeholder={'---Select---'}
                                                         options={this.renderListing('VendorNameList')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                                         required={true}
                                                         handleChangeDescription={this.handleVendorName}
                                                         valueDescription={this.state.vendorName}
                                                         disabled={isEditFlag ? true : false}
                                                     />
                                                 </Col>}
-                                            {this.state.IsVendor && costingHead == 'client' &&
+                                            {this.state.IsVendor && costingHead === 'client' &&
                                                 <Col md="3">
                                                     <Field
                                                         name="clientName"
@@ -678,7 +658,7 @@ class AddOverhead extends Component {
                                                         placeholder={'---Select---'}
                                                         options={this.renderListing('ClientList')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.client == null || this.state.client.length == 0) ? [required] : []}
+                                                        validate={(this.state.client == null || this.state.client.length === 0) ? [required] : []}
                                                         required={true}
                                                         handleChangeDescription={this.handleClient}
                                                         valueDescription={this.state.client}
@@ -698,7 +678,7 @@ class AddOverhead extends Component {
                                                     placeholder={'---Select---'}
                                                     options={this.renderListing('OverheadApplicability')}
                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.overheadAppli == null || this.state.overheadAppli.length == 0) ? [required] : []}
+                                                    validate={(this.state.overheadAppli == null || this.state.overheadAppli.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.handleOverheadChange}
                                                     valueDescription={this.state.overheadAppli}
@@ -825,7 +805,7 @@ class AddOverhead extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                                                    <img className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../assests/images/red-cross.png')}></img>
+                                                                    <img alt={''} className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../assests/images/red-cross.png')}></img>
                                                                 </div>
                                                             )
                                                         })
@@ -878,12 +858,12 @@ function mapStateToProps(state) {
     const { vendorWithVendorCodeSelectList } = supplier;
 
     let initialValues = {};
-    if (overheadProfitData && overheadProfitData != undefined) {
+    if (overheadProfitData && overheadProfitData !== undefined) {
         initialValues = {
-            OverheadPercentage: overheadProfitData.OverheadPercentage != 0 ? overheadProfitData.OverheadPercentage : '',
-            OverheadRMPercentage: overheadProfitData.OverheadRMPercentage != 0 ? overheadProfitData.OverheadRMPercentage : '',
-            OverheadMachiningCCPercentage: overheadProfitData.OverheadMachiningCCPercentage != 0 ? overheadProfitData.OverheadMachiningCCPercentage : '',
-            OverheadBOPPercentage: overheadProfitData.OverheadBOPPercentage != 0 ? overheadProfitData.OverheadBOPPercentage : '',
+            OverheadPercentage: overheadProfitData.OverheadPercentage !== null ? overheadProfitData.OverheadPercentage : '',
+            OverheadRMPercentage: overheadProfitData.OverheadRMPercentage !== null ? overheadProfitData.OverheadRMPercentage : '',
+            OverheadMachiningCCPercentage: overheadProfitData.OverheadMachiningCCPercentage !== null ? overheadProfitData.OverheadMachiningCCPercentage : '',
+            OverheadBOPPercentage: overheadProfitData.OverheadBOPPercentage !== null ? overheadProfitData.OverheadBOPPercentage : '',
             Remark: overheadProfitData.Remark,
         }
     }

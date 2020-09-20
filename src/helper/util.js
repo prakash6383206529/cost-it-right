@@ -13,8 +13,6 @@ export const apiErrors = (res) => {
 
     if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
-    } else if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
-        toastr.error(response.data.error.message.value);
     } else if (response) {
         if (response.status && response.status === 417) {
             toastr.error(response.data.Message);

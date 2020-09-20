@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
-import { required, number, upper, maxLength100, getVendorCode } from "../../../../helper/validation";
+import { Row, Col, } from 'reactstrap';
+import { required, number, maxLength100, getVendorCode } from "../../../../helper/validation";
 import {
-    renderText, renderMultiSelectField, searchableSelect, renderNumberInputField, renderTextAreaField
+    renderText, renderMultiSelectField, searchableSelect, renderTextAreaField
 } from "../../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../../../../actions/master/Supplier';
 import {
@@ -17,7 +17,6 @@ import {
 } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId, userDetails } from "../../../../helper/auth";
 import Switch from "react-switch";
 import $ from 'jquery';
@@ -76,7 +75,7 @@ class AddOperation extends Component {
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getDetail()
-        if (initialConfigureData && initialConfigureData.IsOperationCodeConfigure && data.isEditFlag == false) {
+        if (initialConfigureData && initialConfigureData.IsOperationCodeConfigure && data.isEditFlag === false) {
             this.props.checkAndGetOperationCode('', res => {
                 let Data = res.data.DynamicData;
                 this.props.change('OperationCode', Data.OperationCode)
@@ -86,9 +85,9 @@ class AddOperation extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.filedObj != this.props.filedObj) {
+        if (prevProps.filedObj !== this.props.filedObj) {
             const { filedObj } = this.props;
-            if (filedObj && filedObj != undefined && filedObj.length > 4) {
+            if (filedObj && filedObj !== undefined && filedObj.length > 4) {
             }
         }
     }
@@ -103,35 +102,35 @@ class AddOperation extends Component {
         const temp = [];
         if (label === 'technology') {
             technologySelectList && technologySelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'UOM') {
             UOMSelectList && UOMSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -172,7 +171,7 @@ class AddOperation extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
                 const { vendorName } = this.state;
                 this.props.getPlantBySupplier(vendorName.value, () => { })
@@ -205,7 +204,7 @@ class AddOperation extends Component {
     * @description called
     */
     handleUOM = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ UOM: newValue, })
         } else {
             this.setState({ UOM: [] })
@@ -278,8 +277,8 @@ class AddOperation extends Component {
                     setTimeout(() => {
                         const { vendorWithVendorCodeSelectList, UOMSelectList } = this.props;
 
-                        const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value == Data.VendorId)
-                        const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value == Data.UnitOfMeasurementId)
+                        const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
+                        const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
 
                         this.setState({
                             isEditFlag: true,
@@ -287,9 +286,9 @@ class AddOperation extends Component {
                             IsVendor: Data.IsVendor,
                             selectedTechnology: technologyArray,
                             selectedPlants: plantArray,
-                            vendorName: vendorObj && vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
                             selectedVendorPlants: vendorPlantArray,
-                            UOM: UOMObj && UOMObj != undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                            UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
                             isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
                             remarks: Data.Remark,
                             files: Data.Attachements,
@@ -312,22 +311,21 @@ class AddOperation extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
-        const { isEditFlag, RawMaterialID } = this.state;
         return { url: 'https://httpbin.org/post', }
 
     }
 
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
-        const { isEditFlag, files, } = this.state;
+        const { files, } = this.state;
 
-        if (status == 'removed') {
+        if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
+            let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
             this.setState({ files: tempArr })
         }
 
-        if (status == 'done') {
+        if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
             this.props.fileUploadOperation(data, (res) => {
@@ -338,7 +336,7 @@ class AddOperation extends Component {
             })
         }
 
-        if (status == 'rejected_file_type') {
+        if (status === 'rejected_file_type') {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
@@ -366,12 +364,12 @@ class AddOperation extends Component {
             }
             this.props.fileDeleteOperation(deleteData, (res) => {
                 toastr.success('File has been deleted successfully.')
-                let tempArr = this.state.files.filter(item => item.FileId != FileId)
+                let tempArr = this.state.files.filter(item => item.FileId !== FileId)
                 this.setState({ files: tempArr })
             })
         }
         if (FileId == null) {
-            let tempArr = this.state.files.filter(item => item.FileName != OriginalFileName)
+            let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
             this.setState({ files: tempArr })
         }
     }
@@ -491,7 +489,7 @@ class AddOperation extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset } = this.props;
+        const { handleSubmit, } = this.props;
         const { isEditFlag, isOpenVendor, isOpenUOM } = this.state;
         return (
             <div>
@@ -540,7 +538,7 @@ class AddOperation extends Component {
                                                 label="Technology"
                                                 name="technology"
                                                 placeholder="--Select--"
-                                                selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length == 0) ? [] : this.state.selectedTechnology}
+                                                selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                                                 options={this.renderListing('technology')}
                                                 selectionChanged={this.handleTechnology}
                                                 optionValue={option => option.Value}
@@ -603,7 +601,7 @@ class AddOperation extends Component {
                                                     label="Plant"
                                                     name="Plant"
                                                     placeholder="--Select--"
-                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                                     options={this.renderListing('plant')}
                                                     selectionChanged={this.handlePlants}
                                                     optionValue={option => option.Value}
@@ -626,7 +624,7 @@ class AddOperation extends Component {
                                                             placeholder={'--select--'}
                                                             options={this.renderListing('VendorNameList')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                            validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleVendorName}
                                                             valueDescription={this.state.vendorName}
@@ -645,7 +643,7 @@ class AddOperation extends Component {
                                                     label="Vendor Plant"
                                                     name="VendorPlant"
                                                     placeholder="--- Plant ---"
-                                                    selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                    selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
                                                     options={this.renderListing('VendorPlant')}
                                                     selectionChanged={this.handleVendorPlant}
                                                     optionValue={option => option.Value}
@@ -668,7 +666,7 @@ class AddOperation extends Component {
                                                 placeholder={'--- Select ---'}
                                                 options={this.renderListing('UOM')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                                                validate={(this.state.UOM == null || this.state.UOM.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handleUOM}
                                                 valueDescription={this.state.UOM}
@@ -801,7 +799,7 @@ class AddOperation extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                                                <img className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../assests/images/red-cross.png')}></img>
+                                                                <img alt={''} className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../assests/images/red-cross.png')}></img>
                                                             </div>
                                                         )
                                                     })

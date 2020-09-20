@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { required, checkForNull, maxLength100 } from "../../../../helper/validation";
 import {
-    renderText, renderSelectField, renderNumberInputField, searchableSelect,
+    renderText, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField
 } from "../../../layout/FormInputs";
 import {
@@ -16,11 +16,8 @@ import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPD
 import BOPDomesticListing from './BOPDomesticListing';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
 import Switch from "react-switch";
-import Dropzone from 'react-dropzone-uploader';
-import 'react-dropzone-uploader/dist/styles.css'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
@@ -81,7 +78,7 @@ class AddBOPDomestic extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.fieldsObj != prevProps.fieldsObj) {
+        if (this.props.fieldsObj !== prevProps.fieldsObj) {
             this.handleCalculation()
         }
     }
@@ -107,7 +104,7 @@ class AddBOPDomestic extends Component {
     * @description  used to handle BOP Category Selection
     */
     handleCategoryChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ BOPCategory: newValue });
         } else {
             this.setState({ BOPCategory: [], });
@@ -172,9 +169,6 @@ class AddBOPDomestic extends Component {
                         const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
                         const sourceLocationObj = cityList && cityList.find(item => item.Value == Data.SourceLocation)
 
-                        let tempArr = [];
-                        let tempFiles = [];
-
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
@@ -206,56 +200,56 @@ class AddBOPDomestic extends Component {
         const temp = [];
         if (label === 'BOPCategory') {
             bopCategorySelectList && bopCategorySelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'PartAssembly') {
             partSelectList && partSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'plant') {
             plantList && plantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
             vendorListByVendorType && vendorListByVendorType.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorLocation') {
             filterCityListBySupplier && filterCityListBySupplier.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'SourceLocation') {
             cityList && cityList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'uom') {
             UOMSelectList && UOMSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -293,7 +287,7 @@ class AddBOPDomestic extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
                 const { vendorName } = this.state;
                 this.props.getPlantBySupplier(vendorName.value, () => { })
@@ -369,8 +363,8 @@ class AddBOPDomestic extends Component {
 
     handleCalculation = () => {
         const { fieldsObj } = this.props
-        const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces != undefined ? fieldsObj.NumberOfPieces : 0;
-        const BasicRate = fieldsObj && fieldsObj.BasicRate != undefined ? fieldsObj.BasicRate : 0;
+        const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
+        const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
         const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
         this.props.change('NetLandedCost', NetLandedCost)
     }
@@ -433,8 +427,7 @@ class AddBOPDomestic extends Component {
     onSubmit = (values) => {
         const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
             selectedVendorPlants, vendorLocation, sourceLocation, remarks,
-            BOPID, isEditFlag, files, effectiveDate, receivedFiles } = this.state;
-        const { reset } = this.props;
+            BOPID, isEditFlag, files, effectiveDate, } = this.state;
 
         let partArray = [];
         selectedPartAssembly && selectedPartAssembly.map((item) => {
@@ -500,7 +493,7 @@ class AddBOPDomestic extends Component {
                 LoggedInUserId: loggedInUserId(),
                 Plant: plantArray,
                 VendorPlant: vendorPlantArray,
-                Attachements: []
+                Attachements: files,
             }
 
             this.props.createBOPDomestic(formData, (res) => {
@@ -518,14 +511,8 @@ class AddBOPDomestic extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { files, errors, isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
-
-        const previewStyle = {
-            display: 'inline',
-            width: 100,
-            height: 100,
-        };
+        const { handleSubmit, } = this.props;
+        const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
         return (
             <>
@@ -600,7 +587,7 @@ class AddBOPDomestic extends Component {
                                                         placeholder={'BOP Category'}
                                                         options={this.renderListing('BOPCategory')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.BOPCategory == null || this.state.BOPCategory.length == 0) ? [required] : []}
+                                                        validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
                                                         required={true}
                                                         handleChangeDescription={this.handleCategoryChange}
                                                         valueDescription={this.state.BOPCategory}
@@ -621,7 +608,7 @@ class AddBOPDomestic extends Component {
                                                         label="Part/ Assembly No."
                                                         name="PartAssemblyNo"
                                                         placeholder="--Select--"
-                                                        selection={(this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length == 0) ? [] : this.state.selectedPartAssembly}
+                                                        selection={(this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0) ? [] : this.state.selectedPartAssembly}
                                                         options={this.renderListing('PartAssembly')}
                                                         selectionChanged={this.handlePartAssembly}
                                                         optionValue={option => option.Value}
@@ -652,7 +639,7 @@ class AddBOPDomestic extends Component {
                                                             label="Plant"
                                                             name="Plant"
                                                             placeholder="--Select--"
-                                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                                             options={this.renderListing('plant')}
                                                             selectionChanged={this.handlePlant}
                                                             optionValue={option => option.Value}
@@ -680,7 +667,7 @@ class AddBOPDomestic extends Component {
                                                         placeholder={'Vendor'}
                                                         options={this.renderListing('VendorNameList')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                                         required={true}
                                                         handleChangeDescription={this.handleVendorName}
                                                         valueDescription={this.state.vendorName}
@@ -698,7 +685,7 @@ class AddBOPDomestic extends Component {
                                                         label="Vendor Plant"
                                                         name="VendorPlant"
                                                         placeholder="--- Plant ---"
-                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
                                                         options={this.renderListing('VendorPlant')}
                                                         selectionChanged={this.handleVendorPlant}
                                                         optionValue={option => option.Value}
@@ -718,7 +705,7 @@ class AddBOPDomestic extends Component {
                                                         placeholder={'Location'}
                                                         options={this.renderListing('VendorLocation')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorLocation == null || this.state.vendorLocation.length == 0) ? [required] : []}
+                                                        validate={(this.state.vendorLocation == null || this.state.vendorLocation.length === 0) ? [required] : []}
                                                         required={true}
                                                         handleChangeDescription={this.handleVendorLocation}
                                                         valueDescription={this.state.vendorLocation}
@@ -752,7 +739,7 @@ class AddBOPDomestic extends Component {
                                                             placeholder={'--- Plant ---'}
                                                             options={this.renderListing('SourceLocation')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
+                                                            validate={(this.state.sourceLocation == null || this.state.sourceLocation.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleSourceSupplierCity}
                                                             valueDescription={this.state.sourceLocation}

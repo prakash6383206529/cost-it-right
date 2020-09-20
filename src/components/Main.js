@@ -12,14 +12,11 @@ import Dashboard from './dashboard';
 import { Loader } from '../../src/components/common/Loader';
 import PartMaster from './masters/sap-masters/part-master';
 import UOMMaster from './masters/sap-masters/uom-master';
-import CategoryMaster from './masters/sap-masters/category-master';
 import RowMaterialMaster from './masters/sap-masters/material-master/raw-material';
 import PlantMaster from './masters/sap-masters/plant-master/index';
 import SupplierMaster from './masters/sap-masters/supplier-master/VendorListing';
 import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
-import OtherOperationMaster from './masters/sap-masters/other-operation';
-import CEDoperationMaster from './masters/sap-masters/ced-other-operation';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationListing from './masters/sap-masters/operation/OperationListing';
 import MaterialMaster from './masters/sap-masters/material-master/raw-material';
@@ -145,8 +142,6 @@ class Main extends Component {
 
                     <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster)} />
 
-                    <Route path="/category-master" component={AuthMiddleware(CategoryMaster)} />
-
                     <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster)} />
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster)} />
@@ -157,11 +152,7 @@ class Main extends Component {
 
                     <Route path="/bop-master" component={AuthMiddleware(BOPMaster)} />
 
-                    <Route path="/other-operation" component={AuthMiddleware(OtherOperationMaster)} />
-
                     <Route path="/fuel-master" component={AuthMiddleware(FuelMaster)} />
-
-                    <Route path="/ced-other-operation" component={AuthMiddleware(CEDoperationMaster)} />
 
                     <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
 

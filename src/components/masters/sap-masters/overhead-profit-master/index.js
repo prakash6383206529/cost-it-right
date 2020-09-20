@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import AddOverhead from './AddOverhead';
 import AddProfit from './AddProfit';
@@ -31,12 +31,12 @@ class OverheadProfit extends Component {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == OVERHEAD_AND_PROFIT)
+                const accessData = Data && Data.find(el => el.PageName === OVERHEAD_AND_PROFIT)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -85,16 +85,16 @@ class OverheadProfit extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, isOverheadForm, isProfitForm, data } = this.state;
+        const { isOverheadForm, isProfitForm, data } = this.state;
 
-        if (isOverheadForm == true) {
+        if (isOverheadForm === true) {
             return <AddOverhead
                 data={data}
                 hideForm={this.hideForm}
             />
         }
 
-        if (isProfitForm == true) {
+        if (isProfitForm === true) {
             return <AddProfit
                 data={data}
                 hideForm={this.hideForm}

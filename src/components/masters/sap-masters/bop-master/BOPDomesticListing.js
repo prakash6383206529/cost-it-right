@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
-import { Row, Col, Table, Button } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { getSupplierList } from '../../../../actions/master/Comman';
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../helper';
 import { getBOPDomesticDataList, deleteBOPAPI, } from '../../../../actions/master/BoughtOutParts';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
@@ -49,10 +48,10 @@ class BOPDomesticListing extends Component {
             plant_id: plantId,
         }
         this.props.getBOPDomesticDataList(filterData, (res) => {
-            if (res && res.status == 200) {
+            if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status == 412) {
+            } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [] })
             } else {
                 this.setState({ tableData: [] })
@@ -168,24 +167,20 @@ class BOPDomesticListing extends Component {
 
     }
 
-
-
-
-
     /**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
 
 
         //this.getDataList(null, null, null, null)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         // this.setState({
         //     RawMaterial: [],

@@ -3,11 +3,7 @@ import { connect } from 'react-redux';
 import {
     Container, Row, Col, Button, TabContent, TabPane, Nav, NavItem, NavLink
 } from 'reactstrap';
-import Addfreight from './AddFreight';
-import FreightDetail from './FreightDetail';
 import { getFreightDetailAPI, getAllAdditionalFreightAPI } from '../../../../actions/master/Freight';
-import PackagingDetail from './PackagingDetail';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import classnames from 'classnames';
 
@@ -87,7 +83,6 @@ class FreightMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, freightId } = this.state;
         return (
             <Container className="top-margin">
                 {/* {this.props.loading && <Loader/>} */}
@@ -116,27 +111,14 @@ class FreightMaster extends Component {
                     </Nav>
                     <TabContent activeTab={this.state.activeTab}>
                         <TabPane tabId={1}>
-                            <FreightDetail
-                                editFreightDetails={this.editFreighteDetails}
-                                toggle={this.toggle}
-                            />
+
                         </TabPane>
                         <TabPane tabId={2}>
-                            <PackagingDetail
-                                editPackagingDetails={this.editPackagingDetails}
-                                toggle={this.toggle}
-                            />
+
                         </TabPane>
                     </TabContent>
                 </div>
-                {isOpen && (
-                    <Addfreight
-                        isOpen={isOpen}
-                        onCancel={this.onCancel}
-                        isEditFlag={isEditFlag}
-                        freightId={freightId}
-                    />
-                )}
+
             </Container >
         );
     }

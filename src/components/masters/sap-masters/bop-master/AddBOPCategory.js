@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField } from "../../../layout/FormInputs";
+import { renderText, } from "../../../layout/FormInputs";
 import { createBOPCategory } from '../../../../actions/master/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant';
 import { loggedInUserId } from "../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
@@ -17,14 +16,6 @@ class AddBOPCategory extends Component {
         this.state = {
             isEditFlag: false
         }
-    }
-
-    /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
-    componentDidMount() {
-
     }
 
     /**
@@ -50,12 +41,9 @@ class AddBOPCategory extends Component {
     */
     onSubmit = (values) => {
         const { isEditFlag, } = this.props;
-        const { } = this.state;
 
         if (isEditFlag) {
-            let formData = {
 
-            }
 
         } else {
             let formData = {
@@ -146,17 +134,10 @@ class AddBOPCategory extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
+function mapStateToProps() {
 
     let initialValues = {};
 
-    // if (gradeData && gradeData != undefined) {
-    //     initialValues = {
-    //         MaterialId: gradeData.MaterialTypeId,
-    //         Grade: gradeData.Grade,
-    //         Description: gradeData.Description,
-    //     }
-    // }
     return { initialValues }
 }
 

@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -61,12 +60,12 @@ class OperationListing extends Component {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == OPERATION)
+                const accessData = Data && Data.find(el => el.PageName === OPERATION)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -101,7 +100,7 @@ class OperationListing extends Component {
             vendor_id: vendor_id,
         }
         this.props.getOperationsDataList(filterData, res => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -124,7 +123,7 @@ class OperationListing extends Component {
 
         if (label === 'technology') {
             filterOperation && filterOperation.technology && filterOperation.technology.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -140,7 +139,7 @@ class OperationListing extends Component {
 
         if (label === 'OperationNameList') {
             filterOperation && filterOperation.operations && filterOperation.operations.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -148,7 +147,7 @@ class OperationListing extends Component {
 
         if (label === 'VendorList') {
             filterOperation && filterOperation.vendors && filterOperation.vendors.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -230,7 +229,7 @@ class OperationListing extends Component {
     * @description called
     */
     handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ costingHead: newValue, });
         } else {
             this.setState({ costingHead: [], })
@@ -242,7 +241,7 @@ class OperationListing extends Component {
     * @description called
     */
     handleTechnology = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ selectedTechnology: newValue, }, () => {
                 const { selectedTechnology } = this.state;
                 this.props.getVendorListByTechnology(selectedTechnology.value, () => { })
@@ -260,7 +259,7 @@ class OperationListing extends Component {
     * @description called
     */
     handleOperationName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ operationName: newValue }, () => {
                 const { operationName } = this.state;
                 this.props.getTechnologyListByOperation(operationName.value, () => { })
@@ -278,7 +277,7 @@ class OperationListing extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue }, () => {
                 const { vendorName } = this.state;
                 this.props.getTechnologyListByVendor(vendorName.value, () => { })
@@ -296,7 +295,7 @@ class OperationListing extends Component {
     * @description Used to handle vendor type
     */
     handleVendorType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorType: newValue, vendorName: [], });
         } else {
             this.setState({ vendorType: [], vendorName: [] })
@@ -337,7 +336,7 @@ class OperationListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -451,7 +450,7 @@ class OperationListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
+        const { handleSubmit, } = this.props;
         const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
 
         if (toggleForm) {
@@ -491,7 +490,7 @@ class OperationListing extends Component {
                                         placeholder={'-Costing Head-'}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.costingHead == null || this.state.costingHead.length == 0) ? [required] : []}
+                                        validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleHeadChange}
                                         valueDescription={this.state.costingHead}
@@ -506,7 +505,7 @@ class OperationListing extends Component {
                                         placeholder={'-technology-'}
                                         options={this.renderListing('technology')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length == 0) ? [required] : []}
+                                        validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleTechnology}
                                         valueDescription={this.state.selectedTechnology}
@@ -521,7 +520,7 @@ class OperationListing extends Component {
                                         placeholder={'-operation-'}
                                         options={this.renderListing('OperationNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.operationName == null || this.state.operationName.length == 0) ? [required] : []}
+                                        validate={(this.state.operationName == null || this.state.operationName.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleOperationName}
                                         valueDescription={this.state.operationName}
@@ -536,7 +535,7 @@ class OperationListing extends Component {
                                         placeholder={'-vendors-'}
                                         options={this.renderListing('VendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleVendorName}
                                         valueDescription={this.state.vendorName}
