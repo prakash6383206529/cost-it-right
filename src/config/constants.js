@@ -1087,7 +1087,6 @@ export const UOM = 'UOM';
 export const REASON = 'Reason';
 export const FUEL_AND_POWER = 'Fuel and Power';
 
-
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM';
 export const WDM = 'WDM';
