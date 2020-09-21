@@ -14,13 +14,13 @@ export const apiErrors = (res) => {
     if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
     } else if (response) {
-        if (response.status && response.status === 417) {
+        if (response && response.status === 417) {
             toastr.error(response.data.Message);
-        } else if (response.status && response.status === 302) {
+        } else if (response && response.status === 302) {
             toastr.warning(response.data.Message);                      //used for not able to delete associated ID's 
-        } else if (response.status && response.status === 400) {
+        } else if (response && response.status === 400) {
             toastr.error('Something went wrong please try again.');
-        } else if (response.status && response.status === 401) {
+        } else if (response && response.status === 401) {
             toastr.error('Your session has been expired. Please login again');
         } else if (response && response.status === 403) {
             toastr.error('Server error occurred, please try again after sometime.');

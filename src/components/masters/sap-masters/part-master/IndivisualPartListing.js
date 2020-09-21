@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { } from '../../../../actions/master/Comman';
-import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
+import { focusOnError, } from "../../../layout/FormInputs";
 import { getPartDataList, deletePart, } from '../../../../actions/master/Part';
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
@@ -46,7 +46,7 @@ class IndivisualPartListing extends Component {
     */
     getTableListData = () => {
         this.props.getPartDataList((res) => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -176,7 +176,7 @@ class IndivisualPartListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -255,8 +255,9 @@ class IndivisualPartListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag, editIndex, PartId, departmentType, roleType } = this.state;
+        const { handleSubmit, } = this.props;
+        const { } = this.state;
+
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -312,7 +313,6 @@ class IndivisualPartListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="" width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="RawMaterial" >RM Material</TableHeaderColumn>

@@ -32,6 +32,8 @@ class EfficiencyDrawer extends Component {
             const { fieldsObj } = this.props
             const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
             const ActualWorkingHrs = fieldsObj && fieldsObj.ActualWorkingHrs !== undefined ? checkForNull(fieldsObj.ActualWorkingHrs) : 0;
+            console.log('ActualWorkingHrs: ', ActualWorkingHrs);
+
             this.setState({ calculatedEfficiency: NumberOfWorkingHoursPerYear / ActualWorkingHrs })
         }
     }
@@ -56,9 +58,8 @@ class EfficiencyDrawer extends Component {
     * @description used to Reset form
     */
     cancel = () => {
-        const { reset } = this.props;
-        reset();
-        this.toggleDrawer('')
+        this.props.change('ActualWorkingHrs', 0)
+        setTimeout(() => this.toggleDrawer(''), 100)
     }
 
     /**

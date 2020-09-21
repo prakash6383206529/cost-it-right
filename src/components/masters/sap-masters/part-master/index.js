@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import { TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';

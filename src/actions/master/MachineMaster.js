@@ -424,7 +424,7 @@ export function getFuelUnitCost(data, callback) {
         const queryParams = `fuelId=${data.fuelId}&plantId=${data.plantId}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, { headers })
             .then((response) => {
-                if (response.data.Result === true) {
+                if (response && response.data && response.data.Result === true) {
                     callback(response);
                 }
             }).catch((error) => {

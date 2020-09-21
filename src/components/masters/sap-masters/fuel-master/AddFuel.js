@@ -527,7 +527,7 @@ class AddFuel extends Component {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            maxDate={new Date()}
+                                                            //maxDate={new Date()}
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"

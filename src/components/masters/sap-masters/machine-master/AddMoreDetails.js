@@ -331,12 +331,12 @@ class AddMoreDetails extends Component {
     */
     handleMachineType = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ machineType: newValue }, () => {
+            this.setState({ machineType: newValue, labourGrid: [], }, () => {
                 const { machineType } = this.state;
                 this.props.getLabourTypeByMachineTypeSelectList(machineType.value, () => { })
             });
         } else {
-            this.setState({ machineType: [], })
+            this.setState({ machineType: [], labourGrid: [], })
             this.props.getLabourTypeByMachineTypeSelectList('', () => { })
         }
     };
@@ -365,7 +365,10 @@ class AddMoreDetails extends Component {
 
     closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
         this.setState({ isOpenAvailability: false }, () => {
-            this.props.change('EfficiencyPercentage', calculatedEfficiency)
+            console.log('calculatedEfficiency: ', calculatedEfficiency, typeof calculatedEfficiency);
+            if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
+                this.props.change('EfficiencyPercentage', calculatedEfficiency)
+            }
         })
 
     }
@@ -612,7 +615,6 @@ class AddMoreDetails extends Component {
 
         this.setState({ WorkingHrPrYr: NumberOfShift * WorkingHoursPerShift * NumberOfWorkingDaysPerYear })
         const workingHrPerYr = WorkingHoursPerShift * NumberOfShift * NumberOfWorkingDaysPerYear * calculatePercentage(EfficiencyPercentage)
-        console.log('WorkingHoursPerShift: ', workingHrPerYr, WorkingHoursPerShift, NumberOfShift, NumberOfWorkingDaysPerYear, calculatePercentage(EfficiencyPercentage));
 
         this.props.change('NumberOfWorkingHoursPerYear', Math.round(workingHrPerYr))
     }
