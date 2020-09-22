@@ -1885,3 +1885,43 @@ ul.bread-list.d-inline-flex{
     color: #256bd1;
 }
 }
+
+// Added on 16-09-2020
+.drawer-600px{
+  width: 100%;max-width: 600px;
+}
+.drawer-500px{
+  width: 100%;max-width: 500px;
+}
+.multiselect-with-border{border-radius:4px;}
+.form-control:disabled, .form-control[readonly]{
+  background-color: hsl(0,0%,95%);
+  border-color: hsl(0,0%,90%) !important;
+}
+.select--is-disabled{
+  border-color:hsl(0,0%,90%)
+}
+.sf-mainwrapper{position: relative; z-index: 2;}
+.blue-box{position: relative; z-index: 1;}
+.reset-btn{padding: 0;
+  font-size: 14px;
+  border-radius: 4px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  width: 75px;
+  justify-content: center;
+  text-transform: uppercase;
+ border: 1px solid #8a91ac;
+  font-weight: 400;
+  color: #8a91ac;}
+.multiselect-section{
+  .basic-multi-select{
+    .select__control{ overflow: hidden;
+      .select__indicators{
+        align-items: flex-start;
+      }
+    }
+  }
+}
+.error-block,.sf-pagenotfound{ justify-content: center;}

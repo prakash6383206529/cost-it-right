@@ -1088,9 +1088,17 @@ class AddMachineRate extends Component {
                                                         :
                                                         !this.state.IsDetailedEntry && <button
                                                             type="button"
-                                                            className={'user-btn mt30 pull-left'}
+                                                            className={'user-btn mt30 pull-left mr-3'}
                                                             onClick={this.processTableHandler}>
-                                                            <div className={'plus'}></div>ADD</button>}
+                                                            <div className={'plus'}></div>ADD</button>
+                                                            <button
+                                                            type="button"
+                                                            className={'reset-btn mt30 pull-left'}
+                                                            onClick={this.resetProcessGridData}
+                                                        >Reset</button>
+                                                        </>
+                                                            }
+
 
 
                                                 </div>
@@ -1125,6 +1133,7 @@ class AddMachineRate extends Component {
                                                                 )
                                                             })
                                                         }
+<<<<<<< HEAD
                                                         {this.state.processGrid.length === 0 &&
                                                             <tr>
                                                                 <td>
@@ -1132,6 +1141,15 @@ class AddMachineRate extends Component {
                                                                 </td>
                                                             </tr>
                                                         }
+=======
+                                                         {this.state.processGrid.length == 0 && 
+                                                         <tr>
+                                                             <td colspan="3">
+                                                             <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                                                                 </td> 
+                                                                 </tr>
+                                                                 }
+>>>>>>> m1-frontend-Prem-16-09-2020
                                                     </tbody>
                                                 </Table>
                                             </Col>
