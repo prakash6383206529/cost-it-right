@@ -30,7 +30,6 @@ class AddOverhead extends Component {
         this.state = {
             OverheadID: '',
             costingHead: 'zero',
-            isShowForm: false,
             isEditFlag: false,
             IsVendor: false,
 
@@ -378,12 +377,6 @@ class AddOverhead extends Component {
         }
     }
 
-    formToggle = () => {
-        this.setState({
-            isShowForm: !this.state.isShowForm
-        })
-    }
-
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
         return { url: 'https://httpbin.org/post', }
@@ -467,7 +460,6 @@ class AddOverhead extends Component {
         reset();
         this.setState({
             remarks: '',
-            isShowForm: false,
             IsVendor: false,
             ModelType: [],
             vendorName: [],

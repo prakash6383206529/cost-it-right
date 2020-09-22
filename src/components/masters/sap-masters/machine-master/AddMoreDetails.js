@@ -7,7 +7,7 @@ import {
     renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
 } from "../../../layout/FormInputs";
 import {
-    getTechnologySelectList, getPlantSelectList, getPlantBySupplier, getUOMSelectList,
+    getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList,
     getShiftTypeSelectList, getDepreciationTypeSelectList,
 } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
@@ -27,7 +27,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, WDM, SLM } from '../../../../config/constants';
+import { FILE_URL, WDM, SLM, ZBC } from '../../../../config/constants';
 import HeaderTitle from '../../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
@@ -101,7 +101,7 @@ class AddMoreDetails extends Component {
     componentDidMount() {
         this.props.getTechnologySelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
-        this.props.getPlantSelectList(() => { })
+        this.props.getPlantSelectListByType(ZBC, () => { })
         this.props.getMachineTypeSelectList(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getProcessesSelectList(() => { })
@@ -236,20 +236,13 @@ class AddMoreDetails extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { technologySelectList, plantSelectList, filterPlantList,
+        const { technologySelectList, plantSelectList,
             UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
             DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelComboSelectList, } = this.props;
 
         const temp = [];
         if (label === 'technology') {
             technologySelectList && technologySelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ Text: item.Text, Value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'VendorPlant') {
-            filterPlantList && filterPlantList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
@@ -365,7 +358,6 @@ class AddMoreDetails extends Component {
 
     closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
         this.setState({ isOpenAvailability: false }, () => {
-            console.log('calculatedEfficiency: ', calculatedEfficiency, typeof calculatedEfficiency);
             if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
                 this.props.change('EfficiencyPercentage', calculatedEfficiency)
             }
@@ -1568,6 +1560,22 @@ class AddMoreDetails extends Component {
                                                 />
                                             </Col>
                                         </Row>
+                                        <Row>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Description`}
+                                                    name={"Description"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className=" "
+                                                    customClassName="withBorder"
+                                                />
+                                            </Col>
+                                        </Row>
 
                                         <Row>
                                             <Col md="12">
@@ -2642,7 +2650,7 @@ function mapStateToProps(state) {
         'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
         'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate');
 
-    const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
+    const { technologySelectList, plantSelectList, UOMSelectList,
         ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
     const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
     const { labourTypeByMachineTypeSelectList } = labour;
@@ -2660,6 +2668,7 @@ function mapStateToProps(state) {
             MachineCost: machineData.MachineCost,
             AccessoriesCost: machineData.AccessoriesCost,
             InstallationCharges: machineData.InstallationCharges,
+            Description: machineData.Description,
             LabourCostPerAnnum: machineData.LabourCostPerAnnum,
             TotalCost: machineData.TotalCost,
             LoanPercentage: machineData.LoanPercentage,
@@ -2699,7 +2708,7 @@ function mapStateToProps(state) {
     }
 
     return {
-        vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
+        vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
         machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
         labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading,
     }
@@ -2715,7 +2724,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     getTechnologySelectList,
     getVendorListByVendorType,
-    getPlantSelectList,
+    getPlantSelectListByType,
     getPlantBySupplier,
     getUOMSelectList,
     getMachineTypeSelectList,

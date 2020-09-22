@@ -44,6 +44,7 @@ import {
     GET_TECHNOLOGY_SELECTLIST_SUCCESS,
     GET_PLANT_SELECTLIST_SUCCESS,
     GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
+    GET_PLANT_SELECTLIST_BY_TYPE,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -1193,7 +1194,6 @@ export function getCurrencySelectList(callback) {
     };
 }
 
-
 /**
 * @method getTechnologySelectList
 * @description Used to get select list of Vendor's
@@ -1331,6 +1331,29 @@ export function getRawMaterialCategory(callback) {
         }).catch((error) => {
             dispatch({ type: FETCH_MATER_DATA_FAILURE, });
             callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getPlantSelectListByType
+* @description GET PLANT LIST BY ZBC, VBC
+*/
+export function getPlantSelectListByType(TYPE, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlantSelectListByType}?type=${TYPE}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PLANT_SELECTLIST_BY_TYPE,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: FETCH_MATER_DATA_FAILURE, });
             apiErrors(error);
         });
     };

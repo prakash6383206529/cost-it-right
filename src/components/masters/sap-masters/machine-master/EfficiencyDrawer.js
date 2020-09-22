@@ -32,7 +32,6 @@ class EfficiencyDrawer extends Component {
             const { fieldsObj } = this.props
             const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
             const ActualWorkingHrs = fieldsObj && fieldsObj.ActualWorkingHrs !== undefined ? checkForNull(fieldsObj.ActualWorkingHrs) : 0;
-            console.log('ActualWorkingHrs: ', ActualWorkingHrs);
 
             this.setState({ calculatedEfficiency: NumberOfWorkingHoursPerYear / ActualWorkingHrs })
         }
@@ -66,10 +65,7 @@ class EfficiencyDrawer extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
-
-
-    }
+    onSubmit = (values) => { }
 
     /**
     * @method render

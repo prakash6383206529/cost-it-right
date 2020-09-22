@@ -8,16 +8,7 @@ import {
     API_FAILURE,
     API_SUCCESS,
     LOGIN_SUCCESS,
-    UPDATE_PASSWORD_SUCCESS,
     REGISTER_SUCCESS,
-    FORGOT_PASSWORD_SUCCESS,
-    VERIFY_OTP_SUCCESS,
-    RESEND_OTP_SUCCESS,
-    SOCIAL_MEDIA_LOGIN_SUCCESS,
-    UPDATE_USER_ACCOUNT_DETAIL_SUCCESS,
-    SOCIAL_USER_DATA,
-    INTERNAL_ROUTE_ID,
-    SEND_MESSAGE_SUCCESS,
     GET_ROLE_SUCCESS,
     GET_DEPARTMENT_SUCCESS,
     GET_TECHNOLOGY_DATA_LIST_SUCCESS,
@@ -35,7 +26,6 @@ import {
     GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS,
     GET_LEFT_MENU_BY_MODULE_ID_AND_USER,
-    GET_LEVEL_MAPPING_SUCCESS,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -99,7 +89,7 @@ export function logoutUserAPI(requestData, callback) {
         //dispatch({ type: AUTH_API_REQUEST });
         axios.post(API.logout, requestData, { headers })
             .then((response) => {
-                if (response && response.status == 200) {
+                if (response && response.status === 200) {
                     callback(response);
                 }
             }).catch((error) => {
@@ -285,7 +275,7 @@ export function updateUserAPI(requestData, callback) {
 export function setEmptyUserDataAPI(UserId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (UserId == '') {
+        if (UserId === '') {
             dispatch({
                 type: GET_USER_UNIT_DATA_SUCCESS,
                 payload: '',
@@ -433,7 +423,7 @@ export function getRoleDataAPI(RoleId, callback) {
 export function setEmptyRoleDataAPI(RoleId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (RoleId == '') {
+        if (RoleId === '') {
             dispatch({
                 type: GET_UNIT_ROLE_DATA_SUCCESS,
                 payload: '',
@@ -557,7 +547,7 @@ export function getDepartmentAPI(DepartmentId, callback) {
 export function setEmptyDepartmentAPI(DepartmentId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (DepartmentId == '') {
+        if (DepartmentId === '') {
             dispatch({
                 type: GET_UNIT_DEPARTMENT_DATA_SUCCESS,
                 payload: '',
@@ -680,7 +670,7 @@ export function getUserLevelAPI(LevelId, callback) {
 export function setEmptyLevelAPI(LevelId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (LevelId == '') {
+        if (LevelId === '') {
             dispatch({
                 type: GET_UNIT_LEVEL_DATA_SUCCESS,
                 payload: '',

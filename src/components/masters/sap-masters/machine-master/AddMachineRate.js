@@ -8,7 +8,7 @@ import {
     renderMultiSelectField,
 } from "../../../layout/FormInputs";
 import {
-    getTechnologySelectList, getPlantSelectList, getPlantBySupplier, getUOMSelectList,
+    getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList,
 } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import {
@@ -23,7 +23,7 @@ import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
-import { FILE_URL } from '../../../../config/constants';
+import { FILE_URL, ZBC } from '../../../../config/constants';
 import HeaderTitle from '../../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
@@ -87,7 +87,7 @@ class AddMachineRate extends Component {
 
         this.props.getTechnologySelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
-        this.props.getPlantSelectList(() => { })
+        this.props.getPlantSelectListByType(ZBC, () => { })
         this.props.getMachineTypeSelectList(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getProcessesSelectList(() => { })
@@ -1287,7 +1287,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     getTechnologySelectList,
     getVendorListByVendorType,
-    getPlantSelectList,
+    getPlantSelectListByType,
     getPlantBySupplier,
     getUOMSelectList,
     getMachineTypeSelectList,

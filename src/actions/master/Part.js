@@ -403,3 +403,76 @@ export function getPartSelectList(callback) {
         });
     };
 }
+
+/**
+ * @method fileUploadPart
+ * @description File Upload INDIVIDUAL PART
+ */
+export function fileUploadPart(data, callback) {
+    return (dispatch) => {
+        let multipartHeaders = {
+            'Content-Type': 'multipart/form-data;'
+        };
+        const request = axios.post(API.fileUploadPart, data, headers);
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fileDeletePart
+ * @description delete PART file API
+ */
+export function fileDeletePart(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.fileDeletePart}/${data.Id}/${data.DeletedBy}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method partComponentBulkUpload
+ * @description create Part by Bulk Upload
+ */
+export function partComponentBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.partComponentBulkUpload, data, headers);
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+/**
+ * @method activeInactivePartStatus
+ * @description UPDATE PART STATUS ACTIVE/INACTIVE
+ */
+export function activeInactivePartStatus(requestData, callback) {
+    return (dispatch) => {
+        axios.put(API.activeInactivePartStatus, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                callback(error);
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}

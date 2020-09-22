@@ -12,7 +12,7 @@ import {
     updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode
 } from '../../../../actions/master/OtherOperation';
 import {
-    getTechnologySelectList, getPlantSelectList, getPlantBySupplier,
+    getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier,
     getUOMSelectList,
 } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
@@ -24,7 +24,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL } from '../../../../config/constants';
+import { FILE_URL, ZBC } from '../../../../config/constants';
 import { reactLocalStorage } from "reactjs-localstorage";
 const selector = formValueSelector('AddOperation');
 
@@ -72,7 +72,7 @@ class AddOperation extends Component {
         let initialConfigureData = reactLocalStorage.getObject('InitialConfiguration')
 
         this.props.getTechnologySelectList(() => { })
-        this.props.getPlantSelectList(() => { })
+        this.props.getPlantSelectListByType(ZBC, () => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getDetail()
         if (initialConfigureData && initialConfigureData.IsOperationCodeConfigure && data.isEditFlag === false) {
@@ -856,7 +856,7 @@ class AddOperation extends Component {
 function mapStateToProps(state) {
     const { comman, otherOperation, material, supplier, } = state;
     const filedObj = selector(state, 'OperationCode');
-    const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
+    const { technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
     const { operationData } = otherOperation;
     const { vendorListByVendorType } = material;
     const { vendorWithVendorCodeSelectList } = supplier;
@@ -875,7 +875,7 @@ function mapStateToProps(state) {
 
     return {
         technologySelectList, plantSelectList, vendorListByVendorType, UOMSelectList,
-        plantList, operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
+        operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
         initialValues
     }
 }
@@ -888,7 +888,7 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getTechnologySelectList,
-    getPlantSelectList,
+    getPlantSelectListByType,
     getVendorWithVendorCodeSelectList,
     getPlantBySupplier,
     getUOMSelectList,

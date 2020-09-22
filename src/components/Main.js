@@ -26,7 +26,6 @@ import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
 import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
 import MachineMaster from './masters/sap-masters/machine-master';
-import PowerMaster from './masters/sap-masters/power-master';
 import ReasonListing from "./masters/sap-masters/reason-master/ReasonListing";
 import VolumeMaster from './masters/sap-masters/volume-master/AddVolume';
 import ClientMaster from './masters/sap-masters/client-master/AddClient';
@@ -155,8 +154,6 @@ class Main extends Component {
                     <Route path="/fuel-master" component={AuthMiddleware(FuelMaster)} />
 
                     <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
-
-                    <Route path="/power-master" component={AuthMiddleware(PowerMaster)} />
 
                     <Route path="/operation-master" component={AuthMiddleware(OperationListing)} />
 
