@@ -1086,7 +1086,9 @@ class AddMachineRate extends Component {
                                                             >Cancel</button>
                                                         </>
                                                         :
-                                                        !this.state.IsDetailedEntry && <button
+                                                        !this.state.IsDetailedEntry && 
+                                                        <>
+                                                        <button
                                                             type="button"
                                                             className={'user-btn mt30 pull-left mr-3'}
                                                             onClick={this.processTableHandler}>
