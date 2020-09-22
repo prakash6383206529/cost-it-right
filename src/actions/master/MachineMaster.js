@@ -5,7 +5,6 @@ import {
     API_FAILURE,
     CREATE_SUCCESS,
     CREATE_FAILURE,
-    CREATE_MACHINE_TYPE_SUCCESS,
     GET_MACHINE_TYPE_DATALIST_SUCCESS,
     GET_MACHINE_TYPE_DATA_SUCCESS,
     GET_MACHINE_DATALIST_SUCCESS,
@@ -71,7 +70,7 @@ export function getMachineTypeListAPI(callback) {
 export function getMachineTypeDataAPI(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        if (ID != '') {
+        if (ID !== '') {
             axios.get(`${API.getMachineTypeDataAPI}/${ID}`, headers)
                 .then((response) => {
                     if (response.data.Result === true) {
@@ -424,7 +423,7 @@ export function getFuelUnitCost(data, callback) {
         const queryParams = `fuelId=${data.fuelId}&plantId=${data.plantId}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, { headers })
             .then((response) => {
-                if (response.data.Result === true) {
+                if (response && response.data && response.data.Result === true) {
                     callback(response);
                 }
             }).catch((error) => {

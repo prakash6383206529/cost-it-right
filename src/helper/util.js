@@ -14,25 +14,51 @@ export const apiErrors = (res) => {
     if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
     } else if (response) {
-        if (response.status && response.status === 417) {
-            toastr.error(response.data.Message);
-        } else if (response.status && response.status === 302) {
-            toastr.warning(response.data.Message);                      //used for not able to delete associated ID's 
-        } else if (response.status && response.status === 400) {
-            toastr.error('Something went wrong please try again.');
-        } else if (response.status && response.status === 401) {
-            toastr.error('Your session has been expired. Please login again');
+        if (response && response.status === 203) {
+            toastr.error('Data is inconsistent. Please refresh your session by re-login');
+        } else if (response && response.status === 204) {
+            toastr.error('Intentionally blank for now.');
+        } else if (response && response.status === 205) {
+            toastr.error('Please clear your cache for data to reflect');
+        } else if (response && response.status === 206) {
+            toastr.error('The data might not have been updated properly. Please try again to ensure');
+        } else if (response && (response.status === 300 || response.status === 301 || response.status === 302 || response.status === 303)) {
+            toastr.error('Something is not right. Please contact your IT Team.');
+        } else if (response && response.status === 400) {
+            toastr.error('Bad Request. Please contact your IT Team.');
+        } else if (response && response.status === 401) {
+            toastr.error('Authentication error. Please contact your IT Team.');
         } else if (response && response.status === 403) {
-            toastr.error('Server error occurred, please try again after sometime.');
-        } else if (response && response.status === 406) {
-            toastr.error('User does not exist.');
+            toastr.error('You are not allowed to access this resource. Please contact your IT Team.');
+        } else if (response && response.status === 404) {
+            toastr.error('Not found');
+        } else if (response && response.status === 405) {
+            toastr.error('You are not allowed to access this resource. Please contact your IT Team');
+        } else if (response && (response.status === 406 || response.status === 409 || response.status === 411 || response.status === 414 || response.status === 416 || response.status === 417 || response.status === 426)) {
+            toastr.error('Something is not right. Please contact your IT Team');
+        } else if (response && response.status === 407) {
+            toastr.error('Proxy Authentication Error. Please contact your IT Team');
+        } else if (response && response.status === 408) {
+            toastr.error('Your request has timed out. Please try again after some time.');
+        } else if (response && response.status === 410) {
+            toastr.error('The resource you requested no longer exists.');
         } else if (response && response.status === 412) {
             const errMsg = response && response.data && response.data.Message ? response.data.Message : 'Something went wrong please try again.';
             toastr.error(errMsg);
-        } else if (response && (response.status === 500 || response.status === 501 || response.status === 503 || response.status === 502)) {
-            toastr.error('Server error occurred, please try again after sometime.');
-        } else if (response.status && response.status === 404) {
-            toastr.error('this record does not exist.');
+        } else if (response && response.status === 413) {
+            toastr.error("Server can't process such long request. Please contact your IT Team");
+        } else if (response && response.status === 415) {
+            toastr.error("This request is not supported by the server. Please contact your IT Team");
+        } else if (response && response.status === 500) {
+            toastr.error("Internal server error. Please contact your IT Team");
+        } else if (response && response.status === 501) {
+            toastr.error('Something is not right. Please contact your IT Team');
+        } else if (response && response.status === 502) {
+            toastr.error('Server is unavailable or unreachable. Please contact your IT Team');
+        } else if (response && response.status === 503) {
+            toastr.error('Server is unavailable due to load or maintenance. Please contact your IT Team');
+        } else if (response && response.status === 504) {
+            toastr.error('Server is unavailable due to timeout. Please contact your IT Team');
         } else {
             toastr.error('Something went wrong please try again.');
         }
@@ -56,8 +82,7 @@ export function capitalizeFirstLetter(string) {
 * @desc FORMATTED DATE
 */
 export function formatDate(date) {
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct',
-        'Nov', 'Dec'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
     const day = date.getDate();
     const monthIndex = date.getMonth();
     const year = date.getFullYear();

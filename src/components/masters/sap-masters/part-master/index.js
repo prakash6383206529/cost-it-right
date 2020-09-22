@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
+import { TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';
 import AssemblyPartListing from './AssemblyPartListing';
+import IndivisualPartListing from './IndivisualPartListing';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -13,24 +14,13 @@ class PartMaster extends Component {
             isOpen: false,
             activeTab: '1',
             isAddBOMForm: false,
+            isPartForm: false,
             getDetails: {},
         }
     }
 
     componentDidMount() {
 
-    }
-
-    displayForm = () => {
-        this.setState({ isAddBOMForm: true, })
-    }
-
-    hideForm = () => {
-        this.setState({ isAddBOMForm: false, })
-    }
-
-    getDetails = (data) => {
-        this.setState({ getDetails: data })
     }
 
     /**
@@ -45,17 +35,49 @@ class PartMaster extends Component {
         }
     }
 
+    // DISPLAY BOM FORM
+    displayForm = () => {
+        this.setState({ isAddBOMForm: true, isPartForm: false, getDetails: {} })
+    }
+
+    //GET DETAILS OF BOM 
+    getDetails = (data) => {
+        this.setState({ getDetails: data, isAddBOMForm: true, isPartForm: false, })
+    }
+
+    //HIDE BOM & PART INDIVIDUAL FORM
+    hideForm = () => {
+        this.setState({ isAddBOMForm: false, isPartForm: false, getDetails: {} })
+    }
+
+    //DISPLAY INDIVIDUAL PART FORM
+    displayIndividualForm = () => {
+        this.setState({ isPartForm: true, isAddBOMForm: false, getDetails: {} })
+    }
+
+    //GET DETAILS OF INDIVIDUAL PART
+    getIndividualPartDetails = (data) => {
+        this.setState({ getDetails: data, isPartForm: true, isAddBOMForm: false, })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isAddBOMForm } = this.state;
+        const { isAddBOMForm, isPartForm } = this.state;
 
         if (isAddBOMForm === true) {
             return <AddAssemblyPart
                 hideForm={this.hideForm}
                 getDetails={this.state.getDetails}
+            />
+        }
+
+        if (isPartForm === true) {
+            return <AddIndivisualPart
+                hideForm={this.hideForm}
+                data={this.state.getDetails}
             />
         }
 
@@ -87,7 +109,10 @@ class PartMaster extends Component {
                                 </TabPane>}
                             {this.state.activeTab === '2' &&
                                 <TabPane tabId="2">
-                                    <AddIndivisualPart />
+                                    <IndivisualPartListing
+                                        formToggle={this.displayIndividualForm}
+                                        getDetails={this.getIndividualPartDetails}
+                                    />
                                 </TabPane>}
                         </TabContent>
                     </div>

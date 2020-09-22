@@ -10,6 +10,7 @@ import {
     Overhead, OverheadTempData, Profit, ProfitTempData,
     ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
     MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
+    PartComponent, PartComponentTempData,
     Bought_Out_Parts, OtherOperation,
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable } from "../../helper";
@@ -53,6 +54,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Profit, ProfitTempData);
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
+            case 'PartComponent':
+                return this.returnExcelColumn(PartComponent, PartComponentTempData);
             case 'BOP':
                 return this.returnExcelColumn(Bought_Out_Parts);
             case 'OtherOperation':
@@ -157,7 +160,7 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour')) {
+        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}

@@ -77,7 +77,7 @@ class AddPower extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.fieldsObj != prevProps.fieldsObj) {
+        if (this.props.fieldsObj !== prevProps.fieldsObj) {
             this.SEBPowerCalculation()
             this.selfPowerCalculation()
             this.powerContributionCalculation()
@@ -89,18 +89,18 @@ class AddPower extends Component {
      * @description USED TO CALCULATE SEB POWER CALCULATION
      */
     SEBPowerCalculation = () => {
-        const { source, isCostPerUnitConfigurable, } = this.state;
+        const { isCostPerUnitConfigurable, } = this.state;
         const { fieldsObj } = this.props;
 
-        const MinDemandKWPerMonth = fieldsObj && fieldsObj.MinDemandKWPerMonth != undefined ? checkForNull(fieldsObj.MinDemandKWPerMonth) : 0;
-        const DemandChargesPerKW = fieldsObj && fieldsObj.DemandChargesPerKW != undefined ? checkForNull(fieldsObj.DemandChargesPerKW) : 0;
-        const AvgUnitConsumptionPerMonth = fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth != undefined ? checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) : 0;
-        const MaxDemandChargesKW = fieldsObj && fieldsObj.MaxDemandChargesKW != undefined ? checkForNull(fieldsObj.MaxDemandChargesKW) : 0;
+        const MinDemandKWPerMonth = fieldsObj && fieldsObj.MinDemandKWPerMonth !== undefined ? checkForNull(fieldsObj.MinDemandKWPerMonth) : 0;
+        const DemandChargesPerKW = fieldsObj && fieldsObj.DemandChargesPerKW !== undefined ? checkForNull(fieldsObj.DemandChargesPerKW) : 0;
+        const AvgUnitConsumptionPerMonth = fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) : 0;
+        const MaxDemandChargesKW = fieldsObj && fieldsObj.MaxDemandChargesKW !== undefined ? checkForNull(fieldsObj.MaxDemandChargesKW) : 0;
 
-        const MeterRentAndOtherChargesPerAnnum = fieldsObj && fieldsObj.MeterRentAndOtherChargesPerAnnum != undefined ? checkForNull(fieldsObj.MeterRentAndOtherChargesPerAnnum) : 0;
-        const DutyChargesAndFCA = fieldsObj && fieldsObj.DutyChargesAndFCA != undefined ? checkForNull(fieldsObj.DutyChargesAndFCA) : 0;
+        const MeterRentAndOtherChargesPerAnnum = fieldsObj && fieldsObj.MeterRentAndOtherChargesPerAnnum !== undefined ? checkForNull(fieldsObj.MeterRentAndOtherChargesPerAnnum) : 0;
+        const DutyChargesAndFCA = fieldsObj && fieldsObj.DutyChargesAndFCA !== undefined ? checkForNull(fieldsObj.DutyChargesAndFCA) : 0;
 
-        if (fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth != undefined) {
+        if (fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth !== undefined) {
             this.props.change('UnitConsumptionPerAnnum', checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) * 12)
         }
 
@@ -111,8 +111,8 @@ class AddPower extends Component {
         }
 
         //Formula for TOTAL UNIT CHARGES calculation
-        const UnitConsumptionPerAnnum = fieldsObj && fieldsObj.UnitConsumptionPerAnnum != undefined ? checkForNull(fieldsObj.UnitConsumptionPerAnnum) : 0;
-        const SEBCostPerUnit = fieldsObj && fieldsObj.SEBCostPerUnit != undefined ? checkForNull(fieldsObj.SEBCostPerUnit) : 0;
+        const UnitConsumptionPerAnnum = fieldsObj && fieldsObj.UnitConsumptionPerAnnum !== undefined ? checkForNull(fieldsObj.UnitConsumptionPerAnnum) : 0;
+        const SEBCostPerUnit = fieldsObj && fieldsObj.SEBCostPerUnit !== undefined ? checkForNull(fieldsObj.SEBCostPerUnit) : 0;
 
         const TotalUnitCharges = ((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum
         this.props.change('TotalUnitCharges', trimTwoDecimalPlace(TotalUnitCharges))
@@ -123,18 +123,18 @@ class AddPower extends Component {
      * @description USED TO CALCULATE SELF GENERATED POWER CALCULATION
      */
     selfPowerCalculation = () => {
-        const { source, isCostPerUnitConfigurable, } = this.state;
+        const { source, } = this.state;
         const { fieldsObj } = this.props;
 
         //CALCULATION OF SELF GENERATOR COST PER UNIT
-        if (source && source.value == GENERATOR_DIESEL) {
-            const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement != undefined ? checkForNull(fieldsObj.CostPerUnitOfMeasurement) : 0;
-            const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel != undefined ? checkForNull(fieldsObj.UnitGeneratedPerUnitOfFuel) : 0;
+        if (source && source.value === GENERATOR_DIESEL) {
+            const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? checkForNull(fieldsObj.CostPerUnitOfMeasurement) : 0;
+            const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerUnitOfFuel) : 0;
             const SelfGeneratedCostPerUnit = CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel;
             this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
         } else {
-            const AnnualCost = fieldsObj && fieldsObj.AnnualCost != undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
-            const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum != undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
+            const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
+            const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
             const SelfGeneratedCostPerUnit = AnnualCost / UnitGeneratedPerAnnum;
             this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
         }
@@ -150,8 +150,8 @@ class AddPower extends Component {
         const { fieldsObj } = this.props;
 
         //POWER CONTIRBUTION FIELDS
-        const electricBoardPowerContribution = fieldsObj && fieldsObj.SEBPowerContributaion != undefined ? checkForNull(fieldsObj.SEBPowerContributaion) : 0;
-        const selfGeneratorPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution != undefined ? checkForNull(fieldsObj.SelfPowerContribution) : 0;
+        const electricBoardPowerContribution = fieldsObj && fieldsObj.SEBPowerContributaion !== undefined ? checkForNull(fieldsObj.SEBPowerContributaion) : 0;
+        const selfGeneratorPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution !== undefined ? checkForNull(fieldsObj.SelfPowerContribution) : 0;
 
         //CALCULATION FOR POWER CONTRIBUTION 100%
         const totalContributionFromGrid = powerGrid && powerGrid.reduce((accummlator, el) => {
@@ -160,10 +160,10 @@ class AddPower extends Component {
 
         let powerContributionTotal = 0;
         if (isEditIndex) {
-            let rowObj = powerGrid && powerGrid.find((el, index) => index == powerGridEditIndex)
+            let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
             powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
         } else if (isEditSEBIndex) {
-            let rowObj = powerGrid && powerGrid.find((el, index) => index == powerGridEditIndex)
+            let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
             powerContributionTotal = electricBoardPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
         } else {
             powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
@@ -199,7 +199,7 @@ class AddPower extends Component {
                     setTimeout(() => {
                         const { vendorWithVendorCodeSelectList } = this.props;
 
-                        const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value == Data.VendorId)
+                        const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
 
                         let tempVendorPlant = Data && Data.VendorPlants.map((item) => {
                             return { Text: item.VendorPlantName, Value: item.VendorPlantId }
@@ -211,14 +211,14 @@ class AddPower extends Component {
                             IsVendor: Data.IsVendor,
                             VendorCode: Data.VendorCode,
                             selectedVendorPlants: tempVendorPlant,
-                            vendorName: vendorObj && vendorObj != undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
                         })
                         this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
                     }, 200)
                 }
             })
 
-        } else if (data && data.isEditFlag && data.IsVendor == false) {
+        } else if (data && data.isEditFlag && data.IsVendor === false) {
             this.setState({
                 isEditFlag: false,
                 isLoader: true,
@@ -259,7 +259,7 @@ class AddPower extends Component {
                     setTimeout(() => {
                         const { fuelComboSelectList, } = this.props;
 
-                        const stateObj = fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.find(item => item.Value == Data.StateId)
+                        const stateObj = fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.find(item => item.Value === Data.StateId)
 
                         let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
@@ -269,7 +269,7 @@ class AddPower extends Component {
                             IsVendor: Data.IsVendor,
                             isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
                             selectedPlants: plantArray,
-                            StateName: stateObj && stateObj != undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
+                            StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
                             effectiveDate: moment(Data.SEBChargesDetails[0].EffectiveDate)._d,
                             powerGrid: tempArray,
                         })
@@ -307,7 +307,7 @@ class AddPower extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
                 const { vendorName } = this.state;
                 const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
@@ -339,7 +339,7 @@ class AddPower extends Component {
     * @description called
     */
     handleState = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ StateName: newValue, }, () => {
                 const { StateName } = this.state;
                 this.props.getPlantListByState(StateName.value, () => { })
@@ -373,7 +373,7 @@ class AddPower extends Component {
     * @description called
     */
     handleSource = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ source: newValue, })
         } else {
             this.setState({ source: [] })
@@ -385,7 +385,7 @@ class AddPower extends Component {
     * @description called
     */
     handleUOM = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ UOM: newValue, }, () => {
                 const { StateName, UOM } = this.state;
                 let data = { StateID: StateName.value, UOMID: UOM.value }
@@ -407,8 +407,13 @@ class AddPower extends Component {
         const { powerGrid, } = this.state;
         const { fieldsObj } = this.props;
 
-        const TotalUnitCharges = fieldsObj && fieldsObj != undefined ? fieldsObj.TotalUnitCharges : 0;
-        const SEBPowerContributaion = fieldsObj && fieldsObj != undefined ? fieldsObj.SEBPowerContributaion : 0;
+        const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
+        const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+
+        if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined) {
+            toastr.warning('Fields should not be empty.')
+            return false;
+        }
 
         const tempArray = [];
 
@@ -443,8 +448,8 @@ class AddPower extends Component {
         const { powerGrid, powerGridEditIndex } = this.state;
         const { fieldsObj } = this.props;
 
-        const TotalUnitCharges = fieldsObj && fieldsObj != undefined ? fieldsObj.TotalUnitCharges : 0;
-        const SEBPowerContributaion = fieldsObj && fieldsObj != undefined ? fieldsObj.SEBPowerContributaion : 0;
+        const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
+        const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
 
         let tempArray = [];
 
@@ -468,18 +473,18 @@ class AddPower extends Component {
         const { source, UOM, powerGrid, } = this.state;
         const { fieldsObj } = this.props;
 
-        if (source.length == 0) {
+        if (source.length === 0) {
             toastr.warning('Fields should not be empty');
             return false;
         }
 
-        const AssetCost = fieldsObj && fieldsObj.AssetCost != undefined ? fieldsObj.AssetCost : 0;
-        const AnnualCost = fieldsObj && fieldsObj.AnnualCost != undefined ? fieldsObj.AnnualCost : 0;
-        const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum != undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
-        const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj.SelfGeneratedCostPerUnit != undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
-        const SelfPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution != undefined ? fieldsObj.SelfPowerContribution : 0;
-        const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement != undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
-        const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel != undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
+        const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
+        const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? fieldsObj.AnnualCost : 0;
+        const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
+        const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj.SelfGeneratedCostPerUnit !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
+        const SelfPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution !== undefined ? fieldsObj.SelfPowerContribution : 0;
+        const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+        const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
         const tempArray = [];
 
@@ -491,10 +496,10 @@ class AddPower extends Component {
             UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
             CostPerUnit: SelfGeneratedCostPerUnit,
             PowerContributionPercentage: SelfPowerContribution,
-            UnitOfMeasurementId: source && source.value == GENERATOR_DIESEL ? UOM.value : '',
-            UnitOfMeasurementName: source && source.value == GENERATOR_DIESEL ? UOM.label : '',
-            CostPerUnitOfMeasurement: source && source.value == GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
-            UnitGeneratedPerUnitOfFuel: source && source.value == GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+            UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
+            UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
+            CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+            UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
             OtherCharges: 0,
             isSelfPowerGenerator: isSelfGenerator,
         })
@@ -523,13 +528,13 @@ class AddPower extends Component {
         const { source, UOM, powerGrid, powerGridEditIndex } = this.state;
         const { fieldsObj } = this.props;
 
-        const AssetCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AssetCost : 0;
-        const AnnualCost = fieldsObj && fieldsObj != undefined ? fieldsObj.AnnualCost : 0;
-        const UnitGeneratedPerAnnum = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
-        const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj != undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
-        const SelfPowerContribution = fieldsObj && fieldsObj != undefined ? fieldsObj.SelfPowerContribution : 0;
-        const CostPerUnitOfMeasurement = fieldsObj && fieldsObj != undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
-        const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj != undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
+        const AssetCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AssetCost : 0;
+        const AnnualCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AnnualCost : 0;
+        const UnitGeneratedPerAnnum = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
+        const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
+        const SelfPowerContribution = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfPowerContribution : 0;
+        const CostPerUnitOfMeasurement = fieldsObj && fieldsObj !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+        const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
         let tempArray = [];
 
@@ -542,10 +547,10 @@ class AddPower extends Component {
             UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
             CostPerUnit: SelfGeneratedCostPerUnit,
             PowerContributionPercentage: SelfPowerContribution,
-            UnitOfMeasurementId: source && source.value == GENERATOR_DIESEL ? UOM.value : '',
-            UnitOfMeasurementName: source && source.value == GENERATOR_DIESEL ? UOM.label : '',
-            CostPerUnitOfMeasurement: source && source.value == GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
-            UnitGeneratedPerUnitOfFuel: source && source.value == GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+            UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
+            UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
+            CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+            UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
             OtherCharges: 0
         }
 
@@ -598,7 +603,7 @@ class AddPower extends Component {
         const { fuelComboSelectList } = this.props;
         const tempData = powerGrid[index];
 
-        if (tempData.SourcePowerType == 'SEB') {
+        if (tempData.SourcePowerType === 'SEB') {
 
             this.setState({
                 powerGridEditIndex: index,
@@ -610,13 +615,13 @@ class AddPower extends Component {
             });
 
         } else {
-            let UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(el => el.Value == tempData.UnitOfMeasurementId)
+            let UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(el => el.Value === tempData.UnitOfMeasurementId)
             this.setState({
                 powerGridEditIndex: index,
                 isEditIndex: true,
                 isEditSEBIndex: false,
                 source: { label: tempData.SourcePowerType, value: tempData.SourcePowerType },
-                UOM: (UOMObj && UOMObj != undefined && tempData.SourcePowerType == GENERATOR_DIESEL) ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                UOM: (UOMObj && UOMObj !== undefined && tempData.SourcePowerType === GENERATOR_DIESEL) ? { label: UOMObj.Text, value: UOMObj.Value } : [],
             }, () => {
                 this.props.change('AssetCost', tempData.AssetCost)
                 this.props.change('AnnualCost', tempData.AnnualCost)
@@ -637,7 +642,7 @@ class AddPower extends Component {
         const { powerGrid } = this.state;
 
         let tempData = powerGrid.filter((item, i) => {
-            if (i == index) {
+            if (i === index) {
                 return false;
             }
             return true;
@@ -658,7 +663,7 @@ class AddPower extends Component {
 
         if (label === 'VendorNameList') {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -666,7 +671,7 @@ class AddPower extends Component {
 
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
@@ -674,7 +679,7 @@ class AddPower extends Component {
 
         if (label === 'state') {
             fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -682,7 +687,7 @@ class AddPower extends Component {
 
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
@@ -690,7 +695,7 @@ class AddPower extends Component {
 
         if (label === 'UOM') {
             fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 if (item.Text == 'Liter') {
                     temp.push({ label: item.Text, value: item.Value })
                 }
@@ -700,7 +705,7 @@ class AddPower extends Component {
 
         if (label === 'Source') {
             powerTypeSelectList && powerTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -739,7 +744,7 @@ class AddPower extends Component {
     */
     onSubmit = (values) => {
         const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
-            source, effectiveDate, vendorName, selectedVendorPlants } = this.state;
+            effectiveDate, vendorName, selectedVendorPlants } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => {
             return { PlantName: item.Text, PlantId: item.Value, }
@@ -749,13 +754,13 @@ class AddPower extends Component {
             return { VendorPlantName: item.Text, VendorPlantId: item.Value, }
         })
 
-        if (IsVendor && vendorPlantArray.length == 0) return false;
+        if (IsVendor && vendorPlantArray.length === 0) return false;
 
         const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
             return accummlator + checkForNull(el.CostPerUnit);
         }, 0)
 
-        let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType != 'SEB')
+        let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
 
         if (isEditFlag) {
 
@@ -879,8 +884,8 @@ class AddPower extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { files, errors, isOpenUOM, isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable,
+        const { handleSubmit, } = this.props;
+        const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable,
             checkPowerContribution, } = this.state;
 
         return (
@@ -915,7 +920,6 @@ class AddPower extends Component {
                                                         onColor="#4DC771"
                                                         onHandleColor="#ffffff"
                                                         offColor="#4DC771"
-                                                        id="normal-switch"
                                                         uncheckedIcon={false}
                                                         checkedIcon={false}
                                                         height={20}
@@ -940,7 +944,7 @@ class AddPower extends Component {
                                                                     placeholder={'--select--'}
                                                                     options={this.renderListing('VendorNameList')}
                                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                    validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                                    validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                                                     required={true}
                                                                     handleChangeDescription={this.handleVendorName}
                                                                     valueDescription={this.state.vendorName}
@@ -959,7 +963,7 @@ class AddPower extends Component {
                                                             label="Vendor Plant"
                                                             name="VendorPlant"
                                                             placeholder="--- Plant ---"
-                                                            selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
+                                                            selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
                                                             options={this.renderListing('VendorPlant')}
                                                             selectionChanged={this.handleVendorPlant}
                                                             optionValue={option => option.Value}
@@ -1009,7 +1013,7 @@ class AddPower extends Component {
                                                                     placeholder={'--- Select ---'}
                                                                     options={this.renderListing('state')}
                                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                    validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                                                                    validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
                                                                     required={true}
                                                                     handleChangeDescription={this.handleState}
                                                                     valueDescription={this.state.StateName}
@@ -1025,7 +1029,7 @@ class AddPower extends Component {
                                                                     label="Plant"
                                                                     name="Plant"
                                                                     placeholder="--Select--"
-                                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                                                     options={this.renderListing('plant')}
                                                                     selectionChanged={this.handlePlants}
                                                                     optionValue={option => option.Value}
@@ -1348,7 +1352,7 @@ class AddPower extends Component {
                                                             </div>
                                                         </div>
                                                     </Col>
-                                                    {source && source.value == GENERATOR_DIESEL &&
+                                                    {source && source.value === GENERATOR_DIESEL &&
                                                         <>
                                                             <Col md="3">
                                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -1517,7 +1521,7 @@ class AddPower extends Component {
                                                                     })
                                                                 }
                                                             </tbody>
-                                                            {this.state.powerGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                                            {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                         </Table>
                                                     </Col>
                                                 </Row>

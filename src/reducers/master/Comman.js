@@ -49,6 +49,7 @@ import {
     GET_TECHNOLOGY_SELECTLIST_SUCCESS,
     GET_PLANT_SELECTLIST_SUCCESS,
     GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
+    GET_PLANT_SELECTLIST_BY_TYPE,
 } from '../../config/constants';
 
 const initialState = {
@@ -379,6 +380,13 @@ export default function commanReducer(state = initialState, action) {
                 technologySelectList: action.payload
             };
         case GET_PLANT_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                plantSelectList: action.payload
+            };
+        case GET_PLANT_SELECTLIST_BY_TYPE:
             return {
                 ...state,
                 loading: false,

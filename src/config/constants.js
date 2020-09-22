@@ -23,6 +23,7 @@ export const API = {
   getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
   getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
   getPlantSelectList: `${BASE_URL}/configuration/select-list-get-plant`,
+  getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
 
   //Combo apis
@@ -108,6 +109,10 @@ export const API = {
   getPartDataList: `${BASE_URL}/masters-part/get-all-component-part`,
   getPart: `${BASE_URL}/configuration/select-list-get-part`,
   getPartSelectList: `${BASE_URL}/configuration/select-list-get-part`,
+  fileUploadPart: `${BASE_URL}/masters-part/part-file-upload`,
+  fileDeletePart: `${BASE_URL}/masters-part/delete-part-attachment-file`,
+  partComponentBulkUpload: `${BASE_URL}/masters-part/bulk-upload-for-component-part-json`,
+  activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -655,6 +660,7 @@ export const GET_TECHNOLOGY_SUCCESS = 'GET_TECHNOLOGY_SUCCESS';
 export const GET_SUPPLIER_SELECTLIST_SUCCESS = 'GET_SUPPLIER_SELECTLIST_SUCCESS';
 export const GET_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_TECHNOLOGY_SELECTLIST_SUCCESS';
 export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS';
+export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE';
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST';
 
 //CATEGORY MASTER
@@ -1090,3 +1096,6 @@ export const FUEL_AND_POWER = 'Fuel and Power';
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM';
 export const WDM = 'WDM';
+
+export const ZBC = 'ZBC';
+export const VBC = 'VBC';

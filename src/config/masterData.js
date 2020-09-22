@@ -778,6 +778,41 @@ export const MachineVBCTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const PartComponent = [
+    { label: 'BOMNo', value: 'BOMNo', },
+    { label: 'PartNo', value: 'PartNo', },
+    { label: 'PartName', value: 'PartName', },
+    { label: 'PartDescription', value: 'PartDescription', },
+    { label: 'Type', value: 'Type', },
+    { label: 'GroupCode', value: 'GroupCode', },
+    { label: 'MaterialType', value: 'MaterialType', },
+    { label: 'RevisionNo', value: 'RevisionNo', },
+    { label: 'DrawingNo', value: 'DrawingNo', },
+    { label: 'Plant', value: 'Plant', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark', },
+]
+
+export const PartComponentTempData = [
+    {
+        'BOMNo': 'BOMNo',
+        'PartNo': 'Part  No',
+        'PartName': 'Part Name',
+        'PartDescription': 'Part Description',
+        'Type': 'Type',
+        'GroupCode': 'Group Code',
+        'MaterialType': 'Material Type',
+        'RevisionNo': 'Revision No',
+        'DrawingNo': 'Drawing No',
+        'Plant': 'Plant',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'Remark': 'Remark',
+    }
+]
+
 export const EAccessType = [
     { label: '--Select EAccess Type--', value: '', },
     { label: 'ReadOnly', value: 0, },

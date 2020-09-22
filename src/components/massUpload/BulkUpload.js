@@ -13,6 +13,7 @@ import { labourBulkUpload } from '../../actions/master/Labour';
 import { vendorBulkUpload } from '../../actions/master/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../../actions/master/OverheadProfit';
 import { operationZBCBulkUpload, operationVBCBulkUpload } from '../../actions/master/OtherOperation';
+import { partComponentBulkUpload } from '../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
@@ -263,6 +264,12 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
+        } else if (fileName === 'PartComponent') {
+
+            this.props.partComponentBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
         } else {
 
         }
@@ -421,6 +428,7 @@ export default connect(mapStateToProps, {
     bulkUploadMachineZBC,
     bulkUploadMachineVBC,
     bulkUploadMachineMoreZBC,
+    partComponentBulkUpload,
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

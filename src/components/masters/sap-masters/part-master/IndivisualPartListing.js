@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { } from '../../../../actions/master/Comman';
-import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
-import { getPartDataList, deletePart, } from '../../../../actions/master/Part';
+import { focusOnError, } from "../../../layout/FormInputs";
+import { getPartDataList, deletePart, activeInactivePartStatus, } from '../../../../actions/master/Part';
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -15,6 +15,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
 import { loggedInUserId } from '../../../../helper/auth';
+import BulkUpload from '../../../massUpload/BulkUpload';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -27,12 +28,14 @@ class IndivisualPartListing extends Component {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
+
+            isBulkUpload: false,
+            ActivateAccessibility: true,
         }
     }
 
     componentDidMount() {
         this.getTableListData();
-        this.props.onRef(this)
     }
 
     // Get updated user list after any action performed.
@@ -46,7 +49,7 @@ class IndivisualPartListing extends Component {
     */
     getTableListData = () => {
         this.props.getPartDataList((res) => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -113,20 +116,20 @@ class IndivisualPartListing extends Component {
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
-            Id: row.PlantId,
+            Id: row.PartId,
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        // this.props.activeInactiveStatus(data, res => {
-        //     if (res && res.data && res.data.Result) {
-        //         if (cell == true) {
-        //             toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-        //         } else {
-        //             toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-        //         }
-        //         this.getTableListData()
-        //     }
-        // })
+        this.props.activeInactivePartStatus(data, res => {
+            if (res && res.data && res.data.Result) {
+                // if (cell === true) {
+                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                // } else {
+                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                // }
+                this.getTableListData()
+            }
+        })
     }
 
     /**
@@ -134,39 +137,38 @@ class IndivisualPartListing extends Component {
     * @description Renders buttons
     */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
+        const { ActivateAccessibility } = this.state;
+        if (ActivateAccessibility) {
+            return (
+                <>
+                    <label htmlFor="normal-switch">
+                        {/* <span>Switch with default style</span> */}
+                        <Switch
+                            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+                            checked={cell}
+                            background="#ff6600"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#FC5774"
+                            id="normal-switch"
+                            height={24}
+                        />
+                    </label>
+                </>
+            )
+        } else {
+            return (
+                <>
+                    {
+                        cell ?
+                            <div className={'Activated'}> {'Active'}</div>
+                            :
+                            <div className={'Deactivated'}>{'Deactive'}</div>
+                    }
+                </>
+            )
+        }
     }
-
-    /**
-    * @method checkIsVendorFormatter
-    * @description Renders IsVendor
-    */
-    checkIsVendorFormatter = (cell, row, enumObject, rowIndex) => {
-
-        return (
-            <>
-
-            </>
-        )
-    }
-
-
 
     /**
     * @method indexFormatter
@@ -176,7 +178,7 @@ class IndivisualPartListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -209,16 +211,19 @@ class IndivisualPartListing extends Component {
     * @description Used show listing 
     */
     renderListing = (label) => {
-        const { } = this.props;
-        const temp = [];
 
-        // if (label === 'country') {
-        //     countryList && countryList.map(item =>
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     );
-        //     return temp;
-        // }
 
+    }
+
+
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+            this.getTableListData()
+        })
     }
 
 
@@ -255,8 +260,9 @@ class IndivisualPartListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag, editIndex, PartId, departmentType, roleType } = this.state;
+        const { handleSubmit, } = this.props;
+        const { isBulkUpload } = this.state;
+
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -273,26 +279,21 @@ class IndivisualPartListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-30">
                         <Col md="8" className="filter-block">
-                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                   
-                                </div>
-                                <div className="flex-fill">
-                                    
-                                </div>
-                            </div> */}
+
                         </Col>
                         <Col md="4" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD PART</button>
-                                    }
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.bulkToggle}>
+                                        <div className={'upload'}></div>Bulk Upload</button>
+                                    <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD PART</button>
                                 </div>
                             </div>
                         </Col>
@@ -312,19 +313,26 @@ class IndivisualPartListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="" width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="RawMaterial" >RM Material</TableHeaderColumn>
                     <TableHeaderColumn dataField="Plants" >Plant</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECONumber" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Date" dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn className="action" dataField="PartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
-
+                {isBulkUpload && <BulkUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    fileName={'PartComponent'}
+                    isZBCVBCTemplate={false}
+                    messageLabel={'Part'}
+                    anchor={'right'}
+                />}
             </ >
         );
     }
@@ -341,7 +349,6 @@ function mapStateToProps({ }) {
     return {};
 }
 
-
 /**
 * @method connect
 * @description connect with redux
@@ -352,6 +359,7 @@ function mapStateToProps({ }) {
 export default connect(mapStateToProps, {
     getPartDataList,
     deletePart,
+    activeInactivePartStatus,
 })(reduxForm({
     form: 'IndivisualPartListing',
     onSubmitFail: errors => {
