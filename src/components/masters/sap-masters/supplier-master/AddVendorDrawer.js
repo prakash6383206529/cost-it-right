@@ -412,7 +412,7 @@ class AddVendorDrawer extends Component {
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container >
-                        <div className={`drawer-wrapper WIDTH-700`}>
+                        <div className={`drawer-wrapper WIDTH-700 drawer-600px`}>
                             <form
                                 noValidate
                                 className="form"
@@ -430,7 +430,7 @@ class AddVendorDrawer extends Component {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col md="6">
+                                    <Col md="6 multiselect-section">
                                         <Field
                                             label="Vendor Type"
                                             name="VendorType"
