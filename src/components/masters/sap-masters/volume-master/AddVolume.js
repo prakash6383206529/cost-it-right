@@ -1,28 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
-import { required, number, upper, maxLength100 } from "../../../../helper/validation";
-import {
-    renderText, renderMultiSelectField, searchableSelect, renderNumberInputField, renderTextAreaField
-} from "../../../layout/FormInputs";
+import { Row, Col, } from 'reactstrap';
+import { required, number, } from "../../../../helper/validation";
+import { renderText, renderMultiSelectField, searchableSelect, } from "../../../layout/FormInputs";
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
-import { createVolume, updateVolume, getVolumeData, } from '../../../../actions/master/Volume';
-import { getPlantSelectList, getPlantBySupplier, } from '../../../../actions/master/Comman';
+import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../../../../actions/master/Volume';
+import { getPlantSelectListByType, getPlantBySupplier, } from '../../../../actions/master/Comman';
+import { getPartSelectList } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
-import VolumeListing from './VolumeListing';
 import Switch from "react-switch";
-import YearPicker from "react-year-picker";
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import $ from 'jquery';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import moment from 'moment';
-import { monthSequence } from '../../../../config/masterData';
+import { ZBC } from '../../../../config/constants';
 
 const initialTableData = [
     { VolumeDetailId: 0, Month: 'April', BudgetedQuantity: 0, ApprovedQuantity: 0 },
@@ -38,6 +31,7 @@ const initialTableData = [
     { VolumeDetailId: 10, Month: 'February', BudgetedQuantity: 0, ApprovedQuantity: 0 },
     { VolumeDetailId: 11, Month: 'March', BudgetedQuantity: 0, ApprovedQuantity: 0 },
 ]
+
 class AddVolume extends Component {
     constructor(props) {
         super(props);
@@ -47,8 +41,9 @@ class AddVolume extends Component {
             selectedPlants: [],
             vendorName: [],
             selectedVendorPlants: [],
+            part: [],
 
-            year: new Date('2020'),
+            year: [],
             tableData: initialTableData,
 
             isEditFlag: false,
@@ -62,8 +57,11 @@ class AddVolume extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        this.props.getPlantSelectList(() => { })
+        this.props.getPlantSelectListByType(ZBC, () => { })
         this.props.getVendorListByVendorType(true, () => { })
+        this.props.getFinancialYearSelectList(() => { })
+        this.props.getPartSelectList(() => { })
+        this.getDetail()
     }
 
     /**
@@ -71,27 +69,41 @@ class AddVolume extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { technologySelectList, plantSelectList, vendorListByVendorType, filterPlantList,
-            UOMSelectList, } = this.props;
+        const { plantSelectList, vendorListByVendorType, filterPlantList, financialYearSelectList,
+            partSelectList, } = this.props;
         const temp = [];
 
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
             vendorListByVendorType && vendorListByVendorType.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'yearList') {
+            financialYearSelectList && financialYearSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'PartList') {
+            partSelectList && partSelectList.map(item => {
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
@@ -104,15 +116,7 @@ class AddVolume extends Component {
     * @description Used for Vendor checked
     */
     onPressVendor = () => {
-        this.setState({
-            IsVendor: !this.state.IsVendor,
-            // vendorName: [],
-            // selectedVendorPlants: [],
-            // vendorLocation: [],
-        }, () => {
-            // const { IsVendor } = this.state;
-            // this.props.getVendorListByVendorType(IsVendor, () => { })
-        });
+        this.setState({ IsVendor: !this.state.IsVendor, });
     }
 
     /**
@@ -128,7 +132,7 @@ class AddVolume extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
                 const { vendorName } = this.state;
                 this.props.getPlantBySupplier(vendorName.value, () => { })
@@ -138,16 +142,39 @@ class AddVolume extends Component {
         }
     };
 
+    /**
+    * @method handlePart
+    * @description called
+    */
+    handlePart = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ part: newValue, });
+        } else {
+            this.setState({ part: [], })
+        }
+    };
+
     vendorToggler = () => {
         this.setState({ isOpenVendor: true })
     }
 
     closeVendorDrawer = (e = '') => {
         this.setState({ isOpenVendor: false }, () => {
-            const { IsVendor } = this.state;
             this.props.getVendorListByVendorType(true, () => { })
         })
     }
+
+    /**
+    * @method handleFinancialYear
+    * @description called
+    */
+    handleFinancialYear = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ year: newValue, });
+        } else {
+            this.setState({ year: [], })
+        }
+    };
 
 
     /**
@@ -186,7 +213,7 @@ class AddVolume extends Component {
         //     return true;
         // })
         let filterData = tableData.map(item => {
-            if (item.VolumeApprovedDetailId == ID) {
+            if (item.VolumeApprovedDetailId === ID) {
                 return { ...item, BudgetedQuantity: 0, ApprovedQuantity: 0, }
             }
             return item;
@@ -194,23 +221,16 @@ class AddVolume extends Component {
         this.setState({ tableData: filterData })
     }
 
-    showFinancialYear = () => {
-        const { year } = this.state;
-        const d = new Date(year);
-        return year != '' ? `For Financial Year ${d.getFullYear()} - ${d.getFullYear() + 1}` : '';
-    }
-
-
     /**
     * @method getDetail
-    * @description used to get user detail
+    * @description USED TO GET VOLUME DETAIL
     */
-    getDetail = (data) => {
+    getDetail = () => {
+        const { data } = this.props;
         if (data && data.isEditFlag) {
             this.setState({
                 isLoader: true,
-                isEditFlag: true,
-                isShowForm: true,
+                isEditFlag: false,
                 VolumeId: data.ID,
             })
             $('html, body').animate({ scrollTop: 0 }, 'slow');
@@ -233,13 +253,14 @@ class AddVolume extends Component {
                     let tableArray = [];
                     Data && Data.VolumeApprovedDetails.map((item, i) => {
                         Data.VolumeBudgetedDetails.map(el => {
-                            if (el.Month == item.Month) {
+                            if (el.Month === item.Month) {
                                 tableArray.push({
                                     VolumeApprovedDetailId: item.VolumeApprovedDetailId,
                                     VolumeBudgetedDetailId: el.VolumeBudgetedDetailId,
                                     Month: item.Month,
                                     BudgetedQuantity: el.BudgetedQuantity,
                                     ApprovedQuantity: item.ApprovedQuantity,
+                                    Sequence: el.Sequence,
                                 })
                                 return tableArray.sort();
                             }
@@ -247,41 +268,29 @@ class AddVolume extends Component {
                     })
 
                     setTimeout(() => {
-                        const { vendorListByVendorType, } = this.props;
-                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value == Data.VendorId)
+                        const { vendorListByVendorType, financialYearSelectList, partSelectList } = this.props;
+                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorId)
+                        const yearObj = financialYearSelectList && financialYearSelectList.find(item => item.Text === Data.Year)
+                        const partObj = partSelectList && partSelectList.find(item => item.Value === Data.PartId)
 
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
                             selectedPlants: plantArray,
-                            selectedVendorPlants: vendorPlantArray,
-                            vendorName: { label: vendorObj.Text, value: vendorObj.Value },
-                            year: new Date(Data.Year),
-                            tableData: tableArray,
+                            //selectedVendorPlants: vendorPlantArray,
+                            selectedVendorPlants: [],
+                            vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
+                            part: partObj && partObj !== undefined ? { label: partObj.Text, value: partObj.Value } : [],
+                            tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
                         })
                     }, 500)
 
                 }
             })
+        } else {
+            this.props.getVolumeData('', () => { })
         }
-    }
-
-    formToggle = () => {
-        this.setState({
-            isShowForm: !this.state.isShowForm
-        })
-    }
-
-    clearForm = () => {
-        const { reset } = this.props;
-        reset();
-        this.setState({
-            selectedPlants: [],
-            vendorName: [],
-            selectedVendorPlants: [],
-            isShowForm: false,
-            isEditFlag: false,
-        })
     }
 
     /**
@@ -291,8 +300,15 @@ class AddVolume extends Component {
     cancel = () => {
         const { reset } = this.props;
         reset();
-        this.clearForm();
+        this.setState({
+            selectedPlants: [],
+            vendorName: [],
+            selectedVendorPlants: [],
+            tableData: [],
+            isEditFlag: false,
+        })
         this.props.getVolumeData('', () => { })
+        this.props.hideForm();
     }
 
     /**
@@ -300,9 +316,7 @@ class AddVolume extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, selectedPlants, vendorName, selectedVendorPlants, year, tableData,
-            VolumeId } = this.state;
-        const { reset } = this.props;
+        const { IsVendor, selectedPlants, vendorName, selectedVendorPlants, part, year, tableData, VolumeId } = this.state;
 
         let plantArray = [];
         selectedPlants && selectedPlants.map((item) => {
@@ -362,8 +376,7 @@ class AddVolume extends Component {
             this.props.updateVolume(updateData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.VOLUME_UPDATE_SUCCESS);
-                    this.clearForm()
-                    this.child.getUpdatedData();
+                    this.cancel()
                 }
             });
 
@@ -372,22 +385,22 @@ class AddVolume extends Component {
             let formData = {
                 IsVendor: IsVendor,
                 VendorId: vendorName.value,
-                PartNumber: values.PartNumber,
-                //OldPartNumber: values.OldPartNumber,
-                PartName: values.PartName,
-                Year: new Date(year).getFullYear(),
+                PartId: part.value,
+                PartNumber: part.label,
+                OldPartNumber: '',
+                Year: year.label,
                 VolumeApprovedDetails: approvedArray,
                 VolumeBudgetedDetails: budgetArray,
                 Plant: !IsVendor ? plantArray : [],
-                VendorPlant: vendorPlants,
+                //VendorPlant: vendorPlants,
+                VendorPlant: [],
                 LoggedInUserId: loggedInUserId(),
                 IsActive: true
             }
             this.props.createVolume(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.VOLUME_ADD_SUCCESS);
-                    this.clearForm();
-                    this.child.getUpdatedData();
+                    this.cancel();
                 }
             });
         }
@@ -399,112 +412,66 @@ class AddVolume extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset } = this.props;
-        const { isEditFlag, isOpenVendor, isOpenUOM } = this.state;
+        const { handleSubmit, } = this.props;
+        const { isEditFlag, isOpenVendor, } = this.state;
 
         const cellEditProp = {
             mode: 'click',
-            blurToSave: true
+            blurToSave: true,
         };
 
         return (
-            <div>
+            <>
                 {/* {isLoader && <Loader />} */}
                 <div className="login-container signup-form">
                     <div className="row">
-                        {this.state.isShowForm &&
-                            <div className="col-md-12">
-                                <div className="shadow-lgg login-formg pt-30">
-                                    <div className="row">
-                                        <div className="col-md-6">
-                                            <div className="form-heading mb-0">
-                                                <h2>{this.state.isEditFlag ? 'Update Volume' : 'Add Volume'}</h2>
-                                            </div>
+                        <div className="col-md-12">
+                            <div className="shadow-lgg login-formg">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="form-heading mb-0">
+                                            <h2>{this.state.isEditFlag ? 'Update Volume' : 'Add Volume'}</h2>
                                         </div>
                                     </div>
-                                    <form
-                                        noValidate
-                                        className="form"
-                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                    >
-                                        <Row>
-                                            <Col md="4" className="switch mb15">
-                                                <label>
-                                                    <div className={'left-title'}>Zero Based</div>
-                                                    <Switch
-                                                        onChange={this.onPressVendor}
-                                                        checked={this.state.IsVendor}
-                                                        id="normal-switch"
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                    <div className={'right-title'}>Vendor Based</div>
-                                                </label>
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            {!this.state.IsVendor &&
-                                                <Col md="3">
-                                                    <Field
-                                                        label="Plant"
-                                                        name="Plant"
-                                                        placeholder="--Select--"
-                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
-                                                        options={this.renderListing('plant')}
-                                                        selectionChanged={this.handlePlants}
-                                                        optionValue={option => option.Value}
-                                                        optionLabel={option => option.Text}
-                                                        component={renderMultiSelectField}
-                                                        mendatory={true}
-                                                        className="multiselect-with-border"
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>}
-                                            <Col md="2">
-                                                <Field
-                                                    name="VendorName"
-                                                    type="text"
-                                                    label="Vendor Name"
-                                                    component={searchableSelect}
-                                                    placeholder={'--select--'}
-                                                    options={this.renderListing('VendorNameList')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleVendorName}
-                                                    valueDescription={this.state.vendorName}
+                                </div>
+                                <form
+                                    noValidate
+                                    className="form"
+                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                >
+                                    <Row>
+                                        <Col md="4" className="switch mb15">
+                                            <label className="switch-level">
+                                                <div className={'left-title'}>Zero Based</div>
+                                                <Switch
+                                                    onChange={this.onPressVendor}
+                                                    checked={this.state.IsVendor}
+                                                    id="normal-switch"
                                                     disabled={isEditFlag ? true : false}
+                                                    background="#4DC771"
+                                                    onColor="#4DC771"
+                                                    onHandleColor="#ffffff"
+                                                    offColor="#4DC771"
+                                                    uncheckedIcon={false}
+                                                    checkedIcon={false}
+                                                    height={20}
+                                                    width={46}
                                                 />
-                                            </Col>
-                                            <Col md="1">
-                                                <div
-                                                    onClick={this.vendorToggler}
-                                                    className={'plus-icon-square mt30 mr15 right'}>
-                                                </div>
-                                            </Col>
+                                                <div className={'right-title'}>Vendor Based</div>
+                                            </label>
+                                        </Col>
+                                    </Row>
+
+                                    <Row>
+                                        {!this.state.IsVendor &&
                                             <Col md="3">
                                                 <Field
-                                                    label={`Vendor Code`}
-                                                    name={"VendorCode"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderText}
-                                                    //onChange={this.handleBasicRate}
-                                                    //required={true}
-                                                    disabled={true}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label="Vendor Plant"
-                                                    name="VendorPlant"
-                                                    placeholder="--- Plant ---"
-                                                    selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length == 0) ? [] : this.state.selectedVendorPlants}
-                                                    options={this.renderListing('VendorPlant')}
-                                                    selectionChanged={this.handleVendorPlant}
+                                                    label="Plant"
+                                                    name="Plant"
+                                                    placeholder="--Select--"
+                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                                    options={this.renderListing('plant')}
+                                                    selectionChanged={this.handlePlants}
                                                     optionValue={option => option.Value}
                                                     optionLabel={option => option.Text}
                                                     component={renderMultiSelectField}
@@ -512,110 +479,123 @@ class AddVolume extends Component {
                                                     className="multiselect-with-border"
                                                     disabled={isEditFlag ? true : false}
                                                 />
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Part No.`}
-                                                    name={"PartNumber"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderText}
-                                                    //onChange={this.handleBasicRate}
-                                                    //required={true}
-                                                    disabled={false}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Part Name`}
-                                                    name={"PartName"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderText}
-                                                    //onChange={this.handleBasicRate}
-                                                    //required={true}
-                                                    disabled={isEditFlag ? true : false}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="3">
-                                                <div className="form-group">
-                                                    <label>
-                                                        Year
-                                                    <span className="asterisk-required">*</span>
-                                                    </label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            selected={this.state.year}
-                                                            onChange={this.setStartDate}
-                                                            showYearPicker
-                                                            dateFormat="yyyy"
-                                                        />
-                                                    </div>
+                                            </Col>}
+                                        <Col md="3">
+                                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                <div className="fullinput-icon">
+                                                    <Field
+                                                        name="VendorName"
+                                                        type="text"
+                                                        label="Vendor Name"
+                                                        component={searchableSelect}
+                                                        placeholder={'--select--'}
+                                                        options={this.renderListing('VendorNameList')}
+                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                                                        required={true}
+                                                        handleChangeDescription={this.handleVendorName}
+                                                        valueDescription={this.state.vendorName}
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
                                                 </div>
-                                            </Col>
-                                            <Col md="12">
-                                                {this.showFinancialYear()}
-                                                <BootstrapTable data={this.state.tableData} cellEdit={cellEditProp}>
-                                                    <TableHeaderColumn dataField='Month' editable={false}>Month</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField='BudgetedQuantity'>Budgeted Qty</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField='ApprovedQuantity'>Approved Qty</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField='VolumeApprovedDetailId' hidden>Volume Approv Id</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField='VolumeBudgetedDetailId' hidden>Vol Budget Id</TableHeaderColumn>
-                                                    <TableHeaderColumn className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                                                </BootstrapTable>
-                                            </Col>
-                                        </Row>
-
-                                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-md-12">
-                                                <div className="text-center ">
-                                                    <input
-                                                        //disabled={pristine || submitting}
-                                                        onClick={this.cancel}
-                                                        type="button"
-                                                        value="Cancel"
-                                                        className="reset mr15 cancel-btn"
-                                                    />
-                                                    <input
-                                                        //disabled={isSubmitted ? true : false}
-                                                        type="submit"
-                                                        value={this.state.isEditFlag ? 'Update' : 'Save'}
-                                                        className="submit-button mr5 save-btn"
-                                                    />
+                                                <div
+                                                    onClick={this.vendorToggler}
+                                                    className={'plus-icon-square mr15 right'}>
                                                 </div>
                                             </div>
-                                        </Row>
-                                    </form>
-                                </div>
-                            </div>}
-                    </div>
+                                        </Col>
+                                        {/* <Col md="3">
+                                            <Field
+                                                label="Vendor Plant"
+                                                name="VendorPlant"
+                                                placeholder="--- Plant ---"
+                                                selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
+                                                options={this.renderListing('VendorPlant')}
+                                                selectionChanged={this.handleVendorPlant}
+                                                optionValue={option => option.Value}
+                                                optionLabel={option => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={true}
+                                                className="multiselect-with-border"
+                                                disabled={isEditFlag ? true : false}
+                                            />
+                                        </Col> */}
+                                        <Col md="3">
+                                            <Field
+                                                name="PartNumber"
+                                                type="text"
+                                                label="Part No."
+                                                component={searchableSelect}
+                                                placeholder={'--select--'}
+                                                options={this.renderListing('PartList')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.part == null || this.state.part.length === 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handlePart}
+                                                valueDescription={this.state.part}
+                                                disabled={isEditFlag ? true : false}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                name="FinancialYear"
+                                                type="text"
+                                                label="Year"
+                                                component={searchableSelect}
+                                                placeholder={'--select--'}
+                                                options={this.renderListing('yearList')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.year == null || this.state.year.length === 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleFinancialYear}
+                                                valueDescription={this.state.year}
+                                                disabled={isEditFlag ? true : false}
+                                            />
+                                        </Col>
+                                    </Row>
+
+                                    <Row>
+                                        <Col md="12">
+                                            <BootstrapTable data={this.state.tableData} cellEdit={cellEditProp}>
+                                                <TableHeaderColumn dataField='Month' editable={false}>Month</TableHeaderColumn>
+                                                <TableHeaderColumn dataField='BudgetedQuantity'>Budgeted Qty</TableHeaderColumn>
+                                                <TableHeaderColumn dataField='ApprovedQuantity'>Approved Qty</TableHeaderColumn>
+                                                <TableHeaderColumn dataField='VolumeApprovedDetailId' hidden>Volume Approv Id</TableHeaderColumn>
+                                                <TableHeaderColumn dataField='VolumeBudgetedDetailId' hidden>Vol Budget Id</TableHeaderColumn>
+                                                <TableHeaderColumn className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                                            </BootstrapTable>
+                                        </Col>
+                                    </Row>
+
+                                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                                        <div className="col-sm-12 text-right bluefooter-butn">
+                                            <button
+                                                type={'button'}
+                                                className="reset mr15 cancel-btn"
+                                                onClick={this.cancel} >
+                                                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="submit-button mr5 save-btn" >
+                                                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                                {isEditFlag ? 'Update' : 'Save'}
+                                            </button>
+                                        </div>
+                                    </Row>
+                                </form>
+                            </div>
+                        </div>}
                 </div>
-                <VolumeListing
-                    onRef={ref => (this.child = ref)}
-                    getDetail={this.getDetail}
-                    formToggle={this.formToggle}
-                    isShowForm={this.state.isShowForm}
-                />
-                {isOpenVendor && <AddVendorDrawer
-                    isOpen={isOpenVendor}
-                    closeDrawer={this.closeVendorDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                />}
-            </div>
+                    {isOpenVendor && <AddVendorDrawer
+                        isOpen={isOpenVendor}
+                        closeDrawer={this.closeVendorDrawer}
+                        isEditFlag={false}
+                        ID={''}
+                        anchor={'right'}
+                    />}
+                </div>
+            </>
         );
     }
 }
@@ -625,10 +605,11 @@ class AddVolume extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, volume, material, }) {
-    const { plantList, plantSelectList, filterPlantList, } = comman;
-    const { volumeData } = volume;
+function mapStateToProps({ comman, volume, material, part }) {
+    const { plantSelectList, filterPlantList, } = comman;
+    const { volumeData, financialYearSelectList } = volume;
     const { vendorListByVendorType } = material;
+    const { partSelectList } = part;
 
     let initialValues = {};
     if (volumeData && volumeData !== undefined) {
@@ -639,8 +620,8 @@ function mapStateToProps({ comman, volume, material, }) {
     }
 
     return {
-        plantSelectList, vendorListByVendorType, plantList, filterPlantList, volumeData,
-        initialValues,
+        plantSelectList, vendorListByVendorType, filterPlantList, volumeData, financialYearSelectList,
+        partSelectList, initialValues,
     }
 }
 
@@ -651,12 +632,14 @@ function mapStateToProps({ comman, volume, material, }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getPlantSelectList,
+    getPlantSelectListByType,
     getVendorListByVendorType,
     getPlantBySupplier,
     createVolume,
     updateVolume,
     getVolumeData,
+    getFinancialYearSelectList,
+    getPartSelectList,
 })(reduxForm({
     form: 'AddVolume',
     enableReinitialize: true,

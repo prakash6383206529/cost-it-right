@@ -502,6 +502,158 @@ export const Plant = [
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
+export const BOP_ZBC_DOMESTIC = [
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', },
+    { label: 'BOPPartName', value: 'BOPPartName', },
+    { label: 'BOPCategory', value: 'BOPCategory', },
+    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'Specification', value: 'Specification', },
+    { label: 'Plant', value: 'Plant', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'NoOfPcs', value: 'NoOfPcs', },
+    { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'Remark', value: 'Remark', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+]
+
+export const BOP_ZBC_DOMESTIC_TempData = [
+    {
+        'BOPPartNumber': 'BOPPartNumber',
+        'BOPPartName': 'BOPPartName',
+        'BOPCategory': 'BOPCategory',
+        'PartNumber': 'PartNumber',
+        'Specification': 'Specification',
+        'Plant': 'Plant',
+        'VendorName': 'Vendor Name',
+        'NoOfPcs': 'NoOfPcs',
+        'BasicRate': 'BasicRate',
+        'Remark': 'Remark',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const BOP_VBC_DOMESTIC = [
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', },
+    { label: 'BOPPartName', value: 'BOPPartName', },
+    { label: 'BOPCategory', value: 'BOPCategory', },
+    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'Specification', value: 'Specification', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'VendorLocation', value: 'VendorLocation', },
+    { label: 'VendorPlant', value: 'VendorPlant', },
+    { label: 'SourceVendorName', value: 'SourceVendorName', },
+    { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
+    { label: 'NoOfPcs', value: 'NoOfPcs', },
+    { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'Remark', value: 'Remark', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+]
+
+export const BOP_VBC_DOMESTIC_TempData = [
+    {
+        'BOPPartNumber': 'BOPPartNumber',
+        'BOPPartName': 'BOPPartName',
+        'BOPCategory': 'BOPCategory',
+        'PartNumber': 'PartNumber',
+        'Specification': 'Specification',
+        'VendorName': 'VendorName',
+        'VendorCode': 'VendorCode',
+        'VendorLocation': 'VendorLocation',
+        'VendorPlant': 'VendorPlant',
+        'SourceVendorName': 'SourceVendorName',
+        'SourceVendorLocation': 'SourceVendorLocation',
+        'NoOfPcs': 'NoOfPcs',
+        'BasicRate': 'BasicRate',
+        'Remark': 'Remark',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const BOP_ZBC_IMPORT = [
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', },
+    { label: 'BOPPartName', value: 'BOPPartName', },
+    { label: 'BOPCategory', value: 'BOPCategory', },
+    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'Specification', value: 'Specification', },
+    { label: 'Plant', value: 'Plant', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'NoOfPcs', value: 'NoOfPcs', },
+    { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'Currency', value: 'Currency', },
+    { label: 'Remark', value: 'Remark', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+]
+
+export const BOP_ZBC_IMPORT_TempData = [
+    {
+        'BOPPartNumber': 'BOPPartNumber',
+        'BOPPartName': 'BOPPartName',
+        'BOPCategory': 'BOPCategory',
+        'PartNumber': 'PartNumber',
+        'Specification': 'Specification',
+        'Plant': 'Plant',
+        'VendorName': 'VendorName',
+        'NoOfPcs': 'NoOfPcs',
+        'BasicRate': 'BasicRate',
+        'Currency': 'Currency',
+        'Remark': 'Remark',
+        'EffectiveDate': 'EffectiveDate',
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const BOP_VBC_IMPORT = [
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', },
+    { label: 'BOPPartName', value: 'BOPPartName', },
+    { label: 'BOPCategory', value: 'BOPCategory', },
+    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'Specification', value: 'Specification', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'VendorLocation', value: 'VendorLocation', },
+    { label: 'VendorPlant', value: 'VendorPlant', },
+    { label: 'SourceVendorName', value: 'SourceVendorName', },
+    { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
+    { label: 'NoOfPcs', value: 'NoOfPcs', },
+    { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'Currency', value: 'Currency', },
+    { label: 'Remark', value: 'Remark', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+]
+
+export const BOP_VBC_IMPORT_TempData = [
+    {
+        'BOPPartNumber': 'BOPPartNumber',
+        'BOPPartName': 'BOPPartName',
+        'BOPCategory': 'BOPCategory',
+        'PartNumber': 'PartNumber',
+        'Specification': 'Specification',
+        'VendorName': 'VendorName',
+        'VendorCode': 'VendorCode',
+        'VendorLocation': 'VendorLocation',
+        'VendorPlant': 'VendorPlant',
+        'SourceVendorName': 'SourceVendorName',
+        'SourceVendorLocation': 'SourceVendorLocation',
+        'NoOfPcs': 'NoOfPcs',
+        'BasicRate': 'BasicRate',
+        'Currency': 'Currency',
+        'Remark': 'Remark',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Bought_Out_Parts = [
     { label: 'BasicRate', value: 'BasicRate', },
     { label: 'Quantity', value: 'Quantity', },
@@ -632,9 +784,9 @@ export const MHRMoreZBC = [
     { label: "UOM", value: "UOM", },
     { label: "InstallationCost", value: "InstallationCost", },
     { label: "TotalCost", value: "TotalCost", },
-    { label: "Loan", value: "Loan", },
+    { label: "LoanPercentage", value: "LoanPercentage", },
     { label: "LoanValue", value: "LoanValue", },
-    { label: "Equity", value: "Equity", },
+    { label: "EquityPercentage", value: "EquityPercentage", },
     { label: "EquityValue", value: "EquityValue", },
     { label: "RateOfInterest", value: "RateOfInterest", },
     { label: "RateOfInterestValue", value: "RateOfInterestValue", },
@@ -649,12 +801,15 @@ export const MHRMoreZBC = [
     { label: "CostOfScrap", value: "CostOfScrap", },
     { label: "DateOfPurchase", value: "DateOfPurchase", },
     { label: "DepriciationAmount", value: "DepriciationAmount", },
+    { label: "IsMaintanceFixed", value: "IsMaintanceFixed", },
     { label: "AnnualMaintance", value: "AnnualMaintance", },
     { label: "AnnualMaintanaceAmount", value: "AnnualMaintanaceAmount", },
+    { label: "IsConsumableFixed", value: "IsConsumableFixed", },
     { label: "AnnualConsumable", value: "AnnualConsumable", },
     { label: "AnnualConsumableAmount", value: "AnnualConsumableAmount", },
-    { label: "InsuaranceType", value: "InsuaranceType", },
-    { label: "InsuraceAmount", value: "InsuraceAmount", },
+    { label: "InsuaranceTypeFixed", value: "InsuaranceTypeFixed", },
+    { label: "InsuranceAmount", value: "InsuranceAmount", },
+    { label: "AnnualInsurancePercentage", value: "AnnualInsurancePercentage", },
     { label: "BuildingCostPerSqFt", value: "BuildingCostPerSqFt", },
     { label: "MachineFloorAreaSqPerFt", value: "MachineFloorAreaSqPerFt", },
     { label: "AnnualAreaCost", value: "AnnualAreaCost", },
@@ -666,12 +821,14 @@ export const MHRMoreZBC = [
     { label: "ConsumptionPerAnnum", value: "ConsumptionPerAnnum", },
     { label: "UtilizingFactor", value: "UtilizingFactor", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
+    { label: "PowerCostPerUnit", value: "PowerCostPerUnit", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
     { label: "TotalPowerCostAnnum", value: "TotalPowerCostAnnum", },
     { label: "LabourType", value: "LabourType", },
+    { label: "LabourRate", value: "LabourRate", },
     { label: "NoOfPeople", value: "NoOfPeople", },
     { label: "ProcessName", value: "ProcessName", },
-    { label: "OutputPerHoursr", value: "OutputPerHoursr", },
+    { label: "OutputPerHours", value: "OutputPerHours", },
     { label: "OutputPerAnnum", value: "OutputPerAnnum", },
     { label: "MachineRate", value: "MachineRate", }
 
@@ -683,29 +840,29 @@ export const MHRMoreZBC = [
 export const MHRMoreZBCTempData = [
     {
         "Technology": "Technology",
-        "Ownership": "Ownership",
+        "Ownership": "YES or NO",
         "Plant": "Plant",
         "MachineNo": "MAC-001",
         "MachineName": "Machine Name",
         "MachineType": "Machine Type",
         "Manufacturer": "Manufacturer",
         "YearOfManufacturing": moment().format('YYYY'),
-        "MachineCapicityAndTonnage": "MachineCapicityAndTonnage",
+        "MachineCapicityAndTonnage": 0,
         "MachineCost": 0,
         "AccessoriesCost": 0,
         "UOM": "UOM",
         "InstallationCost": 0,
         "TotalCost": 0,
-        "Loan": 0,
+        "LoanPercentage": 0,
         "LoanValue": 0,
-        "Equity": "Equity %",
+        "EquityPercentage": 0,
         "EquityValue": 0,
-        "RateOfInterest": "RateOfInterest",
+        "RateOfInterest": 0,
         "RateOfInterestValue": 0,
-        "NoOfShifts": "NoOfShifts",
+        "NoOfShifts": 0,
         "WorkingHoursPerShift": 0,
         "NoOfWorkingDaysPerYear": 0,
-        "Efficiency": "Availability",
+        "Efficiency": 0,
         "NoOfWorkingHourPerYear": 0,
         "DepreciationType": "DepreciationType",
         "DepriciationRate": 0,
@@ -713,29 +870,34 @@ export const MHRMoreZBCTempData = [
         "CostOfScrap": 0,
         "DateOfPurchase": moment().format('DD-MM-YYYY'),
         "DepriciationAmount": 0,
+        "IsMaintanceFixed": "YES or NO",
         "AnnualMaintance": 0,
         "AnnualMaintanaceAmount": 0,
+        "IsConsumableFixed": "YES or NO",
         "AnnualConsumable": 0,
         "AnnualConsumableAmount": 0,
-        "InsuaranceType": "InsuaranceType",
-        "InsuraceAmount": 0,
+        "InsuaranceTypeFixed": "YES or NO",
+        "InsuranceAmount": 0,
+        "AnnualInsurancePercentage": 0,
         "BuildingCostPerSqFt": 0,
         "MachineFloorAreaSqPerFt": 0,
         "AnnualAreaCost": 0,
         "OtherYearlyCost": 0,
         "TotalMachineCostPerAnnum": 0,
-        "UsesFuel": "Uses Fuel",
+        "UsesFuel": "YES or NO",
         "Fuel": "Fuel",
         "FuelCostPerUOM": 0,
         "ConsumptionPerAnnum": 0,
-        "UtilizingFactor": "UtilizingFactor",
+        "UtilizingFactor": 0,
         "PowerRatingKW": "Power Rating KW",
+        "PowerCostPerUnit": 0,
         "UsesSolarPower": "YES OR NO",
-        "TotalPowerCostAnnum": "TotalPowerCostAnnum",
+        "TotalPowerCostAnnum": 0,
         "LabourType": "LabourType",
+        "LabourRate": 0,
         "NoOfPeople": 0,
         "ProcessName": "Process Name",
-        "OutputPerHoursr": 0,
+        "OutputPerHours": 0,
         "OutputPerAnnum": 0,
         "MachineRate": 0,
     }

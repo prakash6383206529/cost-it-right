@@ -2,21 +2,20 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../../helper/validation";
+import { required, checkForNull, maxLength100, number } from "../../../../helper/validation";
 import {
     renderText, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField
 } from "../../../layout/FormInputs";
 import {
-    fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList,
-    getCurrencySelectList,
+    fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList,
 } from '../../../../actions/master/Comman';
 import {
-    createBOPImport, updateBOPImport, getBOPCategorySelectList,
-    getBOPImportById,
+    createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
+    fileUploadBOPDomestic, fileDeleteBOPDomestic,
 } from '../../../../actions/master/BoughtOutParts';
-import { getVendorListByVendorType } from '../../../../actions/master/Material';
-import BOPDomesticListing from './BOPDomesticListing';
+import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../../../../actions/master/Supplier';
+import { getPartSelectList } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from "../../../../helper/auth";
@@ -24,10 +23,13 @@ import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
+import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
+import moment from 'moment';
 const selector = formValueSelector('AddBOPImport');
 
 class AddBOPImport extends Component {
@@ -48,15 +50,15 @@ class AddBOPImport extends Component {
 
             vendorName: [],
             selectedVendorPlants: [],
-            vendorLocation: [],
 
             sourceLocation: [],
 
             UOM: [],
             isOpenUOM: false,
+            currency: [],
 
             effectiveDate: '',
-            remarks: '',
+            files: [],
         }
     }
 
@@ -67,6 +69,7 @@ class AddBOPImport extends Component {
     UNSAFE_componentWillMount() {
         this.props.getUOMSelectList(() => { })
         this.props.getBOPCategorySelectList(() => { })
+        this.props.getPartSelectList(() => { })
     }
 
     /**
@@ -75,8 +78,15 @@ class AddBOPImport extends Component {
      */
     componentDidMount() {
         this.props.fetchMaterialComboAPI(res => { });
-        this.props.getVendorListByVendorType(false, () => { })
+        this.props.getVendorTypeBOPSelectList(() => { })
         this.props.getCurrencySelectList(() => { })
+        this.getDetails()
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.fieldsObj !== prevProps.fieldsObj) {
+            this.handleCalculation()
+        }
     }
 
     /**
@@ -88,10 +98,13 @@ class AddBOPImport extends Component {
             IsVendor: !this.state.IsVendor,
             vendorName: [],
             selectedVendorPlants: [],
-            vendorLocation: [],
         }, () => {
             const { IsVendor } = this.state;
-            this.props.getVendorListByVendorType(IsVendor, () => { })
+            if (IsVendor) {
+                this.props.getVendorWithVendorCodeSelectList(() => { })
+            } else {
+                this.props.getVendorTypeBOPSelectList(() => { })
+            }
         });
     }
 
@@ -104,31 +117,19 @@ class AddBOPImport extends Component {
             this.setState({ BOPCategory: newValue });
         } else {
             this.setState({ BOPCategory: [], });
-
         }
-    }
-
-
-    /**
-    * @method handleMessageChange
-    * @description used remarks handler
-    */
-    handleMessageChange = (e) => {
-        this.setState({
-            remarks: e.target.value
-        })
     }
 
     /**
     * @method getDetails
     * @description Used to get Details
     */
-    getDetails = (data) => {
+    getDetails = () => {
+        const { data } = this.props;
         if (data && data.isEditFlag) {
             this.setState({
                 isEditFlag: false,
                 isLoader: true,
-                isShowForm: true,
                 BOPID: data.Id,
             })
             $('html, body').animate({ scrollTop: 0 }, 'slow');
@@ -137,45 +138,37 @@ class AddBOPImport extends Component {
 
                     const Data = res.data.Data;
 
-                    this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+                    if (Data.IsVendor) {
+                        this.props.getVendorWithVendorCodeSelectList(() => { })
+                    } else {
+                        this.props.getVendorTypeBOPSelectList(() => { })
+                    }
                     this.props.getPlantBySupplier(Data.Vendor, () => { })
-                    this.props.getCityBySupplier(Data.Vendor, () => { })
 
                     setTimeout(() => {
-                        const { cityList, bopCategorySelectList,
-                            filterCityListBySupplier, vendorListByVendorType } = this.props;
+                        const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, currencySelectList, } = this.props;
 
-                        const categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value === Data.Category)
-
-                        let plantArray = [];
-                        Data && Data.Plant.map((item) => {
-                            plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                            return plantArray;
-                        })
-
-                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.Vendor)
-
-                        let vendorPlantArray = [];
-                        Data && Data.VendorPlant.map((item) => {
-                            vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                            return vendorPlantArray;
-                        })
-
-                        const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value === Data.VendorLocation)
-                        const sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
+                        let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value === Data.CategoryId)
+                        let plantArray = Data && Data.Plant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+                        let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
+                        let currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
+                        let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
+                        let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+                        let sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
 
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
-                            isShowForm: true,
                             IsVendor: Data.IsVendor,
-                            BOPCategory: { label: categoryObj.Text, value: categoryObj.Value },
+                            BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
+                            selectedPartAssembly: partArray,
                             selectedPlants: plantArray,
-                            vendorName: { label: vendorObj.Text, value: vendorObj.Value },
+                            vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                             selectedVendorPlants: vendorPlantArray,
-                            vendorLocation: { label: vendorLocationObj.Text, value: vendorLocationObj.Value },
-                            sourceLocation: { label: sourceLocationObj.Text, value: sourceLocationObj.Value },
-                            remarks: Data.Remark,
+                            sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
+                            effectiveDate: moment(Data.EffectiveDate)._d,
+                            files: Data.Attachements,
                         })
                     }, 200)
                 }
@@ -192,8 +185,8 @@ class AddBOPImport extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { vendorListByVendorType, bopCategorySelectList, plantList, filterPlantList, cityList,
-            filterCityListBySupplier, UOMSelectList, currencySelectList, } = this.props;
+        const { vendorWithVendorCodeSelectList, bopCategorySelectList, partSelectList, plantList, filterPlantList, cityList,
+            UOMSelectList, currencySelectList, } = this.props;
         const temp = [];
         if (label === 'BOPCategory') {
             bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -203,10 +196,10 @@ class AddBOPImport extends Component {
             return temp;
         }
         if (label === 'PartAssembly') {
-            // plantList && plantList.map(item => {
-            //     if (item.Value == '0') return false;
-            //     temp.push({ Text: item.Text, Value: item.Value })
-            // });
+            partSelectList && partSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ Text: item.Text, Value: item.Value })
+            });
             return temp;
         }
         if (label === 'plant') {
@@ -217,7 +210,7 @@ class AddBOPImport extends Component {
             return temp;
         }
         if (label === 'VendorNameList') {
-            vendorListByVendorType && vendorListByVendorType.map(item => {
+            vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -227,13 +220,6 @@ class AddBOPImport extends Component {
             filterPlantList && filterPlantList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'VendorLocation') {
-            filterCityListBySupplier && filterCityListBySupplier.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
@@ -280,18 +266,25 @@ class AddBOPImport extends Component {
     }
 
     /**
+    * @method handlePlant
+    * @description Used handle Plant
+    */
+    handlePlant = (e) => {
+        this.setState({ selectedPlants: e })
+    }
+
+    /**
     * @method handleVendorName
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
+            this.setState({ vendorName: newValue, selectedVendorPlants: [], }, () => {
                 const { vendorName } = this.state;
                 this.props.getPlantBySupplier(vendorName.value, () => { })
-                this.props.getCityBySupplier(vendorName.value, () => { })
             });
         } else {
-            this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+            this.setState({ vendorName: [], selectedVendorPlants: [], })
         }
     };
 
@@ -302,7 +295,11 @@ class AddBOPImport extends Component {
     closeVendorDrawer = (e = '') => {
         this.setState({ isOpenVendor: false }, () => {
             const { IsVendor } = this.state;
-            this.props.getVendorListByVendorType(IsVendor, () => { })
+            if (IsVendor) {
+                this.props.getVendorWithVendorCodeSelectList(() => { })
+            } else {
+                this.props.getVendorTypeBOPSelectList(() => { })
+            }
         })
     }
 
@@ -312,18 +309,6 @@ class AddBOPImport extends Component {
     */
     handleVendorPlant = (e) => {
         this.setState({ selectedVendorPlants: e })
-    };
-
-    /**
-    * @method handleVendorLocation
-    * @description called
-    */
-    handleVendorLocation = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorLocation: newValue, });
-        } else {
-            this.setState({ vendorLocation: [], })
-        }
     };
 
     /**
@@ -339,24 +324,16 @@ class AddBOPImport extends Component {
     };
 
     /**
-    * @method handleUOM
+    * @method handleCurrency
     * @description called
     */
-    handleUOM = (newValue, actionMeta) => {
+    handleCurrency = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ UOM: newValue, })
+            this.setState({ currency: newValue, })
         } else {
-            this.setState({ UOM: [] })
+            this.setState({ currency: [] })
         }
     };
-
-    uomToggler = () => {
-        this.setState({ isOpenUOM: true })
-    }
-
-    closeUOMDrawer = (e = '') => {
-        this.setState({ isOpenUOM: false })
-    }
 
     handleCalculation = () => {
         const { fieldsObj } = this.props
@@ -377,109 +354,157 @@ class AddBOPImport extends Component {
     };
 
 
+    // specify upload params and url for your files
+    getUploadParams = ({ file, meta }) => {
+        return { url: 'https://httpbin.org/post', }
 
-    formToggle = () => {
-        this.setState({
-            isShowForm: !this.state.isShowForm
+    }
+
+    // called every time a file's `status` changes
+    handleChangeStatus = ({ meta, file }, status) => {
+        const { files, } = this.state;
+
+        if (status === 'removed') {
+            const removedFileName = file.name;
+            let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
+            this.setState({ files: tempArr })
+        }
+
+        if (status === 'done') {
+            let data = new FormData()
+            data.append('file', file)
+            this.props.fileUploadBOPDomestic(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state;
+                files.push(Data)
+                this.setState({ files: files })
+            })
+        }
+
+        if (status === 'rejected_file_type') {
+            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        }
+    }
+
+    renderImages = () => {
+        this.state.files && this.state.files.map(f => {
+            const withOutTild = f.FileURL.replace('~', '')
+            const fileURL = `${FILE_URL}${withOutTild}`;
+            return (
+                <div className={'attachment-wrapper images'}>
+                    <img src={fileURL} alt={''} />
+                    <button
+                        type="button"
+                        onClick={() => this.deleteFile(f.FileId)}>X</button>
+                </div>
+            )
         })
     }
 
-    /**
-    * @method cancel
-    * @description used to Reset form
-    */
-    clearForm = () => {
-        const { reset } = this.props;
-        reset();
-        this.setState({
-            remarks: '',
-            isShowForm: false,
-            IsVendor: false,
-        })
-        this.props.getBOPImportById('', res => { })
+    deleteFile = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            this.props.fileDeleteBOPDomestic(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = this.state.files.filter(item => item.FileId !== FileId)
+                this.setState({ files: tempArr })
+            })
+        }
+        if (FileId == null) {
+            let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+            this.setState({ files: tempArr })
+        }
     }
+
+    Preview = ({ meta }) => {
+        const { name, percent, status } = meta
+        return (
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {/* {Math.round(percent)}% */}
+            </span>
+        )
+    }
+
 
     /**
     * @method cancel
     * @description used to Reset form
     */
     cancel = () => {
-        this.clearForm()
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            IsVendor: false,
+            selectedPartAssembly: [],
+            selectedPlants: [],
+            selectedVendorPlants: [],
+            sourceLocation: [],
+            UOM: [],
+        })
+        this.props.getBOPImportById('', res => { })
+        this.props.hideForm()
     }
-
-    /**
-    * @method resetForm
-    * @description used to Reset form
-    */
-    resetForm = () => {
-        this.clearForm()
-    }
-
-
 
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
-            selectedVendorPlants, vendorLocation, sourceLocation, remarks,
-            BOPID, isEditFlag, files, effectiveDate, } = this.state;
+        const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
+            selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, } = this.state;
 
-        let plantArray = [];
-        selectedPlants && selectedPlants.map((item) => {
-            plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-            return plantArray;
-        })
-
-        let vendorPlantArray = [];
-        selectedVendorPlants && selectedVendorPlants.map((item) => {
-            vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-            return vendorPlantArray;
-        })
+        let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
+        let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
+        let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
         if (isEditFlag) {
-
+            let updatedFiles = files.map((file) => {
+                return { ...file, ContextId: BOPID }
+            })
             let requestData = {
+                Currency: currency.label,
                 BoughtOutPartId: BOPID,
-                Parts: [],
+                Part: partArray,
                 Source: values.Source,
                 SourceLocation: values.sourceLocation,
                 BasicRate: values.BasicRate,
                 NetLandedCost: values.NetLandedCost,
-                Remark: remarks,
+                Remark: values.Remark,
                 LoggedInUserId: loggedInUserId(),
                 Plant: plantArray,
-                Attachements: []
+                Attachements: updatedFiles,
             }
 
             this.props.updateBOPImport(requestData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
-                    this.clearForm();
-                    this.child.getUpdatedData();
+                    this.cancel();
                 }
             })
 
         } else {
 
             const formData = {
+                Currency: currency.label,
                 IsVendor: IsVendor,
                 EntryType: 0,
                 BoughtOutPartNumber: values.BoughtOutPartNumber,
                 BoughtOutPartName: values.BoughtOutPartName,
                 CategoryId: BOPCategory.value,
-                Parts: [],
+                Part: partArray,
                 Specification: values.Specification,
                 Vendor: vendorName.value,
-                VendorLocation: vendorLocation.value,
+                VendorLocation: '',
                 Source: values.Source,
                 SourceLocation: sourceLocation.value,
                 EffectiveDate: effectiveDate,
                 BasicRate: values.BasicRate,
                 NumberOfPieces: values.NumberOfPieces,
                 NetLandedCost: values.NetLandedCost,
-                Remark: remarks,
+                Remark: values.Remark,
                 IsActive: true,
                 LoggedInUserId: loggedInUserId(),
                 Plant: plantArray,
@@ -490,8 +515,7 @@ class AddBOPImport extends Component {
             this.props.createBOPImport(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.BOP_ADD_SUCCESS);
-                    this.clearForm();
-                    this.child.getUpdatedData();
+                    this.cancel();
                 }
             });
         }
@@ -510,388 +534,416 @@ class AddBOPImport extends Component {
                 <div>
                     <div className="login-container signup-form">
                         <div className="row">
-                            {this.state.isShowForm &&
-                                <div className="col-md-12">
-                                    <div className="shadow-lgg login-formg">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <div className="form-heading">
-                                                    <h2>{isEditFlag ? `Update BOP Details` : `Add BOP Details`}</h2>
-                                                </div>
+                            <div className="col-md-12">
+                                <div className="shadow-lgg login-formg">
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-heading">
+                                                <h2>{isEditFlag ? `Update BOP Details` : `Add BOP Details`}</h2>
                                             </div>
                                         </div>
-                                        <form
-                                            noValidate
-                                            className="form"
-                                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                        >
-                                            <Row>
-                                                <Col md="4" className="switch mb15">
-                                                    <label>
-                                                        <div className={'left-title'}>Zero Based</div>
-                                                        <Switch
-                                                            onChange={this.onPressVendor}
-                                                            checked={this.state.IsVendor}
-                                                            id="normal-switch"
+                                    </div>
+                                    <form
+                                        noValidate
+                                        className="form"
+                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                    >
+                                        <Row>
+                                            <Col md="4" className="switch mb15">
+                                                <label className="switch-level">
+                                                    <div className={'left-title'}>Zero Based</div>
+                                                    <Switch
+                                                        onChange={this.onPressVendor}
+                                                        checked={this.state.IsVendor}
+                                                        id="normal-switch"
+                                                        disabled={isEditFlag ? true : false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        height={20}
+                                                        width={46}
+                                                    />
+                                                    <div className={'right-title'}>Vendor Based</div>
+                                                </label>
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`BOP Part No`}
+                                                    name={"BoughtOutPartNumber"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`BOP Part Name`}
+                                                    name={"BoughtOutPartName"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="BOPCategory"
+                                                            type="text"
+                                                            label="BOP Category"
+                                                            component={searchableSelect}
+                                                            placeholder={'BOP Category'}
+                                                            options={this.renderListing('BOPCategory')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleCategoryChange}
+                                                            valueDescription={this.state.BOPCategory}
                                                             disabled={isEditFlag ? true : false}
                                                         />
-                                                        <div className={'right-title'}>Vendor Based</div>
-                                                    </label>
-                                                </Col>
-                                            </Row>
-
-                                            <Row>
-                                                <Col md="4">
-                                                    <Field
-                                                        label={`BOP Part No`}
-                                                        name={"PartNumber"}
-                                                        type="text"
-                                                        placeholder={'Enter'}
-                                                        validate={[required]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        disabled={false}
-                                                        className=" "
-                                                        customClassName=" withBorder"
-                                                    />
-                                                </Col>
-                                                <Col md="4">
-                                                    <Field
-                                                        label={`BOP Part Name`}
-                                                        name={"BOPPartName"}
-                                                        type="text"
-                                                        placeholder={'Enter'}
-                                                        validate={[required]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        disabled={false}
-                                                        className=" "
-                                                        customClassName=" withBorder"
-                                                    />
-                                                </Col>
-                                                <Col md="3">
-                                                    <Field
-                                                        name="BOPCategory"
-                                                        type="text"
-                                                        label="BOP Category"
-                                                        component={searchableSelect}
-                                                        placeholder={'BOP Category'}
-                                                        options={this.renderListing('BOPCategory')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleCategoryChange}
-                                                        valueDescription={this.state.BOPCategory}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>
-                                                <Col md="1">
+                                                    </div>
                                                     <div
                                                         onClick={this.categoryToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square mr15 right'}>
                                                     </div>
-                                                </Col>
-                                            </Row>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label="Part/ Assembly No."
+                                                    name="PartAssemblyNo"
+                                                    placeholder="--Select--"
+                                                    selection={(this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0) ? [] : this.state.selectedPartAssembly}
+                                                    options={this.renderListing('PartAssembly')}
+                                                    selectionChanged={this.handlePartAssembly}
+                                                    optionValue={option => option.Value}
+                                                    optionLabel={option => option.Text}
+                                                    component={renderMultiSelectField}
+                                                    mendatory={true}
+                                                    className="multiselect-with-border"
+                                                //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                                                />
+                                            </Col>
+                                        </Row>
 
-                                            <Row>
-                                                <Col md="4">
+                                        <Row>
+
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Specification`}
+                                                    name={"Specification"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    //validate={[required]}
+                                                    component={renderText}
+                                                    //required={true}
+                                                    disabled={isEditFlag ? true : false}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            {!this.state.IsVendor &&
+                                                <Col md="3">
                                                     <Field
-                                                        label="Part/ Assembly No."
-                                                        name="PartAssemblyNo"
+                                                        label="Plant"
+                                                        name="Plant"
                                                         placeholder="--Select--"
-                                                        selection={(this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0) ? [] : this.state.selectedPartAssembly}
-                                                        options={this.renderListing('PartAssembly')}
-                                                        selectionChanged={this.handlePartAssembly}
+                                                        selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                                        options={this.renderListing('plant')}
+                                                        selectionChanged={this.handlePlant}
                                                         optionValue={option => option.Value}
                                                         optionLabel={option => option.Text}
                                                         component={renderMultiSelectField}
                                                         mendatory={true}
                                                         className="multiselect-with-border"
-                                                    //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                                                        disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                                                     />
-                                                </Col>
-                                                <Col md="4">
+                                                </Col>}
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="12">
+                                                <div className="left-border">
+                                                    {'Vendor'}
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="vendorName"
+                                                            type="text"
+                                                            label="Vendor Name"
+                                                            component={searchableSelect}
+                                                            placeholder={'Vendor'}
+                                                            options={this.renderListing('VendorNameList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleVendorName}
+                                                            valueDescription={this.state.vendorName}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        onClick={this.vendorToggler}
+                                                        className={'plus-icon-square mr15 right'}>
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                            {this.state.IsVendor && <Col md="3">
+                                                <Field
+                                                    label="Vendor Plant"
+                                                    name="VendorPlant"
+                                                    placeholder="--- Plant ---"
+                                                    selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
+                                                    options={this.renderListing('VendorPlant')}
+                                                    selectionChanged={this.handleVendorPlant}
+                                                    optionValue={option => option.Value}
+                                                    optionLabel={option => option.Text}
+                                                    component={renderMultiSelectField}
+                                                    mendatory={true}
+                                                    className="multiselect-with-border"
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                            </Col>}
+
+                                        </Row>
+
+                                        {this.state.IsVendor &&
+                                            <Row>
+                                                <Col md="3">
                                                     <Field
-                                                        label={`Specification`}
-                                                        name={"Specification"}
+                                                        label={`Source`}
+                                                        name={"Source"}
                                                         type="text"
                                                         placeholder={'Enter'}
-                                                        //validate={[required]}
+                                                        validate={[required]}
                                                         component={renderText}
-                                                        //required={true}
+                                                        required={true}
                                                         disabled={false}
                                                         className=" "
                                                         customClassName=" withBorder"
                                                     />
-                                                </Col>
-                                                {!this.state.IsVendor &&
-                                                    <Col md="4">
-                                                        <Field
-                                                            label="Plant"
-                                                            name="Plant"
-                                                            placeholder="--Select--"
-                                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
-                                                            options={this.renderListing('plant')}
-                                                            selectionChanged={this.handlePlant}
-                                                            optionValue={option => option.Value}
-                                                            optionLabel={option => option.Text}
-                                                            component={renderMultiSelectField}
-                                                            mendatory={true}
-                                                            className="multiselect-with-border"
-                                                            disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                                                        />
-                                                    </Col>}
-                                            </Row>
-
-                                            <Row>
-                                                <Col md="12">
-                                                    <div className="left-border">
-                                                        {'Vendor'}
-                                                    </div>
                                                 </Col>
                                                 <Col md="3">
                                                     <Field
-                                                        name="vendorName"
+                                                        name="SourceLocation"
                                                         type="text"
-                                                        label="Vendor Name"
+                                                        label="Source Location"
                                                         component={searchableSelect}
-                                                        placeholder={'Vendor'}
-                                                        options={this.renderListing('VendorNameList')}
+                                                        placeholder={'--- Plant ---'}
+                                                        options={this.renderListing('SourceLocation')}
                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                                                        validate={(this.state.sourceLocation == null || this.state.sourceLocation.length === 0) ? [required] : []}
                                                         required={true}
-                                                        handleChangeDescription={this.handleVendorName}
-                                                        valueDescription={this.state.vendorName}
-                                                        disabled={isEditFlag ? true : false}
+                                                        handleChangeDescription={this.handleSourceSupplierCity}
+                                                        valueDescription={this.state.sourceLocation}
                                                     />
                                                 </Col>
-                                                <Col md="1">
-                                                    <div
-                                                        onClick={this.vendorToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
-                                                    </div>
-                                                </Col>
-                                                <Col md="4">
-                                                    <Field
-                                                        label="Vendor Plant"
-                                                        name="VendorPlant"
-                                                        placeholder="--- Plant ---"
-                                                        selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
-                                                        options={this.renderListing('VendorPlant')}
-                                                        selectionChanged={this.handleVendorPlant}
-                                                        optionValue={option => option.Value}
-                                                        optionLabel={option => option.Text}
-                                                        component={renderMultiSelectField}
-                                                        mendatory={true}
-                                                        className="multiselect-with-border"
-                                                        disabled={isEditFlag ? true : (this.state.IsVendor ? false : true)}
-                                                    />
-                                                </Col>
-                                                <Col md="4">
-                                                    <Field
-                                                        name="VendorLocation"
-                                                        type="text"
-                                                        label="Vendor Location"
-                                                        component={searchableSelect}
-                                                        placeholder={'Location'}
-                                                        options={this.renderListing('VendorLocation')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorLocation == null || this.state.vendorLocation.length === 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleVendorLocation}
-                                                        valueDescription={this.state.vendorLocation}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>
-                                            </Row>
+                                            </Row>}
 
-                                            {this.state.IsVendor &&
-                                                <Row>
-                                                    <Col md="4">
-                                                        <Field
-                                                            label={`Source`}
-                                                            name={"Source"}
-                                                            type="text"
-                                                            placeholder={'Enter'}
-                                                            validate={[required]}
-                                                            component={renderText}
-                                                            required={true}
-                                                            disabled={false}
-                                                            className=" "
-                                                            customClassName=" withBorder"
-                                                        />
-                                                    </Col>
-                                                    <Col md="4">
-                                                        <Field
-                                                            name="SourceLocation"
-                                                            type="text"
-                                                            label="Source Location"
-                                                            component={searchableSelect}
-                                                            placeholder={'--- Plant ---'}
-                                                            options={this.renderListing('SourceLocation')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.sourceLocation == null || this.state.sourceLocation.length === 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleSourceSupplierCity}
-                                                            valueDescription={this.state.sourceLocation}
-                                                        />
-                                                    </Col>
-                                                </Row>}
-
-                                            <Row>
-                                                <Col md="12">
-                                                    <div className="left-border">
-                                                        {'Cost:'}
-                                                    </div>
-                                                </Col>
-                                                <Col md="4">
-                                                    <Field
-                                                        name="Currency"
-                                                        type="text"
-                                                        label="Currency"
-                                                        component={searchableSelect}
-                                                        placeholder={'--- Select Currency ---'}
-                                                        options={this.renderListing('currency')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleCurrency}
-                                                        valueDescription={this.state.currency}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>
-                                                <Col md="4">
-                                                    <Field
-                                                        label={`No. Of Pcs.`}
-                                                        name={"NumberOfPieces"}
-                                                        type="text"
-                                                        placeholder={'Enter'}
-                                                        validate={[required]}
-                                                        component={renderNumberInputField}
-                                                        onChange={this.handleCalculation}
-                                                        required={true}
-                                                        className=""
-                                                        customClassName=" withBorder"
-                                                    />
-                                                </Col>
-                                                <Col md="4">
-                                                    <Field
-                                                        label={`Basic Rate (INR)`}
-                                                        name={"BasicRate"}
-                                                        type="text"
-                                                        placeholder={'Enter'}
-                                                        validate={[required]}
-                                                        component={renderNumberInputField}
-                                                        onChange={this.handleCalculation}
-                                                        required={true}
-                                                        disabled={false}
-                                                        className=" "
-                                                        customClassName=" withBorder"
-                                                    />
-                                                </Col>
-                                            </Row>
-
-                                            <Row>
-                                                <Col md="4">
-                                                    <Field
-                                                        label={`Net Landed Cost (INR)`}
-                                                        name={"NetLandedCost"}
-                                                        type="text"
-                                                        placeholder={''}
-                                                        validate={[required]}
-                                                        component={renderText}
-                                                        required={true}
-                                                        disabled={true}
-                                                        className=" "
-                                                        customClassName=" withBorder"
-                                                    />
-                                                </Col>
-                                                <Col md="4">
-                                                    <div className="form-group">
-                                                        <label>
-                                                            Effective Date
-                                                        {/* <span className="asterisk-required">*</span> */}
-                                                        </label>
-                                                        <div className="inputbox date-section">
-                                                            <DatePicker
-                                                                name="EffectiveDate"
-                                                                selected={this.state.effectiveDate}
-                                                                onChange={this.handleEffectiveDateChange}
-                                                                showMonthDropdown
-                                                                showYearDropdown
-                                                                dateFormat="dd/MM/yyyy"
-                                                                //maxDate={new Date()}
-                                                                dropdownMode="select"
-                                                                placeholderText="Select date"
-                                                                className="withBorder"
-                                                                autoComplete={'off'}
-                                                                disabledKeyboardNavigation
-                                                                onChangeRaw={(e) => e.preventDefault()}
-                                                                disabled={isEditFlag ? true : false}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </Col>
-                                            </Row>
-
-                                            <Row>
-                                                <Col md="12">
-                                                    <div className="left-border">
-                                                        {'Remarks & Attachment'}
-                                                    </div>
-                                                </Col>
-                                                <Col md="6">
-                                                    <Field
-                                                        label={'Remarks'}
-                                                        name={`Remark`}
-                                                        placeholder="Type here..."
-                                                        value={this.state.remarks}
-                                                        className=""
-                                                        customClassName=" textAreaWithBorder"
-                                                        onChange={this.handleMessageChange}
-                                                        validate={[required, maxLength100]}
-                                                        required={true}
-                                                        component={renderTextAreaField}
-                                                        maxLength="5000"
-                                                    />
-                                                </Col>
-                                                <Col md="6">
-
-                                                </Col>
-                                            </Row>
-
-                                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                                <div className="col-sm-12 text-center">
-                                                    <button
-                                                        type={'button'}
-                                                        className="reset mr15 cancel-btn"
-                                                        onClick={this.cancel} >
-                                                        {'Cancel'}
-                                                    </button>
-                                                    <button
-                                                        type="submit"
-                                                        className="submit-button mr5 save-btn" >
-                                                        {isEditFlag ? 'Update' : 'Save'}
-                                                    </button>
+                                        <Row>
+                                            <Col md="12">
+                                                <div className="left-border">
+                                                    {'Cost:'}
                                                 </div>
-                                            </Row>
-                                        </form>
-                                    </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    name="Currency"
+                                                    type="text"
+                                                    label="Currency"
+                                                    component={searchableSelect}
+                                                    placeholder={'--- Select Currency ---'}
+                                                    options={this.renderListing('currency')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleCurrency}
+                                                    valueDescription={this.state.currency}
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`No. Of Pcs.`}
+                                                    name={"NumberOfPieces"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required, number]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    className=""
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Basic Rate (INR)`}
+                                                    name={"BasicRate"}
+                                                    type="text"
+                                                    placeholder={'Enter'}
+                                                    validate={[required, number]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={false}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Net Landed Cost (INR)`}
+                                                    name={"NetLandedCost"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={true}
+                                                    className=" "
+                                                    customClassName=" withBorder"
+                                                />
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="3">
+                                                <div className="form-group">
+                                                    <label>
+                                                        Effective Date
+                                                        {/* <span className="asterisk-required">*</span> */}
+                                                    </label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name="EffectiveDate"
+                                                            selected={this.state.effectiveDate}
+                                                            onChange={this.handleEffectiveDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dateFormat="dd/MM/yyyy"
+                                                            //maxDate={new Date()}
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={'off'}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md="12">
+                                                <div className="left-border">
+                                                    {'Remarks & Attachment'}
+                                                </div>
+                                            </Col>
+                                            <Col md="6">
+                                                <Field
+                                                    label={'Remarks'}
+                                                    name={`Remark`}
+                                                    placeholder="Type here..."
+                                                    className=""
+                                                    customClassName=" textAreaWithBorder"
+                                                    validate={[required, maxLength100]}
+                                                    required={true}
+                                                    component={renderTextAreaField}
+                                                    maxLength="5000"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <label>Upload Files (upload up to 3 files)</label>
+                                                {this.state.files && this.state.files.length >= 3 ? '' :
+                                                    <Dropzone
+                                                        getUploadParams={this.getUploadParams}
+                                                        onChangeStatus={this.handleChangeStatus}
+                                                        PreviewComponent={this.Preview}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                                        initialFiles={this.state.initialFiles}
+                                                        maxFiles={3}
+                                                        maxSizeBytes={2000000}
+                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                                                        styles={{
+                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                                                        }}
+                                                        classNames="draper-drop"
+                                                    />}
+                                            </Col>
+                                            <Col md="3">
+                                                <div className={'attachment-wrapper'}>
+                                                    {
+                                                        this.state.files && this.state.files.map(f => {
+                                                            const withOutTild = f.FileURL.replace('~', '')
+                                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                                            return (
+                                                                <div className={'attachment images'}>
+                                                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
+                                                                    </a> */}
+                                                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                                                        <img src={fileURL} height={50} width={100} />
+                                                                    </div> */}
+
+                                                                    <img alt={''} className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../../assests/images/red-cross.png')}></img>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
+                                            </Col>
+                                        </Row>
+
+                                        <Row className="sf-btn-footer no-gutters justify-content-between">
+                                            <div className="col-sm-12 text-right bluefooter-butn">
+                                                <button
+                                                    type={'button'}
+                                                    className="reset mr15 cancel-btn"
+                                                    onClick={this.cancel} >
+                                                    <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    className="submit-button mr5 save-btn" >
+                                                    <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                                    {isEditFlag ? 'Update' : 'Save'}
+                                                </button>
+                                            </div>
+                                        </Row>
+
+                                    </form>
                                 </div>
-                            }
+                            </div>
                         </div>
                     </div>
-                    <BOPDomesticListing
-                        onRef={ref => (this.child = ref)}
-                        getDetails={this.getDetails}
-                        formToggle={this.formToggle}
-                        isShowForm={this.state.isShowForm} />
                 </div>
                 {isCategoryDrawerOpen && <AddBOPCategory
                     isOpen={isCategoryDrawerOpen}
                     closeDrawer={this.closeCategoryDrawer}
                     isEditFlag={false}
-                    //RawMaterial={this.state.RawMaterial}
                     anchor={'right'}
                 />}
                 {isOpenVendor && <AddVendorDrawer
@@ -919,13 +971,14 @@ class AddBOPImport extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, boughtOutparts, } = state;
+    const { comman, supplier, boughtOutparts, part, } = state;
     const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
 
     const { bopCategorySelectList, bopData, } = boughtOutparts;
     const { plantList, filterPlantList, filterCityListBySupplier, cityList,
         UOMSelectList, currencySelectList, } = comman;
-    const { vendorListByVendorType } = material;
+    const { vendorWithVendorCodeSelectList } = supplier;
+    const { partSelectList } = part;
 
     let initialValues = {};
     if (bopData && bopData !== undefined) {
@@ -934,7 +987,7 @@ function mapStateToProps(state) {
             BoughtOutPartName: bopData.BoughtOutPartName,
             Specification: bopData.Specification,
             Source: bopData.Source,
-            BasicRate: bopData.BasicRatePerUOM,
+            BasicRate: bopData.BasicRate,
             NumberOfPieces: bopData.NumberOfPieces,
             NetLandedCost: bopData.NetLandedCost,
             Remark: bopData.Remark,
@@ -942,8 +995,8 @@ function mapStateToProps(state) {
     }
 
     return {
-        vendorListByVendorType, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-        cityList, UOMSelectList, currencySelectList, fieldsObj, initialValues,
+        vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
+        cityList, partSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues,
     }
 
 }
@@ -955,9 +1008,10 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getVendorListByVendorType,
+    getVendorWithVendorCodeSelectList,
+    getVendorTypeBOPSelectList,
     getPlantBySupplier,
-    getCityBySupplier,
+    getPartSelectList,
     fetchMaterialComboAPI,
     getUOMSelectList,
     getCurrencySelectList,
@@ -965,6 +1019,8 @@ export default connect(mapStateToProps, {
     updateBOPImport,
     getBOPCategorySelectList,
     getBOPImportById,
+    fileUploadBOPDomestic,
+    fileDeleteBOPDomestic,
 })(reduxForm({
     form: 'AddBOPImport',
     enableReinitialize: true,

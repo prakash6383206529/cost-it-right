@@ -1111,7 +1111,7 @@ button.add-btn {
   padding: 0 30px 30px;
   background-color: #EDF0F5;
   height: 100vh;
-  margin-top: 139px;
+  margin-top: 234px;
 }
 
 label for[normal-switch] {
@@ -1505,6 +1505,8 @@ a:hover {
   box-shadow: 0px 5px 10px #0000000f;
   position: relative;
 }
+
+
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:not(.disabled):active:focus,
 .apply:hover,
@@ -3136,6 +3138,11 @@ ul.bread-list.d-inline-flex li.active {
   color: #256bd1;
 }
 
+.drawer-700px {
+  width: 100%;
+  max-width: 700px;
+}
+
 .drawer-600px {
   width: 100%;
   max-width: 600px;
@@ -3205,3 +3212,10 @@ ul.bread-list.d-inline-flex li.active {
           justify-content: center;
 }
 /*# sourceMappingURL=global.css.map */
+
+.delete-btn {
+  background-color: #FC5774;
+  border: 1px solid #FC5774;
+  border-radius: 4px;
+  opacity: 1;
+}

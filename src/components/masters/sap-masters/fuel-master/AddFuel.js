@@ -596,6 +596,7 @@ class AddFuel extends Component {
                                                 </Table>
                                             </Col>
                                         </Row>
+
                                         <Row className="sf-btn-footer no-gutters justify-content-between">
                                             <div className="col-sm-12 text-right bluefooter-butn">
                                                 <button
@@ -612,6 +613,7 @@ class AddFuel extends Component {
                                                 </button>
                                             </div>
                                         </Row>
+
                                     </form>
                                 </div>
                             </div>

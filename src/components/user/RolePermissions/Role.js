@@ -98,17 +98,17 @@ class Role extends Component {
 		let tempArray = [];
 		let oldData = data;
 		let isAnyChildChecked = data && data.map((item, i) => {
-			let index = item.Actions.findIndex(el => el.IsChecked == true)
-			if (index != -1) {
+			let index = item.Actions.findIndex(el => el.IsChecked === true)
+			if (index !== -1) {
 				oldData[i].IsChecked = true;
 				tempArray.push(index)
 			}
 		})
 
-		let isParentChecked = oldData.findIndex(el => el.IsChecked == true)
-		const isAvailable = Modules && Modules.findIndex(a => a.ModuleName == ModuleName)
-		if (isAvailable != -1 && Modules) {
-			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked != -1 ? true : false, Pages: oldData, }) })
+		let isParentChecked = oldData.findIndex(el => el.IsChecked === true)
+		const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
+		if (isAvailable !== -1 && Modules) {
+			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked !== -1 ? true : false, Pages: oldData, }) })
 			this.setState({ Modules: tempArray })
 		}
 	}

@@ -378,21 +378,22 @@ class AddSpecification extends Component {
                                     </Row>
                                     <Row>
                                         <Col md="12">
-                                            <div className="d-flex">
-                                                <Field
-                                                    name="GradeId"
-                                                    type="text"
-                                                    label="RM Grade"
-                                                    component={searchableSelect}
-                                                    placeholder={'Select RM Grade'}
-                                                    options={this.renderListing('RMGrade')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleGrade}
-                                                    valueDescription={this.state.RMGrade}
-                                                />
-
+                                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                <div className="fullinput-icon">
+                                                    <Field
+                                                        name="GradeId"
+                                                        type="text"
+                                                        label="RM Grade"
+                                                        component={searchableSelect}
+                                                        placeholder={'Select RM Grade'}
+                                                        options={this.renderListing('RMGrade')}
+                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
+                                                        required={true}
+                                                        handleChangeDescription={this.handleGrade}
+                                                        valueDescription={this.state.RMGrade}
+                                                    />
+                                                </div>
                                                 {isEditFlag ?
                                                     EditAccessibilityRMANDGRADE && <button className="Edit drawer-edit" type={'button'} onClick={() => this.gradeToggler(specificationData.GradeId)} />
                                                     :

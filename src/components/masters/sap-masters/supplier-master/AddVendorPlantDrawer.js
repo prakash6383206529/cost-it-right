@@ -227,7 +227,7 @@ class AddVendorPlantDrawer extends Component {
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container >
-                        <div className={'drawer-wrapper'}>
+                        <div className={'drawer-wrapper drawer-700px'}>
                             <form
                                 noValidate
                                 className="form"
@@ -291,7 +291,7 @@ class AddVendorPlantDrawer extends Component {
                                             </Col>
                                             <Col className="Ext phoneNumber" md="3">
                                                 <Field
-                                                    label="Extension"
+                                                    label="Ext"
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={''}
@@ -408,17 +408,16 @@ class AddVendorPlantDrawer extends Component {
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-sm-12 text-right bluefooter-butn">
                                         <button
-                                            type="submit"
-                                            className="submit-button mr5 save-btn" >
-                                            <div className={'check-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>
-                                            {isEditFlag ? 'Update' : 'Save'}
-                                        </button>
-
-                                        <button
                                             type={'button'}
                                             className="reset mr15 cancel-btn"
                                             onClick={this.cancel} >
-                                            <div className={'cross-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /></div> {'Cancel'}
+                                            <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="submit-button mr5 save-btn" >
+                                            <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' />
+                                            </div> {isEditFlag ? 'Update' : 'Save'}
                                         </button>
                                     </div>
                                 </Row>

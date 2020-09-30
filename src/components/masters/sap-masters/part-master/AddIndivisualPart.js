@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col } from 'reactstrap';
-import { required, number, maxLength6, maxLength10, maxLength100 } from "../../../../helper/validation";
+import { Row, Col } from 'reactstrap';
+import { required, number, maxLength100 } from "../../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../../helper/auth";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, } from "../../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../../../../actions/master/Part';
-import { getPlantSelectList, getRawMaterialSelectList, } from '../../../../actions/master/Comman';
+import { getPlantSelectList, } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 class AddIndivisualPart extends Component {
     constructor(props) {
@@ -26,13 +26,11 @@ class AddIndivisualPart extends Component {
             isLoader: false,
             PartId: '',
 
-            RawMaterial: [],
             selectedPlants: [],
             effectiveDate: '',
 
-            remarks: '',
             files: [],
-
+            initalConfiguration: reactLocalStorage.getObject('InitialConfiguration')
         }
     }
 
@@ -41,7 +39,6 @@ class AddIndivisualPart extends Component {
     * @description 
     */
     componentDidMount() {
-        this.props.getRawMaterialSelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.getDetails()
     }
@@ -66,17 +63,11 @@ class AddIndivisualPart extends Component {
                     let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
                     setTimeout(() => {
-                        const { rowMaterialList } = this.props;
-
-                        const materialNameObj = rowMaterialList && rowMaterialList.find(item => item.Value === Data.RawMaterialId)
-
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
-                            RawMaterial: materialNameObj && materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
                             selectedPlants: plantArray,
                             effectiveDate: moment(Data.EffectiveDate)._d,
-                            remarks: Data.Remark,
                             files: Data.Attachements,
                         })
                     }, 500)
@@ -84,18 +75,6 @@ class AddIndivisualPart extends Component {
             })
         } else {
             this.props.getPartData('', res => { })
-        }
-    }
-
-    /**
-    * @method handleRMChange
-    * @description  used to handle row material selection
-    */
-    handleRMChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ RawMaterial: newValue });
-        } else {
-            this.setState({ RawMaterial: [], });
         }
     }
 
@@ -112,35 +91,16 @@ class AddIndivisualPart extends Component {
     * @description Handle Effective Date
     */
     handleEffectiveDateChange = (date) => {
-        this.setState({
-            effectiveDate: date,
-        });
+        this.setState({ effectiveDate: date, });
     };
-
-    /**
-    * @method handleMessageChange
-    * @description used remarks handler
-    */
-    handleMessageChange = (e) => {
-        this.setState({
-            remarks: e.target.value
-        })
-    }
 
     /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { rowMaterialList, plantSelectList } = this.props;
+        const { plantSelectList } = this.props;
         const temp = [];
-        if (label === 'material') {
-            rowMaterialList && rowMaterialList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
@@ -246,7 +206,7 @@ class AddIndivisualPart extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { PartId, selectedPlants, RawMaterial, effectiveDate, isEditFlag, remarks, files } = this.state;
+        const { PartId, selectedPlants, effectiveDate, isEditFlag, files } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -260,13 +220,11 @@ class AddIndivisualPart extends Component {
                 PartName: values.PartName,
                 PartNumber: values.PartNumber,
                 Description: values.Description,
-                ECONumber: '',
                 ECNNumber: values.ECNNumber,
                 RevisionNumber: values.RevisionNumber,
-                Drawing: {},
                 DrawingNumber: values.DrawingNumber,
                 GroupCode: values.GroupCode,
-                Remark: remarks,
+                Remark: values.Remark,
                 EffectiveDate: effectiveDate,
                 Plants: plantArray,
                 Attachements: updatedFiles
@@ -285,18 +243,16 @@ class AddIndivisualPart extends Component {
                 LoggedInUserId: loggedInUserId(),
                 BOMNumber: values.BOMNumber,
                 BOMLevel: 0,
-                Remark: remarks,
+                Quantity: 1,
+                Remark: values.Remark,
                 PartNumber: values.PartNumber,
                 PartName: values.PartName,
                 Description: values.Description,
-                ECONumber: '',
                 ECNNumber: values.ECNNumber,
                 EffectiveDate: effectiveDate,
                 RevisionNumber: values.RevisionNumber,
-                Drawing: {},
                 DrawingNumber: values.DrawingNumber,
                 GroupCode: values.GroupCode,
-                RawMaterialId: RawMaterial.value,
                 Plants: plantArray,
                 Attachements: files
             }
@@ -318,7 +274,7 @@ class AddIndivisualPart extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isEditFlag } = this.state;
+        const { isEditFlag, initalConfiguration } = this.state;
         return (
             <>
                 <div>
@@ -367,7 +323,7 @@ class AddIndivisualPart extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            {initalConfiguration.IsBOMNumberDisplay && <Col md="3">
                                                 <Field
                                                     label={`BOM No.`}
                                                     name={"BOMNumber"}
@@ -380,7 +336,7 @@ class AddIndivisualPart extends Component {
                                                     customClassName={'withBorder'}
                                                     disabled={isEditFlag ? true : false}
                                                 />
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
                                                 <Field
                                                     label={`Part Description`}
@@ -398,7 +354,7 @@ class AddIndivisualPart extends Component {
                                         </Row>
 
                                         <Row>
-                                            <Col md="3">
+                                            {initalConfiguration.IsGroupCodeDisplay && <Col md="3">
                                                 <Field
                                                     label={`Group Code`}
                                                     name={"GroupCode"}
@@ -410,23 +366,7 @@ class AddIndivisualPart extends Component {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                 />
-                                            </Col>
-                                            <Col md='3'>
-                                                <Field
-                                                    name="RawMaterialId"
-                                                    type="text"
-                                                    label={'RM Material'}
-                                                    component={searchableSelect}
-                                                    placeholder={'Raw Material'}
-                                                    options={this.renderListing('material')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleRMChange}
-                                                    valueDescription={this.state.RawMaterial}
-                                                    disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
+                                            </Col>}
                                             <Col md='3'>
                                                 <Field
                                                     label="Plant"
@@ -524,10 +464,8 @@ class AddIndivisualPart extends Component {
                                                     label={'Remarks'}
                                                     name={`Remark`}
                                                     placeholder="Type here..."
-                                                    value={this.state.remarks}
                                                     className=""
                                                     customClassName=" textAreaWithBorder"
-                                                    onChange={this.handleMessageChange}
                                                     validate={[required, maxLength100]}
                                                     required={true}
                                                     component={renderTextAreaField}
@@ -613,26 +551,26 @@ class AddIndivisualPart extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material, comman, part }) {
-    const { plantSelectList, rowMaterialList } = comman;
-    const { newPartData } = part;
+function mapStateToProps({ comman, part }) {
+    const { plantSelectList, } = comman;
+    const { partData } = part;
 
     let initialValues = {};
-    if (newPartData && newPartData !== undefined) {
+    if (partData && partData !== undefined) {
         initialValues = {
-            PartNumber: newPartData.PartNumber,
-            PartName: newPartData.PartName,
-            BOMNumber: newPartData.BOMNumber,
-            Description: newPartData.Description,
-            GroupCode: newPartData.GroupCode,
-            ECNNumber: newPartData.ECNNumber,
-            DrawingNumber: newPartData.DrawingNumber,
-            RevisionNumber: newPartData.RevisionNumber,
-            Remark: newPartData.Remark,
+            PartNumber: partData.PartNumber,
+            PartName: partData.PartName,
+            BOMNumber: partData.BOMNumber,
+            Description: partData.Description,
+            GroupCode: partData.GroupCode,
+            ECNNumber: partData.ECNNumber,
+            DrawingNumber: partData.DrawingNumber,
+            RevisionNumber: partData.RevisionNumber,
+            Remark: partData.Remark,
         }
     }
 
-    return { rowMaterialList, plantSelectList, newPartData, initialValues }
+    return { plantSelectList, partData, initialValues }
 }
 
 /**
@@ -642,7 +580,6 @@ function mapStateToProps({ material, comman, part }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getRawMaterialSelectList,
     getPlantSelectList,
     createPart,
     updatePart,

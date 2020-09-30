@@ -6,6 +6,9 @@ import {
     GET_BOP_DOMESTIC_DATA_SUCCESS,
     GET_BOP_IMPORT_DATA_SUCCESS,
     GET_BOP_CATEGORY_SELECTLIST_SUCCESS,
+    GET_ALL_VENDOR_SELECTLIST_SUCCESS,
+    GET_PLANT_SELECTLIST_SUCCESS,
+    GET_PLANT_SELECTLIST_BY_VENDOR,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 
@@ -58,7 +61,7 @@ export function getBOPDomesticDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getBOPDomesticDataList}/${queryParams}`, headers);
+        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -79,7 +82,7 @@ export function getBOPImportDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getBOPImportDataList}/${queryParams}`, headers);
+        const request = axios.get(`${API.getBOPImportDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -155,13 +158,13 @@ export function getBOPImportById(bopId, callback) {
 }
 
 /**
- * @method deleteBOPAPI
+ * @method deleteBOP
  * @description delete BOP
  */
-export function deleteBOPAPI(Id, callback) {
+export function deleteBOP(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteBOPAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteBOP}/${Id}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -243,6 +246,182 @@ export function getBOPCategorySelectList(callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAllVendorSelectList
+ * @description GET ALL VENDORS SELECTLIST
+ */
+export function getAllVendorSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getAllVendorSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getPlantSelectList
+* @description Used to get select list of Vendor's
+*/
+export function getPlantSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlantSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PLANT_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getPlantSelectListByVendor
+* @description Used to get select list of Plant by Vendors
+*/
+export function getPlantSelectListByVendor(VendorId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPlantSelectListByVendor}/${VendorId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PLANT_SELECTLIST_BY_VENDOR,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method fileUploadBOPDomestic
+ * @description File Upload BOP Domestic
+ */
+export function fileUploadBOPDomestic(data, callback) {
+    return (dispatch) => {
+        let multipartHeaders = {
+            'Content-Type': 'multipart/form-data;'
+        };
+        const request = axios.post(API.fileUploadBOPDomestic, data, headers);
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method fileDeleteBOPDomestic
+ * @description delete FILE DELETE API
+ */
+export function fileDeleteBOPDomestic(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.fileDeleteBOPDomestic}/${data.Id}/${data.DeletedBy}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method bulkUploadBOPDomesticZBC
+ * @description upload bulk BOP Domestic ZBC
+ */
+export function bulkUploadBOPDomesticZBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOPDomesticZBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadBOPDomesticVBC
+ * @description upload bulk BOP Domestic VBC
+ */
+export function bulkUploadBOPDomesticVBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOPDomesticVBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadBOPImportZBC
+ * @description upload bulk BOP Domestic ZBC
+ */
+export function bulkUploadBOPImportZBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOPImportZBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadBOPImportVBC
+ * @description upload bulk BOP Domestic VBC
+ */
+export function bulkUploadBOPImportVBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOPImportVBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };

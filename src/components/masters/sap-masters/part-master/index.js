@@ -6,6 +6,7 @@ import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';
 import AssemblyPartListing from './AssemblyPartListing';
 import IndivisualPartListing from './IndivisualPartListing';
+import BOMViewer from './BOMViewer';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -13,9 +14,12 @@ class PartMaster extends Component {
         this.state = {
             isOpen: false,
             activeTab: '1',
+            isBOMViewer: false,
             isAddBOMForm: false,
             isPartForm: false,
             getDetails: {},
+            BOMViewerData: [],
+            flowPointsData: [],
         }
     }
 
@@ -47,7 +51,7 @@ class PartMaster extends Component {
 
     //HIDE BOM & PART INDIVIDUAL FORM
     hideForm = () => {
-        this.setState({ isAddBOMForm: false, isPartForm: false, getDetails: {} })
+        this.setState({ isAddBOMForm: false, isPartForm: false, isBOMViewer: false, getDetails: {}, })
     }
 
     //DISPLAY INDIVIDUAL PART FORM
@@ -60,17 +64,35 @@ class PartMaster extends Component {
         this.setState({ getDetails: data, isPartForm: true, isAddBOMForm: false, })
     }
 
+    //GET DETAILS OF INDIVIDUAL PART
+    displayBOMViewer = (data, isEditFlag, PartId) => {
+        this.setState({
+            getDetails: { isEditFlag, PartId },
+            BOMViewerData: data,
+            isBOMViewer: true,
+            isPartForm: false,
+            isAddBOMForm: false,
+        })
+    }
+
+    //SET FLOWSPOINT UPDATED NODE FROM BOM VIEWER COMPONENT(IF ANY NODE DELETED THAT WILL UPDATED BY THIS FUNCTION)
+    setUpdatedData = (data) => {
+        this.setState({ getDetails: {}, isAddBOMForm: true, isBOMViewer: false, flowPointsData: data })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isAddBOMForm, isPartForm } = this.state;
+        const { isAddBOMForm, isPartForm, isBOMViewer } = this.state;
 
         if (isAddBOMForm === true) {
             return <AddAssemblyPart
                 hideForm={this.hideForm}
-                getDetails={this.state.getDetails}
+                data={this.state.getDetails}
+                displayBOMViewer={this.displayBOMViewer}
+                flowPointsData={this.state.flowPointsData}
             />
         }
 
@@ -78,6 +100,15 @@ class PartMaster extends Component {
             return <AddIndivisualPart
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
+            />
+        }
+
+        if (isBOMViewer === true) {
+            return <BOMViewer
+                hideForm={this.hideForm}
+                BOMViewerData={this.state.BOMViewerData}
+                setUpdatedData={this.setUpdatedData}
+                getDetails={this.state.getDetails}
             />
         }
 

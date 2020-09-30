@@ -1,18 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Label, CustomInput } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
-import {
-    renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
-    searchableSelect
-} from "../../../layout/FormInputs";
-import { } from '../../../../actions/master/Supplier';
-import { } from '../../../../actions/master/Comman';
-import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../helper/auth";
+import { Container, Row, Col, Label, } from 'reactstrap';
+import { getSelectListPartType } from '../../../../actions/master/Part';
+import { ASSEMBLY, COMPONENT_PART, BOUGHTOUTPART } from "../../../../config/constants";
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../../../common/HeaderTitle';
 import AddAssemblyForm from './AddAssemblyForm';
@@ -23,7 +13,10 @@ class AddChildDrawer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            childType: 1,
+            isEditFlag: false,
+            childType: ASSEMBLY,
+            partType: [],
+            selectedPartType: {},
         }
     }
 
@@ -32,40 +25,31 @@ class AddChildDrawer extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        const { isEditFlag } = this.props;
-
-        if (isEditFlag) {
-
-        } else {
-
-        }
+        this.props.getSelectListPartType(res => {
+            if (res && res.status === 200) {
+                let Data = res.data.SelectList;
+                this.setState({
+                    partType: Data && Data.filter(el => el.Value !== '0'),
+                    selectedPartType: Data && Data.find(el => el.Text === ASSEMBLY)
+                })
+            }
+        })
     }
 
     checkRadio = (radioType) => {
-        this.setState({ childType: radioType })
+        const { partType } = this.state;
+        this.setState({ childType: radioType, selectedPartType: partType.find(el => el.Text === radioType) })
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, childData = {}) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', childData)
     };
 
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { } = this.props;
-        const temp = [];
-        // if (label === 'country') {
-        //     countryList && countryList.map(item =>
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     );
-        //     return temp;
-        // }
-
+    setChildParts = (childData = {}) => {
+        this.props.setChildPartsData(childData)
     }
 
     /**
@@ -80,59 +64,17 @@ class AddChildDrawer extends Component {
     }
 
     /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-    onSubmit = (values) => {
-        const { } = this.state;
-
-        /** Update existing detail of supplier master **/
-        if (this.props.isEditFlag) {
-            const { supplierId } = this.props;
-            let formData = {
-
-            }
-
-            // this.props.updateSupplierAPI(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-            //         this.toggleDrawer('')
-            //     }
-            // });
-
-        } else {/** Add new detail for creating supplier master **/
-
-            let formData = {
-
-            }
-
-            // this.props.createSupplierAPI(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-            //         this.toggleDrawer('')
-            //     }
-            // });
-        }
-
-    }
-
-    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
-        const { childType } = this.state;
+        const { isEditFlag, childType } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container>
-                        <div className={'drawer-wrapper'}>
-                            {/* <form
-                                noValidate
-                                className="form"
-                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                            > */}
+                        <div className={'drawer-wrapper drawer-700px'}>
+
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
@@ -156,8 +98,8 @@ class AddChildDrawer extends Component {
                                             <input
                                                 type="radio"
                                                 name="childType"
-                                                checked={childType == 1 ? true : false}
-                                                onClick={() => this.checkRadio(1)}
+                                                checked={childType === ASSEMBLY ? true : false}
+                                                onClick={() => this.checkRadio(ASSEMBLY)}
                                             />{' '}
                                                 Sub Assembly
                                             </Label>
@@ -165,8 +107,8 @@ class AddChildDrawer extends Component {
                                             <input
                                                 type="radio"
                                                 name="childType"
-                                                checked={childType == 2 ? true : false}
-                                                onClick={() => this.checkRadio(2)}
+                                                checked={childType === COMPONENT_PART ? true : false}
+                                                onClick={() => this.checkRadio(COMPONENT_PART)}
                                             />{' '}
                                                 Component
                                             </Label>
@@ -174,8 +116,8 @@ class AddChildDrawer extends Component {
                                             <input
                                                 type="radio"
                                                 name="childType"
-                                                checked={childType == 3 ? true : false}
-                                                onClick={() => this.checkRadio(3)}
+                                                checked={childType === BOUGHTOUTPART ? true : false}
+                                                onClick={() => this.checkRadio(BOUGHTOUTPART)}
                                             />{' '}
                                                 Bought Out Part
                                             </Label>
@@ -183,47 +125,32 @@ class AddChildDrawer extends Component {
                                 </Row>
 
 
-                                {childType == 1 &&
+                                {childType === ASSEMBLY &&
                                     <AddAssemblyForm
                                         toggleDrawer={this.toggleDrawer}
+                                        selectedPartType={this.state.selectedPartType}
+                                        setChildParts={this.setChildParts}
                                     />
                                 }
 
-                                {childType == 2 &&
+                                {childType === COMPONENT_PART &&
                                     <AddComponentForm
                                         toggleDrawer={this.toggleDrawer}
+                                        selectedPartType={this.state.selectedPartType}
+                                        setChildParts={this.setChildParts}
                                     />
                                 }
 
-                                {childType == 3 &&
+                                {childType === BOUGHTOUTPART &&
                                     <AddBOPForm
                                         toggleDrawer={this.toggleDrawer}
+                                        selectedPartType={this.state.selectedPartType}
+                                        setChildParts={this.setChildParts}
                                     />
                                 }
 
-
-
-                                {/* <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-md-12">
-                                            <div className="text-center ">
-                                                <input
-                                                    //disabled={pristine || submitting}
-                                                    onClick={this.cancel}
-                                                    type="button"
-                                                    value="Cancel"
-                                                    className="reset mr15 cancel-btn"
-                                                />
-                                                <input
-                                                    //disabled={isSubmitted ? true : false}
-                                                    type="submit"
-                                                    value={isEditFlag ? 'Update' : 'Save'}
-                                                    className="submit-button mr5 save-btn"
-                                                />
-                                            </div>
-                                        </div>
-                                    </Row> */}
                             </div>
-                            {/* </form> */}
+
                         </div>
                     </Container>
                 </Drawer>
@@ -237,7 +164,7 @@ class AddChildDrawer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
+function mapStateToProps() {
 
     return {}
 }
@@ -249,8 +176,5 @@ function mapStateToProps({ }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-
-})(reduxForm({
-    form: 'AddChildDrawer',
-    enableReinitialize: true,
-})(AddChildDrawer));
+    getSelectListPartType,
+})(AddChildDrawer);

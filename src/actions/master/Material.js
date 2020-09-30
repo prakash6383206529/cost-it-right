@@ -25,7 +25,6 @@ import {
     GET_RM_NAME_SELECTLIST,
     GET_GRADELIST_BY_RM_NAME_SELECTLIST,
     GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
-    GET_GRADE_SELECTLIST_BY_RAWMATERIAL,
     GET_GRADE_SELECTLIST_SUCCESS,
     GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA,
     GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST,
@@ -81,7 +80,7 @@ export function createMaterialAPI(data, callback) {
  */
 export function getRawMaterialDataAPI(RawMaterialId, callback) {
     return (dispatch) => {
-        if (RawMaterialId != '') {
+        if (RawMaterialId !== '') {
             axios.get(`${API.getRawMaterialDataAPI}/${RawMaterialId}`, headers)
                 .then((response) => {
                     dispatch({
@@ -175,7 +174,7 @@ export function createRMCategoryAPI(data, callback) {
  */
 export function getCategoryDataAPI(CategoryId, callback) {
     return (dispatch) => {
-        if (CategoryId != '') {
+        if (CategoryId !== '') {
             axios.get(`${API.getCategoryDataAPI}/${CategoryId}`, headers)
                 .then((response) => {
                     dispatch({
@@ -268,7 +267,7 @@ export function createRMGradeAPI(data, callback) {
  */
 export function getRMGradeDataAPI(GradeId, callback) {
     return (dispatch) => {
-        if (GradeId != '') {
+        if (GradeId !== '') {
             axios.get(`${API.getRMGradeDataAPI}/${GradeId}`, headers)
                 .then((response) => {
                     dispatch({
@@ -350,7 +349,7 @@ export function createRMSpecificationAPI(data, callback) {
  */
 export function getRMSpecificationDataAPI(SpecificationId, callback) {
     return (dispatch) => {
-        if (SpecificationId != '') {
+        if (SpecificationId !== '') {
             axios.get(`${API.getRMSpecificationDataAPI}/${SpecificationId}`, headers)
                 .then((response) => {
                     dispatch({
@@ -434,7 +433,7 @@ export function deleteRMSpecificationAPI(ID, callback) {
  */
 export function getRMGradeSelectListByRawMaterial(Id, callback) {
     return (dispatch) => {
-        if (Id != '') {
+        if (Id !== '') {
             const request = axios.get(`${API.getRMGradeSelectListByRawMaterial}/${Id}`, headers);
             request.then((response) => {
                 if (response.data.Result) {
@@ -605,7 +604,7 @@ export function createMaterialTypeAPI(data, callback) {
  */
 export function getMaterialTypeDataAPI(MaterialTypeId, callback) {
     return (dispatch) => {
-        if (MaterialTypeId != '') {
+        if (MaterialTypeId !== '') {
             axios.get(`${API.getMaterialTypeDataAPI}/${MaterialTypeId}`, headers)
                 .then((response) => {
                     dispatch({
@@ -1201,7 +1200,7 @@ export function bulkUploadRMImportZBC(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadRMImportZBC, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -1219,7 +1218,7 @@ export function bulkUploadRMImportVBC(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.bulkUploadRMImportVBC, data, headers);
         request.then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {
@@ -1274,7 +1273,7 @@ export function updateRawMaterialChildName(data, callback) {
     return (dispatch) => {
         const request = axios.put(API.updateRawMaterialChildName, data, headers);
         request.then((response) => {
-            if (response && response.status == 200) {
+            if (response && response.status === 200) {
                 callback(response);
             }
         }).catch((error) => {

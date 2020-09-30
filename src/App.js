@@ -33,7 +33,6 @@ class App extends Component {
     reactLocalStorage.setObject("isUserLoggedIn", false);
     reactLocalStorage.setObject("userDetail", {});
     reactLocalStorage.set('ModuleId', '');
-    toastr.success(MESSAGES.LOGOUT_SUCCESS);
 
     //setTimeout(() => {
     window.location.assign('/login');

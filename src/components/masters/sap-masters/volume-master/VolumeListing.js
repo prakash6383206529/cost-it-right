@@ -1,25 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getVolumeDataList, deleteVolume } from '../../../../actions/master/Volume';
-import { getPlantSelectList, getPlantBySupplier, } from '../../../../actions/master/Comman';
+import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../../../../actions/master/Volume';
+import { getPlantSelectList, } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import Switch from "react-switch";
+import $ from 'jquery';
 import { loggedInUserId } from '../../../../helper/auth';
 import { Years, Months } from '../../../../config/masterData';
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+import AddVolume from './AddVolume';
 
 class VolumeListing extends Component {
     constructor(props) {
@@ -28,6 +25,8 @@ class VolumeListing extends Component {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
+            showVolumeForm: false,
+            data: { isEditFlag: false, ID: '' },
 
             costingHead: [],
             year: [],
@@ -39,20 +38,16 @@ class VolumeListing extends Component {
 
     componentDidMount() {
         this.props.getPlantSelectList(() => { })
-        this.getTableListData(null, null, null, null, null)
-        this.props.onRef(this)
-    }
-
-    // Get updated Supplier's list after any action performed.
-    getUpdatedData = () => {
-        this.getTableListData(null, null, null, null, null)
+        this.props.getFinancialYearSelectList(() => { })
+        this.props.getVendorListByVendorType(true, () => { })
+        this.getTableListData()
     }
 
     /**
     * @method getTableListData
     * @description Get user list data
     */
-    getTableListData = (costing_head = null, year = null, month = null, vendor_id = null, plant_id = null) => {
+    getTableListData = (costing_head = '', year = '', month = '', vendor_id = '', plant_id = '') => {
         let filterData = {
             costing_head: costing_head,
             year: year,
@@ -61,15 +56,13 @@ class VolumeListing extends Component {
             plant_id: plant_id,
         }
         this.props.getVolumeDataList(filterData, res => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
+                this.setState({ tableData: Data.sort((a, b) => a.Sequence - b.Sequence), })
             } else {
-
+                this.setState({ tableData: [], })
             }
         });
     }
@@ -79,7 +72,7 @@ class VolumeListing extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { vendorListByVendorType, plantSelectList, } = this.props;
+        const { vendorListByVendorType, plantSelectList, financialYearSelectList } = this.props;
         const temp = [];
         if (label === 'costingHead') {
             let tempObj = [
@@ -90,28 +83,28 @@ class VolumeListing extends Component {
         }
         if (label === 'VendorList') {
             vendorListByVendorType && vendorListByVendorType.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'year') {
-            Years && Years.map(item => {
-                if (item.Value == 0) return false;
+            financialYearSelectList && financialYearSelectList.map(item => {
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'month') {
             Months && Months.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -123,11 +116,10 @@ class VolumeListing extends Component {
     * @description confirm edit item
     */
     editItemDetails = (Id) => {
-        let requestData = {
-            isEditFlag: true,
-            ID: Id,
-        }
-        this.props.getDetail(requestData)
+        this.setState({
+            data: { isEditFlag: true, ID: Id },
+            showVolumeForm: true,
+        })
     }
 
     /**
@@ -165,27 +157,9 @@ class VolumeListing extends Component {
         return (
             <>
                 <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
+                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
             </>
         )
-    }
-
-    handleChange = (cell, row, enumObject, rowIndex) => {
-        let data = {
-            Id: row.VendorId,
-            ModifiedBy: loggedInUserId(),
-            IsActive: !cell, //Status of the user.
-        }
-        // this.props.activeInactiveVendorStatus(data, res => {
-        //     if (res && res.data && res.data.Result) {
-        //         if (cell == true) {
-        //             toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-        //         } else {
-        //             toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-        //         }
-        //         this.getTableListData(null, null, null, null, null)
-        //     }
-        // })
     }
 
     /**
@@ -193,7 +167,7 @@ class VolumeListing extends Component {
     * @description called
     */
     handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ costingHead: newValue, });
         } else {
             this.setState({ costingHead: [], })
@@ -205,7 +179,7 @@ class VolumeListing extends Component {
     * @description called
     */
     handleYear = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ year: newValue, });
         } else {
             this.setState({ year: [], })
@@ -217,7 +191,7 @@ class VolumeListing extends Component {
     * @description called
     */
     handleMonth = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ month: newValue, });
         } else {
             this.setState({ month: [], })
@@ -230,7 +204,7 @@ class VolumeListing extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue });
         } else {
             this.setState({ vendorName: [] })
@@ -242,36 +216,12 @@ class VolumeListing extends Component {
     * @description called
     */
     handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ plant: newValue });
         } else {
             this.setState({ plant: [] })
         }
     };
-
-    /**
-    * @method statusButtonFormatter
-    * @description Renders buttons
-    */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
-    }
 
     /**
     * @method indexFormatter
@@ -281,7 +231,7 @@ class VolumeListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -311,7 +261,7 @@ class VolumeListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
+        return cell ? 'Vendor Based' : 'Zero Based';
     }
 
     onExportToCSV = (row) => {
@@ -352,12 +302,23 @@ class VolumeListing extends Component {
             vendorName: [],
             plant: [],
         }, () => {
-            this.getTableListData(null, null, null, null, null)
+            this.getTableListData()
         })
     }
 
     formToggle = () => {
-        this.props.formToggle()
+        this.setState({ showVolumeForm: true })
+    }
+
+    /**
+    * @method hideForm
+    * @description HIDE FORM
+    */
+    hideForm = () => {
+        this.setState({ showVolumeForm: false, data: { isEditFlag: false, ID: '' } }, () => {
+            $('html, body').animate({ scrollTop: 0 }, 'slow')
+            this.getTableListData()
+        })
     }
 
     /**
@@ -368,13 +329,14 @@ class VolumeListing extends Component {
     */
     onSubmit(values) {
     }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag } = this.state;
+        const { handleSubmit, } = this.props;
+        const { isEditFlag, showVolumeForm, data } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -385,40 +347,35 @@ class VolumeListing extends Component {
             paginationSize: 2,
         };
 
+        if (showVolumeForm) {
+            return (
+                <AddVolume
+                    hideForm={this.hideForm}
+                    data={data}
+                />
+            )
+        }
+
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                    <div class="col-sm-4"><h3>Volume Master</h3></div>
+                    <hr />
                     <Row className="pt-30">
                         <Col md="11" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="costingHead"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Select-'}
-                                        options={this.renderListing('costingHead')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.costingHead == null || this.state.costingHead.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleHeadChange}
-                                        valueDescription={this.state.costingHead}
-                                    //disabled={isEditFlag ? true : false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
                                         name="year"
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Select-'}
+                                        placeholder={'-Year-'}
                                         options={this.renderListing('year')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.year == null || this.state.year.length == 0) ? [required] : []}
+                                        validate={(this.state.year == null || this.state.year.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleYear}
                                         valueDescription={this.state.year}
@@ -431,10 +388,10 @@ class VolumeListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Select-'}
+                                        placeholder={'-Month-'}
                                         options={this.renderListing('month')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.month == null || this.state.month.length == 0) ? [required] : []}
+                                        validate={(this.state.month == null || this.state.month.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleMonth}
                                         valueDescription={this.state.month}
@@ -443,14 +400,31 @@ class VolumeListing extends Component {
                                 </div>
                                 <div className="flex-fill">
                                     <Field
+                                        name="costingHead"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-Costing Heads-'}
+                                        options={this.renderListing('costingHead')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleHeadChange}
+                                        valueDescription={this.state.costingHead}
+                                    //disabled={isEditFlag ? true : false}
+                                    />
+                                </div>
+
+                                <div className="flex-fill">
+                                    <Field
                                         name="vendorName"
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Select-'}
+                                        placeholder={'-Vendors-'}
                                         options={this.renderListing('VendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleVendorName}
                                         valueDescription={this.state.vendorName}
@@ -463,10 +437,10 @@ class VolumeListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Select-'}
+                                        placeholder={'-Plant-'}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
+                                        validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handlePlant}
                                         valueDescription={this.state.plant}
@@ -498,13 +472,11 @@ class VolumeListing extends Component {
                         <Col md="1" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight">
                                 <div>
-                                    {!this.props.isShowForm &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>
-                                    }
+                                    <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD</button>
                                 </div>
                             </div>
                         </Col>
@@ -524,17 +496,15 @@ class VolumeListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="Year" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Year'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="Month" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Month'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CostingHead" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantCode" columnTitle={true} dataAlign="center" dataSort={true} >{'PlantCode'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'Part No.'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="center" dataSort={true} >{'Part Name'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BudgetedQuantity" columnTitle={true} dataAlign="center" dataSort={true} >{'Budgeted Quantity'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ApprovedQuantity" columnTitle={true} dataAlign="center" dataSort={true} >{'Actual Quantity '}</TableHeaderColumn>
-                    {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                     <TableHeaderColumn className="action" dataField="VolumeId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
             </ >
@@ -550,8 +520,8 @@ class VolumeListing extends Component {
 function mapStateToProps({ comman, material, volume }) {
     const { loading, plantSelectList, } = comman;
     const { vendorListByVendorType } = material;
-    const { } = volume;
-    return { loading, vendorListByVendorType, plantSelectList, };
+    const { financialYearSelectList } = volume;
+    return { loading, vendorListByVendorType, plantSelectList, financialYearSelectList };
 }
 
 /**
@@ -565,6 +535,7 @@ export default connect(mapStateToProps, {
     getVendorListByVendorType,
     getVolumeDataList,
     deleteVolume,
+    getFinancialYearSelectList,
 })(reduxForm({
     form: 'VolumeListing',
     onSubmitFail: errors => {

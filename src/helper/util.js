@@ -1,3 +1,4 @@
+import React from "react";
 import { toastr } from "react-redux-toastr";
 import Moment from 'moment';
 import { MESSAGES } from '../config/message';
@@ -14,58 +15,78 @@ export const apiErrors = (res) => {
     if (response && response.data && response.data.error && response.data.error.message && response.data.error.message.value) {
         toastr.error(response.data.error.message.value);
     } else if (response) {
-        if (response && response.status === 203) {
-            toastr.error('Data is inconsistent. Please refresh your session by re-login');
-        } else if (response && response.status === 204) {
-            toastr.error('Intentionally blank for now.');
-        } else if (response && response.status === 205) {
-            toastr.error('Please clear your cache for data to reflect');
-        } else if (response && response.status === 206) {
-            toastr.error('The data might not have been updated properly. Please try again to ensure');
-        } else if (response && (response.status === 300 || response.status === 301 || response.status === 302 || response.status === 303)) {
-            toastr.error('Something is not right. Please contact your IT Team.');
-        } else if (response && response.status === 400) {
-            toastr.error('Bad Request. Please contact your IT Team.');
-        } else if (response && response.status === 401) {
-            toastr.error('Authentication error. Please contact your IT Team.');
-        } else if (response && response.status === 403) {
-            toastr.error('You are not allowed to access this resource. Please contact your IT Team.');
-        } else if (response && response.status === 404) {
-            toastr.error('Not found');
-        } else if (response && response.status === 405) {
-            toastr.error('You are not allowed to access this resource. Please contact your IT Team');
-        } else if (response && (response.status === 406 || response.status === 409 || response.status === 411 || response.status === 414 || response.status === 416 || response.status === 417 || response.status === 426)) {
-            toastr.error('Something is not right. Please contact your IT Team');
-        } else if (response && response.status === 407) {
-            toastr.error('Proxy Authentication Error. Please contact your IT Team');
-        } else if (response && response.status === 408) {
-            toastr.error('Your request has timed out. Please try again after some time.');
-        } else if (response && response.status === 410) {
-            toastr.error('The resource you requested no longer exists.');
-        } else if (response && response.status === 412) {
-            const errMsg = response && response.data && response.data.Message ? response.data.Message : 'Something went wrong please try again.';
-            toastr.error(errMsg);
-        } else if (response && response.status === 413) {
-            toastr.error("Server can't process such long request. Please contact your IT Team");
-        } else if (response && response.status === 415) {
-            toastr.error("This request is not supported by the server. Please contact your IT Team");
-        } else if (response && response.status === 500) {
-            toastr.error("Internal server error. Please contact your IT Team");
-        } else if (response && response.status === 501) {
-            toastr.error('Something is not right. Please contact your IT Team');
-        } else if (response && response.status === 502) {
-            toastr.error('Server is unavailable or unreachable. Please contact your IT Team');
-        } else if (response && response.status === 503) {
-            toastr.error('Server is unavailable due to load or maintenance. Please contact your IT Team');
-        } else if (response && response.status === 504) {
-            toastr.error('Server is unavailable due to timeout. Please contact your IT Team');
-        } else {
-            toastr.error('Something went wrong please try again.');
-        }
+        response && handleHTTPStatus(response)
     } else {
         toastr.error('Something went wrong please try again.');
     }
 
+}
+
+/** 
+* @method  handleHTTPStatus
+* @desc HANDLE HTTP STATUS CODE IN RESPONSE OF API'S
+* @param response
+*/
+const handleHTTPStatus = (response) => {
+    console.log('response: ', response);
+    switch (response.status) {
+        case 203:
+            return toastr.error('Data is inconsistent. Please refresh your session by re-login');
+        case 204:
+            return toastr.error('Intentionally blank for now.');
+        case 205:
+            return toastr.error('Please clear your cache for data to reflect');
+        case 206:
+            return toastr.error('The data might not have been updated properly. Please try again to ensure');
+        case 300:
+        case 301:
+        case 302:
+        case 303:
+            return toastr.error('Something is not right. Please contact your IT Team.');
+        case 400:
+            return toastr.error('Bad Request. Please contact your IT Team.');
+        case 401:
+            return toastr.error('Authentication error. Please contact your IT Team.');
+        case 403:
+            return toastr.error('You are not allowed to access this resource. Please contact your IT Team.');
+        case 404:
+            return toastr.error('Not found');
+        case 405:
+            return toastr.error('You are not allowed to access this resource. Please contact your IT Team');
+        case 406:
+        case 409:
+        case 411:
+        case 414:
+        case 416:
+        case 417:
+        case 427:
+            return toastr.error('Something is not right. Please contact your IT Team');
+        case 407:
+            return toastr.error('Proxy Authentication Error. Please contact your IT Team');
+        case 408:
+            return toastr.error('Your request has timed out. Please try again after some time.');
+        case 410:
+            return toastr.error('The resource you requested no longer exists.');
+        case 412:
+            const errMsg = response && response.data && response.data.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.';
+            return toastr.error(errMsg);
+        case 413:
+            return toastr.error("Server can't process such long request. Please contact your IT Team");
+        case 415:
+            return toastr.error("This request is not supported by the server. Please contact your IT Team");
+        case 500:
+            return toastr.error("Internal server error. Please contact your IT Team");
+        case 501:
+            return toastr.error('Something is not right. Please contact your IT Team');
+        case 502:
+            return toastr.error('Server is unavailable or unreachable. Please contact your IT Team');
+        case 503:
+            return toastr.error('Server is unavailable due to load or maintenance. Please contact your IT Team');
+        case 504:
+            return toastr.error('Server is unavailable due to timeout. Please contact your IT Team');
+        default:
+            return toastr.error('Something is not right. Please contact your IT Team');
+    }
 }
 
 /** 
@@ -159,18 +180,7 @@ export function displayDateTimeFormate(date) {
 
 //let showConnectionAlert = true;
 export function requestError(error) {
-    // if (error.code === 'ECONNABORTED' && showConnectionAlert) {
-    //     // alert(error.config.url);
-    //     showConnectionAlert = false;
-    //     Alert.alert(
-    //         'Poor Connection',
-    //         'Poor internet connection. Try later!',
-    //         [
-    //             { text: 'OK', onPress: () => { showConnectionAlert = true; } },
-    //         ],
-    //         { cancelable: false }
-    //     )
-    // }
+
 }
 
 /**
@@ -421,3 +431,4 @@ export function checkPermission(Data) {
 export function calculatePercentage(value) {
     return value / 100
 }
+

@@ -412,7 +412,7 @@ class AddVendorDrawer extends Component {
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container >
-                        <div className={`drawer-wrapper WIDTH-700 drawer-600px`}>
+                        <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
                             <form
                                 noValidate
                                 className="form"
@@ -496,7 +496,7 @@ class AddVendorDrawer extends Component {
                                 <Row>
                                     <Col md="12">
                                         <Row>
-                                            <Col md={9}>
+                                            <Col md={10}>
                                                 <Field
                                                     label="Phone Number"
                                                     name={"PhoneNumber"}
@@ -509,7 +509,7 @@ class AddVendorDrawer extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col md={3}>
+                                            <Col md={2}>
                                                 <Field
                                                     label="Ext"
                                                     name={"Extension"}
@@ -526,7 +526,7 @@ class AddVendorDrawer extends Component {
                                     <Col md="6">
                                         <Field
                                             name="MobileNumber"
-                                            label="MobileNumber"
+                                            label="Mobile Number"
                                             type="text"
                                             placeholder={''}
                                             component={renderText}
@@ -637,49 +637,50 @@ class AddVendorDrawer extends Component {
                                 <Row>
                                     {this.checkVendorSelection() && checkVendorPlantConfigurable() &&
                                         <>
-                                            <Col md="10">
-                                                <Field
-                                                    label="Vendor Plant"
-                                                    name="SelectedPlants"
-                                                    placeholder="--Select Plant--"
-                                                    selection={this.state.selectedVendorPlants}
-                                                    options={this.renderListing('vendorPlants')}
-                                                    selectionChanged={this.handleVendorPlant}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={false}
-                                                    className="multiselect-with-border"
-                                                />
-                                            </Col>
-                                            {this.props.isEditFlag &&
-                                                <Col md="2">
-                                                    <div
-                                                        onClick={this.vendorPlantToggler}
-                                                        className={'plus-icon-square mt30 mr30 right'}>
+                                            <Col md="12">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            label="Vendor Plant"
+                                                            name="SelectedPlants"
+                                                            placeholder="--Select Plant--"
+                                                            selection={this.state.selectedVendorPlants}
+                                                            options={this.renderListing('vendorPlants')}
+                                                            selectionChanged={this.handleVendorPlant}
+                                                            optionValue={option => option.Value}
+                                                            optionLabel={option => option.Text}
+                                                            component={renderMultiSelectField}
+                                                            mendatory={false}
+                                                            className="multiselect-with-border"
+                                                        />
                                                     </div>
-                                                </Col>}
+                                                    {this.props.isEditFlag &&
+                                                        <div
+                                                            onClick={this.vendorPlantToggler}
+                                                            className={'plus-icon-square mr30 right'}>
+                                                        </div>}
+                                                </div>
+                                            </Col>
                                         </>}
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12  text-right">
-                                        <div className="">
-                                            <button
-                                                type={'button'}
-                                                className="reset mr15 cancel-btn"
-                                                onClick={this.cancel} >
-                                                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                className="submit-button mr5 save-btn" >
-                                                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' />
-                                                </div> {this.props.isEditFlag ? 'Update' : 'Save'}
-                                            </button>
-                                        </div>
+                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                        <button
+                                            type={'button'}
+                                            className="reset mr15 cancel-btn"
+                                            onClick={this.cancel} >
+                                            <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="submit-button mr5 save-btn" >
+                                            <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                            {isEditFlag ? 'Update' : 'Save'}
+                                        </button>
                                     </div>
                                 </Row>
+
                             </form>
                         </div>
                     </Container>

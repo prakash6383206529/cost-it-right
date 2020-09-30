@@ -11,7 +11,9 @@ import {
     ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
     MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
     PartComponent, PartComponentTempData,
-    Bought_Out_Parts, OtherOperation,
+    BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData,
+    BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
+    OtherOperation,
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable } from "../../helper";
 
@@ -56,8 +58,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Labour, LabourTempData);
             case 'PartComponent':
                 return this.returnExcelColumn(PartComponent, PartComponentTempData);
-            case 'BOP':
-                return this.returnExcelColumn(Bought_Out_Parts);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             default:
@@ -82,8 +82,10 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(MachineZBC, MachineZBCTempData);
             case 'ZBC_MACHINE_MORE':
                 return this.returnExcelColumn(MHRMoreZBC, MHRMoreZBCTempData);
-            case 'BOP':
-                return this.returnExcelColumn(Bought_Out_Parts);
+            case 'BOPDomestic':
+                return this.returnExcelColumn(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData);
+            case 'BOPImport':
+                return this.returnExcelColumn(BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             default:
@@ -106,8 +108,10 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(this.checkVendorPlantConfig(VBCOperation), VBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
-            case 'BOP':
-                return this.returnExcelColumn(Bought_Out_Parts);
+            case 'BOPDomestic':
+                return this.returnExcelColumn(this.checkVendorPlantConfig(BOP_ZBC_IMPORT), BOP_ZBC_IMPORT_TempData);
+            case 'BOPImport':
+                return this.returnExcelColumn(this.checkVendorPlantConfig(BOP_VBC_IMPORT), BOP_VBC_IMPORT_TempData);
             case 'OtherOperation':
                 return this.returnExcelColumn(OtherOperation);
             default:
@@ -142,7 +146,7 @@ class Downloadxls extends React.Component {
 
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
-        if (isFailedFlag && (costingHead === 'ZBC' || costingHead === 'ZBC_MACHINE_MORE') && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine')) {
+        if (isFailedFlag && (costingHead === 'ZBC' || costingHead === 'ZBC_MACHINE_MORE') && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOPDomestic' || fileName === 'BOPImport')) {
             return (
                 <ExcelFile hideElement={true} filename={`${fileName}ZBC`} fileExtension={'.xls'} >
                     {isMachineMoreTemplate ? this.renderZBCSwitch(costingHead) : this.renderZBCSwitch(fileName)}
@@ -151,7 +155,7 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
-        if (isFailedFlag && costingHead === 'VBC' && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine')) {
+        if (isFailedFlag && costingHead === 'VBC' && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOPDomestic' || fileName === 'BOPImport')) {
             return (
                 <ExcelFile hideElement={true} filename={`${fileName}VBC`} fileExtension={'.xls'} >
                     {this.renderVBCSwitch(fileName)}

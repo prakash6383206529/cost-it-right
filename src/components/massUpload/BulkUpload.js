@@ -14,6 +14,7 @@ import { vendorBulkUpload } from '../../actions/master/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../../actions/master/OverheadProfit';
 import { operationZBCBulkUpload, operationVBCBulkUpload } from '../../actions/master/OtherOperation';
 import { partComponentBulkUpload } from '../../actions/master/Part';
+import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../../actions/master/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
@@ -270,6 +271,30 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
+        } else if (fileName === 'BOPDomestic' && costingHead === 'ZBC') {
+
+            this.props.bulkUploadBOPDomesticZBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'BOPDomestic' && costingHead === 'VBC') {
+
+            this.props.bulkUploadBOPDomesticVBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'BOPImport' && costingHead === 'ZBC') {
+
+            this.props.bulkUploadBOPImportZBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'BOPImport' && costingHead === 'VBC') {
+
+            this.props.bulkUploadBOPImportVBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
         } else {
 
         }
@@ -429,6 +454,10 @@ export default connect(mapStateToProps, {
     bulkUploadMachineVBC,
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
+    bulkUploadBOPDomesticZBC,
+    bulkUploadBOPDomesticVBC,
+    bulkUploadBOPImportZBC,
+    bulkUploadBOPImportVBC,
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

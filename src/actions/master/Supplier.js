@@ -12,6 +12,7 @@ import {
     GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
     GET_ALL_VENDOR_SELECTLIST_SUCCESS,
     GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+    GET_VENDOR_TYPE_BOP_SELECTLIST,
 } from '../../config/constants';
 import {
     apiErrors
@@ -285,7 +286,7 @@ export function getVendorTypeByVendorSelectList(VendorId) {
 
 /**
  * @method getVendorWithVendorCodeSelectList
- * @description GET VENDOR WITH VENDOR CODE SELECTLIST
+ * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
 export function getVendorWithVendorCodeSelectList() {
     return (dispatch) => {
@@ -297,6 +298,29 @@ export function getVendorWithVendorCodeSelectList() {
             });
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorTypeBOPSelectList
+ * @description GET BOP TYPE VENDOR'S SELECTLIST
+ */
+export function getVendorTypeBOPSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getVendorTypeBOPSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VENDOR_TYPE_BOP_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
             apiErrors(error);
         });
     };

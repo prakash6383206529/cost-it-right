@@ -10,6 +10,7 @@ import {
     GET_ALL_VENDOR_SELECTLIST_SUCCESS,
     GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR,
     GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+    GET_VENDOR_TYPE_BOP_SELECTLIST,
 } from '../../config/constants';
 
 const initialState = {
@@ -83,6 +84,13 @@ export default function supplierReducer(state = initialState, action) {
                 vendorTypeByVendorSelectList: action.payload
             };
         case GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                vendorWithVendorCodeSelectList: action.payload
+            };
+        case GET_VENDOR_TYPE_BOP_SELECTLIST:
             return {
                 ...state,
                 loading: false,

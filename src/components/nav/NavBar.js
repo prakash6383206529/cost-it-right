@@ -145,6 +145,7 @@ class SideBar extends Component {
                 pathname: "/",
                 state: { ModuleId: el.ModuleId, PageName: 'Dashboard', PageURL: '/' }
               }}
+              key={i}
             >
               <img className="" src={require('../../assests/images/homeicon.svg')} alt='' />
               <span>{module}</span>
@@ -174,6 +175,7 @@ class SideBar extends Component {
                   pathname: '/raw-material-master',
                   state: { ModuleId: el.ModuleId, PageName: 'Masters', PageURL: '/raw-material-master' }
                 }}
+                key={i}
               >
                 <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
               </Link>
@@ -197,6 +199,7 @@ class SideBar extends Component {
           return (
             <>
               <Link
+                key={i}
                 className="nav-link additional-masters"
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
@@ -227,6 +230,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <Link
+              key={i}
               className="nav-link"
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
@@ -255,6 +259,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <Link
+              key={i}
               className="nav-link"
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
@@ -283,6 +288,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <Link
+              key={i}
               className="nav-link"
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
@@ -311,6 +317,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <Link
+              key={i}
               className="nav-link"
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
@@ -339,6 +346,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <Link
+              key={i}
               className="nav-link"
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{

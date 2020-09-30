@@ -4,6 +4,7 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_VOLUME_DATA_SUCCESS,
+    GET_FINANCIAL_YEAR_SELECTLIST,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 const headers = {
@@ -109,5 +110,28 @@ export function deleteVolume(ID, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+* @method getFinancialYearSelectList
+* @description GET FINANCIAL YEAR LIST
+*/
+export function getFinancialYearSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getFinancialYearSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_FINANCIAL_YEAR_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
     };
 }

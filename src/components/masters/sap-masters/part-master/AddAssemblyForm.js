@@ -1,20 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Label, CustomInput } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
-import {
-    renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
-    searchableSelect
-} from "../../../layout/FormInputs";
-import { } from '../../../../actions/master/Supplier';
-import { } from '../../../../actions/master/Comman';
-import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../helper/auth";
-import Drawer from '@material-ui/core/Drawer';
-import HeaderTitle from '../../../common/HeaderTitle';
+import { Row, Col, } from 'reactstrap';
+import { required, number, } from "../../../../helper/validation";
+import { renderText, searchableSelect } from "../../../layout/FormInputs";
+import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../../../../actions/master/Part';
 
 class AddAssemblyForm extends Component {
     constructor(props) {
@@ -23,6 +13,7 @@ class AddAssemblyForm extends Component {
             assemblyPart: [],
             parentPart: [],
             isAddMore: false,
+            childData: [],
         }
     }
 
@@ -31,17 +22,7 @@ class AddAssemblyForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        const { isEditFlag } = this.props;
-
-        if (isEditFlag) {
-
-        } else {
-
-        }
-    }
-
-    checkRadio = (radioType) => {
-        this.setState({ childType: radioType })
+        this.props.getAssemblyPartSelectList(() => { })
     }
 
     /**
@@ -49,10 +30,14 @@ class AddAssemblyForm extends Component {
     * @description  used to handle 
     */
     handleAssemblyPartChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ assemblyPart: newValue });
+        if (newValue && newValue !== '') {
+            this.setState({ assemblyPart: newValue }, () => {
+                const { assemblyPart } = this.state;
+                this.props.getDrawerAssemblyPartDetail(assemblyPart.value, res => { })
+            });
         } else {
             this.setState({ assemblyPart: [], });
+            this.props.getDrawerAssemblyPartDetail('', res => { })
         }
     }
 
@@ -61,7 +46,7 @@ class AddAssemblyForm extends Component {
     * @description  used to handle 
     */
     handleParentPartChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ parentPart: newValue });
         } else {
             this.setState({ parentPart: [], });
@@ -73,14 +58,15 @@ class AddAssemblyForm extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { } = this.props;
+        const { assemblyPartSelectList } = this.props;
         const temp = [];
-        // if (label === 'country') {
-        //     countryList && countryList.map(item =>
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     );
-        //     return temp;
-        // }
+        if (label === 'assemblyPart') {
+            assemblyPartSelectList && assemblyPartSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
 
     }
 
@@ -92,7 +78,7 @@ class AddAssemblyForm extends Component {
         const { reset } = this.props;
         reset();
         this.props.toggleDrawer('')
-        //this.props.getRMSpecificationDataAPI('', res => { });
+        this.props.getDrawerAssemblyPartDetail('', res => { })
     }
 
     /**
@@ -100,33 +86,26 @@ class AddAssemblyForm extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { isAddMore } = this.state;
+        const { isAddMore, assemblyPart } = this.state;
+        const { DrawerPartData } = this.props;
 
-        /** Update existing detail of supplier master **/
-        if (this.props.isEditFlag) {
-            const { supplierId } = this.props;
-            let formData = {
+        let childData = {
+            PartNumber: assemblyPart ? assemblyPart : [],
+            Position: { "x": 600, "y": 50 },
+            Outputs: assemblyPart ? assemblyPart.label : '',
+            InnerContent: DrawerPartData && DrawerPartData.Description !== undefined ? DrawerPartData.Description : '',
+            PartName: assemblyPart ? assemblyPart : [],
+            Quantity: values.Quantity,
+            Level: "L1",
+            selectedPartType: this.props.selectedPartType,
+            PartId: assemblyPart ? assemblyPart.value : '',
+        }
+        this.props.getDrawerAssemblyPartDetail('', res => { })
 
-            }
-
-            // this.props.updateSupplierAPI(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-            //         this.props.toggleDrawer('')
-            //     }
-            // });
-
-        } else {/** Add new detail for creating supplier master **/
-
-            let formData = {
-
-            }
-            // this.props.createSupplierAPI(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-            //         this.props.toggleDrawer('')
-            //     }
-            // });
+        if (isAddMore) {
+            this.props.setChildParts(childData)
+        } else {
+            this.props.toggleDrawer('', childData)
         }
 
     }
@@ -136,8 +115,7 @@ class AddAssemblyForm extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
-        const { childType } = this.state;
+        const { handleSubmit, isEditFlag, } = this.props;
         return (
             <>
 
@@ -156,7 +134,7 @@ class AddAssemblyForm extends Component {
                                 placeholder={'Assembly Part'}
                                 options={this.renderListing('assemblyPart')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.assemblyPart == null || this.state.assemblyPart.length == 0) ? [required] : []}
+                                validate={(this.state.assemblyPart == null || this.state.assemblyPart.length === 0) ? [required] : []}
                                 required={true}
                                 handleChangeDescription={this.handleAssemblyPartChange}
                                 valueDescription={this.state.assemblyPart}
@@ -165,7 +143,7 @@ class AddAssemblyForm extends Component {
                         <Col md="6">
                             <Field
                                 label={`Assembly Name`}
-                                name={"AssemblyName"}
+                                name={"AssemblyPartName"}
                                 type="text"
                                 placeholder={''}
                                 validate={[required]}
@@ -193,8 +171,8 @@ class AddAssemblyForm extends Component {
                         </Col>
                         <Col md="6">
                             <Field
-                                label={`ECO No.`}
-                                name={"ECONumber"}
+                                label={`ECN No.`}
+                                name={"ECNNumber"}
                                 type="text"
                                 placeholder={''}
                                 validate={[required]}
@@ -251,99 +229,45 @@ class AddAssemblyForm extends Component {
                         </Col>
                         <Col md="6">
                             <Field
-                                label={`RM Material`}
-                                name={"RawMaterial"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
-
-                        <Col md="6">
-                            <Field
                                 label={`Quantity`}
                                 name={"Quantity"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
+                                validate={[number, required]}
                                 component={renderText}
                                 required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={false}
-                            />
-                        </Col>
-                        <Col md="6">
-                            <Field
-                                label={`BOM Level`}
-                                name={"BOMLevel"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={false}
-                            />
-                        </Col>
-                    </Row>
-
-                    <Row>
-                        <Col md="12">
-                            <HeaderTitle
-                                title={'Association:'}
-                                customClass={'Personal-Details'} />
-                        </Col>
-                        <Col md='6'>
-                            <Field
-                                name="Parent"
-                                type="text"
-                                label={'Parent'}
-                                component={searchableSelect}
-                                placeholder={'Parent Part'}
-                                options={this.renderListing('parentPart')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.parentPart == null || this.state.parentPart.length == 0) ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleParentPartChange}
-                                valueDescription={this.state.parentPart}
                             />
                         </Col>
                     </Row>
 
                     <Row className="sf-btn-footer no-gutters justify-content-between">
-                        <div className="col-md-12">
-                            <div className="text-center ">
-                                <input
-                                    //disabled={pristine || submitting}
-                                    onClick={this.cancel}
-                                    type="button"
-                                    value="Cancel"
-                                    className="reset mr15 cancel-btn"
-                                />
-                                <input
-                                    //disabled={isSubmitted ? true : false}
-                                    type="submit"
-                                    onClick={() => this.setState({ isAddMore: true })}
-                                    value={'ADD MORE'}
-                                    className="submit-button mr5 save-btn"
-                                />
-                                <input
-                                    //disabled={isSubmitted ? true : false}
-                                    type="submit"
-                                    onClick={() => this.setState({ isAddMore: false })}
-                                    value={isEditFlag ? 'Update' : 'Save'}
-                                    className="submit-button mr5 save-btn"
-                                />
-                            </div>
+                        <div className="col-sm-12 text-right bluefooter-butn">
+                            <button
+                                type={'button'}
+                                className="reset mr15 cancel-btn"
+                                onClick={this.cancel} >
+                                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                            </button>
+                            <button
+                                type={'submit'}
+                                className="submit-button mr5 save-btn"
+                                onClick={() => this.setState({ isAddMore: true })} >
+                                <div className={'plus'}></div>
+                                {'ADD MORE'}
+                            </button>
+                            <button
+                                type="submit"
+                                className="submit-button mr5 save-btn"
+                                onClick={() => this.setState({ isAddMore: false })} >
+                                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                {isEditFlag ? 'Update' : 'Save'}
+                            </button>
                         </div>
                     </Row>
+
                 </form>
             </>
         );
@@ -355,9 +279,22 @@ class AddAssemblyForm extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
+function mapStateToProps({ part }) {
+    const { assemblyPartSelectList, DrawerPartData } = part;
 
-    return {}
+    let initialValues = {};
+    if (DrawerPartData && DrawerPartData !== undefined) {
+        initialValues = {
+            AssemblyPartName: DrawerPartData.AssemblyPartName,
+            Description: DrawerPartData.Description,
+            ECNNumber: DrawerPartData.ECNNumber,
+            RevisionNumber: DrawerPartData.RevisionNumber,
+            DrawingNumber: DrawerPartData.DrawingNumber,
+            GroupCode: DrawerPartData.GroupCode,
+        }
+    }
+
+    return { assemblyPartSelectList, DrawerPartData, initialValues, }
 }
 
 /**
@@ -367,7 +304,8 @@ function mapStateToProps({ }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-
+    getAssemblyPartSelectList,
+    getDrawerAssemblyPartDetail,
 })(reduxForm({
     form: 'AddAssemblyForm',
     enableReinitialize: true,

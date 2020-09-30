@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
+import { getAssemblyPartDataList, deleteAssemblyPart, } from '../../../../actions/master/Part';
 import { } from '../../../../actions/master/Comman';
-import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
-import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { Loader } from '../../../common/Loader';
@@ -13,6 +11,8 @@ import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
+import moment from 'moment';
+import VisualAdDrawer from './VisualAdDrawer';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -25,12 +25,15 @@ class AssemblyPartListing extends Component {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
+
+            isOpenVisualDrawer: false,
+            visualAdId: '',
+            BOMId: '',
         }
     }
 
     componentDidMount() {
         this.getTableListData();
-        //this.props.onRef(this)
     }
 
     // Get updated user list after any action performed.
@@ -43,13 +46,18 @@ class AssemblyPartListing extends Component {
     * @description Get user list data
     */
     getTableListData = () => {
-        // this.props.getPlantDataAPI(false, (res) => {
-        //     if (res && res.data && res.status === 200) {
-        //         let Data = res.data.DataList;
+        this.props.getAssemblyPartDataList((res) => {
+            if (res.status === 204 && res.data === '') {
+                this.setState({ tableData: [], })
+            } else if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                this.setState({
+                    tableData: Data,
+                })
+            } else {
 
-        //         this.setState({ tableData: Data })
-        //     }
-        // })
+            }
+        })
     }
 
     /**
@@ -66,7 +74,7 @@ class AssemblyPartListing extends Component {
 
     /**
     * @method deleteItem
-    * @description confirm delete part
+    * @description CONFIRM DELETE PART
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
@@ -75,20 +83,56 @@ class AssemblyPartListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
     * @method confirmDeleteItem
-    * @description confirm delete user item
+    * @description DELETE ASSEMBLY PART
     */
     confirmDeleteItem = (ID) => {
-        // this.props.deletePlantAPI(ID, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
-        //         this.getTableListData();
-        //     }
-        // });
+        this.props.deleteAssemblyPart(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.DELETE_BOM_SUCCESS);
+                this.getTableListData();
+            }
+        });
+    }
+
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
+    /**
+    * @method visualAdFormatter
+    * @description Renders buttons
+    */
+    visualAdFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <button className="View mr5" type={'button'} onClick={() => this.visualAdDetails(cell, row.BOMId)} />
+            </>
+        )
+    }
+
+    /**
+    * @method visualAdDetails
+    * @description Renders buttons
+    */
+    visualAdDetails = (cell, BOMId) => {
+        this.setState({ visualAdId: cell, BOMId: BOMId, isOpenVisualDrawer: true })
+    }
+
+    /**
+    * @method closeVisualDrawer
+    * @description CLOSE VISUAL AD DRAWER
+    */
+    closeVisualDrawer = () => {
+        this.setState({ isOpenVisualDrawer: false, visualAdId: '', BOMId: '', })
     }
 
     /**
@@ -147,21 +191,6 @@ class AssemblyPartListing extends Component {
     }
 
     /**
-    * @method checkIsVendorFormatter
-    * @description Renders IsVendor
-    */
-    checkIsVendorFormatter = (cell, row, enumObject, rowIndex) => {
-
-        return (
-            <>
-
-            </>
-        )
-    }
-
-
-
-    /**
     * @method indexFormatter
     * @description Renders serial number
     */
@@ -169,7 +198,7 @@ class AssemblyPartListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -189,40 +218,6 @@ class AssemblyPartListing extends Component {
         );
     }
 
-    /**
-    * @method renderListing
-    * @description Used show listing 
-    */
-    renderListing = (label) => {
-        const { } = this.props;
-        const temp = [];
-
-        // if (label === 'country') {
-        //     countryList && countryList.map(item =>
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     );
-        //     return temp;
-        // }
-
-    }
-
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-
-    }
-
     formToggle = () => {
         this.props.formToggle()
     }
@@ -232,20 +227,11 @@ class AssemblyPartListing extends Component {
     }
 
     /**
-    * @name onSubmit
-    * @param values
-    * @desc Submit the signup form values.
-    * @returns {{}}
-    */
-    onSubmit(values) {
-    }
-    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { isOpen, isEditFlag, editIndex, PartId, departmentType, roleType } = this.state;
+        const { isEditFlag, PartId, isOpenVisualDrawer, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -259,64 +245,26 @@ class AssemblyPartListing extends Component {
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="8" className="filter-block">
-                            {/* <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="CountryId"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Country'}
-                                        options={this.renderListing('country')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.countryHandler}
-                                        valueDescription={this.state.country}
-                                    />
-                                </div>
 
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
+                <Row className="pt-30">
+                    <Col md="8" className="filter-block">
 
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div> */}
-                        </Col>
-                        <Col md="4" className="search-user-block mb-30">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
+                    </Col>
+                    <Col md="4" className="search-user-block">
+                        <div className="d-flex justify-content-end bd-highlight w100">
+                            <div>
 
-                                    <button
-                                        type="button"
-                                        className={'user-btn'}
-                                        onClick={this.displayForm}>
-                                        <div className={'plus'}></div>ADD BOM</button>
+                                <button
+                                    type="button"
+                                    className={'user-btn'}
+                                    onClick={this.displayForm}>
+                                    <div className={'plus'}></div>ADD BOM</button>
 
-                                </div>
                             </div>
-                        </Col>
-                    </Row>
+                        </div>
+                    </Col>
+                </Row>
 
-                </form>
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
@@ -330,22 +278,28 @@ class AssemblyPartListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="" width={'70'} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >BOM NO.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Plant</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width={100}>No. of Child Parts</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >BOM Level Count</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Effective Date</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" >Visual Aid</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMNumber" >BOM NO.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartName" >Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Plants" width={150} >Plant</TableHeaderColumn>
+                    <TableHeaderColumn dataField="NumberOfParts" width={100}>No. of Child Parts</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMLevelCount" width={150}>BOM Level Count</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" width={150}>ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
+                    <TableHeaderColumn dataField="VisualAid" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
-
+                {isOpenVisualDrawer && <VisualAdDrawer
+                    isOpen={isOpenVisualDrawer}
+                    closeDrawer={this.closeVisualDrawer}
+                    isEditFlag={false}
+                    ID={this.state.visualAdId}
+                    BOMId={this.state.BOMId}
+                    anchor={'right'}
+                />}
             </ >
         );
     }
@@ -356,12 +310,9 @@ class AssemblyPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-
-
+function mapStateToProps() {
     return {};
 }
-
 
 /**
 * @method connect
@@ -370,12 +321,8 @@ function mapStateToProps({ }) {
 * @param {function} mapDispatchToProps
 */
 
-export default connect(mapStateToProps, {
-
-})(reduxForm({
-    form: 'AssemblyPartListing',
-    onSubmitFail: errors => {
-        focusOnError(errors);
-    },
-    enableReinitialize: true,
-})(AssemblyPartListing));
+export default connect(mapStateToProps,
+    {
+        getAssemblyPartDataList,
+        deleteAssemblyPart,
+    })(AssemblyPartListing);

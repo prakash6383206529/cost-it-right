@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { } from '../../../../actions/master/Comman';
 import { focusOnError, } from "../../../layout/FormInputs";
-import { getPartDataList, deletePart, activeInactivePartStatus, } from '../../../../actions/master/Part';
+import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../../../../actions/master/Part';
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
@@ -36,16 +35,17 @@ class IndivisualPartListing extends Component {
 
     componentDidMount() {
         this.getTableListData();
+        //this.props.checkStatusCodeAPI(412, () => { })
     }
 
-    // Get updated user list after any action performed.
+    // Get updated list after any action performed.
     getUpdatedData = () => {
         this.getTableListData()
     }
 
     /**
     * @method getTableListData
-    * @description Get user list data
+    * @description Get DATA LIST
     */
     getTableListData = () => {
         this.props.getPartDataList((res) => {
@@ -206,16 +206,6 @@ class IndivisualPartListing extends Component {
         );
     }
 
-    /**
-    * @method renderListing
-    * @description Used show listing 
-    */
-    renderListing = (label) => {
-
-
-    }
-
-
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
@@ -226,41 +216,15 @@ class IndivisualPartListing extends Component {
         })
     }
 
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-
-    }
-
     formToggle = () => {
         this.props.formToggle()
     }
 
     /**
-    * @name onSubmit
-    * @param values
-    * @desc Submit the signup form values.
-    * @returns {{}}
-    */
-    onSubmit(values) {
-    }
-    /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, } = this.props;
         const { isBulkUpload } = this.state;
 
         const options = {
@@ -276,30 +240,30 @@ class IndivisualPartListing extends Component {
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="8" className="filter-block">
 
-                        </Col>
-                        <Col md="4" className="search-user-block">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>
-                                    <button
-                                        type="button"
-                                        className={'user-btn'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD PART</button>
-                                </div>
+                <Row className="pt-30">
+                    <Col md="8" className="filter-block">
+
+                    </Col>
+                    <Col md="4" className="search-user-block">
+                        <div className="d-flex justify-content-end bd-highlight w100">
+                            <div>
+                                <button
+                                    type="button"
+                                    className={'user-btn mr5'}
+                                    onClick={this.bulkToggle}>
+                                    <div className={'upload'}></div>Bulk Upload</button>
+                                <button
+                                    type="button"
+                                    className={'user-btn'}
+                                    onClick={this.formToggle}>
+                                    <div className={'plus'}></div>ADD PART</button>
                             </div>
-                        </Col>
-                    </Row>
+                        </div>
+                    </Col>
+                </Row>
 
-                </form>
+
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
@@ -315,7 +279,6 @@ class IndivisualPartListing extends Component {
                     pagination>
                     <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="RawMaterial" >RM Material</TableHeaderColumn>
                     <TableHeaderColumn dataField="Plants" >Plant</TableHeaderColumn>
                     <TableHeaderColumn dataField="ECNNumber" >ECN No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
@@ -360,10 +323,5 @@ export default connect(mapStateToProps, {
     getPartDataList,
     deletePart,
     activeInactivePartStatus,
-})(reduxForm({
-    form: 'IndivisualPartListing',
-    onSubmitFail: errors => {
-        focusOnError(errors);
-    },
-    enableReinitialize: true,
-})(IndivisualPartListing));
+    checkStatusCodeAPI,
+})(IndivisualPartListing);

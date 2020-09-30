@@ -281,7 +281,7 @@ class AddVBCPlant extends Component {
             <>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                     <Container >
-                        <div className={'drawer-wrapper'}>
+                        <div className={'drawer-wrapper drawer-700px'}>
                             <form
                                 noValidate
                                 className="form"

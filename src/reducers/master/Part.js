@@ -9,8 +9,11 @@ import {
     GET_UNIT_PART_DATA_SUCCESS,
     GET_MATERIAL_TYPE_SUCCESS,
     GET_ALL_NEW_PARTS_SUCCESS,
-    GET_UNIT_NEW_PART_DATA_SUCCESS,
     GET_PART_SELECTLIST_SUCCESS,
+    GET_ASSEMBLY_PART_SELECTLIST,
+    GET_COMPONENT_PART_SELECTLIST,
+    GET_BOUGHTOUT_PART_SELECTLIST,
+    GET_DRAWER_CHILD_PART_DATA,
 } from '../../config/constants';
 
 const initialState = {
@@ -87,12 +90,36 @@ export default function partReducer(state = initialState, action) {
                 error: false
             };
         }
-        case GET_UNIT_NEW_PART_DATA_SUCCESS: {
+        case GET_DRAWER_CHILD_PART_DATA: {
             return {
                 ...state,
-                newPartData: action.payload,
+                DrawerPartData: action.payload,
                 loading: false,
                 error: false
+            };
+        }
+        case GET_ASSEMBLY_PART_SELECTLIST: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                assemblyPartSelectList: action.payload,
+            };
+        }
+        case GET_COMPONENT_PART_SELECTLIST: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                componentPartSelectList: action.payload,
+            };
+        }
+        case GET_BOUGHTOUT_PART_SELECTLIST: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                boughtOutPartSelectList: action.payload,
             };
         }
         case GET_ALL_PARTS_FAILURE:

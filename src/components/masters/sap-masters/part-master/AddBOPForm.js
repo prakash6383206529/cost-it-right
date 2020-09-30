@@ -1,20 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Label, CustomInput } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
-import {
-    renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
-    searchableSelect
-} from "../../../layout/FormInputs";
-import { } from '../../../../actions/master/Supplier';
+import { Row, Col, } from 'reactstrap';
+import { required, number, } from "../../../../helper/validation";
+import { renderText, searchableSelect } from "../../../layout/FormInputs";
+import { getBoughtOutPartSelectList } from '../../../../actions/master/Part';
 import { } from '../../../../actions/master/Comman';
-import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
-import { loggedInUserId } from "../../../../helper/auth";
-import Drawer from '@material-ui/core/Drawer';
-import HeaderTitle from '../../../common/HeaderTitle';
 
 class AddBOPForm extends Component {
     constructor(props) {
@@ -50,7 +41,7 @@ class AddBOPForm extends Component {
     * @description  used to handle 
     */
     handleBOPPartChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ BOPPart: newValue });
         } else {
             this.setState({ BOPPart: [], });
@@ -62,7 +53,7 @@ class AddBOPForm extends Component {
     * @description  used to handle 
     */
     handleParentPartChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ parentPart: newValue });
         } else {
             this.setState({ parentPart: [], });
@@ -74,14 +65,16 @@ class AddBOPForm extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { } = this.props;
+        const { boughtOutPartSelectList } = this.props;
         const temp = [];
-        // if (label === 'country') {
-        //     countryList && countryList.map(item =>
-        //         temp.push({ label: item.Text, value: item.Value })
-        //     );
-        //     return temp;
-        // }
+
+        if (label === 'BOPPart') {
+            boughtOutPartSelectList && boughtOutPartSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
 
     }
 
@@ -101,11 +94,10 @@ class AddBOPForm extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { } = this.state;
 
         /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
-            const { supplierId } = this.props;
+
             let formData = {
 
             }
@@ -138,8 +130,7 @@ class AddBOPForm extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
-        const { childType } = this.state;
+        const { handleSubmit, isEditFlag, } = this.props;
         return (
             <>
 
@@ -158,7 +149,7 @@ class AddBOPForm extends Component {
                                 placeholder={'BOP Part'}
                                 options={this.renderListing('BOPPart')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.BOPPart == null || this.state.BOPPart.length == 0) ? [required] : []}
+                                validate={(this.state.BOPPart == null || this.state.BOPPart.length === 0) ? [required] : []}
                                 required={true}
                                 handleChangeDescription={this.handleBOPPartChange}
                                 valueDescription={this.state.BOPPart}
@@ -230,21 +221,7 @@ class AddBOPForm extends Component {
                                 name={"Quantity"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={false}
-                            />
-                        </Col>
-                        <Col md="6">
-                            <Field
-                                label={`BOM Level`}
-                                name={"BOMLevel"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
+                                validate={[required, number]}
                                 component={renderText}
                                 required={true}
                                 className=""
@@ -253,58 +230,32 @@ class AddBOPForm extends Component {
                             />
                         </Col>
                     </Row>
-
-                    <Row>
-                        <Col md="12">
-                            <HeaderTitle
-                                title={'Association:'}
-                                customClass={'Personal-Details'} />
-                        </Col>
-                        <Col md='6'>
-                            <Field
-                                name="Parent"
-                                type="text"
-                                label={'Parent'}
-                                component={searchableSelect}
-                                placeholder={'Parent Part'}
-                                options={this.renderListing('parentPart')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.parentPart == null || this.state.parentPart.length == 0) ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleParentPartChange}
-                                valueDescription={this.state.parentPart}
-                            />
-                        </Col>
-                    </Row>
-
 
                     <Row className="sf-btn-footer no-gutters justify-content-between">
-                        <div className="col-md-12">
-                            <div className="text-center ">
-                                <input
-                                    //disabled={pristine || submitting}
-                                    onClick={this.cancel}
-                                    type="button"
-                                    value="Cancel"
-                                    className="reset mr15 cancel-btn"
-                                />
-                                <input
-                                    //disabled={isSubmitted ? true : false}
-                                    type="submit"
-                                    onClick={() => this.setState({ isAddMore: true })}
-                                    value={'ADD MORE'}
-                                    className="submit-button mr5 save-btn"
-                                />
-                                <input
-                                    //disabled={isSubmitted ? true : false}
-                                    type="submit"
-                                    onClick={() => this.setState({ isAddMore: false })}
-                                    value={isEditFlag ? 'Update' : 'Save'}
-                                    className="submit-button mr5 save-btn"
-                                />
-                            </div>
+                        <div className="col-sm-12 text-right bluefooter-butn">
+                            <button
+                                type={'button'}
+                                className="reset mr15 cancel-btn"
+                                onClick={this.cancel} >
+                                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                            </button>
+                            <button
+                                type={'submit'}
+                                className="submit-button mr5 save-btn"
+                                onClick={() => this.setState({ isAddMore: true })} >
+                                <div className={'plus'}></div>
+                                {'ADD MORE'}
+                            </button>
+                            <button
+                                type="submit"
+                                className="submit-button mr5 save-btn"
+                                onClick={() => this.setState({ isAddMore: false })} >
+                                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                {isEditFlag ? 'Update' : 'Save'}
+                            </button>
                         </div>
                     </Row>
+
                 </form>
             </>
         );
@@ -316,9 +267,9 @@ class AddBOPForm extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-
-    return {}
+function mapStateToProps({ part }) {
+    const { boughtOutPartSelectList } = part;
+    return { boughtOutPartSelectList }
 }
 
 /**
@@ -328,7 +279,7 @@ function mapStateToProps({ }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-
+    getBoughtOutPartSelectList,
 })(reduxForm({
     form: 'AddBOPForm',
     enableReinitialize: true,

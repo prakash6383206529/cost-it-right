@@ -15,7 +15,6 @@ import UOMMaster from './masters/sap-masters/uom-master';
 import RowMaterialMaster from './masters/sap-masters/material-master/raw-material';
 import PlantMaster from './masters/sap-masters/plant-master/index';
 import SupplierMaster from './masters/sap-masters/supplier-master/VendorListing';
-import BOMMaster from './masters/sap-masters/bom-master';
 import BOPMaster from './masters/sap-masters/bop-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationListing from './masters/sap-masters/operation/OperationListing';
@@ -24,11 +23,11 @@ import FreightMaster from './masters/sap-masters/freight-master';
 import LabourListing from './masters/sap-masters/labour-master/LabourListing';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
 import InterestRate from './masters/sap-masters/interest-rate-master';
-import PartBOMRegister from './masters/sap-masters/part-bom-register/PartBOMRegister';
 import MachineMaster from './masters/sap-masters/machine-master';
 import ReasonListing from "./masters/sap-masters/reason-master/ReasonListing";
-import VolumeMaster from './masters/sap-masters/volume-master/AddVolume';
+import VolumeListing from './masters/sap-masters/volume-master/VolumeListing';
 import ClientMaster from './masters/sap-masters/client-master/AddClient';
+import ExchangeRateListing from './masters/sap-masters/exchange-rate-master/ExchangeRateListing';
 import LeftMenu from './nav/Leftsidemenu';
 import Breadcrumb from './nav/Breadcrumb';
 
@@ -147,8 +146,6 @@ class Main extends Component {
 
                     <Route path="/vendor-master" component={AuthMiddleware(SupplierMaster)} />
 
-                    <Route path="/bom-master" component={AuthMiddleware(BOMMaster)} />
-
                     <Route path="/bop-master" component={AuthMiddleware(BOPMaster)} />
 
                     <Route path="/fuel-master" component={AuthMiddleware(FuelMaster)} />
@@ -169,13 +166,13 @@ class Main extends Component {
 
                     <Route path="/costing" component={AuthMiddleware(Costing)} />
 
-                    <Route path="/part-bom-register" component={AuthMiddleware(PartBOMRegister)} />
-
                     <Route path="/reason-master" component={AuthMiddleware(ReasonListing)} />
 
-                    <Route path="/volume-master" component={AuthMiddleware(VolumeMaster)} />
+                    <Route path="/volume-master" component={AuthMiddleware(VolumeListing)} />
 
                     <Route path="/client-master" component={AuthMiddleware(ClientMaster)} />
+
+                    <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing)} />
 
                     <Route
                       render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}

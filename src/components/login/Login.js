@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import axios from "axios";
 import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
 import {
@@ -7,12 +6,9 @@ import {
   renderText
 } from "../layout/FormInputs";
 import { connect } from "react-redux";
-import { toastr } from "react-redux-toastr";
 import { loginUserAPI, getMenuByUser, getLeftMenu, getLoginPageInit, } from "../../actions";
 import { maxLength70, minLength5, maxLength25, required, email } from "../../helper/validation";
-import { MESSAGES } from "../../config/message";
 import "./Login.scss";
-//import "../users/Users.css";
 import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
@@ -57,7 +53,6 @@ class Login extends Component {
     this.props.loginUserAPI(values, (res) => {
       if (res && res.data && res.data.Result) {
         this.setState({ isLoader: false, isSubmitted: false });
-        toastr.success(MESSAGES.LOGIN_SUCCESS)
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();

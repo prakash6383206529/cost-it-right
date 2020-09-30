@@ -73,27 +73,6 @@ export const API = {
   getUnitTypeListAPI: `${BASE_URL}/configuration/select-list-get-unit-type`,
   activeInactiveUOM: `${BASE_URL}/masters-unit-of-measurement/active`,
 
-  //Api for the part master
-
-  // partCreateAPI: `${BASE_URL}/masters-part/create`,
-  createAssemblyPartAPI: `${BASE_URL}/masters-part/create-assembly-part`,
-  getAssemblyPartDataListAPI: `${BASE_URL}/masters-part/get-all-assembly-parts`,
-  getAssemblyPartDetailAPI: `${BASE_URL}/masters-part/get-assembly-part`,
-  updateAssemblyPartAPI: `${BASE_URL}/masters-part/update-assembly-part`,
-  deleteAssemblyPartAPI: `${BASE_URL}/masters-part/delete-assembly-part`,
-  // getAllPartsAPI: `${BASE_URL}/masters-part/get-all`,
-  // getOnePartAPI: `${BASE_URL}/masters-part/get`,
-  // filterPartAPI: `${BASE_URL}/masters-part/get`,
-  // deletePartAPI: `${BASE_URL}/masters-part/delete`,
-  // updatePartAPI: `${BASE_URL}/masters-part/update`,
-
-  partCreateAPI: `${BASE_URL}/masters-part-bill-of-material/create-part`,
-  getAllPartsAPI: `${BASE_URL}/masters-part-bill-of-material/get-all-part`,
-  getOnePartAPI: `${BASE_URL}/masters-part-bill-of-material/get-part`,
-  filterPartAPI: `${BASE_URL}/masters-part-bill-of-material/get-part`,
-  deletePartAPI: `${BASE_URL}/masters-part-bill-of-material/delete-part`,
-  updatePartAPI: `${BASE_URL}/masters-part-bill-of-material/update-part`,
-
   //NEW PART API
   createNewPartAPI: `${BASE_URL}/masters-part/create-part`,
   getAllNewPartsAPI: `${BASE_URL}/masters-part/get-all-parts`,
@@ -113,6 +92,19 @@ export const API = {
   fileDeletePart: `${BASE_URL}/masters-part/delete-part-attachment-file`,
   partComponentBulkUpload: `${BASE_URL}/masters-part/bulk-upload-for-component-part-json`,
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
+  checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
+
+  //ASSEMBLY PART 
+  createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
+  getAssemblyPartDataList: `${BASE_URL}/masters-part/get-all-assembly-part`,
+  getAssemblyPartDetail: `${BASE_URL}/masters-part/get-assembly-part`,
+  updateAssemblyPart: `${BASE_URL}/masters-part/update-assembly-part`,
+  deleteAssemblyPart: `${BASE_URL}/masters-part/delete-assembly-part`,
+  getSelectListPartType: `${BASE_URL}/masters-part/select-list-part-type`,
+  getAssemblyPartSelectList: `${BASE_URL}/masters-part/select-list-assambly-part`,
+  getComponentPartSelectList: `${BASE_URL}/masters-part/select-list-component-part`,
+  getBoughtOutPartSelectList: `${BASE_URL}/masters-part/select-list-boughtout-part`,
+  getBOMViewerTree: `${BASE_URL}/masters-part/get-visual-aid-bom-level-tree-view`,
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -241,19 +233,27 @@ export const API = {
   getAllVendorSelectList: `${BASE_URL}/vendor/all-vendor-select-list`,
   getVendorTypeByVendorSelectList: `${BASE_URL}/vendor/vendor-type-by-vendor-select-list`,
   getVendorWithVendorCodeSelectList: `${BASE_URL}/vendor/vbc-vendor-with-code-select-list`,
+  getVendorTypeBOPSelectList: `${BASE_URL}/vendor/vendor-bop-type-select-list`,
 
   //BOP DOMESTIC
   createBOPDomestic: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-domestic`,
   getBOPDomesticById: `${BASE_URL}/masters-bought-out-part/get-domestic-bought-out-part-by-id`,
   getBOPDomesticDataList: `${BASE_URL}/masters-bought-out-part/get-all-domestic-bought-out-part-by-filter`,
   updateBOPDomestic: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-domestic`,
-  deleteBOPAPI: `${BASE_URL}/masters-bought-out-part/delete`,
+  deleteBOP: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part`,
+  fileUploadBOPDomestic: `${BASE_URL}/masters-bought-out-part/bought-out-part-file-upload`,
+  fileDeleteBOPDomestic: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part-file`,
+  bulkUploadBOPDomesticZBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-zbc-domestic-json`,
+  bulkUploadBOPDomesticVBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-domestic-json`,
+  getPlantSelectListByVendor: `${BASE_URL}/masters-bought-out-part/get-select-list-plant-by-vendor`,
 
   //BOP IMPORT
   createBOPImport: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-import`,
   getBOPImportById: `${BASE_URL}/masters-bought-out-part/get-import-bought-out-part-by-id`,
   getBOPImportDataList: `${BASE_URL}/masters-bought-out-part/get-all-import-bought-out-part-by-filter`,
   updateBOPImport: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-import`,
+  bulkUploadBOPImportZBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-zbc-import-json`,
+  bulkUploadBOPImportVBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-import-json`,
 
   //BOP Category
   createBOPCategory: `${BASE_URL}/masters-bought-out-part/add-bought-out-part-category`,
@@ -394,7 +394,7 @@ export const API = {
   getDepreciationDataAPI: `${BASE_URL}/masters-machine-hour-rate/get-depreciation-type`,
   updateDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/update-depreciation-type`,
 
-  //Api's for interest rate master
+  //INTEREST MASTER
   getInterestRateAPI: `${BASE_URL}/supplier/get-supplier-interest-rate`,
   getAllInterestRateAPI: `${BASE_URL}/supplier/get-all-supplier-interest-rate`,
   updateInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
@@ -630,6 +630,7 @@ export const API = {
   getVolumeData: `${BASE_URL}/masters-volume/get-volume-by-id`,
   getVolumeDataList: `${BASE_URL}/masters-volume/get-all-volume-by-filter`,
   deleteVolume: `${BASE_URL}/masters-volume/delete-volume`,
+  getFinancialYearSelectList: `${BASE_URL}/masters-volume/get-select-list-for-financial-year`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
@@ -638,6 +639,13 @@ export const API = {
   getClientDataList: `${BASE_URL}/client/get-all-client`,
   deleteClient: `${BASE_URL}/client/delete`,
   getClientSelectList: `${BASE_URL}/client/select-list-client`,
+
+  //EXCHANGE RATE MASTER
+  createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
+  getExchangeRateDataList: `${BASE_URL}/masters-exchange-rate/get-all-exchange-rate`,
+  getExchangeRateData: `${BASE_URL}/masters-exchange-rate/get-exchange-rate-by-id`,
+  deleteExchangeRate: `${BASE_URL}/masters-exchange-rate/delete-exchange-rate`,
+  updateExchangeRate: `${BASE_URL}/masters-exchange-rate/update-exchange-rate`,
 
 }
 
@@ -692,10 +700,15 @@ export const GET_PART_SUCCESS = 'GET_PART_SUCCESS';
 export const GET_UNIT_PART_DATA_SUCCESS = 'GET_UNIT_PART_DATA_SUCCESS';
 export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE';
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS';
+export const GET_DRAWER_CHILD_PART_DATA = 'GET_DRAWER_CHILD_PART_DATA';
+
+//ASSEMBLY PART
+export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST';
+export const GET_COMPONENT_PART_SELECTLIST = 'GET_COMPONENT_PART_SELECTLIST';
+export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST';
 
 //NEW PART MASTER
 export const GET_ALL_NEW_PARTS_SUCCESS = 'GET_ALL_NEW_PARTS_SUCCESS';
-export const GET_UNIT_NEW_PART_DATA_SUCCESS = 'GET_UNIT_NEW_PART_DATA_SUCCESS';
 export const GET_PART_SELECTLIST_SUCCESS = 'GET_PART_SELECTLIST_SUCCESS';
 
 //for category master
@@ -765,6 +778,7 @@ export const GET_VENDOR_TYPE_SELECTLIST_SUCCESS = 'GET_VENDOR_TYPE_SELECTLIST_SU
 export const GET_ALL_VENDOR_SELECTLIST_SUCCESS = 'GET_ALL_VENDOR_SELECTLIST_SUCCESS';
 export const GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR = 'GET_VENDOR_TYPE_SELECTLIST_BY_VENDOR';
 export const GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST';
+export const GET_VENDOR_TYPE_BOP_SELECTLIST = 'GET_VENDOR_TYPE_BOP_SELECTLIST';
 
 //BOM MASTER
 export const CREATE_BOM_SUCCESS = 'CREATE_BOM_SUCCESS';
@@ -785,6 +799,7 @@ export const GET_BOP_IMPORT_DATA_SUCCESS = 'GET_BOP_IMPORT_DATA_SUCCESS';
 export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 export const UPDATE_BOP_SUCCESS = 'UPDATE_BOP_SUCCESS';
 export const GET_BOP_CATEGORY_SELECTLIST_SUCCESS = 'GET_BOP_CATEGORY_SELECTLIST_SUCCESS';
+export const GET_PLANT_SELECTLIST_BY_VENDOR = 'GET_PLANT_SELECTLIST_BY_VENDOR';
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS';
@@ -1031,10 +1046,16 @@ export const GET_CURRENCY_SELECTLIST_SUCCESS = 'GET_CURRENCY_SELECTLIST_SUCCESS'
 
 //VOLUME MASTER
 export const GET_VOLUME_DATA_SUCCESS = 'GET_VOLUME_DATA_SUCCESS';
+export const GET_FINANCIAL_YEAR_SELECTLIST = 'GET_FINANCIAL_YEAR_SELECTLIST';
 
 //CLIENT MASTER
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
 export const GET_CLIENT_SELECTLIST_SUCCESS = 'GET_CLIENT_SELECTLIST_SUCCESS';
+
+//EXCHANGE RATE MASTER
+export const EXCHANGE_RATE_DATALIST = 'EXCHANGE_RATE_DATALIST';
+export const GET_EXCHANGE_RATE_DATA = 'GET_EXCHANGE_RATE_DATA';
+export const GET_CURRENCY_SELECTLIST_BY = 'GET_CURRENCY_SELECTLIST_BY';
 
 //COSTING STATUS
 export const DRAFT = 'Draft';
@@ -1092,6 +1113,7 @@ export const LABOUR = 'Labour';
 export const UOM = 'UOM';
 export const REASON = 'Reason';
 export const FUEL_AND_POWER = 'Fuel and Power';
+export const EXCHANGE_RATE = 'Exchange Rate';
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM';
@@ -1099,3 +1121,8 @@ export const WDM = 'WDM';
 
 export const ZBC = 'ZBC';
 export const VBC = 'VBC';
+
+//PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
+export const ASSEMBLY = 'Assembly';
+export const COMPONENT_PART = 'Component';
+export const BOUGHTOUTPART = 'BoughtOutPart';

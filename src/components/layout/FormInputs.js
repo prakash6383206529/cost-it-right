@@ -74,8 +74,7 @@ export function renderLoginPasswordInputField(field) {
     meta: { touched, error },
     label
   } = field;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
+  const InputClassName = `form-control ${field.className ? field.className : ""
     }`;
   return (
     <div className="input-form-group">
@@ -276,8 +275,7 @@ export function renderEmailInputField(field) {
   const disabled = isDisabled === true ? true : false;
   const inputbox = `inputbox input-group ${active ? "active" : ""}`;
   const className = `form-group ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${
-    disabled ? "disabled-control " : " "
+  const InputClassName = `form-control ${disabled ? "disabled-control " : " "
     } ${field.className ? field.className : ""}`;
   return (
     <div className={className}>
@@ -328,8 +326,7 @@ export function renderTextInputField(field) {
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
   const inputStyle = field.inputStyle ? field.inputStyle : "";
   const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
+  const InputClassName = `form-control ${field.className ? field.className : ""
     }`;
   return (
     <div className={`${className} ${inputStyle}`}>
@@ -371,8 +368,7 @@ export function renderSelectField(field) {
   const { disabled, meta: { touched, error, active } } = field;
   const inputbox = ` ${active ? "active" : ""}`;
   const className = `form-group inputbox ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
+  const InputClassName = `form-control ${field.className ? field.className : ""
     }`;
   let optionKey = field.optionValue;
   let optionText = field.optionLabel;
@@ -527,7 +523,7 @@ export function renderText(field) {
       <label>
         {field.label}
         {field.value}
-        {field.required && field.required == true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        {field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
       </label>
       <input
         maxLength={field.maxLength}
@@ -557,7 +553,7 @@ export function renderDatePicker(field) {
   const { input, placeholder, defaultValue, meta: { touched, error } } = field;
   return (
     <div className={'react-picker-box'}>
-      <label>{field.label}{(field.required && field.required == true) ? <span className="asterisk-required">*</span> : ''} </label>
+      <label>{field.label}{(field.required && field.required === true) ? <span className="asterisk-required">*</span> : ''} </label>
       <DatePicker
         {...input}
         dateFormat="MM/dd/yyyy"
@@ -585,7 +581,7 @@ export function renderDatePickerOneDayAgo(field) {
   const d = new Date();
   return (
     <div>
-      <label>{field.label}{(field.required && field.required == true) ? <span className="asterisk-required">*</span> : ''} </label>
+      <label>{field.label}{(field.required && field.required === true) ? <span className="asterisk-required">*</span> : ''} </label>
       <DatePicker
         {...input}
         dateFormat="MM/dd/yyyy"
@@ -607,10 +603,10 @@ export function renderDatePickerOneDayAgo(field) {
 export const searchableSelect = ({ input, label, required, disabled, handleChangeDescription, valueDescription, options,
   placeholder, meta: { touched, error, dirty, visited }, multi, className }) => {
   const { name, value, onBlur, onChange, onFocus } = input;
-  let isDisable = (disabled && disabled == true) ? true : false;
+  let isDisable = (disabled && disabled === true) ? true : false;
   return (
     <div className="w-100">
-      {label && <label>{label}{(required == true) ? <span className="asterisk-required">*</span> : ''}</label>}
+      {label && <label>{label}{(required === true) ? <span className="asterisk-required">*</span> : ''}</label>}
       <Select
         isClearable
         options={options}
@@ -626,15 +622,11 @@ export const searchableSelect = ({ input, label, required, disabled, handleChang
   )
 }
 
-
-
-
-
 export const RFReactSelect = ({ input, labelKey, label, mendatory, disabled, isLoading, valueKey, options, onChangeHsn, onMaterialChange, rowIndex, selType, meta: { touched, error }, multi, className }) => {
   const { name, value, required, onBlur, onChange, onFocus } = input;
   const transformedValue = transformValue(value, options, multi, valueKey);
-  let isDisable = (disabled && disabled == true) ? true : false;
-  let loader = (isLoading && isLoading == true) ? true : false;
+  let isDisable = (disabled && disabled === true) ? true : false;
+  let loader = (isLoading && isLoading === true) ? true : false;
   return (
     <div>
       {label && <label>{label}{mendatory && <span className="asterisk-required">*</span>}</label>}
@@ -689,7 +681,7 @@ function singleChangeHandler(func, getHsnDetail, onMaterialChange, rowIndex, key
   return function handleSingleChange(value) {
     func(value ? value[key] : '');
 
-    if (onMaterialChange != undefined) {
+    if (onMaterialChange !== undefined) {
 
       setTimeout(function () {
         onMaterialChange(value ? value : '', rowIndex);
@@ -697,8 +689,8 @@ function singleChangeHandler(func, getHsnDetail, onMaterialChange, rowIndex, key
 
     }
 
-    if (getHsnDetail != undefined) {
-      if (type != undefined) {
+    if (getHsnDetail !== undefined) {
+      if (type !== undefined) {
         setTimeout(function () {
           getHsnDetail(value ? value[key] : '', rowIndex, type);
         }, 1000)

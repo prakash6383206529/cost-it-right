@@ -1,15 +1,16 @@
 import {
     API_REQUEST,
     API_FAILURE,
-    GET_VOLUME_DATA_SUCCESS,
-    GET_FINANCIAL_YEAR_SELECTLIST,
+    EXCHANGE_RATE_DATALIST,
+    GET_EXCHANGE_RATE_DATA,
+    GET_CURRENCY_SELECTLIST_BY,
 } from '../../config/constants';
 
 const initialState = {
 
 };
 
-export default function VolumeReducer(state = initialState, action) {
+export default function ExchangeRateReducer(state = initialState, action) {
     switch (action.type) {
         case API_REQUEST:
             return {
@@ -21,17 +22,23 @@ export default function VolumeReducer(state = initialState, action) {
                 ...state,
                 loading: false
             };
-        case GET_VOLUME_DATA_SUCCESS:
+        case EXCHANGE_RATE_DATALIST:
             return {
                 ...state,
                 loading: false,
-                volumeData: action.payload
+                exchangeRateDataList: action.payload
             };
-        case GET_FINANCIAL_YEAR_SELECTLIST:
+        case GET_EXCHANGE_RATE_DATA:
             return {
                 ...state,
                 loading: false,
-                financialYearSelectList: action.payload
+                exchangeRateData: action.payload
+            };
+        case GET_CURRENCY_SELECTLIST_BY:
+            return {
+                ...state,
+                loading: false,
+                currencySelectList: action.payload
             };
         default:
             return state;

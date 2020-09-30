@@ -4,12 +4,17 @@ import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstra
 import classnames from 'classnames';
 import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
+import BOPDomesticListing from './BOPDomesticListing';
+import BOPImportListing from './BOPImportListing';
 
 class BOPMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: '1'
+            activeTab: '1',
+            isBOPDomesticForm: false,
+            isBOPImportForm: false,
+            data: {},
         }
     }
 
@@ -26,10 +31,66 @@ class BOPMaster extends Component {
     }
 
     /**
+    * @method displayDomesticForm
+    * @description DISPLAY BOP DOMESTIC FORM
+    */
+    displayDomesticForm = () => {
+        this.setState({ isBOPDomesticForm: true, isBOPImportForm: false, data: {} })
+    }
+
+    /**
+    * @method displayImportForm
+    * @description DISPLAY BOP IMPORT FORM
+    */
+    displayImportForm = () => {
+        this.setState({ isBOPDomesticForm: false, isBOPImportForm: true, data: {} })
+    }
+
+    /**
+    * @method hideForm
+    * @description HIDE DOMESTIC AND IMPORT FORMS
+    */
+    hideForm = () => {
+        this.setState({ isBOPDomesticForm: false, isBOPImportForm: false, data: {} })
+    }
+
+    /**
+    * @method getDetails
+    * @description GET DETAILS FOR DEOMESTIC FORM
+    */
+    getDetails = (data) => {
+        this.setState({ isBOPDomesticForm: true, data: data })
+    }
+
+    /**
+    * @method getImportDetails
+    * @description GET DETAILS FOR IMPORT FORM
+    */
+    getImportDetails = (data) => {
+        this.setState({ isBOPImportForm: true, data: data })
+    }
+
+    /**
     * @method render
     * @description Renders the component
     */
     render() {
+        const { isBOPDomesticForm, isBOPImportForm, data, } = this.state;
+
+        if (isBOPDomesticForm === true) {
+            return <AddBOPDomestic
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
+        if (isBOPImportForm === true) {
+            return <AddBOPImport
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
         return (
             <>
                 {/* {this.props.loading && <Loader/>} */}
@@ -58,12 +119,18 @@ class BOPMaster extends Component {
 
                             {this.state.activeTab == 1 &&
                                 <TabPane tabId="1">
-                                    <AddBOPDomestic />
+                                    <BOPDomesticListing
+                                        displayForm={this.displayDomesticForm}
+                                        getDetails={this.getDetails}
+                                    />
                                 </TabPane>}
 
                             {this.state.activeTab == 2 &&
                                 <TabPane tabId="2">
-                                    <AddBOPImport />
+                                    <BOPImportListing
+                                        displayForm={this.displayImportForm}
+                                        getDetails={this.getImportDetails}
+                                    />
                                 </TabPane>}
                         </TabContent>
 
