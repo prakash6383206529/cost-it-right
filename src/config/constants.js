@@ -631,6 +631,10 @@ export const API = {
   getVolumeDataList: `${BASE_URL}/masters-volume/get-all-volume-by-filter`,
   deleteVolume: `${BASE_URL}/masters-volume/delete-volume`,
   getFinancialYearSelectList: `${BASE_URL}/masters-volume/get-select-list-for-financial-year`,
+  bulkUploadVolumeActualZBC: `${BASE_URL}/masters-volume/bulk-upload-for-actual-volume-zbc-json`,
+  bulkUploadVolumeActualVBC: `${BASE_URL}/masters-volume/bulk-upload-for-actual-volume-vbc-json`,
+  bulkUploadVolumeBudgetedZBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-zbc-json`,
+  bulkUploadVolumeBudgetedVBC: `${BASE_URL}/masters-volume/bulk-upload-for-budgeted-volume-vbc-json`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,

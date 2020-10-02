@@ -745,7 +745,7 @@ class AddOperation extends Component {
                                     <Row>
                                         <Col md="12">
                                             <div className="left-border">
-                                                {'Remarks & Attachment'}
+                                                {'Remarks & Attachment:'}
                                             </div>
                                         </Col>
                                         <Col md="6">

@@ -18,6 +18,7 @@ import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC } from '../../..
 import AddChildDrawer from './AddChildDrawer';
 import moment from 'moment';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import BOMViewer from './BOMViewer';
 const selector = formValueSelector('AddAssemblyPart')
 
 class AddAssemblyPart extends Component {
@@ -34,6 +35,7 @@ class AddAssemblyPart extends Component {
             files: [],
 
             isOpenChildDrawer: false,
+            isOpenBOMViewerDrawer: false,
             BOMViewerData: [],
             childPartArray: [],
             initalConfiguration: reactLocalStorage.getObject('InitialConfiguration'),
@@ -102,7 +104,7 @@ class AddAssemblyPart extends Component {
                             files: Data.Attachements,
                             ChildParts: Data.ChildParts,
                         })
-                    }, 500)
+                    }, 200)
                 }
             })
         } else {
@@ -151,7 +153,7 @@ class AddAssemblyPart extends Component {
         const { BOMViewerData, } = this.state;
         const tempArray = [];
 
-        const posX = BOMViewerData.length > 0 ? 450 * (BOMViewerData.length - 1) : 50;
+        const posX = BOMViewerData && BOMViewerData.length > 0 ? 450 * (BOMViewerData.length - 1) : 50;
 
         if (Object.keys(childData).length > 0) {
             tempArray.push(...BOMViewerData, {
@@ -227,12 +229,12 @@ class AddAssemblyPart extends Component {
         BOMViewerData && BOMViewerData.map((el, i) => {
             if (el.Level === 'L1') {
                 outputArray.push(el.PartNumber)
-                //return el.PartNumber;
             }
         })
 
         //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
-        let isAvailable = BOMViewerData.findIndex(el => el.Level === 'L0')
+        let isAvailable = BOMViewerData && BOMViewerData.findIndex(el => el.Level === 'L0')
+        console.log('isAvailable: ', isAvailable, BOMViewerData);
 
         if (isAvailable === -1) {
             tempArray.push(...BOMViewerData, {
@@ -244,22 +246,21 @@ class AddAssemblyPart extends Component {
                 PartName: fieldsObj && fieldsObj.AssemblyPartName !== undefined ? fieldsObj.AssemblyPartName : '',
                 Quantity: 1,
                 Level: 'L0',
-                oldFormData: { ...fieldsObj, Plants: this.state.selectedPlants, files: this.state.files, EffectiveDate: this.state.effectiveDate, }
             })
 
-            this.setState({ BOMViewerData: tempArray }, () => {
-                this.props.displayBOMViewer(this.state.BOMViewerData, this.state.isEditFlag, this.state.PartId)
-            })
+            this.setState({ BOMViewerData: tempArray, isOpenBOMViewerDrawer: true, })
 
         } else {
 
             tempArray = Object.assign([...BOMViewerData], { [isAvailable]: Object.assign({}, BOMViewerData[isAvailable], { Outputs: outputArray, }) })
 
-            this.setState({ BOMViewerData: tempArray }, () => {
-                this.props.displayBOMViewer(this.state.BOMViewerData, this.state.isEditFlag, this.state.PartId)
-            })
+            this.setState({ BOMViewerData: tempArray, isOpenBOMViewerDrawer: true, })
         }
 
+    }
+
+    closeBOMViewerDrawer = (e = '', drawerData) => {
+        this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData })
     }
 
     // specify upload params and url for your files
@@ -445,7 +446,7 @@ class AddAssemblyPart extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isEditFlag, isOpenChildDrawer, initalConfiguration } = this.state;
+        const { isEditFlag, isOpenChildDrawer, initalConfiguration, isOpenBOMViewerDrawer, } = this.state;
         return (
             <>
 
@@ -627,11 +628,11 @@ class AddAssemblyPart extends Component {
                                             </div>
                                         </Col>
                                         <Col md="3">
-                                            <button
+                                            {!isEditFlag && <button
                                                 type="button"
                                                 className={'user-btn pull-left mt30 mr5'}
                                                 onClick={this.childDrawerToggle}>
-                                                <div className={'plus'}></div>ADD Child</button>
+                                                <div className={'plus'}></div>ADD Child</button>}
                                             <button
                                                 type="button"
                                                 onClick={this.toggleBOMViewer}
@@ -643,7 +644,7 @@ class AddAssemblyPart extends Component {
                                     <Row>
                                         <Col md="12">
                                             <div className="left-border">
-                                                {'Remarks & Attachment'}
+                                                {'Remarks & Attachment:'}
                                             </div>
                                         </Col>
                                         <Col md="6">
@@ -736,6 +737,15 @@ class AddAssemblyPart extends Component {
                     ID={''}
                     anchor={'right'}
                     setChildPartsData={this.setChildPartsData}
+                />}
+
+                {isOpenBOMViewerDrawer && <BOMViewer
+                    isOpen={isOpenBOMViewerDrawer}
+                    closeDrawer={this.closeBOMViewerDrawer}
+                    isEditFlag={this.state.isEditFlag}
+                    PartId={this.state.PartId}
+                    anchor={'right'}
+                    BOMViewerData={this.state.BOMViewerData}
                 />}
             </>
         );

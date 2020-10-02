@@ -15,6 +15,7 @@ import { overheadBulkUpload, profitBulkUpload } from '../../actions/master/Overh
 import { operationZBCBulkUpload, operationVBCBulkUpload } from '../../actions/master/OtherOperation';
 import { partComponentBulkUpload } from '../../actions/master/Part';
 import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../../actions/master/BoughtOutParts';
+import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedVBC, } from '../../actions/master/Volume';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
@@ -163,7 +164,6 @@ class BulkUpload extends Component {
         this.toggleDrawer('')
     }
 
-
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -292,6 +292,30 @@ class BulkUpload extends Component {
         } else if (fileName === 'BOPImport' && costingHead === 'VBC') {
 
             this.props.bulkUploadBOPImportVBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'ActualVolume' && costingHead === 'ZBC') {
+
+            this.props.bulkUploadVolumeActualZBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'ActualVolume' && costingHead === 'VBC') {
+
+            this.props.bulkUploadVolumeActualVBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'BudgetedVolume' && costingHead === 'ZBC') {
+
+            this.props.bulkUploadVolumeBudgetedZBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'BudgetedVolume' && costingHead === 'VBC') {
+
+            this.props.bulkUploadVolumeBudgetedVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -458,6 +482,10 @@ export default connect(mapStateToProps, {
     bulkUploadBOPDomesticVBC,
     bulkUploadBOPImportZBC,
     bulkUploadBOPImportVBC,
+    bulkUploadVolumeActualZBC,
+    bulkUploadVolumeActualVBC,
+    bulkUploadVolumeBudgetedZBC,
+    bulkUploadVolumeBudgetedVBC,
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

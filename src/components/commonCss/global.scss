@@ -1888,13 +1888,20 @@ ul.bread-list.d-inline-flex{
 
 // Added on 16-09-2020
 .drawer-700px{
-  width: 100%;max-width: 700px;
+  width: 100%;
+  max-width: 700px;
 }
 .drawer-600px{
-  width: 100%;max-width: 600px;
+  width: 100%;
+  max-width: 600px;
 }
 .drawer-500px{
-  width: 100%;max-width: 500px;
+  width: 100%;
+  max-width: 500px;
+}
+.drawer-1500px{
+  width: 100%;
+  max-width: 1500px;
 }
 .multiselect-with-border{border-radius:4px;}
 .form-control:disabled, .form-control[readonly]{

@@ -17,6 +17,7 @@ import $ from 'jquery';
 import { loggedInUserId } from '../../../../helper/auth';
 import { Years, Months } from '../../../../config/masterData';
 import AddVolume from './AddVolume';
+import BulkUpload from '../../../massUpload/BulkUpload';
 
 class VolumeListing extends Component {
     constructor(props) {
@@ -28,11 +29,13 @@ class VolumeListing extends Component {
             showVolumeForm: false,
             data: { isEditFlag: false, ID: '' },
 
-            costingHead: [],
             year: [],
             month: [],
             vendorName: [],
             plant: [],
+
+            isActualBulkUpload: false,
+            isBudgetedBulkUpload: false,
         }
     }
 
@@ -47,9 +50,8 @@ class VolumeListing extends Component {
     * @method getTableListData
     * @description Get user list data
     */
-    getTableListData = (costing_head = '', year = '', month = '', vendor_id = '', plant_id = '') => {
+    getTableListData = (year = '', month = '', vendor_id = '', plant_id = '') => {
         let filterData = {
-            costing_head: costing_head,
             year: year,
             month: month,
             vendor_id: vendor_id,
@@ -60,7 +62,7 @@ class VolumeListing extends Component {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data.sort((a, b) => a.Sequence - b.Sequence), })
+                this.setState({ tableData: Data.sort((a, b) => a.Sequence - b.Sequence).sort((a, b) => a.Index - b.Index), })
             } else {
                 this.setState({ tableData: [], })
             }
@@ -74,13 +76,7 @@ class VolumeListing extends Component {
     renderListing = (label) => {
         const { vendorListByVendorType, plantSelectList, financialYearSelectList } = this.props;
         const temp = [];
-        if (label === 'costingHead') {
-            let tempObj = [
-                { label: 'ZBC', value: 'ZBC' },
-                { label: 'VBC', value: 'VBC' },
-            ]
-            return tempObj;
-        }
+
         if (label === 'VendorList') {
             vendorListByVendorType && vendorListByVendorType.map(item => {
                 if (item.Value === '0') return false;
@@ -161,18 +157,6 @@ class VolumeListing extends Component {
             </>
         )
     }
-
-    /**
-    * @method handleHeadChange
-    * @description called
-    */
-    handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ costingHead: newValue, });
-        } else {
-            this.setState({ costingHead: [], })
-        }
-    };
 
     /**
     * @method handleYear
@@ -277,17 +261,52 @@ class VolumeListing extends Component {
     }
 
     /**
+    * @method actualBulkToggle
+    * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
+    */
+    actualBulkToggle = () => {
+        this.setState({ isActualBulkUpload: true })
+    }
+
+    /**
+    * @method closeActualBulkUploadDrawer
+    * @description CLOSE ACTUAL BULK DRAWER
+    */
+    closeActualBulkUploadDrawer = () => {
+        this.setState({ isActualBulkUpload: false }, () => {
+            this.getTableListData()
+        })
+    }
+
+    /**
+    * @method budgetedBulkToggle
+    * @description OPEN BUDGETED BULK UPLOAD DRAWER FOR BULK UPLOAD
+    */
+    budgetedBulkToggle = () => {
+        this.setState({ isBudgetedBulkUpload: true })
+    }
+
+    /**
+    * @method closeBudgetedBulkUploadDrawer
+    * @description CLOSE BUDGETED BULK DRAWER
+    */
+    closeBudgetedBulkUploadDrawer = () => {
+        this.setState({ isBudgetedBulkUpload: false }, () => {
+            this.getTableListData()
+        })
+    }
+
+    /**
     * @method filterList
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
-        const { costingHead, year, month, vendorName, plant } = this.state;
-        const costingHeadTemp = costingHead ? costingHead.value : null;
+        const { year, month, vendorName, plant } = this.state;
         const yearTemp = year ? year.value : null;
         const monthTemp = month ? month.value : null;
         const vendorNameTemp = vendorName ? vendorName.value : null;
         const plantTemp = plant ? plant.value : null;
-        this.getTableListData(costingHeadTemp, yearTemp, monthTemp, vendorNameTemp, plantTemp)
+        this.getTableListData(yearTemp, monthTemp, vendorNameTemp, plantTemp)
     }
 
     /**
@@ -296,7 +315,6 @@ class VolumeListing extends Component {
     */
     resetFilter = () => {
         this.setState({
-            costingHead: [],
             year: [],
             month: [],
             vendorName: [],
@@ -336,7 +354,7 @@ class VolumeListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isEditFlag, showVolumeForm, data } = this.state;
+        const { isEditFlag, showVolumeForm, data, isActualBulkUpload, isBudgetedBulkUpload, } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -363,9 +381,10 @@ class VolumeListing extends Component {
                     <div class="col-sm-4"><h3>Volume Master</h3></div>
                     <hr />
                     <Row className="pt-30">
-                        <Col md="11" className="filter-block">
+                        <Col md="8" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+
                                 <div className="flex-fill">
                                     <Field
                                         name="year"
@@ -400,23 +419,6 @@ class VolumeListing extends Component {
                                 </div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="costingHead"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Costing Heads-'}
-                                        options={this.renderListing('costingHead')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleHeadChange}
-                                        valueDescription={this.state.costingHead}
-                                    //disabled={isEditFlag ? true : false}
-                                    />
-                                </div>
-
-                                <div className="flex-fill">
-                                    <Field
                                         name="vendorName"
                                         type="text"
                                         label=""
@@ -448,7 +450,6 @@ class VolumeListing extends Component {
                                     />
                                 </div>
 
-
                                 <div className="flex-fill">
                                     <button
                                         type="button"
@@ -467,11 +468,22 @@ class VolumeListing extends Component {
                                         {'Apply'}
                                     </button>
                                 </div>
+
                             </div>
                         </Col>
-                        <Col md="1" className="search-user-block">
+                        <Col md="4" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight">
                                 <div>
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.actualBulkToggle}>
+                                        <div className={'upload'}></div>Actual Upload</button>
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.budgetedBulkToggle}>
+                                        <div className={'upload'}></div>Budgeted Upload</button>
                                     <button
                                         type="button"
                                         className={'user-btn'}
@@ -500,13 +512,30 @@ class VolumeListing extends Component {
                     <TableHeaderColumn dataField="Month" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Month'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantCode" columnTitle={true} dataAlign="center" dataSort={true} >{'PlantCode'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'Part No.'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="center" dataSort={true} >{'Part Name'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BudgetedQuantity" columnTitle={true} dataAlign="center" dataSort={true} >{'Budgeted Quantity'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ApprovedQuantity" columnTitle={true} dataAlign="center" dataSort={true} >{'Actual Quantity '}</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="VolumeId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
+                {isActualBulkUpload && <BulkUpload
+                    isOpen={isActualBulkUpload}
+                    closeDrawer={this.closeActualBulkUploadDrawer}
+                    isEditFlag={false}
+                    fileName={'ActualVolume'}
+                    isZBCVBCTemplate={true}
+                    messageLabel={'Volume Actual'}
+                    anchor={'right'}
+                />}
+                {isBudgetedBulkUpload && <BulkUpload
+                    isOpen={isBudgetedBulkUpload}
+                    closeDrawer={this.closeBudgetedBulkUploadDrawer}
+                    isEditFlag={false}
+                    fileName={'BudgetedVolume'}
+                    isZBCVBCTemplate={true}
+                    messageLabel={'Volume Budgeted'}
+                    anchor={'right'}
+                />}
             </ >
         );
     }

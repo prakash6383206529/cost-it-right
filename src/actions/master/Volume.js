@@ -84,7 +84,7 @@ export function getVolumeData(VolumeId, callback) {
 export function getVolumeDataList(filterData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const QueryParams = `costing_head=${filterData.costing_head}&year=${filterData.year}&month=${filterData.month}&vendor_id=${filterData.vendor_id}&plant_id=${filterData.plant_id}`
+        const QueryParams = `year=${filterData.year}&month=${filterData.month}&vendor_id=${filterData.vendor_id}&plant_id=${filterData.plant_id}`
         axios.get(`${API.getVolumeDataList}?${QueryParams}`, { headers })
             .then((response) => {
                 callback(response);
@@ -131,6 +131,78 @@ export function getFinancialYearSelectList(callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadVolumeActualZBC
+ * @description BULK UPLOAD FOR ACTUAL VOLUME ZBC
+ */
+export function bulkUploadVolumeActualZBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadVolumeActualZBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadVolumeActualVBC
+ * @description BULK UPLOAD FOR ACTUAL VOLUME VBC
+ */
+export function bulkUploadVolumeActualVBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadVolumeActualVBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadVolumeBudgetedZBC
+ * @description BULK UPLOAD FOR BUDGETED VOLUME ZBC
+ */
+export function bulkUploadVolumeBudgetedZBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadVolumeBudgetedZBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method bulkUploadVolumeBudgetedVBC
+ * @description BULK UPLOAD FOR BUDGETED VOLUME VBC
+ */
+export function bulkUploadVolumeBudgetedVBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadVolumeBudgetedVBC, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };

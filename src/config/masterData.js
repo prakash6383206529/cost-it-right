@@ -654,6 +654,106 @@ export const BOP_VBC_IMPORT_TempData = [
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
+export const VOLUME_ACTUAL_ZBC = [
+    { label: 'Plant', value: 'Plant', },
+    { label: 'PartNo', value: 'PartNo', },
+    { label: 'OldPartNo', value: 'OldPartNo', },
+    { label: 'PartName', value: 'PartName', },
+    { label: 'Year', value: 'Year', },
+    { label: 'Month', value: 'Month', },
+    { label: 'ActualQuantity', value: 'ActualQuantity', },
+]
+
+export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
+    {
+        'Plant': 'Plant',
+        'PartNo': 'Part No',
+        'OldPartNo': 'Old Part No',
+        'PartName': 'Part Name',
+        'Year': 'Year',
+        'Month': 'Month',
+        'ActualQuantity': 0,
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const VOLUME_ACTUAL_VBC = [
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'PartNo', value: 'PartNo', },
+    { label: 'OldPartNo', value: 'OldPartNo', },
+    { label: 'PartName', value: 'PartName', },
+    { label: 'Year', value: 'Year', },
+    { label: 'Month', value: 'Month', },
+    { label: 'ActualQuantity', value: 'ActualQuantity', },
+]
+
+export const VOLUME_ACTUAL_VBC_TEMPDATA = [
+    {
+        'VendorName': 'Vendor Name',
+        'PartNo': 'Part No',
+        'OldPartNo': 'Old Part No',
+        'PartName': 'Part Name',
+        'Year': 'Year',
+        'Month': 'Month',
+        'ActualQuantity': 0,
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const VOLUME_BUDGETED_ZBC = [
+    { label: 'BudgetedQuantity', value: 'BudgetedQuantity', },
+    { label: 'Plant', value: 'Plant', },
+    { label: 'PartNo', value: 'PartNo', },
+    { label: 'OldPartNo', value: 'OldPartNo', },
+    { label: 'PartName', value: 'PartName', },
+    { label: 'Year', value: 'Year', },
+    { label: 'Month', value: 'Month', },
+]
+
+export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
+    {
+        'BudgetedQuantity': 'BudgetedQuantity',
+        'Plant': 'Plant',
+        'PartNo': 'PartNo',
+        'OldPartNo': 'OldPartNo',
+        'PartName': 'PartName',
+        'Year': 'Year',
+        'Month': 'Month',
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const VOLUME_BUDGETED_VBC = [
+    { label: 'BudgetedQuantity', value: 'BudgetedQuantity', },
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'PartNo', value: 'PartNo', },
+    { label: 'OldPartNo', value: 'OldPartNo', },
+    { label: 'PartName', value: 'PartName', },
+    { label: 'Year', value: 'Year', },
+    { label: 'Month', value: 'Month', },
+]
+
+export const VOLUME_BUDGETED_VBC_TEMPDATA = [
+    {
+        'BudgetedQuantity': 'BudgetedQuantity',
+        'VendorName': 'VendorName',
+        'PartNo': 'PartNo',
+        'OldPartNo': 'OldPartNo',
+        'PartName': 'PartName',
+        'Year': 'Year',
+        'Month': 'Month',
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
 export const Bought_Out_Parts = [
     { label: 'BasicRate', value: 'BasicRate', },
     { label: 'Quantity', value: 'Quantity', },

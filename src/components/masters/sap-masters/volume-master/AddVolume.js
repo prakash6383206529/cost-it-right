@@ -10,7 +10,7 @@ import { getPlantSelectListByType, getPlantBySupplier, } from '../../../../actio
 import { getPartSelectList } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { loggedInUserId } from "../../../../helper/auth";
+import { loggedInUserId, userDetails } from "../../../../helper/auth";
 import Switch from "react-switch";
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import $ from 'jquery';
@@ -40,7 +40,6 @@ class AddVolume extends Component {
             IsVendor: false,
             selectedPlants: [],
             vendorName: [],
-            selectedVendorPlants: [],
             part: [],
 
             year: [],
@@ -76,7 +75,7 @@ class AddVolume extends Component {
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
-                temp.push({ Text: item.Text, Value: item.Value })
+                temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
@@ -121,11 +120,15 @@ class AddVolume extends Component {
 
     /**
     * @method handlePlants
-    * @description Used handle Plants
+    * @description called
     */
-    handlePlants = (e) => {
-        this.setState({ selectedPlants: e })
-    }
+    handlePlants = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ selectedPlants: newValue, });
+        } else {
+            this.setState({ selectedPlants: [], })
+        }
+    };
 
     /**
     * @method handleVendorName
@@ -133,12 +136,12 @@ class AddVolume extends Component {
     */
     handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
-                const { vendorName } = this.state;
-                this.props.getPlantBySupplier(vendorName.value, () => { })
+            this.setState({ vendorName: newValue, }, () => {
+                //const { vendorName } = this.state;
+                //this.props.getPlantBySupplier(vendorName.value, () => { })
             });
         } else {
-            this.setState({ vendorName: [], selectedVendorPlants: [], })
+            this.setState({ vendorName: [], })
         }
     };
 
@@ -174,15 +177,6 @@ class AddVolume extends Component {
         } else {
             this.setState({ year: [], })
         }
-    };
-
-
-    /**
-    * @method handleVendorPlant
-    * @description called
-    */
-    handleVendorPlant = (e) => {
-        this.setState({ selectedVendorPlants: e })
     };
 
     setStartDate = (date) => {
@@ -239,10 +233,9 @@ class AddVolume extends Component {
                     let Data = res.data.Data;
 
                     let plantArray = [];
-                    Data && Data.Plant.map((item) => {
-                        plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                        return plantArray;
-                    })
+                    if (Data && Data.Plant) {
+                        plantArray.push({ label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId })
+                    }
 
                     let vendorPlantArray = [];
                     Data && Data.VendorPlant.map((item) => {
@@ -276,9 +269,8 @@ class AddVolume extends Component {
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
+                            IsVendor: Data.IsVendor,
                             selectedPlants: plantArray,
-                            //selectedVendorPlants: vendorPlantArray,
-                            selectedVendorPlants: [],
                             vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
                             year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
                             part: partObj && partObj !== undefined ? { label: partObj.Text, value: partObj.Value } : [],
@@ -303,7 +295,6 @@ class AddVolume extends Component {
         this.setState({
             selectedPlants: [],
             vendorName: [],
-            selectedVendorPlants: [],
             tableData: [],
             isEditFlag: false,
         })
@@ -316,19 +307,14 @@ class AddVolume extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { IsVendor, selectedPlants, vendorName, selectedVendorPlants, part, year, tableData, VolumeId } = this.state;
+        const { IsVendor, selectedPlants, vendorName, part, year, tableData, VolumeId } = this.state;
+        const userDetail = userDetails()
 
-        let plantArray = [];
-        selectedPlants && selectedPlants.map((item) => {
-            plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-            return plantArray;
-        })
-
-        let vendorPlants = [];
-        selectedVendorPlants && selectedVendorPlants.map((item) => {
-            vendorPlants.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-            return vendorPlants;
-        })
+        // let plantArray = [];
+        // selectedPlants && selectedPlants.map((item) => {
+        //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
+        //     return plantArray;
+        // })
 
         let budgetArray = [];
         tableData && tableData.map((item) => {
@@ -384,19 +370,19 @@ class AddVolume extends Component {
 
             let formData = {
                 IsVendor: IsVendor,
-                VendorId: vendorName.value,
+                VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
                 PartId: part.value,
                 PartNumber: part.label,
                 OldPartNumber: '',
                 Year: year.label,
                 VolumeApprovedDetails: approvedArray,
                 VolumeBudgetedDetails: budgetArray,
-                Plant: !IsVendor ? plantArray : [],
-                //VendorPlant: vendorPlants,
+                Plant: !IsVendor ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : [],
                 VendorPlant: [],
                 LoggedInUserId: loggedInUserId(),
                 IsActive: true
             }
+
             this.props.createVolume(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.VOLUME_ADD_SUCCESS);
@@ -466,21 +452,21 @@ class AddVolume extends Component {
                                         {!this.state.IsVendor &&
                                             <Col md="3">
                                                 <Field
-                                                    label="Plant"
                                                     name="Plant"
-                                                    placeholder="--Select--"
-                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                                    type="text"
+                                                    label="Plant"
+                                                    component={searchableSelect}
+                                                    placeholder={'--select--'}
                                                     options={this.renderListing('plant')}
-                                                    selectionChanged={this.handlePlants}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    className="multiselect-with-border"
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handlePlants}
+                                                    valueDescription={this.state.selectedPlants}
                                                     disabled={isEditFlag ? true : false}
                                                 />
                                             </Col>}
-                                        <Col md="3">
+                                        {this.state.IsVendor && <Col md="3">
                                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                                 <div className="fullinput-icon">
                                                     <Field
@@ -498,28 +484,12 @@ class AddVolume extends Component {
                                                         disabled={isEditFlag ? true : false}
                                                     />
                                                 </div>
-                                                <div
+                                                {!isEditFlag && <div
                                                     onClick={this.vendorToggler}
                                                     className={'plus-icon-square mr15 right'}>
-                                                </div>
+                                                </div>}
                                             </div>
-                                        </Col>
-                                        {/* <Col md="3">
-                                            <Field
-                                                label="Vendor Plant"
-                                                name="VendorPlant"
-                                                placeholder="--- Plant ---"
-                                                selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
-                                                options={this.renderListing('VendorPlant')}
-                                                selectionChanged={this.handleVendorPlant}
-                                                optionValue={option => option.Value}
-                                                optionLabel={option => option.Text}
-                                                component={renderMultiSelectField}
-                                                mendatory={true}
-                                                className="multiselect-with-border"
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                        </Col> */}
+                                        </Col>}
                                         <Col md="3">
                                             <Field
                                                 name="PartNumber"
@@ -556,10 +526,15 @@ class AddVolume extends Component {
 
                                     <Row>
                                         <Col md="12">
+                                            <div className="left-border">
+                                                {'Quantity:'}
+                                            </div>
+                                        </Col>
+                                        <Col md="12">
                                             <BootstrapTable data={this.state.tableData} cellEdit={cellEditProp}>
                                                 <TableHeaderColumn dataField='Month' editable={false}>Month</TableHeaderColumn>
                                                 <TableHeaderColumn dataField='BudgetedQuantity'>Budgeted Qty</TableHeaderColumn>
-                                                <TableHeaderColumn dataField='ApprovedQuantity'>Approved Qty</TableHeaderColumn>
+                                                <TableHeaderColumn dataField='ApprovedQuantity'>Actual Qty</TableHeaderColumn>
                                                 <TableHeaderColumn dataField='VolumeApprovedDetailId' hidden>Volume Approv Id</TableHeaderColumn>
                                                 <TableHeaderColumn dataField='VolumeBudgetedDetailId' hidden>Vol Budget Id</TableHeaderColumn>
                                                 <TableHeaderColumn className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
