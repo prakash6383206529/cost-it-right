@@ -3,10 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, maxLength100, getVendorCode } from "../../../../helper/validation";
-import {
-    renderText, renderSelectField, renderNumberInputField, searchableSelect,
-    renderMultiSelectField, renderTextAreaField
-} from "../../../layout/FormInputs";
+import { renderNumberInputField, searchableSelect, renderTextAreaField } from "../../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../../actions/master/Comman';
 import { getVendorWithVendorCodeSelectList } from '../../../../actions/master/Supplier';
 import {

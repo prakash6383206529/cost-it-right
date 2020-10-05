@@ -1,31 +1,54 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    Container, Row, Col, Button, TabContent, TabPane, Nav, NavItem, NavLink
-} from 'reactstrap';
-import { getFreightDetailAPI, getAllAdditionalFreightAPI } from '../../../../actions/master/Freight';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
+import AddFreight from './AddFreight';
+import AddPackaging from './AddPackaging';
+import FreightListing from './FreightListing';
+import PackagListing from './PackagListing';
+import { FREIGHT } from '../../../../config/constants';
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 class FreightMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
-            isEditFlag: false,
-            activeTab: 1,
-            freightId: ''
+            activeTab: '1',
+            isFreightForm: false,
+            isPackageForm: false,
+            data: {},
 
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
+            BulkUploadAccessibility: false,
         }
     }
 
-    /**
-   * @method componentDidMount
-   * @description called after render the component
-   */
     componentDidMount() {
-        this.props.getFreightDetailAPI(res => { });
-        this.props.getAllAdditionalFreightAPI(res => { });
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData !== undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName === FREIGHT)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData !== undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    })
+                }
+            }
+        })
     }
 
     /**
@@ -38,88 +61,119 @@ class FreightMaster extends Component {
                 activeTab: tab
             });
         }
-        this.props.getFreightDetailAPI(res => { });
-        this.props.getAllAdditionalFreightAPI(res => { });
     }
 
     /**
-    * @method editFuelDetails
-    * @description  used to edit fuel details
+    * @method displayFreightForm
+    * @description DISPLAY FREIGHT FORM
     */
-    editFreighteDetails = (editFlag, isModelOpen, FreightId) => {
-        this.setState({
-            isEditFlag: editFlag,
-            isOpenModel: isModelOpen,
-            FreightId: FreightId,
-        })
+    displayFreightForm = () => {
+        this.setState({ isFreightForm: true, isPackageForm: false, data: {} })
     }
 
     /**
-     * @method openModel
-     * @description  used to open filter form 
-     */
-    openModel = () => {
-        this.setState({
-            isOpen: true,
-            isEditFlag: false,
-        })
+    * @method displayPackagForm
+    * @description DISPLAY PACKAGING FORM
+    */
+    displayPackagForm = () => {
+        this.setState({ isFreightForm: false, isPackageForm: true, data: {} })
     }
 
     /**
-   * @method onCancel
-   * @description  used to cancel filter form
-   */
-    onCancel = (tabId = 1) => {
-        this.setState({
-            isOpen: false,
-        }, () => {
-            this.toggle(tabId)
-        })
+    * @method hideForm
+    * @description HIDE FREIGHT AND PACKAGING FORMS
+    */
+    hideForm = () => {
+        this.setState({ isFreightForm: false, isPackageForm: false, data: {} })
     }
 
+    /**
+    * @method getDetails
+    * @description GET DETAILS FOR FREIGHT FORM
+    */
+    getDetails = (data) => {
+        this.setState({ isFreightForm: true, data: data })
+    }
+
+    /**
+    * @method getPackaingDetails
+    * @description GET DETAILS FOR PACKAGING FORM
+    */
+    getPackaingDetails = (data) => {
+        this.setState({ isPackageForm: true, data: data })
+    }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
+        const { isFreightForm, isPackageForm, data, } = this.state;
+
+        if (isFreightForm === true) {
+            return <AddFreight
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
+        if (isPackageForm === true) {
+            return <AddPackaging
+                data={data}
+                hideForm={this.hideForm}
+            />
+        }
+
         return (
-            <Container className="top-margin">
+            <>
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
-                    <Col>
-                        <h3>{`${CONSTANT.FREIGHT} ${CONSTANT.MASTER}`}</h3>
-                    </Col>
-                    <Col>
-                        <Button onClick={this.openModel}>{`${CONSTANT.ADD} ${CONSTANT.FREIGHT} `}</Button>
+                    <Col sm="4">
+                        <h3>{`Freight & Packaging Master`}</h3>
                     </Col>
                 </Row>
-                <hr />
-                <div>
-                    <Nav tabs className="subtabs">
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab == 1 })} onClick={() => { this.toggle(1); }}>
-                                {`Freight`}
-                            </NavLink>
-                        </NavItem>
 
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab == 2 })} onClick={() => { this.toggle(2); }}>
-                                {`Packaging`}
-                            </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <TabContent activeTab={this.state.activeTab}>
-                        <TabPane tabId={1}>
+                <Row>
+                    <Col>
+                        <Nav tabs className="subtabs">
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                    Manage Freight
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                    Manage Packaging
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
 
-                        </TabPane>
-                        <TabPane tabId={2}>
+                        <TabContent activeTab={this.state.activeTab}>
 
-                        </TabPane>
-                    </TabContent>
-                </div>
+                            {this.state.activeTab == 1 &&
+                                <TabPane tabId="1">
+                                    <FreightListing
+                                        displayForm={this.displayFreightForm}
+                                        getDetails={this.getDetails}
+                                        AddAccessibility={this.state.AddAccessibility}
+                                        EditAccessibility={this.state.EditAccessibility}
+                                        DeleteAccessibility={this.state.DeleteAccessibility}
+                                    />
+                                </TabPane>}
 
-            </Container >
+                            {this.state.activeTab == 2 &&
+                                <TabPane tabId="2">
+                                    <PackagListing
+                                        displayForm={this.displayPackagForm}
+                                        getDetails={this.getPackaingDetails}
+                                    />
+                                </TabPane>}
+                        </TabContent>
+
+                    </Col>
+                </Row>
+
+            </ >
         );
     }
 }
@@ -129,15 +183,16 @@ class FreightMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps() {
-    return {}
+function mapStateToProps({ boughtOutparts, auth }) {
+    const { BOPListing, loading } = boughtOutparts;
+    const { leftMenuData } = auth;
+    return { BOPListing, leftMenuData, loading }
 }
 
 
-export default connect(
-    mapStateToProps, {
-    getFreightDetailAPI,
-    getAllAdditionalFreightAPI
-}
+export default connect(mapStateToProps,
+    {
+        getLeftMenu
+    }
 )(FreightMaster);
 

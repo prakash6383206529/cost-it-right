@@ -129,7 +129,7 @@ class AddLabour extends Component {
 
         if (label === 'state') {
             fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -137,14 +137,14 @@ class AddLabour extends Component {
 
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
             VendorLabourTypeSelectList && VendorLabourTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -152,7 +152,7 @@ class AddLabour extends Component {
 
         if (label === 'MachineTypeList') {
             machineTypeSelectList && machineTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -160,7 +160,7 @@ class AddLabour extends Component {
 
         if (label === 'labourList') {
             labourTypeByMachineTypeSelectList && labourTypeByMachineTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -196,10 +196,8 @@ class AddLabour extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
-                const { vendorName } = this.state;
-            });
+        if (newValue && newValue !== '') {
+            this.setState({ vendorName: newValue, selectedVendorPlants: [] });
         } else {
             this.setState({ vendorName: [], selectedVendorPlants: [], })
         }
@@ -210,7 +208,7 @@ class AddLabour extends Component {
     * @description called
     */
     handleState = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ StateName: newValue, }, () => {
                 const { StateName } = this.state;
                 this.props.getPlantListByState(StateName.value, () => { })
@@ -408,7 +406,7 @@ class AddLabour extends Component {
         const { gridTable } = this.state;
 
         let tempData = gridTable.filter((item, i) => {
-            if (i == index) return false;
+            if (i === index) return false;
             return true;
         });
 
@@ -494,7 +492,7 @@ class AddLabour extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, reset } = this.props;
+        const { handleSubmit, } = this.props;
         const { isEditFlag, isOpenMachineType, } = this.state;
         return (
             <div>
@@ -759,7 +757,7 @@ class AddLabour extends Component {
                                                             )
                                                         })
                                                     }
-                                                    {this.state.gridTable.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                                    {this.state.gridTable.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                 </tbody>
                                             </Table>
                                         </Col>

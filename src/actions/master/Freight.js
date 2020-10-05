@@ -8,6 +8,9 @@ import {
     GET_FREIGHT_SUCCESS,
     GET_FREIGHT_FAILURE,
     GET_FREIGHT_DATA_SUCCESS,
+    GET_FREIGHT_MODE_SELECTLIST,
+    GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
+    GET_FREIGHT_RATE_CRITERIA_SELECTLIST,
     GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
     GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
     GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS,
@@ -22,12 +25,12 @@ const headers = {
 };
 
 /**
- * @method createFreightAPI
- * @description create freight master
+ * @method createFreight
+ * @description CREATE FREIGHT MASTER
  */
-export function createFreightAPI(data, callback) {
+export function createFreight(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createFreightAPI, data, headers);
+        const request = axios.post(API.createFreight, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -35,61 +38,75 @@ export function createFreightAPI(data, callback) {
                     payload: response.data.Data
                 });
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_FREIGHT_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
 }
 
 /**
- * @method getFreightDetailAPI
- * @description get freight list
+ * @method getFreightDataList
+ * @description GET FREIGHT DATALIST
  */
-export function getFreightDetailAPI() {
+export function getFreightDataList(filterData, callback) {
     return (dispatch) => {
-        const request = axios.get(API.getAllFreightAPI, headers);
+        const queryParams = `freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}`
+        const request = axios.get(`${API.getFreightDataList}?${queryParams}`, headers);
         request.then((response) => {
             dispatch({
                 type: GET_FREIGHT_SUCCESS,
                 payload: response.data.DataList,
             });
-
+            callback(response)
         }).catch((error) => {
-            dispatch({
-                type: GET_FREIGHT_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
 }
 
 /**
- * @method getFreightByIdAPI
- * @description get one freight based on id
+ * @method getFreightData
+ * @description GET FREIGHT DATA
  */
-export function getFreightByIdAPI(freightId, isEditFlag, callback) {
+export function getFreightData(freightId, callback) {
+    return (dispatch) => {
+        if (freightId !== '') {
+            dispatch({ type: API_REQUEST });
+            axios.get(`${API.getFreightData}/${freightId}`, headers)
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_FREIGHT_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_FREIGHT_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method deleteFright
+ * @description DELETE FREIGHT
+ */
+export function deleteFright(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getFreightAPI}/${freightId}`, headers)
+        axios.delete(`${API.deleteFright}/${Id}`, headers)
             .then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_FREIGHT_DATA_SUCCESS,
-                        payload: response.data.Data,
-                    });
-                    callback(response);
-                } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
-                }
                 callback(response);
             }).catch((error) => {
                 apiErrors(error);
@@ -99,13 +116,13 @@ export function getFreightByIdAPI(freightId, isEditFlag, callback) {
 }
 
 /**
- * @method deleteFreightAPI
- * @description delete Freigh
+ * @method updateFright
+ * @description UPDATE FREIGHT
  */
-export function deleteFreightAPI(Id, callback) {
+export function updateFright(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteFrightAPI}/${Id}`, headers)
+        axios.put(`${API.updateFright}`, requestData, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -116,19 +133,59 @@ export function deleteFreightAPI(Id, callback) {
 }
 
 /**
- * @method updateFreightAPI
- * @description update freight
+ * @method getFreightModeSelectList
+ * @description GET FREIGHT MODE SELECTLIST
  */
-export function updateFreightAPI(requestData, callback) {
+export function getFreightModeSelectList() {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateFrightAPI}`, requestData, headers)
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
+        const request = axios.get(API.getFreightModeSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_FREIGHT_MODE_SELECTLIST,
+                payload: response.data.SelectList,
             });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getFreigtFullTruckCapacitySelectList
+ * @description GET FREIGHT FULL TRUCK CAPACITY SELECTLIST
+ */
+export function getFreigtFullTruckCapacitySelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getFreigtFullTruckCapacitySelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getFreigtRateCriteriaSelectList
+ * @description GET FREIGHT RATE CRITERIA SELECTLIST
+ */
+export function getFreigtRateCriteriaSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getFreigtRateCriteriaSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_FREIGHT_RATE_CRITERIA_SELECTLIST,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }
 
@@ -144,25 +201,14 @@ export function createAdditionalFreightAPI(data, callback) {
         const request = axios.post(API.createAdditionalFreightAPI, data, headers);
         request.then((response) => {
             if (response.data.Result) {
-                // dispatch({
-                //     type: CREATE_ADDITIONAL_FREIGHT_SUCCESS,
-                //     payload: response.data.Data
-                // });
                 callback(response);
-            } else {
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
 }
-
 
 /**
  * @method getAdditionalFreightDetailAPI

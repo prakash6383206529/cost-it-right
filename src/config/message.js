@@ -238,6 +238,12 @@ export const MESSAGES = {
   ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY: 'Level of technology added successfully',
   UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY: 'Level of technology updated successfully',
 
+  //FREIGHT
+  ADD_FREIGHT_SUCCESSFULLY: 'Freight has been added successfully',
+  UPDATE_FREIGHT_SUCCESSFULLY: 'Freight has been updated successfully',
+  DELETE_FREIGHT_SUCCESSFULLY: 'Freight has been deleted successfully',
+  FREIGHT_DELETE_ALERT: 'Are you sure you want to delete this Freight?',
+
   //ADDITIONAL FREIGHT
   ADDITIONAL_FREIGHT_ADD_SUCCESS: 'Packaging has been added successfully',
   DELETE_ADDITIONAL_FREIGHT_SUCCESS: 'Additional Freight has been deleted successfully',

@@ -335,12 +335,15 @@ export const API = {
   getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
   getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
 
-  //Api's for fright master
-  createFreightAPI: `${BASE_URL}/masters-freight/create`,
-  getFreightAPI: `${BASE_URL}/masters-freight/get`,
-  getAllFreightAPI: `${BASE_URL}/masters-freight/get-all`,
-  updateFrightAPI: `${BASE_URL}/masters-freight/update`,
-  deleteFrightAPI: `${BASE_URL}/masters-freight/delete`,
+  //FREIGHT MASTER
+  createFreight: `${BASE_URL}/masters-freight/create`,
+  getFreightData: `${BASE_URL}/masters-freight/get`,
+  getFreightDataList: `${BASE_URL}/masters-freight/get-all`,
+  updateFright: `${BASE_URL}/masters-freight/update`,
+  deleteFright: `${BASE_URL}/masters-freight/delete`,
+  getFreightModeSelectList: `${BASE_URL}/configuration/select-list-get-freight-modes`,
+  getFreigtFullTruckCapacitySelectList: `${BASE_URL}/configuration/select-list-get-full-truck-capacity`,
+  getFreigtRateCriteriaSelectList: `${BASE_URL}/configuration/select-list-get-full-truck-ratecriteria`,
 
   //API's for Additional freight master
   createAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/create`,
@@ -887,6 +890,9 @@ export const CREATE_FREIGHT_FAILURE = 'CREATE_FREIGHT_FAILURE';
 export const GET_FREIGHT_SUCCESS = 'GET_FREIGHT_SUCCESS';
 export const GET_FREIGHT_DATA_SUCCESS = 'GET_FREIGHT_DATA_SUCCESS';
 export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE';
+export const GET_FREIGHT_MODE_SELECTLIST = 'GET_FREIGHT_MODE_SELECTLIST';
+export const GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST = 'GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST';
+export const GET_FREIGHT_RATE_CRITERIA_SELECTLIST = 'GET_FREIGHT_RATE_CRITERIA_SELECTLIST';
 
 //ADDITIONAL FREIGHT MASTER
 export const GET_ALL_ADDITIONAL_FREIGHT_SUCCESS = 'GET_ALL_ADDITIONAL_FREIGHT_SUCCESS';
@@ -1118,6 +1124,8 @@ export const UOM = 'UOM';
 export const REASON = 'Reason';
 export const FUEL_AND_POWER = 'Fuel and Power';
 export const EXCHANGE_RATE = 'Exchange Rate';
+export const FREIGHT = 'Freight';
+export const VOLUME = 'Volume';
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM';

@@ -82,14 +82,14 @@ class SpecificationListing extends Component {
 
         if (label === 'material') {
             filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'grade') {
             filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;

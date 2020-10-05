@@ -6,18 +6,16 @@ import { required } from "../../../../helper/validation";
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import {
-    getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
-    getPlantSelectList, getPlantSelectListByVendor,
-} from '../../../../actions/master/BoughtOutParts';
+import { getFreightDataList, deleteFright, } from '../../../../actions/master/Freight';
+import { getVendorListByVendorType, } from '../../../../actions/master/Material';
+import { fetchSupplierCityDataAPI } from '../../../../actions/master/Comman';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
-import BulkUpload from '../../../massUpload/BulkUpload';
 
-class BOPDomesticListing extends Component {
+class FreightListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,8 +25,8 @@ class BOPDomesticListing extends Component {
             isBulkUpload: false,
 
             costingHead: [],
-            BOPCategory: [],
-            plant: [],
+            destinationLocation: [],
+            sourceLocation: [],
             vendor: [],
         }
     }
@@ -38,9 +36,8 @@ class BOPDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.getBOPCategorySelectList(() => { })
-        this.props.getPlantSelectList(() => { })
-        this.props.getAllVendorSelectList(() => { })
+        this.props.getVendorListByVendorType(true, () => { })
+        this.props.fetchSupplierCityDataAPI(res => { });
         this.getDataList()
     }
 
@@ -48,14 +45,14 @@ class BOPDomesticListing extends Component {
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '',) => {
+    getDataList = (freight_for = '', vendor_id = '', source_city_id = '', destination_city_id = '',) => {
         const filterData = {
-            bop_for: bopFor,
-            category_id: CategoryId,
-            vendor_id: vendorId,
-            plant_id: plantId,
+            freight_for: freight_for,
+            vendor_id: vendor_id,
+            source_city_id: source_city_id,
+            destination_city_id: destination_city_id,
         }
-        this.props.getBOPDomesticDataList(filterData, (res) => {
+        this.props.getFreightDataList(filterData, (res) => {
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -91,7 +88,7 @@ class BOPDomesticListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.FREIGHT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -99,22 +96,12 @@ class BOPDomesticListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        this.props.deleteBOP(ID, (res) => {
+        this.props.deleteFright(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.BOP_DELETE_SUCCESS);
+                toastr.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
                 this.getDataList()
             }
         });
-    }
-
-    bulkToggle = () => {
-        this.setState({ isBulkUpload: true })
-    }
-
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getDataList()
-        })
     }
 
     /**
@@ -130,44 +117,40 @@ class BOPDomesticListing extends Component {
     };
 
     /**
-    * @method handleCategoryChange
-    * @description  used to handle BOP Category Selection
-    */
-    handleCategoryChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ BOPCategory: newValue });
-        } else {
-            this.setState({ BOPCategory: [], });
-
-        }
-    }
-
-    /**
-    * @method handlePlantChange
-    * @description  PLANT LIST
-    */
-    handlePlantChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ plant: newValue });
-        } else {
-            this.setState({ plant: [], });
-
-        }
-    }
-
-    /**
     * @method handleVendorChange
     * @description  VENDOR LIST
     */
     handleVendorChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ vendor: newValue }, () => {
-                const { vendor } = this.state;
-                this.props.getPlantSelectListByVendor(vendor.value, () => { })
-            });
+            this.setState({ vendor: newValue });
         } else {
             this.setState({ vendor: [], });
 
+        }
+    }
+
+    /**
+    * @method handleSourceCity
+    * @description  HANDLE SOURCE CITY
+    */
+    handleSourceCity = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ sourceLocation: newValue });
+        } else {
+            this.setState({ sourceLocation: [], });
+
+        }
+    }
+
+    /**
+    * @method handleDestinationCity
+    * @description  HANDLE DESTINATION CITY
+    */
+    handleDestinationCity = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ destinationLocation: newValue });
+        } else {
+            this.setState({ destinationLocation: [], });
         }
     }
 
@@ -222,12 +205,8 @@ class BOPDomesticListing extends Component {
         return serialNumber;
     }
 
-    renderSerialNumber = () => {
-        return <>Sr. <br />No. </>
-    }
-
     renderCostingHead = () => {
-        return <>Costing <br />Head </>
+        return <>Costing Head </>
     }
 
     /**
@@ -251,7 +230,7 @@ class BOPDomesticListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { bopCategorySelectList, plantSelectList, vendorAllSelectList, } = this.props;
+        const { cityList, vendorListByVendorType, } = this.props;
         const temp = [];
 
         if (label === 'costingHead') {
@@ -261,22 +240,23 @@ class BOPDomesticListing extends Component {
             ]
             return temp;
         }
-        if (label === 'BOPCategory') {
-            bopCategorySelectList && bopCategorySelectList.map(item => {
+        if (label === 'SourceLocation') {
+            cityList && cityList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map(item => {
+
+        if (label === 'DestinationLocation') {
+            cityList && cityList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'vendor') {
-            vendorAllSelectList && vendorAllSelectList.map(item => {
+            vendorListByVendorType && vendorListByVendorType.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -289,14 +269,14 @@ class BOPDomesticListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
-        const { costingHead, BOPCategory, plant, vendor } = this.state;
+        const { costingHead, vendor, sourceLocation, destinationLocation } = this.state;
 
         const costingHeadTemp = costingHead ? costingHead.value : '';
-        const categoryTemp = BOPCategory ? BOPCategory.value : '';
         const vendorTemp = vendor ? vendor.value : '';
-        const plantTemp = plant ? plant.value : '';
+        const sourceTemp = sourceLocation ? sourceLocation.value : '';
+        const destinationTemp = destinationLocation ? destinationLocation.value : '';
 
-        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp,)
+        this.getDataList(costingHeadTemp, vendorTemp, sourceTemp, destinationTemp,)
     }
 
     /**
@@ -306,13 +286,10 @@ class BOPDomesticListing extends Component {
     resetFilter = () => {
         this.setState({
             costingHead: [],
-            BOPCategory: [],
-            plant: [],
             vendor: [],
+            sourceLocation: [],
+            destinationLocation: [],
         }, () => {
-            this.props.getBOPCategorySelectList(() => { })
-            this.props.getPlantSelectList(() => { })
-            this.props.getAllVendorSelectList(() => { })
             this.getDataList()
         })
 
@@ -335,8 +312,8 @@ class BOPDomesticListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
-        const { isBulkUpload } = this.state;
+        const { handleSubmit, AddAccessibility } = this.props;
+
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -369,21 +346,6 @@ class BOPDomesticListing extends Component {
                                 </div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="category"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Category-'}
-                                        options={this.renderListing('BOPCategory')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleCategoryChange}
-                                        valueDescription={this.state.BOPCategory}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
                                         name="vendor"
                                         type="text"
                                         label=""
@@ -399,17 +361,32 @@ class BOPDomesticListing extends Component {
                                 </div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="plant"
+                                        name="SourceLocation"
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Plant-'}
-                                        options={this.renderListing('plant')}
+                                        placeholder={'--Source City--'}
+                                        options={this.renderListing('SourceLocation')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
+                                        validate={(this.state.sourceLocation == null || this.state.sourceLocation.length === 0) ? [required] : []}
                                         required={true}
-                                        handleChangeDescription={this.handlePlantChange}
-                                        valueDescription={this.state.plant}
+                                        handleChangeDescription={this.handleSourceCity}
+                                        valueDescription={this.state.sourceLocation}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="DestinationLocation"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'--Destination City--'}
+                                        options={this.renderListing('DestinationLocation')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.destinationLocation == null || this.state.destinationLocation.length === 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleDestinationCity}
+                                        valueDescription={this.state.destinationLocation}
                                     />
                                 </div>
 
@@ -437,11 +414,6 @@ class BOPDomesticListing extends Component {
                         <Col md="2" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {BulkUploadAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>}
                                     {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
@@ -467,32 +439,14 @@ class BOPDomesticListing extends Component {
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="PartAssemblyNumber" columnTitle={true} dataAlign="center"  >{'Part Assembly No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="center" >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NumberOfPieces" columnTitle={true} dataAlign="center"  >{'No. of Pcs'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BasicRate" columnTitle={true} dataAlign="center"  >{'Basic Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center" >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Mode" columnTitle={true} dataAlign="center" dataSort={true} >{'Mode'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="center" dataSort={true} >{'Source City'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="center"  >{'Destination City'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'BOPDomestic'}
-                    isZBCVBCTemplate={true}
-                    messageLabel={'BOP Domestic'}
-                    anchor={'right'}
-                />}
             </div >
         );
     }
@@ -503,9 +457,11 @@ class BOPDomesticListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts }) {
-    const { bopCategorySelectList, vendorAllSelectList, plantSelectList } = boughtOutparts;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, }
+function mapStateToProps({ freight, material, comman }) {
+    const { } = freight;
+    const { vendorListByVendorType } = material;
+    const { cityList, } = comman;
+    return { vendorListByVendorType, cityList }
 }
 
 /**
@@ -515,13 +471,11 @@ function mapStateToProps({ boughtOutparts }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getBOPDomesticDataList,
-    deleteBOP,
-    getBOPCategorySelectList,
-    getPlantSelectList,
-    getAllVendorSelectList,
-    getPlantSelectListByVendor,
+    getFreightDataList,
+    deleteFright,
+    getVendorListByVendorType,
+    fetchSupplierCityDataAPI,
 })(reduxForm({
-    form: 'BOPDomesticListing',
+    form: 'FreightListing',
     enableReinitialize: true,
-})(BOPDomesticListing));
+})(FreightListing));

@@ -5,6 +5,9 @@ import {
     GET_FREIGHT_SUCCESS,
     GET_FREIGHT_FAILURE,
     GET_FREIGHT_DATA_SUCCESS,
+    GET_FREIGHT_MODE_SELECTLIST,
+    GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
+    GET_FREIGHT_RATE_CRITERIA_SELECTLIST,
     GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
     GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
     GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS,
@@ -71,6 +74,24 @@ export default function freightReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 additionalFreightData: action.payload
+            };
+        case GET_FREIGHT_MODE_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                freightModeSelectList: action.payload
+            };
+        case GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                freightFullTruckCapacitySelectList: action.payload
+            };
+        case GET_FREIGHT_RATE_CRITERIA_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                freightRateCriteriaSelectList: action.payload
             };
         default:
             return state;

@@ -5,7 +5,6 @@ import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, getFilteredPlantList, deletePlantAPI } from '../../../../actions/master/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../../actions/master/Comman';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
-import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -14,10 +13,6 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class VBCPlantListing extends Component {
     constructor(props) {

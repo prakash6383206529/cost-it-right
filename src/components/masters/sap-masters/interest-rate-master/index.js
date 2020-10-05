@@ -7,7 +7,6 @@ import SupplierInterestRate from './SupplierInterestRate';
 import { getInterestRateAPI, deleteInterestRateAPI } from '../../../../actions/master/InterestRateMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import moment from 'moment';
 import NoContentFound from '../../../common/NoContentFound';

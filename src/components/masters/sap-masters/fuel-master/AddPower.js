@@ -1,12 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, maxLength100, trimTwoDecimalPlace, getVendorCode } from "../../../../helper/validation";
-import {
-    renderText, renderSelectField, renderNumberInputField, searchableSelect,
-    renderMultiSelectField, renderTextAreaField, focusOnError,
-} from "../../../layout/FormInputs";
+import { required, checkForNull, trimTwoDecimalPlace, getVendorCode } from "../../../../helper/validation";
+import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, } from "../../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../../actions/master/Comman';
 import { getVendorWithVendorCodeSelectList, } from '../../../../actions/master/Supplier';
 import {
@@ -651,7 +648,6 @@ class AddPower extends Component {
         this.setState({ powerGrid: tempData })
     }
 
-
     /**
     * @method renderListing
     * @description Used to show type of listing
@@ -696,7 +692,7 @@ class AddPower extends Component {
         if (label === 'UOM') {
             fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.map(item => {
                 if (item.Value === '0') return false;
-                if (item.Text == 'Liter') {
+                if (item.Text === 'Liter') {
                     temp.push({ label: item.Text, value: item.Value })
                 }
             });

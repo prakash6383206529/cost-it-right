@@ -1,22 +1,16 @@
 import React, { Component } from "react";
-import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../../common/Loader";
-import { required, alphabetsOnlyForName, number } from "../../../helper/validation";
 import "../UserRegistration.scss";
 import {
     getActionHeadsSelectList, getModuleActionInit, getModuleActionInitNew
 } from "../../../actions/auth/AuthActions";
-import { MESSAGES } from "../../../config/message";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
-    USERS,
-    AUDIT,
+    USERS, AUDIT,
 } from "../../../config/constants";
-import { Table, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
-import NoContentFound from "../../common/NoContentFound";
-import Switch from "react-switch";
 import DashboardAuditTab from "./DashboardAuditTab";
 import MastersTab from "./MastersTab";
 import AdditionalMastersTab from "./AdditionalMastersTab";
@@ -52,7 +46,7 @@ class PermissionsTabIndex extends Component {
         this.props.getActionHeadsSelectList(() => {
             setTimeout(() => {
                 const { isEditFlag, isNewRole } = this.props;
-                if (isEditFlag == false && isNewRole) {
+                if (isEditFlag === false && isNewRole) {
                     this.getRolePermission()
                 }
             }, 500)
@@ -62,7 +56,7 @@ class PermissionsTabIndex extends Component {
 
     getRolePermission = () => {
         const { isEditFlag, isNewRole } = this.props;
-        if (isEditFlag == false && isNewRole) {
+        if (isEditFlag === false && isNewRole) {
             this.setState({ isLoader: true });
             this.props.getModuleActionInitNew((res) => {
                 if (res && res.data && res.data.Data) {
@@ -89,26 +83,26 @@ class PermissionsTabIndex extends Component {
     * @description get updated tabs data after update success
     */
     updateTabs = (Data) => {
-        let dashboardObj = Data && Data.filter(el => el.ModuleName == DASHBOARD_AND_AUDIT)
-        let masterObj = Data && Data.filter(el => el.ModuleName == MASTERS)
-        let additionalMasterObj = Data && Data.filter(el => el.ModuleName == ADDITIONAL_MASTERS)
-        let costingObj = Data && Data.filter(el => el.ModuleName == COSTING)
-        let simulationObj = Data && Data.filter(el => el.ModuleName == SIMULATION)
-        let reportAnalyticsObj = Data && Data.filter(el => el.ModuleName == REPORTS_AND_ANALYTICS)
-        let usersObj = Data && Data.filter(el => el.ModuleName == USERS)
-        let auditObj = Data && Data.filter(el => el.ModuleName == AUDIT)
+        let dashboardObj = Data && Data.filter(el => el.ModuleName === DASHBOARD_AND_AUDIT)
+        let masterObj = Data && Data.filter(el => el.ModuleName === MASTERS)
+        let additionalMasterObj = Data && Data.filter(el => el.ModuleName === ADDITIONAL_MASTERS)
+        let costingObj = Data && Data.filter(el => el.ModuleName === COSTING)
+        let simulationObj = Data && Data.filter(el => el.ModuleName === SIMULATION)
+        let reportAnalyticsObj = Data && Data.filter(el => el.ModuleName === REPORTS_AND_ANALYTICS)
+        let usersObj = Data && Data.filter(el => el.ModuleName === USERS)
+        let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
 
         this.setState({
             actionData: Data,
             isLoader: false,
-            dashoard: dashboardObj && dashboardObj != undefined ? dashboardObj[0].Pages : [],
-            masters: masterObj && masterObj != undefined ? masterObj[0].Pages : [],
-            additionalMasters: additionalMasterObj && additionalMasterObj != undefined ? additionalMasterObj[0].Pages : [],
-            costing: costingObj && costingObj != undefined ? costingObj[0].Pages : [],
-            simulation: simulationObj && simulationObj != undefined ? simulationObj[0].Pages : [],
-            reportAnalytics: reportAnalyticsObj && reportAnalyticsObj != undefined ? reportAnalyticsObj[0].Pages : [],
-            user: usersObj && usersObj != undefined ? usersObj[0].Pages : [],
-            audit: auditObj && auditObj != undefined ? auditObj[0].Pages : [],
+            dashoard: dashboardObj && dashboardObj !== undefined ? dashboardObj[0].Pages : [],
+            masters: masterObj && masterObj !== undefined ? masterObj[0].Pages : [],
+            additionalMasters: additionalMasterObj && additionalMasterObj !== undefined ? additionalMasterObj[0].Pages : [],
+            costing: costingObj && costingObj !== undefined ? costingObj[0].Pages : [],
+            simulation: simulationObj && simulationObj !== undefined ? simulationObj[0].Pages : [],
+            reportAnalytics: reportAnalyticsObj && reportAnalyticsObj !== undefined ? reportAnalyticsObj[0].Pages : [],
+            user: usersObj && usersObj !== undefined ? usersObj[0].Pages : [],
+            audit: auditObj && auditObj !== undefined ? auditObj[0].Pages : [],
         }, () => {
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
             this.permissionHandler(this.state.masters, MASTERS)
@@ -285,7 +279,7 @@ const mapStateToProps = (state, ownProps) => {
     const { roleList, roleDetail, actionSelectList, loading } = auth;
     let initialValues = {};
 
-    if (roleDetail && roleDetail != undefined) {
+    if (roleDetail && roleDetail !== undefined) {
         initialValues = {
             RoleName: roleDetail.RoleName,
             Description: roleDetail.Description,

@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, Label, Input } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70 } from "../../../../helper/validation";
-import {
-    renderText, renderSelectField, renderEmailInputField, renderMultiSelectField,
-    searchableSelect
-} from "../../../layout/FormInputs";
+import { Container, Row, Col, } from 'reactstrap';
+import { required, } from "../../../../helper/validation";
+import { renderText, renderMultiSelectField, } from "../../../layout/FormInputs";
 import { createMachineType } from '../../../../actions/master/MachineMaster';
 import { getLabourTypeSelectList } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
@@ -48,7 +44,7 @@ class AddMachineTypeDrawer extends Component {
 
         if (label === 'labourList') {
             labourTypeSelectList && labourTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
             });
             return temp;
@@ -86,7 +82,6 @@ class AddMachineTypeDrawer extends Component {
 
         /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
-            const { supplierId } = this.props;
             let formData = {
 
             }
@@ -120,7 +115,7 @@ class AddMachineTypeDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, } = this.props;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -162,7 +157,7 @@ class AddMachineTypeDrawer extends Component {
                                             label="Labour Type"
                                             name="LabourTypeIds"
                                             placeholder="--Select--"
-                                            selection={(this.state.labourType == null || this.state.labourType.length == 0) ? [] : this.state.labourType}
+                                            selection={(this.state.labourType == null || this.state.labourType.length === 0) ? [] : this.state.labourType}
                                             options={this.renderListing('labourList')}
                                             selectionChanged={this.labourHandler}
                                             optionValue={option => option.Value}

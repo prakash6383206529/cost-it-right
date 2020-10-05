@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from "reactstrap";
-import { Loader } from '../../../common/Loader';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import AddFuel from './AddFuel';
 import AddPower from './AddPower';
@@ -37,12 +35,12 @@ class FuelMaster extends Component {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == FUEL_AND_POWER)
+                const accessData = Data && Data.find(el => el.PageName === FUEL_AND_POWER)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,

@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, checkForNull, maxLength100, number } from "../../../../helper/validation";
 import {
-    renderText, renderNumberInputField, searchableSelect,
+    renderText, searchableSelect,
     renderMultiSelectField, renderTextAreaField
 } from "../../../layout/FormInputs";
 import {
@@ -308,7 +308,7 @@ class AddBOPDomestic extends Component {
     * @description called
     */
     handleSourceSupplierCity = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ sourceLocation: newValue, });
         } else {
             this.setState({ sourceLocation: [], })
@@ -320,7 +320,7 @@ class AddBOPDomestic extends Component {
     * @description called
     */
     handleUOM = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ UOM: newValue, })
         } else {
             this.setState({ UOM: [] })

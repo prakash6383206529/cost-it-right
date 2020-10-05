@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../../common/Loader";
-import { required, alphabetsOnlyForName, number } from "../../../helper/validation";
+import { required, alphabetsOnlyForName, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import "../UserRegistration.scss";
 import {
@@ -12,9 +12,6 @@ import {
 } from "../../../actions/auth/AuthActions";
 import { MESSAGES } from "../../../config/message";
 import { } from 'reactstrap';
-import classnames from 'classnames';
-import NoContentFound from "../../common/NoContentFound";
-import { CONSTANT } from "../../../helper/AllConastant";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import PermissionsTabIndex from "./PermissionsTabIndex";
 
@@ -215,7 +212,7 @@ class Role extends Component {
 	}
 
 	render() {
-		const { handleSubmit, pristine, } = this.props;
+		const { handleSubmit, } = this.props;
 		const { isLoader, isSubmitted, isEditFlag } = this.state;
 
 		return (
@@ -300,7 +297,7 @@ const mapStateToProps = (state, ownProps) => {
 	const { roleList, roleDetail, actionSelectList, loading } = auth;
 	let initialValues = {};
 
-	if (roleDetail && roleDetail != undefined) {
+	if (roleDetail && roleDetail !== undefined) {
 		initialValues = {
 			RoleName: roleDetail.RoleName,
 			Description: roleDetail.Description,

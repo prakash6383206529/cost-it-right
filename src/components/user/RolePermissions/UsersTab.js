@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
-import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import "../UserRegistration.scss";
 import {
     getModuleSelectList, getActionHeadsSelectList, getModuleActionInit,
 } from "../../../actions/auth/AuthActions";
-import { Table, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
-import classnames from 'classnames';
+import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { CONSTANT } from "../../../helper/AllConastant";
-import { COSTING, SIMULATION, USERS, } from "../../../config/constants";
+import { USERS, } from "../../../config/constants";
 import Switch from "react-switch";
 
 class UsersTab extends Component {
@@ -98,7 +96,7 @@ class UsersTab extends Component {
         let actionArray = [];
         let tempArray = [];
 
-        let actionRow = (Modules && Modules != undefined) ? Modules[index].Actions : [];
+        let actionRow = (Modules && Modules !== undefined) ? Modules[index].Actions : [];
         if (isModuleChecked) {
             actionArray = actionRow && actionRow.map((item, index) => {
                 item.IsChecked = false;
@@ -125,8 +123,8 @@ class UsersTab extends Component {
     * @description used to select module's 
     */
     isCheckModule = (actionData) => {
-        let tempArray = actionData && actionData.filter(item => item.IsChecked == true)
-        if (actionData && actionData != undefined) {
+        let tempArray = actionData && actionData.filter(item => item.IsChecked === true)
+        if (actionData && actionData !== undefined) {
             return tempArray.length > 0 ? true : false;
         }
     }
@@ -136,22 +134,22 @@ class UsersTab extends Component {
     * @description used to select module's action row (Horizontally)
     */
     isCheckAll = (parentIndex, actionData) => {
-        const { Modules, actionSelectList } = this.state;
+        const { Modules, } = this.state;
 
-        let tempArray = actionData && actionData.filter(item => item.IsChecked == true)
-        if (actionData && actionData != undefined) {
-            return tempArray.length == Modules[parentIndex].Actions.length ? true : false;
+        let tempArray = actionData && actionData.filter(item => item.IsChecked === true)
+        if (actionData && actionData !== undefined) {
+            return tempArray.length === Modules[parentIndex].Actions.length ? true : false;
         }
     }
 
     selectAllHandler = (parentIndex, actionRows) => {
-        const { Modules, actionSelectList } = this.state;
+        const { Modules, } = this.state;
         //const { actionSelectList } = this.props;
 
-        let checkedActions = actionRows.filter(item => item.IsChecked == true)
+        let checkedActions = actionRows.filter(item => item.IsChecked === true)
 
         let tempArray = [];
-        let isCheckedSelectAll = (checkedActions.length == Modules[parentIndex].Actions.length) ? true : false;
+        let isCheckedSelectAll = (checkedActions.length === Modules[parentIndex].Actions.length) ? true : false;
 
         if (isCheckedSelectAll) {
             let actionArray = actionRows && actionRows.map((item, index) => {
@@ -180,7 +178,7 @@ class UsersTab extends Component {
         return actionSelectList && actionSelectList.map((el, i) => {
             if (el.Value == 0) return false;
             return actions && actions.map((item, index) => {
-                if (el.Value != item.ActionId) return false;
+                if (el.Value !== item.ActionId) return false;
                 return (
                     <td className="text-center">
                         {
@@ -213,9 +211,9 @@ class UsersTab extends Component {
     actionCheckHandler = (parentIndex, childIndex) => {
         const { Modules } = this.state;
 
-        let actionRow = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
+        let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
         let actionArray = actionRow && actionRow.map((el, index) => {
-            if (childIndex == index) {
+            if (childIndex === index) {
                 el.IsChecked = !el.IsChecked
             }
             return el;
@@ -223,16 +221,16 @@ class UsersTab extends Component {
         let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
         this.setState({ Modules: tempArray }, () => {
             const { Modules } = this.state;
-            let aa = (Modules && Modules != undefined) ? Modules[parentIndex].Actions : [];
-            let checkedActions = aa.filter(item => item.IsChecked == true)
-            let abcd = checkedActions && checkedActions.length != 0 ? true : false;
+            let aa = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
+            let checkedActions = aa.filter(item => item.IsChecked === true)
+            let abcd = checkedActions && checkedActions.length !== 0 ? true : false;
             let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
             this.setState({ Modules: tempArray1 })
         })
     }
 
     componentDidUpdate(prevState) {
-        if (prevState.Modules != this.state.Modules) {
+        if (prevState.Modules !== this.state.Modules) {
             this.updateModules()
         }
     }
@@ -255,8 +253,7 @@ class UsersTab extends Component {
     }
 
     render() {
-        const { loading } = this.props;
-        const { isLoader, isEditFlag, actionSelectList } = this.state;
+        const { actionSelectList } = this.state;
         return (
             <div>
                 <div className="row form-group grant-user-grid">
@@ -304,7 +301,7 @@ class UsersTab extends Component {
                                         </tr>
                                     )
                                 })}
-                                {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.state.Modules.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </tbody>
                         </Table>
 
@@ -322,7 +319,7 @@ class UsersTab extends Component {
 */
 const mapStateToProps = (state, ownProps) => {
     const { auth } = state;
-    const { roleList, roleDetail, moduleSelectList, actionSelectList, loading } = auth;
+    const { roleList, moduleSelectList, actionSelectList, loading } = auth;
     let initialValues = {};
 
     return { loading, roleList, initialValues, moduleSelectList, actionSelectList };

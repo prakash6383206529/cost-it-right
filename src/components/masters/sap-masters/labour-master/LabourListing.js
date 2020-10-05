@@ -54,12 +54,12 @@ class LabourListing extends Component {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == LABOUR)
+                const accessData = Data && Data.find(el => el.PageName === LABOUR)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -121,7 +121,7 @@ class LabourListing extends Component {
 
         if (label === 'state') {
             stateSelectList && stateSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -129,7 +129,7 @@ class LabourListing extends Component {
 
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -137,7 +137,7 @@ class LabourListing extends Component {
 
         if (label === 'MachineTypeList') {
             machineTypeSelectList && machineTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -145,7 +145,7 @@ class LabourListing extends Component {
 
         if (label === 'labourList') {
             labourTypeByPlantSelectList && labourTypeByPlantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;

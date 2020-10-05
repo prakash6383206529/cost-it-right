@@ -5,7 +5,6 @@ import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../../../../actions/master/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../../actions/master/Comman';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
-import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -14,10 +13,6 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class ZBCPlantListing extends Component {
     constructor(props) {

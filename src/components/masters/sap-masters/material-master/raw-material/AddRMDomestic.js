@@ -88,7 +88,7 @@ class AddRMDomestic extends Component {
         this.props.getUOMSelectList(() => { })
         this.props.getSupplierList(() => { })
         this.props.fetchPlantDataAPI(() => { })
-        this.props.getRMGradeSelectListByRawMaterial(0, res => { });
+        this.props.getRMGradeSelectListByRawMaterial('', res => { });
     }
 
     /**
@@ -119,7 +119,7 @@ class AddRMDomestic extends Component {
 
         } else {
             this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [], });
-            this.props.getRMGradeSelectListByRawMaterial(0, res => { });
+            this.props.getRMGradeSelectListByRawMaterial('', res => { });
         }
     }
 

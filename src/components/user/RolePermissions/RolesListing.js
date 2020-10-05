@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { getAllRoleAPI, deleteRoleAPI, getLeftMenu } from '../../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -134,7 +134,7 @@ class RolesListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, editIndex, AddAccessibility } = this.state;
+    const { AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,

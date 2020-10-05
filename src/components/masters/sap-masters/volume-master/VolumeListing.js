@@ -12,12 +12,15 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../../../../actions/master/Volume';
 import { getPlantSelectList, } from '../../../../actions/master/Comman';
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
-import Switch from "react-switch";
 import $ from 'jquery';
-import { loggedInUserId } from '../../../../helper/auth';
-import { Years, Months } from '../../../../config/masterData';
+import { Months } from '../../../../config/masterData';
 import AddVolume from './AddVolume';
 import BulkUpload from '../../../massUpload/BulkUpload';
+import { VOLUME } from '../../../../config/constants';
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 class VolumeListing extends Component {
     constructor(props) {
@@ -36,10 +39,37 @@ class VolumeListing extends Component {
 
             isActualBulkUpload: false,
             isBudgetedBulkUpload: false,
+
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
+            BulkUploadAccessibility: false,
         }
     }
 
     componentDidMount() {
+
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData !== undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName === VOLUME)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData !== undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    })
+                }
+            }
+        })
+
         this.props.getPlantSelectList(() => { })
         this.props.getFinancialYearSelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
@@ -150,10 +180,11 @@ class VolumeListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -354,7 +385,8 @@ class VolumeListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isEditFlag, showVolumeForm, data, isActualBulkUpload, isBudgetedBulkUpload, } = this.state;
+        const { isEditFlag, showVolumeForm, data, isActualBulkUpload, isBudgetedBulkUpload,
+            AddAccessibility, BulkUploadAccessibility } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -474,21 +506,21 @@ class VolumeListing extends Component {
                         <Col md="4" className="search-user-block">
                             <div className="d-flex justify-content-end bd-highlight">
                                 <div>
-                                    <button
+                                    {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
                                         onClick={this.actualBulkToggle}>
-                                        <div className={'upload'}></div>Actual Upload</button>
-                                    <button
+                                        <div className={'upload'}></div>Actual Upload</button>}
+                                    {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
                                         onClick={this.budgetedBulkToggle}>
-                                        <div className={'upload'}></div>Budgeted Upload</button>
-                                    <button
+                                        <div className={'upload'}></div>Budgeted Upload</button>}
+                                    {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
                                         onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>
+                                        <div className={'plus'}></div>ADD</button>}
                                 </div>
                             </div>
                         </Col>
@@ -546,11 +578,12 @@ class VolumeListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, material, volume }) {
+function mapStateToProps({ comman, material, volume, auth, }) {
     const { loading, plantSelectList, } = comman;
     const { vendorListByVendorType } = material;
     const { financialYearSelectList } = volume;
-    return { loading, vendorListByVendorType, plantSelectList, financialYearSelectList };
+    const { leftMenuData } = auth;
+    return { loading, vendorListByVendorType, plantSelectList, financialYearSelectList, leftMenuData };
 }
 
 /**
@@ -565,6 +598,7 @@ export default connect(mapStateToProps, {
     getVolumeDataList,
     deleteVolume,
     getFinancialYearSelectList,
+    getLeftMenu,
 })(reduxForm({
     form: 'VolumeListing',
     onSubmitFail: errors => {

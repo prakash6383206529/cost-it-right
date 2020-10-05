@@ -106,10 +106,11 @@ class IndivisualPartListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -226,7 +227,7 @@ class IndivisualPartListing extends Component {
     */
     render() {
         const { isBulkUpload } = this.state;
-
+        const { AddAccessibility, BulkUploadAccessibility } = this.props
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -248,16 +249,16 @@ class IndivisualPartListing extends Component {
                     <Col md="4" className="search-user-block">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                <button
+                                {AddAccessibility && <button
                                     type="button"
                                     className={'user-btn mr5'}
                                     onClick={this.bulkToggle}>
-                                    <div className={'upload'}></div>Bulk Upload</button>
-                                <button
+                                    <div className={'upload'}></div>Bulk Upload</button>}
+                                {BulkUploadAccessibility && <button
                                     type="button"
                                     className={'user-btn'}
                                     onClick={this.formToggle}>
-                                    <div className={'plus'}></div>ADD PART</button>
+                                    <div className={'plus'}></div>ADD PART</button>}
                             </div>
                         </div>
                     </Col>
@@ -306,9 +307,7 @@ class IndivisualPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ }) {
-
-
+function mapStateToProps() {
     return {};
 }
 

@@ -58,10 +58,10 @@ class OverheadListing extends Component {
             model_type_id: modelType,
         }
         this.props.getOverheadDataList(filterData, (res) => {
-            if (res && res.status == 200) {
+            if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status == 412) {
+            } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [] })
             } else {
                 this.setState({ tableData: [] })
@@ -149,11 +149,11 @@ class OverheadListing extends Component {
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         let headText = '';
-        if (!cell && row.VendorName != '-') {
+        if (!cell && row.VendorName !== '-') {
             headText = 'Zero Based';
-        } else if (cell && row.VendorName != '-') {
+        } else if (cell && row.VendorName !== '-') {
             headText = 'Vendor Based';
-        } else if ((cell || cell == null) && row.ClientName != '-') {
+        } else if ((cell || cell == null) && row.ClientName !== '-') {
             headText = 'Client Based';
         }
         return headText;
@@ -168,7 +168,7 @@ class OverheadListing extends Component {
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
         let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -214,7 +214,7 @@ class OverheadListing extends Component {
     * @description called
     */
     handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ costingHead: newValue, });
         } else {
             this.setState({ costingHead: [], })
@@ -226,7 +226,7 @@ class OverheadListing extends Component {
     * @description called
     */
     handleModelTypeChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ ModelType: newValue, }, () => {
                 const { ModelType } = this.state;
                 this.props.getVendorFilterByModelTypeSelectList(ModelType.value, () => { })
@@ -241,7 +241,7 @@ class OverheadListing extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue }, () => {
                 const { vendorName } = this.state;
                 this.props.getModelTypeFilterByVendorSelectList(vendorName.value, () => { })
@@ -269,7 +269,7 @@ class OverheadListing extends Component {
 
         if (label === 'ModelType') {
             filterOverheadSelectList && filterOverheadSelectList.modelTypeSelectList && filterOverheadSelectList.modelTypeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -277,7 +277,7 @@ class OverheadListing extends Component {
 
         if (label === 'VendorNameList') {
             filterOverheadSelectList && filterOverheadSelectList.VendorsSelectList && filterOverheadSelectList.VendorsSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -285,9 +285,9 @@ class OverheadListing extends Component {
     }
 
     /**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -315,7 +315,7 @@ class OverheadListing extends Component {
         }
         this.props.activeInactiveOverhead(data, res => {
             if (res && res.data && res.data.Result) {
-                if (cell == true) {
+                if (cell === true) {
                     toastr.success(MESSAGES.OVERHEAD_INACTIVE_SUCCESSFULLY)
                 } else {
                     toastr.success(MESSAGES.OVERHEAD_ACTIVE_SUCCESSFULLY)
@@ -326,9 +326,9 @@ class OverheadListing extends Component {
     }
 
     /**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         const { costingHead, ModelType, vendorName, overheadAppli, } = this.state;
         const costingHeadTemp = costingHead ? costingHead.value : null;
@@ -339,10 +339,10 @@ class OverheadListing extends Component {
         this.getDataList(costingHeadTemp, vendorNameTemp, OverheadAppliTemp, ModelTypeTemp)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             costingHead: [],
@@ -400,7 +400,7 @@ class OverheadListing extends Component {
                                         placeholder={'---Select---'}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.costingHead == null || this.state.costingHead.length == 0) ? [required] : []}
+                                        validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleHeadChange}
                                         valueDescription={this.state.costingHead}
@@ -416,7 +416,7 @@ class OverheadListing extends Component {
                                         placeholder={'-ModelType-'}
                                         options={this.renderListing('ModelType')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.ModelType == null || this.state.ModelType.length == 0) ? [required] : []}
+                                        validate={(this.state.ModelType == null || this.state.ModelType.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleModelTypeChange}
                                         valueDescription={this.state.ModelType}
@@ -432,7 +432,7 @@ class OverheadListing extends Component {
                                         placeholder={'VendorName'}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleVendorName}
                                         valueDescription={this.state.vendorName}

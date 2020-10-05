@@ -6,6 +6,11 @@ import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
+import { BOP } from '../../../../config/constants';
+import { checkPermission } from '../../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { loggedInUserId } from '../../../../helper/auth';
+import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 
 class BOPMaster extends Component {
     constructor(props) {
@@ -15,7 +20,35 @@ class BOPMaster extends Component {
             isBOPDomesticForm: false,
             isBOPImportForm: false,
             data: {},
+
+            ViewAccessibility: false,
+            AddAccessibility: false,
+            EditAccessibility: false,
+            DeleteAccessibility: false,
+            BulkUploadAccessibility: false,
         }
+    }
+
+    componentDidMount() {
+        let ModuleId = reactLocalStorage.get('ModuleId');
+        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+            const { leftMenuData } = this.props;
+            if (leftMenuData !== undefined) {
+                let Data = leftMenuData;
+                const accessData = Data && Data.find(el => el.PageName === BOP)
+                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+                if (permmisionData !== undefined) {
+                    this.setState({
+                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    })
+                }
+            }
+        })
     }
 
     /**
@@ -122,6 +155,10 @@ class BOPMaster extends Component {
                                     <BOPDomesticListing
                                         displayForm={this.displayDomesticForm}
                                         getDetails={this.getDetails}
+                                        AddAccessibility={this.state.AddAccessibility}
+                                        EditAccessibility={this.state.EditAccessibility}
+                                        DeleteAccessibility={this.state.DeleteAccessibility}
+                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                     />
                                 </TabPane>}
 
@@ -130,6 +167,10 @@ class BOPMaster extends Component {
                                     <BOPImportListing
                                         displayForm={this.displayImportForm}
                                         getDetails={this.getImportDetails}
+                                        AddAccessibility={this.state.AddAccessibility}
+                                        EditAccessibility={this.state.EditAccessibility}
+                                        DeleteAccessibility={this.state.DeleteAccessibility}
+                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                     />
                                 </TabPane>}
                         </TabContent>
@@ -147,14 +188,16 @@ class BOPMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts }) {
-    const { BOPListing, loading } = boughtOutparts;;
-    return { BOPListing, loading }
+function mapStateToProps({ boughtOutparts, auth }) {
+    const { BOPListing, loading } = boughtOutparts;
+    const { leftMenuData } = auth;
+    return { BOPListing, leftMenuData, loading }
 }
 
 
-export default connect(
-    mapStateToProps, {
-}
+export default connect(mapStateToProps,
+    {
+        getLeftMenu,
+    }
 )(BOPMaster);
 
