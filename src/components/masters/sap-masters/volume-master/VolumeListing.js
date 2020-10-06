@@ -424,6 +424,7 @@ class VolumeListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Year-'}
+                                        isClearable={false}
                                         options={this.renderListing('year')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.year == null || this.state.year.length === 0) ? [required] : []}
@@ -440,6 +441,7 @@ class VolumeListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Month-'}
+                                        isClearable={false}
                                         options={this.renderListing('month')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.month == null || this.state.month.length === 0) ? [required] : []}
@@ -456,6 +458,7 @@ class VolumeListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Vendors-'}
+                                        isClearable={false}
                                         options={this.renderListing('VendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
@@ -472,6 +475,7 @@ class VolumeListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Plant-'}
+                                        isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}

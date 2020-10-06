@@ -347,6 +347,7 @@ class BOPImportListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Costing Head-'}
+                                        isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
@@ -362,6 +363,7 @@ class BOPImportListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Category-'}
+                                        isClearable={false}
                                         options={this.renderListing('BOPCategory')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
@@ -377,6 +379,7 @@ class BOPImportListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Vendor-'}
+                                        isClearable={false}
                                         options={this.renderListing('vendor')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
@@ -392,6 +395,7 @@ class BOPImportListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Plant-'}
+                                        isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}

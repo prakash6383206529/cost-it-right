@@ -313,17 +313,17 @@ class PowerListing extends Component {
     };
 
     /**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         this.getDataList()
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             StateName: [],
@@ -403,6 +403,7 @@ class PowerListing extends Component {
                                                 label={''}
                                                 component={searchableSelect}
                                                 placeholder={'--- Select State ---'}
+                                                isClearable={false}
                                                 options={this.renderListing('state')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
@@ -419,6 +420,7 @@ class PowerListing extends Component {
                                                 label={''}
                                                 component={searchableSelect}
                                                 placeholder={'--Select Plant'}
+                                                isClearable={false}
                                                 options={this.renderListing('plant')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
@@ -437,6 +439,7 @@ class PowerListing extends Component {
                                                 label={''}
                                                 component={searchableSelect}
                                                 placeholder={'--Vendor Name--'}
+                                                isClearable={false}
                                                 options={this.renderListing('VendorNameList')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
@@ -454,6 +457,7 @@ class PowerListing extends Component {
                                                 label={''}
                                                 component={searchableSelect}
                                                 placeholder={'--Vendor Plant--'}
+                                                isClearable={false}
                                                 options={this.renderListing('VendorPlant')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 validate={(this.state.vendorPlant == null || this.state.vendorPlant.length == 0) ? [required] : []}

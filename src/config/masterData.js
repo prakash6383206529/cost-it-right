@@ -1075,6 +1075,61 @@ export const PartComponentTempData = [
     }
 ]
 
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const ZBCInterestRate = [
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'ICCApplicability', value: 'ICCApplicability', },
+    { label: 'ICCPercent', value: 'ICCPercent', },
+    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', },
+    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', },
+    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+]
+
+export const ZBCInterestRateTempData = [
+    {
+        'VendorName': 'Vendor Name',
+        'VendorCode': 'Vendor Code',
+        'ICCApplicability': 'ICCApplicability',
+        'ICCPercent': 0,
+        'PaymentTermApplicability': 'Payment Term Applicability',
+        'PaymentTermPercent': 0,
+        'RepaymentPeriod': 0,
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const VBCInterestRate = [
+    { label: 'VendorName', value: 'VendorName', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'ICCApplicability', value: 'ICCApplicability', },
+    { label: 'ICCPercent', value: 'ICCPercent', },
+    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', },
+    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', },
+    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+]
+
+export const VBCInterestRateTempData = [
+    {
+        'VendorName': 'VendorName',
+        'VendorCode': 'VendorCode',
+        'ICCApplicability': 'ICCApplicability',
+        'ICCPercent': 'ICCPercent',
+        'PaymentTermApplicability': 'PaymentTermApplicability',
+        'PaymentTermPercent': 'PaymentTermPercent',
+        'RepaymentPeriod': 'RepaymentPeriod',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+    }
+]
+
 export const EAccessType = [
     { label: '--Select EAccess Type--', value: '', },
     { label: 'ReadOnly', value: 0, },

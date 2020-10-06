@@ -11,9 +11,6 @@ export const MESSAGES = {
   PART_DELETE_SUCCESS: 'Part has been deleted',
   UPDATE_PART_SUCESS: 'Part updated successfully',
   MESSAGE_SENT_EXCEPT_USER: 'Message has been sent except the user',
-  UOM_ADD_SUCCESS: 'Unit Of measurement added successfully',
-  UPDATE_UOM_SUCESS: 'Unit Of measurement updated successfully',
-  DELETE_UOM_SUCCESS: 'Unit Of measurement deleted successfully',
   CONFIRM_DELETE: 'Are you sure you want to delete this part?',
 
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
@@ -25,6 +22,9 @@ export const MESSAGES = {
   UPDATE_BOM_SUCCESS: 'Assembly Part updated successfully',
 
   //UOM
+  UOM_ADD_SUCCESS: 'Unit Of measurement added successfully',
+  UPDATE_UOM_SUCESS: 'Unit Of measurement updated successfully',
+  DELETE_UOM_SUCCESS: 'Unit Of measurement deleted successfully',
   UOM_ACTIVE_SUCCESSFULLY: 'UOM has been activated successfully',
   UOM_INACTIVE_SUCCESSFULLY: 'UOM has been de-activated successfully',
 
@@ -165,9 +165,12 @@ export const MESSAGES = {
   POWER_DETAIL_DELETE_ALERT: 'Are you sure you want to delete this power detail?',
   DELETE_POWER_SUCCESS: 'Power detail deleted successfully',
 
-  INTEREST_RATE_ADDED_SUCCESS: 'Suppiler interest rate added successfully',
-  DELETE_INTEREST_RATE_SUCCESS: 'Supplier interest rate deleted successfully',
-  UPDATE_INTEREST_RATE_SUCESS: 'Supplier interest rate updated successfully',
+  //INTEREST
+  INTEREST_RATE_ADDED_SUCCESS: 'Interest rate added successfully',
+  UPDATE_INTEREST_RATE_SUCESS: 'Interest rate updated successfully',
+  DELETE_INTEREST_RATE_SUCCESS: 'Interest rate deleted successfully',
+  INTEREST_DELETE_ALERT: 'Are you sure you want to delete this Interest Rate?',
+
   ADD_PART_WITH_SUPPLIER_SUCCESS: 'Supplier has been added successfully',
   NEW_COSTING_CREATE_SUCCESS: 'New sheetmetal costing created successfully',
   WEIGHT_ADD_SUCCESS: 'Weight specification added successfully',
@@ -293,5 +296,11 @@ export const MESSAGES = {
   EXCHANGE_UPDATE_SUCCESS: 'Exchange has been updated successfully',
   EXCHANGE_DELETE_ALERT: 'Are you sure you want to delete this Exchange Rate?',
   DELETE_EXCHANGE_SUCCESS: 'Exchange Rate has been deleted successfully',
+
+  //TAX MASTER
+  TAX_ADD_SUCCESS: 'Tax Details added successfully',
+  TAX_UPDATE_SUCCESS: 'Tax Details has been updated successfully',
+  TAX_DELETE_ALERT: 'Are you sure you want to delete this Tax Details?',
+  DELETE_TAX_SUCCESS: 'Tax Details Rate has been deleted successfully',
 };
 

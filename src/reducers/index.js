@@ -28,6 +28,7 @@ import ReasonReducer from './master/ReasonMaster';
 import VolumeReducer from './master/Volume';
 import ClientReducer from './master/Client';
 import ExchangeRateReducer from './master/ExchangeRate';
+import TaxReducer from './master/Tax';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -67,6 +68,7 @@ const allReducers = combineReducers({
    volume: VolumeReducer,
    client: ClientReducer,
    exchangeRate: ExchangeRateReducer,
+   tax: TaxReducer,
 });
 
 export default rootReducer;

@@ -1,61 +1,198 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required } from "../../../../helper/validation";
-import { renderText, renderSelectField, searchableSelect } from "../../../layout/FormInputs";
-import { createInterestRateAPI, getInterestRateComboData } from '../../../../actions/master/InterestRateMaster';
-//import { createOtherOperationsAPI } from '../../../../actions/master/OtherOperation';
+import { Field, reduxForm, } from "redux-form";
+import { Row, Col, } from 'reactstrap';
+import { required, number, } from "../../../../helper/validation";
+import { renderText, searchableSelect, } from "../../../layout/FormInputs";
+import {
+    updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList,
+    getICCAppliSelectList, getInterestRateData,
+} from '../../../../actions/master/InterestRateMaster';
+import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { loggedInUserId } from "../../../../helper/auth";
+import { loggedInUserId, userDetails } from "../../../../helper/auth";
+import Switch from "react-switch";
+import $ from 'jquery';
+import moment from 'moment';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 class AddInterestRate extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            processOperationValue: [],
-            supplierValue: [],
-            overHeadValue: [],
-            profitTypesValue: [],
-            typeOfListing: [],
-            technologyValue: '',
-            TechnologyId: '',
-            PlantId: '',
-            modelId: ''
+            IsVendor: false,
+
+            vendorName: [],
+            ICCApplicability: [],
+            PaymentTermsApplicability: [],
+
+            isEditFlag: false,
+            InterestRateId: '',
+            effectiveDate: '',
         }
     }
 
     /**
     * @method componentWillMount
-    * @description called before rendering the component
+    * @description called before render the component
     */
     UNSAFE_componentWillMount() {
-        this.props.getInterestRateComboData(() => { });
+        this.props.getVendorListByVendorType(true, () => { })
+
     }
 
     /**
-    * @method componentDidMount
-    * @description called after render the component
-    */
+     * @method componentDidMount
+     * @description called after render the component
+     */
     componentDidMount() {
-        const { uomId, isEditFlag } = this.props;
-
-        // if (isEditFlag) {
-        //     this.setState({ isEditFlag }, () => {
-        //         this.props.getOneUnitOfMeasurementAPI(uomId, true, res => { })
-        //     })
-        // } else {
-        //     this.props.getOneUnitOfMeasurementAPI('', false, res => { })
-        // }
+        this.props.getICCAppliSelectList(() => { })
+        this.props.getPaymentTermsAppliSelectList(() => { })
+        this.getDetail()
     }
 
     /**
-    * @method toggleModel
-    * @description Used to cancel modal
+    * @method renderListing
+    * @description Used show listing of unit of measurement
     */
-    toggleModel = () => {
-        this.props.onCancel();
+    renderListing = (label) => {
+        const { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
+        const temp = [];
+        if (label === 'VendorNameList') {
+            vendorListByVendorType && vendorListByVendorType.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'ICC') {
+            iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+        if (label === 'PaymentTerms') {
+            paymentTermsSelectList && paymentTermsSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+    }
+
+    /**
+    * @method onPressVendor
+    * @description Used for Vendor checked
+    */
+    onPressVendor = () => {
+        this.setState({ IsVendor: !this.state.IsVendor, });
+    }
+
+    /**
+    * @method handleVendorName
+    * @description called
+    */
+    handleVendorName = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ vendorName: newValue, });
+        } else {
+            this.setState({ vendorName: [], })
+        }
+    };
+
+    /**
+    * @method handleICCApplicability
+    * @description called
+    */
+    handleICCApplicability = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ ICCApplicability: newValue, });
+        } else {
+            this.setState({ ICCApplicability: [], })
+        }
+    };
+
+    /**
+    * @method handlePaymentApplicability
+    * @description called
+    */
+    handlePaymentApplicability = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ PaymentTermsApplicability: newValue, });
+        } else {
+            this.setState({ PaymentTermsApplicability: [], })
+        }
+    };
+
+
+    /**
+    * @method handleChange
+    * @description Handle Effective Date
+    */
+    handleEffectiveDateChange = (date) => {
+        this.setState({ effectiveDate: date, });
+    };
+
+    /**
+    * @method getDetail
+    * @description used to get user detail
+    */
+    getDetail = () => {
+        const { data } = this.props;
+        if (data && data.isEditFlag) {
+            this.setState({
+                isLoader: true,
+                isEditFlag: true,
+                InterestRateId: data.ID,
+            })
+            $('html, body').animate({ scrollTop: 0 }, 'slow');
+            this.props.getInterestRateData(data.ID, (res) => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+
+                    setTimeout(() => {
+                        const { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
+
+                        const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorId)
+                        const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
+                        const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
+
+                        this.setState({
+                            isEditFlag: true,
+                            isLoader: false,
+                            IsVendor: Data.IsVendor,
+                            vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                            ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
+                            PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
+                            effectiveDate: moment(Data.EffectiveDate)._d
+                        })
+                    }, 500)
+
+                }
+            })
+        } else {
+            this.props.getInterestRateData('', () => { })
+        }
+    }
+
+
+    /**
+    * @method cancel
+    * @description used to Reset form
+    */
+    cancel = () => {
+        const { reset } = this.props;
+        reset();
+        this.setState({
+            vendorName: [],
+            isEditFlag: false,
+        })
+        this.props.getInterestRateData('', () => { })
+        this.props.hideForm()
     }
 
     /**
@@ -63,127 +200,59 @@ class AddInterestRate extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { overHeadValue, profitTypesValue, supplierValue, modelId, TechnologyId, PlantId } = this.state;
-        const { Technologies } = this.props;
+        const { IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate } = this.state;
+        const userDetail = userDetails()
 
-        let loginUserId = loggedInUserId();
+        /** Update existing detail of supplier master **/
+        if (this.state.isEditFlag) {
 
-        //values.OtherOperationName = processOperationValue.label;
-        //"OperationCode": "string",
-        //"Description": "string",
-        values.TechnologyId = TechnologyId != '' ? TechnologyId : Technologies[0].Value;;
-        values.SupplierId = supplierValue.value;
-        values.OverheadTypeId = overHeadValue.value;
-        values.ProfitTypeId = profitTypesValue.value;
-        //values.OperationId = processOperationValue.value;
-        //values.UnitOfMeasurementId = uom;
-        values.PlantId = PlantId;
-        values.ModelTypeId = modelId;
-        values.CreatedBy = loginUserId;
+            let updateData = {
+                VendorInterestRateId: InterestRateId,
+                ModifiedBy: loggedInUserId(),
+                VendorName: IsVendor ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName,
+                ICCApplicability: ICCApplicability.value,
+                PaymentTermApplicability: PaymentTermsApplicability.value,
+                Isvendor: IsVendor,
+                VendorIdRef: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+                ICCPercent: values.ICCPercent,
+                PaymentTermPercent: values.PaymentTermPercent,
+                RepaymentPeriod: values.RepaymentPeriod,
+                EffectiveDate: effectiveDate,
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId(),
+            }
 
-        if (this.props.isEditFlag) {
+            this.props.updateInterestRate(updateData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                    this.cancel()
+                }
+            });
 
-        } else {
-            this.props.createInterestRateAPI(values, (res) => {
-                if (res.data.Result === true) {
-                    toastr.success(MESSAGES.OVERHEAD_PROFIT_ADDED_SUCCESS);
-                    { this.toggleModel() }
-                } else {
-                    toastr.error(res.data.message);
+        } else {/** Add new detail for creating operation master **/
+
+            let formData = {
+                Isvendor: IsVendor,
+                VendorIdRef: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+                ICCApplicability: ICCApplicability.label,
+                ICCPercent: values.ICCPercent,
+                PaymentTermApplicability: PaymentTermsApplicability.label,
+                PaymentTermPercent: values.PaymentTermPercent,
+                RepaymentPeriod: values.RepaymentPeriod,
+                EffectiveDate: effectiveDate,
+                IsActive: true,
+                CreatedDate: '',
+                CreatedBy: loggedInUserId()
+            }
+
+            this.props.createInterestRate(formData, (res) => {
+                if (res.data.Result) {
+                    toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
+                    this.cancel();
                 }
             });
         }
-    }
-
-    processOperationHandler = (newValue, actionMeta) => {
-        this.setState({ processOperationValue: newValue });
-    };
-
-    technologyHandler = (e) => {
-        this.setState({ TechnologyId: e.target.value });
-    }
-
-    handleChangeSupplier = (newValue, actionMeta) => {
-        this.setState({ supplierValue: newValue });
-    };
-
-    handleChangeOverheadType = (newValue, actionMeta) => {
-        this.setState({ overHeadValue: newValue });
-    };
-
-    handleChangeProfitTypes = (newValue, actionMeta) => {
-        this.setState({ profitTypesValue: newValue });
-    };
-
-    uomHandler = (e) => {
-        this.setState({
-            uom: e.target.value
-        })
-    }
-
-    plantHandler = (e) => {
-        this.setState({
-            PlantId: e.target.value
-        })
-    }
-
-    modelHandler = (e) => {
-        this.setState({
-            modelId: e.target.value
-        })
-    }
-
-    /**
-    * @method renderTypeOfListing
-    * @description Used show listing of types
-    */
-    renderTypeOfListing = (label) => {
-        const { ModelTypes, ProfitTypes, OverheadTypes, Plants, Suppliers, Technologies, UnitOfMeasurements } = this.props;
-        const temp = [];
-        //const tempSupplier = [];
-        if (label == 'technology') {
-            Technologies && Technologies.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'modelTypes') {
-            ModelTypes && ModelTypes.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'profitTypes') {
-            ProfitTypes && ProfitTypes.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'overheadTypes') {
-            OverheadTypes && OverheadTypes.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'supplier') {
-            Suppliers && Suppliers.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'uom') {
-            UnitOfMeasurements && UnitOfMeasurements.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-        if (label == 'plant') {
-            Plants && Plants.map(item =>
-                temp.push({ label: item.Text, value: item.Value })
-            );
-            return temp;
-        }
-
 
     }
 
@@ -192,211 +261,212 @@ class AddInterestRate extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
-
+        const { handleSubmit, } = this.props;
+        const { isEditFlag, } = this.state;
         return (
-            <Container className="top-margin">
-                <Modal size={'lg'} isOpen={this.props.isOpen} toggle={this.toggleModel} className={this.props.className}>
-                    <ModalHeader className="mdl-filter-text" toggle={this.toggleModel}>{isEditFlag ? 'Update Interest Rate' : 'Add Interest Rate'}</ModalHeader>
-                    <ModalBody>
-                        <Row>
-                            <Container>
+            <div>
+                {/* {isLoader && <Loader />} */}
+                <div className="login-container signup-form">
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="shadow-lgg login-formg">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="form-heading mb-0">
+                                            <h2>{this.state.isEditFlag ? 'Update Interest Rate' : 'Add Interest Rate'}</h2>
+                                        </div>
+                                    </div>
+                                </div>
                                 <form
                                     noValidate
                                     className="form"
                                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 >
                                     <Row>
-                                        {/* <Col md="6">
+                                        <Col md="4" className="switch mb15">
+                                            <label className="switch-level">
+                                                <div className={'left-title'}>Zero Based</div>
+                                                <Switch
+                                                    onChange={this.onPressVendor}
+                                                    checked={this.state.IsVendor}
+                                                    id="normal-switch"
+                                                    disabled={isEditFlag ? true : false}
+                                                    background="#4DC771"
+                                                    onColor="#4DC771"
+                                                    onHandleColor="#ffffff"
+                                                    offColor="#4DC771"
+                                                    uncheckedIcon={false}
+                                                    checkedIcon={false}
+                                                    height={20}
+                                                    width={46}
+                                                />
+                                                <div className={'right-title'}>Vendor Based</div>
+                                            </label>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        {this.state.IsVendor &&
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="VendorName"
+                                                            type="text"
+                                                            label="Vendor Name"
+                                                            component={searchableSelect}
+                                                            placeholder={'--select--'}
+                                                            options={this.renderListing('VendorNameList')}
+                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                            validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleVendorName}
+                                                            valueDescription={this.state.vendorName}
+                                                            disabled={isEditFlag ? true : false}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Col>}
+                                    </Row>
+
+                                    <Row>
+                                        <Col md="12">
+                                            <div className="left-border">
+                                                {'ICC:'}
+                                            </div>
+                                        </Col>
+                                        <Col md="3">
                                             <Field
-                                                label={`Technology`}
-                                                name={"TechnologyId"}
+                                                name="ICCApplicability"
                                                 type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                //required={true}
-                                                className=" withoutBorder custom-select"
-                                                options={this.renderTypeOfListing('technology')}
-                                                //options={technologyOptions}
-                                                onChange={this.technologyHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                            />
-                                        </Col> */}
-                                        <Col md="6">
-                                            <Field
-                                                id="supplier"
-                                                name="supplier"
-                                                type="text"
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                label="Supplier"
+                                                label="ICC Applicability"
                                                 component={searchableSelect}
-                                                //validate={[required, maxLength50]}
-                                                options={this.renderTypeOfListing('supplier')}
-                                                //options={supplierOptions}
-                                                required={true}
-                                                handleChangeDescription={this.handleChangeSupplier}
-                                                valueDescription={this.state.supplierValue}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    {/* <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label="Supplier Code"
-                                                name={"SupplierCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                id="OverheadTypeId"
-                                                name="OverheadTypeId"
-                                                type="text"
+                                                placeholder={'--select--'}
+                                                options={this.renderListing('ICC')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                label="Overhead Type"
-                                                component={searchableSelect}
-                                                //validate={[required, maxLength50]}
-                                                options={this.renderTypeOfListing('overheadTypes')}
-                                                //options={supplierOptions}
+                                                validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
                                                 required={true}
-                                                handleChangeDescription={this.handleChangeOverheadType}
-                                                valueDescription={this.state.overHeadValue}
-                                            />
-                                        </Col>
-                                    </Row> */}
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label="Overhead (%)"
-                                                name={"OverheadPercentage"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
+                                                handleChangeDescription={this.handleICCApplicability}
+                                                valueDescription={this.state.ICCApplicability}
                                                 disabled={false}
                                             />
                                         </Col>
-                                        <Col md="6">
+                                        <Col md="3">
                                             <Field
-                                                id="ProfitTypeId"
-                                                name="ProfitTypeId"
+                                                label={`Annual ICC (%)`}
+                                                name={"ICCPercent"}
                                                 type="text"
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                label="Profit Type"
-                                                component={searchableSelect}
-                                                //validate={[required, maxLength50]}
-                                                options={this.renderTypeOfListing('profitTypes')}
-                                                //options={supplierOptions}
-                                                required={true}
-                                                handleChangeDescription={this.handleChangeProfitTypes}
-                                                valueDescription={this.state.profitTypesValue}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md="6">
-                                            <Field
-                                                label="Profit (%)"
-                                                name={"ProfitPercentage"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
+                                                placeholder={'Enter'}
+                                                validate={[required, number]}
                                                 component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Overhead Machining(CC) (%)"
-                                                name={"OverheadMachiningCCPercentage"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <Field
-                                                label="Profit Machining(CC) (%) "
-                                                name={"ProfitMachiningCCPercentage"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=" withoutBorder"
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col>
-                                            <Field
-                                                label={`Plant`}
-                                                name={"PlantId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
                                                 required={true}
-                                                maxLength={26}
-                                                options={this.renderTypeOfListing('plant')}
-                                                onChange={this.plantHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <Field
-                                                label={`Model Type`}
-                                                name={"ModelTypeId"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                required={true}
-                                                maxLength={26}
-                                                options={this.renderTypeOfListing('modelTypes')}
-                                                onChange={this.modelHandler}
-                                                optionValue={'value'}
-                                                optionLabel={'label'}
-                                                component={renderSelectField}
-                                                className=" withoutBorder custom-select"
+                                                disabled={false}
+                                                className=" "
+                                                customClassName=" withBorder"
                                             />
                                         </Col>
                                     </Row>
 
+                                    <Row>
+                                        <Col md="12">
+                                            <div className="left-border">
+                                                {'Payment Terms:'}
+                                            </div>
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                name="PaymentTermsApplicability"
+                                                type="text"
+                                                label="Payment Terms Applicability"
+                                                component={searchableSelect}
+                                                placeholder={'--select--'}
+                                                options={this.renderListing('PaymentTerms')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handlePaymentApplicability}
+                                                valueDescription={this.state.PaymentTermsApplicability}
+                                                disabled={false}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`Repayment Period (Days)`}
+                                                name={"RepaymentPeriod"}
+                                                type="text"
+                                                placeholder={'Enter'}
+                                                validate={[required, number]}
+                                                component={renderText}
+                                                required={true}
+                                                disabled={false}
+                                                className=" "
+                                                customClassName=" withBorder"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <Field
+                                                label={`Payment Term (%)`}
+                                                name={"PaymentTermPercent"}
+                                                type="text"
+                                                placeholder={'Enter'}
+                                                validate={[required, number]}
+                                                component={renderText}
+                                                required={true}
+                                                disabled={false}
+                                                className=" "
+                                                customClassName=" withBorder"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <div className="form-group">
+                                                <label>
+                                                    Effective Date
+                                                    {/* <span className="asterisk-required">*</span> */}
+                                                </label>
+                                                <div className="inputbox date-section">
+                                                    <DatePicker
+                                                        name="EffectiveDate"
+                                                        selected={this.state.effectiveDate}
+                                                        onChange={this.handleEffectiveDateChange}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dateFormat="dd/MM/yyyy"
+                                                        //maxDate={new Date()}
+                                                        dropdownMode="select"
+                                                        placeholderText="Select date"
+                                                        className="withBorder"
+                                                        autoComplete={'off'}
+                                                        disabledKeyboardNavigation
+                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                        disabled={isEditFlag ? true : false}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    </Row>
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-center">
-                                            <button type="submit" className="btn dark-pinkbtn" >
+                                        <div className="col-sm-12 text-right bluefooter-butn">
+                                            <button
+                                                type={'button'}
+                                                className="reset mr15 cancel-btn"
+                                                onClick={this.cancel} >
+                                                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="submit-button mr5 save-btn" >
+                                                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                                 {isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </Row>
                                 </form>
-                            </Container>
-                        </Row>
-                    </ModalBody>
-                </Modal>
-            </Container >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         );
     }
 }
@@ -406,12 +476,24 @@ class AddInterestRate extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ interestRate }) {
-    if (interestRate && interestRate.interestRateComboData) {
-        const { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, UnitOfMeasurements } = interestRate.interestRateComboData;
-        let initialValues = {};
+function mapStateToProps(state) {
+    const { interestRate, material, } = state;
 
-        return { Plants, Suppliers, ModelTypes, ProfitTypes, OverheadTypes, Technologies, initialValues, UnitOfMeasurements };
+    const { vendorListByVendorType } = material;
+    const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateData } = interestRate;
+
+    let initialValues = {};
+    if (interestRateData && interestRateData !== undefined) {
+        initialValues = {
+            ICCPercent: interestRateData.ICCPercent,
+            RepaymentPeriod: interestRateData.RepaymentPeriod,
+            PaymentTermPercent: interestRateData.PaymentTermPercent,
+
+        }
+    }
+
+    return {
+        paymentTermsSelectList, iccApplicabilitySelectList, vendorListByVendorType, interestRateData, initialValues
     }
 }
 
@@ -422,9 +504,14 @@ function mapStateToProps({ interestRate }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getInterestRateComboData,
-    createInterestRateAPI
+    updateInterestRate,
+    createInterestRate,
+    getInterestRateData,
+    getPaymentTermsAppliSelectList,
+    getICCAppliSelectList,
+    getVendorListByVendorType,
 })(reduxForm({
-    form: 'addInterestRate',
+    form: 'AddInterestRate',
     enableReinitialize: true,
 })(AddInterestRate));
+

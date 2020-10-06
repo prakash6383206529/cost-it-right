@@ -1,41 +1,35 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../../../../actions/master/Labour';
-import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../../../../actions/master/Fuel';
-import { getMachineTypeSelectList, } from '../../../../actions/master/MachineMaster';
+import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../../../../actions/master/InterestRateMaster';
+import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import Switch from "react-switch";
-import AddLabour from './AddLabour';
+import moment from 'moment';
+import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../../massUpload/BulkUpload';
-import { LABOUR } from '../../../../config/constants';
+import { INTEREST_RATE } from '../../../../config/constants';
 import { checkPermission } from '../../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
-import moment from 'moment';
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
-
-class LabourListing extends Component {
+class InterestRateListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
             tableData: [],
 
-            EmploymentTerms: [],
             vendorName: [],
-            stateName: [],
+            ICCApplicability: [],
+            PaymentTermsApplicability: [],
 
             data: { isEditFlag: false, ID: '' },
             toggleForm: false,
@@ -56,7 +50,7 @@ class LabourListing extends Component {
             const { leftMenuData } = this.props;
             if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === LABOUR)
+                const accessData = Data && Data.find(el => el.PageName === INTEREST_RATE)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
                 if (permmisionData !== undefined) {
@@ -71,34 +65,30 @@ class LabourListing extends Component {
             }
         })
 
-        this.props.getZBCPlantList(() => { })
-        this.props.getStateSelectList(() => { })
-        this.props.getMachineTypeSelectList(() => { })
+        this.props.getVendorListByVendorType(true, () => { })
+        this.props.getICCAppliSelectList(() => { })
+        this.props.getPaymentTermsAppliSelectList(() => { })
         this.getTableListData()
     }
 
     /**
     * @method getTableListData
-    * @description Get Data List
+    * @description Get list data
     */
-    getTableListData = (employment_terms = '', state = '', plant = '', labour_type = '', machine_type = '') => {
+    getTableListData = (vendor = '', icc_applicability = '', payment_term_applicability = '') => {
         let filterData = {
-            employment_terms: employment_terms,
-            state: state,
-            plant: plant,
-            labour_type: labour_type,
-            machine_type: machine_type,
+            vendor: vendor,
+            icc_applicability: icc_applicability,
+            payment_term_applicability: payment_term_applicability,
         }
-        this.props.getLabourDataList(filterData, res => {
-            if (res.status == 204 && res.data == '') {
+        this.props.getInterestRateDataList(filterData, res => {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
+                this.setState({ tableData: Data, })
             } else {
-
+                this.setState({ tableData: [], })
             }
         });
     }
@@ -108,43 +98,33 @@ class LabourListing extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { plantSelectList, stateSelectList, machineTypeSelectList, labourTypeByPlantSelectList } = this.props;
+        const { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
         const temp = [];
 
-        if (label === 'EmploymentTerms') {
+        if (label === 'costingHead') {
             let tempObj = [
-                { label: 'Employed', value: 'Employed' },
-                { label: 'Contractual', value: 'Contractual' },
+                { label: 'ZBC', value: 'ZBC' },
+                { label: 'VBC', value: 'VBC' },
             ]
             return tempObj;
         }
 
-        if (label === 'state') {
-            stateSelectList && stateSelectList.map(item => {
+        if (label === 'VendorList') {
+            vendorListByVendorType && vendorListByVendorType.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
-
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map(item => {
+        if (label === 'ICC') {
+            iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
-
-        if (label === 'MachineTypeList') {
-            machineTypeSelectList && machineTypeSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-        if (label === 'labourList') {
-            labourTypeByPlantSelectList && labourTypeByPlantSelectList.map(item => {
+        if (label === 'PaymentTerms') {
+            paymentTermsSelectList && paymentTermsSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -174,7 +154,7 @@ class LabourListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(MESSAGES.LABOUR_DELETE_ALERT, toastrConfirmOptions);
+        return toastr.confirm(MESSAGES.INTEREST_DELETE_ALERT, toastrConfirmOptions);
     }
 
     /**
@@ -182,12 +162,20 @@ class LabourListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteLabour(ID, (res) => {
+        this.props.deleteInterestRate(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_LABOUR_SUCCESS);
-                this.getTableListData(null, null, null, null)
+                toastr.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
+                this.getTableListData()
             }
         });
+    }
+
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -199,7 +187,7 @@ class LabourListing extends Component {
         return (
             <>
                 {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(row.LabourDetailsId)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }
@@ -223,73 +211,40 @@ class LabourListing extends Component {
     }
 
     /**
-    * @method handleHeadChange
+    * @method handleICCApplicability
     * @description called
     */
-    handleHeadChange = (newValue, actionMeta) => {
+    handleICCApplicability = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ EmploymentTerms: newValue, });
+            this.setState({ ICCApplicability: newValue, });
         } else {
-            this.setState({ EmploymentTerms: '', })
-        }
-    };
-
-
-    /**
-    * @method handleState
-    * @description  STATE FILTER
-    */
-    handleState = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ StateName: newValue }, () => {
-                const { StateName } = this.state;
-                this.props.getPlantListByState(StateName.value, () => { })
-            });
-        } else {
-            this.setState({ StateName: [], });
-            this.props.getZBCPlantList(() => { })
-        }
-    }
-
-    /**
-        * @method handlePlant
-        * @description  PLANT FILTER
-        */
-    handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ plant: newValue }, () => {
-                const { plant } = this.state;
-                this.props.getLabourTypeByPlantSelectList(plant.value, () => { })
-            });
-        } else {
-            this.setState({ plant: [], });
-        }
-    }
-
-    /**
-    * @method labourHandler
-    * @description called
-    */
-    labourHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ labourType: newValue });
-        } else {
-            this.setState({ labourType: [] })
+            this.setState({ ICCApplicability: [], })
         }
     };
 
     /**
-    * @method handleMachineType
+    * @method handlePaymentApplicability
     * @description called
     */
-    handleMachineType = (newValue, actionMeta) => {
+    handlePaymentApplicability = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ machineType: newValue });
+            this.setState({ PaymentTermsApplicability: newValue, });
         } else {
-            this.setState({ machineType: [], })
+            this.setState({ PaymentTermsApplicability: [], })
         }
     };
 
+    /**
+    * @method handleVendorName
+    * @description called
+    */
+    handleVendorName = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ vendorName: newValue });
+        } else {
+            this.setState({ vendorName: [] })
+        }
+    };
 
     /**
     * @method statusButtonFormatter
@@ -299,6 +254,7 @@ class LabourListing extends Component {
         return (
             <>
                 <label htmlFor="normal-switch">
+                    {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
                         checked={cell}
@@ -313,6 +269,7 @@ class LabourListing extends Component {
             </>
         )
     }
+
 
     /**
     * @method indexFormatter
@@ -334,28 +291,20 @@ class LabourListing extends Component {
         return <>Sr. <br />No. </>
     }
 
+    renderCostingHead = () => {
+        return <>Costing Head </>
+    }
+
+    renderVendorName = () => {
+        return <>Vendor <br />Name </>
+    }
+
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Contractual' : 'Employed';
-    }
-
-    /**
-    * @method dashFormatter
-    * @description Renders Costing head
-    */
-    dashFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell !== 'NA' ? cell : '-';
-    }
-
-    /**
-    * @method effectiveDateFormatter
-    * @description Renders buttons
-    */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell ? 'Vendor Based' : 'Zero Based';
     }
 
     onExportToCSV = (row) => {
@@ -376,13 +325,13 @@ class LabourListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
-        const { EmploymentTerms, StateName, plant, labourType, machineType } = this.state;
-        const ETerms = EmploymentTerms ? EmploymentTerms.value : '';
-        const State = StateName ? StateName.value : '';
-        const Plant = plant ? plant.value : '';
-        const labour = labourType ? labourType.value : '';
-        const machine = machineType ? machineType.value : '';
-        this.getTableListData(ETerms, State, Plant, labour, machine)
+        const { vendorName, ICCApplicability, PaymentTermsApplicability, } = this.state;
+
+        const vendorTemp = vendorName ? vendorName.value : '';
+        const iccTemp = ICCApplicability ? ICCApplicability.value : '';
+        const paymentTemp = PaymentTermsApplicability ? PaymentTermsApplicability.value : '';
+
+        this.getTableListData(vendorTemp, iccTemp, paymentTemp)
     }
 
     /**
@@ -391,31 +340,18 @@ class LabourListing extends Component {
     */
     resetFilter = () => {
         this.setState({
-            EmploymentTerms: [],
-            StateName: [],
-            plant: [],
-            labourType: [],
-            machineType: [],
+            vendorName: [],
+            ICCApplicability: [],
+            PaymentTermsApplicability: [],
         }, () => {
-            this.props.getZBCPlantList(() => { })
-            this.props.getStateSelectList(() => { })
-            this.props.getMachineTypeSelectList(() => { })
             this.getTableListData()
         })
     }
 
-    /**
-    * @method formToggle
-    * @description OPEN ADD FORM
-    */
     formToggle = () => {
         this.setState({ toggleForm: true })
     }
 
-    /**
-    * @method hideForm
-    * @description HIDE ADD FORM
-    */
     hideForm = () => {
         this.setState({
             toggleForm: false,
@@ -425,21 +361,13 @@ class LabourListing extends Component {
         })
     }
 
-    /**
-    * @method bulkToggle
-    * @description OPEN BULK UPLOAD DRAWER
-    */
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
 
-    /**
-    * @method closeBulkUploadDrawer
-    * @description CLOSED BULK UPLOAD DRAWER
-    */
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData(null, null, null, null)
+            this.getTableListData()
         })
     }
 
@@ -462,7 +390,7 @@ class LabourListing extends Component {
 
         if (toggleForm) {
             return (
-                <AddLabour
+                <AddInterestRate
                     hideForm={this.hideForm}
                     data={data}
                 />
@@ -482,7 +410,7 @@ class LabourListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <div class="col-sm-4"><h3>Labour</h3></div>
+                    <div class="col-sm-4"><h3>Interest Rate</h3></div>
                     <hr />
                     <Row className="pt-30">
                         <Col md="9" className="filter-block">
@@ -490,86 +418,55 @@ class LabourListing extends Component {
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="Employment Terms"
+                                        name="vendorName"
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Employment-'}
+                                        placeholder={'-Vendors-'}
                                         isClearable={false}
-                                        options={this.renderListing('EmploymentTerms')}
+                                        options={this.renderListing('VendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.EmploymentTerms == null || this.state.EmploymentTerms.length == 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleHeadChange}
-                                        valueDescription={this.state.EmploymentTerms}
+                                        //validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleVendorName}
+                                        valueDescription={this.state.vendorName}
                                     />
                                 </div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="state"
+                                        name="ICCApplicability"
                                         type="text"
-                                        label={''}
+                                        label=""
                                         component={searchableSelect}
-                                        placeholder={'--State--'}
+                                        placeholder={'--ICC Applicability--'}
                                         isClearable={false}
-                                        options={this.renderListing('state')}
+                                        options={this.renderListing('ICC')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                                        //validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
                                         //required={true}
-                                        handleChangeDescription={this.handleState}
-                                        valueDescription={this.state.StateName}
+                                        handleChangeDescription={this.handleICCApplicability}
+                                        valueDescription={this.state.ICCApplicability}
                                         disabled={false}
                                     />
                                 </div>
                                 <div className="flex-fill">
                                     <Field
-                                        name="plant"
+                                        name="PaymentTermsApplicability"
                                         type="text"
-                                        label={''}
+                                        label=""
                                         component={searchableSelect}
-                                        placeholder={'--Plant--'}
+                                        placeholder={'--Payment Applicability--'}
                                         isClearable={false}
-                                        options={this.renderListing('plant')}
+                                        options={this.renderListing('PaymentTerms')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
+                                        //validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
                                         //required={true}
-                                        handleChangeDescription={this.handlePlant}
-                                        valueDescription={this.state.plant}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="LabourTypeIds"
-                                        type="text"
-                                        label=''
-                                        component={searchableSelect}
-                                        placeholder={'--Labour--'}
-                                        isClearable={false}
-                                        options={this.renderListing('labourList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.labourHandler}
-                                        valueDescription={this.state.labourType}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="MachineType"
-                                        type="text"
-                                        label=''
-                                        component={searchableSelect}
-                                        placeholder={'Machine Type'}
-                                        isClearable={false}
-                                        options={this.renderListing('MachineTypeList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleMachineType}
-                                        valueDescription={this.state.machineType}
+                                        handleChangeDescription={this.handlePaymentApplicability}
+                                        valueDescription={this.state.PaymentTermsApplicability}
                                         disabled={false}
                                     />
                                 </div>
+
                                 <div className="flex-fill">
                                     <button
                                         type="button"
@@ -622,24 +519,23 @@ class LabourListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="IsContractBase" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{'Employment Terms '}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{'Vendor Name'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plant" columnTitle={true} dataAlign="center" >{'Plant'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="State" columnTitle={true} dataAlign="center" >{'State'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="MachineType" columnTitle={true} dataAlign="center" >{'Machine Type'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="LabourType" columnTitle={true} dataAlign="center" >{'Labour Type'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="LabourRate" columnTitle={true} dataAlign="center" >{'Rate Per Person/Annum'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Isvendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{'ICC Applicability'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ICCPercent" columnTitle={true} dataAlign="center" >{'Annual ICC (%)'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PaymentTermApplicability" columnTitle={true} dataAlign="center" >{'Payment Term Applicability'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{'Repayment Period (Days)'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{'Payment Term Interest Rate (%) '}</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="LabourId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'Labour'}
-                    isZBCVBCTemplate={false}
-                    messageLabel={'Labour'}
+                    fileName={'InterestRate'}
+                    isZBCVBCTemplate={true}
+                    messageLabel={'Interest Rate'}
                     anchor={'right'}
                 />}
             </ >
@@ -652,12 +548,11 @@ class LabourListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ labour, auth, fuel, machine, }) {
-    const { loading, labourTypeByPlantSelectList } = labour;
-    const { plantSelectList, stateSelectList } = fuel;
-    const { machineTypeSelectList, } = machine;
+function mapStateToProps({ material, auth, interestRate }) {
     const { leftMenuData } = auth;
-    return { loading, leftMenuData, plantSelectList, stateSelectList, labourTypeByPlantSelectList, machineTypeSelectList, };
+    const { vendorListByVendorType } = material;
+    const { paymentTermsSelectList, iccApplicabilitySelectList, } = interestRate;
+    return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData };
 }
 
 /**
@@ -667,18 +562,16 @@ function mapStateToProps({ labour, auth, fuel, machine, }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getLabourDataList,
-    deleteLabour,
-    getPlantListByState,
-    getZBCPlantList,
-    getStateSelectList,
-    getMachineTypeSelectList,
-    getLabourTypeByPlantSelectList,
+    getInterestRateDataList,
+    deleteInterestRate,
+    getVendorListByVendorType,
+    getPaymentTermsAppliSelectList,
+    getICCAppliSelectList,
     getLeftMenu,
 })(reduxForm({
-    form: 'LabourListing',
+    form: 'InterestRateListing',
     onSubmitFail: errors => {
         focusOnError(errors);
     },
     enableReinitialize: true,
-})(LabourListing));
+})(InterestRateListing));

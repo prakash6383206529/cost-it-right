@@ -211,9 +211,9 @@ class FuelListing extends Component {
     };
 
     /**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
     filterList = () => {
         const { StateName, fuel } = this.state;
         const fuelID = fuel ? fuel.value : null;
@@ -222,10 +222,10 @@ class FuelListing extends Component {
         this.getDataList(fuelID, stateId)
     }
 
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
     resetFilter = () => {
         this.setState({
             fuel: [],
@@ -283,6 +283,7 @@ class FuelListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'--- Select Fuel ---'}
+                                        isClearable={false}
                                         options={this.renderListing('fuel')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.fuel == null || this.state.fuel.length == 0) ? [required] : []}
@@ -299,6 +300,7 @@ class FuelListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'--- Select State ---'}
+                                        isClearable={false}
                                         options={this.renderListing('state')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}

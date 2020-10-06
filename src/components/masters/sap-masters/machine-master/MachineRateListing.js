@@ -429,6 +429,7 @@ class MachineRateListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Head-'}
+                                        isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.costingHead == null || this.state.costingHead.length == 0) ? [required] : []}
@@ -444,6 +445,7 @@ class MachineRateListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'-Plant-'}
+                                        isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
@@ -459,6 +461,7 @@ class MachineRateListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-technology-'}
+                                        isClearable={false}
                                         options={this.renderListing('technology')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
@@ -474,6 +477,7 @@ class MachineRateListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'-Vendor-'}
+                                        isClearable={false}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
@@ -491,6 +495,7 @@ class MachineRateListing extends Component {
                                         label=''
                                         component={searchableSelect}
                                         placeholder={'-Machine-'}
+                                        isClearable={false}
                                         options={this.renderListing('MachineTypeList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
@@ -507,6 +512,7 @@ class MachineRateListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Process-'}
+                                        isClearable={false}
                                         options={this.renderListing('ProcessNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}

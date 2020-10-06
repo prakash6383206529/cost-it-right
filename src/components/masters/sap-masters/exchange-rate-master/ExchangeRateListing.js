@@ -297,6 +297,7 @@ class ExchangeRateListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'--Select Currency--'}
+                                        isClearable={false}
                                         options={this.renderListing('currency')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}

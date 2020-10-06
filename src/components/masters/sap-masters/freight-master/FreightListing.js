@@ -336,6 +336,7 @@ class FreightListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Costing Head-'}
+                                        isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
@@ -351,6 +352,7 @@ class FreightListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Vendor-'}
+                                        isClearable={false}
                                         options={this.renderListing('vendor')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
@@ -366,6 +368,7 @@ class FreightListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'--Source City--'}
+                                        isClearable={false}
                                         options={this.renderListing('SourceLocation')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.sourceLocation == null || this.state.sourceLocation.length === 0) ? [required] : []}
@@ -381,6 +384,7 @@ class FreightListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'--Destination City--'}
+                                        isClearable={false}
                                         options={this.renderListing('DestinationLocation')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.destinationLocation == null || this.state.destinationLocation.length === 0) ? [required] : []}

@@ -265,21 +265,21 @@ class RMImportListing extends Component {
         const temp = [];
         if (label === 'material') {
             filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'grade') {
             filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
             filterRMSelectList && filterRMSelectList.Vendors && filterRMSelectList.Vendors.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -444,6 +444,7 @@ class RMImportListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'Raw Material'}
+                                        isClearable={false}
                                         options={this.renderListing('material')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
@@ -459,6 +460,7 @@ class RMImportListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'RM Grade'}
+                                        isClearable={false}
                                         options={this.renderListing('grade')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
@@ -474,6 +476,7 @@ class RMImportListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'-Vendor-'}
+                                        isClearable={false}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}

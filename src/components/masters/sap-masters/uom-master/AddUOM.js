@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required, maxLength25, minLength3 } from "../../../../helper/validation";
 import { renderText, searchableSelect } from "../../../layout/FormInputs";
 import {
@@ -34,7 +34,7 @@ class AddUOM extends Component {
                     const { unitTypeList } = this.props;
                     if (res && res.data && res.data.Data) {
                         let Data = res.data.Data;
-                        let tempObj = unitTypeList && unitTypeList.find(item => item.Value == Data.UnitTypeId)
+                        let tempObj = unitTypeList && unitTypeList.find(item => item.Value === Data.UnitTypeId)
                         this.setState({ unitTypes: { label: tempObj.Text, value: tempObj.Value } })
                     }
                 })
@@ -70,7 +70,7 @@ class AddUOM extends Component {
 
         if (label === 'UnitType') {
             unitTypeList && unitTypeList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -152,7 +152,7 @@ class AddUOM extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, } = this.props;
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                 <Container>
@@ -197,7 +197,7 @@ class AddUOM extends Component {
                                         placeholder={'Select Unit Type'}
                                         options={this.searchableSelectType('UnitType')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.unitTypes == null || this.state.unitTypes.length == 0) ? [required] : []}
+                                        validate={(this.state.unitTypes == null || this.state.unitTypes.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.unitTypeHandler}
                                         valueDescription={this.state.unitTypes}

@@ -1,28 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import AddUOM from './AddUOM';
-import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../../../../actions/master/unitOfMeasurment';
+import { getTaxDetailsDataList, deleteTaxDetails, } from '../../../../actions/master/TaxMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import Switch from "react-switch";
-import { UOM } from '../../../../config/constants';
+import { TAX } from '../../../../config/constants';
 import { checkPermission } from '../../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
+import AddTaxDetails from './AddTaxDetails';
+import moment from 'moment';
 
-class UOMMaster extends Component {
+class TaxListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
             isEditFlag: false,
-            uomId: '',
-            dataList: [],
+            ID: '',
+            tableData: [],
 
             ViewAccessibility: false,
             AddAccessibility: false,
@@ -41,7 +41,7 @@ class UOMMaster extends Component {
             const { leftMenuData } = this.props;
             if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === UOM)
+                const accessData = Data && Data.find(el => el.PageName === TAX)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
                 if (permmisionData !== undefined) {
@@ -55,14 +55,22 @@ class UOMMaster extends Component {
             }
         })
 
-        this.getUOMDataList()
+        this.getTableListData()
     }
 
-    getUOMDataList = () => {
-        this.props.getUnitOfMeasurementAPI(res => {
-            if (res && res.data && res.data.DataList) {
+    /**
+     * @method getTableListData
+     * @description  GET DATALIST
+     */
+    getTableListData = () => {
+        this.props.getTaxDetailsDataList(res => {
+            if (res.status === 204 && res.data === '') {
+                this.setState({ tableData: [], })
+            } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({ dataList: Data })
+                this.setState({ tableData: Data, })
+            } else {
+                this.setState({ tableData: [], })
             }
         });
     }
@@ -84,7 +92,7 @@ class UOMMaster extends Component {
      */
     closeDrawer = (e = '') => {
         this.setState({ isOpen: false }, () => {
-            this.getUOMDataList()
+            this.getTableListData()
         })
     }
 
@@ -96,35 +104,43 @@ class UOMMaster extends Component {
         this.setState({
             isEditFlag: true,
             isOpen: true,
-            uomId: Id,
+            ID: Id,
         })
     }
 
     /**
     * @method deleteItem
-    * @description confirm delete UOM
+    * @description confirm delete TAX
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteUOM(Id)
+                this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Are you sure you want to delete UOM?`, toastrConfirmOptions);
+        return toastr.confirm(MESSAGES.TAX_DELETE_ALERT, toastrConfirmOptions);
     }
 
     /**
-    * @method confirmDeleteUOM
-    * @description confirm delete unit of measurement
+    * @method confirmDelete
+    * @description confirm delete TAX
     */
-    confirmDeleteUOM = (Id) => {
-        this.props.deleteUnitOfMeasurementAPI(Id, (res) => {
+    confirmDelete = (Id) => {
+        this.props.deleteTaxDetails(Id, (res) => {
             if (res.data.Result) {
-                toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
-                this.getUOMDataList()
+                toastr.success(MESSAGES.DELETE_TAX_SUCCESS);
+                this.getTableListData()
             }
         });
+    }
+
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -132,54 +148,13 @@ class UOMMaster extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
-        const { EditAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
             <>
                 {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
-    }
-
-    /**
-    * @method statusButtonFormatter
-    * @description Renders buttons
-    */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
-    }
-
-    handleChange = (cell, row, enumObject, rowIndex) => {
-        let data = {
-            Id: row.Id,
-            LoggedInUserId: loggedInUserId(),
-            IsActive: !cell, //Status of the UOM.
-        }
-        this.props.activeInactiveUOM(data, res => {
-            if (res && res.data && res.data.Result) {
-                if (cell === true) {
-                    toastr.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
-                } else {
-                    toastr.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
-                }
-                this.getUOMDataList()
-            }
-        })
     }
 
     /**
@@ -187,7 +162,7 @@ class UOMMaster extends Component {
     * @description Renders the component
     */
     render() {
-        const { isOpen, isEditFlag, uomId, AddAccessibility } = this.state;
+        const { isOpen, isEditFlag, AddAccessibility } = this.state;
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -202,15 +177,16 @@ class UOMMaster extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <Row>
                     <Col md={12}>
-                        <h3>{`Unit of Measurement Master`}</h3>
-                    </Col> <hr />
+                        <h3>{`Tax Details`}</h3>
+                    </Col>
+                    <hr />
                     {AddAccessibility &&
                         <Col md={12} className='text-right mb15'>
                             <button
                                 type={'button'}
                                 className={'user-btn'}
                                 onClick={this.openModel}>
-                                <div className={'plus'}></div>{`ADD UOM`}</button>
+                                <div className={'plus'}></div>{`ADD`}</button>
                         </Col>}
                 </Row>
 
@@ -218,7 +194,7 @@ class UOMMaster extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.dataList}
+                            data={this.state.tableData}
                             striped={false}
                             bordered={false}
                             hover={true}
@@ -230,20 +206,21 @@ class UOMMaster extends Component {
                             trClassName={'userlisting-row'}
                             tableHeaderClass='my-custom-class'
                             pagination>
-                            <TableHeaderColumn dataField="Unit" csvHeader='Full-Name' dataAlign="center" dataSort={true}>Unit</TableHeaderColumn>
-                            <TableHeaderColumn dataField="UnitType" dataSort={true}>Unit Type</TableHeaderColumn>
-                            <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Id" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="TaxName" dataAlign="center" dataSort={true}>Tax Name</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
+                            <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>
                 </Row>
                 {isOpen && (
-                    <AddUOM
+                    <AddTaxDetails
                         isOpen={isOpen}
                         closeDrawer={this.closeDrawer}
                         isEditFlag={isEditFlag}
-                        ID={uomId}
+                        ID={this.state.ID}
                         anchor={'right'}
                     />
                 )}
@@ -257,18 +234,15 @@ class UOMMaster extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ unitOfMeasrement, auth }) {
-    const { unitOfMeasurementList, loading } = unitOfMeasrement;
+function mapStateToProps({ auth }) {
     const { leftMenuData } = auth;
-    return { unitOfMeasurementList, leftMenuData, loading }
+    return { leftMenuData, }
 }
 
-export default connect(
-    mapStateToProps, {
-    getUnitOfMeasurementAPI,
-    deleteUnitOfMeasurementAPI,
-    activeInactiveUOM,
-    getLeftMenu,
-}
-)(UOMMaster);
+export default connect(mapStateToProps,
+    {
+        getTaxDetailsDataList,
+        deleteTaxDetails,
+        getLeftMenu,
+    })(TaxListing);
 

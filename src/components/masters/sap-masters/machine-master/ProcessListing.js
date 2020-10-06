@@ -287,6 +287,7 @@ class ProcessListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'--Plant--'}
+                                        isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
@@ -302,6 +303,7 @@ class ProcessListing extends Component {
                                         label=''
                                         component={searchableSelect}
                                         placeholder={'-Machine-'}
+                                        isClearable={false}
                                         options={this.renderListing('Machine')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         //validate={(this.state.machine == null || this.state.machine.length == 0) ? [required] : []}

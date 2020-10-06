@@ -16,6 +16,7 @@ import { operationZBCBulkUpload, operationVBCBulkUpload } from '../../actions/ma
 import { partComponentBulkUpload } from '../../actions/master/Part';
 import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../../actions/master/BoughtOutParts';
 import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedVBC, } from '../../actions/master/Volume';
+import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, } from '../../actions/master/InterestRateMaster';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
@@ -100,9 +101,7 @@ class BulkUpload extends Component {
 
             let data = new FormData()
             data.append('file', fileObj)
-            // if (fileName == 'RMDomestic') {
-            //     this.props.bulkfileUploadRM(data, res => { }); //temp for file upload in folder on server
-            // }
+
             ExcelRenderer(fileObj, (err, resp) => {
                 if (err) {
                     console.log(err);
@@ -114,10 +113,7 @@ class BulkUpload extends Component {
                     let fileData = [];
                     resp.rows.map((val, index) => {
                         if (index > 0) {
-                            let obj = {
-                                // PlantId: uploadBOMplantID.value,
-                                // CreatedBy: loggedInUserId(),
-                            }
+                            let obj = {}
                             val.map((el, i) => {
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                                     el = getJsDateFromExcel(el)
@@ -319,6 +315,18 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
+        } else if (fileName === 'InterestRate' && costingHead === 'ZBC') {
+
+            this.props.bulkUploadInterestRateZBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'InterestRate' && costingHead === 'VBC') {
+
+            this.props.bulkUploadInterestRateVBC(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
         } else {
 
         }
@@ -486,6 +494,8 @@ export default connect(mapStateToProps, {
     bulkUploadVolumeActualVBC,
     bulkUploadVolumeBudgetedZBC,
     bulkUploadVolumeBudgetedVBC,
+    bulkUploadInterestRateZBC,
+    bulkUploadInterestRateVBC
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

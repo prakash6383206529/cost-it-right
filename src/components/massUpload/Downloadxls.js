@@ -15,7 +15,7 @@ import {
     BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
     VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
     VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
-    OtherOperation,
+    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData,
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable } from "../../helper";
 
@@ -60,8 +60,6 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Labour, LabourTempData);
             case 'PartComponent':
                 return this.returnExcelColumn(PartComponent, PartComponentTempData);
-            case 'OtherOperation':
-                return this.returnExcelColumn(OtherOperation);
             default:
                 return 'foo';
         }
@@ -92,8 +90,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA);
             case 'BudgetedVolume':
                 return this.returnExcelColumn(VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA);
-            case 'OtherOperation':
-                return this.returnExcelColumn(OtherOperation);
+            case 'InterestRate':
+                return this.returnExcelColumn(ZBCInterestRate, ZBCInterestRateTempData);
             default:
                 return 'foo';
         }
@@ -122,8 +120,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA);
             case 'BudgetedVolume':
                 return this.returnExcelColumn(VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA);
-            case 'OtherOperation':
-                return this.returnExcelColumn(OtherOperation);
+            case 'InterestRate':
+                return this.returnExcelColumn(VBCInterestRate, VBCInterestRateTempData);
             default:
                 return 'foo';
         }
@@ -156,7 +154,7 @@ class Downloadxls extends React.Component {
 
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
-        if (isFailedFlag && (costingHead === 'ZBC' || costingHead === 'ZBC_MACHINE_MORE') && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOPDomestic' || fileName === 'BOPImport' || fileName === 'ActualVolume' || fileName === 'BudgetedVolume')) {
+        if (isFailedFlag && (costingHead === 'ZBC' || costingHead === 'ZBC_MACHINE_MORE') && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOPDomestic' || fileName === 'BOPImport' || fileName === 'ActualVolume' || fileName === 'BudgetedVolume' || fileName === 'InterestRate')) {
             return (
                 <ExcelFile hideElement={true} filename={`${fileName}ZBC`} fileExtension={'.xls'} >
                     {isMachineMoreTemplate ? this.renderZBCSwitch(costingHead) : this.renderZBCSwitch(fileName)}
@@ -165,7 +163,7 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
-        if (isFailedFlag && costingHead === 'VBC' && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOPDomestic' || fileName === 'BOPImport' || fileName === 'ActualVolume' || fileName === 'BudgetedVolume')) {
+        if (isFailedFlag && costingHead === 'VBC' && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOPDomestic' || fileName === 'BOPImport' || fileName === 'ActualVolume' || fileName === 'BudgetedVolume' || fileName === 'InterestRate')) {
             return (
                 <ExcelFile hideElement={true} filename={`${fileName}VBC`} fileExtension={'.xls'} >
                     {this.renderVBCSwitch(fileName)}

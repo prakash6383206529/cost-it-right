@@ -398,6 +398,7 @@ class OverheadListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'---Select---'}
+                                        isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
@@ -414,6 +415,7 @@ class OverheadListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-ModelType-'}
+                                        isClearable={false}
                                         options={this.renderListing('ModelType')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.ModelType == null || this.state.ModelType.length === 0) ? [required] : []}
@@ -430,6 +432,7 @@ class OverheadListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'VendorName'}
+                                        isClearable={false}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}

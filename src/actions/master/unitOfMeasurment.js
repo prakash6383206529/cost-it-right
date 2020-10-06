@@ -33,19 +33,13 @@ export function getUnitOfMeasurementAPI(callback) {
         dispatch({ type: API_REQUEST });
         axios.get(API.getAllUOMAPI, { headers })
             .then((response) => {
-                //if (response.data.Result === true) {
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,
                     payload: response.data.DataList,
                 });
                 callback(response);
-                // } else {
-                //     toastr.error(MESSAGES.SOME_ERROR);
-                // }
             }).catch((error) => {
-                dispatch({
-                    type: API_FAILURE
-                });
+                dispatch({ type: API_FAILURE });
                 callback(error);
                 apiErrors(error);
             });

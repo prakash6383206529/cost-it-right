@@ -398,11 +398,15 @@ export const API = {
   updateDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/update-depreciation-type`,
 
   //INTEREST MASTER
-  getInterestRateAPI: `${BASE_URL}/supplier/get-supplier-interest-rate`,
-  getAllInterestRateAPI: `${BASE_URL}/supplier/get-all-supplier-interest-rate`,
-  updateInterestRateAPI: `${BASE_URL}/supplier/update-supplier-interest-rate`,
-  deleteInterestRateAPI: `${BASE_URL}/supplier/delete-supplier-interest-rate`,
-  createInterestRateAPI: `${BASE_URL}/supplier/create-supplier-interest-rate`,
+  createInterestRate: `${BASE_URL}/vendor/create-vendor-interest-rate`,
+  getInterestRateDataList: `${BASE_URL}/vendor/get-all-vendor-interest-rate`,
+  getInterestRateData: `${BASE_URL}/vendor/get-vendor-interest-rate`,
+  updateInterestRate: `${BASE_URL}/vendor/update-vendor-interest-rate`,
+  deleteInterestRate: `${BASE_URL}/vendor/delete-vendor-interest-rate`,
+  getPaymentTermsAppliSelectList: `${BASE_URL}/configuration/get-payment-terms-applicability-list`,
+  getICCAppliSelectList: `${BASE_URL}/configuration/get-icc-applicability-list`,
+  bulkUploadInterestRateZBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-zbc-json`,
+  bulkUploadInterestRateVBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-vbc-json`,
 
   //Api's for costing
   getPlantCombo: `${BASE_URL}/costing-sheet-metal/get-plant-combo-select-list`,
@@ -653,6 +657,13 @@ export const API = {
   getExchangeRateData: `${BASE_URL}/masters-exchange-rate/get-exchange-rate-by-id`,
   deleteExchangeRate: `${BASE_URL}/masters-exchange-rate/delete-exchange-rate`,
   updateExchangeRate: `${BASE_URL}/masters-exchange-rate/update-exchange-rate`,
+
+  //TAX DETAILS MASTER
+  createTaxDetails: `${BASE_URL}/masters-tax-details/create`,
+  getTaxDetailsDataList: `${BASE_URL}/masters-tax-details/get-all`,
+  getTaxDetailsData: `${BASE_URL}/masters-tax-details/get`,
+  deleteTaxDetails: `${BASE_URL}/masters-tax-details/delete`,
+  updateTaxDetails: `${BASE_URL}/masters-tax-details/update`,
 
 }
 
@@ -927,6 +938,8 @@ export const GET_DEPRECIATION_DATA_SUCCESS = 'GET_DEPRECIATION_DATA_SUCCESS';
 export const GET_INTEREST_RATE_SUCCESS = 'GET_INTEREST_RATE_SUCCESS';
 export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DATA_SUCCESS';
 export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS';
+export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST';
+export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST';
 
 //COSTING
 export const GET_PLANT_COMBO_SUCCESS = 'GET_PLANT_COMBO_SUCCESS';
@@ -1067,6 +1080,10 @@ export const EXCHANGE_RATE_DATALIST = 'EXCHANGE_RATE_DATALIST';
 export const GET_EXCHANGE_RATE_DATA = 'GET_EXCHANGE_RATE_DATA';
 export const GET_CURRENCY_SELECTLIST_BY = 'GET_CURRENCY_SELECTLIST_BY';
 
+//TAX DETAIL MASTER
+export const GET_TAX_DETAILS_DATALIST = 'GET_TAX_DETAILS_DATALIST';
+export const GET_TAX_DETAILS_DATA = 'GET_TAX_DETAILS_DATA';
+
 //COSTING STATUS
 export const DRAFT = 'Draft';
 export const PENDING = 'PendingForApproval';
@@ -1126,6 +1143,8 @@ export const FUEL_AND_POWER = 'Fuel and Power';
 export const EXCHANGE_RATE = 'Exchange Rate';
 export const FREIGHT = 'Freight';
 export const VOLUME = 'Volume';
+export const TAX = 'Tax';
+export const INTEREST_RATE = 'Interest Rate';
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM';

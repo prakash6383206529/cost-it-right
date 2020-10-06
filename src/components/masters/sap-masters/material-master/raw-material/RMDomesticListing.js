@@ -451,6 +451,7 @@ class RMDomesticListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'Raw Material'}
+                                        isClearable={false}
                                         options={this.renderListing('material')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
@@ -466,6 +467,7 @@ class RMDomesticListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'RM Grade'}
+                                        isClearable={false}
                                         options={this.renderListing('grade')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
@@ -481,6 +483,7 @@ class RMDomesticListing extends Component {
                                         label={''}
                                         component={searchableSelect}
                                         placeholder={'-Vendor-'}
+                                        isClearable={false}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}

@@ -488,6 +488,7 @@ class OperationListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-Costing Head-'}
+                                        isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
@@ -503,6 +504,7 @@ class OperationListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-technology-'}
+                                        isClearable={false}
                                         options={this.renderListing('technology')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [required] : []}
@@ -518,6 +520,7 @@ class OperationListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-operation-'}
+                                        isClearable={false}
                                         options={this.renderListing('OperationNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.operationName == null || this.state.operationName.length === 0) ? [required] : []}
@@ -533,6 +536,7 @@ class OperationListing extends Component {
                                         label=""
                                         component={searchableSelect}
                                         placeholder={'-vendors-'}
+                                        isClearable={false}
                                         options={this.renderListing('VendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}

@@ -22,12 +22,13 @@ import MaterialMaster from './masters/sap-masters/material-master/raw-material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourListing from './masters/sap-masters/labour-master/LabourListing';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
-import InterestRate from './masters/sap-masters/interest-rate-master';
+import InterestRate from './masters/sap-masters/interest-rate-master/InterestRateListing';
 import MachineMaster from './masters/sap-masters/machine-master';
 import ReasonListing from "./masters/sap-masters/reason-master/ReasonListing";
 import VolumeListing from './masters/sap-masters/volume-master/VolumeListing';
 import ClientMaster from './masters/sap-masters/client-master/AddClient';
 import ExchangeRateListing from './masters/sap-masters/exchange-rate-master/ExchangeRateListing';
+import TaxListing from './masters/sap-masters/tax-master/TaxListing';
 import LeftMenu from './nav/Leftsidemenu';
 import Breadcrumb from './nav/Breadcrumb';
 
@@ -173,6 +174,8 @@ class Main extends Component {
                     <Route path="/client-master" component={AuthMiddleware(ClientMaster)} />
 
                     <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing)} />
+
+                    <Route path="/tax-master" component={AuthMiddleware(TaxListing)} />
 
                     <Route
                       render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}

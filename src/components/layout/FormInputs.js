@@ -1,7 +1,6 @@
 import React from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import "./formInputs.css";
 
@@ -601,14 +600,15 @@ export function renderDatePickerOneDayAgo(field) {
 }
 
 export const searchableSelect = ({ input, label, required, disabled, handleChangeDescription, valueDescription, options,
-  placeholder, meta: { touched, error, dirty, visited }, multi, className }) => {
+  placeholder, isClearable, meta: { touched, error, dirty, visited }, multi, className }) => {
   const { name, value, onBlur, onChange, onFocus } = input;
   let isDisable = (disabled && disabled === true) ? true : false;
+  let isClear = (isClearable === undefined) ? true : false;
   return (
     <div className="w-100">
       {label && <label>{label}{(required === true) ? <span className="asterisk-required">*</span> : ''}</label>}
       <Select
-        isClearable
+        isClearable={isClear}
         options={options}
         onChange={handleChangeDescription}
         //onCreateOption={handleCreate}
