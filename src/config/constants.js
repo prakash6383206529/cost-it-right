@@ -1153,7 +1153,6 @@ export const WDM = 'WDM';
 export const ZBC = 'ZBC';
 export const VBC = 'VBC';
 
-
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly';
 export const COMPONENT_PART = 'Component';
