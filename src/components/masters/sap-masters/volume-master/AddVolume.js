@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, } from "../../../../helper/validation";
-import { renderText, renderMultiSelectField, searchableSelect, } from "../../../layout/FormInputs";
+import { required, } from "../../../../helper/validation";
+import { searchableSelect, } from "../../../layout/FormInputs";
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../../../../actions/master/Volume';
 import { getPlantSelectListByType, getPlantBySupplier, } from '../../../../actions/master/Comman';
@@ -533,8 +533,8 @@ class AddVolume extends Component {
                                         <Col md="12">
                                             <BootstrapTable data={this.state.tableData} cellEdit={cellEditProp}>
                                                 <TableHeaderColumn dataField='Month' editable={false}>Month</TableHeaderColumn>
-                                                <TableHeaderColumn dataField='BudgetedQuantity'>Budgeted Qty</TableHeaderColumn>
-                                                <TableHeaderColumn dataField='ApprovedQuantity'>Actual Qty</TableHeaderColumn>
+                                                <TableHeaderColumn dataField='BudgetedQuantity' >Budgeted Qty</TableHeaderColumn>
+                                                <TableHeaderColumn dataField='ApprovedQuantity' >Actual Qty</TableHeaderColumn>
                                                 <TableHeaderColumn dataField='VolumeApprovedDetailId' hidden>Volume Approv Id</TableHeaderColumn>
                                                 <TableHeaderColumn dataField='VolumeBudgetedDetailId' hidden>Vol Budget Id</TableHeaderColumn>
                                                 <TableHeaderColumn className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

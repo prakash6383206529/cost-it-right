@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, number, maxLength100 } from "../../../../helper/validation";
-import { userDetails, loggedInUserId } from "../../../../helper/auth";
-import { renderText, renderTextAreaField, searchableSelect, renderMultiSelectField } from "../../../layout/FormInputs";
+import { required, maxLength100, number } from "../../../../helper/validation";
+import { loggedInUserId } from "../../../../helper/auth";
+import { renderText, renderTextAreaField, renderMultiSelectField } from "../../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../../actions/master/Comman';
 import { createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart } from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
@@ -198,12 +198,8 @@ class AddAssemblyPart extends Component {
         if (fieldsObj.BOMNumber === undefined ||
             fieldsObj.AssemblyPartNumber === undefined ||
             fieldsObj.AssemblyPartName === undefined ||
-            fieldsObj.ECNNumber === undefined ||
-            fieldsObj.RevisionNumber === undefined ||
             fieldsObj.Description === undefined ||
-            fieldsObj.DrawingNumber === undefined ||
-            fieldsObj.GroupCode === undefined ||
-            fieldsObj.Remark === undefined) {
+            fieldsObj.GroupCode === undefined) {
             return false;
         } else {
             return true;
@@ -536,9 +532,9 @@ class AddAssemblyPart extends Component {
                                                 name={"ECNNumber"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[number]}
                                                 component={renderText}
-                                                required={true}
+                                                //required={true}
                                                 className=""
                                                 customClassName={'withBorder'}
                                             />
@@ -549,9 +545,9 @@ class AddAssemblyPart extends Component {
                                                 name={"RevisionNumber"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[number]}
                                                 component={renderText}
-                                                required={true}
+                                                //required={true}
                                                 className=""
                                                 customClassName={'withBorder'}
                                             />
@@ -562,9 +558,9 @@ class AddAssemblyPart extends Component {
                                                 name={"DrawingNumber"}
                                                 type="text"
                                                 placeholder={''}
-                                                validate={[required]}
+                                                validate={[number]}
                                                 component={renderText}
-                                                required={true}
+                                                //required={true}
                                                 className=""
                                                 customClassName={'withBorder'}
                                             />
@@ -654,7 +650,7 @@ class AddAssemblyPart extends Component {
                                                 placeholder="Type here..."
                                                 className=""
                                                 customClassName=" textAreaWithBorder"
-                                                validate={[required, maxLength100]}
+                                                validate={[number, maxLength100]}
                                                 required={true}
                                                 component={renderTextAreaField}
                                                 maxLength="5000"
@@ -737,6 +733,7 @@ class AddAssemblyPart extends Component {
                     ID={''}
                     anchor={'right'}
                     setChildPartsData={this.setChildPartsData}
+                    BOMViewerData={this.state.BOMViewerData}
                 />}
 
                 {isOpenBOMViewerDrawer && <BOMViewer

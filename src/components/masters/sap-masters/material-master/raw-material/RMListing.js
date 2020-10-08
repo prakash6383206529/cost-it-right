@@ -9,6 +9,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { GridTotalFormate } from '../../../../common/TableGridFunctions';
 
 class RMListing extends Component {
     constructor(props) {
@@ -120,11 +121,7 @@ class RMListing extends Component {
     * @description Pagination
     */
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -152,7 +149,7 @@ class RMListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -175,7 +172,7 @@ class RMListing extends Component {
                             data={this.props.rawMaterialTypeDataList}
                             striped={false}
                             bordered={false}
-                            hover={true}
+                            hover={false}
                             options={options}
                             search
                             // exportCSV

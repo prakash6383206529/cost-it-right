@@ -18,7 +18,6 @@ import SupplierMaster from './masters/sap-masters/supplier-master/VendorListing'
 import BOPMaster from './masters/sap-masters/bop-master';
 import FuelMaster from './masters/sap-masters/fuel-master';
 import OperationListing from './masters/sap-masters/operation/OperationListing';
-import MaterialMaster from './masters/sap-masters/material-master/raw-material';
 import FreightMaster from './masters/sap-masters/freight-master';
 import LabourListing from './masters/sap-masters/labour-master/LabourListing';
 import OverheadProfit from './masters/sap-masters/overhead-profit-master';
@@ -35,6 +34,10 @@ import Breadcrumb from './nav/Breadcrumb';
 import Costing from './costing';
 import { showUserData } from '../actions';
 import AuthMiddleware from '../AuthMiddleware';
+import {
+  BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION, OVERHEAD_AND_PROFIT, PART, PLANT,
+  RAW_MATERIAL, UOM, USER, VENDOR, SHEET_METAL, REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX
+} from '../config/constants'
 
 class Main extends Component {
   constructor(props) {
@@ -122,7 +125,7 @@ class Main extends Component {
               <div className={isLogin ? 'content-page' : ''}>
                 <div className={isLogin ? 'middleContainer' : ''}>
                   <Switch>
-                    <Route exact path="/" component={AuthMiddleware(Dashboard)} />
+                    <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
                     <Route path="/login" render={(props) =>
                       <Login
                         {...props}
@@ -131,51 +134,47 @@ class Main extends Component {
                       />
                     } />
 
-                    <Route path="/users" component={AuthMiddleware(User)} />
+                    <Route path="/users" component={AuthMiddleware(User, USER)} />
 
-                    <Route path="/dashboard" component={AuthMiddleware(Dashboard)} />
+                    <Route path="/dashboard" component={AuthMiddleware(Dashboard, DASHBOARD)} />
 
-                    {/* <Route path="/PartMasterOld" component={AuthMiddleware(PartMaster)} /> */}
+                    <Route path="/part-master" component={AuthMiddleware(PartMaster, PART)} />
 
-                    <Route path="/part-master" component={AuthMiddleware(PartMaster)} />
+                    <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster, UOM)} />
 
-                    <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster)} />
+                    <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL)} />
 
-                    <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster)} />
+                    <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 
-                    <Route path="/plant-master" component={AuthMiddleware(PlantMaster)} />
+                    <Route path="/vendor-master" component={AuthMiddleware(SupplierMaster, VENDOR)} />
 
-                    <Route path="/vendor-master" component={AuthMiddleware(SupplierMaster)} />
+                    <Route path="/bop-master" component={AuthMiddleware(BOPMaster, BOP)} />
 
-                    <Route path="/bop-master" component={AuthMiddleware(BOPMaster)} />
+                    <Route path="/fuel-master" component={AuthMiddleware(FuelMaster, FUEL_AND_POWER)} />
 
-                    <Route path="/fuel-master" component={AuthMiddleware(FuelMaster)} />
+                    <Route path="/machine-master" component={AuthMiddleware(MachineMaster, MACHINE)} />
 
-                    <Route path="/machine-master" component={AuthMiddleware(MachineMaster)} />
+                    <Route path="/operation-master" component={AuthMiddleware(OperationListing, OPERATION)} />
 
-                    <Route path="/operation-master" component={AuthMiddleware(OperationListing)} />
+                    <Route path="/freight-master" component={AuthMiddleware(FreightMaster, FREIGHT)} />
 
-                    <Route path="/material-master" component={AuthMiddleware(MaterialMaster)} />
+                    <Route path="/labour-master" component={AuthMiddleware(LabourListing, LABOUR)} />
 
-                    <Route path="/freight-master" component={AuthMiddleware(FreightMaster)} />
+                    <Route path="/overhead-profits-master" component={AuthMiddleware(OverheadProfit, OVERHEAD_AND_PROFIT)} />
 
-                    <Route path="/labour-master" component={AuthMiddleware(LabourListing)} />
+                    <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate, INTEREST_RATE)} />
 
-                    <Route path="/overhead-profits-master" component={AuthMiddleware(OverheadProfit)} />
+                    <Route path="/costing" component={AuthMiddleware(Costing, SHEET_METAL)} />
 
-                    <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate)} />
+                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
 
-                    <Route path="/costing" component={AuthMiddleware(Costing)} />
+                    <Route path="/volume-master" component={AuthMiddleware(VolumeListing, VOLUME)} />
 
-                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing)} />
+                    <Route path="/client-master" component={AuthMiddleware(ClientMaster, CLIENT)} />
 
-                    <Route path="/volume-master" component={AuthMiddleware(VolumeListing)} />
+                    <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing, EXCHANGE_RATE)} />
 
-                    <Route path="/client-master" component={AuthMiddleware(ClientMaster)} />
-
-                    <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing)} />
-
-                    <Route path="/tax-master" component={AuthMiddleware(TaxListing)} />
+                    <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
 
                     <Route
                       render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}

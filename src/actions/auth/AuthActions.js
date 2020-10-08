@@ -26,6 +26,7 @@ import {
     GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS,
     GET_LEFT_MENU_BY_MODULE_ID_AND_USER,
+    config
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -36,10 +37,7 @@ import { MESSAGES } from "../../config/message";
  * @description get data from dummy api
  */
 
-const headers = {
-    'Content-Type': 'application/json',
-    //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
-};
+const headers = config;
 
 export function loginUserAPI(requestData, callback) {
     return (dispatch) => {
@@ -1221,11 +1219,40 @@ export function getLeftMenu(ModuleId, UserId, callback) {
     };
 }
 
-
-
 export function showUserData(data) {
     return {
         type: LOGIN_SUCCESS,
         payload: (data),
     }
+}
+
+export function checkPageAuthorization(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.checkPageAuthorization, requestData, { headers })
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                callback(error.response);
+                apiErrors(error);
+            });
+    };
+}
+
+/**
+ * @method getModuleIdByPathName
+ * @description GET MODULE ID BY PATH NAME
+ */
+export function getModuleIdByPathName(pathname, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getModuleIdByPathName}?navigationURL=${pathname}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+        });
+    };
 }

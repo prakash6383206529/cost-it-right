@@ -130,6 +130,7 @@ class AddChildDrawer extends Component {
                                         toggleDrawer={this.toggleDrawer}
                                         selectedPartType={this.state.selectedPartType}
                                         setChildParts={this.setChildParts}
+                                        BOMViewerData={this.props.BOMViewerData}
                                     />
                                 }
 
@@ -138,6 +139,7 @@ class AddChildDrawer extends Component {
                                         toggleDrawer={this.toggleDrawer}
                                         selectedPartType={this.state.selectedPartType}
                                         setChildParts={this.setChildParts}
+                                        BOMViewerData={this.props.BOMViewerData}
                                     />
                                 }
 
@@ -146,6 +148,7 @@ class AddChildDrawer extends Component {
                                         toggleDrawer={this.toggleDrawer}
                                         selectedPartType={this.state.selectedPartType}
                                         setChildParts={this.setChildParts}
+                                        BOMViewerData={this.props.BOMViewerData}
                                     />
                                 }
 

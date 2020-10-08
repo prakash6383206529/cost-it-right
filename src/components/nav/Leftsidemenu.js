@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getLeftMenu } from '../../actions';
+import { getLeftMenu, getModuleIdByPathName } from '../../actions';
 import { loggedInUserId } from '../../helper/auth';
 import { Link } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -15,8 +15,19 @@ class Leftmenu extends Component {
 	}
 
 	UNSAFE_componentWillMount() {
-		const ModuleId = reactLocalStorage.get('ModuleId')
-		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => { })
+
+		//COMMENTED FOR USE BELOW CONDITION
+		// const ModuleId = reactLocalStorage.get('ModuleId')
+		// this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => { })
+
+		//07-10-2020 COMMENTED, FOR LEFT MENU RENDER WHEN DIRECT URL HIT
+		const { location } = this.props;
+		if (location && location !== undefined) {
+			this.props.getModuleIdByPathName(location.pathname, res => {
+				this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
+			})
+		}
+
 	}
 
 	setModuleId = (ModuleId) => {
@@ -80,4 +91,5 @@ function mapStateToProps({ auth }) {
 export default connect(mapStateToProps,
 	{
 		getLeftMenu,
+		getModuleIdByPathName,
 	})(Leftmenu);

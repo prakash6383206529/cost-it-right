@@ -5,11 +5,10 @@ import {
     API_FAILURE,
     GET_VOLUME_DATA_SUCCESS,
     GET_FINANCIAL_YEAR_SELECTLIST,
+    config
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
-const headers = {
-    'Content-Type': 'application/json',
-};
+const headers = config
 
 /**
  * @method createVolume

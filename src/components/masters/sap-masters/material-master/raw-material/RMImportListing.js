@@ -26,6 +26,7 @@ import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
 import moment from 'moment';
 import BulkUpload from '../../../../massUpload/BulkUpload';
+import { GridTotalFormate } from '../../../../common/TableGridFunctions';
 
 class RMImportListing extends Component {
     constructor(props) {
@@ -162,11 +163,7 @@ class RMImportListing extends Component {
     * @description Pagination
     */
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -426,7 +423,7 @@ class RMImportListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -539,7 +536,7 @@ class RMImportListing extends Component {
                             data={this.state.tableData}
                             striped={false}
                             bordered={false}
-                            hover={true}
+                            hover={false}
                             options={options}
                             search
                             // exportCSV

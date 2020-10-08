@@ -1,4 +1,3 @@
-import React from "react";
 import { toastr } from "react-redux-toastr";
 import Moment from 'moment';
 import { MESSAGES } from '../config/message';
@@ -28,7 +27,6 @@ export const apiErrors = (res) => {
 * @param response
 */
 const handleHTTPStatus = (response) => {
-    console.log('response: ', response);
     switch (response.status) {
         case 203:
             return toastr.error('Data is inconsistent. Please refresh your session by re-login');
@@ -264,17 +262,6 @@ export const stringToArray = (str) => {
 export const displayTitle = (text) => {
     return text.replace(/\r?\n|\r/g, "");
 };
-
-/**
-* @method formatAddress
-* @descriptin FORMAT ADDRESS
-**/
-export const formatAddress = (address, city, state, country, zipCode) => {
-    const formatedAddress = [address, city, state, country, zipCode];
-    const res = formatedAddress.filter(Boolean).join(', ');
-    return res;
-};
-
 
 export function displayPublishOnDate(date) {
     const currentDate = Moment().format('YYYY-MM-DD');

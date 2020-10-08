@@ -4,8 +4,9 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, } from "../../../../helper/validation";
 import { renderText, searchableSelect } from "../../../layout/FormInputs";
-import { getBoughtOutPartSelectList } from '../../../../actions/master/Part';
+import { getBoughtOutPartSelectList, getDrawerBOPData } from '../../../../actions/master/Part';
 import { } from '../../../../actions/master/Comman';
+import { BOUGHTOUTPART } from '../../../../config/constants';
 
 class AddBOPForm extends Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class AddBOPForm extends Component {
             parentPart: [],
             BOPPart: [],
             isAddMore: false,
+            selectedParts: [],
         }
     }
 
@@ -23,13 +25,18 @@ class AddBOPForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        const { isEditFlag } = this.props;
+        const { BOMViewerData } = this.props;
+        let tempArr = [];
 
-        if (isEditFlag) {
+        this.props.getBoughtOutPartSelectList(() => { })
 
-        } else {
+        BOMViewerData && BOMViewerData.map(el => {
+            if (el.PartType === BOUGHTOUTPART) {
+                tempArr.push(el.PartId)
+            }
+        })
 
-        }
+        this.setState({ selectedParts: tempArr })
     }
 
     checkRadio = (radioType) => {
@@ -42,9 +49,13 @@ class AddBOPForm extends Component {
     */
     handleBOPPartChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ BOPPart: newValue });
+            this.setState({ BOPPart: newValue }, () => {
+                const { BOPPart } = this.state;
+                this.props.getDrawerBOPData(BOPPart.value, () => { })
+            });
         } else {
             this.setState({ BOPPart: [], });
+            this.props.getDrawerBOPData('', () => { })
         }
     }
 
@@ -66,11 +77,12 @@ class AddBOPForm extends Component {
     */
     renderListing = (label) => {
         const { boughtOutPartSelectList } = this.props;
+        const { selectedParts } = this.state;
         const temp = [];
 
         if (label === 'BOPPart') {
             boughtOutPartSelectList && boughtOutPartSelectList.map(item => {
-                if (item.Value === '0') return false;
+                if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -94,33 +106,28 @@ class AddBOPForm extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        const { isAddMore, BOPPart } = this.state;
+        const { DrawerPartData } = this.props;
 
         /** Update existing detail of supplier master **/
-        if (this.props.isEditFlag) {
+        let childData = {
+            PartNumber: BOPPart ? BOPPart : [],
+            Position: { "x": 600, "y": 50 },
+            Outputs: BOPPart ? BOPPart.label : '',
+            InnerContent: DrawerPartData && DrawerPartData.Description !== undefined ? DrawerPartData.Description : '',
+            PartName: BOPPart ? BOPPart : [],
+            Quantity: values.Quantity,
+            Level: "L1",
+            selectedPartType: this.props.selectedPartType,
+            PartId: BOPPart ? BOPPart.value : '',
+        }
 
-            let formData = {
+        this.props.getDrawerBOPData('', () => { })
 
-            }
-
-            // this.props.updateSupplierAPI(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-            //         this.props.toggleDrawer('')
-            //     }
-            // });
-
-        } else {/** Add new detail for creating supplier master **/
-
-            let formData = {
-
-            }
-
-            // this.props.createSupplierAPI(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-            //         this.props.toggleDrawer('')
-            //     }
-            // });
+        if (isAddMore) {
+            this.props.setChildParts(childData)
+        } else {
+            this.props.toggleDrawer('', childData)
         }
 
     }
@@ -268,8 +275,18 @@ class AddBOPForm extends Component {
 * @param {*} state
 */
 function mapStateToProps({ part }) {
-    const { boughtOutPartSelectList } = part;
-    return { boughtOutPartSelectList }
+    const { boughtOutPartSelectList, DrawerPartData } = part;
+
+    let initialValues = {};
+    if (DrawerPartData && DrawerPartData !== undefined) {
+        initialValues = {
+            BOPPartName: DrawerPartData.BoughtOutPartName,
+            BOPCategory: DrawerPartData.Category,
+            Plant: DrawerPartData.Plant,
+        }
+    }
+
+    return { boughtOutPartSelectList, DrawerPartData, initialValues, }
 }
 
 /**
@@ -280,6 +297,7 @@ function mapStateToProps({ part }) {
 */
 export default connect(mapStateToProps, {
     getBoughtOutPartSelectList,
+    getDrawerBOPData,
 })(reduxForm({
     form: 'AddBOPForm',
     enableReinitialize: true,

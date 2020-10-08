@@ -3,9 +3,6 @@ import { connect } from "react-redux";
 import Main from './components/Main.js';
 import { BrowserRouter, Route, } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { toastr } from "react-redux-toastr";
-import { MESSAGES } from '../src/config/message';
-//import './App.css';
 
 class App extends Component {
   constructor(props) {

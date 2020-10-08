@@ -1,6 +1,17 @@
 /**
- * Define all the constants required in application inside this file and export them
- */
+* Define all the constants required in application inside this file and export them
+*/
+
+import { getAuthToken } from "../helper/auth";
+
+export const config = {
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': 'true',
+    'Auth-Token': getAuthToken(),
+    'Access-From': 'WEB'
+  }
+};
 
 //hosting url for api of cost-it-right
 //const BASE_URL = 'http://10.10.1.100:8081/CIRLite';
@@ -105,6 +116,7 @@ export const API = {
   getComponentPartSelectList: `${BASE_URL}/masters-part/select-list-component-part`,
   getBoughtOutPartSelectList: `${BASE_URL}/masters-part/select-list-boughtout-part`,
   getBOMViewerTree: `${BASE_URL}/masters-part/get-visual-aid-bom-level-tree-view`,
+  getChildDrawerBOPData: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-by-id`,
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -535,6 +547,8 @@ export const API = {
   getModuleActionInit: `${BASE_URL}/user-role/get-module-action-init`,
   getModuleActionInitNew: `${BASE_URL}/user-role/get-module-page-action-init_new`,
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
+  checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
+  getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
 
   //REASON
   createReason: `${BASE_URL}/masters-reason/create`,
@@ -1122,29 +1136,35 @@ export const USERS = 'Users';
 export const AUDIT = 'Audit';
 
 //PAGE NAMES
+export const DASHBOARD = 'Dashboard';
+
+export const RAW_MATERIAL = 'Raw Material';
+export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade';
+export const BOP = 'BOP';
+export const PART = 'Part';
+export const MACHINE = 'Machine';
+export const VENDOR = 'Vendor';
+export const CLIENT = 'Client';
+export const PLANT = 'Plant';
+
+export const OVERHEAD_AND_PROFIT = 'Overhead and Profits';
+export const LABOUR = 'Labour';
+export const REASON = 'Reason';
+export const OPERATION = 'Operation';
+export const FUEL_AND_POWER = 'Fuel and Power';
+export const UOM = 'UOM';
+export const VOLUME = 'Volume';
+export const EXCHANGE_RATE = 'Exchange Rate';
+export const FREIGHT = 'Freight';
+export const INTEREST_RATE = 'Interest Rate';
+export const TAX = 'Tax';
+
+export const SHEET_METAL = 'Sheet Metal';
+
 export const USER = 'User';
 export const ROLE = 'Role';
 export const DEPARTMENT = 'Department';
 export const LEVELS = 'Levels';
-export const RAW_MATERIAL = 'Raw Material';
-export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade';
-export const VENDOR = 'Vendor';
-export const CLIENT = 'Client';
-export const PLANT = 'Plant';
-export const MACHINE = 'Machine';
-export const PART = 'Part';
-export const BOP = 'BOP';
-export const OVERHEAD_AND_PROFIT = 'Overhead and Profits';
-export const OPERATION = 'Operation';
-export const LABOUR = 'Labour';
-export const UOM = 'UOM';
-export const REASON = 'Reason';
-export const FUEL_AND_POWER = 'Fuel and Power';
-export const EXCHANGE_RATE = 'Exchange Rate';
-export const FREIGHT = 'Freight';
-export const VOLUME = 'Volume';
-export const TAX = 'Tax';
-export const INTEREST_RATE = 'Interest Rate';
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM';

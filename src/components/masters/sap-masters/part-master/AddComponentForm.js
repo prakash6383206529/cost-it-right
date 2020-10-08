@@ -5,6 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, number, } from "../../../../helper/validation";
 import { renderText, searchableSelect } from "../../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../../../../actions/master/Part';
+import { COMPONENT_PART } from '../../../../config/constants';
 
 class AddComponentForm extends Component {
     constructor(props) {
@@ -13,6 +14,7 @@ class AddComponentForm extends Component {
             part: [],
             parentPart: [],
             isAddMore: false,
+            selectedParts: [],
         }
     }
 
@@ -21,7 +23,17 @@ class AddComponentForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
+        const { BOMViewerData } = this.props;
         this.props.getComponentPartSelectList(() => { })
+
+        let tempArr = [];
+        BOMViewerData && BOMViewerData.map(el => {
+            if (el.PartType === COMPONENT_PART) {
+                tempArr.push(el.PartId)
+            }
+        })
+
+        this.setState({ selectedParts: tempArr })
     }
 
     checkRadio = (radioType) => {
@@ -62,10 +74,12 @@ class AddComponentForm extends Component {
     */
     renderListing = (label) => {
         const { componentPartSelectList } = this.props;
+        const { selectedParts } = this.state;
+
         const temp = [];
         if (label === 'part') {
             componentPartSelectList && componentPartSelectList.map(item => {
-                if (item.Value === '0') return false;
+                if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;

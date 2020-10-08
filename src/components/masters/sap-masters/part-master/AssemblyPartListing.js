@@ -5,7 +5,6 @@ import { getAssemblyPartDataList, deleteAssemblyPart, } from '../../../../action
 import { } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -13,6 +12,7 @@ import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
 import moment from 'moment';
 import VisualAdDrawer from './VisualAdDrawer';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -212,11 +212,7 @@ class AssemblyPartListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     formToggle = () => {
@@ -241,7 +237,7 @@ class AssemblyPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -269,7 +265,7 @@ class AssemblyPartListing extends Component {
                     data={this.state.tableData}
                     striped={false}
                     bordered={false}
-                    hover={true}
+                    hover={false}
                     options={options}
                     search
                     // exportCSV

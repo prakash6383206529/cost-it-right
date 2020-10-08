@@ -6,7 +6,7 @@ import { NavbarToggler, Nav, Dropdown, DropdownToggle, DropdownItem, DropdownMen
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser,
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName,
 } from '../../actions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -24,6 +24,13 @@ class SideBar extends Component {
   }
 
   UNSAFE_componentWillMount() {
+    const { location } = this.props;
+    if (location && location !== undefined) {
+      this.props.getModuleIdByPathName(location.pathname, res => {
+        this.setLeftMenu(res.data.Data.ModuleId);
+      })
+    }
+
     const loginUserId = loggedInUserId();
     this.props.getModuleSelectList(() => { })
     if (loginUserId != null) {
@@ -498,5 +505,6 @@ export default connect(
   getModuleSelectList,
   getLeftMenu,
   getPermissionByUser,
+  getModuleIdByPathName,
 }
 )(SideBar);

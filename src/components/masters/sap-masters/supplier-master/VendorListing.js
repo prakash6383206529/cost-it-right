@@ -25,6 +25,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { VENDOR } from '../../../../config/constants';
 import { loggedInUserId } from '../../../../helper';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -324,11 +325,7 @@ class VendorListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     bulkToggle = () => {
@@ -405,7 +402,7 @@ class VendorListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -493,8 +490,8 @@ class VendorListing extends Component {
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
+                    hover={false}
                     bordered={false}
-                    hover={true}
                     options={options}
                     className={"mr15 pr15"}
                     search

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
-import { Row, Col, Table, Button } from 'reactstrap';
-import { required } from "../../../../helper/validation";
+import { Row, Col, } from 'reactstrap';
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -17,6 +16,7 @@ import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import AddProcessDrawer from './AddProcessDrawer';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 class ProcessListing extends Component {
     constructor(props) {
@@ -49,10 +49,10 @@ class ProcessListing extends Component {
             machine_id: machine_id,
         }
         this.props.getProcessDataList(filterData, (res) => {
-            if (res && res.status == 200) {
+            if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status == 412) {
+            } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [] })
             } else {
                 this.setState({ tableData: [] })
@@ -65,7 +65,7 @@ class ProcessListing extends Component {
     * @description  PLANT FILTER
     */
     handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ plant: newValue }, () => {
                 const { plant } = this.state;
                 this.props.getMachineSelectListByPlant(plant.value, () => { })
@@ -81,7 +81,7 @@ class ProcessListing extends Component {
     * @description called
     */
     handleMachineType = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ machine: newValue }, () => {
                 const { machine } = this.state;
                 this.props.getPlantSelectListByMachine(machine.value, () => { })
@@ -120,7 +120,7 @@ class ProcessListing extends Component {
     */
     confirmDelete = (ID) => {
         this.props.deleteProcess(ID, (res) => {
-            if (res.data.Result == true) {
+            if (res.data.Result === true) {
                 toastr.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
                 this.getDataList()
             }
@@ -132,11 +132,7 @@ class ProcessListing extends Component {
     * @description Pagination
     */
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -170,7 +166,7 @@ class ProcessListing extends Component {
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
         let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -197,7 +193,7 @@ class ProcessListing extends Component {
 
         if (label === 'plant') {
             filterSelectList && filterSelectList.plants && filterSelectList.plants.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -205,7 +201,7 @@ class ProcessListing extends Component {
 
         if (label === 'Machine') {
             filterSelectList && filterSelectList.machine && filterSelectList.machine.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -269,7 +265,7 @@ class ProcessListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -354,8 +350,9 @@ class ProcessListing extends Component {
                     <Col>
                         <BootstrapTable
                             data={this.state.tableData}
-                            striped={true}
-                            hover={true}
+                            striped={false}
+                            hover={false}
+                            bordered={false}
                             options={options}
                             search
                             // exportCSV

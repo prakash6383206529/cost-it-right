@@ -1,20 +1,17 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Container, Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, decimalLength2 } from "../../../../helper/validation";
+import { Row, Col, Table } from 'reactstrap';
+import { required, decimalLength2 } from "../../../../helper/validation";
 import {
-    renderText, renderSelectField, renderNumberInputField, searchableSelect,
-    renderMultiSelectField, renderTextAreaField, focusOnError,
+    renderNumberInputField, searchableSelect, focusOnError,
 } from "../../../layout/FormInputs";
 import { } from '../../../../actions/master/Comman';
 import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../../../../actions/master/Fuel';
-import axios from 'axios';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
-import Switch from "react-switch";
 import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -77,9 +74,9 @@ class AddFuel extends Component {
                     setTimeout(() => {
                         const { fuelComboSelectList } = this.props;
 
-                        const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => item.Value == Data.FuelId)
+                        const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuelId)
                         //const StateObj = fuelComboSelectList && fuelComboSelectList.States.find(item => item.Value == Data.StateId)
-                        const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value == Data.UnitOfMeasurementId)
+                        const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value === Data.UnitOfMeasurementId)
 
                         let rateGridArray = Data && Data.FuelDetatils.map((item) => {
                             return {
@@ -95,8 +92,8 @@ class AddFuel extends Component {
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
-                            fuel: fuelObj && fuelObj != undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
-                            UOM: UOMObj && UOMObj != undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                            fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
+                            UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
                             rateGrid: rateGridArray,
                         })
                     }, 200)
@@ -117,7 +114,7 @@ class AddFuel extends Component {
     * @description called
     */
     handleFuel = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ fuel: newValue, })
         } else {
             this.setState({ fuel: [] })
@@ -129,7 +126,7 @@ class AddFuel extends Component {
     * @description called
     */
     handleUOM = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ UOM: newValue, })
         } else {
             this.setState({ UOM: [] })
@@ -141,7 +138,7 @@ class AddFuel extends Component {
     * @description called
     */
     handleState = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ StateName: newValue, })
         } else {
             this.setState({ StateName: [] })
@@ -150,12 +147,12 @@ class AddFuel extends Component {
 
     rateTableHandler = () => {
         const { StateName, rateGrid, effectiveDate, } = this.state;
-        if (StateName.length == 0 || effectiveDate == '') {
+        if (StateName.length === 0 || effectiveDate === '') {
             toastr.warning('Fields should not be empty');
             return false;
         }
         const { fieldsObj } = this.props;
-        const Rate = fieldsObj && fieldsObj != undefined ? fieldsObj : 0;
+        const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
         const tempArray = [];
 
         tempArray.push(...rateGrid, {
@@ -182,7 +179,7 @@ class AddFuel extends Component {
     updateRateGrid = () => {
         const { StateName, rateGrid, effectiveDate, rateGridEditIndex } = this.state;
         const { fieldsObj } = this.props;
-        const Rate = fieldsObj && fieldsObj != undefined ? fieldsObj : 0;
+        const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
         let tempArray = [];
 
         let tempData = rateGrid[rateGridEditIndex];
@@ -243,7 +240,7 @@ class AddFuel extends Component {
         const { rateGrid } = this.state;
 
         let tempData = rateGrid.filter((item, i) => {
-            if (i == index) {
+            if (i === index) {
                 return false;
             }
             return true;
@@ -283,22 +280,22 @@ class AddFuel extends Component {
         const temp = [];
         if (label === 'fuel') {
             fuelComboSelectList && fuelComboSelectList.Fuels.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'state') {
             fuelComboSelectList && fuelComboSelectList.States.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'uom') {
             fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.map(item => {
-                if (item.Value == 0) return false;
-                if (item.Text == 'Kilogram' || item.Text == 'Liter') {
+                if (item.Value === '0') return false;
+                if (item.Text === 'Kilogram' || item.Text === 'Liter') {
                     temp.push({ label: item.Text, value: item.Value })
                 }
             });
@@ -337,9 +334,9 @@ class AddFuel extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { isEditFlag, rateGrid, fuel, UOM, StateName, FuelDetailId } = this.state;
+        const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId } = this.state;
 
-        if (rateGrid.length == 0) {
+        if (rateGrid.length === 0) {
             toastr.warning('Rate should not be empty.');
             return false;
         }
@@ -392,14 +389,8 @@ class AddFuel extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
-        const { files, errors, isOpenFuelDrawer, isEditFlag, } = this.state;
-
-        const previewStyle = {
-            display: 'inline',
-            width: 100,
-            height: 100,
-        };
+        const { handleSubmit, } = this.props;
+        const { isOpenFuelDrawer, isEditFlag, } = this.state;
 
         return (
             <>
@@ -437,7 +428,7 @@ class AddFuel extends Component {
                                                             placeholder={'--- Select Fuel ---'}
                                                             options={this.renderListing('fuel')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.fuel == null || this.state.fuel.length == 0) ? [required] : []}
+                                                            validate={(this.state.fuel == null || this.state.fuel.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleFuel}
                                                             valueDescription={this.state.fuel}
@@ -461,7 +452,7 @@ class AddFuel extends Component {
                                                             placeholder={'--- Select ---'}
                                                             options={this.renderListing('uom')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                                                            validate={(this.state.UOM == null || this.state.UOM.length === 0) ? [required] : []}
                                                             required={true}
                                                             handleChangeDescription={this.handleUOM}
                                                             valueDescription={this.state.UOM}
@@ -592,7 +583,7 @@ class AddFuel extends Component {
                                                             })
                                                         }
                                                     </tbody>
-                                                    {this.state.rateGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                                    {this.state.rateGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                 </Table>
                                             </Col>
                                         </Row>
@@ -639,21 +630,12 @@ class AddFuel extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, fuel } = state;
+    const { fuel } = state;
     const fieldsObj = selector(state, 'Rate');
 
     const { fuelComboSelectList } = fuel;
 
     let initialValues = {};
-    // if (rawMaterialDetails && rawMaterialDetails != undefined) {
-    //     initialValues = {
-    //         Source: rawMaterialDetails.Source,
-    //         BasicRate: rawMaterialDetails.BasicRatePerUOM,
-    //         ScrapRate: rawMaterialDetails.ScrapRate,
-    //         NetLandedCost: rawMaterialDetails.NetLandedCost,
-    //         Remark: rawMaterialDetails.Remark,
-    //     }
-    // }
 
     return {
         initialValues, fieldsObj, fuelComboSelectList,

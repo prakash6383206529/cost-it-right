@@ -15,6 +15,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
 import BulkUpload from '../../../massUpload/BulkUpload';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 class BOPImportListing extends Component {
     constructor(props) {
@@ -175,11 +176,7 @@ class BOPImportListing extends Component {
     * @description Pagination
     */
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -329,7 +326,7 @@ class BOPImportListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -449,8 +446,9 @@ class BOPImportListing extends Component {
                     <Col>
                         <BootstrapTable
                             data={this.state.tableData}
-                            striped={true}
-                            hover={true}
+                            striped={false}
+                            hover={false}
+                            bordered={false}
                             options={options}
                             search
                             // exportCSV

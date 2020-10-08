@@ -24,13 +24,6 @@ export function formatLoginResult(res) {
     return null;
 }
 
-export function formatAddress(address, city, state, country, zipCode) {
-    const formatedAddress = [address, city, state, country, zipCode];
-    const res = formatedAddress.filter(Boolean).join(', ');
-    return res;
-}
-
-
 export function formatCloneOpportunityListData(cloneOpportunityListApiData, cloneOpportunityListStoreData) {
     let cloneListValue = [];
     let defaultObj = {
