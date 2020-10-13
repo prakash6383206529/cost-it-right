@@ -4,14 +4,15 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_TAX_DETAILS_DATALIST,
-    GET_TAX_DETAILS_DATA,
+    GET_TAX_DETAILS_DATA, config,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 
-const headers = {
-    'Content-Type': 'application/json',
-    //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
-};
+// const headers = {
+//     'Content-Type': 'application/json',
+//     //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
+// };
+const headers = config;
 
 /**
  * @method createTaxDetails
@@ -39,7 +40,7 @@ export function createTaxDetails(data, callback) {
 export function getTaxDetailsDataList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(API.getTaxDetailsDataList, { headers })
+        axios.get(API.getTaxDetailsDataList, headers)
             .then((response) => {
                 dispatch({
                     type: GET_TAX_DETAILS_DATALIST,

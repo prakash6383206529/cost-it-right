@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../../helper/validation";
 import { renderText, focusOnError } from "../../../layout/FormInputs";
 import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../../../../actions/master/ReasonMaster';
@@ -124,7 +124,7 @@ class AddReason extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset, pristine, submitting } = this.props;
+        const { handleSubmit, isEditFlag, } = this.props;
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                 <Container>

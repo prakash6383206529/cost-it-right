@@ -11,14 +11,11 @@ import {
     GET_ASSEMBLY_PART_SELECTLIST,
     GET_COMPONENT_PART_SELECTLIST,
     GET_BOUGHTOUT_PART_SELECTLIST,
-    GET_DRAWER_CHILD_PART_DATA,
+    GET_DRAWER_CHILD_PART_DATA, config
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 
-const headers = {
-    'Content-Type': 'application/json',
-    //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
-};
+const headers = config;
 
 
 ////////////////////////////// PART MASTER INDIVISUAL COMPONENT /////////////////////////////
@@ -490,6 +487,37 @@ export function getDrawerComponentPartData(PartId, callback) {
 }
 
 /**
+ * @method getDrawerBOPData
+ * @description get Drawer BOP Data
+ */
+export function getDrawerBOPData(PartId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (PartId !== '') {
+            axios.get(`${API.getChildDrawerBOPData}/${PartId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_DRAWER_CHILD_PART_DATA,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_DRAWER_CHILD_PART_DATA,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+/**
  * @method getBOMViewerTree
  * @description GET BOM VIEWER TREE BY ASSEMBLY PART ID
  */
@@ -497,6 +525,25 @@ export function getBOMViewerTree(PartId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         axios.get(`${API.getBOMViewerTree}/${PartId}`, headers)
+            .then((response) => {
+                if (response.data.Result === true) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getBOMViewerTreeDataByPartIdAndLevel
+ * @description GET BOM VIEWER TREE BY ASSEMBLY PART ID AND LEVELID
+ */
+export function getBOMViewerTreeDataByPartIdAndLevel(PartId, LevelId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.get(`${API.getBOMViewerTree}/${PartId}/${LevelId}`, headers)
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);

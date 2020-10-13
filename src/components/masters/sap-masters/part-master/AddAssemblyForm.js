@@ -5,6 +5,8 @@ import { Row, Col, } from 'reactstrap';
 import { required, number, } from "../../../../helper/validation";
 import { renderText, searchableSelect } from "../../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../../../../actions/master/Part';
+import { ASSEMBLY } from '../../../../config/constants';
+import { getRandomSixDigit } from '../../../../helper/util';
 
 class AddAssemblyForm extends Component {
     constructor(props) {
@@ -14,6 +16,7 @@ class AddAssemblyForm extends Component {
             parentPart: [],
             isAddMore: false,
             childData: [],
+            selectedParts: [],
         }
     }
 
@@ -22,7 +25,20 @@ class AddAssemblyForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
+        const { BOMViewerData } = this.props;
+
         this.props.getAssemblyPartSelectList(() => { })
+
+        let tempArr = [];
+        BOMViewerData && BOMViewerData.map(el => {
+            if (el.PartType === ASSEMBLY) {
+                tempArr.push(el.PartId)
+            }
+            return null;
+        })
+
+        this.setState({ selectedParts: tempArr })
+
     }
 
     /**
@@ -59,11 +75,14 @@ class AddAssemblyForm extends Component {
     */
     renderListing = (label) => {
         const { assemblyPartSelectList } = this.props;
+        const { selectedParts } = this.state;
+
         const temp = [];
         if (label === 'assemblyPart') {
             assemblyPartSelectList && assemblyPartSelectList.map(item => {
-                if (item.Value === '0') return false;
+                if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -98,7 +117,10 @@ class AddAssemblyForm extends Component {
             Quantity: values.Quantity,
             Level: "L1",
             selectedPartType: this.props.selectedPartType,
+            PartType: this.props.selectedPartType.Text,
+            PartTypeId: this.props.selectedPartType.Value,
             PartId: assemblyPart ? assemblyPart.value : '',
+            Input: getRandomSixDigit(),
         }
         this.props.getDrawerAssemblyPartDetail('', res => { })
 

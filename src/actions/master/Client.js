@@ -5,11 +5,10 @@ import {
     API_FAILURE,
     GET_CLIENT_DATA_SUCCESS,
     GET_CLIENT_SELECTLIST_SUCCESS,
+    config,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
-const headers = {
-    'Content-Type': 'application/json',
-};
+const headers = config
 
 /**
  * @method createClient

@@ -29,3 +29,15 @@ export function checkVendorPlantConfigurable() {
     const userDetail = reactLocalStorage.getObject("userDetail");
     return userDetail.IsVendorPlantConfigurable;
 };
+
+/**
+ * function for get logged in user auth token
+ * @returns {string}
+ */
+export const getAuthToken = () => {
+    let authToken = '';
+    if (isUserLoggedIn()) {
+        authToken = reactLocalStorage.getObject("userDetail").Token;
+    }
+    return authToken;
+};

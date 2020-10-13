@@ -27,10 +27,8 @@ import { checkPermission } from '../../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class OperationListing extends Component {
     constructor(props) {
@@ -125,6 +123,7 @@ class OperationListing extends Component {
             filterOperation && filterOperation.technology && filterOperation.technology.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -141,6 +140,7 @@ class OperationListing extends Component {
             filterOperation && filterOperation.operations && filterOperation.operations.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -149,6 +149,7 @@ class OperationListing extends Component {
             filterOperation && filterOperation.vendors && filterOperation.vendors.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -375,11 +376,7 @@ class OperationListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -468,7 +465,7 @@ class OperationListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -589,8 +586,8 @@ class OperationListing extends Component {
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
+                    hover={false}
                     bordered={false}
-                    hover={true}
                     options={options}
                     search
                     // exportCSV

@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Container, Row, Col, Table } from 'reactstrap';
 import {
   getUserDataAPI, getPermissionByUser, getActionHeadsSelectList,
   getUsersTechnologyLevelAPI,
 } from "../../actions/auth/AuthActions";
-import { toastr } from 'react-redux-toastr';
-import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
-import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../common/HeaderTitle';
+import { loggedInUserId } from '../../helper/auth';
 
 class ViewUserDetails extends Component {
   constructor(props) {
@@ -80,7 +78,7 @@ class ViewUserDetails extends Component {
 
     return actionSelectList && actionSelectList.map((el, i) => {
       return actions && actions.map((item, index) => {
-        if (el.Text != item.ActionName || item.IsChecked == false) return false;
+        if (el.Text !== item.ActionName || item.IsChecked === false) return false;
         this.renderSecondLevelAction(item.Actions, index)
       })
     })
@@ -91,7 +89,7 @@ class ViewUserDetails extends Component {
 
     return actionSelectList && actionSelectList.map((el, i) => {
       return actions && actions.map((item, index) => {
-        if (el.Text != item.ActionName || item.IsChecked == false) return false;
+        if (el.Text !== item.ActionName || item.IsChecked === false) return false;
         return (
           <td>
             <div className={`${item.ActionName}-icon`}>
@@ -119,8 +117,8 @@ class ViewUserDetails extends Component {
     this.setState({
       isPermissionOpen: !this.state.isPermissionOpen,
     }, () => {
-      const { isTechnologyOpen, isPermissionOpen } = this.state;
-      if (isPermissionOpen == false) {
+      const { isPermissionOpen } = this.state;
+      if (isPermissionOpen === false) {
         this.setState({ isTechnologyOpen: true })
       } else {
         this.setState({ isTechnologyOpen: false })
@@ -136,8 +134,8 @@ class ViewUserDetails extends Component {
     this.setState({
       isTechnologyOpen: !this.state.isTechnologyOpen,
     }, () => {
-      const { isTechnologyOpen, isPermissionOpen } = this.state;
-      if (isTechnologyOpen == false) {
+      const { isTechnologyOpen, } = this.state;
+      if (isTechnologyOpen === false) {
         this.setState({ isPermissionOpen: true })
       } else {
         this.setState({ isPermissionOpen: false })
@@ -152,7 +150,7 @@ class ViewUserDetails extends Component {
   */
   render() {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
-    const { isPermissionOpen, isTechnologyOpen } = this.state;
+    const { isTechnologyOpen } = this.state;
 
     const address = registerUserData ? `${registerUserData.AddressLine1}, ${registerUserData.AddressLine2}, 
     ${registerUserData.CityName},  ${registerUserData.ZipCode}` : '';
@@ -182,7 +180,7 @@ class ViewUserDetails extends Component {
                       customClass={'Personal-Details'} />
                   </Col>
                   <Col md="6">
-                    {EditAccessibility && <button
+                    {EditAccessibility && (UserId !== loggedInUserId()) && <button
                       className={'user-btn'}
                       onClick={() => this.props.editItemDetails(UserId, false)}
                       type="button">
@@ -314,7 +312,7 @@ class ViewUserDetails extends Component {
                             })
                           }
                         </tbody>
-                        {this.state.TechnologyLevelGrid.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                        {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
 
                       </Table>
                     </Col>}

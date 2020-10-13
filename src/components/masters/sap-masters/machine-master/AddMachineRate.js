@@ -29,7 +29,6 @@ import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../../common/NoContentFound';
 import { reactLocalStorage } from "reactjs-localstorage";
-import { Loader } from '../../../common/Loader';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -253,6 +252,7 @@ class AddMachineRate extends Component {
             technologySelectList && technologySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -260,6 +260,7 @@ class AddMachineRate extends Component {
             vendorListByVendorType && vendorListByVendorType.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -267,6 +268,7 @@ class AddMachineRate extends Component {
             filterPlantList && filterPlantList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -274,6 +276,7 @@ class AddMachineRate extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -281,6 +284,7 @@ class AddMachineRate extends Component {
             machineTypeSelectList && machineTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -288,6 +292,7 @@ class AddMachineRate extends Component {
             processSelectList && processSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -295,6 +300,7 @@ class AddMachineRate extends Component {
             UOMSelectList && UOMSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -669,7 +675,6 @@ class AddMachineRate extends Component {
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}
@@ -778,8 +783,8 @@ class AddMachineRate extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, loading, AddAccessibility, EditAccessibility } = this.props;
-        const { isLoader, isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied } = this.state;
+        const { handleSubmit, AddAccessibility, EditAccessibility } = this.props;
+        const { isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied } = this.state;
 
         return (
             <>

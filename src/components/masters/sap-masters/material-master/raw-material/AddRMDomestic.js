@@ -468,78 +468,89 @@ class AddRMDomestic extends Component {
         const temp = [];
         if (label === 'material') {
             rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'grade') {
             gradeSelectList && gradeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'specification') {
             rmSpecification && rmSpecification.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'category') {
             categoryList && categoryList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'plant') {
             plantList && plantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'VendorNameList') {
             vendorListByVendorType && vendorListByVendorType.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'VendorLocation') {
             filterCityListBySupplier && filterCityListBySupplier.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'SourceLocation') {
             cityList && cityList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'uom') {
             UOMSelectList && UOMSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'city') {
             filterCityListBySupplier && filterCityListBySupplier.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -600,22 +611,21 @@ class AddRMDomestic extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
-        const { isEditFlag, RawMaterialID } = this.state;
         return { url: 'https://httpbin.org/post', }
 
     }
 
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
-        const { isEditFlag, files, } = this.state;
+        const { files, } = this.state;
 
-        if (status == 'removed') {
+        if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files.filter(item => item.OriginalFileName != removedFileName)
+            let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
             this.setState({ files: tempArr })
         }
 
-        if (status == 'done') {
+        if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
             this.props.fileUploadRMDomestic(data, (res) => {
@@ -626,7 +636,7 @@ class AddRMDomestic extends Component {
             })
         }
 
-        if (status == 'rejected_file_type') {
+        if (status === 'rejected_file_type') {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
@@ -654,18 +664,17 @@ class AddRMDomestic extends Component {
             }
             this.props.fileDeleteRMDomestic(deleteData, (res) => {
                 toastr.success('File has been deleted successfully.')
-                let tempArr = this.state.files.filter(item => item.FileId != FileId)
+                let tempArr = this.state.files.filter(item => item.FileId !== FileId)
                 this.setState({ files: tempArr })
             })
         }
         if (FileId == null) {
-            let tempArr = this.state.files.filter(item => item.FileName != OriginalFileName)
+            let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
             this.setState({ files: tempArr })
         }
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}

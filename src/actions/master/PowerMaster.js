@@ -6,13 +6,11 @@ import {
     CREATE_SUCCESS,
     GET_POWER_DATALIST_SUCCESS,
     GET_POWER_DATA_SUCCESS,
+    config
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 
-const headers = {
-    'Content-Type': 'application/json',
-    //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
-};
+const headers = config
 
 /**
  * @method createUnitOfMeasurementAPI
@@ -40,7 +38,7 @@ export function createPowerAPI(data, callback) {
 export function getPowerDataListAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getPowerDataListAPI, { headers })
+        axios.get(API.getPowerDataListAPI, headers)
             .then((response) => {
                 dispatch({
                     type: GET_POWER_DATALIST_SUCCESS,

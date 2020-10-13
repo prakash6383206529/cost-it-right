@@ -72,6 +72,7 @@ class AddUOM extends Component {
             unitTypeList && unitTypeList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }

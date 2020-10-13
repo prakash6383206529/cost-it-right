@@ -15,6 +15,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
+import { GridTotalFormate } from '../common/TableGridFunctions';
 
 class DepartmentsListing extends Component {
   constructor(props) {
@@ -135,6 +136,10 @@ class DepartmentsListing extends Component {
     });
   }
 
+  renderPaginationShowsTotal(start, to, total) {
+    return <GridTotalFormate start={start} to={to} total={total} />
+  }
+
   /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -158,6 +163,7 @@ class DepartmentsListing extends Component {
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      paginationShowsTotal: this.renderPaginationShowsTotal,
     };
     return (
       <>

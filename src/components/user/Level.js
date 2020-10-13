@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
-import { langs } from "../../config/localization";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, alphabetsOnlyForName, number } from "../../helper/validation";
+import { required, number } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
@@ -13,14 +12,9 @@ import {
   getLevelMappingAPI, updateLevelMappingAPI,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
-import { reactLocalStorage } from "reactjs-localstorage";
-import { Redirect } from 'react-router-dom';
-import LevelsListing from './LevelsListing';
-import LevelTechnologyListing from "./LevelTechnologyListing";
 import { loggedInUserId } from "../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import { Container, Row, Col, Button, Table } from 'reactstrap';
-import $ from 'jquery';
+import { Container, Row, Col, } from 'reactstrap';
 
 class Level extends Component {
   constructor(props) {
@@ -79,8 +73,8 @@ class Level extends Component {
 
           setTimeout(() => {
 
-            let technologyObj = technologyList && technologyList.filter(item => item.Value == Data.TechnologyId)
-            let levelObj = levelList && levelList.filter(item => item.LevelId == Data.LevelId)
+            let technologyObj = technologyList && technologyList.filter(item => item.Value === Data.TechnologyId)
+            let levelObj = levelList && levelList.filter(item => item.LevelId === Data.LevelId)
 
             this.setState({
               isEditMappingFlag: true,
@@ -124,7 +118,7 @@ class Level extends Component {
       * @description Used to handle 
       */
   technologyHandler = (newValue, actionMeta) => {
-    if (newValue && newValue != '') {
+    if (newValue && newValue !== '') {
       this.setState({ technology: newValue });
     } else {
       this.setState({ technology: [] });
@@ -136,7 +130,7 @@ class Level extends Component {
   * @description Used to handle 
   */
   levelHandler = (newValue, actionMeta) => {
-    if (newValue && newValue != '') {
+    if (newValue && newValue !== '') {
       this.setState({ level: newValue });
     } else {
       this.setState({ level: [] });
@@ -196,12 +190,7 @@ class Level extends Component {
   };
 
   submitLevelTechnology = () => {
-    const { technology, level } = this.state;
-    const { isEditFlag, reset } = this.props;
     this.setState({ isLoader: true })
-
-
-
   }
 
   /**
@@ -302,8 +291,7 @@ class Level extends Component {
 
 
   render() {
-    const { handleSubmit, pristine, reset, submitting, isShowForm,
-      isShowMappingForm, isEditFlag } = this.props;
+    const { handleSubmit, isShowForm, isEditFlag } = this.props;
     const { isLoader, isSubmitted } = this.state;
 
     return (
@@ -372,7 +360,7 @@ class Level extends Component {
                           type="button"
                           value="CANCEL"
                           className="reset mr15 cancel-btn">
-                         <div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> CANCEL</button>
+                          <div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> CANCEL</button>
 
 
                         <button
@@ -402,7 +390,7 @@ class Level extends Component {
                           component={searchableSelect}
                           options={this.searchableSelectType('technology')}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
+                          validate={(this.state.technology == null || this.state.technology.length === 0) ? [required] : []}
                           required={true}
                           handleChangeDescription={this.technologyHandler}
                           valueDescription={this.state.technology}
@@ -417,7 +405,7 @@ class Level extends Component {
                           component={searchableSelect}
                           options={this.searchableSelectType('level')}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                          validate={(this.state.level == null || this.state.level.length === 0) ? [required] : []}
                           required={true}
                           handleChangeDescription={this.levelHandler}
                           valueDescription={this.state.level}
@@ -437,7 +425,7 @@ class Level extends Component {
                           type="button"
                           value="CANCEL"
                           className="reset mr15 cancel-btn">
-                         <div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> CANCEL</button>
+                          <div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> CANCEL</button>
                         {/* <input
                             disabled={isSubmitted ? true : false}
                             type="submit"
@@ -486,7 +474,7 @@ const mapStateToProps = ({ auth }) => {
   const { levelDetail, technologyList, levelList } = auth;
   let initialValues = {};
 
-  if (levelDetail && levelDetail != undefined) {
+  if (levelDetail && levelDetail !== undefined) {
     initialValues = {
       LevelName: levelDetail.LevelName,
       Description: levelDetail.Description,

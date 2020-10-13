@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
 import { required } from "../../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -22,10 +21,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 import moment from 'moment';
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 class LabourListing extends Component {
     constructor(props) {
@@ -90,7 +86,7 @@ class LabourListing extends Component {
             machine_type: machine_type,
         }
         this.props.getLabourDataList(filterData, res => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
@@ -123,6 +119,7 @@ class LabourListing extends Component {
             stateSelectList && stateSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -131,6 +128,7 @@ class LabourListing extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -139,6 +137,7 @@ class LabourListing extends Component {
             machineTypeSelectList && machineTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -147,6 +146,7 @@ class LabourListing extends Component {
             labourTypeByPlantSelectList && labourTypeByPlantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -364,11 +364,7 @@ class LabourListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -475,7 +471,7 @@ class LabourListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -498,7 +494,7 @@ class LabourListing extends Component {
                                         isClearable={false}
                                         options={this.renderListing('EmploymentTerms')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.EmploymentTerms == null || this.state.EmploymentTerms.length == 0) ? [required] : []}
+                                        validate={(this.state.EmploymentTerms == null || this.state.EmploymentTerms.length === 0) ? [required] : []}
                                         required={true}
                                         handleChangeDescription={this.handleHeadChange}
                                         valueDescription={this.state.EmploymentTerms}
@@ -612,8 +608,8 @@ class LabourListing extends Component {
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
+                    hover={false}
                     bordered={false}
-                    hover={true}
                     options={options}
                     search
                     // exportCSV

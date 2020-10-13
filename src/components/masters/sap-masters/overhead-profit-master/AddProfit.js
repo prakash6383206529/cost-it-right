@@ -165,6 +165,7 @@ class AddProfit extends Component {
             modelTypes && modelTypes.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -173,6 +174,7 @@ class AddProfit extends Component {
             costingHead && costingHead.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -181,6 +183,7 @@ class AddProfit extends Component {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -189,6 +192,7 @@ class AddProfit extends Component {
             clientSelectList && clientSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -445,7 +449,6 @@ class AddProfit extends Component {
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}

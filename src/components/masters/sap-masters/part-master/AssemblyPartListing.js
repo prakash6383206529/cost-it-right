@@ -5,7 +5,6 @@ import { getAssemblyPartDataList, deleteAssemblyPart, } from '../../../../action
 import { } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -13,6 +12,8 @@ import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
 import moment from 'moment';
 import VisualAdDrawer from './VisualAdDrawer';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import BOMViewer from './BOMViewer';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -114,7 +115,7 @@ class AssemblyPartListing extends Component {
     visualAdFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="View mr5" type={'button'} onClick={() => this.visualAdDetails(cell, row.BOMId)} />
+                <button className="View mr5" type={'button'} onClick={() => this.visualAdDetails(cell)} />
             </>
         )
     }
@@ -123,8 +124,8 @@ class AssemblyPartListing extends Component {
     * @method visualAdDetails
     * @description Renders buttons
     */
-    visualAdDetails = (cell, BOMId) => {
-        this.setState({ visualAdId: cell, BOMId: BOMId, isOpenVisualDrawer: true })
+    visualAdDetails = (cell) => {
+        this.setState({ visualAdId: cell, isOpenVisualDrawer: true })
     }
 
     /**
@@ -132,7 +133,7 @@ class AssemblyPartListing extends Component {
     * @description CLOSE VISUAL AD DRAWER
     */
     closeVisualDrawer = () => {
-        this.setState({ isOpenVisualDrawer: false, visualAdId: '', BOMId: '', })
+        this.setState({ isOpenVisualDrawer: false, visualAdId: '', })
     }
 
     /**
@@ -212,11 +213,7 @@ class AssemblyPartListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     formToggle = () => {
@@ -241,7 +238,7 @@ class AssemblyPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -269,7 +266,7 @@ class AssemblyPartListing extends Component {
                     data={this.state.tableData}
                     striped={false}
                     bordered={false}
-                    hover={true}
+                    hover={false}
                     options={options}
                     search
                     // exportCSV
@@ -281,25 +278,28 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="BOMNumber" >BOM NO.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" >Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plants" width={150} >Plant</TableHeaderColumn>
-                    <TableHeaderColumn dataField="NumberOfParts" width={100}>No. of Child Parts</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMLevelCount" width={150}>BOM Level Count</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" width={150}>ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Plants" width={'150'} >Plant</TableHeaderColumn>
+                    <TableHeaderColumn dataField="NumberOfParts" width={'100'}>No. of Child Parts</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMLevelCount" width={'150'}>BOM Level Count</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" width={'150'}>ECN No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="VisualAid" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
-                {isOpenVisualDrawer && <VisualAdDrawer
+
+                {isOpenVisualDrawer && <BOMViewer
                     isOpen={isOpenVisualDrawer}
                     closeDrawer={this.closeVisualDrawer}
-                    isEditFlag={false}
-                    ID={this.state.visualAdId}
-                    BOMId={this.state.BOMId}
+                    isEditFlag={true}
+                    PartId={this.state.visualAdId}
                     anchor={'right'}
+                    isFromVishualAd={true}
+                    NewAddedLevelOneChilds={[]}
                 />}
+
             </ >
         );
     }

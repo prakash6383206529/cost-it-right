@@ -1,95 +1,122 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import { useForm } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { } from '../../../../actions/master/Part';
-import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
+import { TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { yupResolver } from '@hookform/resolvers';
+import * as yup from "yup";
 
-class VishualAdDrawer extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
+const schema = yup.object().shape({
+    quantity: yup.string().matches(/^[0-9]*$/, 'Please enter valid number').required('this field is required'),
+    //firstName: yup.string().matches(/^[A-Za-z ]*$/, 'Please enter valid name').required('this field is required'),
+});
 
-        }
-    }
 
-    /**
-   * @method componentDidMount
-   * @description called after render the component
-   */
-    componentDidMount() {
-        //this.props.getLabourTypeSelectList(() => { })
-    }
+export default function VishualAdDrawer(props) {
 
-    toggleDrawer = (event) => {
+    const { register, handleSubmit, watch, errors } = useForm({
+        resolver: yupResolver(schema)
+    });
+
+    console.log(watch("quantity")); // watch input value by passing the name of it
+
+    const toggleDrawer = (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        props.closeDrawer('')
     };
-
-
 
     /**
     * @method cancel
     * @description used to Reset form
     */
-    cancel = () => {
-        this.toggleDrawer('')
+    const cancel = () => {
+        toggleDrawer('')
     }
+
+    const onSubmit = data => {
+        console.log('errors', errors)
+        props.closeDrawer(data.quantity)
+    }
+    console.log('errors', errors)
 
     /**
     * @method render
     * @description Renders the component
     */
-    render() {
-        const { } = this.props;
-        return (
-            <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                    <Container>
-                        <div className={'drawer-wrapper'}>
+    return (
+        <div>
+            <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+                <Container>
+                    <div className={'drawer-wrapper'}>
 
-                            <Row className="drawer-heading">
-                                <Col>
-                                    <div className={'header-wrapper left'}>
-                                        <h3>{'Visual Ad'}</h3>
-                                    </div>
-                                    <div
-                                        onClick={(e) => this.toggleDrawer(e)}
-                                        className={'close-button right'}>
-                                    </div>
-                                </Col>
-                            </Row>
+                        <Row className="drawer-heading">
+                            <Col>
+                                <div className={'header-wrapper left'}>
+                                    <h3>{'Update Quantity'}</h3>
+                                </div>
+                                <div
+                                    onClick={(e) => toggleDrawer(e)}
+                                    className={'close-button right'}>
+                                </div>
+                            </Col>
+                        </Row>
 
+                        <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
 
+                                <Col md="12">
+                                    <TextFieldHookForm
+                                        label="Quantity"
+                                        name={'quantity'}
+                                        register={register}
+                                        required={true}
+                                        defaultValue={props.updatedQuantity}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.quantity}
+                                    />
+                                </Col>
+                                {/* <Col md="12">
+                                    <TextFieldHookForm
+                                        label="First Name"
+                                        name={'firstName'}
+                                        register={register}
+                                        required={true}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.firstName}
+                                    />
+                                </Col> */}
+
+
                             </Row>
 
-                        </div>
-                    </Container>
-                </Drawer>
-            </div>
-        );
-    }
+                            <Row className="sf-btn-footer no-gutters justify-content-between">
+                                <div className="col-sm-12 text-right bluefooter-butn">
+                                    <button
+                                        type={'button'}
+                                        className="reset mr15 cancel-btn"
+                                        onClick={cancel} >
+                                        <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                    </button>
+
+                                    <button
+                                        type="submit"
+                                        className="submit-button mr5 save-btn" >
+                                        <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                        {'Update'}
+                                    </button>
+                                </div>
+                            </Row>
+
+                        </form>
+                    </div>
+                </Container>
+            </Drawer>
+        </div>
+    );
 }
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps() {
-
-    return {}
-}
-
-/**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-
-})(VishualAdDrawer);

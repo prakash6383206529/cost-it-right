@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../../layout/FormInputs";
-import { required } from "../../../../helper/validation";
+import { reduxForm } from "redux-form";
+import { Col, } from 'reactstrap';
+import { focusOnError, } from "../../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { Loader } from '../../../common/Loader';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../../../../actions/master/ReasonMaster';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
@@ -18,10 +16,7 @@ import { checkPermission } from '../../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
-
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 class ReasonListing extends Component {
     constructor(props) {
@@ -42,12 +37,12 @@ class ReasonListing extends Component {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
-            if (leftMenuData != undefined) {
+            if (leftMenuData !== undefined) {
                 let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName == REASON)
+                const accessData = Data && Data.find(el => el.PageName === REASON)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-                if (permmisionData != undefined) {
+                if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -72,15 +67,13 @@ class ReasonListing extends Component {
     */
     getTableListData = () => {
         this.props.getAllReasonAPI(res => {
-            if (res.status == 204 && res.data == '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
+                this.setState({ tableData: Data, })
             } else {
-
+                this.setState({ tableData: [], })
             }
         });
     }
@@ -184,7 +177,7 @@ class ReasonListing extends Component {
         let currentPage = this.refs.table.state.currPage;
         let sizePerPage = this.refs.table.state.sizePerPage;
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -197,11 +190,7 @@ class ReasonListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     formToggle = () => {
@@ -223,7 +212,6 @@ class ReasonListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, pristine, submitting, } = this.props;
         const { isEditFlag, isOpenDrawer, AddAccessibility, } = this.state;
         const options = {
             clearSearch: true,
@@ -232,7 +220,7 @@ class ReasonListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -254,8 +242,8 @@ class ReasonListing extends Component {
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
+                    hover={false}
                     bordered={false}
-                    hover={true}
                     options={options}
                     search
                     // exportCSV

@@ -13,6 +13,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 class ZBCPlantListing extends Component {
     constructor(props) {
@@ -187,11 +188,7 @@ class ZBCPlantListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -206,6 +203,7 @@ class ZBCPlantListing extends Component {
             countryList && countryList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -213,6 +211,7 @@ class ZBCPlantListing extends Component {
             stateList && stateList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -220,6 +219,7 @@ class ZBCPlantListing extends Component {
             cityList && cityList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -345,7 +345,7 @@ class ZBCPlantListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -440,8 +440,8 @@ class ZBCPlantListing extends Component {
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
+                    hover={false}
                     bordered={false}
-                    hover={true}
                     options={options}
                     search
                     // exportCSV

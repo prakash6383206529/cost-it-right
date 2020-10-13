@@ -2,21 +2,39 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Redirect } from 'react-router-dom';
+import { checkPageAuthorization } from './actions/auth/AuthActions'
+import { loggedInUserId } from './helper';
 
-export default function (ComposedComponent) {
+export default function (ComposedComponent, PAGENAME) {
     class AuthMiddleware extends Component {
 
         constructor(props) {
             super(props);
             this.state = {
-                redirectToLogin: false
+                redirectToLogin: false,
+                redirectToDashboard: false,
             }
         }
 
         UNSAFE_componentWillMount() {
+
+            // CONDITION TO CHECK IF USER LOGGED IN THEN CONTINUE, OTHERWISE REDIRECT TO LOGIN PAGE
             if (this.props.authenticated === false) {
                 this.setState({ redirectToLogin: true })
                 return false;
+            }
+
+            // CONDITION TO CHECK REQUEST (PAGE OR URL) IS ACCESSIBLE OR NOT
+            if (this.props.authenticated === true) {
+                let reqData = {
+                    PageName: PAGENAME,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.checkPageAuthorization(reqData, res => {
+                    if (res && res.status === 401) {
+                        this.setState({ redirectToDashboard: true })
+                    }
+                })
             }
         }
 
@@ -26,6 +44,14 @@ export default function (ComposedComponent) {
                 return (<Redirect
                     to={{
                         pathname: `/login`,
+                    }} />
+                )
+            }
+
+            if (this.state.redirectToDashboard === true) {
+                return (<Redirect
+                    to={{
+                        pathname: `/`,
                     }} />
                 )
             }
@@ -59,5 +85,5 @@ export default function (ComposedComponent) {
     * @param {function} mapStateToProps
     * @param {function} mapDispatchToProps
     */
-    return connect(mapStateToProps)(AuthMiddleware);
+    return connect(mapStateToProps, { checkPageAuthorization })(AuthMiddleware);
 }

@@ -15,6 +15,7 @@ import Switch from "react-switch";
 import moment from 'moment';
 import { loggedInUserId } from '../../../../helper/auth';
 import BulkUpload from '../../../massUpload/BulkUpload';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -200,11 +201,7 @@ class IndivisualPartListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     bulkToggle = () => {
@@ -235,7 +232,7 @@ class IndivisualPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -269,7 +266,7 @@ class IndivisualPartListing extends Component {
                     data={this.state.tableData}
                     striped={false}
                     bordered={false}
-                    hover={true}
+                    hover={false}
                     options={options}
                     search
                     // exportCSV

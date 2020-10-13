@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
-import { Row, Col, Table, Button } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { } from '../../../../actions/master/Material';
 import { required } from "../../../../helper/validation";
 import {
@@ -13,13 +13,13 @@ import { getVendorWithVendorCodeSelectList, } from '../../../../actions/master/S
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Loader } from '../../../common/Loader';
 import { CONSTANT } from '../../../../helper/AllConastant';
-import { convertISOToUtcDate, } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 class PowerListing extends Component {
     constructor(props) {
@@ -57,10 +57,10 @@ class PowerListing extends Component {
                 stateID: StateName ? StateName.value : '',
             }
             this.props.getPowerDetailDataList(filterData, (res) => {
-                if (res && res.status == 200) {
+                if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     this.setState({ tableData: Data })
-                } else if (res && res.response && res.response.status == 412) {
+                } else if (res && res.response && res.response.status === 412) {
                     this.setState({ tableData: [] })
                 } else {
                     this.setState({ tableData: [] })
@@ -70,14 +70,14 @@ class PowerListing extends Component {
         } else {
 
             const filterData = {
-                vendorID: vendorName && vendorName != undefined ? vendorName.value : '',
-                plantID: vendorPlant && vendorPlant != undefined ? vendorPlant.value : '',
+                vendorID: vendorName && vendorName !== undefined ? vendorName.value : '',
+                plantID: vendorPlant && vendorPlant !== undefined ? vendorPlant.value : '',
             }
             this.props.getVendorPowerDetailDataList(filterData, (res) => {
-                if (res && res.status == 200) {
+                if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     this.setState({ tableData: Data })
-                } else if (res && res.response && res.response.status == 412) {
+                } else if (res && res.response && res.response.status === 412) {
                     this.setState({ tableData: [] })
                 } else {
                     this.setState({ tableData: [] })
@@ -142,11 +142,7 @@ class PowerListing extends Component {
     * @description Pagination
     */
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -180,7 +176,7 @@ class PowerListing extends Component {
         let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
         let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
         let serialNumber = '';
-        if (currentPage == 1) {
+        if (currentPage === 1) {
             serialNumber = rowIndex + 1;
         } else {
             serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
@@ -214,28 +210,28 @@ class PowerListing extends Component {
 
         if (label === 'state') {
             stateSelectList && stateSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorNameList') {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
         }
         if (label === 'VendorPlant') {
             filterPlantList && filterPlantList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
             return temp;
@@ -260,7 +256,7 @@ class PowerListing extends Component {
     * @description  STATE FILTER
     */
     handleState = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ StateName: newValue }, () => {
                 const { StateName } = this.state;
                 this.props.getPlantListByState(StateName.value, () => { })
@@ -275,7 +271,7 @@ class PowerListing extends Component {
     * @description  PLANT FILTER
     */
     handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ plant: newValue });
         } else {
             this.setState({ plant: [], });
@@ -287,7 +283,7 @@ class PowerListing extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
                 const { vendorName } = this.state;
                 this.props.getPlantBySupplier(vendorName.value, () => { })
@@ -303,10 +299,8 @@ class PowerListing extends Component {
     * @description called
     */
     handleVendorPlant = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
-            this.setState({ vendorPlant: newValue, }, () => {
-                const { vendorPlant } = this.state;
-            });
+        if (newValue && newValue !== '') {
+            this.setState({ vendorPlant: newValue, });
         } else {
             this.setState({ vendorPlant: [], })
         }
@@ -360,7 +354,7 @@ class PowerListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -380,7 +374,6 @@ class PowerListing extends Component {
                                     onColor="#4DC771"
                                     onHandleColor="#ffffff"
                                     offColor="#4DC771"
-                                    id="normal-switch"
                                     uncheckedIcon={false}
                                     checkedIcon={false}
                                     height={20}
@@ -442,7 +435,7 @@ class PowerListing extends Component {
                                                 isClearable={false}
                                                 options={this.renderListing('VendorNameList')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
+                                                validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handleVendorName}
                                                 valueDescription={this.state.vendorName}
@@ -460,7 +453,7 @@ class PowerListing extends Component {
                                                 isClearable={false}
                                                 options={this.renderListing('VendorPlant')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.vendorPlant == null || this.state.vendorPlant.length == 0) ? [required] : []}
+                                                validate={(this.state.vendorPlant == null || this.state.vendorPlant.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handleVendorPlant}
                                                 valueDescription={this.state.vendorPlant}
@@ -512,8 +505,9 @@ class PowerListing extends Component {
                         {!this.state.IsVendor &&
                             <BootstrapTable
                                 data={this.state.tableData}
-                                striped={true}
-                                hover={true}
+                                striped={false}
+                                hover={false}
+                                bordered={false}
                                 options={options}
                                 search
                                 // exportCSV
@@ -531,8 +525,9 @@ class PowerListing extends Component {
                         {this.state.IsVendor &&
                             <BootstrapTable
                                 data={this.state.tableData}
-                                striped={true}
-                                hover={true}
+                                striped={false}
+                                hover={false}
+                                bordered={false}
                                 options={options}
                                 search
                                 // exportCSV

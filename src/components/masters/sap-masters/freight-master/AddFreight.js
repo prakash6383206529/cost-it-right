@@ -547,11 +547,11 @@ class AddFreight extends Component {
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                                     <div className="fullinput-icon">
                                                         <Field
-                                                            name="Mood"
+                                                            name="Mode"
                                                             type="text"
-                                                            label="Mood"
+                                                            label="Mode"
                                                             component={searchableSelect}
-                                                            placeholder={'--Mood--'}
+                                                            placeholder={'--Mode--'}
                                                             options={this.renderListing('FREIGHT_MODE')}
                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                             validate={(this.state.TransPortMood == null || this.state.TransPortMood.length === 0) ? [required] : []}

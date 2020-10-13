@@ -16,6 +16,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { CLIENT } from '../../../../config/constants';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -177,11 +178,7 @@ class ClientListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -236,7 +233,7 @@ class ClientListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -263,8 +260,8 @@ class ClientListing extends Component {
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
+                    hover={false}
                     bordered={false}
-                    hover={true}
                     options={options}
                     search
                     // exportCSV

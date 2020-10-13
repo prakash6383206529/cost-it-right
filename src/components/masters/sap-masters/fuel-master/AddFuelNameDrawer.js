@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { required, maxLength25, minLength3 } from "../../../../helper/validation";
-import { renderText, searchableSelect } from "../../../layout/FormInputs";
+import { Container, Row, Col, } from 'reactstrap';
+import { required, } from "../../../../helper/validation";
+import { renderText, } from "../../../layout/FormInputs";
 import { createFuel } from '../../../../actions/master/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { loggedInUserId } from "../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
 class AddFuelNameDrawer extends Component {
@@ -59,8 +58,6 @@ class AddFuelNameDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { unitTypes } = this.state;
-
         /** Update detail of the existing UOM  */
         if (this.props.isEditFlag) {
 
@@ -83,7 +80,7 @@ class AddFuelNameDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, reset } = this.props;
+        const { handleSubmit, isEditFlag, } = this.props;
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
                 <Container>
@@ -150,10 +147,8 @@ class AddFuelNameDrawer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ fuel }) {
-    const { } = fuel;
+function mapStateToProps() {
     let initialValues = {};
-
     return { initialValues };
 }
 

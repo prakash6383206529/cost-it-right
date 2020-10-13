@@ -18,6 +18,7 @@ import { loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { GridTotalFormate } from '../common/TableGridFunctions';
 function enumFormatter(cell, row, enumObject) {
 	return enumObject[cell];
 }
@@ -351,11 +352,7 @@ class UsersListing extends Component {
 	}
 
 	renderPaginationShowsTotal(start, to, total) {
-		return (
-			<p style={{ color: 'Red' }}>
-				Showing {start} of {to} entries.
-			</p>
-		);
+		return <GridTotalFormate start={start} to={to} total={total} />
 	}
 
 	/**
@@ -410,7 +407,7 @@ class UsersListing extends Component {
 			//onExportToCSV: this.onExportToCSV,
 			//paginationShowsTotal: true,
 			paginationShowsTotal: this.renderPaginationShowsTotal,
-			paginationSize: 2,
+			paginationSize: 5,
 		};
 
 		return (
@@ -489,7 +486,7 @@ class UsersListing extends Component {
 					data={this.state.userData}
 					striped={false}
 					bordered={false}
-					hover={true}
+					hover={false}
 					options={options}
 					search
 					// exportCSV

@@ -14,6 +14,7 @@ import { checkPermission } from '../../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 class UOMMaster extends Component {
     constructor(props) {
@@ -127,6 +128,10 @@ class UOMMaster extends Component {
         });
     }
 
+    renderPaginationShowsTotal(start, to, total) {
+        return <GridTotalFormate start={start} to={to} total={total} />
+    }
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -194,8 +199,8 @@ class UOMMaster extends Component {
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
-            //paginationShowsTotal: this.renderPaginationShowsTotal,
-            //paginationSize: 2,
+            paginationShowsTotal: this.renderPaginationShowsTotal,
+            paginationSize: 5,
         };
         return (
             < >
@@ -220,8 +225,8 @@ class UOMMaster extends Component {
                         <BootstrapTable
                             data={this.state.dataList}
                             striped={false}
+                            hover={false}
                             bordered={false}
-                            hover={true}
                             options={options}
                             search
                             // exportCSV

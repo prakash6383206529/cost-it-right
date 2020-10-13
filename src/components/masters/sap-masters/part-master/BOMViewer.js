@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 import { } from "../../../../helper/validation";
 import { } from "../../../layout/FormInputs";
-import { getBOMViewerTree } from '../../../../actions/master/Part';
+import { getBOMViewerTree, getBOMViewerTreeDataByPartIdAndLevel } from '../../../../actions/master/Part';
 import { Flowpoint, Flowspace } from 'flowpoints';
 import AddChildDrawer from './AddChildDrawer';
 import Drawer from '@material-ui/core/Drawer';
+import { ASSEMBLY } from '../../../../config/constants';
+import { getRandomSixDigit } from '../../../../helper/util';
+import VisualAdDrawer from './VisualAdDrawer';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 class BOMViewer extends Component {
     constructor(props) {
@@ -18,6 +22,12 @@ class BOMViewer extends Component {
             BOPPart: [],
             isAddMore: false,
             displayDeleteIcon: false,
+
+            displayEditIcon: false,
+            EditIndex: '',
+            updatedQuantity: '',
+            isOpenVisualDrawer: false,
+
             selected_point: null,
 
             flowpoints: [],
@@ -25,6 +35,7 @@ class BOMViewer extends Component {
 
             ActualBOMData: [],
             isCancel: false,
+            initalConfiguration: reactLocalStorage.getObject('InitialConfiguration'),
         }
     }
 
@@ -33,12 +44,12 @@ class BOMViewer extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { isEditFlag, PartId } = this.props;
+        const { isEditFlag, PartId, NewAddedLevelOneChilds } = this.props;
         if (isEditFlag) {
             this.props.getBOMViewerTree(PartId, res => {
                 if (res && res.status === 200) {
                     let Data = res.data.Data;
-                    this.setState({ flowpoints: Data.FlowPoints })
+                    this.setState({ flowpoints: [...Data.FlowPoints, ...NewAddedLevelOneChilds] })
                 }
             })
         } else {
@@ -69,11 +80,56 @@ class BOMViewer extends Component {
         let tempArray = [];
         let outputArray = [];
 
-        const posX = flowpoints.length > 0 ? 450 * (flowpoints.length - 1) : 50;
+        const posX = flowpoints.length > 0 ? 450 * (flowpoints.filter(el => el.Level === 'L1').length - 1) : 50;
 
-        if (Object.keys(childData).length > 0) {
+        if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
+
+            this.props.getBOMViewerTreeDataByPartIdAndLevel(childData.PartId, 1, res => {
+                let Data = res.data.Data.FlowPoints;
+
+                const DeleteNodeL1 = getRandomSixDigit();
+                Data && Data.map(el => {
+                    tempArray.push({
+                        PartType: el.PartType,
+                        PartNumber: el.PartNumber,
+                        Input: el.Input,
+                        Position: el.Position,
+                        Outputs: el.Outputs,
+                        InnerContent: el.InnerContent,
+                        PartName: el.PartName,
+                        Quantity: el.Quantity,
+                        Level: el.Level,
+                        selectedPartType: childData.selectedPartType,
+                        PartId: childData.PartId,
+                        DeleteNodeL1: DeleteNodeL1,
+                    })
+                    return null;
+                })
+
+            })
+
+            setTimeout(() => {
+
+                tempArray && tempArray.map((el, i) => {
+                    if (el.Level === 'L1') {
+                        outputArray.push(el.Input)
+                    }
+                    return null;
+                })
+
+                //GET INDEX OF L0 LEVEL OBJECTS
+                let isAvailable = flowpoints.findIndex(el => el.Level === 'L0')
+
+                let flowPointstempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Outputs: [...flowpoints[isAvailable].Outputs, ...outputArray], }) })
+
+                this.setState({ flowpoints: [...flowPointstempArray, ...tempArray] })
+
+            }, 200)
+
+        } else if (Object.keys(childData).length > 0) {
+
             tempArray.push(...flowpoints, {
-                PartType: childData && childData.selectedPartType ? childData.selectedPartType.Text : '',
+                PartType: childData && childData.PartType ? childData.PartType : '',
                 PartNumber: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
                 Position: { "x": posX, "y": 250 },
                 Outputs: [],
@@ -83,12 +139,14 @@ class BOMViewer extends Component {
                 Level: 'L1',
                 selectedPartType: childData.selectedPartType,
                 PartId: childData.PartId,
+                Input: childData.Input,
             })
 
             tempArray && tempArray.map((el, i) => {
                 if (el.Level === 'L1') {
-                    outputArray.push(el.PartNumber)
+                    outputArray.push(el.Input)
                 }
+                return null;
             })
 
             //GET INDEX OF L0 LEVEL OBJECTS
@@ -98,6 +156,35 @@ class BOMViewer extends Component {
             setTimeout(() => {
                 this.setState({ flowpoints: tempArray })
             }, 200)
+
+        }
+    }
+
+    /**
+    * @method editLevelOne
+    * @description EDIT LEVEL 1 QUANTITY IN DRAWER
+    */
+    editLevelOne(index, quantity) {
+        this.setState({ isOpenVisualDrawer: true, EditIndex: index, updatedQuantity: quantity })
+    }
+
+    /**
+    * @method closeVisualDrawer
+    * @description CLOSE VISUAL AD DRAWER
+    */
+    closeVisualDrawer = (quantity = '') => {
+        const { flowpoints } = this.state;
+
+        if (quantity !== '') {
+            let isAvailable = flowpoints.findIndex((el, i) => i === this.state.EditIndex)
+
+            let tempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Quantity: quantity, }) })
+            setTimeout(() => {
+                this.setState({ flowpoints: tempArray, isOpenVisualDrawer: false, updatedQuantity: '', EditIndex: '' })
+            }, 200)
+
+        } else {
+            this.setState({ isOpenVisualDrawer: false, })
         }
     }
 
@@ -112,7 +199,23 @@ class BOMViewer extends Component {
             if (i === index) return false;
             return true;
         })
-        this.setState({ flowpoints: tempArray })
+
+        let assemblyOutPuts = flowpoints.find((el, i) => {
+            if (i === index && el.PartType === ASSEMBLY) return true;
+            return false;
+        })
+
+        //DELETE ASSEMBLY CHILDS
+        if (assemblyOutPuts !== undefined && Object.keys(assemblyOutPuts).length > 0) {
+            tempArray = tempArray.filter(el => {
+                if (assemblyOutPuts.DeleteNodeL1 === el.DeleteNodeL1) {
+                    return false;
+                }
+                return true;
+            })
+        }
+
+        this.setState({ flowpoints: tempArray, })
     }
 
     toggleDrawer = (event) => {
@@ -150,14 +253,14 @@ class BOMViewer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
-        const { isOpenChildDrawer } = this.state;
+        const { handleSubmit, isEditFlag, isFromVishualAd } = this.props;
+        const { isOpenChildDrawer, isOpenVisualDrawer, initalConfiguration } = this.state;
 
         return (
             <>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                    <Container>
-                        <div className={'drawer-wrapper drawer-1500px'}>
+                    <>
+                        <div className={'drawer-wrapper drawer-full-width'}>
 
                             <Row className="drawer-heading">
                                 <Col md="6">
@@ -175,14 +278,19 @@ class BOMViewer extends Component {
                             <Row>
                                 <Col md="8">
                                 </Col>
-                                {!isEditFlag &&
+                                {(!isEditFlag || initalConfiguration.IsBOMEditable) &&
                                     <Col md="4">
                                         <button
                                             type={'button'}
                                             className="reset mr15 cancel-btn pull-right"
-                                            onClick={() => this.setState({ displayDeleteIcon: true })} >
+                                            onClick={() => this.setState({ displayDeleteIcon: !this.state.displayDeleteIcon, displayEditIcon: false, })} >
                                             <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Delete'}
                                         </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => this.setState({ displayEditIcon: !this.state.displayEditIcon, displayDeleteIcon: false, })}
+                                            className={'user-btn mr15 pull-right mt10'}>
+                                            <div className={'EDIT'}></div>EDIT</button>
                                         <button
                                             type="button"
                                             onClick={this.childDrawerToggle}
@@ -202,7 +310,7 @@ class BOMViewer extends Component {
                                         theme="#2196f3"
                                         variant="outlined"
                                         arrowStart={false}
-                                        arrowEnd={true}
+                                        arrowEnd={false}
                                         outputColor="#0c00ff"
                                         inputColor="#ff0022"
                                         style={{ height: "100vh", width: "100vw" }}
@@ -214,7 +322,7 @@ class BOMViewer extends Component {
 
                                                 return (
                                                     <Flowpoint
-                                                        key={el.PartNumber}
+                                                        key={el.Input}
                                                         snap={{ 'x': 10, 'y': 10 }}
                                                         startPosition={el.Position}
                                                         outputs={el.Outputs}
@@ -240,16 +348,21 @@ class BOMViewer extends Component {
                                                             <h3>{el.PartNumber}</h3>
                                                             <span className="flowpoint-header-level">{el.Level}</span>
                                                             <span className="flowpoint-header-qty">Qty:<strong>{el.Quantity}</strong></span>
-                                                            <span className="flowpoint-header-delete">
-                                                                {this.state.displayDeleteIcon && el.Level === 'L1' &&
-                                                                    <button onClick={() => this.deleteLevelOne(i)}>x</button>}
-                                                            </span>
+                                                            {this.state.displayEditIcon && el.Level === 'L1' &&
+                                                                <span className="flowpoint-header-edit">
+                                                                    <button className="Edit" onClick={() => this.editLevelOne(i, el.Quantity)} />
+                                                                </span>}
+                                                            {this.state.displayDeleteIcon && el.Level === 'L1' &&
+                                                                <span className="flowpoint-header-delete">
+                                                                    <button onClick={() => this.deleteLevelOne(i)}>x</button>
+                                                                </span>}
                                                         </div>
                                                         <div className="flowpoint-body">
 
                                                             <p>Name:<strong>{el.PartName}</strong></p>
                                                             <p>Part Type:<strong>{el.PartType}</strong></p>
-
+                                                            {/* {`X=:${el.Position.x}`}
+                                                            {`Y=:${el.Position.y}`} */}
                                                         </div>
                                                     </Flowpoint>
                                                 )
@@ -267,13 +380,13 @@ class BOMViewer extends Component {
                                             onClick={this.cancel} >
                                             <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                                         </button>
-                                        <button
+                                        {!isFromVishualAd && <button
                                             type="submit"
                                             className="submit-button mr5 save-btn"
                                         >
                                             <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                             {'Save'}
-                                        </button>
+                                        </button>}
                                     </div>
                                 </Row>
 
@@ -288,8 +401,16 @@ class BOMViewer extends Component {
                             ID={''}
                             anchor={'right'}
                             setChildPartsData={this.setChildPartsData}
+                            BOMViewerData={this.state.flowpoints}
                         />}
-                    </Container>
+                        {isOpenVisualDrawer && <VisualAdDrawer
+                            isOpen={isOpenVisualDrawer}
+                            closeDrawer={this.closeVisualDrawer}
+                            isEditFlag={true}
+                            anchor={'right'}
+                            updatedQuantity={this.state.updatedQuantity}
+                        />}
+                    </>
                 </Drawer>
             </>
         );
@@ -314,6 +435,7 @@ function mapStateToProps() {
 */
 export default connect(mapStateToProps, {
     getBOMViewerTree,
+    getBOMViewerTreeDataByPartIdAndLevel,
 })(reduxForm({
     form: 'BOMViewer',
     enableReinitialize: true,

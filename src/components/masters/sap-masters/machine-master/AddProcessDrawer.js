@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, } from "../../../../helper/validation";
-import { renderText, renderMultiSelectField, searchableSelect } from "../../../layout/FormInputs";
+import { required, } from "../../../../helper/validation";
+import { renderText, renderMultiSelectField, } from "../../../layout/FormInputs";
 import { getMachineSelectList, } from '../../../../actions/master/MachineMaster';
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../../../../actions/master/Process';
 import { getPlantSelectList, } from '../../../../actions/master/Comman';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-import { CONSTANT } from '../../../../helper/AllConastant'
 import { loggedInUserId } from "../../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 
@@ -97,15 +96,17 @@ class AddProcessDrawer extends Component {
         const temp = [];
         if (label === 'machine') {
             machineSelectList && machineSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
-                if (item.Value == 0) return false;
+                if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -178,7 +179,7 @@ class AddProcessDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, isMachineShow, reset } = this.props;
+        const { handleSubmit, isEditFlag, isMachineShow, } = this.props;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
@@ -236,7 +237,7 @@ class AddProcessDrawer extends Component {
                                             label="Plant"
                                             name="Plant"
                                             placeholder="--Select--"
-                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length == 0) ? [] : this.state.selectedPlants}
+                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                             options={this.renderListing('plant')}
                                             selectionChanged={this.handlePlants}
                                             optionValue={option => option.Value}
@@ -252,7 +253,7 @@ class AddProcessDrawer extends Component {
                                             label="Machine"
                                             name="Machine"
                                             placeholder="--Select--"
-                                            selection={(this.state.selectedMachine == null || this.state.selectedMachine.length == 0) ? [] : this.state.selectedMachine}
+                                            selection={(this.state.selectedMachine == null || this.state.selectedMachine.length === 0) ? [] : this.state.selectedMachine}
                                             options={this.renderListing('machine')}
                                             selectionChanged={this.handleMachine}
                                             optionValue={option => option.Value}

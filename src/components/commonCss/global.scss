@@ -1899,9 +1899,9 @@ ul.bread-list.d-inline-flex{
   width: 100%;
   max-width: 500px;
 }
-.drawer-1500px{
+.drawer-full-width{
   width: 100%;
-  max-width: 1500px;
+  max-width: 100%;
 }
 .multiselect-with-border{border-radius:4px;}
 .form-control:disabled, .form-control[readonly]{
@@ -1968,6 +1968,11 @@ ul.bread-list.d-inline-flex{
       position: absolute;
       top: -13px;
       left: calc(50% - 24px);
+    }
+    .flowpoint-header-edit {
+      position: absolute;
+      top: -15px;
+      right: -15px;
     }
     .flowpoint-header-delete {
       position: absolute;

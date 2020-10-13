@@ -19,6 +19,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import AddSpecification from './AddSpecification';
 import BulkUpload from '../../../../massUpload/BulkUpload';
+import { GridTotalFormate } from '../../../../common/TableGridFunctions';
 
 class SpecificationListing extends Component {
     constructor(props) {
@@ -184,11 +185,7 @@ class SpecificationListing extends Component {
     * @description Pagination
     */
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -303,7 +300,7 @@ class SpecificationListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -387,7 +384,7 @@ class SpecificationListing extends Component {
                             data={this.state.specificationData}
                             striped={false}
                             bordered={false}
-                            hover={true}
+                            hover={false}
                             options={options}
                             search
                             // exportCSV

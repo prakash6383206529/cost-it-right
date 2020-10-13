@@ -5,6 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, number, } from "../../../../helper/validation";
 import { renderText, searchableSelect } from "../../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../../../../actions/master/Part';
+import { COMPONENT_PART } from '../../../../config/constants';
 
 class AddComponentForm extends Component {
     constructor(props) {
@@ -13,6 +14,7 @@ class AddComponentForm extends Component {
             part: [],
             parentPart: [],
             isAddMore: false,
+            selectedParts: [],
         }
     }
 
@@ -21,7 +23,18 @@ class AddComponentForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
+        const { BOMViewerData } = this.props;
         this.props.getComponentPartSelectList(() => { })
+
+        let tempArr = [];
+        BOMViewerData && BOMViewerData.map(el => {
+            if (el.PartType === COMPONENT_PART) {
+                tempArr.push(el.PartId)
+            }
+            return null;
+        })
+
+        this.setState({ selectedParts: tempArr })
     }
 
     checkRadio = (radioType) => {
@@ -62,11 +75,14 @@ class AddComponentForm extends Component {
     */
     renderListing = (label) => {
         const { componentPartSelectList } = this.props;
+        const { selectedParts } = this.state;
+
         const temp = [];
         if (label === 'part') {
             componentPartSelectList && componentPartSelectList.map(item => {
-                if (item.Value === '0') return false;
+                if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -101,7 +117,10 @@ class AddComponentForm extends Component {
             Quantity: values.Quantity,
             Level: "L1",
             selectedPartType: this.props.selectedPartType,
+            PartType: this.props.selectedPartType.Text,
+            PartTypeId: this.props.selectedPartType.Value,
             PartId: part ? part.value : '',
+            Input: Math.floor(100000 + Math.random() * 900000),
         }
 
         this.props.getDrawerComponentPartData('', res => { })
@@ -224,20 +243,6 @@ class AddComponentForm extends Component {
                                 validate={[required]}
                                 component={renderText}
                                 required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
-                        <Col md="6">
-                            <Field
-                                label={`Plant`}
-                                name={"plant"}
-                                type="text"
-                                placeholder={''}
-                                //validate={[required]}
-                                component={renderText}
-                                //required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}

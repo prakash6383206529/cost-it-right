@@ -17,6 +17,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 import moment from 'moment';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
 class ExchangeRateListing extends Component {
     constructor(props) {
@@ -202,11 +203,7 @@ class ExchangeRateListing extends Component {
     }
 
     renderPaginationShowsTotal(start, to, total) {
-        return (
-            <p style={{ color: 'blue' }}>
-                Showing {start} of {to} entries.
-            </p>
-        );
+        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -277,7 +274,7 @@ class ExchangeRateListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 2,
+            paginationSize: 5,
         };
 
         return (
@@ -345,8 +342,8 @@ class ExchangeRateListing extends Component {
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
+                    hover={false}
                     bordered={false}
-                    hover={true}
                     options={options}
                     search
                     // exportCSV
