@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
-import { CONSTANT } from '../../helper/AllConastant';
+import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
-import { getCostingBySupplier } from '../../actions/costing/CostWorking';
-import { fetchPlantDataAPI } from '../../actions/master/Comman';
-import { uploadBOMxlsAPI } from '../../actions/master/BillOfMaterial';
 
 class Costing extends Component {
     constructor(props) {
@@ -23,7 +19,7 @@ class Costing extends Component {
     * @description  called before mounting the component
     */
     componentDidMount() {
-        this.props.fetchPlantDataAPI(() => { })
+
     }
 
     /**
@@ -32,20 +28,8 @@ class Costing extends Component {
     */
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
-            this.setState({
-                activeTab: tab
-            });
+            this.setState({ activeTab: tab });
         }
-    }
-
-    /**
-    * @method toggleUpload
-    * @description toggling the file upload tabs
-    */
-    toggleUpload = () => {
-        this.setState({
-            isShowFileUpload: !this.state.isShowFileUpload
-        })
     }
 
     /**
@@ -55,37 +39,34 @@ class Costing extends Component {
     render() {
         return (
             <>
-                <Row>
-                    <Col>
-                        <h3 className={'mt20'}>{`${CONSTANT.COSTING} Summary`}</h3>
-                    </Col>
-                </Row>
-                <hr />
-                <Row>
-                    <Col>
+                <div className="user-page p-0">
+                    {/* {this.props.loading && <Loader/>} */}
+                    <div>
+                        <h1>Costing</h1>
                         <Nav tabs className="subtabs">
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Cost Summary
+                                    Costing Details
                                 </NavLink>
                             </NavItem>
-
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Cost Working
+                                    Costing Summary
                                 </NavLink>
                             </NavItem>
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
-                            <TabPane tabId="1">
-                                COST SUMMARY
-                            </TabPane>
-                            <TabPane tabId="2">
-                                COST WORKING
-                            </TabPane>
+                            {this.state.activeTab === '1' &&
+                                <TabPane tabId="1">
+                                    {'AA'}
+                                </TabPane>}
+                            {this.state.activeTab === '2' &&
+                                <TabPane tabId="2">
+                                    {'BB'}
+                                </TabPane>}
                         </TabContent>
-                    </Col>
-                </Row>
+                    </div>
+                </div >
             </ >
         );
     }
@@ -102,11 +83,8 @@ function mapStateToProps({ comman }) {
 }
 
 
-export default connect(
-    mapStateToProps, {
-    getCostingBySupplier,
-    fetchPlantDataAPI,
-    uploadBOMxlsAPI,
+export default connect(mapStateToProps, {
+
 }
 )(reduxForm({
     form: 'CostingForm',

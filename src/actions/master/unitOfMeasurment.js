@@ -25,7 +25,7 @@ const headers = config;
 export function getUnitOfMeasurementAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(API.getAllUOMAPI, { headers })
+        axios.get(API.getAllUOMAPI, headers)
             .then((response) => {
                 dispatch({
                     type: GET_UOM_DATA_SUCCESS,

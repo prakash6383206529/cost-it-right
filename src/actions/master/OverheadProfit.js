@@ -186,7 +186,7 @@ export function getOverheadDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&overhead_applicability_type_id=${data.overhead_applicability_type_id}&model_type_id=${data.model_type_id}`
-        axios.get(`${API.getOverheadDataList}?${queryParams}`, { headers })
+        axios.get(`${API.getOverheadDataList}?${queryParams}`, headers)
             .then((response) => {
                 dispatch({
                     type: GET_OVERHEAD_PROFIT_SUCCESS,
@@ -209,7 +209,7 @@ export function getProfitDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&profit_applicability_type_id=${data.profit_applicability_type_id}&model_type_id=${data.model_type_id}`
-        axios.get(`${API.getProfitDataList}?${queryParams}`, { headers })
+        axios.get(`${API.getProfitDataList}?${queryParams}`, headers)
             .then((response) => {
                 dispatch({
                     type: GET_OVERHEAD_PROFIT_SUCCESS,
@@ -298,9 +298,6 @@ export function activeInactiveProfit(requestData, callback) {
  */
 export function fileUploadOverHead(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadOverHead, data, headers);
         request.then((response) => {
             if (response && response.status === 200) {
@@ -319,9 +316,6 @@ export function fileUploadOverHead(data, callback) {
  */
 export function fileUploadProfit(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadProfit, data, headers);
         request.then((response) => {
             if (response && response.status === 200) {

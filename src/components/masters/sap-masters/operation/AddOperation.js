@@ -8,7 +8,7 @@ import {
 } from "../../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../../../../actions/master/Supplier';
 import {
-    createOperationsAPI, getOperationDataAPI, getOperationsMasterAPI,
+    createOperationsAPI, getOperationDataAPI,
     updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode
 } from '../../../../actions/master/OtherOperation';
 import {
@@ -104,6 +104,7 @@ class AddOperation extends Component {
             technologySelectList && technologySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -111,6 +112,7 @@ class AddOperation extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -118,6 +120,7 @@ class AddOperation extends Component {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -125,6 +128,7 @@ class AddOperation extends Component {
             filterPlantList && filterPlantList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -132,6 +136,7 @@ class AddOperation extends Component {
             UOMSelectList && UOMSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -375,7 +380,6 @@ class AddOperation extends Component {
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}

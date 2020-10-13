@@ -132,6 +132,7 @@ class VendorListing extends Component {
             countryList && countryList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -139,6 +140,7 @@ class VendorListing extends Component {
             vendorTypeList && vendorTypeList.map((item, i) => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -146,6 +148,7 @@ class VendorListing extends Component {
             vendorSelectList && vendorSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }

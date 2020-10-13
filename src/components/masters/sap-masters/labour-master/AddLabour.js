@@ -131,6 +131,7 @@ class AddLabour extends Component {
             fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -139,6 +140,7 @@ class AddLabour extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -146,6 +148,7 @@ class AddLabour extends Component {
             VendorLabourTypeSelectList && VendorLabourTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -154,6 +157,7 @@ class AddLabour extends Component {
             machineTypeSelectList && machineTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }

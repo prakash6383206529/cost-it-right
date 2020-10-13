@@ -34,6 +34,7 @@ class AddBOPForm extends Component {
             if (el.PartType === BOUGHTOUTPART) {
                 tempArr.push(el.PartId)
             }
+            return null;
         })
 
         this.setState({ selectedParts: tempArr })
@@ -84,6 +85,7 @@ class AddBOPForm extends Component {
             boughtOutPartSelectList && boughtOutPartSelectList.map(item => {
                 if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -120,6 +122,9 @@ class AddBOPForm extends Component {
             Level: "L1",
             selectedPartType: this.props.selectedPartType,
             PartId: BOPPart ? BOPPart.value : '',
+            PartType: this.props.selectedPartType.Text,
+            PartTypeId: this.props.selectedPartType.Value,
+            Input: Math.floor(100000 + Math.random() * 900000),
         }
 
         this.props.getDrawerBOPData('', () => { })
@@ -197,30 +202,14 @@ class AddBOPForm extends Component {
                                 name={"Specification"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
+                                //validate={[required]}
                                 component={renderText}
-                                required={true}
+                                //required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}
                             />
                         </Col>
-
-                        <Col md="6">
-                            <Field
-                                label={`Plant`}
-                                name={"Plant"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
-
 
                         <Col md="6">
                             <Field
@@ -282,7 +271,6 @@ function mapStateToProps({ part }) {
         initialValues = {
             BOPPartName: DrawerPartData.BoughtOutPartName,
             BOPCategory: DrawerPartData.Category,
-            Plant: DrawerPartData.Plant,
         }
     }
 

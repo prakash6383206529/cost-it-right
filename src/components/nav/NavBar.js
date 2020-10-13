@@ -25,16 +25,20 @@ class SideBar extends Component {
 
   UNSAFE_componentWillMount() {
     const { location } = this.props;
+    this.setState({ isLoader: true })
     if (location && location !== undefined) {
       this.props.getModuleIdByPathName(location.pathname, res => {
         this.setLeftMenu(res.data.Data.ModuleId);
+        this.setState({ isLoader: false })
       })
     }
 
     const loginUserId = loggedInUserId();
     this.props.getModuleSelectList(() => { })
     if (loginUserId != null) {
-      this.props.getMenuByUser(loginUserId, () => { })
+      this.props.getMenuByUser(loginUserId, () => {
+        this.setState({ isLoader: false })
+      })
     }
   }
 
@@ -408,7 +412,7 @@ class SideBar extends Component {
                             </a>
                             <a className="dropdown-item preview-item">
                               <div className="preview-thumbnail">
-                                <img src="../../assests/images/user-pic.png" alt="image" className="img-sm profile-pic" /> </div>
+                                <img src="../../assests/images/user-pic.png" alt={''} className="img-sm profile-pic" /> </div>
                               <div className="preview-item-content flex-grow py-2">
                                 <p className="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
                                 <p className="font-weight-light small-text"> The meeting is cancelled </p>

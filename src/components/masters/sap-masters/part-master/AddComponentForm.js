@@ -31,6 +31,7 @@ class AddComponentForm extends Component {
             if (el.PartType === COMPONENT_PART) {
                 tempArr.push(el.PartId)
             }
+            return null;
         })
 
         this.setState({ selectedParts: tempArr })
@@ -81,6 +82,7 @@ class AddComponentForm extends Component {
             componentPartSelectList && componentPartSelectList.map(item => {
                 if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -115,7 +117,10 @@ class AddComponentForm extends Component {
             Quantity: values.Quantity,
             Level: "L1",
             selectedPartType: this.props.selectedPartType,
+            PartType: this.props.selectedPartType.Text,
+            PartTypeId: this.props.selectedPartType.Value,
             PartId: part ? part.value : '',
+            Input: Math.floor(100000 + Math.random() * 900000),
         }
 
         this.props.getDrawerComponentPartData('', res => { })
@@ -238,20 +243,6 @@ class AddComponentForm extends Component {
                                 validate={[required]}
                                 component={renderText}
                                 required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
-                        <Col md="6">
-                            <Field
-                                label={`Plant`}
-                                name={"plant"}
-                                type="text"
-                                placeholder={''}
-                                //validate={[required]}
-                                component={renderText}
-                                //required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}

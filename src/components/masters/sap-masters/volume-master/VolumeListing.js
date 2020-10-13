@@ -112,6 +112,7 @@ class VolumeListing extends Component {
             vendorListByVendorType && vendorListByVendorType.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -119,6 +120,7 @@ class VolumeListing extends Component {
             financialYearSelectList && financialYearSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -126,6 +128,7 @@ class VolumeListing extends Component {
             Months && Months.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -133,6 +136,7 @@ class VolumeListing extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }

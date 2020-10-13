@@ -13,6 +13,7 @@ import { loggedInUserId } from '../../../../helper/auth';
 import moment from 'moment';
 import VisualAdDrawer from './VisualAdDrawer';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import BOMViewer from './BOMViewer';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -114,7 +115,7 @@ class AssemblyPartListing extends Component {
     visualAdFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="View mr5" type={'button'} onClick={() => this.visualAdDetails(cell, row.BOMId)} />
+                <button className="View mr5" type={'button'} onClick={() => this.visualAdDetails(cell)} />
             </>
         )
     }
@@ -123,8 +124,8 @@ class AssemblyPartListing extends Component {
     * @method visualAdDetails
     * @description Renders buttons
     */
-    visualAdDetails = (cell, BOMId) => {
-        this.setState({ visualAdId: cell, BOMId: BOMId, isOpenVisualDrawer: true })
+    visualAdDetails = (cell) => {
+        this.setState({ visualAdId: cell, isOpenVisualDrawer: true })
     }
 
     /**
@@ -132,7 +133,7 @@ class AssemblyPartListing extends Component {
     * @description CLOSE VISUAL AD DRAWER
     */
     closeVisualDrawer = () => {
-        this.setState({ isOpenVisualDrawer: false, visualAdId: '', BOMId: '', })
+        this.setState({ isOpenVisualDrawer: false, visualAdId: '', })
     }
 
     /**
@@ -277,25 +278,28 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="BOMNumber" >BOM NO.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" >Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plants" width={150} >Plant</TableHeaderColumn>
-                    <TableHeaderColumn dataField="NumberOfParts" width={100}>No. of Child Parts</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMLevelCount" width={150}>BOM Level Count</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" width={150}>ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Plants" width={'150'} >Plant</TableHeaderColumn>
+                    <TableHeaderColumn dataField="NumberOfParts" width={'100'}>No. of Child Parts</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMLevelCount" width={'150'}>BOM Level Count</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" width={'150'}>ECN No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="VisualAid" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
-                {isOpenVisualDrawer && <VisualAdDrawer
+
+                {isOpenVisualDrawer && <BOMViewer
                     isOpen={isOpenVisualDrawer}
                     closeDrawer={this.closeVisualDrawer}
-                    isEditFlag={false}
-                    ID={this.state.visualAdId}
-                    BOMId={this.state.BOMId}
+                    isEditFlag={true}
+                    PartId={this.state.visualAdId}
                     anchor={'right'}
+                    isFromVishualAd={true}
+                    NewAddedLevelOneChilds={[]}
                 />}
+
             </ >
         );
     }

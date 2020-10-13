@@ -195,6 +195,7 @@ class ProcessListing extends Component {
             filterSelectList && filterSelectList.plants && filterSelectList.plants.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -203,6 +204,7 @@ class ProcessListing extends Component {
             filterSelectList && filterSelectList.machine && filterSelectList.machine.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }

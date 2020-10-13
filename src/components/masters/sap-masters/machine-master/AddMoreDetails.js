@@ -245,6 +245,7 @@ class AddMoreDetails extends Component {
             technologySelectList && technologySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -252,6 +253,7 @@ class AddMoreDetails extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -259,6 +261,7 @@ class AddMoreDetails extends Component {
             machineTypeSelectList && machineTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -266,6 +269,7 @@ class AddMoreDetails extends Component {
             processSelectList && processSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -273,6 +277,7 @@ class AddMoreDetails extends Component {
             ShiftTypeSelectList && ShiftTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -280,6 +285,7 @@ class AddMoreDetails extends Component {
             DepreciationTypeSelectList && DepreciationTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -287,6 +293,7 @@ class AddMoreDetails extends Component {
             labourTypeByMachineTypeSelectList && labourTypeByMachineTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -294,6 +301,7 @@ class AddMoreDetails extends Component {
             fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -301,6 +309,7 @@ class AddMoreDetails extends Component {
             UOMSelectList && UOMSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -1122,7 +1131,6 @@ class AddMoreDetails extends Component {
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}

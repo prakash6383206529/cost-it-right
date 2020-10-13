@@ -21,7 +21,6 @@ class PartMaster extends Component {
             isAddBOMForm: false,
             isPartForm: false,
             getDetails: {},
-            flowPointsData: [],
 
             ViewAccessibility: false,
             AddAccessibility: false,
@@ -102,7 +101,6 @@ class PartMaster extends Component {
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
                 displayBOMViewer={this.displayBOMViewer}
-                flowPointsData={this.state.flowPointsData}
             />
         }
 

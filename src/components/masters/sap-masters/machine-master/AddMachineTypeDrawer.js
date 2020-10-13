@@ -46,6 +46,7 @@ class AddMachineTypeDrawer extends Component {
             labourTypeSelectList && labourTypeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -82,9 +83,6 @@ class AddMachineTypeDrawer extends Component {
 
         /** Update existing detail of supplier master **/
         if (this.props.isEditFlag) {
-            let formData = {
-
-            }
 
             // this.props.updateSupplierAPI(formData, (res) => {
             //     if (res.data.Result) {

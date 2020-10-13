@@ -82,12 +82,14 @@ class AddVendorDrawer extends Component {
             let DefaultVendorTypeIds = [];
             supplierData && supplierData.VendorTypes && supplierData.VendorTypes.map((item, index) => {
                 DefaultVendorTypeIds.push(item.VendorTypeId)
+                return null;
             })
 
             //Selected Vendor Type IDs.
             let SelectedVendorTypeIds = [];
             e && e.map((item, index) => {
                 SelectedVendorTypeIds.push(item.Value)
+                return null;
             })
 
             //Removed Vendor Type Id's
@@ -192,6 +194,7 @@ class AddVendorDrawer extends Component {
             countryList && countryList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -199,6 +202,7 @@ class AddVendorDrawer extends Component {
             stateList && stateList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -206,6 +210,7 @@ class AddVendorDrawer extends Component {
             cityList && cityList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -213,6 +218,7 @@ class AddVendorDrawer extends Component {
             vendorTypeList && vendorTypeList.map((item, i) => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -220,6 +226,7 @@ class AddVendorDrawer extends Component {
             vendorPlantSelectList && vendorPlantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -248,10 +255,12 @@ class AddVendorDrawer extends Component {
 
                     Data && Data.VendorTypes.map((item) => {
                         tempArr.push({ Text: item.VendorType, Value: item.VendorTypeId })
+                        return null;
                     })
 
                     Data && Data.VendorPlants.map((item) => {
                         tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
+                        return null;
                     })
 
                     setTimeout(() => {
@@ -323,18 +332,21 @@ class AddVendorDrawer extends Component {
         let VendorPlantsArray = [];
         vendorPlantSelectList && vendorPlantSelectList.map((item, index) => {
             VendorPlantsArray.push(item.Value)
+            return null;
         })
 
         //DefaultIds Get in Edit Mode.
         let DefaultVendorPlantIds = [];
         existedVendorPlants && existedVendorPlants.map((item, index) => {
             DefaultVendorPlantIds.push(item.Value)
+            return null;
         })
 
         //Selected Vendor Plant IDs.
         let SelectedVendorPlantIds = [];
         selectedVendorPlants && selectedVendorPlants.map((item, index) => {
             SelectedVendorPlantIds.push(item.Value)
+            return null;
         })
 
         //Additonal Vendor Plant Id's

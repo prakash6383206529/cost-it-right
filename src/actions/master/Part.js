@@ -535,3 +535,22 @@ export function getBOMViewerTree(PartId, callback) {
             });
     };
 }
+
+/**
+ * @method getBOMViewerTreeDataByPartIdAndLevel
+ * @description GET BOM VIEWER TREE BY ASSEMBLY PART ID AND LEVELID
+ */
+export function getBOMViewerTreeDataByPartIdAndLevel(PartId, LevelId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.get(`${API.getBOMViewerTree}/${PartId}/${LevelId}`, headers)
+            .then((response) => {
+                if (response.data.Result === true) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}

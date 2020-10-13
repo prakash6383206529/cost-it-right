@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, } from "../../../../helper/validation";
+import { checkForNull, required, } from "../../../../helper/validation";
 import { searchableSelect, } from "../../../layout/FormInputs";
 import { getVendorListByVendorType, } from '../../../../actions/master/Material';
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../../../../actions/master/Volume';
@@ -76,6 +76,7 @@ class AddVolume extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -83,6 +84,7 @@ class AddVolume extends Component {
             vendorListByVendorType && vendorListByVendorType.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -90,6 +92,7 @@ class AddVolume extends Component {
             financialYearSelectList && financialYearSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -97,6 +100,7 @@ class AddVolume extends Component {
             partSelectList && partSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -104,6 +108,7 @@ class AddVolume extends Component {
             filterPlantList && filterPlantList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -196,16 +201,26 @@ class AddVolume extends Component {
         )
     }
 
+    /**
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
+    beforeSaveCell = (row, cellName, cellValue) => {
+        if (Number.isInteger(Number(cellValue))) {
+            return true;
+        } else {
+            toastr.warning('Please enter numbers.')
+            return false;
+        }
+    }
+
     editItemDetails = (ID) => {
 
     }
 
     deleteItem = (ID, index) => {
         const { tableData } = this.state;
-        // let filterData = tableData.filter(item => {
-        //     if (item.Month == ID) return false;
-        //     return true;
-        // })
+
         let filterData = tableData.map(item => {
             if (item.VolumeApprovedDetailId === ID) {
                 return { ...item, BudgetedQuantity: 0, ApprovedQuantity: 0, }
@@ -404,6 +419,7 @@ class AddVolume extends Component {
         const cellEditProp = {
             mode: 'click',
             blurToSave: true,
+            beforeSaveCell: this.beforeSaveCell,
         };
 
         return (

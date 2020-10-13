@@ -4,9 +4,12 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, maxLength100, number } from "../../../../helper/validation";
 import { loggedInUserId } from "../../../../helper/auth";
-import { renderText, renderTextAreaField, renderMultiSelectField } from "../../../layout/FormInputs";
+import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError } from "../../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../../actions/master/Comman';
-import { createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart } from '../../../../actions/master/Part';
+import {
+    createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
+    getBOMViewerTreeDataByPartIdAndLevel,
+} from '../../../../actions/master/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -19,6 +22,7 @@ import AddChildDrawer from './AddChildDrawer';
 import moment from 'moment';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import BOMViewer from './BOMViewer';
+import { getRandomSixDigit } from '../../../../helper/util';
 const selector = formValueSelector('AddAssemblyPart')
 
 class AddAssemblyPart extends Component {
@@ -38,6 +42,7 @@ class AddAssemblyPart extends Component {
             isOpenBOMViewerDrawer: false,
             BOMViewerData: [],
             childPartArray: [],
+            NewAddedLevelOneChilds: [],
             initalConfiguration: reactLocalStorage.getObject('InitialConfiguration'),
 
         }
@@ -48,34 +53,8 @@ class AddAssemblyPart extends Component {
     * @description 
     */
     componentDidMount() {
-        const { flowPointsData } = this.props;
         this.props.getPlantSelectListByType(ZBC, () => { })
         this.getDetails()
-
-        if (flowPointsData.length > 0) {
-            let flowPointObj = flowPointsData.find(el => el.Level === 'L0');
-
-            if (Object.keys(flowPointObj.oldFormData)) {
-                this.props.change('BOMNumber', flowPointObj.oldFormData.BOMNumber)
-                this.props.change('AssemblyPartNumber', flowPointObj.oldFormData.AssemblyPartNumber)
-                this.props.change('AssemblyPartName', flowPointObj.oldFormData.AssemblyPartName)
-                this.props.change('ECNNumber', flowPointObj.oldFormData.ECNNumber)
-                this.props.change('RevisionNumber', flowPointObj.oldFormData.RevisionNumber)
-                this.props.change('Description', flowPointObj.oldFormData.Description)
-                this.props.change('DrawingNumber', flowPointObj.oldFormData.DrawingNumber)
-                this.props.change('GroupCode', flowPointObj.oldFormData.GroupCode)
-                this.props.change('Remark', flowPointObj.oldFormData.Remark)
-
-                let plantArray = flowPointObj.oldFormData && flowPointObj.oldFormData.Plants.map((item) => ({ Text: item.Text, Value: item.Value }))
-                this.setState({
-                    selectedPlants: plantArray,
-                    effectiveDate: moment(flowPointObj.oldFormData.EffectiveDate)._d,
-                    files: flowPointObj.oldFormData.files,
-                    BOMViewerData: flowPointsData,
-                })
-            }
-
-        }
     }
 
     /**
@@ -103,6 +82,7 @@ class AddAssemblyPart extends Component {
                             effectiveDate: moment(Data.EffectiveDate)._d,
                             files: Data.Attachements,
                             ChildParts: Data.ChildParts,
+                            BOMViewerData: Data.ChildParts,
                         })
                     }, 200)
                 }
@@ -153,11 +133,43 @@ class AddAssemblyPart extends Component {
         const { BOMViewerData, } = this.state;
         const tempArray = [];
 
-        const posX = BOMViewerData && BOMViewerData.length > 0 ? 450 * (BOMViewerData.length - 1) : 50;
 
-        if (Object.keys(childData).length > 0) {
+        const posX = BOMViewerData && BOMViewerData.length > 0 ? 450 * (BOMViewerData.filter(el => el.Level === 'L1').length - 1) : 50;
+
+        if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
+            this.props.getBOMViewerTreeDataByPartIdAndLevel(childData.PartId, 1, res => {
+                let Data = res.data.Data.FlowPoints;
+
+                const DeleteNodeL1 = getRandomSixDigit();
+                Data && Data.map(el => {
+                    tempArray.push({
+                        PartId: childData.PartId,
+                        PartType: el.PartType,
+                        PartNumber: el.PartNumber,
+                        Input: el.Input,
+                        Position: el.Position,
+                        Outputs: el.Outputs,
+                        InnerContent: el.InnerContent,
+                        PartName: el.PartName,
+                        Quantity: el.Quantity,
+                        Level: el.Level,
+                        //selectedPartType: childData.selectedPartType,
+                        DeleteNodeL1: DeleteNodeL1,
+                    })
+                    return null;
+                })
+
+                setTimeout(() => {
+                    this.setState({ BOMViewerData: [...BOMViewerData, ...tempArray] }, () => this.getLevelOneNewAddedChild())
+                }, 200)
+
+            })
+
+        } else if (Object.keys(childData).length > 0) {
+
             tempArray.push(...BOMViewerData, {
-                PartType: childData && childData.selectedPartType ? childData.selectedPartType.Text : '',
+                PartType: childData && childData.PartType ? childData.PartType : '',
+                PartTypeId: childData && childData.PartTypeId ? childData.PartTypeId : '',
                 PartNumber: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
                 Position: { "x": posX, "y": 250 },
                 Outputs: [],
@@ -165,11 +177,36 @@ class AddAssemblyPart extends Component {
                 PartName: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
                 Quantity: childData && childData.Quantity !== undefined ? childData.Quantity : '',
                 Level: 'L1',
-                selectedPartType: childData.selectedPartType,
+                //selectedPartType: childData.selectedPartType,
                 PartId: childData.PartId,
+                Input: getRandomSixDigit(),
             })
-            this.setState({ BOMViewerData: tempArray })
+            this.setState({ BOMViewerData: tempArray }, () => this.getLevelOneNewAddedChild())
         }
+
+    }
+
+    /**
+    * @method getLevelOneNewAddedChild
+    * @description USED TO GET NEW ADDED LEVEL ONE CHILD IN EDIT MODE
+    */
+    getLevelOneNewAddedChild = () => {
+        const { BOMViewerData, ChildParts } = this.state;
+
+        let OldChildPartsArray = [];
+
+        ChildParts && ChildParts.map((el) => {
+            OldChildPartsArray.push(el.PartId)
+            return null;
+        })
+
+        let NewAddedLevelOneChilds = BOMViewerData && BOMViewerData.filter(el => {
+            if (!OldChildPartsArray.includes(el.PartId)) {
+                return true;
+            }
+            return false;
+        })
+        this.setState({ NewAddedLevelOneChilds: NewAddedLevelOneChilds })
     }
 
     /**
@@ -184,6 +221,7 @@ class AddAssemblyPart extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -224,24 +262,25 @@ class AddAssemblyPart extends Component {
 
         BOMViewerData && BOMViewerData.map((el, i) => {
             if (el.Level === 'L1') {
-                outputArray.push(el.PartNumber)
+                outputArray.push(el.Input)
             }
+            return null;
         })
 
         //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
         let isAvailable = BOMViewerData && BOMViewerData.findIndex(el => el.Level === 'L0')
-        console.log('isAvailable: ', isAvailable, BOMViewerData);
 
         if (isAvailable === -1) {
             tempArray.push(...BOMViewerData, {
                 PartType: ASSEMBLY,
                 PartNumber: fieldsObj && fieldsObj.AssemblyPartNumber !== undefined ? fieldsObj.AssemblyPartNumber : '',
-                Position: { "x": 600, "y": 50 },
+                Position: { "x": 900, "y": 50 },
                 Outputs: outputArray,
                 InnerContent: fieldsObj && fieldsObj.Description !== undefined ? fieldsObj.Description : '',
                 PartName: fieldsObj && fieldsObj.AssemblyPartName !== undefined ? fieldsObj.AssemblyPartName : '',
                 Quantity: 1,
                 Level: 'L0',
+                Input: '',
             })
 
             this.setState({ BOMViewerData: tempArray, isOpenBOMViewerDrawer: true, })
@@ -325,7 +364,6 @@ class AddAssemblyPart extends Component {
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}
@@ -363,15 +401,17 @@ class AddAssemblyPart extends Component {
 
         BOMViewerData && BOMViewerData.map((item) => {
             if (item.Level === 'L0') return false;
-            childPartArray.push({
-                PartId: item.selectedPartType && (item.selectedPartType.Text === ASSEMBLY || item.selectedPartType.Text === COMPONENT_PART) ? item.PartId : '',
-                ParentPartId: isEditFlag ? PartId : '',
-                BoughtOutPartId: item.selectedPartType && item.selectedPartType.Text === BOUGHTOUTPART ? item.PartId : '',
-                PartTypeId: item.selectedPartType ? item.selectedPartType.Value : '',
-                PartType: item.selectedPartType ? item.selectedPartType.Text : '',
-                BOMLevel: 1,
-                Quantity: item.Quantity,
-            })
+            if (item.Level === 'L1') {
+                childPartArray.push({
+                    PartId: item.PartType && (item.PartType === ASSEMBLY || item.PartType === COMPONENT_PART) ? item.PartId : '',
+                    ParentPartId: isEditFlag ? PartId : '',
+                    BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? item.PartId : '',
+                    PartTypeId: item.PartTypeId ? item.PartTypeId : '',
+                    PartType: item.PartType ? item.PartType : '',
+                    BOMLevel: 1,
+                    Quantity: item.Quantity,
+                })
+            }
             return childPartArray;
         })
 
@@ -393,7 +433,7 @@ class AddAssemblyPart extends Component {
                 Remark: values.Remark,
                 Plants: plantArray,
                 Attachements: updatedFiles,
-                ChildParts: ChildParts,
+                ChildParts: childPartArray,
             }
 
             this.props.updateAssemblyPart(updateData, (res) => {
@@ -624,7 +664,7 @@ class AddAssemblyPart extends Component {
                                             </div>
                                         </Col>
                                         <Col md="3">
-                                            {!isEditFlag && <button
+                                            {(!isEditFlag || initalConfiguration.IsBOMEditable) && <button
                                                 type="button"
                                                 className={'user-btn pull-left mt30 mr5'}
                                                 onClick={this.childDrawerToggle}>
@@ -650,8 +690,8 @@ class AddAssemblyPart extends Component {
                                                 placeholder="Type here..."
                                                 className=""
                                                 customClassName=" textAreaWithBorder"
-                                                validate={[number, maxLength100]}
-                                                required={true}
+                                                validate={[maxLength100]}
+                                                //required={true}
                                                 component={renderTextAreaField}
                                                 maxLength="5000"
                                             />
@@ -743,6 +783,7 @@ class AddAssemblyPart extends Component {
                     PartId={this.state.PartId}
                     anchor={'right'}
                     BOMViewerData={this.state.BOMViewerData}
+                    NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
                 />}
             </>
         );
@@ -793,7 +834,12 @@ export default connect(mapStateToProps, {
     createAssemblyPart,
     updateAssemblyPart,
     getAssemblyPartDetail,
+    getBOMViewerTreeDataByPartIdAndLevel,
 })(reduxForm({
     form: 'AddAssemblyPart',
+    onSubmitFail: errors => {
+        console.log('errors: ', errors);
+        focusOnError(errors);
+    },
     enableReinitialize: true,
 })(AddAssemblyPart));

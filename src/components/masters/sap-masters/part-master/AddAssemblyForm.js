@@ -6,6 +6,7 @@ import { required, number, } from "../../../../helper/validation";
 import { renderText, searchableSelect } from "../../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../../../../actions/master/Part';
 import { ASSEMBLY } from '../../../../config/constants';
+import { getRandomSixDigit } from '../../../../helper/util';
 
 class AddAssemblyForm extends Component {
     constructor(props) {
@@ -33,6 +34,7 @@ class AddAssemblyForm extends Component {
             if (el.PartType === ASSEMBLY) {
                 tempArr.push(el.PartId)
             }
+            return null;
         })
 
         this.setState({ selectedParts: tempArr })
@@ -80,6 +82,7 @@ class AddAssemblyForm extends Component {
             assemblyPartSelectList && assemblyPartSelectList.map(item => {
                 if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -114,7 +117,10 @@ class AddAssemblyForm extends Component {
             Quantity: values.Quantity,
             Level: "L1",
             selectedPartType: this.props.selectedPartType,
+            PartType: this.props.selectedPartType.Text,
+            PartTypeId: this.props.selectedPartType.Value,
             PartId: assemblyPart ? assemblyPart.value : '',
+            Input: getRandomSixDigit(),
         }
         this.props.getDrawerAssemblyPartDetail('', res => { })
 

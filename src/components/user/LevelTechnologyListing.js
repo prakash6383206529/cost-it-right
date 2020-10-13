@@ -134,7 +134,7 @@ class LevelTechnologyListing extends Component {
 							data={this.state.tableData}
 							striped={false}
 							bordered={false}
-							hover={true}
+							hover={false}
 							options={options}
 							//search
 							ignoreSinglePage

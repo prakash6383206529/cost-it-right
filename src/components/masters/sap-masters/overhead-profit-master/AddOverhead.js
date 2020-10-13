@@ -2,11 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, checkForNull, maxLength100, getVendorCode } from "../../../../helper/validation";
-import {
-    renderText, renderNumberInputField, searchableSelect,
-    renderTextAreaField
-} from "../../../layout/FormInputs";
+import { required, maxLength100, getVendorCode } from "../../../../helper/validation";
+import { renderNumberInputField, searchableSelect, renderTextAreaField } from "../../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../../actions/master/Comman';
 import { getVendorWithVendorCodeSelectList } from '../../../../actions/master/Supplier';
 import {
@@ -84,7 +81,7 @@ class AddOverhead extends Component {
     * @description called
     */
     handleModelTypeChange = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ ModelType: newValue, });
         } else {
             this.setState({ ModelType: [], })
@@ -168,6 +165,7 @@ class AddOverhead extends Component {
             modelTypes && modelTypes.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -176,6 +174,7 @@ class AddOverhead extends Component {
             costingHead && costingHead.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -184,6 +183,7 @@ class AddOverhead extends Component {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -192,6 +192,7 @@ class AddOverhead extends Component {
             clientSelectList && clientSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -202,7 +203,7 @@ class AddOverhead extends Component {
     * @description called
     */
     handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue != '') {
+        if (newValue && newValue !== '') {
             this.setState({ vendorName: newValue });
         } else {
             this.setState({ vendorName: [] })
@@ -443,7 +444,6 @@ class AddOverhead extends Component {
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}

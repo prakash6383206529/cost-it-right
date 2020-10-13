@@ -9,7 +9,8 @@ export const config = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
     'Auth-Token': getAuthToken(),
-    'Access-From': 'WEB'
+    'Access-From': 'WEB',
+    'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   }
 };
 
@@ -1178,3 +1179,5 @@ export const VBC = 'VBC';
 export const ASSEMBLY = 'Assembly';
 export const COMPONENT_PART = 'Component';
 export const BOUGHTOUTPART = 'BoughtOutPart';
+
+export const COSTING_PATH = '/costing';

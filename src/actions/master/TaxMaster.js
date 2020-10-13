@@ -40,7 +40,7 @@ export function createTaxDetails(data, callback) {
 export function getTaxDetailsDataList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(API.getTaxDetailsDataList, { headers })
+        axios.get(API.getTaxDetailsDataList, headers)
             .then((response) => {
                 dispatch({
                     type: GET_TAX_DETAILS_DATALIST,

@@ -29,9 +29,6 @@ import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
 
 class OperationListing extends Component {
     constructor(props) {
@@ -126,6 +123,7 @@ class OperationListing extends Component {
             filterOperation && filterOperation.technology && filterOperation.technology.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -142,6 +140,7 @@ class OperationListing extends Component {
             filterOperation && filterOperation.operations && filterOperation.operations.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -150,6 +149,7 @@ class OperationListing extends Component {
             filterOperation && filterOperation.vendors && filterOperation.vendors.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }

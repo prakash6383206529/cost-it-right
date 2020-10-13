@@ -14,6 +14,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
 import { LEVELS } from '../../config/constants';
+import { GridTotalFormate } from '../common/TableGridFunctions';
 
 class LevelsListing extends Component {
 	constructor(props) {
@@ -161,6 +162,10 @@ class LevelsListing extends Component {
 		});
 	}
 
+	renderPaginationShowsTotal(start, to, total) {
+		return <GridTotalFormate start={start} to={to} total={total} />
+	}
+
 	/**
 	* @method buttonFormatter
 	* @description Renders buttons
@@ -190,6 +195,7 @@ class LevelsListing extends Component {
 			//clearSearch: true,
 			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
 			afterSearch: this.afterSearch,
+			paginationShowsTotal: this.renderPaginationShowsTotal,
 		};
 		return (
 			<>
@@ -213,7 +219,7 @@ class LevelsListing extends Component {
 									data={this.state.tableData}
 									striped={false}
 									bordered={false}
-									hover={true}
+									hover={false}
 									options={options}
 									//search
 									ignoreSinglePage

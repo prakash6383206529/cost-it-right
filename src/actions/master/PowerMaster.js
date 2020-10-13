@@ -38,7 +38,7 @@ export function createPowerAPI(data, callback) {
 export function getPowerDataListAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getPowerDataListAPI, { headers })
+        axios.get(API.getPowerDataListAPI, headers)
             .then((response) => {
                 dispatch({
                     type: GET_POWER_DATALIST_SUCCESS,

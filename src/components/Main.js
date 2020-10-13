@@ -36,7 +36,7 @@ import { showUserData } from '../actions';
 import AuthMiddleware from '../AuthMiddleware';
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION, OVERHEAD_AND_PROFIT, PART, PLANT,
-  RAW_MATERIAL, UOM, USER, VENDOR, SHEET_METAL, REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX
+  RAW_MATERIAL, UOM, USER, VENDOR, SHEET_METAL, REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH
 } from '../config/constants'
 
 class Main extends Component {
@@ -75,6 +75,7 @@ class Main extends Component {
   }
 
   render() {
+    const { location } = this.props;
     let isLogin = false;
     let checkLogin = reactLocalStorage.getObject("isUserLoggedIn");
 
@@ -85,6 +86,8 @@ class Main extends Component {
     } else {
       isLogin = false;
     }
+
+    const fullSizeClass = location.pathname === COSTING_PATH ? 'full_size_content' : '';
 
     return (
       <Suspense fallback={<Loader />}>
@@ -120,9 +123,9 @@ class Main extends Component {
           <div className={isLogin ? 'blue-box' : ''}>
 
             <div className={isLogin ? 'main-section' : ''}>
-              {isLogin && !this.state.visibelPageNotFound && <LeftMenu {...this.props} />}
+              {isLogin && !this.state.visibelPageNotFound && location.pathname !== COSTING_PATH && <LeftMenu {...this.props} />}
 
-              <div className={isLogin ? 'content-page' : ''}>
+              <div className={isLogin ? `content-page ${fullSizeClass}` : ''}>
                 <div className={isLogin ? 'middleContainer' : ''}>
                   <Switch>
                     <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />

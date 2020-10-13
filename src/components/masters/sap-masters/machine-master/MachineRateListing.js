@@ -95,6 +95,7 @@ class MachineRateListing extends Component {
             filterSelectList && filterSelectList.plants && filterSelectList.plants.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -103,6 +104,7 @@ class MachineRateListing extends Component {
             technologySelectList && technologySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -111,6 +113,7 @@ class MachineRateListing extends Component {
             filterSelectList && filterSelectList.vendor && filterSelectList.vendor.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -119,6 +122,7 @@ class MachineRateListing extends Component {
             filterSelectList && filterSelectList.processList && filterSelectList.processList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -127,6 +131,7 @@ class MachineRateListing extends Component {
             filterSelectList && filterSelectList.machineTypes && filterSelectList.machineTypes.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }

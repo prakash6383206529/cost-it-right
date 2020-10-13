@@ -419,3 +419,11 @@ export function calculatePercentage(value) {
     return value / 100
 }
 
+/**
+ * @description getRandomSixDigit 
+ * @returns {number}
+ */
+export function getRandomSixDigit() {
+    return Math.floor(100000 + Math.random() * 900000)
+}
+
