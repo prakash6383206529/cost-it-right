@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, maxLength100, getVendorCode } from "../../../../helper/validation";
-import { renderNumberInputField, searchableSelect, renderTextAreaField } from "../../../layout/FormInputs";
+import { required, maxLength100, getVendorCode, number } from "../../../../helper/validation";
+import { renderText, searchableSelect, renderTextAreaField } from "../../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../../actions/master/Comman';
 import { getVendorWithVendorCodeSelectList } from '../../../../actions/master/Supplier';
 import {
@@ -686,8 +686,8 @@ class AddProfit extends Component {
                                                     name={"ProfitPercentage"}
                                                     type="text"
                                                     placeholder={!isOverheadPercent ? 'Enter' : ''}
-                                                    validate={!isOverheadPercent ? [required] : []}
-                                                    component={renderNumberInputField}
+                                                    validate={!isOverheadPercent ? [required, number] : []}
+                                                    component={renderText}
                                                     onBlur={this.handlePercent}
                                                     required={!isOverheadPercent ? true : false}
                                                     className=""
@@ -701,8 +701,8 @@ class AddProfit extends Component {
                                                     name={"ProfitRMPercentage"}
                                                     type="text"
                                                     placeholder={!isRM ? 'Enter' : ''}
-                                                    validate={!isRM ? [required] : []}
-                                                    component={renderNumberInputField}
+                                                    validate={!isRM ? [required, number] : []}
+                                                    component={renderText}
                                                     //onChange={this.handleCalculation}
                                                     required={!isRM ? true : false}
                                                     className=""
@@ -716,8 +716,8 @@ class AddProfit extends Component {
                                                     name={"ProfitMachiningCCPercentage"}
                                                     type="text"
                                                     placeholder={!isCC ? 'Enter' : ''}
-                                                    validate={!isCC ? [required] : []}
-                                                    component={renderNumberInputField}
+                                                    validate={!isCC ? [required, number] : []}
+                                                    component={renderText}
                                                     //onChange={this.handleCalculation}
                                                     required={!isCC ? true : false}
                                                     className=""
@@ -731,8 +731,8 @@ class AddProfit extends Component {
                                                     name={"ProfitBOPPercentage"}
                                                     type="text"
                                                     placeholder={!isBOP ? 'Enter' : ''}
-                                                    validate={!isBOP ? [required] : []}
-                                                    component={renderNumberInputField}
+                                                    validate={!isBOP ? [required, number] : []}
+                                                    component={renderText}
                                                     //onChange={this.handleCalculation}
                                                     required={!isBOP ? true : false}
                                                     className=""
@@ -745,7 +745,7 @@ class AddProfit extends Component {
                                         <Row>
                                             <Col md="12">
                                                 <div className="left-border">
-                                                    {'Remarks & Attachment'}
+                                                    {'Remark & Attachments'}
                                                 </div>
                                             </Col>
                                             <Col md="6">
@@ -757,8 +757,8 @@ class AddProfit extends Component {
                                                     className=""
                                                     customClassName=" textAreaWithBorder"
                                                     onChange={this.handleMessageChange}
-                                                    validate={[required, maxLength100]}
-                                                    required={true}
+                                                    validate={[maxLength100]}
+                                                    //required={true}
                                                     component={renderTextAreaField}
                                                     maxLength="5000"
                                                 />

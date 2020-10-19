@@ -193,7 +193,7 @@ class RMImportListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
+        return cell ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
@@ -540,7 +540,7 @@ class RMImportListing extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

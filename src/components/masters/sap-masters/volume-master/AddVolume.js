@@ -576,8 +576,8 @@ class AddVolume extends Component {
                                     </Row>
                                 </form>
                             </div>
-                        </div>}
-                </div>
+                        </div>
+                    </div>
                     {isOpenVendor && <AddVendorDrawer
                         isOpen={isOpenVendor}
                         closeDrawer={this.closeVendorDrawer}

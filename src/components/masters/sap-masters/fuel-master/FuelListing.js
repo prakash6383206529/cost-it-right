@@ -356,7 +356,7 @@ class FuelListing extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

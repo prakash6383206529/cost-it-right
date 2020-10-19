@@ -1155,7 +1155,7 @@ class AddMachineRate extends Component {
                                         <Row>
                                             <Col md="12" className="filter-block">
                                                 <div className=" flex-fills mb-2">
-                                                    <h5>{'Remarks & Attachment'}</h5>
+                                                    <h5>{'Remark & Attachments'}</h5>
                                                 </div>
                                             </Col>
                                             <Col md="6">
@@ -1167,8 +1167,8 @@ class AddMachineRate extends Component {
                                                     className=""
                                                     customClassName=" textAreaWithBorder"
                                                     onChange={this.handleMessageChange}
-                                                    validate={[required, maxLength100]}
-                                                    required={true}
+                                                    validate={[maxLength100]}
+                                                    //required={true}
                                                     component={renderTextAreaField}
                                                     maxLength="5000"
                                                     rows="6"

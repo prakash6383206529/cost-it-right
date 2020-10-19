@@ -540,14 +540,14 @@ class VolumeListing extends Component {
                     options={options}
                     search
                     // exportCSV
-                    ignoreSinglePage
+                    //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
+                    <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="Year" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Year'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="Month" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Month'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'Part No.'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="center" dataSort={true} >{'Part Name'}</TableHeaderColumn>

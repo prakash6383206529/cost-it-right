@@ -19,6 +19,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { costingHeadObj } from '../../../../config/masterData';
 
 class ProfitListing extends Component {
     constructor(props) {
@@ -43,12 +44,12 @@ class ProfitListing extends Component {
     componentDidMount() {
         this.props.fetchModelTypeAPI('--Model Types--', res => { });
         this.props.getVendorWithVendorCodeSelectList()
-        this.getDataList(null, null, null, null)
+        this.getDataList()
     }
 
     // Get updated Table data list after any action performed.
     getUpdatedData = () => {
-        this.getDataList(null, null, null, null)
+        this.getDataList()
     }
 
     getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null,) => {
@@ -94,7 +95,7 @@ class ProfitListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`${MESSAGES.OVERHEAD_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.PROFIT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -104,8 +105,8 @@ class ProfitListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteProfit(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
-                this.getDataList(null, null, null, null)
+                toastr.success(MESSAGES.DELETE_PROFIT_SUCCESS);
+                this.getDataList()
             }
         });
     }
@@ -271,11 +272,7 @@ class ProfitListing extends Component {
         const temp = [];
 
         if (label === 'costingHead') {
-            let tempObj = [
-                { label: 'ZBC', value: 'ZBC' },
-                { label: 'VBC', value: 'VBC' },
-            ]
-            return tempObj;
+            return costingHeadObj;
         }
 
         if (label === 'ModelType') {
@@ -410,7 +407,7 @@ class ProfitListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'---Select---'}
+                                        placeholder={'-Costing Head-'}
                                         isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -427,7 +424,7 @@ class ProfitListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-ModelType-'}
+                                        placeholder={'-Model Type-'}
                                         isClearable={false}
                                         options={this.renderListing('ModelType')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -444,7 +441,7 @@ class ProfitListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'VendorName'}
+                                        placeholder={'-Vendor Name-'}
                                         isClearable={false}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -501,7 +498,7 @@ class ProfitListing extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

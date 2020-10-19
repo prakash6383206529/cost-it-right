@@ -196,16 +196,18 @@ class UserRegistration extends Component {
 
     if (label === 'city') {
       cityList && cityList.map(item => {
-        if (item.Value === 0) return false;
+        if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null;
       });
       return temp;
     }
 
     if (label === 'technology') {
       technologyList && technologyList.map(item => {
-        if (item.Value == 0) return false;
+        if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null;
       });
       return temp;
     }
@@ -388,6 +390,7 @@ class UserRegistration extends Component {
         temp111[i].IsChecked = true;
         tempArray.push(index)
       }
+      return null;
     })
 
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
@@ -616,7 +619,7 @@ class UserRegistration extends Component {
       oldTechnologyLevelGrid, UserId } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
 
-    if (TechnologyLevelGrid && TechnologyLevelGrid.length == 0) {
+    if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
       toastr.warning('Users technology level should not be empty.')
       return false;
     }
@@ -631,6 +634,7 @@ class UserRegistration extends Component {
         TechnologyId: item.TechnologyId,
         LevelId: item.LevelId
       })
+      return null;
     })
 
     if (isEditFlag) {
@@ -681,13 +685,13 @@ class UserRegistration extends Component {
       let isPermissionUpdate = false;
       let isTechnologyUpdate = false;
 
-      if (JSON.stringify(Modules) == JSON.stringify(oldModules)) {
+      if (JSON.stringify(Modules) === JSON.stringify(oldModules)) {
         isPermissionUpdate = false;
       } else {
         isPermissionUpdate = true;
       }
 
-      if (JSON.stringify(TechnologyLevelGrid) == JSON.stringify(oldTechnologyLevelGrid)) {
+      if (JSON.stringify(TechnologyLevelGrid) === JSON.stringify(oldTechnologyLevelGrid)) {
         isTechnologyUpdate = false;
       } else {
         isTechnologyUpdate = true;
@@ -705,7 +709,7 @@ class UserRegistration extends Component {
             this.confirmUpdateUser(updatedData, false)
           }
         };
-        return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
 
       } else {
 

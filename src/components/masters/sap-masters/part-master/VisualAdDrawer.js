@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
@@ -14,7 +14,7 @@ const schema = yup.object().shape({
 
 export default function VishualAdDrawer(props) {
 
-    const { register, handleSubmit, watch, errors } = useForm({
+    const { register, handleSubmit, watch, errors, control } = useForm({
         resolver: yupResolver(schema)
     });
 
@@ -70,28 +70,16 @@ export default function VishualAdDrawer(props) {
                                     <TextFieldHookForm
                                         label="Quantity"
                                         name={'quantity'}
+                                        Controller={Controller}
+                                        control={control}
                                         register={register}
-                                        required={true}
+                                        mandatory={true}
                                         defaultValue={props.updatedQuantity}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.quantity}
                                     />
                                 </Col>
-                                {/* <Col md="12">
-                                    <TextFieldHookForm
-                                        label="First Name"
-                                        name={'firstName'}
-                                        register={register}
-                                        required={true}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.firstName}
-                                    />
-                                </Col> */}
-
-
                             </Row>
 
                             <Row className="sf-btn-footer no-gutters justify-content-between">

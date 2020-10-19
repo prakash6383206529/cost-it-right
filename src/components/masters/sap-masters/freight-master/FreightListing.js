@@ -15,6 +15,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { costingHeadObj } from '../../../../config/masterData';
 
 class FreightListing extends Component {
     constructor(props) {
@@ -231,11 +232,7 @@ class FreightListing extends Component {
         const temp = [];
 
         if (label === 'costingHead') {
-            let temp = [
-                { label: 'ZBC', value: 'ZBC' },
-                { label: 'VBC', value: 'VBC' },
-            ]
-            return temp;
+            return costingHeadObj;
         }
         if (label === 'SourceLocation') {
             cityList && cityList.map(item => {
@@ -436,7 +433,7 @@ class FreightListing extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

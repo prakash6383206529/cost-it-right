@@ -14,10 +14,9 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC } from '../../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import moment from 'moment';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -43,6 +42,7 @@ class AddAssemblyPart extends Component {
             BOMViewerData: [],
             childPartArray: [],
             NewAddedLevelOneChilds: [],
+            avoidAPICall: false,
             initalConfiguration: reactLocalStorage.getObject('InitialConfiguration'),
 
         }
@@ -145,15 +145,15 @@ class AddAssemblyPart extends Component {
                     tempArray.push({
                         PartId: childData.PartId,
                         PartType: el.PartType,
+                        PartTypeId: el.PartTypeId,
                         PartNumber: el.PartNumber,
                         Input: el.Input,
                         Position: el.Position,
                         Outputs: el.Outputs,
                         InnerContent: el.InnerContent,
                         PartName: el.PartName,
-                        Quantity: el.Quantity,
+                        Quantity: el.Level === 'L1' ? childData.Quantity : el.Quantity,
                         Level: el.Level,
-                        //selectedPartType: childData.selectedPartType,
                         DeleteNodeL1: DeleteNodeL1,
                     })
                     return null;
@@ -177,7 +177,6 @@ class AddAssemblyPart extends Component {
                 PartName: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
                 Quantity: childData && childData.Quantity !== undefined ? childData.Quantity : '',
                 Level: 'L1',
-                //selectedPartType: childData.selectedPartType,
                 PartId: childData.PartId,
                 Input: getRandomSixDigit(),
             })
@@ -201,7 +200,7 @@ class AddAssemblyPart extends Component {
         })
 
         let NewAddedLevelOneChilds = BOMViewerData && BOMViewerData.filter(el => {
-            if (!OldChildPartsArray.includes(el.PartId)) {
+            if (!OldChildPartsArray.includes(el.PartId) && el.Level === 'L1') {
                 return true;
             }
             return false;
@@ -250,10 +249,15 @@ class AddAssemblyPart extends Component {
     */
     toggleBOMViewer = () => {
         const { fieldsObj } = this.props;
-        const { BOMViewerData, } = this.state;
+        const { BOMViewerData, isEditFlag } = this.state;
 
         if (this.checkIsFormFilled() === false) {
             toastr.warning('All fields are mandatory.')
+            return false;
+        }
+
+        if (isEditFlag) {
+            this.setState({ isOpenBOMViewerDrawer: true, })
             return false;
         }
 
@@ -294,8 +298,8 @@ class AddAssemblyPart extends Component {
 
     }
 
-    closeBOMViewerDrawer = (e = '', drawerData) => {
-        this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData })
+    closeBOMViewerDrawer = (e = '', drawerData, isSaved) => {
+        this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved })
     }
 
     // specify upload params and url for your files
@@ -390,14 +394,48 @@ class AddAssemblyPart extends Component {
     }
 
     /**
+    * @method confirmBOMDraft
+    * @description CONFIRM BOM DRAFT
+    */
+    confirmBOMDraft = (updateData) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDraftItem(updateData)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDraftItem
+    * @description DRAFT ASSEMBLY BOM
+    */
+    confirmDraftItem = (updateData) => {
+        let Data = { ...updateData, IsForceUpdate: true }
+        this.props.updateAssemblyPart(Data, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.UPDATE_BOM_SUCCESS);
+                this.cancel()
+            }
+        });
+    }
+
+    /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, ChildParts, } = this.state;
+        const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall } = this.state;
+        const { actualBOMTreeData, fieldsObj, partData } = this.props;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
         let childPartArray = [];
+
+        if (BOMViewerData && (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
+            toastr.warning('Need to add assembly parts.');
+            return false;
+        }
 
         BOMViewerData && BOMViewerData.map((item) => {
             if (item.Level === 'L0') return false;
@@ -434,6 +472,15 @@ class AddAssemblyPart extends Component {
                 Plants: plantArray,
                 Attachements: updatedFiles,
                 ChildParts: childPartArray,
+                NumberOfChildParts: BOMViewerData && BOMViewerData.length,
+                IsForceUpdate: false,
+            }
+
+            if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
+                if (fieldsObj.ECNNumber === partData.ECNNumber && fieldsObj.RevisionNumber === partData.RevisionNumber) {
+                    this.confirmBOMDraft(updateData)
+                    return false;
+                }
             }
 
             this.props.updateAssemblyPart(updateData, (res) => {
@@ -463,6 +510,7 @@ class AddAssemblyPart extends Component {
                 GroupCode: values.GroupCode,
                 Plants: plantArray,
                 Attachements: files,
+                NumberOfChildParts: BOMViewerData && BOMViewerData.length
             }
 
             this.props.createAssemblyPart(formData, (res) => {
@@ -632,7 +680,7 @@ class AddAssemblyPart extends Component {
                                                 optionValue={option => option.Value}
                                                 optionLabel={option => option.Text}
                                                 component={renderMultiSelectField}
-                                                mendatory={true}
+                                                //mendatory={true}
                                                 className="multiselect-with-border"
                                                 disabled={isEditFlag ? true : false}
                                             />
@@ -664,11 +712,11 @@ class AddAssemblyPart extends Component {
                                             </div>
                                         </Col>
                                         <Col md="3">
-                                            {(!isEditFlag || initalConfiguration.IsBOMEditable) && <button
+                                            {/* {(!isEditFlag || initalConfiguration.IsBOMEditable) && <button
                                                 type="button"
                                                 className={'user-btn pull-left mt30 mr5'}
                                                 onClick={this.childDrawerToggle}>
-                                                <div className={'plus'}></div>ADD Child</button>}
+                                                <div className={'plus'}></div>ADD Child</button>} */}
                                             <button
                                                 type="button"
                                                 onClick={this.toggleBOMViewer}
@@ -680,7 +728,7 @@ class AddAssemblyPart extends Component {
                                     <Row>
                                         <Col md="12">
                                             <div className="left-border">
-                                                {'Remarks & Attachment:'}
+                                                {'Remark & Attachments:'}
                                             </div>
                                         </Col>
                                         <Col md="6">
@@ -784,6 +832,8 @@ class AddAssemblyPart extends Component {
                     anchor={'right'}
                     BOMViewerData={this.state.BOMViewerData}
                     NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
+                    isFromVishualAd={false}
+                    avoidAPICall={this.state.avoidAPICall}
                 />}
             </>
         );
@@ -800,7 +850,7 @@ function mapStateToProps(state) {
         'Description', 'DrawingNumber', 'GroupCode', 'Remark')
     const { comman, part } = state;
     const { plantSelectList } = comman;
-    const { partData } = part;
+    const { partData, actualBOMTreeData } = part;
 
     let initialValues = {};
     if (partData && partData !== undefined) {
@@ -817,13 +867,13 @@ function mapStateToProps(state) {
         }
     }
 
-    return { plantSelectList, partData, fieldsObj, initialValues }
+    return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues }
 
 }
 
 /**
- * @method connect
- * @description connect with redux
+* @method connect
+* @description connect with redux
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */

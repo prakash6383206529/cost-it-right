@@ -265,7 +265,7 @@ class ClientListing extends Component {
                     options={options}
                     search
                     // exportCSV
-                    ignoreSinglePage
+                    //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header client-table'

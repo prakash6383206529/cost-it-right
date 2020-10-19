@@ -19,6 +19,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { costingHeadObj } from '../../../../config/masterData';
 
 class OverheadListing extends Component {
     constructor(props) {
@@ -257,11 +258,7 @@ class OverheadListing extends Component {
         const temp = [];
 
         if (label === 'costingHead') {
-            let tempObj = [
-                { label: 'ZBC', value: 'ZBC' },
-                { label: 'VBC', value: 'VBC' },
-            ]
-            return tempObj;
+            return costingHeadObj;
         }
 
         if (label === 'ModelType') {
@@ -396,7 +393,7 @@ class OverheadListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'---Select---'}
+                                        placeholder={'-Costing Head-'}
                                         isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -413,7 +410,7 @@ class OverheadListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-ModelType-'}
+                                        placeholder={'-Model Type-'}
                                         isClearable={false}
                                         options={this.renderListing('ModelType')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -430,7 +427,7 @@ class OverheadListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'VendorName'}
+                                        placeholder={'-Vendor Name-'}
                                         isClearable={false}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -486,7 +483,7 @@ class OverheadListing extends Component {
                             options={options}
                             search
                             //exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

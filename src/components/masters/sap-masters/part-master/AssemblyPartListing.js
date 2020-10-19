@@ -11,9 +11,9 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../../helper/auth';
 import moment from 'moment';
-import VisualAdDrawer from './VisualAdDrawer';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
+import BOMUpload from '../../../massUpload/BOMUpload';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -30,6 +30,7 @@ class AssemblyPartListing extends Component {
             isOpenVisualDrawer: false,
             visualAdId: '',
             BOMId: '',
+            isBulkUpload: false,
         }
     }
 
@@ -224,12 +225,22 @@ class AssemblyPartListing extends Component {
         this.props.displayForm()
     }
 
+
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+        })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isOpenVisualDrawer, } = this.state;
+        const { isOpenVisualDrawer, isBulkUpload } = this.state;
         const { AddAccessibility, } = this.props;
         const options = {
             clearSearch: true,
@@ -252,6 +263,11 @@ class AssemblyPartListing extends Component {
                     <Col md="4" className="search-user-block">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
+                                <button
+                                    type="button"
+                                    className={'user-btn mr5'}
+                                    onClick={this.bulkToggle}>
+                                    <div className={'upload'}></div>Upload BOM</button>
                                 {AddAccessibility && <button
                                     type="button"
                                     className={'user-btn'}
@@ -270,21 +286,21 @@ class AssemblyPartListing extends Component {
                     options={options}
                     search
                     // exportCSV
-                    ignoreSinglePage
+                    //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="BOMNumber" >BOM NO.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" >Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plants" width={'150'} >Plant</TableHeaderColumn>
-                    <TableHeaderColumn dataField="NumberOfParts" width={'100'}>No. of Child Parts</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMNumber" width={'100'}>BOM NO.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartNumber" width={'100'}>Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Plants" width={'100'} >Plant</TableHeaderColumn>
+                    <TableHeaderColumn dataField="NumberOfParts" width={'150'}>No. of Child Parts</TableHeaderColumn>
                     <TableHeaderColumn dataField="BOMLevelCount" width={'150'}>BOM Level Count</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" width={'150'}>ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" width={'70'}>ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" width={'100'} >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RevisionNumber" width={'100'} >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" width={'130'} dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
@@ -299,7 +315,14 @@ class AssemblyPartListing extends Component {
                     isFromVishualAd={true}
                     NewAddedLevelOneChilds={[]}
                 />}
-
+                {isBulkUpload && <BOMUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    fileName={'BOM'}
+                    messageLabel={'BOM'}
+                    anchor={'right'}
+                />}
             </ >
         );
     }

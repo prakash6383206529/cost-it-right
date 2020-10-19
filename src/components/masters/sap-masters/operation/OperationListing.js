@@ -28,6 +28,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { costingHeadObj } from '../../../../config/masterData';
 
 
 class OperationListing extends Component {
@@ -129,11 +130,7 @@ class OperationListing extends Component {
         }
 
         if (label === 'costingHead') {
-            let tempObj = [
-                { label: 'ZBC', value: 'ZBC' },
-                { label: 'VBC', value: 'VBC' },
-            ]
-            return tempObj;
+            return costingHeadObj;
         }
 
         if (label === 'OperationNameList') {
@@ -591,7 +588,7 @@ class OperationListing extends Component {
                     options={options}
                     search
                     // exportCSV
-                    ignoreSinglePage
+                    //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'

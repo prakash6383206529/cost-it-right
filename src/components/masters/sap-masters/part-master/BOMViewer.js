@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { } from "../../../../helper/validation";
+import { checkForNull } from "../../../../helper/validation";
 import { } from "../../../layout/FormInputs";
-import { getBOMViewerTree, getBOMViewerTreeDataByPartIdAndLevel } from '../../../../actions/master/Part';
+import { getBOMViewerTree, getBOMViewerTreeDataByPartIdAndLevel, setActualBOMData } from '../../../../actions/master/Part';
 import { Flowpoint, Flowspace } from 'flowpoints';
 import AddChildDrawer from './AddChildDrawer';
 import Drawer from '@material-ui/core/Drawer';
@@ -35,6 +35,7 @@ class BOMViewer extends Component {
 
             ActualBOMData: [],
             isCancel: false,
+            isSaved: false,
             initalConfiguration: reactLocalStorage.getObject('InitialConfiguration'),
         }
     }
@@ -44,18 +45,38 @@ class BOMViewer extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        const { isEditFlag, PartId, NewAddedLevelOneChilds } = this.props;
-        if (isEditFlag) {
+        const { isEditFlag, PartId, NewAddedLevelOneChilds, avoidAPICall } = this.props;
+        if (isEditFlag && !avoidAPICall) {
             this.props.getBOMViewerTree(PartId, res => {
                 if (res && res.status === 200) {
                     let Data = res.data.Data;
-                    this.setState({ flowpoints: [...Data.FlowPoints, ...NewAddedLevelOneChilds] })
+                    let tempArray = [...Data.FlowPoints, ...NewAddedLevelOneChilds]
+
+                    let outputArray = [];
+
+                    tempArray && tempArray.map((el, i) => {
+                        if (el.Level === 'L1') {
+                            outputArray.push(el.Input)
+                        }
+                        return null;
+                    })
+
+                    //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
+                    let isAvailable = tempArray && tempArray.findIndex(el => el.Level === 'L0')
+                    tempArray = Object.assign([...tempArray], { [isAvailable]: Object.assign({}, tempArray[isAvailable], { Outputs: outputArray, }) })
+
+                    setTimeout(() => {
+                        this.setState({ flowpoints: tempArray, ActualBOMData: tempArray, isSaved: avoidAPICall, })
+                        this.props.setActualBOMData(tempArray)
+                    }, 200);
+
                 }
             })
         } else {
             this.setState({
                 flowpoints: this.props.BOMViewerData,
                 ActualBOMData: this.props.BOMViewerData,
+                isSaved: avoidAPICall,
             })
         }
     }
@@ -91,13 +112,14 @@ class BOMViewer extends Component {
                 Data && Data.map(el => {
                     tempArray.push({
                         PartType: el.PartType,
+                        PartTypeId: el.PartTypeId,
                         PartNumber: el.PartNumber,
                         Input: el.Input,
                         Position: el.Position,
                         Outputs: el.Outputs,
                         InnerContent: el.InnerContent,
                         PartName: el.PartName,
-                        Quantity: el.Quantity,
+                        Quantity: el.Level === 'L1' ? checkForNull(childData.Quantity) : el.Quantity,
                         Level: el.Level,
                         selectedPartType: childData.selectedPartType,
                         PartId: childData.PartId,
@@ -130,12 +152,13 @@ class BOMViewer extends Component {
 
             tempArray.push(...flowpoints, {
                 PartType: childData && childData.PartType ? childData.PartType : '',
+                PartTypeId: childData && childData.PartTypeId ? childData.PartTypeId : '',
                 PartNumber: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
                 Position: { "x": posX, "y": 250 },
                 Outputs: [],
                 InnerContent: childData && childData.InnerContent !== undefined ? childData.InnerContent : '',
                 PartName: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
-                Quantity: childData && childData.Quantity !== undefined ? childData.Quantity : '',
+                Quantity: childData && childData.Quantity !== undefined ? checkForNull(childData.Quantity) : '',
                 Level: 'L1',
                 selectedPartType: childData.selectedPartType,
                 PartId: childData.PartId,
@@ -178,7 +201,7 @@ class BOMViewer extends Component {
         if (quantity !== '') {
             let isAvailable = flowpoints.findIndex((el, i) => i === this.state.EditIndex)
 
-            let tempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Quantity: quantity, }) })
+            let tempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Quantity: checkForNull(quantity), }) })
             setTimeout(() => {
                 this.setState({ flowpoints: tempArray, isOpenVisualDrawer: false, updatedQuantity: '', EditIndex: '' })
             }, 200)
@@ -224,9 +247,9 @@ class BOMViewer extends Component {
         }
 
         if (this.state.isCancel) {
-            this.props.closeDrawer('', this.state.ActualBOMData)
+            this.props.closeDrawer('', this.state.ActualBOMData, this.state.isSaved)
         } else {
-            this.props.closeDrawer('', this.state.flowpoints)
+            this.props.closeDrawer('', this.state.flowpoints, this.state.isSaved)
         }
     };
 
@@ -235,7 +258,7 @@ class BOMViewer extends Component {
     * @description used to Reset form
     */
     cancel = () => {
-        this.setState({ isCancel: true }, () => this.toggleDrawer(''))
+        this.setState({ isCancel: true, isSaved: false, }, () => this.toggleDrawer(''))
     }
 
     /**
@@ -244,8 +267,8 @@ class BOMViewer extends Component {
     */
     onSubmit = (values) => {
         const { flowpoints } = this.state;
-        this.setState({ flowpoints })
-        this.toggleDrawer('')
+        this.setState({ flowpoints, isSaved: true, isCancel: false, }, () => this.toggleDrawer(''))
+
     }
 
     /**
@@ -278,7 +301,7 @@ class BOMViewer extends Component {
                             <Row>
                                 <Col md="8">
                                 </Col>
-                                {(!isEditFlag || initalConfiguration.IsBOMEditable) &&
+                                {(!isEditFlag || initalConfiguration.IsBOMEditable) && !isFromVishualAd &&
                                     <Col md="4">
                                         <button
                                             type={'button'}
@@ -422,9 +445,9 @@ class BOMViewer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps() {
-
-    return {}
+function mapStateToProps({ part }) {
+    const { actualBOMTreeData } = part;
+    return { actualBOMTreeData }
 }
 
 /**
@@ -436,6 +459,7 @@ function mapStateToProps() {
 export default connect(mapStateToProps, {
     getBOMViewerTree,
     getBOMViewerTreeDataByPartIdAndLevel,
+    setActualBOMData,
 })(reduxForm({
     form: 'BOMViewer',
     enableReinitialize: true,

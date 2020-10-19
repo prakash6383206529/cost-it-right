@@ -388,7 +388,7 @@ class SpecificationListing extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
@@ -409,6 +409,7 @@ class SpecificationListing extends Component {
                     anchor={'right'}
                     AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
                     EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
+                    isRMDomesticSpec={false}
                 />}
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}

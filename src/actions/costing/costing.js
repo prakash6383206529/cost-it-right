@@ -4,9 +4,7 @@ import {
     API_REQUEST,
     API_FAILURE,
     API_SUCCESS,
-    GET_PLANT_COMBO_SUCCESS,
     GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
-    CREATE_PART_WITH_SUPPLIER_SUCCESS,
     GET_COSTING_BY_COSTINGID,
     GET_COST_SUMMARY_OTHER_OPERATION_LIST_SUCCESS,
     SET_CED_ROW_DATA_TO_COST_SUMMARY,
@@ -16,6 +14,9 @@ import {
     GET_FREIGHT_AMOUNT_DATA_SUCCESS,
     EMPTY_COSTING_DATA,
     GET_ZBC_COSTING_SELECTLIST_BY_PART,
+    GET_COSTING_TECHNOLOGY_SELECTLIST,
+    GET_COSTING_PART_SELECTLIST,
+    GET_PART_INFO,
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 import { MESSAGES } from '../../config/message';
@@ -27,26 +28,99 @@ const headers = {
 };
 
 /**
- * @method getPlantCombo
- * @description get all plant list
- */
-export function getPlantCombo(callback) {
+* @method getCostingTechnologySelectList
+* @description GET TECHNOLOGY SELECTLIST
+*/
+export function getCostingTechnologySelectList(callback) {
     return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantCombo}`, headers);
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCostingTechnologySelectList}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_PLANT_COMBO_SUCCESS,
-                    payload: response.data.DynamicData,
+                    type: GET_COSTING_TECHNOLOGY_SELECTLIST,
+                    payload: response.data.SelectList,
                 });
                 callback(response);
-            } else {
-                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getAllPartSelectList
+* @description GET TECHNOLOGY SELECTLIST
+*/
+export function getAllPartSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllPartSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_PART_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getPartInfo
+* @description GET PART INFO
+*/
+export function getPartInfo(PartId, callback) {
+    return (dispatch) => {
+        if (PartId !== '') {
+            dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getPartInfo}/${PartId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_PART_INFO,
+                        payload: response.data.Data,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_PART_INFO,
+                payload: {},
+            });
+        }
+    };
+}
+
+/**
+ * @method checkPartWithTechnology
+ * @description CHECK PART WITH TECHNOLOGY IS ASSOCIATED OR NOT
+ */
+export function checkPartWithTechnology(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkPartWithTechnology, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                dispatch({ type: API_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
@@ -67,12 +141,6 @@ export function getExistingSupplierDetailByPartId(partId, loginUserId, callback)
                     payload: response.data.DynamicData,
                 });
                 callback(response);
-            } else {
-                dispatch({
-                    type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
-                    payload: null,
-                });
-                toastr.warning(response.data.Message);
             }
         }).catch((error) => {
             dispatch({
@@ -99,7 +167,6 @@ export function setEmptyExistingSupplierData(callback) {
         callback()
     }
 }
-
 
 /**
 * @method getZBCCostingSelectListByPart
@@ -139,32 +206,6 @@ export function createPartWithSupplier(data, callback) {
                 toastr.success(MESSAGES.ADD_PART_WITH_SUPPLIER_SUCCESS);
             }
             callback(response);
-        }).catch((error) => {
-            dispatch({
-                type: API_FAILURE
-            });
-            apiErrors(error);
-        });
-    };
-}
-
-
-/**
- * @method createFreightAPI
- * @description create freight master
- */
-export function checkPartWithTechnology(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.checkPartWithTechnology, data, headers);
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            } else {
-                dispatch({ type: API_FAILURE });
-                if (response.data.Message) {
-                    toastr.error(response.data.Message);
-                }
-            }
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE

@@ -1390,6 +1390,14 @@ class AddMoreDetails extends Component {
                                                         checked={this.state.IsPurchased}
                                                         id="normal-switch"
                                                         disabled={isEditFlag ? true : false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        height={20}
+                                                        width={46}
                                                     />
                                                     <div className={'right-title'}>Leased</div>
                                                 </label>
@@ -1887,6 +1895,14 @@ class AddMoreDetails extends Component {
                                                         checked={this.state.IsAnnualMaintenanceFixed}
                                                         id="normal-switch"
                                                         disabled={false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        height={20}
+                                                        width={46}
                                                     />
                                                     <div className={'right-title'}>%</div>
                                                 </label>
@@ -1929,6 +1945,14 @@ class AddMoreDetails extends Component {
                                                         checked={this.state.IsAnnualConsumableFixed}
                                                         id="normal-switch"
                                                         disabled={false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        height={20}
+                                                        width={46}
                                                     />
                                                     <div className={'right-title'}>%</div>
                                                 </label>
@@ -1972,6 +1996,14 @@ class AddMoreDetails extends Component {
                                                         checked={this.state.IsInsuranceFixed}
                                                         id="normal-switch"
                                                         disabled={false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        height={20}
+                                                        width={46}
                                                     />
                                                     <div className={'right-title'}>%</div>
                                                 </label>
@@ -2092,6 +2124,14 @@ class AddMoreDetails extends Component {
                                                         checked={this.state.IsUsesFuel}
                                                         id="normal-switch"
                                                         disabled={isEditFlag ? true : false}
+                                                        background="#4DC771"
+                                                        onColor="#4DC771"
+                                                        onHandleColor="#ffffff"
+                                                        offColor="#4DC771"
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        height={20}
+                                                        width={46}
                                                     />
                                                     <div className={'right-title'}>Yes</div>
                                                 </label>
@@ -2197,6 +2237,14 @@ class AddMoreDetails extends Component {
                                                                 checked={this.state.IsUsesSolarPower}
                                                                 id="normal-switch"
                                                                 disabled={isEditFlag ? true : false}
+                                                                background="#4DC771"
+                                                                onColor="#4DC771"
+                                                                onHandleColor="#ffffff"
+                                                                offColor="#4DC771"
+                                                                uncheckedIcon={false}
+                                                                checkedIcon={false}
+                                                                height={20}
+                                                                width={46}
                                                             />
                                                             <div className={'right-title'}>Yes</div>
                                                         </label>

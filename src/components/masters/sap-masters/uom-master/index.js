@@ -15,6 +15,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../../helper/auth';
 import { getLeftMenu, } from '../../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { applySuperScript } from '../../../../helper/validation';
 
 class UOMMaster extends Component {
     constructor(props) {
@@ -133,6 +134,18 @@ class UOMMaster extends Component {
     }
 
     /**
+    * @method applySuperScriptFormatter
+    * @description Renders buttons
+    */
+    applySuperScriptFormatter = (cell, row, enumObject, rowIndex) => {
+        if (cell && cell.indexOf('^') !== -1) {
+            return applySuperScript(cell)
+        } else {
+            return cell;
+        }
+    }
+
+    /**
     * @method buttonFormatter
     * @description Renders buttons
     */
@@ -230,15 +243,15 @@ class UOMMaster extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             trClassName={'userlisting-row'}
                             tableHeaderClass='my-custom-class'
                             pagination>
-                            <TableHeaderColumn dataField="Unit" csvHeader='Full-Name' dataAlign="center" dataSort={true}>Unit</TableHeaderColumn>
-                            <TableHeaderColumn dataField="UnitType" dataSort={true}>Unit Type</TableHeaderColumn>
-                            <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Id" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Unit" dataAlign="center" dataSort={true} dataFormat={this.applySuperScriptFormatter}>Unit</TableHeaderColumn>
+                            <TableHeaderColumn dataField="UnitType" dataSort={true} >Unit Type</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Id" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>

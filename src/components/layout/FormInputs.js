@@ -446,18 +446,16 @@ export function renderNumberInputField(field) {
 @desc: Render textarea input
 */
 export function renderTextAreaField(field) {
+  console.log('field: ', field);
   const { input, disabled, meta: { touched, error } } = field;
   const customClass = `${field.customClassName ? field.customClassName : ""}`;
   const disabledLabel = disabled ? true : false;
   const placeholder = field.placeholder ? field.placeholder : "";
   return (
     <div className={`form-group ${customClass}`}>
-      <label>{field.label}
-        {field.required && field.required === true ? (
-          <span className="asterisk-required">*</span>
-        ) : (
-            ""
-          )}
+      <label>
+        {field.label}
+        {field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}
       </label>
       <div className="inputbox ">
         <textarea
@@ -469,7 +467,8 @@ export function renderTextAreaField(field) {
           disabled={disabledLabel}
         />
       </div>
-      <div className="text-help">{touched && field.input.value === '' ? 'This field is required' : ""}</div>
+      {/* <div className="text-help">{touched && field.input.value === '' ? 'This field is required' : ""}</div> */}
+      <div className="text-help">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -603,12 +602,12 @@ export const searchableSelect = ({ input, label, required, disabled, handleChang
   placeholder, isClearable, meta: { touched, error, dirty, visited }, multi, className }) => {
   const { name, value, onBlur, onChange, onFocus } = input;
   let isDisable = (disabled && disabled === true) ? true : false;
-  let isClear = (isClearable === undefined) ? true : false;
+  //let isClear = (isClearable === undefined) ? true : false;
   return (
     <div className="w-100">
       {label && <label>{label}{(required === true) ? <span className="asterisk-required">*</span> : ''}</label>}
       <Select
-        isClearable={isClear}
+        isClearable={false}
         options={options}
         onChange={handleChangeDescription}
         //onCreateOption={handleCreate}

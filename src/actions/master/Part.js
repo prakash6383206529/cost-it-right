@@ -11,7 +11,9 @@ import {
     GET_ASSEMBLY_PART_SELECTLIST,
     GET_COMPONENT_PART_SELECTLIST,
     GET_BOUGHTOUT_PART_SELECTLIST,
-    GET_DRAWER_CHILD_PART_DATA, config
+    GET_DRAWER_CHILD_PART_DATA,
+    SET_ACTUAL_BOM_DATA,
+    config
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 
@@ -552,5 +554,36 @@ export function getBOMViewerTreeDataByPartIdAndLevel(PartId, LevelId, callback) 
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+
+/**
+ * @method setActualBOMData
+ * @description SET ACTUAL BOM DATA JSON
+ */
+export function setActualBOMData(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_ACTUAL_BOM_DATA,
+            payload: data,
+        });
+    };
+
+}
+
+/**
+ * @method BOMUploadPart
+ * @description create Part Assembly By BOM Upload
+ */
+export function BOMUploadPart(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.BOMUploadPart, data, headers);
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
     };
 }

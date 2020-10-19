@@ -856,7 +856,7 @@ class AddBOPImport extends Component {
                                         <Row>
                                             <Col md="12">
                                                 <div className="left-border">
-                                                    {'Remarks & Attachment'}
+                                                    {'Remark & Attachments'}
                                                 </div>
                                             </Col>
                                             <Col md="6">
@@ -866,8 +866,8 @@ class AddBOPImport extends Component {
                                                     placeholder="Type here..."
                                                     className=""
                                                     customClassName=" textAreaWithBorder"
-                                                    validate={[required, maxLength100]}
-                                                    required={true}
+                                                    validate={[maxLength100]}
+                                                    //required={true}
                                                     component={renderTextAreaField}
                                                     maxLength="5000"
                                                 />

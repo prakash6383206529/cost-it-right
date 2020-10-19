@@ -14,6 +14,7 @@ import {
     GET_COMPONENT_PART_SELECTLIST,
     GET_BOUGHTOUT_PART_SELECTLIST,
     GET_DRAWER_CHILD_PART_DATA,
+    SET_ACTUAL_BOM_DATA,
 } from '../../config/constants';
 
 const initialState = {
@@ -120,6 +121,14 @@ export default function partReducer(state = initialState, action) {
                 loading: false,
                 error: false,
                 boughtOutPartSelectList: action.payload,
+            };
+        }
+        case SET_ACTUAL_BOM_DATA: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                actualBOMTreeData: action.payload,
             };
         }
         case GET_ALL_PARTS_FAILURE:

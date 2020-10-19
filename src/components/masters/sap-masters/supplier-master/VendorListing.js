@@ -177,7 +177,7 @@ class VendorListing extends Component {
             },
             onCancel: () => console.log('CANCEL: clicked')
         };
-        return toastr.confirm(`Are you sure you want to delete this supplier?`, toastrConfirmOptions);
+        return toastr.confirm(`Are you sure you want to delete this Vendor?`, toastrConfirmOptions);
     }
 
     /**
@@ -424,7 +424,7 @@ class VendorListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'Vendor Type'}
+                                        placeholder={'-Vendor Type-'}
                                         options={this.renderListing('vendorType')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorType == null || this.state.vendorType.length === 0) ? [required] : []}
@@ -440,7 +440,7 @@ class VendorListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'Vendor Name'}
+                                        placeholder={'-Vendor Name-'}
                                         options={this.renderListing('vendorList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
@@ -499,7 +499,7 @@ class VendorListing extends Component {
                     className={"mr15 pr15"}
                     search
                     // exportCSV
-                    ignoreSinglePage
+                    //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'

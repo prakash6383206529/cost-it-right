@@ -506,7 +506,7 @@ class LabourListing extends Component {
                                         type="text"
                                         label={''}
                                         component={searchableSelect}
-                                        placeholder={'--State--'}
+                                        placeholder={'-State-'}
                                         isClearable={false}
                                         options={this.renderListing('state')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -523,7 +523,7 @@ class LabourListing extends Component {
                                         type="text"
                                         label={''}
                                         component={searchableSelect}
-                                        placeholder={'--Plant--'}
+                                        placeholder={'-Plant-'}
                                         isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -539,7 +539,7 @@ class LabourListing extends Component {
                                         type="text"
                                         label=''
                                         component={searchableSelect}
-                                        placeholder={'--Labour--'}
+                                        placeholder={'-Labour-'}
                                         isClearable={false}
                                         options={this.renderListing('labourList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -555,7 +555,7 @@ class LabourListing extends Component {
                                         type="text"
                                         label=''
                                         component={searchableSelect}
-                                        placeholder={'Machine Type'}
+                                        placeholder={'-Machine Type-'}
                                         isClearable={false}
                                         options={this.renderListing('MachineTypeList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -613,7 +613,7 @@ class LabourListing extends Component {
                     options={options}
                     search
                     // exportCSV
-                    ignoreSinglePage
+                    //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'

@@ -118,6 +118,7 @@ export const API = {
   getBoughtOutPartSelectList: `${BASE_URL}/masters-part/select-list-boughtout-part`,
   getBOMViewerTree: `${BASE_URL}/masters-part/get-visual-aid-bom-level-tree-view`,
   getChildDrawerBOPData: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-by-id`,
+  BOMUploadPart: `${BASE_URL}/masters-part/upload-bom-json`,
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -403,7 +404,7 @@ export const API = {
   getProfitVendorFilterByModelSelectList: `${BASE_URL}/masters-overhead-and-profit/profit-vendor-with-code-by-model-type-select-list`,
   getProfitModelFilterByVendorSelectList: `${BASE_URL}/masters-overhead-and-profit/profit-model-type-by-vendor-select-list`,
 
-  //Api's for depreciation master
+  //DEPRECIATION MASTER
   createDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/create-depreciation-type`,
   getDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/get-all-depreciation-type`,
   deleteDepreciationAPI: `${BASE_URL}/masters-machine-hour-rate/delete-depreciation-type`,
@@ -421,16 +422,18 @@ export const API = {
   bulkUploadInterestRateZBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-zbc-json`,
   bulkUploadInterestRateVBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-vbc-json`,
 
-  //Api's for costing
-  getPlantCombo: `${BASE_URL}/costing-sheet-metal/get-plant-combo-select-list`,
+  //COSTING API
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
-  checkPartWithTechnology: `${BASE_URL}/costing-sheet-metal/check-part-with-technology`,
   createNewCosting: `${BASE_URL}/costing-sheet-metal/create`,
   getCostingDetailsById: `${BASE_URL}/costing-sheet-metal/get-costing-details-by-id`,
   getZBCCostingSelectListByPart: `${BASE_URL}/costing-sheet-metal/get-costing-select-list-by-part`,
+  getCostingTechnologySelectList: `${BASE_URL}/costing/get-technology-select-list`,
+  getAllPartSelectList: `${BASE_URL}/costing/get-part-select-list`,
+  getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
+  checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
 
-  //weight calculation costing
+  //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
   UpdateCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/update-costing-weight-calculation`,
@@ -734,6 +737,7 @@ export const GET_UNIT_PART_DATA_SUCCESS = 'GET_UNIT_PART_DATA_SUCCESS';
 export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE';
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS';
 export const GET_DRAWER_CHILD_PART_DATA = 'GET_DRAWER_CHILD_PART_DATA';
+export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA';
 
 //ASSEMBLY PART
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST';
@@ -957,7 +961,9 @@ export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APP
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST';
 
 //COSTING
-export const GET_PLANT_COMBO_SUCCESS = 'GET_PLANT_COMBO_SUCCESS';
+export const GET_COSTING_TECHNOLOGY_SELECTLIST = 'GET_COSTING_TECHNOLOGY_SELECTLIST';
+export const GET_COSTING_PART_SELECTLIST = 'GET_COSTING_PART_SELECTLIST';
+export const GET_PART_INFO = 'GET_PART_INFO';
 export const GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS = 'GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS';
 export const CREATE_PART_WITH_SUPPLIER_SUCCESS = 'CREATE_PART_WITH_SUPPLIER_SUCCESS';
 export const CREATE_SHEETMETAL_COSTING_SUCCESS = 'CREATE_SHEETMETAL_COSTING_SUCCESS';
@@ -1178,6 +1184,5 @@ export const VBC = 'VBC';
 export const ASSEMBLY = 'Assembly';
 export const COMPONENT_PART = 'Component';
 export const BOUGHTOUTPART = 'BoughtOutPart';
-
 
 export const COSTING_PATH = '/costing';

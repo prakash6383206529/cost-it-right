@@ -112,7 +112,7 @@ class AddRMDomestic extends Component {
     handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
 
-            this.setState({ RawMaterial: newValue }, () => {
+            this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
                 const { RawMaterial } = this.state;
                 this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
             });
@@ -892,10 +892,14 @@ class AddRMDomestic extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    {!isEditFlag && <div
-                                                        onClick={this.specificationToggler}
-                                                        className={'plus-icon-square  right'}>
-                                                    </div>}
+                                                    {((this.state.RawMaterial == null || this.state.RawMaterial.length === 0) || (this.state.RMGrade == null || this.state.RMGrade.length === 0)) ?
+                                                        <div className={'plus-icon-square blurPlus-icon-square right'}>
+                                                        </div>
+                                                        :
+                                                        !isEditFlag && <div
+                                                            onClick={this.specificationToggler}
+                                                            className={'plus-icon-square  right'}>
+                                                        </div>}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -1146,7 +1150,7 @@ class AddRMDomestic extends Component {
                                         <Row>
                                             <Col md="12" className="filter-block">
                                                 <div className=" flex-fills mb-2">
-                                                    <h5>{'Remarks & Attachment'}</h5>
+                                                    <h5>{'Remark & Attachments'}</h5>
                                                 </div>
                                             </Col>
                                             <Col md="6">
@@ -1158,8 +1162,8 @@ class AddRMDomestic extends Component {
                                                     className=""
                                                     customClassName=" textAreaWithBorder"
                                                     onChange={this.handleMessageChange}
-                                                    validate={[required, maxLength100]}
-                                                    required={true}
+                                                    validate={[maxLength100]}
+                                                    //required={true}
                                                     component={renderTextAreaField}
                                                     maxLength="5000"
                                                     rows="6"
@@ -1241,7 +1245,11 @@ class AddRMDomestic extends Component {
                     anchor={'right'}
                     AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
                     EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
+                    RawMaterial={''}
+                    RMGrade={''}
+                    isRMDomesticSpec={true}
                 />}
+
                 {isOpenGrade && <AddGrade
                     isOpen={isOpenGrade}
                     closeDrawer={this.closeGradeDrawer}
@@ -1249,6 +1257,7 @@ class AddRMDomestic extends Component {
                     RawMaterial={this.state.RawMaterial}
                     anchor={'right'}
                 />}
+
                 {isOpenSpecification && <AddSpecification
                     isOpen={isOpenSpecification}
                     closeDrawer={this.closeSpecDrawer}
@@ -1257,7 +1266,11 @@ class AddRMDomestic extends Component {
                     anchor={'right'}
                     AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
                     EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
+                    RawMaterial={this.state.RawMaterial}
+                    RMGrade={this.state.RMGrade}
+                    isRMDomesticSpec={true}
                 />}
+
                 {isOpenCategory && <AddCategory
                     isOpen={isOpenCategory}
                     closeDrawer={this.closeCategoryDrawer}
@@ -1265,6 +1278,7 @@ class AddRMDomestic extends Component {
                     ID={''}
                     anchor={'right'}
                 />}
+
                 {isOpenVendor && <AddVendorDrawer
                     isOpen={isOpenVendor}
                     closeDrawer={this.closeVendorDrawer}
@@ -1272,6 +1286,7 @@ class AddRMDomestic extends Component {
                     ID={''}
                     anchor={'right'}
                 />}
+
                 {isOpenUOM && <AddUOM
                     isOpen={isOpenUOM}
                     closeDrawer={this.closeUOMDrawer}
@@ -1279,6 +1294,7 @@ class AddRMDomestic extends Component {
                     ID={''}
                     anchor={'right'}
                 />}
+
                 {isVisible && <ImageModel
                     onOk={this.onOk}
                     onCancel={this.onCancel}

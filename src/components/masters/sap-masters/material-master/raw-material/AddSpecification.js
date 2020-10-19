@@ -48,6 +48,24 @@ class AddSpecification extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        const { RawMaterial, RMGrade, isRMDomesticSpec, } = this.props;
+
+        if (isRMDomesticSpec && RawMaterial !== '' && RMGrade !== '') {
+            this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
+
+            setTimeout(() => {
+                const { rawMaterialNameSelectList, gradeSelectList } = this.props;
+
+                let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === RawMaterial.value)
+                let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Value === RMGrade.value)
+
+                this.setState({
+                    RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+                    RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+                })
+            }, 500)
+        }
+
         this.getDetails()
     }
 

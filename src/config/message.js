@@ -90,8 +90,8 @@ export const MESSAGES = {
   PROFIT_ADDED_SUCCESS: 'Profit created successfully',
   OVERHEAD_UPDATE_SUCCESS: 'Overhead has been updated successfully',
   PROFIT_UPDATE_SUCCESS: 'Profit has been updated successfully',
-  OVERHEAD_DELETE_ALERT: 'Are you sure you want to delete this overhead?',
-  PROFIT_DELETE_ALERT: 'Are you sure you want to delete this profit?',
+  OVERHEAD_DELETE_ALERT: 'Are you sure you want to delete this Overhead Detail?',
+  PROFIT_DELETE_ALERT: 'Are you sure you want to delete this Profit Detail?',
   DELETE_OVERHEAD_SUCCESS: 'Overhead deleted successfully',
   DELETE_PROFIT_SUCCESS: 'Profit deleted successfully',
   OVERHEAD_ACTIVE_SUCCESSFULLY: 'Overhead has been activated successfully',
@@ -215,7 +215,7 @@ export const MESSAGES = {
   USER_ACTIVE_ALERT: 'Are you sure you want to activate?',
   USER_DELETE_ALERT: 'Are you sure you want to delete this User?',
   UPDATE_USER_SUCCESSFULLY: 'User has been updated successfully',
-  COSTING_DELETE_ALERT: 'All costing which are pending for approval and whose approval are awaited will get rejected. Do you want to continue?',
+  COSTING_REJECT_ALERT: "All costing's which are pending for approval and whose approval are awaited will get rejected. Do you want to continue?",
 
   //ROLE
   ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully',

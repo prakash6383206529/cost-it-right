@@ -749,7 +749,7 @@ class AddOperation extends Component {
                                     <Row>
                                         <Col md="12">
                                             <div className="left-border">
-                                                {'Remarks & Attachment:'}
+                                                {'Remark & Attachments:'}
                                             </div>
                                         </Col>
                                         <Col md="6">
@@ -761,8 +761,8 @@ class AddOperation extends Component {
                                                 className=""
                                                 customClassName=" textAreaWithBorder"
                                                 onChange={this.handleMessageChange}
-                                                validate={[required, maxLength100]}
-                                                required={true}
+                                                validate={[maxLength100]}
+                                                //required={true}
                                                 component={renderTextAreaField}
                                                 maxLength="5000"
                                             />

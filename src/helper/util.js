@@ -56,7 +56,6 @@ const handleHTTPStatus = (response) => {
         case 411:
         case 414:
         case 416:
-        case 417:
         case 427:
             return toastr.error('Something is not right. Please contact your IT Team');
         case 407:
@@ -72,6 +71,9 @@ const handleHTTPStatus = (response) => {
             return toastr.error("Server can't process such long request. Please contact your IT Team");
         case 415:
             return toastr.error("This request is not supported by the server. Please contact your IT Team");
+        case 417:
+            const errMsg417 = response && response.data && response.data.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.';
+            return toastr.error(errMsg417);
         case 500:
             return toastr.error("Internal server error. Please contact your IT Team");
         case 501:

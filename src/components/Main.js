@@ -30,8 +30,8 @@ import ExchangeRateListing from './masters/sap-masters/exchange-rate-master/Exch
 import TaxListing from './masters/sap-masters/tax-master/TaxListing';
 import LeftMenu from './nav/Leftsidemenu';
 import Breadcrumb from './nav/Breadcrumb';
-
-import Costing from './costing';
+import CostingRoutes from './costing/Routes';
+import Costing from './costing/components';
 import { showUserData } from '../actions';
 import AuthMiddleware from '../AuthMiddleware';
 import {
@@ -167,7 +167,9 @@ class Main extends Component {
 
                     <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate, INTEREST_RATE)} />
 
-                    <Route path="/costing" component={AuthMiddleware(Costing, SHEET_METAL)} />
+                    {/* <Route path="/costing" component={AuthMiddleware(Costing, SHEET_METAL)} /> */}
+                    <Route path="/costing" component={CostingRoutes} />
+                    {/* <CostingRoutes /> */}
 
                     <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
 
@@ -178,6 +180,7 @@ class Main extends Component {
                     <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing, EXCHANGE_RATE)} />
 
                     <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
+
 
                     <Route
                       render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}

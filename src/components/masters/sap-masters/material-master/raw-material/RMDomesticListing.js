@@ -189,7 +189,7 @@ class RMDomesticListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
+        return cell ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
@@ -268,6 +268,7 @@ class RMDomesticListing extends Component {
             filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -275,6 +276,7 @@ class RMDomesticListing extends Component {
             filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -282,6 +284,7 @@ class RMDomesticListing extends Component {
             filterRMSelectList && filterRMSelectList.Vendors && filterRMSelectList.Vendors.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -491,6 +494,7 @@ class RMDomesticListing extends Component {
                                 </div>
                                 <div className="flex-fill sliderange ">
                                     <InputRange
+                                        //formatLabel={value => `${value}cm`}
                                         maxValue={this.state.maxRange}
                                         minValue={0}
                                         value={this.state.value}
@@ -551,7 +555,7 @@ class RMDomesticListing extends Component {
                             options={options}
                             search
                             //exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

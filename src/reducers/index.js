@@ -19,9 +19,6 @@ import freightReducer from './master/Freight';
 import labourReducer from './master/Labour';
 import OverheadProfitReducer from './master/OverheadProfit';
 import InterestRateReducer from './master/InterestRate';
-import costingReducer from './costing/Costing';
-import CostWorkingReducer from './costing/CostWorking';
-import ApprovalReducer from './costing/Approval';
 import MachineReducer from './master/MachineMaster';
 import PowerReducer from './master/PowerMaster';
 import ReasonReducer from './master/ReasonMaster';
@@ -29,6 +26,7 @@ import VolumeReducer from './master/Volume';
 import ClientReducer from './master/Client';
 import ExchangeRateReducer from './master/ExchangeRate';
 import TaxReducer from './master/Tax';
+import CostingReducer from '../components/costing/MainReducer';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -59,9 +57,6 @@ const allReducers = combineReducers({
    labour: labourReducer,
    overheadProfit: OverheadProfitReducer,
    interestRate: InterestRateReducer,
-   costing: costingReducer,
-   costWorking: CostWorkingReducer,
-   approval: ApprovalReducer,
    machine: MachineReducer,
    power: PowerReducer,
    reason: ReasonReducer,
@@ -69,6 +64,7 @@ const allReducers = combineReducers({
    client: ClientReducer,
    exchangeRate: ExchangeRateReducer,
    tax: TaxReducer,
+   ...CostingReducer,
 });
 
 export default rootReducer;

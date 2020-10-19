@@ -16,7 +16,7 @@ import {
     GET_COSTING_TECHNOLOGY_SELECTLIST,
     GET_COSTING_PART_SELECTLIST,
     GET_PART_INFO,
-} from '../../config/constants';
+} from '../../../config/constants';
 
 const initialState = {
     costingData: {

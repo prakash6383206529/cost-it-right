@@ -286,7 +286,7 @@ class AddIndivisualPart extends Component {
                                     <Row>
                                         <Col md="6">
                                             <div className="form-heading mb-0">
-                                                <h2>{this.state.isEditFlag ? 'Update Indivisual Part' : 'Add  Indivisual Part'}</h2>
+                                                <h2>{this.state.isEditFlag ? 'Update Individual Part' : 'Add  Individual Part'}</h2>
                                             </div>
                                         </Col>
                                     </Row>
@@ -354,55 +354,10 @@ class AddIndivisualPart extends Component {
                                         </Row>
 
                                         <Row>
-                                            {initalConfiguration.IsGroupCodeDisplay && <Col md="3">
-                                                <Field
-                                                    label={`Group Code`}
-                                                    name={"GroupCode"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>}
-                                            <Col md='3'>
-                                                <Field
-                                                    label="Plant"
-                                                    name="Plant"
-                                                    placeholder="--Select--"
-                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
-                                                    options={this.renderListing('plant')}
-                                                    selectionChanged={this.handlePlant}
-                                                    optionValue={option => option.Value}
-                                                    optionLabel={option => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    className="multiselect-with-border"
-                                                //disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
                                             <Col md="3">
                                                 <Field
                                                     label={`ECN No.`}
                                                     name={"ECNNumber"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Drawing No.`}
-                                                    name={"DrawingNumber"}
                                                     type="text"
                                                     placeholder={''}
                                                     validate={[required]}
@@ -425,6 +380,53 @@ class AddIndivisualPart extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={`Drawing No.`}
+                                                    name={"DrawingNumber"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                />
+                                            </Col>
+                                            {initalConfiguration.IsGroupCodeDisplay && <Col md="3">
+                                                <Field
+                                                    label={`Group Code`}
+                                                    name={"GroupCode"}
+                                                    type="text"
+                                                    placeholder={''}
+                                                    validate={[required]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                />
+                                            </Col>}
+
+                                        </Row>
+
+                                        <Row>
+                                            <Col md='3'>
+                                                <Field
+                                                    label="Plant"
+                                                    name="Plant"
+                                                    placeholder="--Select--"
+                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                                    options={this.renderListing('plant')}
+                                                    selectionChanged={this.handlePlant}
+                                                    optionValue={option => option.Value}
+                                                    optionLabel={option => option.Text}
+                                                    component={renderMultiSelectField}
+                                                    //mendatory={true}
+                                                    className="multiselect-with-border"
+                                                //disabled={isEditFlag ? true : false}
+                                                />
+                                            </Col>
+
                                             <Col md="3">
                                                 <div className="form-group">
                                                     <label>
@@ -456,7 +458,7 @@ class AddIndivisualPart extends Component {
                                         <Row>
                                             <Col md="12">
                                                 <div className="left-border">
-                                                    {'Remarks & Attachment'}
+                                                    {'Remark & Attachments'}
                                                 </div>
                                             </Col>
                                             <Col md="6">
@@ -466,8 +468,8 @@ class AddIndivisualPart extends Component {
                                                     placeholder="Type here..."
                                                     className=""
                                                     customClassName=" textAreaWithBorder"
-                                                    validate={[required, maxLength100]}
-                                                    required={true}
+                                                    validate={[maxLength100]}
+                                                    //required={true}
                                                     component={renderTextAreaField}
                                                     maxLength="5000"
                                                 />

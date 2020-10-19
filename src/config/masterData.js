@@ -1048,9 +1048,9 @@ export const PartComponent = [
     { label: 'PartNo', value: 'PartNo', },
     { label: 'PartName', value: 'PartName', },
     { label: 'PartDescription', value: 'PartDescription', },
-    { label: 'Type', value: 'Type', },
+    // { label: 'Type', value: 'Type', },
     { label: 'GroupCode', value: 'GroupCode', },
-    { label: 'MaterialType', value: 'MaterialType', },
+    // { label: 'MaterialType', value: 'MaterialType', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: 'Plant', value: 'Plant', },
@@ -1064,9 +1064,9 @@ export const PartComponentTempData = [
         'PartNo': 'Part  No',
         'PartName': 'Part Name',
         'PartDescription': 'Part Description',
-        'Type': 'Type',
+        // 'Type': 'Type',
         'GroupCode': 'Group Code',
-        'MaterialType': 'Material Type',
+        // 'MaterialType': 'Material Type',
         'RevisionNo': 'Revision No',
         'DrawingNo': 'Drawing No',
         'Plant': 'Plant',
@@ -1130,6 +1130,43 @@ export const VBCInterestRateTempData = [
     }
 ]
 
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const BOMUpload = [
+    { label: "BOMNo", value: "BOMNo" },
+    { label: "AssemblyPartNo", value: "AssemblyPartNo" },
+    { label: "PartNo", value: "PartNo" },
+    { label: "AssemblyPartName", value: "AssemblyPartName" },
+    { label: "Description", value: "Description" },
+    { label: "PartType", value: "PartType" },
+    { label: "GroupCode", value: "GroupCode" },
+    { label: "ECNNumber", value: "ECNNumber" },
+    { label: "RevisionNo", value: "RevisionNo" },
+    { label: "DrawingNo", value: "DrawingNo" },
+    { label: "AssemblyMark", value: "AssemblyMark" },
+    { label: "Level", value: "Level" },
+    { label: "Quantity", value: "Quantity" },
+]
+
+export const BOMUploadTempData = [
+    {
+        "BOMNo": "BOM No",
+        "AssemblyPartNo": "Assembly Part No",
+        "PartNo": "Part No",
+        "AssemblyPartName": "Assembly Part Name",
+        "Description": "Description",
+        "PartType": "Part Type",
+        "GroupCode": "Group Code",
+        "ECNNumber": 1,
+        "RevisionNo": 1,
+        "DrawingNo": 1,
+        "AssemblyMark": "Assembly Mark",
+        "Level": 0,
+        "Quantity": 0,
+    }
+]
+
 export const EAccessType = [
     { label: '--Select EAccess Type--', value: '', },
     { label: 'ReadOnly', value: 0, },
@@ -1181,4 +1218,9 @@ export const monthSequence = [
     { seq: 9, month: 'January' },
     { seq: 10, month: 'February' },
     { seq: 11, month: 'March' },
-] 
+]
+
+export const costingHeadObj = [
+    { label: 'Zero Based', value: 'ZBC' },
+    { label: 'Vendor Based', value: 'VBC' },
+]

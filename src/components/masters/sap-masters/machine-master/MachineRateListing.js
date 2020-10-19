@@ -22,6 +22,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import BulkUpload from '../../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { costingHeadObj } from '../../../../config/masterData';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -84,11 +85,7 @@ class MachineRateListing extends Component {
         const temp = [];
 
         if (label === 'costingHead') {
-            let tempObj = [
-                { label: 'ZBC', value: 'ZBC' },
-                { label: 'VBC', value: 'VBC' },
-            ]
-            return tempObj;
+            return costingHeadObj;
         }
 
         if (label === 'plant') {
@@ -304,7 +301,7 @@ class MachineRateListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vandor Based' : 'Zero Based';
+        return cell ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
@@ -575,7 +572,7 @@ class MachineRateListing extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>

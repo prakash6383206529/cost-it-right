@@ -16,6 +16,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
 import BulkUpload from '../../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { costingHeadObj } from '../../../../config/masterData';
 
 class BOPImportListing extends Component {
     constructor(props) {
@@ -244,12 +245,9 @@ class BOPImportListing extends Component {
         const temp = [];
 
         if (label === 'costingHead') {
-            let temp = [
-                { label: 'ZBC', value: 'ZBC' },
-                { label: 'VBC', value: 'VBC' },
-            ]
-            return temp;
+            return costingHeadObj;
         }
+
         if (label === 'BOPCategory') {
             bopCategorySelectList && bopCategorySelectList.map(item => {
                 if (item.Value === '0') return false;
@@ -257,6 +255,7 @@ class BOPImportListing extends Component {
             });
             return temp;
         }
+
         if (label === 'plant') {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
@@ -264,6 +263,7 @@ class BOPImportListing extends Component {
             });
             return temp;
         }
+
         if (label === 'vendor') {
             vendorAllSelectList && vendorAllSelectList.map(item => {
                 if (item.Value === '0') return false;
@@ -271,6 +271,7 @@ class BOPImportListing extends Component {
             });
             return temp;
         }
+
     }
 
     /**
@@ -452,7 +453,7 @@ class BOPImportListing extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

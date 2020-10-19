@@ -176,7 +176,7 @@ class RMListing extends Component {
                             options={options}
                             search
                             // exportCSV
-                            ignoreSinglePage
+                            //ignoreSinglePage
                             ref={'table'}
                             className={'RM-table'}
                             pagination>
