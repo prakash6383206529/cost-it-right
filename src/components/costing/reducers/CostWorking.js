@@ -22,7 +22,6 @@ import {
     GET_OTHER_OPERATION_SELECT_LIST_SUCCESS,
     SAVE_OTHER_OPERATION_COSTING_SUCCESS,
     ADD_PROCESS_COSTING_SUCCESS,
-    GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
     SET_COSTING_DETAIL_ROW_DATA,
     UPDATE_COSTING_OTHER_OPERATION_SUCCESS,
     SAVE_COSTING_AS_DRAFT_SUCCESS,
@@ -203,13 +202,6 @@ export default function CostWorkingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-            };
-        case GET_MATERIAL_DATA_SELECTLIST_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                error: true,
-                MaterialSelectList: action.payload
             };
         case SET_COSTING_DETAIL_ROW_DATA:
             return {

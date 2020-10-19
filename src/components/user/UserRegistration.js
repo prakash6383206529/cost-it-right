@@ -18,7 +18,7 @@ import {
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
   setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLoginPageInit,
 } from "../../actions/auth/AuthActions";
-import { getAllCities } from "../../actions/master/Comman";
+import { getAllCities } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { loggedInUserId } from "../../helper/auth";

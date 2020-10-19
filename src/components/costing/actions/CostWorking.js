@@ -25,7 +25,6 @@ import {
   GET_OTHER_OPERATION_SELECT_LIST_SUCCESS,
   SAVE_OTHER_OPERATION_COSTING_SUCCESS,
   ADD_PROCESS_COSTING_SUCCESS,
-  GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
   SET_COSTING_DETAIL_ROW_DATA,
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS,
   SAVE_COSTING_AS_DRAFT_SUCCESS,
@@ -658,27 +657,6 @@ export function saveOtherOpsCosting(data, callback) {
           toastr.error(response.data.Message);
         }
       }
-    }).catch((error) => {
-      dispatch({
-        type: API_FAILURE
-      });
-      apiErrors(error);
-    });
-  };
-}
-
-/**
- * @method getMaterialTypeSelectList
- * @description fetch UOM and material type list
- */
-export function getMaterialTypeSelectList() {
-  return (dispatch) => {
-    const request = axios.get(API.getMaterialTypeSelectList, headers);
-    request.then((response) => {
-      dispatch({
-        type: GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
-        payload: response.data.SelectList,
-      });
     }).catch((error) => {
       dispatch({
         type: API_FAILURE

@@ -6,17 +6,17 @@ import { getJsDateFromExcel } from "../../helper/validation";
 import {
     bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
     bulkfileUploadRM, bulkUploadRMSpecification,
-} from '../../actions/master/Material';
-import { bulkUploadMachineZBC, bulkUploadMachineVBC, bulkUploadMachineMoreZBC } from '../../actions/master/MachineMaster';
-import { fuelBulkUpload } from '../../actions/master/Fuel';
-import { labourBulkUpload } from '../../actions/master/Labour';
-import { vendorBulkUpload } from '../../actions/master/Supplier';
-import { overheadBulkUpload, profitBulkUpload } from '../../actions/master/OverheadProfit';
-import { operationZBCBulkUpload, operationVBCBulkUpload } from '../../actions/master/OtherOperation';
-import { partComponentBulkUpload } from '../../actions/master/Part';
-import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../../actions/master/BoughtOutParts';
-import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedVBC, } from '../../actions/master/Volume';
-import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, } from '../../actions/master/InterestRateMaster';
+} from '../masters/sap-masters/actions/Material';
+import { bulkUploadMachineZBC, bulkUploadMachineVBC, bulkUploadMachineMoreZBC } from '../masters/sap-masters/actions/MachineMaster';
+import { fuelBulkUpload } from '../masters/sap-masters/actions/Fuel';
+import { labourBulkUpload } from '../masters/sap-masters/actions/Labour';
+import { vendorBulkUpload } from '../masters/sap-masters/actions/Supplier';
+import { overheadBulkUpload, profitBulkUpload } from '../masters/sap-masters/actions/OverheadProfit';
+import { operationZBCBulkUpload, operationVBCBulkUpload } from '../masters/sap-masters/actions/OtherOperation';
+import { partComponentBulkUpload } from '../masters/sap-masters/actions/Part';
+import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../masters/sap-masters/actions/BoughtOutParts';
+import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedVBC, } from '../masters/sap-masters/actions/Volume';
+import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, } from '../masters/sap-masters/actions/InterestRateMaster';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';

@@ -1,0 +1,529 @@
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Field, reduxForm, } from "redux-form";
+import { Row, Col, } from 'reactstrap';
+import { required } from "../../../helper/validation";
+import { searchableSelect } from "../../layout/FormInputs";
+import { Loader } from '../../common/Loader';
+import { CONSTANT } from '../../../helper/AllConastant';
+import {
+    getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
+    getPlantSelectList, getPlantSelectListByVendor,
+} from '../sap-masters/actions/BoughtOutParts';
+import NoContentFound from '../../common/NoContentFound';
+import { MESSAGES } from '../../../config/message';
+import { toastr } from 'react-redux-toastr';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import moment from 'moment';
+import BulkUpload from '../../massUpload/BulkUpload';
+import { GridTotalFormate } from '../../common/TableGridFunctions';
+import { costingHeadObj } from '../../../config/masterData';
+
+class BOPDomesticListing extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isOpen: false,
+            isEditFlag: false,
+            tableData: [],
+            isBulkUpload: false,
+
+            costingHead: [],
+            BOPCategory: [],
+            plant: [],
+            vendor: [],
+        }
+    }
+
+    /**
+    * @method componentDidMount
+    * @description Called after rendering the component
+    */
+    componentDidMount() {
+        this.props.getBOPCategorySelectList(() => { })
+        this.props.getPlantSelectList(() => { })
+        this.props.getAllVendorSelectList(() => { })
+        this.getDataList()
+    }
+
+    /**
+    * @method getDataList
+    * @description GET DETAILS OF BOP DOMESTIC
+    */
+    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '',) => {
+        const filterData = {
+            bop_for: bopFor,
+            category_id: CategoryId,
+            vendor_id: vendorId,
+            plant_id: plantId,
+        }
+        this.props.getBOPDomesticDataList(filterData, (res) => {
+            if (res && res.status === 200) {
+                let Data = res.data.DataList;
+                this.setState({ tableData: Data })
+            } else if (res && res.response && res.response.status === 412) {
+                this.setState({ tableData: [] })
+            } else {
+                this.setState({ tableData: [] })
+            }
+        })
+    }
+
+    /**
+    * @method editItemDetails
+    * @description edit material type
+    */
+    editItemDetails = (Id, rowData) => {
+        let data = {
+            isEditFlag: true,
+            Id: Id,
+            IsVendor: rowData.CostingHead,
+        }
+        this.props.getDetails(data);
+    }
+
+    /**
+    * @method deleteItem
+    * @description confirm delete Raw Material details
+    */
+    deleteItem = (Id) => {
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.confirmDelete(Id)
+            },
+            onCancel: () => console.log('CANCEL: clicked')
+        };
+        return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
+    }
+
+    /**
+    * @method confirmDelete
+    * @description confirm delete Raw Material details
+    */
+    confirmDelete = (ID) => {
+        this.props.deleteBOP(ID, (res) => {
+            if (res.data.Result === true) {
+                toastr.success(MESSAGES.BOP_DELETE_SUCCESS);
+                this.getDataList()
+            }
+        });
+    }
+
+    bulkToggle = () => {
+        this.setState({ isBulkUpload: true })
+    }
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+            this.getDataList()
+        })
+    }
+
+    /**
+    * @method handleHeadChange
+    * @description called
+    */
+    handleHeadChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ costingHead: newValue, });
+        } else {
+            this.setState({ costingHead: [], })
+        }
+    };
+
+    /**
+    * @method handleCategoryChange
+    * @description  used to handle BOP Category Selection
+    */
+    handleCategoryChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ BOPCategory: newValue });
+        } else {
+            this.setState({ BOPCategory: [], });
+
+        }
+    }
+
+    /**
+    * @method handlePlantChange
+    * @description  PLANT LIST
+    */
+    handlePlantChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ plant: newValue });
+        } else {
+            this.setState({ plant: [], });
+
+        }
+    }
+
+    /**
+    * @method handleVendorChange
+    * @description  VENDOR LIST
+    */
+    handleVendorChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ vendor: newValue }, () => {
+                const { vendor } = this.state;
+                this.props.getPlantSelectListByVendor(vendor.value, () => { })
+            });
+        } else {
+            this.setState({ vendor: [], });
+
+        }
+    }
+
+    /**
+    * @method renderPaginationShowsTotal
+    * @description Pagination
+    */
+    renderPaginationShowsTotal(start, to, total) {
+        return <GridTotalFormate start={start} to={to} total={total} />
+    }
+
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
+    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        const { EditAccessibility, DeleteAccessibility } = this.props;
+        return (
+            <>
+                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+            </>
+        )
+    }
+
+    /**
+    * @method costingHeadFormatter
+    * @description Renders Costing head
+    */
+    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell ? 'VBC' : 'ZBC';
+    }
+
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
+    indexFormatter = (cell, row, enumObject, rowIndex) => {
+        const { table } = this.refs;
+        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+        let serialNumber = '';
+        if (currentPage === 1) {
+            serialNumber = rowIndex + 1;
+        } else {
+            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+        }
+        return serialNumber;
+    }
+
+    renderSerialNumber = () => {
+        return <>Sr. <br />No. </>
+    }
+
+    renderCostingHead = () => {
+        return <>Costing <br />Head </>
+    }
+
+    /**
+    * @method costingHeadFormatter
+    * @description Renders Costing head
+    */
+    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell ? 'Vendor Based' : 'Zero Based';
+    }
+
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
+    /**
+    * @method renderListing
+    * @description Used to show type of listing
+    */
+    renderListing = (label) => {
+        const { bopCategorySelectList, plantSelectList, vendorAllSelectList, } = this.props;
+        const temp = [];
+
+        if (label === 'costingHead') {
+            return costingHeadObj;
+        }
+
+        if (label === 'BOPCategory') {
+            bopCategorySelectList && bopCategorySelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+
+        if (label === 'vendor') {
+            vendorAllSelectList && vendorAllSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
+    }
+
+    /**
+    * @method filterList
+    * @description Filter user listing on the basis of role and department
+    */
+    filterList = () => {
+        const { costingHead, BOPCategory, plant, vendor } = this.state;
+
+        const costingHeadTemp = costingHead ? costingHead.value : '';
+        const categoryTemp = BOPCategory ? BOPCategory.value : '';
+        const vendorTemp = vendor ? vendor.value : '';
+        const plantTemp = plant ? plant.value : '';
+
+        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp,)
+    }
+
+    /**
+    * @method resetFilter
+    * @description Reset user filter
+    */
+    resetFilter = () => {
+        this.setState({
+            costingHead: [],
+            BOPCategory: [],
+            plant: [],
+            vendor: [],
+        }, () => {
+            this.props.getBOPCategorySelectList(() => { })
+            this.props.getPlantSelectList(() => { })
+            this.props.getAllVendorSelectList(() => { })
+            this.getDataList()
+        })
+
+    }
+
+    formToggle = () => {
+        this.props.displayForm()
+    }
+
+    /**
+    * @method onSubmit
+    * @description Used to Submit the form
+    */
+    onSubmit = (values) => {
+
+    }
+
+    /**
+    * @method render
+    * @description Renders the component
+    */
+    render() {
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { isBulkUpload } = this.state;
+        const options = {
+            clearSearch: true,
+            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            paginationShowsTotal: this.renderPaginationShowsTotal,
+            paginationSize: 5,
+        };
+
+        return (
+            <div>
+                {this.props.loading && <Loader />}
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                    <Row className="pt-30">
+                        <Col md="10" className="filter-block">
+                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="costingHead"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-Costing Head-'}
+                                        isClearable={false}
+                                        options={this.renderListing('costingHead')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleHeadChange}
+                                        valueDescription={this.state.costingHead}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="category"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-Category-'}
+                                        isClearable={false}
+                                        options={this.renderListing('BOPCategory')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleCategoryChange}
+                                        valueDescription={this.state.BOPCategory}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="vendor"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-Vendor-'}
+                                        isClearable={false}
+                                        options={this.renderListing('vendor')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handleVendorChange}
+                                        valueDescription={this.state.vendor}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <Field
+                                        name="plant"
+                                        type="text"
+                                        label=""
+                                        component={searchableSelect}
+                                        placeholder={'-Plant-'}
+                                        isClearable={false}
+                                        options={this.renderListing('plant')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
+                                        required={true}
+                                        handleChangeDescription={this.handlePlantChange}
+                                        valueDescription={this.state.plant}
+                                    />
+                                </div>
+
+                                <div className="flex-fill">
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={this.resetFilter}
+                                        className="reset mr10"
+                                    >
+                                        {'Reset'}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={this.filterList}
+                                        className="apply mr5"
+                                    >
+                                        {'Apply'}
+                                    </button>
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md="2" className="search-user-block">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div>
+                                    {BulkUploadAccessibility && <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        onClick={this.bulkToggle}>
+                                        <div className={'upload'}></div>Bulk Upload</button>}
+                                    {AddAccessibility && <button
+                                        type="button"
+                                        className={'user-btn'}
+                                        onClick={this.formToggle}>
+                                        <div className={'plus'}></div>ADD</button>}
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
+
+                </form>
+                <Row>
+                    <Col>
+                        <BootstrapTable
+                            data={this.state.tableData}
+                            striped={false}
+                            hover={false}
+                            bordered={false}
+                            options={options}
+                            search
+                            // exportCSV
+                            //ignoreSinglePage
+                            ref={'table'}
+                            pagination>
+                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="PartAssemblyNumber" columnTitle={true} dataAlign="center"  >{'Part Assembly No.'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="center" >{'Specification'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NumberOfPieces" columnTitle={true} dataAlign="center"  >{'No. of Pcs'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BasicRate" columnTitle={true} dataAlign="center"  >{'Basic Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center" >{'Net Landed Cost'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        </BootstrapTable>
+                    </Col>
+                </Row>
+                {isBulkUpload && <BulkUpload
+                    isOpen={isBulkUpload}
+                    closeDrawer={this.closeBulkUploadDrawer}
+                    isEditFlag={false}
+                    fileName={'BOPDomestic'}
+                    isZBCVBCTemplate={true}
+                    messageLabel={'BOP Domestic'}
+                    anchor={'right'}
+                />}
+            </div >
+        );
+    }
+}
+
+/**
+* @method mapStateToProps
+* @description return state to component as props
+* @param {*} state
+*/
+function mapStateToProps({ boughtOutparts }) {
+    const { bopCategorySelectList, vendorAllSelectList, plantSelectList } = boughtOutparts;
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, }
+}
+
+/**
+ * @method connect
+ * @description connect with redux
+* @param {function} mapStateToProps
+* @param {function} mapDispatchToProps
+*/
+export default connect(mapStateToProps, {
+    getBOPDomesticDataList,
+    deleteBOP,
+    getBOPCategorySelectList,
+    getPlantSelectList,
+    getAllVendorSelectList,
+    getPlantSelectListByVendor,
+})(reduxForm({
+    form: 'BOPDomesticListing',
+    enableReinitialize: true,
+})(BOPDomesticListing));
