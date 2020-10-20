@@ -13,9 +13,9 @@ import {
 import {
     createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
     fileUploadBOPDomestic, fileDeleteBOPDomestic,
-} from '../sap-masters/actions/BoughtOutParts';
-import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../sap-masters/actions/Supplier';
-import { getPartSelectList } from '../sap-masters/actions/Part';
+} from '../actions/BoughtOutParts';
+import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
+import { getPartSelectList } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";

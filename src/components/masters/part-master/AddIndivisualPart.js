@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, number, maxLength100 } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, renderMultiSelectField, renderTextAreaField, } from "../../layout/FormInputs";
-import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../sap-masters/actions/Part';
+import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';

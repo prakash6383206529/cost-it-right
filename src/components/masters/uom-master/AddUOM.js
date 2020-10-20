@@ -7,7 +7,7 @@ import { renderText, searchableSelect } from "../../layout/FormInputs";
 import {
     createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI,
     getUnitOfMeasurementAPI, getUnitTypeListAPI
-} from '../sap-masters/actions/unitOfMeasurment';
+} from '../actions/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";

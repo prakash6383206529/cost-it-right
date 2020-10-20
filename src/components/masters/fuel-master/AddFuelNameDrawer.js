@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
-import { createFuel } from '../sap-masters/actions/Fuel';
+import { createFuel } from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';

@@ -8,7 +8,7 @@ import {
     createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
     getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
     getMaterialTypeSelectList,
-} from '../sap-masters/actions/Material';
+} from '../actions/Material';
 import { fetchRMGradeAPI } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';

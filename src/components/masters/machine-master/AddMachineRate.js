@@ -10,11 +10,11 @@ import {
 import {
     getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList,
 } from '../../../actions/Common';
-import { getVendorListByVendorType, } from '../sap-masters/actions/Material';
+import { getVendorListByVendorType, } from '../actions/Material';
 import {
     createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
     checkAndGetMachineNumber, getMachineData,
-} from '../sap-masters/actions/MachineMaster';
+} from '../actions/MachineMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'

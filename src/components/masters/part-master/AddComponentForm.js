@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
-import { getComponentPartSelectList, getDrawerComponentPartData, } from '../sap-masters/actions/Part';
+import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
 
 class AddComponentForm extends Component {

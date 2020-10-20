@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { getPlantDataAPI, activeInactiveStatus, getFilteredPlantList, deletePlantAPI } from '../sap-masters/actions/Plant';
+import { getPlantDataAPI, activeInactiveStatus, getFilteredPlantList, deletePlantAPI } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';

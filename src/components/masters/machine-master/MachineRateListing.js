@@ -13,8 +13,8 @@ import {
     getMachineTypeSelectListByTechnology,
     getMachineTypeSelectListByVendor,
     getProcessSelectListByMachineType,
-} from '../sap-masters/actions/Process';
-import { getMachineDataList, deleteMachine, copyMachine, } from '../sap-masters/actions/MachineMaster';
+} from '../actions/Process';
+import { getMachineDataList, deleteMachine, copyMachine, } from '../actions/MachineMaster';
 import { getTechnologySelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';

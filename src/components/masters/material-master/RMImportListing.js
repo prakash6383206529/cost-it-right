@@ -12,7 +12,7 @@ import {
     getVendorFilterByGradeSelectList,
     getRawMaterialFilterByVendorSelectList,
     getGradeFilterByVendorSelectList,
-} from '../sap-masters/actions/Material';
+} from '../actions/Material';
 import { required } from "../../../helper/validation";
 import { getSupplierList } from '../../../actions/Common';
 import { searchableSelect } from "../../layout/FormInputs";

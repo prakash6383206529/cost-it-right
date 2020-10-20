@@ -5,13 +5,13 @@ import { Row, Col, Table, } from 'reactstrap';
 import { required, checkForNull, number } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, } from '../sap-masters/actions/Supplier';
-import { getVendorListByVendorType, } from '../sap-masters/actions/Material';
+import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
+import { getVendorListByVendorType, } from '../actions/Material';
 import {
     createFreight, updateFright, getFreightData, getFreightModeSelectList,
     getFreigtFullTruckCapacitySelectList,
     getFreigtRateCriteriaSelectList,
-} from '../sap-masters/actions/Freight';
+} from '../actions/Freight';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";

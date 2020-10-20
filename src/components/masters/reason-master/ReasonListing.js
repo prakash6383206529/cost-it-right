@@ -5,7 +5,7 @@ import { Col, } from 'reactstrap';
 import { focusOnError, } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../sap-masters/actions/ReasonMaster';
+import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';

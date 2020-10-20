@@ -8,7 +8,7 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getClientDataList, deleteClient } from '../sap-masters/actions/Client';
+import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 
 import { checkPermission } from '../../../helper/util';

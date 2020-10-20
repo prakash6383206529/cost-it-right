@@ -7,7 +7,7 @@ import {
     renderNumberInputField, searchableSelect, focusOnError,
 } from "../../layout/FormInputs";
 import { } from '../../../actions/Common';
-import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../sap-masters/actions/Fuel';
+import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'

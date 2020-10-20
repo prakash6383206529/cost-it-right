@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
-import { createRMCategoryAPI, getCategoryDataAPI, updateCategoryAPI } from '../sap-masters/actions/Material';
+import { createRMCategoryAPI, getCategoryDataAPI, updateCategoryAPI } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';

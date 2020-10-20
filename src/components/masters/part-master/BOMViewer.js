@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForNull } from "../../../helper/validation";
-import { getBOMViewerTree, getBOMViewerTreeDataByPartIdAndLevel, setActualBOMData } from '../sap-masters/actions/Part';
+import { getBOMViewerTree, getBOMViewerTreeDataByPartIdAndLevel, setActualBOMData } from '../actions/Part';
 import { Flowpoint, Flowspace } from 'flowpoints';
 import AddChildDrawer from './AddChildDrawer';
 import Drawer from '@material-ui/core/Drawer';

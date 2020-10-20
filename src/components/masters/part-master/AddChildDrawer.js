@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Label, } from 'reactstrap';
-import { getSelectListPartType } from '../sap-masters/actions/Part';
+import { getSelectListPartType } from '../actions/Part';
 import { ASSEMBLY, COMPONENT_PART, BOUGHTOUTPART } from "../../../config/constants";
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../../common/HeaderTitle';

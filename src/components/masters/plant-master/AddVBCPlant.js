@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, number, maxLength6, } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
-import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../sap-masters/actions/Plant';
+import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
 import {
     fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList,
     getCityByCountry,

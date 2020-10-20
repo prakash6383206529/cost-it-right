@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getLeftMenu, getModuleIdByPathName } from '../../actions';
+import { getLeftMenu, getModuleIdByPathName } from '../../actions/auth/AuthActions';
 import { loggedInUserId } from '../../helper/auth';
 import { Link } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';

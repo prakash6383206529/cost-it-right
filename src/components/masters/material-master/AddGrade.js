@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
-import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI, getMaterialTypeSelectList } from '../sap-masters/actions/Material';
+import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';

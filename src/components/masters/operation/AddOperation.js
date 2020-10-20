@@ -6,11 +6,11 @@ import { required, number, maxLength100, getVendorCode } from "../../../helper/v
 import {
     renderText, renderMultiSelectField, searchableSelect, renderTextAreaField
 } from "../../layout/FormInputs";
-import { getVendorWithVendorCodeSelectList } from '../sap-masters/actions/Supplier';
+import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
     createOperationsAPI, getOperationDataAPI,
     updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode
-} from '../sap-masters/actions/OtherOperation';
+} from '../actions/OtherOperation';
 import {
     getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier,
     getUOMSelectList,

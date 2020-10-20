@@ -7,8 +7,8 @@ import { renderText, searchableSelect, } from "../../layout/FormInputs";
 import {
     updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList,
     getICCAppliSelectList, getInterestRateData,
-} from '../sap-masters/actions/InterestRateMaster';
-import { getVendorListByVendorType, } from '../sap-masters/actions/Material';
+} from '../actions/InterestRateMaster';
+import { getVendorListByVendorType, } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";

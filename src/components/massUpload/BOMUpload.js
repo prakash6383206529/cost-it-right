@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { getJsDateFromExcel } from "../../helper/validation";
-import { BOMUploadPart } from '../masters/sap-masters/actions/Part';
+import { BOMUploadPart } from '../masters/actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';

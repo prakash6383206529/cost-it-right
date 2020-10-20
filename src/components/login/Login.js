@@ -6,7 +6,7 @@ import {
   renderText
 } from "../layout/FormInputs";
 import { connect } from "react-redux";
-import { loginUserAPI, getMenuByUser, getLeftMenu, getLoginPageInit, } from "../../actions";
+import { loginUserAPI, getMenuByUser, getLeftMenu, getLoginPageInit, } from "../../actions/auth/AuthActions";
 import { maxLength70, minLength5, maxLength25, required, email } from "../../helper/validation";
 import "./Login.scss";
 import { Loader } from "../common/Loader";

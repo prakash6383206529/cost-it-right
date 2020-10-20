@@ -11,7 +11,7 @@ import {
 } from '../../../actions/Common';
 import {
 
-} from '../sap-masters/actions/BoughtOutParts';
+} from '../actions/BoughtOutParts';
 
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';

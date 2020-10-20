@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getAssemblyPartDataList, deleteAssemblyPart, } from '../sap-masters/actions/Part';
+import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
 import { } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';

@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
     getPlantSelectList, getPlantSelectListByVendor,
-} from '../sap-masters/actions/BoughtOutParts';
+} from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';

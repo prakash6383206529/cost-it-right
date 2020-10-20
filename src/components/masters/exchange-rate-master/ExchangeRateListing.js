@@ -9,7 +9,7 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList } from '../sap-masters/actions/ExchangeRateMaster';
+import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';

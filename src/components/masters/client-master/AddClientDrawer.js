@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, email, minLength7, maxLength70, minLength10 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect } from "../../layout/FormInputs";
-import { createClient, updateClient, getClientData } from '../sap-masters/actions/Client';
+import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';

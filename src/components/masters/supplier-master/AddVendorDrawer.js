@@ -10,7 +10,7 @@ import {
 import {
     createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType,
     getVendorTypesSelectList,
-} from '../sap-masters/actions/Supplier';
+} from '../actions/Supplier';
 import {
     fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList,
     getAllCities, getCityByCountry,

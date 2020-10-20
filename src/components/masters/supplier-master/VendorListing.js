@@ -6,7 +6,6 @@ import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -14,7 +13,7 @@ import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
     getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
     getVendorTypeByVendorSelectList
-} from '../sap-masters/actions/Supplier';
+} from '../actions/Supplier';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';

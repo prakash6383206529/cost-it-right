@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { } from '../sap-masters/actions/Material';
 import { required } from "../../../helper/validation";
 import {
     getPowerDetailDataList, getVendorPowerDetailDataList, getFuelComboData, getPlantListByState,
     getZBCPlantList, getStateSelectList, deletePowerDetail, deleteVendorPowerDetail,
-} from '../sap-masters/actions/Fuel';
+} from '../actions/Fuel';
 import { getPlantBySupplier } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, } from '../sap-masters/actions/Supplier';
+import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';

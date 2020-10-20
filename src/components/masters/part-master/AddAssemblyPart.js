@@ -9,7 +9,7 @@ import { getPlantSelectListByType, } from '../../../actions/Common';
 import {
     createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
     getBOMViewerTreeDataByPartIdAndLevel,
-} from '../sap-masters/actions/Part';
+} from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';

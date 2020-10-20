@@ -5,12 +5,12 @@ import { Row, Col, Table } from 'reactstrap';
 import { required, checkForNull, trimTwoDecimalPlace, getVendorCode } from "../../../helper/validation";
 import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, } from '../sap-masters/actions/Supplier';
+import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
     getFuelComboData, createPowerDetail, updatePowerDetail, getPlantListByState,
     createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
     getPowerDetailData, getVendorPowerDetailData,
-} from '../sap-masters/actions/Fuel';
+} from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { GENERATOR_DIESEL, } from '../../../config/constants';

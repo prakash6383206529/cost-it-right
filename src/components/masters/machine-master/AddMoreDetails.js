@@ -10,13 +10,13 @@ import {
     getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList,
     getShiftTypeSelectList, getDepreciationTypeSelectList,
 } from '../../../actions/Common';
-import { getVendorListByVendorType, } from '../sap-masters/actions/Material';
+import { getVendorListByVendorType, } from '../actions/Material';
 import {
     createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
     getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine,
-} from '../sap-masters/actions/MachineMaster';
-import { getLabourTypeByMachineTypeSelectList } from '../sap-masters/actions/Labour';
-import { getFuelComboData, } from '../sap-masters/actions/Fuel';
+} from '../actions/MachineMaster';
+import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
+import { getFuelComboData, } from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'

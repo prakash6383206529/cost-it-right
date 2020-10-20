@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getTaxDetailsDataList, deleteTaxDetails, } from '../sap-masters/actions/TaxMaster';
+import { getTaxDetailsDataList, deleteTaxDetails, } from '../actions/TaxMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';

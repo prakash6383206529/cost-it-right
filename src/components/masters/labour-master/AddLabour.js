@@ -4,9 +4,9 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import { required, number, decimalLength2, checkForNull } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
-import { getFuelComboData, getPlantListByState, } from '../sap-masters/actions/Fuel';
-import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList } from '../sap-masters/actions/Labour';
-import { getMachineTypeSelectList, } from '../sap-masters/actions/MachineMaster';
+import { getFuelComboData, getPlantListByState, } from '../actions/Fuel';
+import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
+import { getMachineTypeSelectList, } from '../actions/MachineMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'

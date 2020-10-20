@@ -18,7 +18,7 @@ import {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-} from '../sap-masters/actions/OtherOperation';
+} from '../actions/OtherOperation';
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';

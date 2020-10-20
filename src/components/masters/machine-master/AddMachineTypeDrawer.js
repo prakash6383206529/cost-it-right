@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, } from "../../layout/FormInputs";
-import { createMachineType } from '../sap-masters/actions/MachineMaster';
+import { createMachineType } from '../actions/MachineMaster';
 import { getLabourTypeSelectList } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';

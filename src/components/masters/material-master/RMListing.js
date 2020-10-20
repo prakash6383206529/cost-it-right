@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import AddMaterialType from './AddMaterialType';
-import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../sap-masters/actions/Material';
+import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../actions/Material';
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';

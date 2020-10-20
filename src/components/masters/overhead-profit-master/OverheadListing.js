@@ -8,7 +8,7 @@ import {
     getVendorWithVendorCodeSelectList,
     getVendorFilterByModelTypeSelectList,
     getModelTypeFilterByVendorSelectList,
-} from '../sap-masters/actions/OverheadProfit';
+} from '../actions/OverheadProfit';
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';

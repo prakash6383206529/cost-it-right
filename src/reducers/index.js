@@ -4,7 +4,7 @@ import { reducer as toastrReducer } from 'react-redux-toastr';
 import { reducer as formReducer } from 'redux-form';
 import commanReducer from './Common';
 import CostingReducer from '../components/costing/MainReducer';
-import MastersReducer from '../components/masters/sap-masters/MainReducer';
+import MastersReducer from '../components/masters/MainReducer';
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {

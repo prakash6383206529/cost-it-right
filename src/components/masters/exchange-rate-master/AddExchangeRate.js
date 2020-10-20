@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
-import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../sap-masters/actions/ExchangeRateMaster';
+import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";

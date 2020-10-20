@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
-import { createBOPCategory } from '../sap-masters/actions/BoughtOutParts';
+import { createBOPCategory } from '../actions/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";

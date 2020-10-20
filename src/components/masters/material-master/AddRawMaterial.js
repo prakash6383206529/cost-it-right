@@ -6,7 +6,7 @@ import { required } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import {
     createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName
-} from '../sap-masters/actions/Material';
+} from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";

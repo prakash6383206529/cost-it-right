@@ -10,7 +10,7 @@ import {
     getProcessDataList,
     getMachineSelectListByPlant,
     getPlantSelectListByMachine,
-} from '../sap-masters/actions/Process';
+} from '../actions/Process';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';

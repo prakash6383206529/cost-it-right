@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
-import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../sap-masters/actions/TaxMaster';
+import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../actions/TaxMaster';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';

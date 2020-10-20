@@ -5,12 +5,12 @@ import { Row, Col, Label } from 'reactstrap';
 import { required, maxLength100, getVendorCode, number } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList } from '../sap-masters/actions/Supplier';
+import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
     createProfit, updateProfit, getProfitData, fileUploadProfit,
     fileDeleteProfit,
-} from '../sap-masters/actions/OverheadProfit';
-import { getClientSelectList, } from '../sap-masters/actions/Client';
+} from '../actions/OverheadProfit';
+import { getClientSelectList, } from '../actions/Client';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";

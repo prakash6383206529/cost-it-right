@@ -9,7 +9,7 @@ import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from
 import { CONSTANT } from '../../../helper/AllConastant';
 import classnames from 'classnames';
 
-import { getRowMaterialDataAPI } from '../sap-masters/actions/Material';
+import { getRowMaterialDataAPI } from '../actions/Material';
 import AddRMImport from './AddRMImport';
 import RMDomesticListing from './RMDomesticListing';
 import RMImportListing from './RMImportListing';

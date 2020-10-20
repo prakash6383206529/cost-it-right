@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText, focusOnError } from "../../layout/FormInputs";
-import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../sap-masters/actions/ReasonMaster';
+import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../actions/ReasonMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth';

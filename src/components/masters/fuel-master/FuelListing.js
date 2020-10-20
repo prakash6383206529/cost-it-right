@@ -6,7 +6,7 @@ import {
     getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI,
     getStateListByFuel,
     getFuelListByState,
-} from '../sap-masters/actions/Fuel';
+} from '../actions/Fuel';
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';

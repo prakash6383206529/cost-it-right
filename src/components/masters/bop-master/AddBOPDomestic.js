@@ -10,12 +10,12 @@ import {
 import {
     fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList,
 } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../sap-masters/actions/Supplier';
-import { getPartSelectList } from '../sap-masters/actions/Part';
+import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
+import { getPartSelectList } from '../actions/Part';
 import {
     createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById,
     fileUploadBOPDomestic, fileDeleteBOPDomestic,
-} from '../sap-masters/actions/BoughtOutParts';
+} from '../actions/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";

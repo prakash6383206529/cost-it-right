@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
-import { getBoughtOutPartSelectList, getDrawerBOPData } from '../sap-masters/actions/Part';
+import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { } from '../../../actions/Common';
 import { BOUGHTOUTPART } from '../../../config/constants';
 

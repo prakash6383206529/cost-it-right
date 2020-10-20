@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, maxLength6 } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
-import { createPlantAPI, } from '../sap-masters/actions/Plant';
+import { createPlantAPI, } from '../actions/Plant';
 import {
     fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
     getCityByCountry,

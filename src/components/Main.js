@@ -32,7 +32,7 @@ import LeftMenu from './nav/Leftsidemenu';
 import Breadcrumb from './nav/Breadcrumb';
 import CostingRoutes from './costing/Routes';
 import Costing from './costing/components';
-import { showUserData } from '../actions';
+import { showUserData } from '../actions/auth/AuthActions';
 import AuthMiddleware from '../AuthMiddleware';
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION, OVERHEAD_AND_PROFIT, PART, PLANT,
