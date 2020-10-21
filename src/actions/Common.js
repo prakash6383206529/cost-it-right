@@ -46,6 +46,7 @@ import {
   GET_PLANT_SELECTLIST_SUCCESS,
   GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
   GET_PLANT_SELECTLIST_BY_TYPE,
+  GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
   config,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
@@ -1353,6 +1354,25 @@ export function getPlantSelectListByType(TYPE, callback) {
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getVendorWithVendorCodeSelectList
+ * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
+ */
+export function getVendorWithVendorCodeSelectList() {
+  return (dispatch) => {
+    const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+    request.then((response) => {
+      dispatch({
+        type: GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+        payload: response.data.SelectList,
+      });
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
       apiErrors(error);
     });
   };

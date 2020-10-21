@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { Row, Col, Table } from 'reactstrap';
+import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, } from '../actions/Costing';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ErrorMessage } from '@hookform/error-message';
-
+import AddPlantDrawer from './AddPlantDrawer';
+import NoContentFound from '../../common/NoContentFound';
+import { CONSTANT } from '../../../helper/AllConastant';
+import AddVendorDrawer from './AddVendorDrawer';
 
 function CostingDetails() {
 
@@ -19,6 +22,10 @@ function CostingDetails() {
   const [part, setPart] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
+  const [IsPlantDrawerOpen, setIsPlantDrawerOpen] = useState(false);
+  const [zbcPlantGrid, setZBCPlantGrid] = useState([]);
+  const [IsVendorDrawerOpen, setIsVendorDrawerOpen] = useState(false);
+  const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
 
   const dispatch = useDispatch()
   const technologySelectList = useSelector(state => state.costing.technologySelectList)
@@ -36,14 +43,14 @@ function CostingDetails() {
 
   useEffect(() => {
     dispatch(getCostingTechnologySelectList(() => { }))
-
     dispatch(getAllPartSelectList(() => { }))
+    dispatch(getPartInfo('', () => { }))
   }, []);
 
   /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
+  * @method renderListing
+  * @description Used show listing of unit of measurement
+  */
   const renderListing = (label) => {
 
     const temp = [];
@@ -106,9 +113,9 @@ function CostingDetails() {
   }
 
   /**
-    * @method handleChange
-    * @description Handle Effective Date
-    */
+  * @method handleEffectiveDateChange
+  * @description Handle Effective Date
+  */
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
   };
@@ -122,15 +129,52 @@ function CostingDetails() {
   }
 
   /**
+  * @method plantDrawerToggle
+  * @description HANDLE ZBC PLANT DRAWER TOGGLE
+  */
+  const plantDrawerToggle = () => {
+    setIsPlantDrawerOpen(true)
+  };
+
+  /**
+  * @method closePlantDrawer
+  * @description HIDE ZBC PLANT DRAWER
+  */
+  const closePlantDrawer = (e = '') => {
+    setIsPlantDrawerOpen(false)
+  }
+
+  /**
+  * @method vendorDrawerToggle
+  * @description HANDLE VBC VENDOR DRAWER TOGGLE
+  */
+  const vendorDrawerToggle = () => {
+    setIsVendorDrawerOpen(true)
+  };
+
+  /**
+  * @method closePlantDrawer
+  * @description HIDE ZBC PLANT DRAWER
+  */
+  const closeVendorDrawer = (e = '') => {
+    setIsVendorDrawerOpen(false)
+  }
+
+  /**
   * @method cancel
   * @description used to Reset form
   */
   const cancel = () => {
+    setTechnology([])
+    setPart([])
     dispatch(getPartInfo('', () => { }))
-    reset()
+    reset({
+      Technology: '',
+      Part: '',
+    })
   }
 
-  //console.log('errors', errors)
+  console.log('errors', errors)
 
   /**
   * @method onSubmit
@@ -165,36 +209,34 @@ function CostingDetails() {
 
                   <Col md="2">
                     <SearchableSelectHookForm
-                      name={'Technology'}
                       label={'Technology'}
+                      name={'Technology'}
+                      placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
-                      placeholder={'-Select-'}
-                      defaultValue={''}
                       rules={{ required: true }}
                       register={register}
+                      defaultValue={technology.length !== 0 ? technology : ''}
                       options={renderListing('Technology')}
                       mandatory={true}
                       handleChange={handleTechnologyChange}
-                      //valueDescription={part}
                       errors={errors.Technology}
                     />
                   </Col>
 
                   <Col md="2">
                     <SearchableSelectHookForm
-                      name={'Part'}
                       label={'Assembly No./Part No.'}
+                      name={'Part'}
+                      placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
-                      placeholder={'-Select-'}
-                      defaultValue={''}
                       rules={{ required: true }}
-                      register={register({ required: "Part Number is required." })}
+                      register={register}
+                      defaultValue={part.length !== 0 ? part : ''}
                       options={renderListing('PartList')}
                       mandatory={true}
                       handleChange={handlePartChange}
-                      //valueDescription={part}
                       errors={errors.Part}
                     />
                   </Col>
@@ -208,7 +250,14 @@ function CostingDetails() {
                       //register={register({ required: "PartName is required." })} //Working for required and msg
                       register={register}
                       mandatory={false}
-                      //rules={{ required: true, message: 'Required' }}
+                      rules={{
+                        required: false,
+                        // pattern: {
+                        //   value: /^[0-9]*$/i,
+                        //   message: 'Invalid Number.'
+                        // },
+                        // maxLength: 4,
+                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -224,8 +273,8 @@ function CostingDetails() {
                       name={'Description'}
                       Controller={Controller}
                       control={control}
-                      //register={register({ required: "Description is required." })}
                       register={register}
+                      rules={{ required: false }}
                       mandatory={false}
                       defaultValue={''}
                       className=""
@@ -325,6 +374,103 @@ function CostingDetails() {
 
                 </Row>
 
+                {IsOpenVendorSOBDetails &&
+                  <Row>
+                    <Col md="12">
+                      <div className="left-border">
+                        {'SOB Details:'}
+                      </div>
+                    </Col>
+                  </Row>
+                }
+                {IsOpenVendorSOBDetails &&
+                  <Row>
+                    <Col md="3" className={'mb15 mt15'}>ZBC:</Col>
+                    <Col md="7" className={'mb15 mt15'}></Col>
+                    <Col md="2" className={'mb15 mt15'}>
+                      <button
+                        type="button"
+                        className={'user-btn'}
+                        onClick={plantDrawerToggle}>
+                        <div className={'plus'}></div>ADD PLANT</button>
+                    </Col>
+
+                    {/* ZBC PLANT GRID FOR COSTING */}
+                    <Col md="12">
+                      <Table className="table" size="sm" >
+                        <thead>
+                          <tr>
+                            <th>{`Plant Code`}</th>
+                            <th>{`SOB`}</th>
+                            <th>{`Costing Version`}</th>
+                            <th>{`Status`}</th>
+                            <th>{`Action`}</th>
+                          </tr>
+                        </thead>
+                        <tbody >
+                          {
+
+                          }
+
+                          {
+                            zbcPlantGrid.length === 0 &&
+                            <tr>
+                              <td colSpan={'5'}>
+                                <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </Table>
+                    </Col>
+
+                  </Row>
+                }
+
+                {IsOpenVendorSOBDetails &&
+                  <Row>
+                    <Col md="3" className={'mb15 mt15'}>VBC:</Col>
+                    <Col md="7" className={'mb15 mt15'}></Col>
+                    <Col md="2" className={'mb15 mt15'}>
+                      <button
+                        type="button"
+                        className={'user-btn'}
+                        onClick={vendorDrawerToggle}>
+                        <div className={'plus'}></div>ADD VENDOR</button>
+                    </Col>
+
+                    {/* ZBC PLANT GRID FOR COSTING */}
+                    <Col md="12">
+                      <Table className="table" size="sm" >
+                        <thead>
+                          <tr>
+                            <th>{`Vendor`}</th>
+                            <th>{`SOB`}</th>
+                            <th>{`Costing Version`}</th>
+                            <th>{`Status`}</th>
+                            <th>{`Action`}</th>
+                          </tr>
+                        </thead>
+                        <tbody >
+                          {
+
+                          }
+
+                          {
+                            vbcVendorGrid.length === 0 &&
+                            <tr>
+                              <td colSpan={'5'}>
+                                <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </Table>
+                    </Col>
+
+                  </Row>
+                }
+
                 {!IsOpenVendorSOBDetails &&
                   <Row className="sf-btn-footer no-gutters justify-content-between">
                     <div className="col-sm-12 text-right bluefooter-butn">
@@ -345,18 +491,10 @@ function CostingDetails() {
                     </div>
                   </Row>}
 
-                {IsOpenVendorSOBDetails &&
-                  <Row>
-                    <Col md="12">
-                      <div className="left-border">
-                        {'Vendor & SOB Details:'}
-                      </div>
-                    </Col>
-                  </Row>
-                }
+
 
                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                  <div className="col-sm-12 text-right bluefooter-butn">
+                  {/* <div className="col-sm-12 text-right bluefooter-butn">
                     <button
                       type={'button'}
                       className="reset mr15 cancel-btn"
@@ -370,13 +508,27 @@ function CostingDetails() {
                       <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                       {isEditFlag ? 'Update' : 'Save'}
                     </button>
-                  </div>
+                  </div> */}
                 </Row>
               </form>
             </div>
           </Col>
         </Row>
       </div>
+      {IsPlantDrawerOpen && <AddPlantDrawer
+        isOpen={IsPlantDrawerOpen}
+        closeDrawer={closePlantDrawer}
+        isEditFlag={false}
+        ID={''}
+        anchor={'right'}
+      />}
+      {IsVendorDrawerOpen && <AddVendorDrawer
+        isOpen={IsVendorDrawerOpen}
+        closeDrawer={closeVendorDrawer}
+        isEditFlag={false}
+        ID={''}
+        anchor={'right'}
+      />}
     </>
   );
 };

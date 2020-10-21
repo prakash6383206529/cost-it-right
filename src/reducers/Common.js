@@ -31,8 +31,6 @@ import {
   GET_PLANTS_BY_SUPPLIER,
   GET_PLANTS_BY_CITY,
   GET_CITY_BY_SUPPLIER,
-  GET_SOURCE_PLANTS_BY_SOURCE_CITY,
-  GET_DESTINATION_PLANTS_BY_DESTINATION_CITY,
   GET_LABOUR_TYPE_SELECTLIST_SUCCESS,
   GET_POWER_TYPE_SELECTLIST_SUCCESS,
   GET_CHARGE_TYPE_SELECTLIST_SUCCESS,
@@ -50,6 +48,7 @@ import {
   GET_PLANT_SELECTLIST_SUCCESS,
   GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
   GET_PLANT_SELECTLIST_BY_TYPE,
+  GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
 } from '../config/constants';
 
 const initialState = {
@@ -399,6 +398,13 @@ export default function commanReducer(state = initialState, action) {
         loading: false,
         error: true,
         vendorPlantSelectList: action.payload
+      };
+    case GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST:
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        vendorWithVendorCodeSelectList: action.payload
       };
     default:
       return state;

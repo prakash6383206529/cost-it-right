@@ -360,9 +360,9 @@ class AddIndivisualPart extends Component {
                                                     name={"ECNNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[number, required]}
+                                                    validate={[number]}
                                                     component={renderText}
-                                                    required={true}
+                                                    //required={true}
                                                     className=""
                                                     customClassName={'withBorder'}
                                                 />
@@ -373,9 +373,9 @@ class AddIndivisualPart extends Component {
                                                     name={"RevisionNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[number, required]}
+                                                    validate={[number]}
                                                     component={renderText}
-                                                    required={true}
+                                                    //required={true}
                                                     className=""
                                                     customClassName={'withBorder'}
                                                 />
@@ -386,9 +386,9 @@ class AddIndivisualPart extends Component {
                                                     name={"DrawingNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[number, required]}
+                                                    validate={[number]}
                                                     component={renderText}
-                                                    required={true}
+                                                    //required={true}
                                                     className=""
                                                     customClassName={'withBorder'}
                                                 />
@@ -401,7 +401,7 @@ class AddIndivisualPart extends Component {
                                                     placeholder={''}
                                                     validate={[required]}
                                                     component={renderText}
-                                                    required={true}
+                                                    //required={true}
                                                     className=""
                                                     customClassName={'withBorder'}
                                                 />

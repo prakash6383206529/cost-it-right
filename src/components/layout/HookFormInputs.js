@@ -29,13 +29,14 @@ export const TextFieldHookForm = (field) => {
             />
           )}
         />
-        <div className="text-help">{errors ? errors.message : ""}</div>
+        <div className="text-help">{errors && (errors.message || errors.type) ? (errors.message || errors.type) : ""}</div>
       </div>
     </>
   )
 }
 
 export const SearchableSelectHookForm = (field) => {
+  console.log('field: ', field);
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
@@ -52,19 +53,23 @@ export const SearchableSelectHookForm = (field) => {
         rules={rules}
         ref={register}
         defaultValue={defaultValue}
-        render={({ onChange, onBlur, value, name }) => (
-          <Select
-            name={name}
-            placeholder={placeholder}
-            disabled={isDisable}
-            onChange={(e) => {
-              handleChange(e);
-              onChange(e)
-            }}
-            options={options}
-            onBlur={onBlur}
-            selected={value} />
-        )}
+        render={({ onChange, onBlur, value, name }) => {
+          return (
+            <Select
+              name={name}
+              placeholder={placeholder}
+              disabled={isDisable}
+              onChange={(e) => {
+                handleChange(e);
+                onChange(e)
+              }}
+              options={options}
+              onBlur={onBlur}
+              //selected={value}
+              value={value}
+            />
+          )
+        }}
       />
       <div className="text-help">{errors && errors.type === 'required' ? 'This field is required' : ""}</div>
     </div>

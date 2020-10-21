@@ -858,11 +858,10 @@ class AddOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, otherOperation, material, supplier, } = state;
+    const { comman, otherOperation, supplier, } = state;
     const filedObj = selector(state, 'OperationCode');
     const { technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
     const { operationData } = otherOperation;
-    const { vendorListByVendorType } = material;
     const { vendorWithVendorCodeSelectList } = supplier;
 
     let initialValues = {};
@@ -878,7 +877,7 @@ function mapStateToProps(state) {
     }
 
     return {
-        technologySelectList, plantSelectList, vendorListByVendorType, UOMSelectList,
+        technologySelectList, plantSelectList, UOMSelectList,
         operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
         initialValues
     }

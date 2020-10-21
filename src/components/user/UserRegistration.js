@@ -985,9 +985,9 @@ class UserRegistration extends Component {
                         name={"ZipCode"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required, number, maxLength6]}
+                        validate={[number, maxLength6]}
                         component={renderText}
-                        required={true}
+                        //required={true}
                         maxLength={6}
                         customClassName={'withBorder'}
                       />

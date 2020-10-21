@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import SideBar from './nav/NavBar';
 import { Route, Switch } from "react-router-dom";
 import ReduxToastr from 'react-redux-toastr';
-import Footer from "../components/footer/Footer";
+import Footer from "./common/Footer";
 import Login from './login/Login';
 import NotFoundPage from './common/NotFoundPage';
 import User from './user';
