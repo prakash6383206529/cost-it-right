@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getMenuByUser, getLeftMenu, } from "../../actions";
+import { getMenuByUser, getLeftMenu, } from "../../actions/auth/AuthActions";
 import { checkForNull, loggedInUserId } from '../../helper';
 import { reactLocalStorage } from "reactjs-localstorage";
 
