@@ -1101,13 +1101,13 @@ p {
  }
 /*Right Content Css*/
 .content-page {
-  margin-left: 205px;
-  overflow: auto;
+  // margin-left: 205px;
+  // overflow: auto;
   padding: 21px 15px 15px 15px;
   // min-height: 588px;
   margin-top: 0 ;
   background-color: #FFFFFF;
-  height: calc(100vh - 169px);
+  // height: calc(100vh - 169px);
   width: 100%;
 
   .nav-item {
@@ -2015,5 +2015,16 @@ ul.bread-list.d-inline-flex{
   }
   .flowpoint-body {
     padding: 10px;
+  }
+}
+.container-fluild.header-menuP{padding:15px;}
+.sf-mainheader{
+  .header-menu{
+    .row{
+      margin:0;
+      .col-md-12{
+        padding: 0px;
+      }
+    }
   }
 }
