@@ -16,6 +16,7 @@ import {
     GET_COSTING_TECHNOLOGY_SELECTLIST,
     GET_COSTING_PART_SELECTLIST,
     GET_PART_INFO,
+    GET_COSTING_DATA_BY_COSTINGID,
 } from '../../../config/constants';
 
 const initialState = {
@@ -180,6 +181,13 @@ export default function costingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 partInfo: action.payload
+            };
+        case GET_COSTING_DATA_BY_COSTINGID:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                costingData: action.payload
             };
         default:
             return state;

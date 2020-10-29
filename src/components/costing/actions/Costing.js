@@ -17,6 +17,7 @@ import {
   GET_COSTING_TECHNOLOGY_SELECTLIST,
   GET_COSTING_PART_SELECTLIST,
   GET_PART_INFO,
+  GET_COSTING_DATA_BY_COSTINGID,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -227,6 +228,29 @@ export function updateVBCSOBDetail(requestData, callback) {
         apiErrors(error);
         dispatch({ type: API_FAILURE });
       });
+  };
+}
+
+/**
+ * @method getZBCCostingByCostingId
+ * @description GET COSTING DETAIL BY COSTING ID
+ */
+export function getZBCCostingByCostingId(CostingId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_COSTING_DATA_BY_COSTINGID,
+          payload: response.data.Data,
+        })
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
   };
 }
 

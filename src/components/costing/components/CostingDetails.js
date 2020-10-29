@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
@@ -19,6 +19,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { VBC, ZBC } from '../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function CostingDetails() {
 
@@ -53,6 +54,10 @@ function CostingDetails() {
   const [stepOne, setStepOne] = useState(true);
   const [stepTwo, setStepTwo] = useState(false);
   const [partInfoStepTwo, setPartInfo] = useState({});
+  const [costingData, setCostingData] = useState({});
+
+  const InitialConfiguration = reactLocalStorage.getObject('InitialConfiguration');
+  //console.log('InitialConfiguration: ', InitialConfiguration.NumberOfVendorsForCostDetails);
 
   //console.log('watch', watch('zbcPlantGridFields'))
   const fieldValues = useWatch({
@@ -69,7 +74,6 @@ function CostingDetails() {
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
   }, []);
-
 
   const technologySelectList = useSelector(state => state.costing.technologySelectList)
   const partSelectList = useSelector(state => state.costing.partSelectList)
@@ -357,19 +361,35 @@ function CostingDetails() {
   * @description HANDLE VBC SOB CHANGE
   */
   const handleVBCSOBChange = (event, index) => {
-    console.log('vbcGridFields', fieldValues.vbcGridFields)
 
     let tempArray = [];
     let tempData = vbcVendorGrid[index];
 
     if (!isNaN(event.target.value)) {
 
-      tempData = { ...tempData, ShareOfBusinessPercent: parseInt(event.target.value) }
+      tempData = { ...tempData, ShareOfBusinessPercent: parseInt(event.target.value), isSOBChanged: checkIsVBCSOBChanged(event, index) }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
       setVBCVendorGrid(tempArray)
 
     } else {
       warningMessageHandle('VALID_NUMBER_WARNING')
+    }
+
+  }
+
+  /**
+  * @method checkIsZBCSOBChanged
+  * @description HANDLE ZBC SOB CHANGE
+  */
+  const checkIsVBCSOBChanged = (event, index) => {
+    let tempOldObj = vbcVendorOldArray[index];
+
+    if (index > vbcVendorOldArray.length - 1) {
+      return false;
+    } else if (parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercent) {
+      return false;
+    } else if (parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercent) {
+      return true;
     }
 
   }
@@ -480,6 +500,7 @@ function CostingDetails() {
       dispatch(createZBCCosting(data, (res) => {
         if (res.data.Result) {
           setPartInfo(res.data.Data);
+          setCostingData({ costingId: res.data.Data.CostingId, type })
           setStepTwo(true);
           setStepOne(false);
         }
@@ -516,6 +537,7 @@ function CostingDetails() {
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
           setPartInfo(res.data.Data);
+          setCostingData({ costingId: res.data.Data.CostingId, type })
           setStepTwo(true)
           setStepOne(false)
         }
@@ -540,7 +562,7 @@ function CostingDetails() {
     } else if (!checkForError(index, type)) {
       warningMessageHandle('ERROR_WARNING')
     } else {
-      console.log('Move to view detail in read only mode.')
+      moveToCostingDetail(index, type)
     }
   }
 
@@ -558,7 +580,7 @@ function CostingDetails() {
     } else if (checkSOBChanged(index, type)) {
       editCostingAlert(index, type)
     } else {
-      console.log('Move to Edit detail.')
+      moveToCostingDetail(index, type)
     }
   }
 
@@ -585,7 +607,7 @@ function CostingDetails() {
   const editCostingAlert = (index, type) => {
     const toastrConfirmOptions = {
       onOk: () => {
-        confirmUpdate(index, type)
+        confirmUpdateCosting(index, type)
       },
       onCancel: () => console.log('CANCEL: clicked')
     };
@@ -593,13 +615,14 @@ function CostingDetails() {
   }
 
   /**
-      * @method confirmUpdate
+      * @method confirmUpdateCosting
       * @description CONFIRM UPDATE AND MOVE TO STEP TWO
       */
-  const confirmUpdate = (index, type) => {
+  const confirmUpdateCosting = (index, type) => {
 
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index];
+      setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       const data = {
         CostingId: tempData.SelectedCostingVersion.value,
         PlantId: tempData.PlantId,
@@ -608,12 +631,14 @@ function CostingDetails() {
         LoggedInUserId: loggedInUserId(),
       }
       dispatch(updateZBCSOBDetail(data, res => {
-        console.log('res: ', res);
+        setStepTwo(true)
+        setStepOne(false)
       }))
     }
 
     if (type === VBC) {
       let tempData = vbcVendorGrid[index];
+      setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       const data = {
         CostingId: tempData.SelectedCostingVersion.value,
         PlantId: tempData.PlantId,
@@ -622,10 +647,31 @@ function CostingDetails() {
         LoggedInUserId: loggedInUserId(),
       }
       dispatch(updateVBCSOBDetail(data, res => {
-        console.log('res: ', res);
+        setStepTwo(true)
+        setStepOne(false)
       }))
     }
 
+  }
+
+  /**
+  * @method moveToCostingDetail
+  * @description MOVE TO COSTING DETAIL
+  */
+  const moveToCostingDetail = (index, type) => {
+    if (type === ZBC) {
+      let tempData = zbcPlantGrid[index];
+      setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      setStepTwo(true)
+      setStepOne(false)
+    }
+
+    if (type === VBC) {
+      let tempData = vbcVendorGrid[index];
+      setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      setStepTwo(true)
+      setStepOne(false)
+    }
   }
 
   /**
@@ -945,6 +991,7 @@ function CostingDetails() {
                               {
                                 zbcPlantGrid &&
                                 zbcPlantGrid.map((item, index) => {
+                                  const CostingId = item.SelectedCostingVersion !== undefined ? item.SelectedCostingVersion.value : '';
                                   return (
                                     <tr key={index}>
                                       <td>{item.PlantCode}</td>
@@ -1023,97 +1070,103 @@ function CostingDetails() {
                         <Col md="3" className={'mb15 mt15'}>VBC:</Col>
                         <Col md="7" className={'mb15 mt15'}></Col>
                         <Col md="2" className={'mb15 mt15'}>
-                          <button
-                            type="button"
-                            className={'user-btn'}
-                            onClick={vendorDrawerToggle}>
-                            <div className={'plus'}></div>ADD VENDOR</button>
+                          {
+                            vbcVendorGrid.length < InitialConfiguration.NumberOfVendorsForCostDetails ?
+                              <button
+                                type="button"
+                                className={'user-btn'}
+                                onClick={vendorDrawerToggle}>
+                                <div className={'plus'}></div>ADD VENDOR</button>
+                              :
+                              ''
+                          }
                         </Col>
 
                         {/* ZBC PLANT GRID FOR COSTING */}
-                        <Table className="table" size="sm" >
-                          <thead>
-                            <tr>
-                              <th style={{ width: '100px' }}>{`Vendor`}</th>
-                              <th style={{ width: '150px' }}>{`SOB`}</th>
-                              <th style={{ width: '150px' }}>{`Costing Version`}</th>
-                              <th style={{ width: '200px' }}>{`Status`}</th>
-                              <th style={{ width: '200px' }}>{`Actions`}</th>
-                            </tr>
-                          </thead>
-                          <tbody >
-                            {
-                              vbcVendorGrid &&
-                              vbcVendorGrid.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td>{item.VendorName}</td>
-                                    <td>
-                                      <TextFieldHookForm
-                                        label=""
-                                        name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                          //required: true,
-                                          pattern: {
-                                            //value: /^[0-9]*$/i,
-                                            value: /^[0-9]\d*(\.\d+)?$/i,
-                                            message: 'Invalid Number.'
-                                          },
-                                        }}
-                                        defaultValue={item.ShareOfBusinessPercent}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        handleChange={(e) => {
-                                          e.preventDefault()
-                                          handleVBCSOBChange(e, index)
-                                        }}
-                                        errors={errors && errors.vbcGridFields && errors.vbcGridFields[index] !== undefined ? errors.vbcGridFields[index].ShareOfBusinessPercent : ''}
-                                        disabled={isSOBEnabled ? true : false}
-                                      />
-                                    </td>
-                                    <td>
-                                      <SearchableSelectHookForm
-                                        label={''}
-                                        name={`${vbcGridFields}[${index}]CostingVersion`}
-                                        placeholder={'-Select-'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        defaultValue={item.SelectedCostingVersion}
-                                        options={renderCostingOption(item.CostingOptions)}
-                                        mandatory={false}
-                                        handleChange={(newValue) => handleCostingChange(newValue, VBC, index)}
-                                        errors={`${vbcGridFields}[${index}]CostingVersion`}
-                                      />
-                                    </td>
-                                    <td>
-                                      <div className={item.Status}>{item.Status}</div>
-                                    </td>
-                                    <td>
-                                      <button className="Add-file mr5" type={'button'} title={'Add Costing'} onClick={() => addDetails(index, VBC)} />
-                                      {!item.IsNewCosting && <button className="View mr5" type={'button'} title={'View Costing'} onClick={() => viewDetails(index, VBC)} />}
-                                      {!item.IsNewCosting && <button className="Edit mr5" type={'button'} title={'Edit Costing'} onClick={() => editCosting(index, VBC)} />}
-                                      {!item.IsNewCosting && <button className="Copy All mr5" title={'Copy Costing'} type={'button'} onClick={() => copyCosting(index, VBC)} />}
-                                    </td>
-                                  </tr>
-                                )
-                              })
-                            }
-                            {vbcVendorGrid.length === 0 &&
+                        <Col md="12">
+                          <Table className="table" size="sm" >
+                            <thead>
                               <tr>
-                                <td colSpan={5}>
-                                  <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                                </td>
+                                <th style={{ width: '100px' }}>{`Vendor`}</th>
+                                <th style={{ width: '150px' }}>{`SOB`}</th>
+                                <th style={{ width: '150px' }}>{`Costing Version`}</th>
+                                <th style={{ width: '200px' }}>{`Status`}</th>
+                                <th style={{ width: '200px' }}>{`Actions`}</th>
                               </tr>
-                            }
-                          </tbody>
-                        </Table>
-
+                            </thead>
+                            <tbody >
+                              {
+                                vbcVendorGrid &&
+                                vbcVendorGrid.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <td>{item.VendorName}</td>
+                                      <td>
+                                        <TextFieldHookForm
+                                          label=""
+                                          name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
+                                          Controller={Controller}
+                                          control={control}
+                                          register={register}
+                                          mandatory={false}
+                                          rules={{
+                                            //required: true,
+                                            pattern: {
+                                              //value: /^[0-9]*$/i,
+                                              value: /^[0-9]\d*(\.\d+)?$/i,
+                                              message: 'Invalid Number.'
+                                            },
+                                          }}
+                                          defaultValue={item.ShareOfBusinessPercent}
+                                          className=""
+                                          customClassName={'withBorder'}
+                                          handleChange={(e) => {
+                                            e.preventDefault()
+                                            handleVBCSOBChange(e, index)
+                                          }}
+                                          errors={errors && errors.vbcGridFields && errors.vbcGridFields[index] !== undefined ? errors.vbcGridFields[index].ShareOfBusinessPercent : ''}
+                                          disabled={isSOBEnabled ? true : false}
+                                        />
+                                      </td>
+                                      <td>
+                                        <SearchableSelectHookForm
+                                          label={''}
+                                          name={`${vbcGridFields}[${index}]CostingVersion`}
+                                          placeholder={'-Select-'}
+                                          Controller={Controller}
+                                          control={control}
+                                          rules={{ required: false }}
+                                          register={register}
+                                          defaultValue={item.SelectedCostingVersion}
+                                          options={renderCostingOption(item.CostingOptions)}
+                                          mandatory={false}
+                                          handleChange={(newValue) => handleCostingChange(newValue, VBC, index)}
+                                          errors={`${vbcGridFields}[${index}]CostingVersion`}
+                                        />
+                                      </td>
+                                      <td>
+                                        <div className={item.Status}>{item.Status}</div>
+                                      </td>
+                                      <td>
+                                        <button className="Add-file mr5" type={'button'} title={'Add Costing'} onClick={() => addDetails(index, VBC)} />
+                                        {!item.IsNewCosting && <button className="View mr5" type={'button'} title={'View Costing'} onClick={() => viewDetails(index, VBC)} />}
+                                        {!item.IsNewCosting && <button className="Edit mr5" type={'button'} title={'Edit Costing'} onClick={() => editCosting(index, VBC)} />}
+                                        {!item.IsNewCosting && <button className="Copy All mr5" title={'Copy Costing'} type={'button'} onClick={() => copyCosting(index, VBC)} />}
+                                      </td>
+                                    </tr>
+                                  )
+                                })
+                              }
+                              {vbcVendorGrid.length === 0 &&
+                                <tr>
+                                  <td colSpan={5}>
+                                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                                  </td>
+                                </tr>
+                              }
+                            </tbody>
+                          </Table>
+                        </Col>
                       </Row>
                     }
 
@@ -1157,7 +1210,12 @@ function CostingDetails() {
                       </div>
                     </Row> */}
                   </>}
-                {stepTwo && <CostingDetailStepTwo backBtn={backToFirstStep} partInfo={partInfoStepTwo} />}
+                {stepTwo &&
+                  <CostingDetailStepTwo
+                    backBtn={backToFirstStep}
+                    partInfo={partInfoStepTwo}
+                    costingData={costingData}
+                  />}
               </form>
             </div>
           </Col>

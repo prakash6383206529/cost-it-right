@@ -48,7 +48,7 @@ function Costing(props) {
                         </NavItem>
                     </Nav>
                     <TabContent activeTab={activeTab}>
-                        {/* {activeTab === '1' &&
+                        {activeTab === '1' &&
                             <TabPane tabId="1">
                                 <CostingDetails />
                             </TabPane>}
@@ -59,7 +59,7 @@ function Costing(props) {
                         {activeTab === '3' &&
                             <TabPane tabId="3">
                                 {'Insights'}
-                            </TabPane>} */}
+                            </TabPane>}
                     </TabContent>
                 </div>
             </div >

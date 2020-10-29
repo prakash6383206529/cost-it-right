@@ -431,6 +431,8 @@ export const API = {
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
   updateVBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
+  getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
+  getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
 
   getCostingPartDetails: `${BASE_URL}/costing/get-costing-part-details`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
@@ -984,6 +986,7 @@ export const EMPTY_COSTING_DATA = 'EMPTY_COSTING_DATA';
 export const GET_ZBC_COSTING_SELECTLIST_BY_PART = 'GET_ZBC_COSTING_SELECTLIST_BY_PART';
 export const ADD_BOP_GRID_COSTING_SUCCESS = 'ADD_BOP_GRID_COSTING_SUCCESS';
 export const SAVE_BOP_COSTING_SUCCESS = 'SAVE_BOP_COSTING_SUCCESS';
+export const GET_COSTING_DATA_BY_COSTINGID = 'GET_COSTING_DATA_BY_COSTINGID';
 
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
@@ -1022,6 +1025,7 @@ export const AUTH_API_FAILURE = 'AUTH_API_FAILURE';
 export const AUTH_API_REQUEST = 'AUTH_API_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
+export const LOGIN_PAGE_INIT_CONFIGURATION = 'LOGIN_PAGE_INIT_CONFIGURATION';
 
 //User 
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
