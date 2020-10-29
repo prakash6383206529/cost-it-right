@@ -26,6 +26,7 @@ import {
     GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS,
     GET_LEFT_MENU_BY_MODULE_ID_AND_USER,
+    LOGIN_PAGE_INIT_CONFIGURATION,
     config
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
@@ -1102,6 +1103,10 @@ export function getLoginPageInit(callback) {
         const request = axios.get(`${API.getLoginPageInit}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: LOGIN_PAGE_INIT_CONFIGURATION,
+                    payload: response.data.Data,
+                });
                 callback(response);
             }
         }).catch((error) => {

@@ -5,40 +5,51 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
+import { getZBCDetailByPlantId, } from '../actions/Costing';
 import { ZBC } from '../../../config/constants';
+import { getPlantCode } from '../../../helper/validation';
 
-export default function AddPlantDrawer(props) {
+function AddPlantDrawer(props) {
 
-  const { register, handleSubmit, watch, errors, control } = useForm();
+  const { register, handleSubmit, errors, control } = useForm();
 
   const [plant, setPlant] = useState([]);
+  const [data, setPlantData] = useState({});
+  const [selectedPlants, setSelectedPlants] = useState([]);
 
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
 
   useEffect(() => {
+    const { zbcPlantGrid } = props;
     dispatch(getPlantSelectListByType(ZBC, () => { }))
+
+    let tempArr = [];
+    zbcPlantGrid && zbcPlantGrid.map(el => {
+      tempArr.push(el.PlantId)
+      return null;
+    })
+    setSelectedPlants(tempArr)
+
   }, []);
 
   const toggleDrawer = (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('')
+    props.closeDrawer('', data)
   };
-
 
   /**
   * @method renderListing
   * @description RENDER LISTING IN DROPDOWN
   */
   const renderListing = (label) => {
-
     const temp = [];
 
     if (label === 'Plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || selectedPlants.includes(item.Value)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -54,6 +65,11 @@ export default function AddPlantDrawer(props) {
   const handlePlantChange = (newValue) => {
     if (newValue && newValue !== '') {
       setPlant(newValue)
+      dispatch(getZBCDetailByPlantId(newValue.value, (res) => {
+        if (res && res.data && res.data.Data) {
+          setPlantData(res.data.Data)
+        }
+      }))
     } else {
       setPlant([])
     }
@@ -64,11 +80,11 @@ export default function AddPlantDrawer(props) {
   * @description used to Reset form
   */
   const cancel = () => {
-    toggleDrawer('')
+    props.closeDrawer()
   }
 
   const onSubmit = data => {
-    props.closeDrawer()
+    toggleDrawer('')
   }
 
   /**
@@ -140,3 +156,4 @@ export default function AddPlantDrawer(props) {
   );
 }
 
+export default React.memo(AddPlantDrawer);

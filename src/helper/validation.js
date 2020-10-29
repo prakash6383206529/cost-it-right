@@ -180,6 +180,17 @@ export const getVendorCode = (name) => {
     }
 }
 
+export const getPlantCode = (name) => {
+    if (name !== '') {
+        const firstIndex = name.indexOf('(');
+        const lastIndex = name.lastIndexOf(')');
+        const Code = name.substring(firstIndex + 1, lastIndex);
+        return Code;
+    } else {
+        return '';
+    }
+}
+
 export const applySuperScript = (cell) => {
     if (cell && cell !== '') {
         const capIndex = cell && cell.indexOf('^');

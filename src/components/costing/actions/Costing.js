@@ -17,6 +17,7 @@ import {
   GET_COSTING_TECHNOLOGY_SELECTLIST,
   GET_COSTING_PART_SELECTLIST,
   GET_PART_INFO,
+  GET_COSTING_DATA_BY_COSTINGID,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -81,7 +82,7 @@ export function getPartInfo(PartId, callback) {
   return (dispatch) => {
     if (PartId !== '') {
       dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getPartInfo}/${PartId}`, headers);
+      const request = axios.get(`${API.getCostingPartDetails}/${PartId}`, headers);
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -113,14 +114,181 @@ export function checkPartWithTechnology(data, callback) {
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
-        }
+      }
+    }).catch((error) => {
+      callback(error.response);
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method createZBCCosting
+ * @description CREATE ZBC COSTING
+ */
+export function createZBCCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createZBCCosting, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method createVBCCosting
+ * @description CREATE VBC COSTING
+ */
+export function createVBCCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createVBCCosting, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+* @method getZBCExistingCosting
+* @description get ZBC Costing Select List By Part
+*/
+export function getZBCExistingCosting(PartId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getZBCExistingCosting}/${PartId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      //apiErrors(error);
+    });
+  };
+}
+
+/**
+* @method getVBCExistingCosting
+* @description get VBC Costing Select List By Part
+*/
+export function getVBCExistingCosting(PartId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getVBCExistingCosting}/${PartId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      //apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method updateZBCSOBDetail
+ * @description UPDATE ZBC SOB DETAILS
+ */
+export function updateZBCSOBDetail(requestData, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    axios.put(`${API.updateZBCSOBDetail}`, requestData, headers)
+      .then((response) => {
+        callback(response);
+      }).catch((error) => {
+        apiErrors(error);
+        dispatch({ type: API_FAILURE });
+      });
+  };
+}
+
+/**
+ * @method updateVBCSOBDetail
+ * @description UPDATE VBC SOB DETAILS
+ */
+export function updateVBCSOBDetail(requestData, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    axios.put(`${API.updateVBCSOBDetail}`, requestData, headers)
+      .then((response) => {
+        callback(response);
+      }).catch((error) => {
+        apiErrors(error);
+        dispatch({ type: API_FAILURE });
+      });
+  };
+}
+
+/**
+ * @method getZBCCostingByCostingId
+ * @description GET COSTING DETAIL BY COSTING ID
+ */
+export function getZBCCostingByCostingId(CostingId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_COSTING_DATA_BY_COSTINGID,
+          payload: response.data.Data,
+        })
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getZBCDetailByPlantId
+ * @description GET PLANT DETAIL BY PLANT ID IN COSTING PLATN DRAWER
+ */
+export function getZBCDetailByPlantId(PlantId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getZBCDetailByPlantId}/${PlantId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getVBCDetailByVendorId
+ * @description GET VENDOR DETAIL IN COSTING VENDOR ADD DRAWER 
+ */
+export function getVBCDetailByVendorId(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
       apiErrors(error);
     });
   };
