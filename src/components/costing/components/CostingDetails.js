@@ -6,7 +6,6 @@ import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookF
 import { getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, } from '../actions/Costing';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ErrorMessage } from '@hookform/error-message';
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -264,7 +263,6 @@ function CostingDetails() {
                       errors={errors.PartName}
                       disabled={true}
                     />
-                    <ErrorMessage errors={errors} name="PartName" />
                   </Col>
 
                   <Col md="2">
