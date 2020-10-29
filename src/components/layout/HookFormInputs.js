@@ -2,8 +2,37 @@ import React from "react";
 import Select from "react-select";
 import "./formInputs.css";
 
+export const TextFieldHooks = (input) => {
+  console.log('input: ', input);
+  const { register, rules, name, label, mandatory, errors, disabled, value, ...inputProps } = input;
+  const isDisabled = disabled === true ? true : false;
+  const className = `form-group inputbox ${input.customClassName ? input.customClassName : ""}`;
+  const InputClassName = `form-control ${input.className ? input.className : ""}`;
+  return (
+    <>
+      <div className={className}>
+        <label>
+          {label}
+          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <input
+          name={name}
+          ref={register}
+          className={InputClassName}
+          disabled={isDisabled}
+          value={value}
+          rules={rules}
+          {...inputProps}
+        />
+        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+      </div>
+    </>
+  )
+}
+
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules } = field
+  console.log('field: ', field);
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -21,22 +50,30 @@ export const TextFieldHookForm = (field) => {
           rules={rules}
           ref={register}
           defaultValue={defaultValue}
-          render={field => (
-            <input
-              {...field}
-              className={InputClassName}
-              disabled={isDisabled}
-            />
-          )}
+          render={({ onChange, onBlur, value, name }) => {
+            return (
+              <input
+                {...field}
+                name={name}
+                className={InputClassName}
+                disabled={isDisabled}
+                value={value}
+                onChange={(e) => {
+                  handleChange(e);
+                  onChange(e)
+                }}
+              />
+            )
+          }
+          }
         />
-        <div className="text-help">{errors && (errors.message || errors.type) ? (errors.message || errors.type) : ""}</div>
+        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
       </div>
     </>
   )
 }
 
 export const SearchableSelectHookForm = (field) => {
-  console.log('field: ', field);
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register } = field;
   let isDisable = (disabled && disabled === true) ? true : false;

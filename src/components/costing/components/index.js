@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { useForm } from "react-hook-form";
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
-//import { addPatient } from "../actions";
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 
 function Costing(props) {
-
-    const { register, handleSubmit, watch, errors } = useForm();
 
     const [activeTab, setActiveTab] = useState('1');
 
@@ -23,9 +19,6 @@ function Costing(props) {
     }
 
     const dispatch = useDispatch();
-    const onSubmit = data => {
-        //dispatch(addPatient(data))
-    }
 
     /**
     * @method render

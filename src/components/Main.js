@@ -54,8 +54,20 @@ class Main extends Component {
    * @description Handle the page not found when the url entered is incorrect.
    */
   handlePageNotFound = () => {
+    console.log('component callled')
     this.setState({
       visibelPageNotFound: true
+    });
+  };
+
+  /**
+   * @method hidePageNotFound
+   * @description Handle the page not found when the url entered is incorrect.
+   */
+  hidePageNotFound = () => {
+    console.log('component callled')
+    this.setState({
+      visibelPageNotFound: false
     });
   };
 
@@ -169,7 +181,6 @@ class Main extends Component {
 
                     {/* <Route path="/costing" component={AuthMiddleware(Costing, SHEET_METAL)} /> */}
                     <Route path="/costing" component={CostingRoutes} />
-                    {/* <CostingRoutes /> */}
 
                     <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
 
@@ -183,7 +194,7 @@ class Main extends Component {
 
 
                     <Route
-                      render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} />}
+                      render={props => <NotFoundPage {...props} isLoggeIn={false} handlePageNotFound={this.handlePageNotFound} hidePageNotFound={this.hidePageNotFound} />}
                     />
                   </Switch>
                 </div>
