@@ -423,6 +423,16 @@ export const API = {
   bulkUploadInterestRateVBC: `${BASE_URL}/vendor/bulk-upload-for-vendor-interest-rate-vbc-json`,
 
   //COSTING API
+  createZBCCosting: `${BASE_URL}/costing/create-zbc-costing`,
+  createVBCCosting: `${BASE_URL}/costing/create-vbc-costing`,
+  getZBCExistingCosting: `${BASE_URL}/costing/get-zbc-exsit-costings-list`,
+  getVBCExistingCosting: `${BASE_URL}/costing/get-vbc-exsit-costings-list`,
+  getZBCDetailByPlantId: `${BASE_URL}/costing/get-zbc-plant-by-id`,
+  getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
+  updateZBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
+  updateVBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
+
+  getCostingPartDetails: `${BASE_URL}/costing/get-costing-part-details`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
   createNewCosting: `${BASE_URL}/costing-sheet-metal/create`,

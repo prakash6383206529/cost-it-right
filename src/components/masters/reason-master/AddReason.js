@@ -105,7 +105,8 @@ class AddReason extends Component {
         } else {
 
             /** Add detail for creating new UOM  */
-            values.IsActive = this.state.IsActive;
+            //values.IsActive = this.state.IsActive;
+            values.IsActive = true;
             values.CreatedBy = loggedInUserId();
             values.CreatedDate = '';
 
@@ -161,7 +162,7 @@ class AddReason extends Component {
                                         disabled={this.state.isEditFlag ? true : false}
                                     />
                                 </Col>
-                                <Col md="6">
+                                {/* <Col md="6">
                                     <Col className={'pull-right'}>
                                         <label
                                             className="custom-checkbox pull-right"
@@ -180,7 +181,7 @@ class AddReason extends Component {
                                             />
                                         </label>
                                     </Col>
-                                </Col>
+                                </Col> */}
                             </Row>
 
                             <Row className="sf-btn-footer no-gutters justify-content-between">

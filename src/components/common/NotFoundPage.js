@@ -12,6 +12,10 @@ class NotFoundPage extends Component {
 		//}
 	}
 
+	componentWillUnmount() {
+		this.props.hidePageNotFound()
+	}
+
 	render() {
 		const { location } = this.props;
 		return (

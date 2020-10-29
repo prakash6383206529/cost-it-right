@@ -12,8 +12,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import $ from 'jquery';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import { ZBC } from '../../../config/constants';
 
@@ -61,6 +61,11 @@ class AddVolume extends Component {
         this.props.getFinancialYearSelectList(() => { })
         this.props.getPartSelectList(() => { })
         this.getDetail()
+    }
+
+    componentWillUnmount() {
+        this.setState({ tableData: [] })
+        console.log('tableData: ', this.state.tableData);
     }
 
     /**

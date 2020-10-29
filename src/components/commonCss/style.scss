@@ -425,14 +425,22 @@ body {
 }
 
 .mr10 {
-  margin-right: 15px;
+  margin-right: 10px;
 }
 
 .mr5 {
   margin-right: 5px;
 }
 
+.ml5 {
+  margin-left: 5px;
+}
+
 .ml10 {
+  margin-left: 10px;
+}
+
+.ml15 {
   margin-left: 15px;
 }
 
@@ -828,7 +836,8 @@ button.add-btn {
 .Copy,
 .Approve,
 .Run,
-.Save {
+.Save,
+.Add-file {
   margin: 0 auto;
   color: #3d4465;
   font-size: 14px;
@@ -1244,6 +1253,13 @@ button.user-btn.pull-right {
   width: 32px;
   height: 32px;
   background: transparent url("../../assests/images/Save.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+.Add-file {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/add-file4.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }

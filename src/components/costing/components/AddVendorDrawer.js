@@ -4,26 +4,45 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
+import { getVendorWithVendorCodeSelectList, getPlantBySupplier } from '../../../actions/Common';
+import { getVBCDetailByVendorId, } from '../actions/Costing';
+import { checkVendorPlantConfigurable, getVendorCode } from '../../../helper';
 
-export default function AddVendorDrawer(props) {
+function AddVendorDrawer(props) {
 
-  const { register, handleSubmit, watch, errors, control } = useForm();
+  const { register, handleSubmit, errors, reset, control } = useForm();
 
   const [vendor, setVendor] = useState([]);
+  const [vendorPlant, setVendorPlant] = useState([]);
+  const [data, setData] = useState({});
+  const [selectedVendors, setSelectedVendors] = useState([]);
 
   const dispatch = useDispatch()
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
+  const filterPlantList = useSelector(state => state.comman.filterPlantList)
 
   useEffect(() => {
+    const { vbcVendorGrid } = props;
     dispatch(getVendorWithVendorCodeSelectList(() => { }))
+
+    let tempArr = [];
+    vbcVendorGrid && vbcVendorGrid.map(el => {
+      tempArr.push(el.VendorId)
+      return null;
+    })
+    setSelectedVendors(tempArr)
+
   }, []);
 
+  /**
+  * @method toggleDrawer
+  * @description TOGGLE DRAWER
+  */
   const toggleDrawer = (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('')
+    props.closeDrawer('', data)
   };
 
   /**
@@ -36,6 +55,15 @@ export default function AddVendorDrawer(props) {
 
     if (label === 'Vendor') {
       vendorSelectList && vendorSelectList.map(item => {
+        if (item.Value === '0' || selectedVendors.includes(item.Value)) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
+    if (label === 'VendorPlant') {
+      filterPlantList && filterPlantList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -52,8 +80,51 @@ export default function AddVendorDrawer(props) {
   const handleChange = (newValue) => {
     if (newValue && newValue !== '') {
       setVendor(newValue)
+      reset({ VendorPlant: '' })
+      setVendorPlant([])
+      setData({})
+
+      //IF VENDOR PLANT IS CONFIGURABLE
+      checkVendorPlantConfigurable() && dispatch(getPlantBySupplier(newValue.value, () => { }))
+
+      //IF VENDOR PLANT IS NOT CONFIGURABLE
+      if (!checkVendorPlantConfigurable()) {
+        let data = {
+          VendorId: vendor.value,
+          VendorPlantId: checkVendorPlantConfigurable() ? newValue.value : "00000000-0000-0000-0000-000000000000",
+        }
+        dispatch(getVBCDetailByVendorId(data, (res) => {
+          if (res && res.data && res.data.Data) {
+            setData(res.data.Data)
+          }
+        }))
+      }
+
     } else {
       setVendor([])
+      setVendorPlant([])
+      setData({})
+    }
+  }
+
+  /**
+  * @method handleChangeVendorPlant
+  * @description  USED TO HANDLE CHANGE
+  */
+  const handleChangeVendorPlant = (newValue) => {
+    if (newValue && newValue !== '') {
+      setVendorPlant(newValue)
+      let data = {
+        VendorId: vendor.value,
+        VendorPlantId: checkVendorPlantConfigurable() ? newValue.value : "00000000-0000-0000-0000-000000000000",
+      }
+      dispatch(getVBCDetailByVendorId(data, (res) => {
+        if (res && res.data && res.data.Data) {
+          setData(res.data.Data)
+        }
+      }))
+    } else {
+      setVendorPlant([])
     }
   }
 
@@ -66,7 +137,7 @@ export default function AddVendorDrawer(props) {
   }
 
   const onSubmit = data => {
-    props.closeDrawer()
+    toggleDrawer('')
   }
 
   /**
@@ -110,6 +181,23 @@ export default function AddVendorDrawer(props) {
                     errors={errors.Vendor}
                   />
                 </Col>
+                {checkVendorPlantConfigurable() &&
+                  <Col md="12">
+                    <SearchableSelectHookForm
+                      label={'Vendor Plant'}
+                      name={'VendorPlant'}
+                      placeholder={'-Select-'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={vendorPlant.length !== 0 ? vendorPlant : ''}
+                      options={renderListing('VendorPlant')}
+                      mandatory={true}
+                      handleChange={handleChangeVendorPlant}
+                      errors={errors.VendorPlant}
+                    />
+                  </Col>}
               </Row>
 
               <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -138,3 +226,4 @@ export default function AddVendorDrawer(props) {
   );
 }
 
+export default React.memo(AddVendorDrawer)
