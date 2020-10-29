@@ -1111,7 +1111,7 @@ button.add-btn {
   padding: 0 30px 30px;
   background-color: #EDF0F5;
   height: 100vh;
-  margin-top: 234px;
+  /* margin-top: 234px; */
 }
 
 label for[normal-switch] {
