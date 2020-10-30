@@ -502,11 +502,11 @@ class UsersListing extends Component {
 					<TableHeaderColumn dataField="Mobile" width={'140'} dataSort={false}>Mobile No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="PhoneNumber" dataSort={false}>Phone No.</TableHeaderColumn>
 
-					<TableHeaderColumn dataField='DepartmentName' dataSort={true} >Product Name</TableHeaderColumn>
+					<TableHeaderColumn dataField='DepartmentName' dataSort={true} >Department</TableHeaderColumn>
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
                                 filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn> */}
-					<TableHeaderColumn dataField='RoleName' dataSort={true} >Role Name</TableHeaderColumn>
+					<TableHeaderColumn dataField='RoleName' dataSort={true} >Role</TableHeaderColumn>
 					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
                                 filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn> */}
 					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn> */}

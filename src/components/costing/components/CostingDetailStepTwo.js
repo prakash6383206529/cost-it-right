@@ -12,6 +12,7 @@ import { checkForNull } from '../../../helper';
 import $ from 'jquery';
 import { VBC, ZBC } from '../../../config/constants';
 import moment from 'moment';
+import CostingHeadTabs from './costingHeaderTabs/index'
 
 function CostingDetailStepTwo(props) {
 
@@ -20,7 +21,6 @@ function CostingDetailStepTwo(props) {
   const { partInfo } = props;
   const [isEditFlag, setIsEditFlag] = useState(false);
   const [costData, setCostData] = useState({});
-
 
   //console.log('watch', watch('zbcPlantGridFields'))
   const fieldValues = useWatch({
@@ -262,10 +262,13 @@ function CostingDetailStepTwo(props) {
                     </button>
                   </Col>
                   <hr />
+
+                </Row>
+
+                <Row>
                   <Col md="12">
-
+                    <CostingHeadTabs costData={costData} />
                   </Col>
-
                 </Row>
 
               </form>
