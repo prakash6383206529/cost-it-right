@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { Link, } from "react-router-dom";
 import "./Breadcrumb.scss";
 
 class Breadcrumb extends Component {
@@ -57,6 +58,15 @@ class Breadcrumb extends Component {
 									<li><a href="/">Home</a></li>
 									<li><a href={`/${url}`}>{this.state.secondTitle}</a></li>
 									<li className="active">{this.state.ThirdTitle}</li>
+									{/* <Link className="bell-notifcation-icon" to="/">
+										Home
+                  </Link>
+									<Link className="bell-notifcation-icon" to={`/${url}`}>
+										{this.state.secondTitle}
+									</Link>
+									<Link className="bell-notifcation-icon active" >
+										{this.state.ThirdTitle}
+									</Link> */}
 								</ul>
 							</div>
 						</div>
