@@ -50,7 +50,7 @@ class BOPDomesticListing extends Component {
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '',) => {
+    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '', ) => {
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -293,7 +293,7 @@ class BOPDomesticListing extends Component {
         const vendorTemp = vendor ? vendor.value : '';
         const plantTemp = plant ? plant.value : '';
 
-        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp,)
+        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp)
     }
 
     /**

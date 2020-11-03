@@ -1109,8 +1109,12 @@ p {
   margin-top: 0 ;
   background-color: #FFFFFF;
   // height: calc(100vh - 169px);
-  width: 100%;
-
+  width: calc(100% - 205px);
+.basic-multi-select{
+  .select__control{
+    height: auto;
+  }
+}
   .nav-item {
     margin-right: 48px;
   }

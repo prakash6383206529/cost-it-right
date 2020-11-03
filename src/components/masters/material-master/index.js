@@ -157,7 +157,6 @@ class RowMaterialMaster extends Component {
                 EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
             />
         }
-
         return (
             <Container fluid>
                 <Row>
@@ -165,7 +164,6 @@ class RowMaterialMaster extends Component {
                         <h1>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER}`}</h1>
                     </Col>
                 </Row>
-
                 <Row>
                     <Col>
                         <div>
