@@ -56,9 +56,6 @@ function CostingDetails() {
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
 
-  const InitialConfiguration = reactLocalStorage.getObject('InitialConfiguration');
-  //console.log('InitialConfiguration: ', InitialConfiguration.NumberOfVendorsForCostDetails);
-
   //console.log('watch', watch('zbcPlantGridFields'))
   const fieldValues = useWatch({
     control,
@@ -78,6 +75,7 @@ function CostingDetails() {
   const technologySelectList = useSelector(state => state.costing.technologySelectList)
   const partSelectList = useSelector(state => state.costing.partSelectList)
   const partInfo = useSelector(state => state.costing.partInfo)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   /**
   * @method renderListing
@@ -1071,7 +1069,7 @@ function CostingDetails() {
                         <Col md="7" className={'mb15 mt15'}></Col>
                         <Col md="2" className={'mb15 mt15'}>
                           {
-                            vbcVendorGrid.length < InitialConfiguration.NumberOfVendorsForCostDetails ?
+                            vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ?
                               <button
                                 type="button"
                                 className={'user-btn'}
@@ -1214,7 +1212,7 @@ function CostingDetails() {
                   <CostingDetailStepTwo
                     backBtn={backToFirstStep}
                     partInfo={partInfoStepTwo}
-                    costingData={costingData}
+                    costingInfo={costingData}
                   />}
               </form>
             </div>

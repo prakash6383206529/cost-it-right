@@ -2,10 +2,9 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, checkForNull, maxLength100, number } from "../../../helper/validation";
+import { required, checkForNull, maxLength100, number, checkForDecimalAndNull } from "../../../helper/validation";
 import {
-    renderText, renderNumberInputField, searchableSelect,
-    renderMultiSelectField, renderTextAreaField
+    renderText, searchableSelect, renderMultiSelectField, renderTextAreaField
 } from "../../layout/FormInputs";
 import {
     fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList,
@@ -98,6 +97,7 @@ class AddBOPImport extends Component {
             IsVendor: !this.state.IsVendor,
             vendorName: [],
             selectedVendorPlants: [],
+            selectedPlants: [],
         }, () => {
             const { IsVendor } = this.state;
             if (IsVendor) {
@@ -336,11 +336,11 @@ class AddBOPImport extends Component {
     };
 
     handleCalculation = () => {
-        const { fieldsObj } = this.props
+        const { fieldsObj, initialConfiguration } = this.props
         const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
         const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
         const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
-        this.props.change('NetLandedCost', NetLandedCost)
+        this.props.change('NetLandedCost', NetLandedCost !== 0 ? checkForDecimalAndNull(NetLandedCost, initialConfiguration.NumberOfDecimalForTransaction) : 0)
     }
 
     /**
@@ -701,10 +701,10 @@ class AddBOPImport extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </div>
-                                                    <div
+                                                    {/* <div
                                                         onClick={this.vendorToggler}
                                                         className={'plus-icon-square mr15 right'}>
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </Col>
                                             {this.state.IsVendor && <Col md="3">
@@ -971,7 +971,7 @@ class AddBOPImport extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, supplier, boughtOutparts, part, } = state;
+    const { comman, supplier, boughtOutparts, part, auth, } = state;
     const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
 
     const { bopCategorySelectList, bopData, } = boughtOutparts;
@@ -979,6 +979,7 @@ function mapStateToProps(state) {
         UOMSelectList, currencySelectList, } = comman;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { partSelectList } = part;
+    const { initialConfiguration } = auth;
 
     let initialValues = {};
     if (bopData && bopData !== undefined) {
@@ -996,7 +997,7 @@ function mapStateToProps(state) {
 
     return {
         vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-        cityList, partSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues,
+        cityList, partSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration,
     }
 
 }

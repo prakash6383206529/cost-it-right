@@ -61,20 +61,8 @@ class AddMachineRate extends Component {
 
             remarks: '',
             files: [],
-            isConfigurableMachineNumber: false,
 
         }
-    }
-
-    /**
-    * @method componentWillMount
-    * @description Called before render the component
-    */
-    UNSAFE_componentWillMount() {
-        let initialConfigureData = reactLocalStorage.getObject('InitialConfiguration')
-        this.setState({
-            isConfigurableMachineNumber: initialConfigureData.IsMachineNumberConfigure
-        })
     }
 
     /**
@@ -82,7 +70,7 @@ class AddMachineRate extends Component {
      * @description Called after rendering the component
      */
     componentDidMount() {
-        const { data, editDetails } = this.props;
+        const { data, editDetails, initialConfiguration } = this.props;
 
         this.props.getTechnologySelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
@@ -91,7 +79,7 @@ class AddMachineRate extends Component {
         this.props.getUOMSelectList(() => { })
         this.props.getProcessesSelectList(() => { })
 
-        if (this.state.isConfigurableMachineNumber && editDetails && editDetails.isEditFlag === false) {
+        if (initialConfiguration.IsMachineNumberConfigure && editDetails && editDetails.isEditFlag === false) {
             this.props.checkAndGetMachineNumber('', res => {
                 let Data = res.data.DynamicData;
                 this.props.change('MachineNumber', Data.MachineNumber)
@@ -783,8 +771,8 @@ class AddMachineRate extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, EditAccessibility } = this.props;
-        const { isConfigurableMachineNumber, isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied } = this.state;
+        const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration } = this.props;
+        const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied } = this.state;
 
         return (
             <>
@@ -912,7 +900,7 @@ class AddMachineRate extends Component {
                                                     component={renderText}
                                                     required={true}
                                                     onBlur={this.checkUniqNumber}
-                                                    disabled={(isEditFlag || isConfigurableMachineNumber) ? true : false}
+                                                    disabled={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
                                                 />
@@ -1267,12 +1255,13 @@ class AddMachineRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, machine, } = state;
+    const { comman, material, machine, auth } = state;
     const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
     const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
     const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
     const { vendorListByVendorType } = material;
+    const { initialConfiguration } = auth;
 
     let initialValues = {};
 
@@ -1288,7 +1277,7 @@ function mapStateToProps(state) {
 
     return {
         vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
-        machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading,
+        machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration,
     }
 
 }

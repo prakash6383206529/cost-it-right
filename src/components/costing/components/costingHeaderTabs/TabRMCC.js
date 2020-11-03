@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, Collapse, CardBody, Card } from 'reactstrap';
+import PartCompoment from '../CostingHeadCosts/Part'
 
 function TabRMCC(props) {
   const { costData } = props;
@@ -90,18 +91,14 @@ function TabRMCC(props) {
                         <td>{1}</td>
                         <td>{netTotalCost()}</td>
                       </tr>
-                      <div>
-                        <Collapse isOpen={isOpen}>
-                          <Card>
-                            <CardBody>
-                              Anim pariatur cliche reprehenderit,
-                              enim eiusmod high life accusamus terry richardson ad squid. Nihil
-                              anim keffiyeh helvetica, craft beer labore wes anderson cred
-                              nesciunt sapiente ea proident.
-                            </CardBody>
-                          </Card>
-                        </Collapse>
-                      </div>
+                      {isOpen &&
+                        <tr>
+                          <td colSpan={7}>
+                            <div>
+                              <PartCompoment />
+                            </div>
+                          </td>
+                        </tr>}
                     </tbody>
                   </Table>
                 </Row>

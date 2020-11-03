@@ -6,7 +6,7 @@ import {
   renderText
 } from "../layout/FormInputs";
 import { connect } from "react-redux";
-import { loginUserAPI, getMenuByUser, getLeftMenu, getLoginPageInit, } from "../../actions/auth/AuthActions";
+import { loginUserAPI, getMenuByUser, getLeftMenu, } from "../../actions/auth/AuthActions";
 import { maxLength70, minLength5, maxLength25, required, email } from "../../helper/validation";
 import "./Login.scss";
 import { Loader } from "../common/Loader";
@@ -21,17 +21,10 @@ class Login extends Component {
       isLoader: false,
       isSubmitted: false,
       isRedirect: false,
-      IsLoginEmailConfigure: true,
     };
   }
 
   UNSAFE_componentWillMount() {
-
-    this.props.getLoginPageInit(res => {
-      let Data = res.data.Data;
-      this.setState({ IsLoginEmailConfigure: Data.IsLoginEmailConfigure })
-      reactLocalStorage.setObject('InitialConfiguration', Data)
-    })
 
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
     if (isLoggedIn === true) {
@@ -65,8 +58,8 @@ class Login extends Component {
   }
 
   render() {
-    const { handleSubmit } = this.props;
-    const { isLoader, isSubmitted, isRedirect, IsLoginEmailConfigure } = this.state;
+    const { handleSubmit, initialConfiguration } = this.props;
+    const { isLoader, isSubmitted, isRedirect, } = this.state;
 
     if (isRedirect === true) {
       return <Redirect
@@ -96,7 +89,7 @@ class Login extends Component {
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 >
                   <div className="input-group mail">
-                    {IsLoginEmailConfigure ?
+                    {initialConfiguration && initialConfiguration.IsLoginEmailConfigure ?
                       <Field
                         name="UserName"
                         // label="UserName"
@@ -185,8 +178,8 @@ const validate = values => {
  * @return object{}
  */
 function mapStateToProps({ auth }) {
-  const { menusData, leftMenuData } = auth
-  return { menusData, leftMenuData }
+  const { menusData, leftMenuData, initialConfiguration } = auth
+  return { menusData, leftMenuData, initialConfiguration }
 }
 
 /**
@@ -205,5 +198,4 @@ export default reduxForm({
   loginUserAPI,
   getMenuByUser,
   getLeftMenu,
-  getLoginPageInit,
 })(Login));

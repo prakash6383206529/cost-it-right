@@ -16,7 +16,7 @@ import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
   updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
-  setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLoginPageInit,
+  setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
 } from "../../actions/auth/AuthActions";
 import { getAllCities } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -67,15 +67,7 @@ class UserRegistration extends Component {
       technologyLevelEditIndex: '',
       isEditIndex: false,
       isShowPwdField: true,
-      IsLoginEmailConfigure: true,
     };
-  }
-
-  UNSAFE_componentWillMount() {
-    this.props.getLoginPageInit(res => {
-      let Data = res.data.Data;
-      this.setState({ IsLoginEmailConfigure: Data.IsLoginEmailConfigure })
-    })
   }
 
   /**
@@ -614,7 +606,7 @@ class UserRegistration extends Component {
    * @returns {{}}
    */
   onSubmit(values) {
-    const { reset, registerUserData } = this.props;
+    const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
       oldTechnologyLevelGrid, UserId } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
@@ -725,7 +717,7 @@ class UserRegistration extends Component {
     } else {
 
       let userData = {
-        UserName: !this.state.IsLoginEmailConfigure ? values.UserName : null,
+        UserName: !initialConfiguration.IsLoginEmailConfigure ? values.UserName : null,
         Password: values.Password,
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
@@ -763,7 +755,7 @@ class UserRegistration extends Component {
   }
 
   render() {
-    const { handleSubmit, loading } = this.props;
+    const { handleSubmit, initialConfiguration, loading } = this.props;
     const { isSubmitted } = this.state;
     return (
       <div>
@@ -881,7 +873,7 @@ class UserRegistration extends Component {
                         customClassName={'withBorderEmail'}
                       />
                     </div>
-                    {!this.state.IsLoginEmailConfigure &&
+                    {!initialConfiguration.IsLoginEmailConfigure &&
                       <div className="input-group col-md-3">
                         <Field
                           name="UserName"
@@ -1252,12 +1244,12 @@ function validate(values) {
 */
 const mapStateToProps = ({ auth, comman }) => {
   const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
-    levelList, loading, } = auth;
+    levelList, initialConfiguration, loading, } = auth;
   const { cityList } = comman;
 
   let initialValues = {};
 
-  if (registerUserData && registerUserData != undefined) {
+  if (registerUserData && registerUserData !== undefined) {
     initialValues = {
       FirstName: registerUserData.FirstName,
       MiddleName: registerUserData.MiddleName,
@@ -1277,7 +1269,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, levelList, loading,
+    initialValues, technologyList, levelList, initialConfiguration, loading,
   };
 };
 
@@ -1305,7 +1297,6 @@ export default connect(mapStateToProps, {
   setUserAdditionalPermission,
   setUserTechnologyLevelForCosting,
   updateUserTechnologyLevelForCosting,
-  getLoginPageInit,
 })(reduxForm({
   validate,
   form: 'Signup',

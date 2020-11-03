@@ -12,7 +12,7 @@ import { checkForNull } from '../../../helper';
 import $ from 'jquery';
 import { VBC, ZBC } from '../../../config/constants';
 import moment from 'moment';
-import CostingHeadTabs from './costingHeaderTabs/index'
+import CostingHeadTabs from './CostingHeaderTabs/index'
 
 function CostingDetailStepTwo(props) {
 
@@ -21,6 +21,7 @@ function CostingDetailStepTwo(props) {
   const { partInfo } = props;
   const [isEditFlag, setIsEditFlag] = useState(false);
   const [costData, setCostData] = useState({});
+  const [partDataList, setPartDataList] = useState([]);
 
   //console.log('watch', watch('zbcPlantGridFields'))
   const fieldValues = useWatch({
@@ -33,18 +34,20 @@ function CostingDetailStepTwo(props) {
 
   useEffect(() => {
 
-    const { costingData } = props;
+    const { costingInfo } = props;
 
-    if (costingData.type === ZBC) {
-      dispatch(getZBCCostingByCostingId(costingData.costingId, (res) => {
+    if (costingInfo.type === ZBC) {
+      dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => {
         console.log('getZBCCostingByCostingId', res)
         setCostData(res.data.Data);
+        setPartDataList(res.data.DataList);
       }))
     }
 
-    if (costingData.type === VBC) {
-      dispatch(getZBCCostingByCostingId(costingData.costingId, (res) => {
+    if (costingInfo.type === VBC) {
+      dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => {
         setCostData(res.data.Data);
+        setPartDataList(res.data.DataList);
       }))
     }
 
@@ -84,92 +87,92 @@ function CostingDetailStepTwo(props) {
   * @method netRMCostPerAssembly
   * @description GET TOTAL RM COST FOR TOP HEADER 
   */
-  const netRMCostPerAssembly = useCallback(() => {
-    return costData && costData.NetRMCost !== null ? checkForNull(costData.NetRMCost) : 0
-  }, [costData])
+  const netRMCostPerAssembly = useCallback((item) => {
+    return item && item.NetRMCost !== null ? checkForNull(item.NetRMCost) : 0
+  }, [])
 
   /**
    * @method netBOPCostPerAssembly
    * @description GET TOTAL BOP COST FOR TOP HEADER 
    */
-  const netBOPCostPerAssembly = useCallback(() => {
-    return costData && costData.NetBOPCost !== null ? checkForNull(costData.NetBOPCost) : 0
-  }, [costData])
+  const netBOPCostPerAssembly = useCallback((item) => {
+    return item && item.NetBOPCost !== null ? checkForNull(item.NetBOPCost) : 0
+  }, [])
 
   /**
    * @method netConversionCostPerAssembly
    * @description GET TOTAL CONVERSION COST FOR TOP HEADER 
    */
-  const netConversionCostPerAssembly = useCallback(() => {
-    return costData && costData.NetConversionCost !== null ? checkForNull(costData.NetConversionCost) : 0
-  }, [costData])
+  const netConversionCostPerAssembly = useCallback((item) => {
+    return item && item.NetConversionCost !== null ? checkForNull(item.NetConversionCost) : 0
+  }, [])
 
   /**
    * @method netRMCCcost
    * @description GET RM + CC COST TOTAL OF (RM+BOP+CC) FOR TOP HEADER 
    */
-  const netRMCCcost = useCallback(() => {
-    const netRM = costData && costData.NetRMCost !== null ? checkForNull(costData.NetRMCost) : 0
-    const netBOP = costData && costData.NetBOPCost !== null ? checkForNull(costData.NetBOPCost) : 0
-    const netCC = costData && costData.NetConversionCost !== null ? checkForNull(costData.NetConversionCost) : 0
+  const netRMCCcost = useCallback((item) => {
+    const netRM = item && item.NetRMCost !== null ? checkForNull(item.NetRMCost) : 0
+    const netBOP = item && item.NetBOPCost !== null ? checkForNull(item.NetBOPCost) : 0
+    const netCC = item && item.NetConversionCost !== null ? checkForNull(item.NetConversionCost) : 0
     return netRM + netBOP + netCC;
-  }, [costData])
+  }, [])
 
   /**
    * @method netSurfaceTreatmentCost
    * @description GET NET SURFACE TREATMENT COST FOR TOP HEADER 
    */
-  const netSurfaceTreatmentCost = useCallback(() => {
-    return costData && costData.NetSurfaceTreatmentCost !== null ? checkForNull(costData.NetSurfaceTreatmentCost) : 0
-  }, [costData])
+  const netSurfaceTreatmentCost = useCallback((item) => {
+    return item && item.NetSurfaceTreatmentCost !== null ? checkForNull(item.NetSurfaceTreatmentCost) : 0
+  }, [])
 
   /**
    * @method netOverheadProfitCost
    * @description GET NET OVERHEAD & PROFIT COST FOR TOP HEADER 
    */
-  const netOverheadProfitCost = useCallback(() => {
-    return costData && costData.NetOverheadAndProfitCost !== null ? checkForNull(costData.NetOverheadAndProfitCost) : 0
-  }, [costData])
+  const netOverheadProfitCost = useCallback((item) => {
+    return item && item.NetOverheadAndProfitCost !== null ? checkForNull(item.NetOverheadAndProfitCost) : 0
+  }, [])
 
   /**
    * @method netPackagingFreightCost
    * @description GET NET PACKAGING & FREIGHT COST FOR TOP HEADER 
    */
-  const netPackagingFreightCost = useCallback(() => {
-    return costData && costData.NetPackagingAndFreight !== null ? checkForNull(costData.NetPackagingAndFreight) : 0
-  }, [costData])
+  const netPackagingFreightCost = useCallback((item) => {
+    return item && item.NetPackagingAndFreight !== null ? checkForNull(item.NetPackagingAndFreight) : 0
+  }, [])
 
   /**
    * @method netToolCost
    * @description GET NET TOOL COST FOR TOP HEADER 
    */
-  const netToolCost = useCallback(() => {
-    return costData && costData.ToolCost !== null ? checkForNull(costData.ToolCost) : 0
-  }, [costData])
+  const netToolCost = useCallback((item) => {
+    return item && item.ToolCost !== null ? checkForNull(item.ToolCost) : 0
+  }, [])
 
   /**
    * @method netDiscountOtherCost
    * @description GET NET DISCOUNT & OTHER COST FOR TOP HEADER 
    */
-  const netDiscountOtherCost = useCallback(() => {
-    return costData && costData.DiscountsAndOtherCost !== null ? checkForNull(costData.DiscountsAndOtherCost) : 0
-  }, [costData])
+  const netDiscountOtherCost = useCallback((item) => {
+    return item && item.DiscountsAndOtherCost !== null ? checkForNull(item.DiscountsAndOtherCost) : 0
+  }, [])
 
   /**
    * @method netTotalCost
    * @description GET NET TOTAL COST FOR TOP HEADER 
    */
-  const netTotalCost = useCallback(() => {
+  const netTotalCost = useCallback((item) => {
 
     const RMCCCost = netRMCCcost();
-    const netSurfaceTreatmentCost = costData && costData.NetSurfaceTreatmentCost !== null ? checkForNull(costData.NetSurfaceTreatmentCost) : 0
-    const netPackagingFreightCost = costData && costData.NetPackagingAndFreight !== null ? checkForNull(costData.NetPackagingAndFreight) : 0
-    const netOverheadProfitCost = costData && costData.NetOverheadAndProfictCost !== null ? checkForNull(costData.NetOverheadAndProfictCost) : 0
-    const discountOtherCost = costData && costData.DiscountsAndOtherCost !== null ? checkForNull(costData.DiscountsAndOtherCost) : 0
+    const netSurfaceTreatmentCost = item && item.NetSurfaceTreatmentCost !== null ? checkForNull(item.NetSurfaceTreatmentCost) : 0
+    const netPackagingFreightCost = item && item.NetPackagingAndFreight !== null ? checkForNull(item.NetPackagingAndFreight) : 0
+    const netOverheadProfitCost = item && item.NetOverheadAndProfictCost !== null ? checkForNull(item.NetOverheadAndProfictCost) : 0
+    const discountOtherCost = item && item.DiscountsAndOtherCost !== null ? checkForNull(item.DiscountsAndOtherCost) : 0
 
     return RMCCCost + netSurfaceTreatmentCost + netPackagingFreightCost + netOverheadProfitCost - discountOtherCost;
 
-  }, [costData])
+  }, [])
 
   /**
   * @method cancel
@@ -234,19 +237,26 @@ function CostingDetailStepTwo(props) {
                       </tr>
                     </thead>
                     <tbody >
-                      <tr>
-                        <td>{costingData.PartNumber}</td>
-                        <td>{netRMCostPerAssembly()}</td>
-                        <td>{netBOPCostPerAssembly()}</td>
-                        <td>{netConversionCostPerAssembly()}</td>
-                        <td>{netRMCCcost()}</td>
-                        <td>{netSurfaceTreatmentCost()}</td>
-                        <td>{netOverheadProfitCost()}</td>
-                        <td>{netPackagingFreightCost()}</td>
-                        <td>{netToolCost()}</td>
-                        <td>{netDiscountOtherCost()}</td>
-                        <td>{netTotalCost()}</td>
-                      </tr>
+                      {
+                        partDataList &&
+                        partDataList.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>{item.PartNumber}</td>
+                              <td>{netRMCostPerAssembly(item)}</td>
+                              <td>{netBOPCostPerAssembly(item)}</td>
+                              <td>{netConversionCostPerAssembly(item)}</td>
+                              <td>{netRMCCcost(item)}</td>
+                              <td>{netSurfaceTreatmentCost(item)}</td>
+                              <td>{netOverheadProfitCost(item)}</td>
+                              <td>{netPackagingFreightCost(item)}</td>
+                              <td>{netToolCost(item)}</td>
+                              <td>{netDiscountOtherCost(item)}</td>
+                              <td>{netTotalCost(item)}</td>
+                            </tr>
+                          )
+                        }
+                        )}
                     </tbody>
                   </Table>
                 </Row>

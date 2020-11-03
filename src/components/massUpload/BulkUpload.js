@@ -108,13 +108,16 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
+                    //console.log('resp.rows: ', resp.rows);
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
+                        //console.log('val:>> ', val);
                         if (index > 0) {
                             let obj = {}
                             val.map((el, i) => {
+                                //console.log('el: ', el);
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                                     el = getJsDateFromExcel(el)
                                 }
@@ -122,6 +125,7 @@ class BulkUpload extends Component {
                             })
                             fileData.push(obj)
                             obj = {}
+                            //console.log('fileData: ', fileData);
                         }
                     })
                     this.setState({
