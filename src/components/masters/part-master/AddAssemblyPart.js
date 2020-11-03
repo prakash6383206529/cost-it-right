@@ -43,7 +43,6 @@ class AddAssemblyPart extends Component {
             childPartArray: [],
             NewAddedLevelOneChilds: [],
             avoidAPICall: false,
-            initalConfiguration: reactLocalStorage.getObject('InitialConfiguration'),
 
         }
     }
@@ -529,8 +528,8 @@ class AddAssemblyPart extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, } = this.props;
-        const { isEditFlag, isOpenChildDrawer, initalConfiguration, isOpenBOMViewerDrawer, } = this.state;
+        const { handleSubmit, initialConfiguration } = this.props;
+        const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, } = this.state;
         return (
             <>
 
@@ -653,7 +652,7 @@ class AddAssemblyPart extends Component {
                                                 customClassName={'withBorder'}
                                             />
                                         </Col>
-                                        {initalConfiguration.IsGroupCodeDisplay && <Col md="3">
+                                        {initialConfiguration && initialConfiguration.IsGroupCodeDisplay && <Col md="3">
                                             <Field
                                                 label={`Group Code`}
                                                 name={"GroupCode"}
@@ -712,7 +711,7 @@ class AddAssemblyPart extends Component {
                                             </div>
                                         </Col>
                                         <Col md="3">
-                                            {/* {(!isEditFlag || initalConfiguration.IsBOMEditable) && <button
+                                            {/* {(!isEditFlag || initialConfiguration.IsBOMEditable) && <button
                                                 type="button"
                                                 className={'user-btn pull-left mt30 mr5'}
                                                 onClick={this.childDrawerToggle}>
@@ -848,9 +847,10 @@ class AddAssemblyPart extends Component {
 function mapStateToProps(state) {
     const fieldsObj = selector(state, 'BOMNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'ECNNumber', 'RevisionNumber',
         'Description', 'DrawingNumber', 'GroupCode', 'Remark')
-    const { comman, part } = state;
+    const { comman, part, auth } = state;
     const { plantSelectList } = comman;
     const { partData, actualBOMTreeData } = part;
+    const { initialConfiguration } = auth;
 
     let initialValues = {};
     if (partData && partData !== undefined) {
@@ -867,7 +867,7 @@ function mapStateToProps(state) {
         }
     }
 
-    return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues }
+    return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, }
 
 }
 

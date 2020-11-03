@@ -10,7 +10,6 @@ import Drawer from '@material-ui/core/Drawer';
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 class BOMViewer extends Component {
     constructor(props) {
@@ -35,7 +34,6 @@ class BOMViewer extends Component {
             ActualBOMData: [],
             isCancel: false,
             isSaved: false,
-            initalConfiguration: reactLocalStorage.getObject('InitialConfiguration'),
         }
     }
 
@@ -275,8 +273,8 @@ class BOMViewer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, isFromVishualAd } = this.props;
-        const { isOpenChildDrawer, isOpenVisualDrawer, initalConfiguration } = this.state;
+        const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration } = this.props;
+        const { isOpenChildDrawer, isOpenVisualDrawer, } = this.state;
 
         return (
             <>
@@ -300,7 +298,7 @@ class BOMViewer extends Component {
                             <Row>
                                 <Col md="8">
                                 </Col>
-                                {(!isEditFlag || initalConfiguration.IsBOMEditable) && !isFromVishualAd &&
+                                {(!isEditFlag || initialConfiguration.IsBOMEditable) && !isFromVishualAd &&
                                     <Col md="4">
                                         <button
                                             type={'button'}
@@ -444,9 +442,10 @@ class BOMViewer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part }) {
+function mapStateToProps({ part, auth }) {
     const { actualBOMTreeData } = part;
-    return { actualBOMTreeData }
+    const { initialConfiguration } = auth;
+    return { actualBOMTreeData, initialConfiguration }
 }
 
 /**

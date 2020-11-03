@@ -68,14 +68,13 @@ class AddOperation extends Component {
      * @description called after render the component
      */
     componentDidMount() {
-        const { data } = this.props;
-        let initialConfigureData = reactLocalStorage.getObject('InitialConfiguration')
+        const { data, initialConfiguration } = this.props;
 
         this.props.getTechnologySelectList(() => { })
         this.props.getPlantSelectListByType(ZBC, () => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getDetail()
-        if (initialConfigureData && initialConfigureData.IsOperationCodeConfigure && data.isEditFlag === false) {
+        if (initialConfiguration && initialConfiguration.IsOperationCodeConfigure && data.isEditFlag === false) {
             this.props.checkAndGetOperationCode('', res => {
                 let Data = res.data.DynamicData;
                 this.props.change('OperationCode', Data.OperationCode)
@@ -858,11 +857,12 @@ class AddOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, otherOperation, supplier, } = state;
+    const { comman, otherOperation, supplier, auth, } = state;
     const filedObj = selector(state, 'OperationCode');
     const { technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
     const { operationData } = otherOperation;
     const { vendorWithVendorCodeSelectList } = supplier;
+    const { initialConfiguration } = auth;
 
     let initialValues = {};
     if (operationData && operationData !== undefined) {
@@ -879,7 +879,7 @@ function mapStateToProps(state) {
     return {
         technologySelectList, plantSelectList, UOMSelectList,
         operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
-        initialValues
+        initialValues, initialConfiguration,
     }
 }
 

@@ -604,7 +604,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BasicRate': 'BasicRate',
         'Currency': 'Currency',
         'Remark': 'Remark',
-        'EffectiveDate': 'EffectiveDate',
+        'EffectiveDate': moment().format('DD-MM-YYYY'),
     }
 ]
 

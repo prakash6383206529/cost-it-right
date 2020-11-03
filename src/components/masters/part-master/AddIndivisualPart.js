@@ -30,7 +30,6 @@ class AddIndivisualPart extends Component {
             effectiveDate: '',
 
             files: [],
-            initalConfiguration: reactLocalStorage.getObject('InitialConfiguration')
         }
     }
 
@@ -273,8 +272,8 @@ class AddIndivisualPart extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, } = this.props;
-        const { isEditFlag, initalConfiguration } = this.state;
+        const { handleSubmit, initialConfiguration } = this.props;
+        const { isEditFlag, } = this.state;
         return (
             <>
                 <div>
@@ -323,7 +322,7 @@ class AddIndivisualPart extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            {initalConfiguration.IsBOMNumberDisplay && <Col md="3">
+                                            {initialConfiguration && initialConfiguration.IsBOMNumberDisplay && <Col md="3">
                                                 <Field
                                                     label={`BOM No.`}
                                                     name={"BOMNumber"}
@@ -393,7 +392,7 @@ class AddIndivisualPart extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            {initalConfiguration.IsGroupCodeDisplay && <Col md="3">
+                                            {initialConfiguration && initialConfiguration.IsGroupCodeDisplay && <Col md="3">
                                                 <Field
                                                     label={`Group Code`}
                                                     name={"GroupCode"}
@@ -553,9 +552,10 @@ class AddIndivisualPart extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, part }) {
+function mapStateToProps({ comman, part, auth }) {
     const { plantSelectList, } = comman;
     const { partData } = part;
+    const { initialConfiguration } = auth;
 
     let initialValues = {};
     if (partData && partData !== undefined) {
@@ -572,7 +572,7 @@ function mapStateToProps({ comman, part }) {
         }
     }
 
-    return { plantSelectList, partData, initialValues }
+    return { plantSelectList, partData, initialValues, initialConfiguration, }
 }
 
 /**

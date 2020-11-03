@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
 	getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI,
-	activeInactiveUser, getLeftMenu, getLoginPageInit,
+	activeInactiveUser, getLeftMenu,
 } from '../../actions/auth/AuthActions';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
@@ -40,16 +40,10 @@ class UsersListing extends Component {
 			EditAccessibility: false,
 			DeleteAccessibility: false,
 			ActivateAccessibility: false,
-			IsLoginEmailConfigure: true,
 		}
 	}
 
 	UNSAFE_componentWillMount() {
-
-		this.props.getLoginPageInit(res => {
-			let Data = res.data.Data;
-			this.setState({ IsLoginEmailConfigure: Data.IsLoginEmailConfigure })
-		})
 
 		let ModuleId = reactLocalStorage.get('ModuleId');
 		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
@@ -398,7 +392,7 @@ class UsersListing extends Component {
 	* @description Renders the component
 	*/
 	render() {
-		const { handleSubmit, } = this.props;
+		const { handleSubmit, initialConfiguration, } = this.props;
 		const { EditAccessibility, departmentType, roleType, AddAccessibility } = this.state;
 		const options = {
 			clearSearch: true,
@@ -497,16 +491,16 @@ class UsersListing extends Component {
 					pagination>
 					{/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
 					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
-					{!this.state.IsLoginEmailConfigure ? <TableHeaderColumn dataField="UserName" width={'150'} dataSort={true}>User name</TableHeaderColumn> : null}
+					{!initialConfiguration.IsLoginEmailConfigure ? <TableHeaderColumn dataField="UserName" width={'150'} dataSort={true}>User name</TableHeaderColumn> : null}
 					<TableHeaderColumn dataField="EmailAddress" columnTitle width={'200'} dataSort={true}>Email Id</TableHeaderColumn>
 					<TableHeaderColumn dataField="Mobile" width={'140'} dataSort={false}>Mobile No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="PhoneNumber" dataSort={false}>Phone No.</TableHeaderColumn>
 
-					<TableHeaderColumn dataField='DepartmentName' dataSort={true} >Product Name</TableHeaderColumn>
+					<TableHeaderColumn dataField='DepartmentName' dataSort={true} >Department</TableHeaderColumn>
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
                                 filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn> */}
-					<TableHeaderColumn dataField='RoleName' dataSort={true} >Role Name</TableHeaderColumn>
+					<TableHeaderColumn dataField='RoleName' dataSort={true} >Role</TableHeaderColumn>
 					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
                                 filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn> */}
 					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn> */}
@@ -522,7 +516,7 @@ class UsersListing extends Component {
 						closeUserDetails={this.closeUserDetails}
 						EditAccessibility={EditAccessibility}
 						anchor={'right'}
-						IsLoginEmailConfigure={this.state.IsLoginEmailConfigure}
+						IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
 					/>}
 			</ >
 		);
@@ -535,9 +529,9 @@ class UsersListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { userDataList, roleList, departmentList, leftMenuData, loading } = auth;
+	const { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading } = auth;
 
-	return { userDataList, roleList, departmentList, leftMenuData, loading };
+	return { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading };
 }
 
 
@@ -555,7 +549,6 @@ export default connect(mapStateToProps, {
 	getAllRoleAPI,
 	activeInactiveUser,
 	getLeftMenu,
-	getLoginPageInit,
 })(reduxForm({
 	form: 'UsersListing',
 	onSubmitFail: errors => {

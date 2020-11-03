@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import Main from './components/Main.js';
 import { BrowserRouter, Route, } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { getLoginPageInit, } from "./actions/auth/AuthActions";
 
 class App extends Component {
   constructor(props) {
@@ -10,6 +11,13 @@ class App extends Component {
     this.state = {
       isUserLoggedIn: false,
     };
+  }
+
+  UNSAFE_componentWillMount() {
+    this.props.getLoginPageInit(res => {
+      let Data = res.data.Data;
+      reactLocalStorage.setObject('InitialConfiguration', Data)
+    })
   }
 
   /**
@@ -54,5 +62,18 @@ class App extends Component {
   }
 }
 
-export default connect(null, {})(App);
+
+/**
+* @method mapStateToProps
+* @description return state to component as props
+* @param {*} state
+*/
+function mapStateToProps(state) {
+  const { auth } = state;
+  const { initialConfiguration } = auth;
+
+  return { initialConfiguration, }
+}
+
+export default connect(mapStateToProps, { getLoginPageInit })(App);
 
