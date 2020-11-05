@@ -142,6 +142,7 @@ export const MESSAGES = {
   //BOP MASTER
   // ADD_BOP_SUCCESS: 'BOP added successfully', kitna baar BOP ko success karoge
   BOP_ADD_SUCCESS: 'BOP added successfully',
+  BOP_CATEGORY_ADD_SUCCESS: 'BOP added successfully',
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
   BOP_DELETE_ALERT: 'Are you sure you want to delete this BOP?',
   BOP_DELETE_SUCCESS: 'BOP has been deleted',

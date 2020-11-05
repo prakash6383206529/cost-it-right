@@ -31,7 +31,6 @@ export const TextFieldHooks = (input) => {
 }
 
 export const TextFieldHookForm = (field) => {
-  console.log('field: ', field);
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;

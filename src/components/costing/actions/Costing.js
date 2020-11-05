@@ -295,6 +295,97 @@ export function getVBCDetailByVendorId(data, callback) {
 }
 
 /**
+ * @method getRMCCTabData
+ * @description GET RM+CC TAB DATA IN COSTING DETAIL
+ */
+export function getRMCCTabData(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getRMDrawerDataList
+ * @description GET RM DATALIST IN RM DRAWER IN COSTING
+ */
+export function getRMDrawerDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getRMDrawerDataList}/${data.PlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
  * @method getExistingSupplierDetailByPartId
  * @description get Existing Supplier Detail By PartId
  */

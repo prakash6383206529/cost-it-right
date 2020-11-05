@@ -50,7 +50,7 @@ class BOPDomesticListing extends Component {
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '', ) => {
+    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '',) => {
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -478,8 +478,6 @@ class BOPDomesticListing extends Component {
                             <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="NumberOfPieces" columnTitle={true} dataAlign="center"  >{'No. of Pcs'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BasicRate" columnTitle={true} dataAlign="center"  >{'Basic Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center" >{'Net Landed Cost'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

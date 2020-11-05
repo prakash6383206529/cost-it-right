@@ -187,7 +187,6 @@ a:hover {
 .apply{width: 100px;}
 .reset {
   height: 32px;
-  box-shadow: 0px 5px 10px #0000000f;
   border: 2px solid $colorPrimary;
   border-radius: 4px;
   opacity: 1;
@@ -1170,7 +1169,7 @@ p {
       &:hover {
         border: none;
         background: transparent;
-        color: $highlightcolor;
+        color: $highlightcolor !important;
         border-bottom: $highlightcolor 2px solid;
       }
     }
@@ -1892,6 +1891,10 @@ ul.bread-list.d-inline-flex{
 }
 
 // Added on 16-09-2020
+.drawer-1500px{
+  width: 100%;
+  max-width: 1500px;
+}
 .drawer-700px{
   width: 100%;
   max-width: 700px;

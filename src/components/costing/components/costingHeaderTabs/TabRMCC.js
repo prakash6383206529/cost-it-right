@@ -1,13 +1,33 @@
-import React, { useState, useEffect, useCallback, } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Table, Collapse, CardBody, Card } from 'reactstrap';
+import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
+import { getRMCCTabData } from '../../actions/Costing';
+import { costingInfoContext } from '../CostingDetailStepTwo';
 
 function TabRMCC(props) {
-  const { costData } = props;
-  const { register, handleSubmit, watch, control, reset, errors } = useForm();
+
+  const { register, handleSubmit, watch, reset } = useForm();
   const [isOpen, setIsOpen] = useState(false);
+  const [tabData, setTabData] = useState([]);
+  const dispatch = useDispatch()
+
+  const costData = useContext(costingInfoContext);
+
+  useEffect(() => {
+    if (Object.keys(costData).length > 0) {
+      const data = {
+        CostingId: costData.CostingId,
+        PartId: costData.PartId,
+        PlantId: costData.PlantId,
+      }
+      dispatch(getRMCCTabData(data, (res) => {
+        let Data = res.data.Data;
+        setTabData(Data.CostingBaseGridHeaderDetails)
+      }))
+    }
+  }, [costData]);
 
   const toggle = () => setIsOpen(!isOpen);
 
@@ -16,7 +36,7 @@ function TabRMCC(props) {
   * @method netRMCost
   * @description GET RM COST
   */
-  const netRMCost = () => {
+  const netRMCost = (rmData) => {
     return 0;
   }
 
@@ -24,7 +44,7 @@ function TabRMCC(props) {
   * @method netBOPCost
   * @description GET BOP COST
   */
-  const netBOPCost = () => {
+  const netBOPCost = (bopData) => {
     return 0;
   }
 
@@ -32,7 +52,7 @@ function TabRMCC(props) {
   * @method netConversionCost
   * @description GET CONVERSION COST
   */
-  const netConversionCost = () => {
+  const netConversionCost = (ccData) => {
     return 0;
   }
 
@@ -82,23 +102,36 @@ function TabRMCC(props) {
                       </tr>
                     </thead>
                     <tbody >
-                      <tr onClick={toggle}>
-                        <td>{costData.PartNumber}</td>
-                        <td>{costData.PartNumber}</td>
-                        <td>{netRMCost()}</td>
-                        <td>{netBOPCost()}</td>
-                        <td>{netConversionCost()}</td>
-                        <td>{1}</td>
-                        <td>{netTotalCost()}</td>
-                      </tr>
-                      {isOpen &&
-                        <tr>
-                          <td colSpan={7}>
-                            <div>
-                              <PartCompoment />
-                            </div>
-                          </td>
-                        </tr>}
+                      {
+                        tabData && tabData.map((item, index) => {
+                          return (
+                            < >
+                              <tr key={index} onClick={toggle}>
+                                <td>{item.PartNumber}</td>
+                                <td>{item.Type}</td>
+                                <td>{netRMCost(item.CostingRawMaterialsCost)}</td>
+                                <td>{netBOPCost(item.CostingBoughtOutPartCost)}</td>
+                                <td>{netConversionCost(item.CostingConversionCostResponse)}</td>
+                                <td>{item.Quantity}</td>
+                                <td>{netTotalCost(item)}</td>
+                              </tr>
+                              <tr>
+                                <td colSpan={7}>
+                                  <div>
+                                    <PartCompoment
+                                      rmData={item.CostingRawMaterialsCost}
+                                      bopData={item.CostingBoughtOutPartCost}
+                                      ccData={item.CostingConversionCostResponse}
+                                      costData={costData}
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                            </>
+                          )
+                        })
+                      }
+
                     </tbody>
                   </Table>
                 </Row>

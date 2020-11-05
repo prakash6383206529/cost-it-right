@@ -113,20 +113,30 @@ class BulkUpload extends Component {
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
-                        //console.log('val:>> ', val);
                         if (index > 0) {
+
+                            // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+                            const i = val.findIndex(e => e === undefined);
+                            if (i !== -1) {
+                                val[i] = '';
+                            }
+
                             let obj = {}
                             val.map((el, i) => {
-                                //console.log('el: ', el);
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                                     el = getJsDateFromExcel(el)
                                 }
+                                if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
+                                    el = parseInt(el)
+                                }
                                 obj[fileHeads[i]] = el;
+                                return null;
                             })
                             fileData.push(obj)
                             obj = {}
-                            //console.log('fileData: ', fileData);
+                            console.log('fileData', fileData)
                         }
+                        return null;
                     })
                     this.setState({
                         cols: resp.cols,

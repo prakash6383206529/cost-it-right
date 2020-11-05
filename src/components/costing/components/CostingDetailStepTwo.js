@@ -14,6 +14,8 @@ import { VBC, ZBC } from '../../../config/constants';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
 
+export const costingInfoContext = React.createContext()
+
 function CostingDetailStepTwo(props) {
 
   const { register, handleSubmit, watch, control, setValue, getValues, reset, errors } = useForm();
@@ -272,12 +274,13 @@ function CostingDetailStepTwo(props) {
                     </button>
                   </Col>
                   <hr />
-
                 </Row>
 
                 <Row>
                   <Col md="12">
-                    <CostingHeadTabs costData={costData} />
+                    <costingInfoContext.Provider value={costData} >
+                      <CostingHeadTabs costData={costData} />
+                    </costingInfoContext.Provider>
                   </Col>
                 </Row>
 

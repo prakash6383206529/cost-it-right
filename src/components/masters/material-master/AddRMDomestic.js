@@ -98,7 +98,7 @@ class AddRMDomestic extends Component {
     componentDidMount() {
         const { data } = this.props;
         this.getDetails(data);
-        this.props.change('NetLandedCost', 0)
+        //this.props.change('NetLandedCost', 0)
         this.props.getRawMaterialCategory(res => { });
         this.props.fetchSupplierCityDataAPI(res => { });
         this.props.getVendorListByVendorType(false, () => { })

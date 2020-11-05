@@ -6,7 +6,7 @@ import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 
 function PartCompoment(props) {
-
+  const { rmData, bopData, ccData, } = props;
   /**
   * @method render
   * @description Renders the component
@@ -15,11 +15,17 @@ function PartCompoment(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <RawMaterialCost />
+          <RawMaterialCost
+            data={rmData}
+          />
           <hr />
-          <BOPCost />
+          <BOPCost
+            data={bopData}
+          />
           <hr />
-          <ProcessCost />
+          <ProcessCost
+            data={ccData}
+          />
         </div>
       </div >
     </ >

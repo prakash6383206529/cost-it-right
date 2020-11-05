@@ -62,7 +62,7 @@ function CostingDetails() {
     name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology'],
     //defaultValue: 'default' // default value before the render
   });
-  console.log('fieldValues: ', fieldValues);
+  //console.log('fieldValues: ', fieldValues);
 
   const dispatch = useDispatch()
 
@@ -712,7 +712,7 @@ function CostingDetails() {
     dispatch(getPartInfo(part.value, () => { }))
   }
 
-  console.log('errors >>>', errors);
+  //console.log('errors >>>', errors);
 
   /**
   * @method onSubmit

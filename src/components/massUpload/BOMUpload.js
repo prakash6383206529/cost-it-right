@@ -81,6 +81,13 @@ class BOMUpload extends Component {
 
           resp.rows.map((val, index) => {
             if (index > 0) {
+
+              // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+              const i = val.findIndex(e => e === undefined);
+              if (i !== -1) {
+                val[i] = '';
+              }
+
               let obj = {}
               val.map((el, i) => {
                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {

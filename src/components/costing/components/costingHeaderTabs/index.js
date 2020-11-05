@@ -58,7 +58,7 @@ function CostingHeaderTabs(props) {
           <TabContent activeTab={activeTab}>
             {activeTab === '1' &&
               <TabPane tabId="1">
-                <TabRMCC costData={props.costData} />
+                <TabRMCC />
               </TabPane>}
             {activeTab === '2' &&
               <TabPane tabId="2">

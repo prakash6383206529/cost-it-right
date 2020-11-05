@@ -52,7 +52,7 @@ class AddBOPCategory extends Component {
             }
             this.props.createBOPCategory(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.BOP_ADD_SUCCESS);
+                    toastr.success(MESSAGES.BOP_CATEGORY_ADD_SUCCESS);
                     this.toggleDrawer('')
                 }
             });
