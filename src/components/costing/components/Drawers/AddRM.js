@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller } from "react-hook-form";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { costingInfoContext } from '../CostingDetailStepTwo';
 import { getRMDrawerDataList } from '../../actions/Costing';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
+import { costingInfoContext } from '../CostingDetailStepTwo';
+import { ZBC } from '../../../../config/constants';
 
 function AddRM(props) {
 
@@ -52,12 +52,11 @@ function AddRM(props) {
   };
 
   const onRowSelect = (row, isSelected, e) => {
-    console.log('row, isSelected, e', row, isSelected, e)
     setSelectedRowData(row)
   }
 
   const onSelectAll = (isSelected, rows) => {
-    console.log('isSelected, rows', isSelected, rows)
+
   }
 
   const selectRowProp = {
@@ -170,8 +169,8 @@ function AddRM(props) {
                   <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="RMGrade" >{'RM Grade'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMSpec" >{'RM Spec'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >Vendor Location</TableHeaderColumn>
+                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
+                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >Vendor Location</TableHeaderColumn>}
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Currency" searchable={false} >Currency</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRatePerUOM" searchable={false} >{renderBasicRate()}</TableHeaderColumn>
@@ -182,20 +181,20 @@ function AddRM(props) {
             </Row>
 
             <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-right bluefooter-butn">
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button>
-
+              <div className="col-sm-12 text-left bluefooter-butn">
                 <button
                   type={'button'}
                   className="submit-button mr5 save-btn"
                   onClick={addRow} >
                   <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                  {'ADD'}
+                  {'SELECT'}
+                </button>
+
+                <button
+                  type={'button'}
+                  className="reset mr15 cancel-btn"
+                  onClick={cancel} >
+                  <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                 </button>
               </div>
             </Row>

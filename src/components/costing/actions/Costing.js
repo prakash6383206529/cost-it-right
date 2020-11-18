@@ -334,6 +334,164 @@ export function getRMDrawerDataList(data, callback) {
   };
 }
 
+/**
+ * @method getBOPDrawerDataList
+ * @description GET BOP DATALIST IN RM DRAWER IN COSTING
+ */
+export function getBOPDrawerDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getBOPDrawerDataList}/${data.PlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getOperationDrawerDataList
+ * @description GET OPERATION DATALIST IN OPERATION DRAWER IN COSTING
+ */
+export function getOperationDrawerDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getOperationDrawerDataList}/${data.PlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getProcessDrawerDataList
+ * @description GET OPERATION DATALIST IN OPERATION DRAWER IN COSTING
+ */
+export function getProcessDrawerDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getProcessDrawerDataList}/${data.PlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveCostingRMCCTab
+ * @description SAVE COSTING RM+CC TAB
+ */
+export function saveCostingRMCCTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingRMCCTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getSurfaceTreatmentTabData
+ * @description GET SURFACE TREATMENT DATA IN COSTING DETAIL
+ */
+export function getSurfaceTreatmentTabData(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveCostingSurfaceTreatmentTab
+ * @description SAVE COSTING SURFACE TREATMENT TAB
+ */
+export function saveCostingSurfaceTreatmentTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingSurfaceTreatmentTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getSurfaceTreatmentDrawerDataList
+ * @description GET SURFACE TREATMENT DATALIST IN SURFACE TREATMENT DRAWER IN COSTING
+ */
+export function getSurfaceTreatmentDrawerDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,15 +1,8 @@
 import React, { useState, useEffect, useCallback, } from 'react';
-import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getZBCCostingByCostingId } from '../actions/Costing';
-import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { toastr } from 'react-redux-toastr';
 import { checkForNull } from '../../../helper';
-import $ from 'jquery';
 import { VBC, ZBC } from '../../../config/constants';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
@@ -18,19 +11,8 @@ export const costingInfoContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
 
-  const { register, handleSubmit, watch, control, setValue, getValues, reset, errors } = useForm();
-
-  const { partInfo } = props;
-  const [isEditFlag, setIsEditFlag] = useState(false);
   const [costData, setCostData] = useState({});
   const [partDataList, setPartDataList] = useState([]);
-
-  //console.log('watch', watch('zbcPlantGridFields'))
-  const fieldValues = useWatch({
-    control,
-    name: ['zbcPlantGridFields', 'Technology'],
-    //defaultValue: 'default' // default value before the render
-  });
 
   const dispatch = useDispatch()
 
@@ -56,34 +38,6 @@ function CostingDetailStepTwo(props) {
   }, []);
 
   const costingData = useSelector(state => state.costing.costingData)
-
-  /**
-  * @method renderListing
-  * @description Used show listing of unit of measurement
-  */
-  const renderListing = (label) => {
-
-    const temp = [];
-
-    if (label === 'Technology') {
-      // technologySelectList && technologySelectList.map(item => {
-      //   if (item.Value === '0') return false;
-      //   temp.push({ label: item.Text, value: item.Value })
-      //   return null;
-      // });
-      // return temp;
-    }
-
-    if (label === 'PartList') {
-      // partSelectList && partSelectList.map(item => {
-      //   if (item.Value === '0') return false;
-      //   temp.push({ label: item.Text, value: item.Value })
-      //   return null;
-      // });
-      // return temp;
-    }
-
-  }
 
   /**
   * @method netRMCostPerAssembly
@@ -114,6 +68,7 @@ function CostingDetailStepTwo(props) {
    * @description GET RM + CC COST TOTAL OF (RM+BOP+CC) FOR TOP HEADER 
    */
   const netRMCCcost = useCallback((item) => {
+    console.log('called')
     const netRM = item && item.NetRMCost !== null ? checkForNull(item.NetRMCost) : 0
     const netBOP = item && item.NetBOPCost !== null ? checkForNull(item.NetBOPCost) : 0
     const netCC = item && item.NetConversionCost !== null ? checkForNull(item.NetConversionCost) : 0
@@ -166,7 +121,7 @@ function CostingDetailStepTwo(props) {
    */
   const netTotalCost = useCallback((item) => {
 
-    const RMCCCost = netRMCCcost();
+    const RMCCCost = netRMCCcost(item);
     const netSurfaceTreatmentCost = item && item.NetSurfaceTreatmentCost !== null ? checkForNull(item.NetSurfaceTreatmentCost) : 0
     const netPackagingFreightCost = item && item.NetPackagingAndFreight !== null ? checkForNull(item.NetPackagingAndFreight) : 0
     const netOverheadProfitCost = item && item.NetOverheadAndProfictCost !== null ? checkForNull(item.NetOverheadAndProfictCost) : 0
@@ -177,24 +132,44 @@ function CostingDetailStepTwo(props) {
   }, [])
 
   /**
-  * @method cancel
-  * @description used to Reset form
-  */
-  const cancel = () => {
-    reset({
-      Technology: '',
-      Part: '',
-    })
+   * @method setHeaderCostRMCCTab
+   * @description SET COSTS FOR TOP HEADER FROM RM+CC TAB 
+   */
+  const setHeaderCostRMCCTab = (data) => {
+    const headerIndex = 0;
+
+    setTimeout(() => {
+      let tempData = partDataList[headerIndex];
+      tempData = {
+        ...tempData,
+        NetRMCost: data.NetRawMaterialsCost,
+        NetBOPCost: data.NetBoughtOutPartCost,
+        NetConversionCost: data.NetConversionCost,
+        NetTotalRMBOPCC: data.NetTotalRMBOPCC,
+      }
+      let tempArr = Object.assign([...partDataList], { [headerIndex]: tempData })
+      setPartDataList(tempArr)
+    }, 200)
+
   }
 
-  console.log('errors >>>', errors);
-
   /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => {
-    console.log('values >>>', values);
+   * @method setHeaderCostSurfaceTab
+   * @description SET COSTS FOR TOP HEADER FROM SURFACE TAB 
+   */
+  const setHeaderCostSurfaceTab = (data) => {
+    const headerIndex = 0;
+
+    setTimeout(() => {
+      let tempData = partDataList[headerIndex];
+      tempData = {
+        ...tempData,
+        NetSurfaceTreatmentCost: data.NetSurfaceTreatmentCost,
+      }
+      let tempArr = Object.assign([...partDataList], { [headerIndex]: tempData })
+      setPartDataList(tempArr)
+    }, 200)
+
   }
 
   return (
@@ -211,80 +186,82 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
 
-                <Row>
-                  <Col md="2"><div className={'part-info-title'}><p>Part No.</p>{costingData.PartNumber}</div></Col>
-                  <Col md="2"><div className={'part-info-title'}><p>Part Name</p>{costingData.PartName}</div></Col>
-                  <Col md="2"><div className={'part-info-title'}><p>{costingData.VendorType}</p>SOB:{costingData.ShareOfBusinessPercent}%</div></Col>
-                  <Col md="2"><div className={'part-info-title'}><p>Costing ID</p>{costingData.CostingNumber}</div></Col>
-                  <Col md="4"><div className={'part-info-title'}><p>Costing Date Time</p>{moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}</div></Col>
-                </Row>
+              <Row>
+                <Col md="2"><div className={'part-info-title'}><p>Part No.</p>{costingData.PartNumber}</div></Col>
+                <Col md="2"><div className={'part-info-title'}><p>Part Name</p>{costingData.PartName}</div></Col>
+                <Col md="2"><div className={'part-info-title'}><p>{costingData.VendorType}</p>SOB:{costingData.ShareOfBusinessPercent}%</div></Col>
+                <Col md="2"><div className={'part-info-title'}><p>Costing ID</p>{costingData.CostingNumber}</div></Col>
+                <Col md="4"><div className={'part-info-title'}><p>Costing Date Time</p>{moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}</div></Col>
+              </Row>
 
-                <Row>
-                  <Table className="table" size="sm" >
-                    <thead>
-                      <tr>
-                        <th style={{ width: '100px' }}>{``}</th>
-                        <th style={{ width: '100px' }}>{`Net RM Cost/Assembly`}</th>
-                        <th style={{ width: '150px' }}>{`Net BOP Cost/Assembly`}</th>
-                        <th style={{ width: '150px' }}>{`Net Conversion Cost/Assembly`}</th>
-                        <th style={{ width: '200px' }}>{`RM + CC Cost`}</th>
-                        <th style={{ width: '200px' }}>{`Surface Treatment`}</th>
-                        <th style={{ width: '200px' }}>{`Overheads & Profits`}</th>
-                        <th style={{ width: '200px' }}>{`Packaging & Freight`}</th>
-                        <th style={{ width: '200px' }}>{`Tool Cost`}</th>
-                        <th style={{ width: '200px' }}>{`Discount & Other Cost`}</th>
-                        <th style={{ width: '200px' }}>{`Total Cost`}</th>
-                      </tr>
-                    </thead>
-                    <tbody >
-                      {
-                        partDataList &&
-                        partDataList.map((item, index) => {
-                          return (
-                            <tr key={index}>
-                              <td>{item.PartNumber}</td>
-                              <td>{netRMCostPerAssembly(item)}</td>
-                              <td>{netBOPCostPerAssembly(item)}</td>
-                              <td>{netConversionCostPerAssembly(item)}</td>
-                              <td>{netRMCCcost(item)}</td>
-                              <td>{netSurfaceTreatmentCost(item)}</td>
-                              <td>{netOverheadProfitCost(item)}</td>
-                              <td>{netPackagingFreightCost(item)}</td>
-                              <td>{netToolCost(item)}</td>
-                              <td>{netDiscountOtherCost(item)}</td>
-                              <td>{netTotalCost(item)}</td>
-                            </tr>
-                          )
-                        }
-                        )}
-                    </tbody>
-                  </Table>
-                </Row>
+              <Row>
+                <Table className="table" size="sm" >
+                  <thead>
+                    <tr>
+                      <th style={{ width: '100px' }}>{``}</th>
+                      <th style={{ width: '100px' }}>{`Net RM Cost/Assembly`}</th>
+                      <th style={{ width: '150px' }}>{`Net BOP Cost/Assembly`}</th>
+                      <th style={{ width: '150px' }}>{`Net Conversion Cost/Assembly`}</th>
+                      <th style={{ width: '200px' }}>{`RM + CC Cost`}</th>
+                      <th style={{ width: '200px' }}>{`Surface Treatment`}</th>
+                      <th style={{ width: '200px' }}>{`Overheads & Profits`}</th>
+                      <th style={{ width: '200px' }}>{`Packaging & Freight`}</th>
+                      <th style={{ width: '200px' }}>{`Tool Cost`}</th>
+                      <th style={{ width: '200px' }}>{`Discount & Other Cost`}</th>
+                      <th style={{ width: '200px' }}>{`Total Cost`}</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    {
+                      partDataList &&
+                      partDataList.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>{item.PartNumber}</td>
+                            <td>{netRMCostPerAssembly(item)}</td>
+                            <td>{netBOPCostPerAssembly(item)}</td>
+                            <td>{netConversionCostPerAssembly(item)}</td>
+                            <td>{netRMCCcost(item)}</td>
+                            <td>{netSurfaceTreatmentCost(item)}</td>
+                            <td>{netOverheadProfitCost(item)}</td>
+                            <td>{netPackagingFreightCost(item)}</td>
+                            <td>{netToolCost(item)}</td>
+                            <td>{netDiscountOtherCost(item)}</td>
+                            <td>{netTotalCost(item)}</td>
+                          </tr>
+                        )
+                      }
+                      )}
+                  </tbody>
+                </Table>
+              </Row>
 
-                <Row>
-                  <Col md="3">
-                    <button
-                      type="button"
-                      className="submit-button mr5 save-btn"
-                      onClick={props.backBtn} >
-                      <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Back '}
-                    </button>
-                  </Col>
-                  <hr />
-                </Row>
+              <Row>
+                <Col md="3">
+                  <button
+                    type="button"
+                    className="submit-button mr5 save-btn"
+                    onClick={props.backBtn} >
+                    <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                    {'Back '}
+                  </button>
+                </Col>
+                <hr />
+              </Row>
 
-                <Row>
-                  <Col md="12">
-                    <costingInfoContext.Provider value={costData} >
-                      <CostingHeadTabs costData={costData} />
-                    </costingInfoContext.Provider>
-                  </Col>
-                </Row>
+              <Row>
+                <Col md="12">
+                  <costingInfoContext.Provider value={costData} >
+                    <CostingHeadTabs
+                      costData={costData}
+                      setHeaderCost={setHeaderCostRMCCTab}
+                      setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
+                    />
+                  </costingInfoContext.Provider>
+                </Col>
+              </Row>
 
-              </form>
             </div>
           </Col>
         </Row>

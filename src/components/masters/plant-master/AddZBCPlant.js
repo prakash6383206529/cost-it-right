@@ -145,7 +145,7 @@ class AddZBCPlant extends Component {
     */
     stateHandler = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ state: newValue }, () => {
+            this.setState({ state: newValue, city: [], }, () => {
                 const { state } = this.state;
                 this.props.fetchCityDataAPI(state.value, () => { })
             });

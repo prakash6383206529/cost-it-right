@@ -47,6 +47,7 @@ import {
   GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
   GET_PLANT_SELECTLIST_BY_TYPE,
   GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+  GET_UOM_SELECTLIST_BY_UNITTYPE,
   config,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
@@ -1031,8 +1032,6 @@ export function getUOMSelectList(callback) {
           payload: response.data.SelectList,
         });
         callback(response);
-      } else {
-        toastr.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE, });
@@ -1373,6 +1372,29 @@ export function getVendorWithVendorCodeSelectList() {
       });
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getUOMListByUnitType
+ * @description UOM SELECT LIST BY UNIT TYPE
+ */
+export function getUOMListByUnitType(UnitTypeId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getUOMListByUnitType}/${UnitTypeId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_UOM_SELECTLIST_BY_UNITTYPE,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE, });
+      callback(error);
       apiErrors(error);
     });
   };

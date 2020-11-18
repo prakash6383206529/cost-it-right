@@ -2,6 +2,7 @@ import { toastr } from "react-redux-toastr";
 import Moment from 'moment';
 import { MESSAGES } from '../config/message';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkForNull } from "./validation";
 
 /** 
 * @method  apiErrors
@@ -427,5 +428,50 @@ export function calculatePercentage(value) {
  */
 export function getRandomSixDigit() {
     return Math.floor(100000 + Math.random() * 900000)
+}
+
+/**
+ * @description getWeightOfSheet 
+ * @returns {number}
+ */
+export function getWeightOfSheet(data) {
+    const value = data.Density * (Math.PI / 4) * (Math.pow(data.OuterDiameter, 2) - (Math.pow(data.InnerDiameter, 2))) * data.SheetLength;
+    return checkForNull(value)
+}
+
+/**
+ * @description getWeightOfPart 
+ * @returns {number}
+ */
+export function getWeightOfPart(data) {
+    const value = data.Density * (Math.PI / 4) * (Math.pow(data.OuterDiameter, 2) - (Math.pow(data.InnerDiameter, 2))) * data.PartLength;
+    return checkForNull(value)
+}
+
+/**
+ * @description getWeightOfScrap 
+ * @returns {number}
+ */
+export function getWeightOfScrap(data) {
+    const value = data.Density * (Math.PI / 4) * (Math.pow(data.OuterDiameter, 2) - (Math.pow(data.InnerDiameter, 2))) * data.ScrapLength;
+    return checkForNull(value)
+}
+
+/**
+ * @description getNetSurfaceArea 
+ * @returns {number}
+ */
+export function getNetSurfaceArea(data) {
+    const value = (Math.PI * data.OuterDiameter * data.PartLength) + (Math.PI / 2 * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2)))
+    return checkForNull(value)
+}
+
+/**
+ * @description getNetSurfaceAreaBothSide 
+ * @returns {number}
+ */
+export function getNetSurfaceAreaBothSide(data) {
+    const value = (Math.PI * data.OuterDiameter * data.PartLength) + (Math.PI * data.InnerDiameter * data.PartLength) + (Math.PI / 2 * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2)))
+    return checkForNull(value)
 }
 

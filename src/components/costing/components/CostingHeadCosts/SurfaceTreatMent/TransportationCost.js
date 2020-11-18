@@ -1,0 +1,208 @@
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { Col, Row, } from 'reactstrap';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { toastr } from 'react-redux-toastr';
+import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { getUOMSelectList } from '../../../../../actions/Common'
+
+function TransportationCost(props) {
+
+  const { register, control, errors, setValue, getValues, } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+  const [gridData, setGridData] = useState([])
+  const [uom, setUOM] = useState([])
+  const [Quantity, setQuantity] = useState('')
+  const [Rate, setRate] = useState('')
+  const [NetCost, setNetCost] = useState('')
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    let tempObj = {
+      TransporationDetailId: '',
+      UOMName: uom ? uom.label : '',
+      UOMId: uom ? uom.value : '',
+      Rate: Rate,
+      Quantity: Quantity,
+      TransporationCost: NetCost,
+    }
+
+    props.setTransportationCost(tempObj, props.index)
+  }, [uom, Rate, Quantity]);
+
+  useEffect(() => {
+    dispatch(getUOMSelectList(() => { }))
+  }, []);
+
+  const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
+
+  /**
+  * @method handleUOMChange
+  * @description  USED TO HANDLE UOM CHANGE
+  */
+  const handleUOMChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setUOM(newValue)
+    } else {
+      setUOM([])
+    }
+  }
+
+  const handleRateChange = (event) => {
+    if (!isNaN(event.target.value)) {
+      const Quantity = getValues('Quantity')
+      setRate(event.target.value)
+      if (Quantity !== '') {
+        const cost = Quantity * event.target.value;
+        setNetCost(checkForDecimalAndNull(cost, 2));
+      } else {
+        setNetCost(0);
+      }
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  const handleQuantityChange = (event) => {
+    if (!isNaN(event.target.value)) {
+      const Rate = getValues('Rate')
+      setQuantity(event.target.value);
+
+      if (Rate !== '') {
+        const cost = Rate * event.target.value;
+        setNetCost(checkForDecimalAndNull(cost, 2));
+      } else {
+        setNetCost(0);
+      }
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+
+  /**
+  * @method renderListing
+  * @description RENDER LISTING
+  */
+  const renderListing = (label) => {
+
+    const temp = [];
+
+    if (label === 'UOM') {
+      UOMSelectList && UOMSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
+  }
+
+  /**
+  * @method render
+  * @description Renders the component
+  */
+  return (
+    <>
+      <div className="user-page p-0">
+        <div>
+
+          <Row>
+            <Col col={'10'}>
+              <p>{'Transportation Cost'}</p>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md="3">
+              <SearchableSelectHookForm
+                label={'UOM'}
+                name={'UOM'}
+                placeholder={'-Select-'}
+                Controller={Controller}
+                control={control}
+                rules={{ required: true }}
+                register={register}
+                defaultValue={uom.length !== 0 ? uom : ''}
+                options={renderListing('UOM')}
+                mandatory={true}
+                handleChange={handleUOMChange}
+                errors={errors.UOM}
+              />
+            </Col>
+            <Col md="3">
+              <TextFieldHookForm
+                label="Rate"
+                name={`Rate`}
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={false}
+                rules={{
+                  //required: true,
+                  pattern: {
+                    value: /^[0-9]*$/i,
+                    //value: /^[0-9]\d*(\.\d+)?$/i,
+                    message: 'Invalid Number.'
+                  },
+                }}
+                defaultValue={''}
+                className=""
+                customClassName={'withBorder'}
+                handleChange={(e) => {
+                  e.preventDefault()
+                  handleRateChange(e)
+                }}
+                errors={errors && errors.Rate}
+                disabled={false}
+              />
+            </Col>
+            <Col md="3">
+              <TextFieldHookForm
+                label="Quantity"
+                name={`Quantity`}
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={false}
+                rules={{
+                  //required: true,
+                  pattern: {
+                    value: /^[0-9]*$/i,
+                    //value: /^[0-9]\d*(\.\d+)?$/i,
+                    message: 'Invalid Number.'
+                  },
+                }}
+                defaultValue={''}
+                className=""
+                customClassName={'withBorder'}
+                handleChange={(e) => {
+                  e.preventDefault()
+                  handleQuantityChange(e)
+                }}
+                errors={errors && errors.Quantity}
+                disabled={false}
+              />
+
+            </Col>
+            <Col md="3">
+              <label>
+                {'Cost'}
+              </label>
+              {NetCost}
+            </Col>
+          </Row>
+
+        </div>
+      </div>
+    </ >
+  );
+}
+
+export default TransportationCost;

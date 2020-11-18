@@ -3,6 +3,7 @@ import { connect, useDispatch } from 'react-redux';
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import TabRMCC from './TabRMCC';
+import TabSurfaceTreatment from './TabSurfaceTreatment';
 
 function CostingHeaderTabs(props) {
 
@@ -56,26 +57,25 @@ function CostingHeaderTabs(props) {
             </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
-            {activeTab === '1' &&
-              <TabPane tabId="1">
-                <TabRMCC />
-              </TabPane>}
-            {activeTab === '2' &&
-              <TabPane tabId="2">
-                {'Surface Treatment'}
-              </TabPane>}
-            {activeTab === '3' &&
-              <TabPane tabId="3">
-                {'Overheads & Profit'}
-              </TabPane>}
-            {activeTab === '4' &&
-              <TabPane tabId="4">
-                {'Tool Cost'}
-              </TabPane>}
-            {activeTab === '5' &&
-              <TabPane tabId="5">
-                {'Discount & Other Cost'}
-              </TabPane>}
+            <TabPane tabId="1">
+              <TabRMCC
+                setHeaderCost={props.setHeaderCost}
+              />
+            </TabPane>
+            <TabPane tabId="2">
+              <TabSurfaceTreatment
+                setHeaderCost={props.setHeaderCostSurfaceTab}
+              />
+            </TabPane>
+            <TabPane tabId="3">
+              {'Overheads & Profit'}
+            </TabPane>
+            <TabPane tabId="4">
+              {'Tool Cost'}
+            </TabPane>
+            <TabPane tabId="5">
+              {'Discount & Other Cost'}
+            </TabPane>
           </TabContent>
         </div>
       </div >

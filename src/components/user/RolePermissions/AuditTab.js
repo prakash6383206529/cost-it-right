@@ -71,7 +71,7 @@ class AuditTab extends Component {
         let actionNames = actionData && actionData.find(el => el.ModuleName === AUDIT)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
-                if (item.Value == 0) return false;
+                if (item.Value === 0) return false;
                 if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
                     return (
                         <th className="crud-label">

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getOperationDrawerDataList } from '../../actions/Costing';
+import { getSurfaceTreatmentDrawerDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
@@ -10,7 +10,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 
-function AddOperation(props) {
+function AddSurfaceTreatment(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
@@ -35,7 +35,7 @@ function AddOperation(props) {
       PlantId: costData.PlantId,
       CostingId: costData.CostingId,
     }
-    dispatch(getOperationDrawerDataList(data, (res) => {
+    dispatch(getSurfaceTreatmentDrawerDataList(data, (res) => {
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         setTableDataList(Data)
@@ -134,7 +134,7 @@ function AddOperation(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Operation'}</h3>
+                  <h3>{'ADD Surface Treatment'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -165,9 +165,9 @@ function AddOperation(props) {
                   <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="Technology" >{'Technology'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UnitOfMeasurement" >{'UOM'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Rate" searchable={false} >{'Rate'}</TableHeaderColumn>
-                  {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Quantity" searchable={false} >{'Quantity'}</TableHeaderColumn> */}
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourRate" searchable={false} >{'Labour Rate'}</TableHeaderColumn>
-                  {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourQuantity" searchable={false} >{'Labour Quantity'}</TableHeaderColumn> */}
+                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourRate" searchable={false} >{'LabourRate'}</TableHeaderColumn>
+                  {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Quantity" searchable={false} >{'Specification'}</TableHeaderColumn> */}
+                  {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourQuantity" searchable={false} >{'Specification'}</TableHeaderColumn> */}
                 </BootstrapTable>
               </Col>
             </Row>
@@ -198,4 +198,4 @@ function AddOperation(props) {
   );
 }
 
-export default React.memo(AddOperation);
+export default React.memo(AddSurfaceTreatment);

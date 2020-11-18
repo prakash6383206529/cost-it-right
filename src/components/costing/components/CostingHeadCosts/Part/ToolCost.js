@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { Col, Row, Table } from 'reactstrap';
+import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import NoContentFound from '../../../../common/NoContentFound';
+import { CONSTANT } from '../../../../../helper/AllConastant';
+import { toastr } from 'react-redux-toastr';
+import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 
 function ToolCost(props) {
 
+  const { register, control, errors } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+  const [gridData, setGridData] = useState([])
+  const [rowObjData, setRowObjData] = useState({})
+  const [editIndex, setEditIndex] = useState('')
+  const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    props.setToolCost(gridData, 0)
+  }, [gridData]);
 
   /**
   * @method DrawerToggle
@@ -19,9 +37,83 @@ function ToolCost(props) {
   * @method closeDrawer
   * @description HIDE RM DRAWER
   */
-  const closeDrawer = (e = '') => {
+  const closeDrawer = (e = '', rowData = {}) => {
+    if (Object.keys(rowData).length > 0) {
+      let rowArray = {
+        ToolOperationId: rowData.ToolOperationId,
+        ProcessOrOperation: rowData.ProcessOrOperation,
+        ToolCategory: rowData.ToolCategory,
+        ToolName: rowData.ToolName,
+        Quantity: rowData.Quantity,
+        ToolCost: rowData.ToolCost,
+        Life: rowData.Life,
+        NetToolCost: '',
+      }
+      let tempArr = [...gridData, rowArray]
+      setGridData(tempArr)
+    }
     setDrawerOpen(false)
+    selectedIds()
   }
+
+  /**
+  * @method selectedIds
+  * @description SELECTED IDS
+  */
+  const selectedIds = () => {
+
+  }
+
+  const deleteItem = (index) => {
+    let tempArr = gridData && gridData.filter((el, i) => {
+      if (i === index) return false;
+      return true;
+    })
+    setGridData(tempArr)
+  }
+
+  const editItem = (index) => {
+    let tempArr = gridData && gridData.find((el, i) => i === index)
+    if (editIndex !== '') {
+      let tempArr = Object.assign([...gridData], { [editIndex]: rowObjData })
+      setGridData(tempArr)
+    }
+    setEditIndex(index)
+    setRowObjData(tempArr)
+  }
+
+  const SaveItem = (index) => {
+    setEditIndex('')
+  }
+
+  const CancelItem = (index) => {
+    let tempArr = Object.assign([...gridData], { [index]: rowObjData })
+    setEditIndex('')
+    setGridData(tempArr)
+    setRowObjData({})
+  }
+
+  const handleQuantityChange = (event, index) => {
+    let tempArr = [];
+    let tempData = gridData[index];
+
+    if (!isNaN(event.target.value)) {
+      const NetCost = tempData.ToolCost * event.target.value;
+      tempData = { ...tempData, Quantity: parseInt(event.target.value), NetCost: NetCost, NetToolCost: NetCost }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setGridData(tempArr)
+
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  const netCost = (item) => {
+    const cost = (item.Rate * item.Quantity) + (item.LabourRate * item.LabourQuantity);
+    return checkForDecimalAndNull(cost, 2);
+  }
+
+  const ToolGridFields = 'ToolGridFields';
 
   /**
   * @method render
@@ -43,11 +135,103 @@ function ToolCost(props) {
                 <div className={'plus'}></div>ADD TOOL</button>
             </Col>
           </Row>
+
           <Row>
-            {'Costing grid goes here'}
+            {/*TOOL COST GRID */}
+
+            <Col md="12">
+              <Table className="table" size="sm" >
+                <thead>
+                  <tr>
+                    <th>{`Process/Operation`}</th>
+                    <th>{`Tool Category`}</th>
+                    <th>{`Name`}</th>
+                    <th style={{ width: 200 }}>{`Quantity`}</th>
+                    <th>{`Tool Cost`}</th>
+                    <th>{`Life`}</th>
+                    <th>{`Net Tool Cost`}</th>
+                    <th>{`Action`}</th>
+                  </tr>
+                </thead>
+                <tbody >
+                  {
+                    gridData &&
+                    gridData.map((item, index) => {
+                      return (
+                        editIndex === index ?
+                          <tr key={index}>
+                            <td>{item.ProcessOrOperation}</td>
+                            <td>{item.ToolCategory}</td>
+                            <td>{item.ToolName}</td>
+                            <td style={{ width: 200 }}>
+                              {
+                                <TextFieldHookForm
+                                  label=""
+                                  name={`${ToolGridFields}[${index}]Quantity`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^[1-9]*$/i,
+                                      //value: /^[0-9]\d*(\.\d+)?$/i,
+                                      message: 'Invalid Number.'
+                                    },
+                                  }}
+                                  defaultValue={item.Quantity}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleQuantityChange(e, index)
+                                  }}
+                                  errors={errors && errors.ToolGridFields && errors.ToolGridFields[index] !== undefined ? errors.ToolGridFields[index].Quantity : ''}
+                                  disabled={false}
+                                />
+                              }
+                            </td>
+                            <td>{item.ToolCost}</td>
+                            <td>{item.Life}</td>
+                            <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
+                            <td>
+                              <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
+                              <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
+                            </td>
+                          </tr>
+                          :
+                          <tr key={index}>
+                            <td>{item.ProcessOrOperation}</td>
+                            <td>{item.ToolCategory}</td>
+                            <td>{item.ToolName}</td>
+                            <td style={{ width: 200 }}>{item.Quantity}</td>
+                            <td>{item.ToolCost}</td>
+                            <td>{item.Life}</td>
+                            <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
+                            <td>
+                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                            </td>
+                          </tr>
+                      )
+                    })
+                  }
+                  {gridData.length === 0 &&
+                    <tr>
+                      <td colSpan={8}>
+                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </Table>
+            </Col>
           </Row>
+
         </div>
       </div >
+
       {isDrawerOpen && <AddTool
         isOpen={isDrawerOpen}
         closeDrawer={closeDrawer}

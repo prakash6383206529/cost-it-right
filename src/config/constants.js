@@ -84,6 +84,7 @@ export const API = {
   deleteUOMAPI: `${BASE_URL}/masters-unit-of-measurement/delete`,
   getUnitTypeListAPI: `${BASE_URL}/configuration/select-list-get-unit-type`,
   activeInactiveUOM: `${BASE_URL}/masters-unit-of-measurement/active`,
+  getUOMListByUnitType: `${BASE_URL}/configuration/select-list-get-unit-of-measurement-by-unit-type`,
 
   //NEW PART API
   createNewPartAPI: `${BASE_URL}/masters-part/create-part`,
@@ -433,8 +434,17 @@ export const API = {
   updateVBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
   getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
-  getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
+  //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
+  getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-detail`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-raw-materials-detail`,
+  getBOPDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-bop-detail`,
+  getOperationDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-cc-operation-detail`,
+  getProcessDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-cc-machine-detail`,
+  saveCostingRMCCTab: `${BASE_URL}/costing/save-zbc-costing-tab-one`,
+
+  getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-zbc-costing-detail-surface-treatment`,
+  saveCostingSurfaceTreatmentTab: `${BASE_URL}/costing/save-zbc-costing-surface-treatment-details`,
+  getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
 
   getCostingPartDetails: `${BASE_URL}/costing/get-costing-part-details`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
@@ -1100,6 +1110,7 @@ export const GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_SUPPLIER_TY
 export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS';
 export const GET_POWER_DATALIST_SUCCESS = 'GET_POWER_DATALIST_SUCCESS';
 export const GET_POWER_DATA_SUCCESS = 'GET_POWER_DATA_SUCCESS';
+export const GET_UOM_SELECTLIST_BY_UNITTYPE = 'GET_UOM_SELECTLIST_BY_UNITTYPE';
 
 //CURRENCY EXCHANGE
 export const GET_CURRENCY_SELECTLIST_SUCCESS = 'GET_CURRENCY_SELECTLIST_SUCCESS';

@@ -1,15 +1,37 @@
-import React, { useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { Col, Row, Table } from 'reactstrap';
 import Switch from "react-switch";
 import OperationCost from './OperationCost';
+import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
+import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import NoContentFound from '../../../../common/NoContentFound';
+import { CONSTANT } from '../../../../../helper/AllConastant';
+import { toastr } from 'react-redux-toastr';
 
 function ProcessCost(props) {
 
+  const { data } = props;
+
+  const { register, control, errors } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+  const [gridData, setGridData] = useState(data && data.CostingProcessCostResponse)
+  const [rowObjData, setRowObjData] = useState({})
+  const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const [Ids, setIds] = useState([])
   const [isOpen, setIsOpen] = useState(false);
+  const [tabData, setTabData] = useState(props.data);
+
+  useEffect(() => {
+    props.setProcessCost(tabData, props.index)
+  }, [tabData]);
 
   /**
     * @method onToolToggle
@@ -31,9 +53,224 @@ function ProcessCost(props) {
   * @method closeDrawer
   * @description HIDE RM DRAWER
   */
-  const closeDrawer = (e = '') => {
+  const closeDrawer = (e = '', rowData = {}) => {
+    if (Object.keys(rowData).length > 0) {
+
+      let rowArray = rowData && rowData.map(el => {
+        return {
+          ProcessId: el.ProcessId,
+          ProcessDetailId: '',
+          MachineId: el.MachineId,
+          MachineRateId: el.MachineRateId,
+          ProcessName: el.ProcessName,
+          ProcessDescription: el.Description,
+          MachineName: el.MachineName,
+          Tonnage: el.MachineTonnage,
+          UOM: el.UnitOfMeasurement,
+          MHR: el.MachineRate,
+          CycleTime: '',
+          Efficiency: '',
+          Cavity: '',
+          Quantity: '',
+          ProcessCost: '',
+        }
+      })
+
+      let tempArr = [...gridData, ...rowArray]
+      setGridData(tempArr)
+      selectedIds(tempArr)
+    }
     setDrawerOpen(false)
   }
+
+  /**
+  * @method selectedIds
+  * @description SELECTED IDS
+  */
+  const selectedIds = (tempArr) => {
+    tempArr && tempArr.map(el => {
+      if (Ids.includes(el.ProcessId) === false) {
+        let selectedIds = Ids;
+        selectedIds.push(el.ProcessId)
+        setIds(selectedIds)
+      }
+      return null;
+    })
+  }
+
+  const deleteItem = (index) => {
+    let tempArr = gridData && gridData.filter((el, i) => {
+      if (i === index) return false;
+      return true;
+    })
+    setGridData(tempArr)
+  }
+
+  const editItem = (index) => {
+    let tempArr = gridData && gridData.find((el, i) => i === index)
+    if (editIndex !== '') {
+      let tempArr = Object.assign([...gridData], { [editIndex]: rowObjData })
+      setGridData(tempArr)
+    }
+    setEditIndex(index)
+    setRowObjData(tempArr)
+  }
+
+  const SaveItem = (index) => {
+    setEditIndex('')
+  }
+
+  const CancelItem = (index) => {
+    let tempArr = Object.assign([...gridData], { [index]: rowObjData })
+    setEditIndex('')
+    setGridData(tempArr)
+    setRowObjData({})
+  }
+
+  const handleCycleTimeChange = (event, index) => {
+    let tempArr = [];
+    let tempData = gridData[index];
+
+    if (!isNaN(event.target.value)) {
+      const Cavity = tempData.Cavity !== undefined ? checkForNull(tempData.Cavity) : 0;
+      const Efficiency = tempData.Efficiency !== undefined ? checkForNull(tempData.Efficiency) : 0;
+      const Quantity = ((event.target.value / 3600) * 100 / Efficiency) * Cavity;
+      const ProcessCost = tempData.MHR / parseInt(Quantity);
+
+      tempData = {
+        ...tempData,
+        Quantity: parseInt(Quantity),
+        CycleTime: checkForNull(event.target.value),
+        ProcessCost: ProcessCost,
+      }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setGridData(tempArr)
+
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  const handleEfficiencyChange = (event, index) => {
+    let tempArr = [];
+    let tempData = gridData[index];
+
+    if (!isNaN(event.target.value)) {
+      const Cavity = tempData.Cavity !== undefined ? checkForNull(tempData.Cavity) : 0;
+      const Quantity = ((tempData.CycleTime / 3600) * 100 / event.target.value) * Cavity;
+      const ProcessCost = tempData.MHR / parseInt(Quantity);
+
+      tempData = {
+        ...tempData,
+        Efficiency: checkForNull(event.target.value),
+        ProcessCost: ProcessCost
+      }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setGridData(tempArr)
+
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  const handleCavityChange = (event, index) => {
+    let tempArr = [];
+    let tempData = gridData[index];
+
+    if (!isNaN(event.target.value)) {
+      const Efficiency = tempData.Efficiency !== undefined ? checkForNull(tempData.Efficiency) : 0;
+      const CycleTime = tempData.CycleTime !== undefined ? checkForNull(tempData.CycleTime) : 0;
+
+      const Quantity = ((CycleTime / 3600) * 100 / Efficiency) * event.target.value;
+      const ProcessCost = tempData.MHR / parseInt(Quantity);
+
+      tempData = {
+        ...tempData,
+        Cavity: checkForNull(event.target.value),
+        ProcessCost: ProcessCost
+      }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setGridData(tempArr)
+
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  const handleQuantityChange = (event, index) => {
+    let tempArr = [];
+    let tempData = gridData[index];
+
+    if (!isNaN(event.target.value)) {
+      const ProcessCost = tempData.MHR / parseInt(event.target.value);
+      tempData = { ...tempData, Quantity: parseInt(event.target.value), ProcessCost: ProcessCost }
+      let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+
+      let ProcessCostTotal = 0;
+      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost);
+      }, 0)
+
+      tempArr = {
+        ...tabData,
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0),
+        ProcessCostTotal: ProcessCostTotal,
+        CostingProcessCostResponse: gridTempArr
+      }
+
+      setTabData(tempArr)
+      setGridData(gridTempArr)
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  /**
+  * @method setOperationCost
+  * @description SET BOP COST
+  */
+  const setOperationCost = (operationGrid, index) => {
+
+    let OperationCostTotal = 0;
+    OperationCostTotal = operationGrid && operationGrid.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.NetCost);
+    }, 0)
+
+    let tempArr = {
+      ...tabData,
+      NetConversionCost: OperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
+      OperationCostTotal: OperationCostTotal,
+      CostingOperationCostResponse: operationGrid
+    }
+
+    setTabData(tempArr)
+    props.setOperationCost(tempArr, props.index)
+  }
+
+  /**
+  * @method setToolCost
+  * @description SET TOOL COST
+  */
+  const setToolCost = (toolGrid, index) => {
+    console.log('toolGrid: ', toolGrid);
+
+    let ToolsCostTotal = 0;
+    ToolsCostTotal = toolGrid && toolGrid.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.NetToolCost);
+    }, 0)
+
+    let tempArr = {
+      ...tabData,
+      //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
+      ToolsCostTotal: ToolsCostTotal,
+      CostingToolsCostResponse: toolGrid
+    }
+
+    setTabData(tempArr)
+    props.setToolCost(tempArr, props.index)
+  }
+
+  const ProcessGridFields = 'ProcessGridFields';
 
   /**
   * @method render
@@ -48,9 +285,9 @@ function ProcessCost(props) {
             <Col md="12" className={'mb15'}>
               <p>{'Conversion Cost'}</p>
             </Col>
-            <Col md="3">{'Process Cost: Auto Populated'}</Col>
-            <Col md="3">{'Operation Cost: Auto Populated'}</Col>
-            <Col md="3">{'Net Conversion Cost: Auto Populated'}</Col>
+            <Col md="3">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>
+            <Col md="3">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>
+            <Col md="3">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>
             <Col md="3" className="switch mb15">
               <label className="switch-level">
                 <div className={'left-title'}>{''}</div>
@@ -72,6 +309,7 @@ function ProcessCost(props) {
               </label>
             </Col>
           </Row>
+
           <Row>
             <Col col={'10'}>
               <p>{'Process Cost'}</p>
@@ -84,13 +322,206 @@ function ProcessCost(props) {
                 <div className={'plus'}></div>ADD PROCESS</button>
             </Col>
           </Row>
+
           <Row>
-            {'Costing grid goes here'}
+            {/*OPERATION COST GRID */}
+
+            <Col md="12">
+              <Table className="table" size="sm" >
+                <thead>
+                  <tr>
+                    <th>{`Process Name`}</th>
+                    <th>{`Process Description`}</th>
+                    <th>{`Machine Name`}</th>
+                    <th>{`Tonnage`}</th>
+                    <th>{`UOM`}</th>
+                    <th>{`MHR`}</th>
+                    <th style={{ width: 150 }}>{`Cycle Time`}</th>
+                    <th style={{ width: 150 }}>{`Efficiency`}</th>
+                    <th style={{ width: 150 }}>{`Cavity`}</th>
+                    <th style={{ width: 150 }}>{`Quantity`}</th>
+                    <th>{`Net Cost`}</th>
+                    <th>{`Action`}</th>
+                  </tr>
+                </thead>
+                <tbody >
+                  {
+                    gridData &&
+                    gridData.map((item, index) => {
+                      return (
+                        editIndex === index ?
+                          <tr key={index}>
+                            <td>{item.ProcessName}</td>
+                            <td>{item.ProcessDescription}</td>
+                            <td>{item.MachineName}</td>
+                            <td>{item.Tonnage}</td>
+                            <td>{item.UOM}</td>
+                            <td>{item.MHR}</td>
+                            <td style={{ width: 200 }}>
+                              {
+                                <TextFieldHookForm
+                                  label=""
+                                  name={`${ProcessGridFields}[${index}]CycleTime`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^[0-9]\d*(\.\d+)?$/i,
+                                      message: 'Invalid Number.'
+                                    },
+                                  }}
+                                  defaultValue={item.CycleTime}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleCycleTimeChange(e, index)
+                                  }}
+                                  errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].GrossWeight : ''}
+                                  disabled={true}
+                                />
+                              }
+                            </td>
+                            <td style={{ width: 200 }}>
+                              {
+                                <TextFieldHookForm
+                                  label=""
+                                  name={`${ProcessGridFields}[${index}]Efficiency`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^[1-9]*$/i,
+                                      //value: /^[0-9]\d*(\.\d+)?$/i,
+                                      message: 'Invalid Number.'
+                                    },
+                                  }}
+                                  defaultValue={item.Efficiency}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleEfficiencyChange(e, index)
+                                  }}
+                                  errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].GrossWeight : ''}
+                                  disabled={true}
+                                />
+                              }
+                            </td>
+                            <td style={{ width: 200 }}>
+                              {
+                                <TextFieldHookForm
+                                  label=""
+                                  name={`${ProcessGridFields}[${index}]Cavity`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^[1-9]*$/i,
+                                      //value: /^[0-9]\d*(\.\d+)?$/i,
+                                      message: 'Invalid Number.'
+                                    },
+                                  }}
+                                  defaultValue={item.Cavity}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleCavityChange(e, index)
+                                  }}
+                                  errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].GrossWeight : ''}
+                                  disabled={true}
+                                />
+                              }
+                            </td>
+                            <td style={{ width: 200 }}>
+                              {
+                                <TextFieldHookForm
+                                  label=""
+                                  name={`${ProcessGridFields}[${index}]Quantity`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^[0-9]\d*(\.\d+)?$/i,
+                                      message: 'Invalid Number.'
+                                    },
+                                  }}
+                                  defaultValue={item.Quantity}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleQuantityChange(e, index)
+                                  }}
+                                  errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
+                                  disabled={false}
+                                />
+                              }
+                            </td>
+                            <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, 2) : 0}</td>
+                            <td>
+                              <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
+                              <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
+                            </td>
+                          </tr>
+                          :
+                          <tr key={index}>
+                            <td>{item.ProcessName}</td>
+                            <td>{item.ProcessDescription}</td>
+                            <td>{item.MachineName}</td>
+                            <td>{item.Tonnage}</td>
+                            <td>{item.UOM}</td>
+                            <td>{item.MHR}</td>
+                            <td>{item.CycleTime ? item.CycleTime : '-'}</td>
+                            <td>{item.Efficiency ? item.Efficiency : '-'}</td>
+                            <td>{item.Cavity ? item.Cavity : '-'}</td>
+                            <td>{item.Quantity}</td>
+                            <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, 2) : 0}</td>
+                            <td>
+                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                            </td>
+                          </tr>
+                      )
+                    })
+                  }
+                  {gridData && gridData.length === 0 &&
+                    <tr>
+                      <td colSpan={12}>
+                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </Table>
+            </Col>
           </Row>
+
           <hr />
-          <OperationCost />
+          <OperationCost
+            data={props.data && props.data.CostingOperationCostResponse}
+            setOperationCost={setOperationCost}
+          />
+
           <hr />
-          {isOpen && <ToolCost />}
+          {isOpen && <ToolCost
+            data={props.data && props.data.CostingToolsCostResponse}
+            setToolCost={setToolCost}
+          />}
+
         </div>
       </div>
       {isDrawerOpen && <AddProcess
@@ -99,6 +530,7 @@ function ProcessCost(props) {
         isEditFlag={false}
         ID={''}
         anchor={'right'}
+        Ids={Ids}
       />}
     </ >
   );

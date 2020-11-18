@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { Col, Row } from 'reactstrap';
+import React from 'react';
 import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
@@ -16,15 +14,25 @@ function PartCompoment(props) {
       <div className="user-page p-0">
         <div>
           <RawMaterialCost
+            index={props.index}
             data={rmData}
+            setRMCost={props.setRMCost}
           />
+
           <hr />
           <BOPCost
+            index={props.index}
             data={bopData}
+            setBOPCost={props.setBOPCost}
           />
+
           <hr />
           <ProcessCost
+            index={props.index}
             data={ccData}
+            setProcessCost={props.setProcessCost}
+            setOperationCost={props.setOperationCost}
+            setToolCost={props.setToolCost}
           />
         </div>
       </div >

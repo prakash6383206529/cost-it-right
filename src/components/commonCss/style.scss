@@ -825,6 +825,33 @@ button.add-btn {
   border: none;
 }
 
+.SaveIcon {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/RightTick.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+}
+
+.CancelIcon {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Cross-icon.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+}
+
+.CalculatorIcon {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/tool.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+}
+
 .Add,
 .Edit,
 .Delete,
@@ -837,7 +864,10 @@ button.add-btn {
 .Approve,
 .Run,
 .Save,
-.Add-file {
+.Add-file,
+.SaveIcon,
+.CancelIcon,
+.CalculatorIcon {
   margin: 0 auto;
   color: #3d4465;
   font-size: 14px;

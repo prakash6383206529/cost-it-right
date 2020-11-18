@@ -49,6 +49,7 @@ import {
   GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST,
   GET_PLANT_SELECTLIST_BY_TYPE,
   GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+  GET_UOM_SELECTLIST_BY_UNITTYPE,
 } from '../config/constants';
 
 const initialState = {
@@ -405,6 +406,13 @@ export default function commanReducer(state = initialState, action) {
         loading: false,
         error: true,
         vendorWithVendorCodeSelectList: action.payload
+      };
+    case GET_UOM_SELECTLIST_BY_UNITTYPE:
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        UOMSelectListByUnitType: action.payload
       };
     default:
       return state;

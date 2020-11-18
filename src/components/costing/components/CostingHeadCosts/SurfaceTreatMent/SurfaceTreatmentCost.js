@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 
-function OperationCost(props) {
+function SurfaceTreatmentCost(props) {
 
   const { register, control, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
 
-  const [gridData, setGridData] = useState(props.data)
+  const [gridData, setGridData] = useState([])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    props.setOperationCost(gridData, 0)
+    props.setSurfaceCost(gridData, props.index)
   }, [gridData]);
 
   /**
@@ -43,20 +43,19 @@ function OperationCost(props) {
       let rowArray = rowData && rowData.map(el => {
         const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
-        const OperationCost = WithLaboutCost + WithOutLabourCost;
+        const SurfaceTreatmentCost = WithLaboutCost + WithOutLabourCost;
 
         return {
           OperationId: el.OperationId,
           OperationName: el.OperationName,
-          OperationCode: el.OperationCode,
+          SurfaceArea: '',
           UOM: el.UnitOfMeasurement,
-          Rate: el.Rate,
-          Quantity: el.Quantity,
+          RatePerUOM: el.Rate,
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
-          OperationCost: OperationCost,
-          IsChecked: el.IsChecked,
+          SurfaceTreatmentCost: 0,
+          SurfaceTreatmentDetailsId: '',
         }
       })
 
@@ -112,15 +111,14 @@ function OperationCost(props) {
     setRowObjData({})
   }
 
-  const handleQuantityChange = (event, index) => {
+  const handleSurfaceAreaChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
 
     if (!isNaN(event.target.value)) {
-      const WithLaboutCost = checkForNull(tempData.Rate) * parseInt(event.target.value);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * parseInt(tempData.LabourQuantity) : 0;
-      const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: parseInt(event.target.value), OperationCost: OperationCost }
+
+      const SurfaceTreatmentCost = checkForNull(event.target.value) * checkForNull(tempData.RatePerUOM) * checkForNull(tempData.LabourRate) * parseInt(tempData.LabourQuantity);
+      tempData = { ...tempData, SurfaceArea: parseInt(event.target.value), SurfaceTreatmentCost: SurfaceTreatmentCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
@@ -134,21 +132,14 @@ function OperationCost(props) {
     let tempData = gridData[index];
 
     if (!isNaN(event.target.value)) {
-      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * parseInt(event.target.value) : 0;
-      const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, LabourQuantity: parseInt(event.target.value), OperationCost: OperationCost }
+      const SurfaceTreatmentCost = checkForNull(tempData.SurfaceArea) * checkForNull(tempData.RatePerUOM) * checkForNull(tempData.LabourRate) * parseInt(event.target.value);
+      tempData = { ...tempData, LabourQuantity: parseInt(event.target.value), SurfaceTreatmentCost: SurfaceTreatmentCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
     } else {
       toastr.warning('Please enter valid number.')
     }
-  }
-
-  const netCost = (item) => {
-    const cost = checkForNull(item.Rate * item.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
-    return checkForDecimalAndNull(cost, 2);
   }
 
   const OperationGridFields = 'OperationGridFields';
@@ -163,14 +154,14 @@ function OperationCost(props) {
         <div>
           <Row>
             <Col col={'10'}>
-              <p>{'Operation Cost'}</p>
+              <p>{'Surface Treatment Cost'}</p>
             </Col>
             <Col col={'2'}>
               <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OPERATION</button>
+                <div className={'plus'}></div>ADD SURFACE TREATMENT</button>
             </Col>
           </Row>
           <Row>
@@ -181,13 +172,12 @@ function OperationCost(props) {
                 <thead>
                   <tr>
                     <th>{`Operation Name`}</th>
-                    <th>{`Operation Code`}</th>
+                    <th>{`Surface Area`}</th>
                     <th>{`UOM`}</th>
-                    <th>{`Rate`}</th>
-                    <th style={{ width: 200 }}>{`Quantity`}</th>
-                    <th>{`Labour Rate`}</th>
+                    <th>{`Rate/UOM`}</th>
+                    <th>{`Labour Rate/UOM`}</th>
                     <th>{`Labour Quantity`}</th>
-                    <th>{`Net Cost`}</th>
+                    <th>{`Cost`}</th>
                     <th>{`Action`}</th>
                   </tr>
                 </thead>
@@ -199,14 +189,11 @@ function OperationCost(props) {
                         editIndex === index ?
                           <tr key={index}>
                             <td>{item.OperationName}</td>
-                            <td>{item.OperationCode}</td>
-                            <td>{item.UOM}</td>
-                            <td>{item.Rate}</td>
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
                                   label=""
-                                  name={`${OperationGridFields}[${index}]Quantity`}
+                                  name={`${OperationGridFields}[${index}]SurfaceArea`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -219,18 +206,20 @@ function OperationCost(props) {
                                       message: 'Invalid Number.'
                                     },
                                   }}
-                                  defaultValue={item.Quantity}
+                                  defaultValue={item.SurfaceArea}
                                   className=""
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {
                                     e.preventDefault()
-                                    handleQuantityChange(e, index)
+                                    handleSurfaceAreaChange(e, index)
                                   }}
-                                  errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
+                                  errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].SurfaceArea : ''}
                                   disabled={false}
                                 />
                               }
                             </td>
+                            <td>{item.UOM}</td>
+                            <td>{item.RatePerUOM}</td>
                             <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
                             <td style={{ width: 200 }}>
                               {
@@ -264,7 +253,7 @@ function OperationCost(props) {
                                   '-'
                               }
                             </td>
-                            <td>{netCost(item)}</td>
+                            <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
                             <td>
                               <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
                               <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
@@ -273,13 +262,12 @@ function OperationCost(props) {
                           :
                           <tr key={index}>
                             <td>{item.OperationName}</td>
-                            <td>{item.OperationCode}</td>
+                            <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
-                            <td>{item.Rate}</td>
-                            <td style={{ width: 200 }}>{item.Quantity}</td>
+                            <td>{item.RatePerUOM}</td>
                             <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
                             <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
-                            <td>{netCost(item)}</td>
+                            <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
                             <td>
                               <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
                               <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
@@ -290,7 +278,7 @@ function OperationCost(props) {
                   }
                   {gridData.length === 0 &&
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={7}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />
                       </td>
                     </tr>
@@ -302,7 +290,7 @@ function OperationCost(props) {
 
         </div>
       </div>
-      {isDrawerOpen && <AddOperation
+      {isDrawerOpen && <AddSurfaceTreatment
         isOpen={isDrawerOpen}
         closeDrawer={closeDrawer}
         isEditFlag={false}
@@ -314,4 +302,4 @@ function OperationCost(props) {
   );
 }
 
-export default OperationCost;
+export default SurfaceTreatmentCost;
