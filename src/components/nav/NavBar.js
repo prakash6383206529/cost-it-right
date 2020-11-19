@@ -391,6 +391,9 @@ class SideBar extends Component {
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
                 <img src={require('../../assests/images/logo.png')} alt='Cost It Rights' height="30" />
               </a>
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
+                <img src={require('../../assests/images/sipl-logo.svg')} alt='Cost It Rights' height="30" />
+              </a>
               <button className="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
                 <span className="navbar-toggler-icon"></span>
               </button>
@@ -421,13 +424,13 @@ class SideBar extends Component {
                           </div>
                         </div>
                       </li>
-                      <li className="nav-item d-xl-inline-block">
+                      {/* <li className="nav-item d-xl-inline-block">
                         <a className="nav-link" href="#"><i className="fa fa-cog" aria-hidden="true"></i></a>
                       </li>
                       <li className="nav-item d-xl-inline-block">
                         <a className="nav-link" href="#"><i className="fa fa-question-circle" aria-hidden="true"></i>
                         </a>
-                      </li>
+                      </li> */}
                     </>}
 
                   <li className="nav-item d-xl-inline-block">
@@ -465,7 +468,9 @@ class SideBar extends Component {
                         <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
                       </Nav>
                     </div>
-
+                  </li>
+                  <li className="nav-item d-xl-inline-block cr-logout-btn">
+                    <a className="nav-link" href="#"><img className="" src={require('../../assests/images/logout.svg')} alt='' /></a>
                   </li>
                 </ul>
               </div>

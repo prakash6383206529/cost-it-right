@@ -372,6 +372,14 @@ li.nav-item .logo {
       top: 9px;
     }
   }
+  .cr-logout-btn{
+    .nav-link{
+      padding-top: 2px;
+      padding-right: 2px;
+      margin-left: 4px;
+      img{width: 19px;height:19px;}
+    }
+  }
 }
 
 .main-menu {
@@ -709,14 +717,6 @@ ul.ml-auto.top-menu.logout.nav {
     height: 20px;
   }
 }
-
-// .main-menu{
-//   ul.ml-auto.top-menu.logout.nav{
-//     .dropdown{
-//       padding-right: 0;
-//     }
-//   }
-// }
 @media (max-width: 360px) {
   .userImg-header {
     span {
@@ -752,4 +752,15 @@ label.btn.btn-link.align-middle.checkbox-label {
 .inner-header.main-menu {
   // position: fixed;
     width: 100%;
+}
+.MuiDrawer-root.MuiDrawer-modal{
+  top: 47px !important;
+  .MuiBackdrop-root,.MuiDrawer-paper{
+    top: 47px;
+  }
+}
+.cr-other-logo{
+  border-left: 1px solid #959CB6;
+  padding-left: 16px;
+  margin-left: 16px;
 }
