@@ -124,8 +124,10 @@ function ToolCost(props) {
       <div className="user-page p-0">
         <div>
           <Row>
-            <Col col={'10'}>
-              <p>{'Tool Cost'}</p>
+            <Col md="10">
+              <div className="left-border">
+                {'Tool Cost:'}
+              </div>
             </Col>
             <Col col={'2'}>
               <button

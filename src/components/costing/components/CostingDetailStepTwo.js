@@ -243,7 +243,7 @@ function CostingDetailStepTwo(props) {
                     type="button"
                     className="submit-button mr5 save-btn"
                     onClick={props.backBtn} >
-                    <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                    <div className={'check-icon'}><img src={require('../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
                     {'Back '}
                   </button>
                 </Col>

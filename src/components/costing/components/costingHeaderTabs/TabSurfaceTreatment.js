@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { useForm, Controller, useWatch } from "react-hook-form";
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect, useContext } from 'react';
+import { useForm, } from "react-hook-form";
+import { useDispatch, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import PartCompoment from '../CostingHeadCosts/Part'
 import { getSurfaceTreatmentTabData, saveCostingSurfaceTreatmentTab } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
 import SurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent';
 
 function TabSurfaceTreatment(props) {
 
-  const { register, handleSubmit, watch, reset } = useForm();
+  const { handleSubmit, watch, reset } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const [isIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
   const [tabData, setTabData] = useState([]);

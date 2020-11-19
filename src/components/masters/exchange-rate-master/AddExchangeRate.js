@@ -44,8 +44,9 @@ class AddExchangeRate extends Component {
         const temp = [];
         if (label === 'currency') {
             currencySelectList && currencySelectList.map(item => {
-                if (item.Value === '0') return false;
+                if (item.Value === '0' || item.Text === 'INR') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }

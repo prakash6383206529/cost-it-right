@@ -25,7 +25,6 @@ import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
-import { reactLocalStorage } from "reactjs-localstorage";
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -682,7 +681,7 @@ class AddOperation extends Component {
                                                 name={"Rate"}
                                                 type="text"
                                                 placeholder={'Enter'}
-                                                validate={[required]}
+                                                validate={[required, number]}
                                                 component={renderText}
                                                 //onChange={this.handleBasicRate}
                                                 required={true}

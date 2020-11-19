@@ -518,6 +518,7 @@ class AddOverhead extends Component {
             const formData = {
                 EAttachementEntityName: 0,
                 IsVendor: IsVendor,
+                IsCombinedEntry: !isOverheadPercent ? true : false,
                 OverheadPercentage: !isOverheadPercent ? values.OverheadPercentage : '',
                 OverheadMachiningCCPercentage: !isCC ? values.OverheadMachiningCCPercentage : '',
                 OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : '',

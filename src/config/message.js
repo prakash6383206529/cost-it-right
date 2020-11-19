@@ -86,8 +86,8 @@ export const MESSAGES = {
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
 
   //OVERHEAD AND PROFIT
-  OVERHEAD_ADDED_SUCCESS: 'Overhead created successfully',
-  PROFIT_ADDED_SUCCESS: 'Profit created successfully',
+  OVERHEAD_ADDED_SUCCESS: 'Overhead has been added successfully',
+  PROFIT_ADDED_SUCCESS: 'Profit has been added successfully',
   OVERHEAD_UPDATE_SUCCESS: 'Overhead has been updated successfully',
   PROFIT_UPDATE_SUCCESS: 'Profit has been updated successfully',
   OVERHEAD_DELETE_ALERT: 'Are you sure you want to delete this Overhead Detail?',

@@ -153,8 +153,10 @@ function SurfaceTreatmentCost(props) {
       <div className="user-page p-0">
         <div>
           <Row>
-            <Col col={'10'}>
-              <p>{'Surface Treatment Cost'}</p>
+            <Col md="10">
+              <div className="left-border">
+                {'Surface Treatment Cost:'}
+              </div>
             </Col>
             <Col col={'2'}>
               <button

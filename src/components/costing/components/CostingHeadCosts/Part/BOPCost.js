@@ -137,8 +137,10 @@ function BOPCost(props) {
       <div className="user-page p-0">
         <div>
           <Row>
-            <Col col={'10'}>
-              <p>{'BOP Cost'}</p>
+            <Col md="10">
+              <div className="left-border">
+                {'BOP Cost:'}
+              </div>
             </Col>
             <Col col={'2'}>
               <button

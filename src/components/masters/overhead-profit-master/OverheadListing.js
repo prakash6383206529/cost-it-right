@@ -147,7 +147,7 @@ class OverheadListing extends Component {
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         let headText = '';
-        if (!cell && row.VendorName !== '-') {
+        if (!cell && row.VendorName === '-') {
             headText = 'Zero Based';
         } else if (cell && row.VendorName !== '-') {
             headText = 'Vendor Based';

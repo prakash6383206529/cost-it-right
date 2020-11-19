@@ -523,6 +523,7 @@ class AddProfit extends Component {
 
             const formData = {
                 IsVendor: IsVendor,
+                IsCombinedEntry: !isOverheadPercent ? true : false,
                 ProfitPercentage: !isOverheadPercent ? values.ProfitPercentage : '',
                 ProfitMachiningCCPercentage: !isCC ? values.ProfitMachiningCCPercentage : '',
                 ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',

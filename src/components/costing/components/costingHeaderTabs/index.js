@@ -4,6 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import TabRMCC from './TabRMCC';
 import TabSurfaceTreatment from './TabSurfaceTreatment';
+import TabOverheadProfit from './TabOverheadProfit';
 
 function CostingHeaderTabs(props) {
 
@@ -46,12 +47,17 @@ function CostingHeaderTabs(props) {
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('4'); }}>
+              <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
+                Packaging & Profit
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
                 Tool Cost
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('5'); }}>
+              <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
                 Discount & Other Cost
               </NavLink>
             </NavItem>
@@ -68,12 +74,15 @@ function CostingHeaderTabs(props) {
               />
             </TabPane>
             <TabPane tabId="3">
-              {'Overheads & Profit'}
+              <TabOverheadProfit />
             </TabPane>
             <TabPane tabId="4">
-              {'Tool Cost'}
+              {'Packaging & Freight'}
             </TabPane>
             <TabPane tabId="5">
+              {'Tool Cost'}
+            </TabPane>
+            <TabPane tabId="6">
               {'Discount & Other Cost'}
             </TabPane>
           </TabContent>

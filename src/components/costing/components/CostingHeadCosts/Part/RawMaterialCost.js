@@ -178,8 +178,10 @@ function RawMaterialCost(props) {
         <div>
 
           <Row>
-            <Col col={'10'}>
-              <p>{'Raw Material Cost'}</p>
+            <Col md="10">
+              <div className="left-border">
+                {'Raw Material Cost:'}
+              </div>
             </Col>
             <Col col={'2'}>
               {gridData.length === 0 && <button

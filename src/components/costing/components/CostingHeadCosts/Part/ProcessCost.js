@@ -282,8 +282,10 @@ function ProcessCost(props) {
         <div>
           <hr />
           <Row>
-            <Col md="12" className={'mb15'}>
-              <p>{'Conversion Cost'}</p>
+            <Col md="12">
+              <div className="left-border">
+                {'Conversion Cost:'}
+              </div>
             </Col>
             <Col md="3">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>
             <Col md="3">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>
@@ -311,8 +313,10 @@ function ProcessCost(props) {
           </Row>
 
           <Row>
-            <Col col={'10'}>
-              <p>{'Process Cost'}</p>
+            <Col md="10">
+              <div className="left-border">
+                {'Process Cost:'}
+              </div>
             </Col>
             <Col col={'2'}>
               <button
