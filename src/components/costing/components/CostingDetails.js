@@ -977,7 +977,7 @@ function CostingDetails() {
                             <thead>
                               <tr>
                                 <th style={{ width: '100px' }}>{`Plant Code`}</th>
-                                <th style={{ width: '150px' }}>{`SOB`}<button className="Edit mr5 ml5" type={'button'} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
+                                <th style={{ width: '150px' }}>{`SOB`}<button className="edit-details-btn mr5 ml5" type={'button'} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
                                 <th style={{ width: '150px' }}>{`Costing Version`}</th>
                                 <th style={{ width: '200px' }}>{`Status`}</th>
                                 <th style={{ width: '200px' }}>{`Actions`}</th>
@@ -991,9 +991,9 @@ function CostingDetails() {
                                   return (
                                     <tr key={index}>
                                       <td>{item.PlantCode}</td>
-                                      <td>
+                                      <td className="cr-select-height">
                                         <TextFieldHookForm
-                                          label={''}
+                                          label={'aaa'}
                                           name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
                                           Controller={Controller}
                                           control={control}
@@ -1018,9 +1018,9 @@ function CostingDetails() {
                                           disabled={isSOBEnabled ? true : false}
                                         />
                                       </td>
-                                      <td>
+                                      <td className="cr-select-height">
                                         <SearchableSelectHookForm
-                                          label={''}
+                                          label={'asd'}
                                           name={`${zbcPlantGridFields}[${index}]CostingVersion`}
                                           placeholder={'-Select-'}
                                           Controller={Controller}
@@ -1080,7 +1080,7 @@ function CostingDetails() {
 
                         {/* ZBC PLANT GRID FOR COSTING */}
                         <Col md="12">
-                          <Table className="table" size="sm" >
+                          <Table className="table cr-brdr-main" size="sm" >
                             <thead>
                               <tr>
                                 <th style={{ width: '100px' }}>{`Vendor`}</th>

@@ -762,7 +762,7 @@ button.add-btn {
 }
 
 .form-group.inputbox.withBorder {
-  margin-bottom: 0;
+  margin-bottom:20px;
   border-bottom: none;
 }
 
@@ -800,7 +800,14 @@ button.add-btn {
   border: none;
   cursor: pointer;
 }
-
+.edit-details-btn {
+  width: 32px;
+  height: 16px;
+  background: transparent url("../../assests/images/pencil-icon.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+}
 .Delete {
   width: 32px;
   height: 32px;
@@ -1320,3 +1327,6 @@ button.user-btn.pull-right {
     width: 100%;
   }
 }
+[class$=hdxg-control]{
+  min-height: 40px !important;
+ }
