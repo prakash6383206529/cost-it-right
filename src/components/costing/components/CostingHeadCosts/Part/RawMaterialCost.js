@@ -43,15 +43,18 @@ function RawMaterialCost(props) {
   * @description HIDE RM DRAWER
   */
   const closeDrawer = (e = '', rowData = {}) => {
+    console.log('rowData: ', rowData);
     if (Object.keys(rowData).length > 0) {
       let tempObj = {
-        RMName: rowData.RMName,
-        RMRate: rowData.RMRate,
+        RMName: rowData.RawMaterial,
+        RMRate: rowData.BasicRatePerUOM,
+        MaterialType: rowData.MaterialType,
+        Density: rowData.Density,
         UOM: rowData.UOM,
         ScrapRate: rowData.ScrapRate,
         FinishWeight: '',
         GrossWeight: '',
-        NetLandedCost: rowData.NetLandedCost,
+        NetLandedCost: '',
         RawMaterialId: rowData.RawMaterialId,
       }
       setGridData([tempObj])
@@ -275,7 +278,7 @@ function RawMaterialCost(props) {
                                 />
                               }
                             </td>
-                            <td>{checkForDecimalAndNull(item.NetLandedCost, 2)}</td>
+                            <td>{item.NetLandedCost ? checkForDecimalAndNull(item.NetLandedCost, 2) : ''}</td>
                             <td>
                               <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
                             </td>

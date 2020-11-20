@@ -66,15 +66,19 @@ function CostingHeaderTabs(props) {
             <TabPane tabId="1">
               <TabRMCC
                 setHeaderCost={props.setHeaderCost}
+                activeTab={activeTab}
               />
             </TabPane>
             <TabPane tabId="2">
               <TabSurfaceTreatment
                 setHeaderCost={props.setHeaderCostSurfaceTab}
+                activeTab={activeTab}
               />
             </TabPane>
             <TabPane tabId="3">
-              <TabOverheadProfit />
+              <TabOverheadProfit
+                activeTab={activeTab}
+              />
             </TabPane>
             <TabPane tabId="4">
               {'Packaging & Freight'}

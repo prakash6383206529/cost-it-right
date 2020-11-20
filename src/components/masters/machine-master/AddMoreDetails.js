@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100 } from "../../../helper/validation";
+import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100, checkForDecimalAndNull } from "../../../helper/validation";
 import {
     renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
 } from "../../layout/FormInputs";
@@ -368,7 +368,7 @@ class AddMoreDetails extends Component {
     closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
         this.setState({ isOpenAvailability: false }, () => {
             if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
-                this.props.change('EfficiencyPercentage', calculatedEfficiency)
+                this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, 2))
             }
         })
 
@@ -617,7 +617,7 @@ class AddMoreDetails extends Component {
         this.setState({ WorkingHrPrYr: NumberOfShift * WorkingHoursPerShift * NumberOfWorkingDaysPerYear })
         const workingHrPerYr = WorkingHoursPerShift * NumberOfShift * NumberOfWorkingDaysPerYear * calculatePercentage(EfficiencyPercentage)
 
-        this.props.change('NumberOfWorkingHoursPerYear', Math.round(workingHrPerYr))
+        this.props.change('NumberOfWorkingHoursPerYear', checkForNull(Math.round(workingHrPerYr)))
     }
 
     /**
@@ -1508,7 +1508,7 @@ class AddMoreDetails extends Component {
                                                     name={"TonnageCapacity"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[required, number]}
                                                     component={renderText}
                                                     required={true}
                                                     disabled={isEditFlag ? true : false}
@@ -1525,8 +1525,8 @@ class AddMoreDetails extends Component {
                                                     name={"MachineCost"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[required, number]}
+                                                    component={renderText}
                                                     required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "

@@ -15,7 +15,8 @@ function ToolCost(props) {
     reValidateMode: 'onChange',
   });
 
-  const [gridData, setGridData] = useState([])
+  const [gridData, setGridData] = useState(props.data)
+  const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -47,7 +48,7 @@ function ToolCost(props) {
         Quantity: rowData.Quantity,
         ToolCost: rowData.ToolCost,
         Life: rowData.Life,
-        NetToolCost: '',
+        NetToolCost: rowData.NetToolCost,
       }
       let tempArr = [...gridData, rowArray]
       setGridData(tempArr)
@@ -160,62 +161,19 @@ function ToolCost(props) {
                     gridData &&
                     gridData.map((item, index) => {
                       return (
-                        editIndex === index ?
-                          <tr key={index}>
-                            <td>{item.ProcessOrOperation}</td>
-                            <td>{item.ToolCategory}</td>
-                            <td>{item.ToolName}</td>
-                            <td style={{ width: 200 }}>
-                              {
-                                <TextFieldHookForm
-                                  label=""
-                                  name={`${ToolGridFields}[${index}]Quantity`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      value: /^[1-9]*$/i,
-                                      //value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.'
-                                    },
-                                  }}
-                                  defaultValue={item.Quantity}
-                                  className=""
-                                  customClassName={'withBorder'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleQuantityChange(e, index)
-                                  }}
-                                  errors={errors && errors.ToolGridFields && errors.ToolGridFields[index] !== undefined ? errors.ToolGridFields[index].Quantity : ''}
-                                  disabled={false}
-                                />
-                              }
-                            </td>
-                            <td>{item.ToolCost}</td>
-                            <td>{item.Life}</td>
-                            <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
-                            <td>
-                              <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
-                            </td>
-                          </tr>
-                          :
-                          <tr key={index}>
-                            <td>{item.ProcessOrOperation}</td>
-                            <td>{item.ToolCategory}</td>
-                            <td>{item.ToolName}</td>
-                            <td style={{ width: 200 }}>{item.Quantity}</td>
-                            <td>{item.ToolCost}</td>
-                            <td>{item.Life}</td>
-                            <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
-                            <td>
-                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
-                            </td>
-                          </tr>
+                        <tr key={index}>
+                          <td>{item.ProcessOrOperation}</td>
+                          <td>{item.ToolCategory}</td>
+                          <td>{item.ToolName}</td>
+                          <td style={{ width: 200 }}>{item.Quantity}</td>
+                          <td>{item.ToolCost}</td>
+                          <td>{item.Life}</td>
+                          <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
+                          <td>
+                            <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                            <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                          </td>
+                        </tr>
                       )
                     })
                   }

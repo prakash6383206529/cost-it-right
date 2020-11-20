@@ -61,9 +61,9 @@ function WeightCalculator(props) {
             </Row>
 
             <Row>
-              <Col md="2">{`RM Name: ${rmRowData.RawMaterial}`}</Col>
-              <Col md="2">{`Material: ${rmRowData.MaterialType}`}</Col>
-              <Col md="2">{`Density(g/cm2) ${rmRowData.Density}`}</Col>
+              <Col md="2">{`RM Name: ${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</Col>
+              <Col md="2">{`Material: ${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</Col>
+              <Col md="2">{`Density(g/cm2) ${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</Col>
             </Row>
 
             <Row>
