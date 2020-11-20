@@ -437,9 +437,7 @@ class SideBar extends Component {
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
                         <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-
                           <DropdownToggle caret>
-
                             {
                               isLoggedIn ?
                                 <>
@@ -451,7 +449,7 @@ class SideBar extends Component {
                             }
                           </DropdownToggle>
 
-                          <DropdownMenu>
+                          {/* <DropdownMenu>
                             {
                               isLoggedIn ?
                                 <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>
@@ -462,16 +460,22 @@ class SideBar extends Component {
                                   </Link>
                                 </DropdownItem>
                             }
-                          </DropdownMenu>
-
+                          </DropdownMenu> */}
                         </Dropdown>
                         <NavbarToggler className="navbar-light float-right" onClick={this.toggleMobile} />
                       </Nav>
                     </div>
                   </li>
-                  <li className="nav-item d-xl-inline-block cr-logout-btn">
-                    <a className="nav-link" href="#"><img className="" src={require('../../assests/images/logout.svg')} alt='' /></a>
-                  </li>
+                  {
+                    isLoggedIn ?
+                      <li className="nav-item d-xl-inline-block cr-logout-btn">
+                        <a className="nav-link" href="javascript:void(0)" onClick={this.logout}>
+                          <img className="" src={require('../../assests/images/logout.svg')} alt='' />
+                        </a>
+                      </li>
+                      :
+                      ""
+                  }
                 </ul>
               </div>
             </nav>

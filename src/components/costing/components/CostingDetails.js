@@ -971,11 +971,9 @@ function CostingDetails() {
                             onClick={plantDrawerToggle}>
                             <div className={'plus'}></div>ADD PLANT</button>
                         </Col>
-
                         {/* ZBC PLANT GRID FOR COSTING */}
-
                         <Col md="12">
-                          <Table className="table" size="sm" >
+                          <Table className="table cr-brdr-main" size="sm">
                             <thead>
                               <tr>
                                 <th style={{ width: '100px' }}>{`Plant Code`}</th>
@@ -985,7 +983,7 @@ function CostingDetails() {
                                 <th style={{ width: '200px' }}>{`Actions`}</th>
                               </tr>
                             </thead>
-                            <tbody >
+                            <tbody>
                               {
                                 zbcPlantGrid &&
                                 zbcPlantGrid.map((item, index) => {
@@ -995,7 +993,7 @@ function CostingDetails() {
                                       <td>{item.PlantCode}</td>
                                       <td>
                                         <TextFieldHookForm
-                                          label=""
+                                          label={''}
                                           name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
                                           Controller={Controller}
                                           control={control}
@@ -1169,8 +1167,8 @@ function CostingDetails() {
                     }
 
                     {!IsOpenVendorSOBDetails &&
-                      <Row className="sf-btn-footer no-gutters justify-content-between">
-                        <div className="col-sm-12 text-right bluefooter-butn">
+                      <Row className="sf-btn-footer justify-content-between">
+                        <div className="col-sm-12 text-right">
                           <button
                             type={'button'}
                             className="reset mr15 cancel-btn"
@@ -1180,7 +1178,7 @@ function CostingDetails() {
 
                           <button
                             type="button"
-                            className="submit-button mr5 save-btn"
+                            className="submit-button save-btn"
                             onClick={nextToggle} >
                             <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                             {'Next'}

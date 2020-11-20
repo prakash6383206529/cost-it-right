@@ -39,7 +39,7 @@ function Costing(props) {
                         <NavItem>
                             <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                                 Costing Details
-                                </NavLink>
+                            </NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>

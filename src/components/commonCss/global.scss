@@ -1101,6 +1101,10 @@ p {
  }
 /*Right Content Css*/
 .content-page {
+  &.full_size_content{
+    width: 100%;
+    padding-bottom:35px;
+  }
   // margin-left: 205px;
   // overflow: auto;
   padding: 21px 15px 15px 15px;
@@ -2034,5 +2038,29 @@ ul.bread-list.d-inline-flex{
         padding: 0px;
       }
     }
+  }
+}
+td{
+  .Draft{
+    background-color: #FC5774;
+    min-width: 84px;
+    height: 24px;
+    border-radius: 30px;
+    text-align: center;
+    color:#fff;
+    font-size: 14px;
+    display: inline-block;
+    line-height: 24px;
+  }
+}
+.table.cr-brdr-main{
+  border: 1px solid #C2CBE8;
+  thead{
+     th{
+      border-top: 1px solid #B4C5E2;
+     }
+  }
+  tbody{
+    td{}
   }
 }
