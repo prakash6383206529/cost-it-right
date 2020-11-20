@@ -2041,16 +2041,26 @@ ul.bread-list.d-inline-flex{
   }
 }
 td{
-  .Draft{
+  .Draft,.PendingApproval,.Approved,.History{
     background-color: #FC5774;
-    min-width: 84px;
-    height: 24px;
+    min-width: 90px;
+    height: 30px;
     border-radius: 30px;
     text-align: center;
     color:#fff;
     font-size: 14px;
     display: inline-block;
-    line-height: 24px;
+    line-height: 30px;
+    padding: 0 1.5rem;
+  }
+  .PendingApproval{
+    background-color: #F8A000;
+  }
+  .Approved{
+    background-color: #4DC771;
+  }
+  .History{
+    background-color: #C2CBE8;
   }
 }
 .table.cr-brdr-main{
@@ -2061,7 +2071,9 @@ td{
       border-bottom: 1px solid #B4C5E2;
      }
   }
-  tbody{
-    td{}
-  }
+}
+body {
+  .mb-15{
+  margin-bottom: 15px;
+}
 }

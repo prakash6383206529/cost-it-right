@@ -1120,7 +1120,7 @@ class AddMachineRate extends Component {
                                                                         <td>
                                                                             {!this.state.IsDetailedEntry &&
                                                                                 <>
-                                                                                    <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                                                                    <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
                                                                                     <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
                                                                                 </>}
                                                                         </td>

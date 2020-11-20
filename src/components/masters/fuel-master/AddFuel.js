@@ -575,7 +575,7 @@ class AddFuel extends Component {
                                                                         {/* <td>{item.effectiveDate}</td> */}
                                                                         <td>{moment(item.effectiveDate).format('DD/MM/YYYY')}</td>
                                                                         <td>
-                                                                            <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
                                                                             <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
                                                                         </td>
                                                                     </tr>

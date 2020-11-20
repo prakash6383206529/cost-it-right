@@ -276,7 +276,7 @@ class AddTaxDetails extends Component {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="submit-button mr5 save-btn" >
+                                        className="submit-button mr5 save-btn">
                                         <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                         {isEditFlag ? 'Update' : 'Save'}
                                     </button>

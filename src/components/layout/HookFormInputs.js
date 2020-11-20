@@ -78,7 +78,7 @@ export const SearchableSelectHookForm = (field) => {
   let isDisable = (disabled && disabled === true) ? true : false;
 
   return (
-    <div className="w-100">
+    <div className="w-100 mb-15">
       <label>
         {label}
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}

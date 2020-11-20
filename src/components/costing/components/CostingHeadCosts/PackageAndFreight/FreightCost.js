@@ -201,7 +201,7 @@ function FreightCost(props) {
                               }
                             </td>
                             <td>
-                              <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
+                              <button className="SaveIcon mt15 mr-2" type={'button'} onClick={() => SaveItem(index)} />
                               <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
                             </td>
                           </tr>
@@ -210,7 +210,7 @@ function FreightCost(props) {
                             <td>{item.OperationName}</td>
                             <td>{item.OperationName}</td>
                             <td>
-                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                               <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
                             </td>
                           </tr>

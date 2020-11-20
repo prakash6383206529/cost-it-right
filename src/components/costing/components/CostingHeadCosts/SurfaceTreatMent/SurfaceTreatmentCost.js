@@ -257,7 +257,7 @@ function SurfaceTreatmentCost(props) {
                             </td>
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
                             <td>
-                              <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
+                              <button className="SaveIcon mt15 mr-2" type={'button'} onClick={() => SaveItem(index)} />
                               <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
                             </td>
                           </tr>
@@ -271,7 +271,7 @@ function SurfaceTreatmentCost(props) {
                             <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
                             <td>
-                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                               <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
                             </td>
                           </tr>

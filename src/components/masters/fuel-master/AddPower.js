@@ -1509,7 +1509,7 @@ class AddPower extends Component {
                                                                                 <td>{item.CostPerUnit}</td>
                                                                                 <td>{item.PowerContributionPercentage}</td>
                                                                                 <td>
-                                                                                    <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
+                                                                                    <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                                                                     <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
                                                                                 </td>
                                                                             </tr>

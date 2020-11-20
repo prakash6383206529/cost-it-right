@@ -2396,7 +2396,7 @@ class AddMoreDetails extends Component {
                                                                         <td>{item.NumberOfLabour}</td>
                                                                         <td>{item.LabourCost}</td>
                                                                         <td>
-                                                                            <button className="Edit mr5" type={'button'} onClick={() => this.editLabourItemDetails(index)} />
+                                                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editLabourItemDetails(index)} />
                                                                             <button className="Delete" type={'button'} onClick={() => this.deleteLabourItem(index)} />
                                                                         </td>
                                                                     </tr>
@@ -2557,7 +2557,7 @@ class AddMoreDetails extends Component {
                                                                         <td>{item.OutputPerYear}</td>
                                                                         <td>{item.MachineRate}</td>
                                                                         <td>
-                                                                            <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
                                                                             <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
                                                                         </td>
                                                                     </tr>

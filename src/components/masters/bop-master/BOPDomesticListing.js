@@ -50,7 +50,7 @@ class BOPDomesticListing extends Component {
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '',) => {
+    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '', ) => {
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -189,7 +189,7 @@ class BOPDomesticListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )

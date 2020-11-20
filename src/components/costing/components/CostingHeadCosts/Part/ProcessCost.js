@@ -479,7 +479,7 @@ function ProcessCost(props) {
                             </td>
                             <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, 2) : 0}</td>
                             <td>
-                              <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
+                              <button className="SaveIcon mt15 mr-2" type={'button'} onClick={() => SaveItem(index)} />
                               <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
                             </td>
                           </tr>
@@ -497,7 +497,7 @@ function ProcessCost(props) {
                             <td>{item.Quantity}</td>
                             <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, 2) : 0}</td>
                             <td>
-                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                               <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
                             </td>
                           </tr>

@@ -47,7 +47,7 @@ class FreightListing extends Component {
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (freight_for = '', vendor_id = '', source_city_id = '', destination_city_id = '',) => {
+    getDataList = (freight_for = '', vendor_id = '', source_city_id = '', destination_city_id = '', ) => {
         const filterData = {
             freight_for: freight_for,
             vendor_id: vendor_id,
@@ -172,7 +172,7 @@ class FreightListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
@@ -270,7 +270,7 @@ class FreightListing extends Component {
         const sourceTemp = sourceLocation ? sourceLocation.value : '';
         const destinationTemp = destinationLocation ? destinationLocation.value : '';
 
-        this.getDataList(costingHeadTemp, vendorTemp, sourceTemp, destinationTemp,)
+        this.getDataList(costingHeadTemp, vendorTemp, sourceTemp, destinationTemp)
     }
 
     /**

@@ -754,7 +754,7 @@ class AddLabour extends Component {
                                                                     <td>{item.LabourRate}</td>
                                                                     <td>{moment(item.EffectiveDate).format('DD/MM/YYYY')}</td>
                                                                     <td>
-                                                                        <button className="Edit mr5" type={'button'} onClick={() => this.editGridItemDetails(index)} />
+                                                                        <button className="Edit mr-2" type={'button'} onClick={() => this.editGridItemDetails(index)} />
                                                                         <button className="Delete" type={'button'} onClick={() => this.deleteGridItem(index)} />
                                                                     </td>
                                                                 </tr>

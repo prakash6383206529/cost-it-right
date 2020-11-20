@@ -222,7 +222,7 @@ function BOPCost(props) {
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
-                                <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                                <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                                 <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
                               </td>
                             </tr>

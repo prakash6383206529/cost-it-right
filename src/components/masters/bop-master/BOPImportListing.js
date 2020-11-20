@@ -49,7 +49,7 @@ class BOPImportListing extends Component {
     * @method getDataList
     * @description GET DATALIST OF IMPORT BOP
     */
-    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '',) => {
+    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '', ) => {
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -187,7 +187,7 @@ class BOPImportListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
@@ -285,7 +285,7 @@ class BOPImportListing extends Component {
         const vendorTemp = vendor ? vendor.value : '';
         const plantTemp = plant ? plant.value : '';
 
-        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp,)
+        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp)
     }
 
     /**

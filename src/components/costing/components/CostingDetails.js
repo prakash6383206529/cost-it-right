@@ -954,7 +954,7 @@ function CostingDetails() {
                     {IsOpenVendorSOBDetails &&
                       <Row>
                         <Col md="12">
-                          <div className="left-border">
+                          <div className="left-border mt-15 mb-0">
                             {'SOB Details:'}
                           </div>
                         </Col>
@@ -977,9 +977,9 @@ function CostingDetails() {
                             <thead>
                               <tr>
                                 <th style={{ width: '100px' }}>{`Plant Code`}</th>
-                                <th style={{ width: '150px' }}>{`SOB`}<button className="edit-details-btn mr5 ml5" type={'button'} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
+                                <th style={{ width: '150px' }}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={'button'} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
                                 <th style={{ width: '150px' }}>{`Costing Version`}</th>
-                                <th style={{ width: '200px' }}>{`Status`}</th>
+                                <th className="text-center" style={{ width: '200px' }}>{`Status`}</th>
                                 <th style={{ width: '200px' }}>{`Actions`}</th>
                               </tr>
                             </thead>
@@ -993,7 +993,6 @@ function CostingDetails() {
                                       <td>{item.PlantCode}</td>
                                       <td className="cr-select-height">
                                         <TextFieldHookForm
-                                          label={'aaa'}
                                           name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
                                           Controller={Controller}
                                           control={control}
@@ -1020,7 +1019,6 @@ function CostingDetails() {
                                       </td>
                                       <td className="cr-select-height">
                                         <SearchableSelectHookForm
-                                          label={'asd'}
                                           name={`${zbcPlantGridFields}[${index}]CostingVersion`}
                                           placeholder={'-Select-'}
                                           Controller={Controller}
@@ -1034,14 +1032,14 @@ function CostingDetails() {
                                           errors={`${zbcPlantGridFields}[${index}]CostingVersion`}
                                         />
                                       </td>
-                                      <td>
+                                      <td className="text-center">
                                         <div className={item.Status}>{item.Status}</div>
                                       </td>
-                                      <td>
-                                        <button className="Add-file mr5" type={'button'} title={'Add Costing'} onClick={() => addDetails(index, ZBC)} />
-                                        {!item.IsNewCosting && <button className="View mr5" type={'button'} title={'View Costing'} onClick={() => viewDetails(index, ZBC)} />}
-                                        {!item.IsNewCosting && <button className="Edit mr5" type={'button'} title={'Edit Costing'} onClick={() => editCosting(index, ZBC)} />}
-                                        {!item.IsNewCosting && <button className="Copy All mr5" type={'button'} title={'Copy Costing'} onClick={() => copyCosting(index, ZBC)} />}
+                                      <td style={{ width: '200px' }}>
+                                        <button className="Add-file mr-2" type={'button'} title={'Add Costing'} onClick={() => addDetails(index, ZBC)} />
+                                        {!item.IsNewCosting && <button className="View mr-2" type={'button'} title={'View Costing'} onClick={() => viewDetails(index, ZBC)} />}
+                                        {!item.IsNewCosting && <button className="Edit mr-2" type={'button'} title={'Edit Costing'} onClick={() => editCosting(index, ZBC)} />}
+                                        {!item.IsNewCosting && <button className="Copy All mr-2" type={'button'} title={'Copy Costing'} onClick={() => copyCosting(index, ZBC)} />}
                                       </td>
                                     </tr>
                                   )
@@ -1086,7 +1084,7 @@ function CostingDetails() {
                                 <th style={{ width: '100px' }}>{`Vendor`}</th>
                                 <th style={{ width: '150px' }}>{`SOB`}</th>
                                 <th style={{ width: '150px' }}>{`Costing Version`}</th>
-                                <th style={{ width: '200px' }}>{`Status`}</th>
+                                <th className="text-center" style={{ width: '200px' }}>{`Status`}</th>
                                 <th style={{ width: '200px' }}>{`Actions`}</th>
                               </tr>
                             </thead>
@@ -1140,14 +1138,14 @@ function CostingDetails() {
                                           errors={`${vbcGridFields}[${index}]CostingVersion`}
                                         />
                                       </td>
-                                      <td>
+                                      <td className="text-center">
                                         <div className={item.Status}>{item.Status}</div>
                                       </td>
                                       <td>
-                                        <button className="Add-file mr5" type={'button'} title={'Add Costing'} onClick={() => addDetails(index, VBC)} />
-                                        {!item.IsNewCosting && <button className="View mr5" type={'button'} title={'View Costing'} onClick={() => viewDetails(index, VBC)} />}
-                                        {!item.IsNewCosting && <button className="Edit mr5" type={'button'} title={'Edit Costing'} onClick={() => editCosting(index, VBC)} />}
-                                        {!item.IsNewCosting && <button className="Copy All mr5" title={'Copy Costing'} type={'button'} onClick={() => copyCosting(index, VBC)} />}
+                                        <button className="Add-file mr-2" type={'button'} title={'Add Costing'} onClick={() => addDetails(index, VBC)} />
+                                        {!item.IsNewCosting && <button className="View mr-2" type={'button'} title={'View Costing'} onClick={() => viewDetails(index, VBC)} />}
+                                        {!item.IsNewCosting && <button className="Edit mr-2" type={'button'} title={'Edit Costing'} onClick={() => editCosting(index, VBC)} />}
+                                        {!item.IsNewCosting && <button className="Copy All mr-2" title={'Copy Costing'} type={'button'} onClick={() => copyCosting(index, VBC)} />}
                                       </td>
                                     </tr>
                                   )

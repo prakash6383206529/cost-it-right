@@ -52,7 +52,7 @@ class ProfitListing extends Component {
         this.getDataList()
     }
 
-    getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null,) => {
+    getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, ) => {
         const filterData = {
             costing_head: costingHead,
             vendor_id: vendorName,
@@ -135,7 +135,7 @@ class ProfitListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
@@ -346,7 +346,7 @@ class ProfitListing extends Component {
         const vendorNameTemp = vendorName ? vendorName.value : null;
         const OverheadAppliTemp = overheadAppli ? overheadAppli.value : null;
 
-        this.getDataList(costingHeadTemp, vendorNameTemp, OverheadAppliTemp, ModelTypeTemp,)
+        this.getDataList(costingHeadTemp, vendorNameTemp, OverheadAppliTemp, ModelTypeTemp)
     }
 
     /**

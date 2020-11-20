@@ -93,7 +93,7 @@ export default function VishualAdDrawer(props) {
 
                                     <button
                                         type="submit"
-                                        className="submit-button mr5 save-btn" >
+                                        className="submit-button mr5 save-btn">
                                         <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                         {'Update'}
                                     </button>

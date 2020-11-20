@@ -170,7 +170,7 @@ function ToolCost(props) {
                           <td>{item.Life}</td>
                           <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
                           <td>
-                            <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                            <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                             <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
                           </td>
                         </tr>

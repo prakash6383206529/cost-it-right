@@ -174,7 +174,7 @@ class LevelsListing extends Component {
 		const { EditAccessibility, DeleteAccessibility } = this.state;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit mr5" onClick={() => this.editItemDetails(cell)} />}
+				{EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell)} />}
 				{DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
 			</>
 		)
