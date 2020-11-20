@@ -26,7 +26,7 @@ function ProcessCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const [Ids, setIds] = useState([])
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost);
   const [tabData, setTabData] = useState(props.data);
 
   useEffect(() => {
@@ -89,9 +89,9 @@ function ProcessCost(props) {
   */
   const selectedIds = (tempArr) => {
     tempArr && tempArr.map(el => {
-      if (Ids.includes(el.ProcessId) === false) {
+      if (Ids.includes(el.MachineRateId) === false) {
         let selectedIds = Ids;
-        selectedIds.push(el.ProcessId)
+        selectedIds.push(el.MachineRateId)
         setIds(selectedIds)
       }
       return null;
@@ -103,6 +103,7 @@ function ProcessCost(props) {
       if (i === index) return false;
       return true;
     })
+    selectedIds(tempArr)
     setGridData(tempArr)
   }
 
@@ -233,7 +234,7 @@ function ProcessCost(props) {
 
     let OperationCostTotal = 0;
     OperationCostTotal = operationGrid && operationGrid.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetCost);
+      return accummlator + checkForNull(el.OperationCost);
     }, 0)
 
     let tempArr = {
@@ -262,6 +263,7 @@ function ProcessCost(props) {
     let tempArr = {
       ...tabData,
       //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
+      IsShowToolCost: true,
       ToolsCostTotal: ToolsCostTotal,
       CostingToolsCostResponse: toolGrid
     }

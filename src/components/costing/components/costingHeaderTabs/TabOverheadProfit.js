@@ -24,12 +24,12 @@ function TabOverheadProfit(props) {
         PartId: costData.PartId,
         PlantId: costData.PlantId,
       }
-      dispatch(getSurfaceTreatmentTabData(data, (res) => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setTabData(Data.CostingPartDetails)
-        }
-      }))
+      // dispatch(getSurfaceTreatmentTabData(data, (res) => {
+      //   if (res && res.data && res.data.Result) {
+      //     let Data = res.data.Data;
+      //     setTabData(Data.CostingPartDetails)
+      //   }
+      // }))
     }
   }, [costData]);
 
@@ -221,7 +221,7 @@ function TabOverheadProfit(props) {
                   </Table>
                 </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between mt25">
+                {/* <Row className="sf-btn-footer no-gutters justify-content-between mt25">
                   <div className="col-sm-12 text-right bluefooter-butn">
 
                     <button
@@ -232,7 +232,7 @@ function TabOverheadProfit(props) {
                       {'Save'}
                     </button>
                   </div>
-                </Row>
+                </Row> */}
 
               </form>
             </div>

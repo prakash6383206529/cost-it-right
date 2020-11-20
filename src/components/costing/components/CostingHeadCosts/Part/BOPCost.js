@@ -218,9 +218,9 @@ function BOPCost(props) {
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
                               <td>{item.Currency}</td>
-                              <td>{checkForDecimalAndNull(item.LandedCostINR, 2)}</td>
+                              <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, 2) : ''}</td>
                               <td style={{ width: 200 }}>{item.Quantity}</td>
-                              <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
+                              <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
                                 <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
                                 <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />

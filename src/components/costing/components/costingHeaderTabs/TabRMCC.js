@@ -273,11 +273,11 @@ function TabRMCC(props) {
       [index]: Object.assign({}, tabData[index],
         {
           GrandTotalCost: GrandTotalCost,
-          TotalConversionCost: toolGrid.NetConversionCost + checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2),
+          //TotalConversionCost: toolGrid.NetConversionCost,
+          IsShowToolCost: true,
           CostingConversionCost: {
             ...toolGrid,
-            IsShowToolCost: true,
-            NetConversionCost: toolGrid.NetConversionCost + checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2),
+            //NetConversionCost: toolGrid.NetConversionCost,
             ToolsCostTotal: checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2),
             CostingToolsCostResponse: data,
           },

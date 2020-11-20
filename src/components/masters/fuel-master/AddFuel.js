@@ -376,7 +376,7 @@ class AddFuel extends Component {
             }
 
             this.props.createFuelDetail(formData, (res) => {
-                if (res.data.Result) {
+                if (res && res.data && res.data.Result) {
                     toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
                     this.cancel();
                 }

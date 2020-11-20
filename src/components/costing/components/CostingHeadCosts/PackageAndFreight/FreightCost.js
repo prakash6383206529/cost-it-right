@@ -8,7 +8,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 
-function SurfaceTreatmentCost(props) {
+function FreightCost(props) {
 
   const { register, control, errors } = useForm({
     mode: 'onChange',
@@ -22,7 +22,7 @@ function SurfaceTreatmentCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    props.setSurfaceCost(gridData, props.index)
+    //props.setSurfaceCost(gridData, props.index)
   }, [gridData]);
 
   /**
@@ -127,21 +127,6 @@ function SurfaceTreatmentCost(props) {
     }
   }
 
-  const handleLabourQuantityChange = (event, index) => {
-    let tempArr = [];
-    let tempData = gridData[index];
-
-    if (!isNaN(event.target.value)) {
-      const SurfaceTreatmentCost = (checkForNull(tempData.SurfaceArea) * checkForNull(tempData.RatePerUOM)) + (checkForNull(tempData.LabourRate) * parseInt(event.target.value));
-      tempData = { ...tempData, LabourQuantity: parseInt(event.target.value), SurfaceTreatmentCost: SurfaceTreatmentCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-
-    } else {
-      toastr.warning('Please enter valid number.')
-    }
-  }
-
   const OperationGridFields = 'OperationGridFields';
 
   /**
@@ -175,11 +160,6 @@ function SurfaceTreatmentCost(props) {
                   <tr>
                     <th>{`Operation Name`}</th>
                     <th>{`Surface Area`}</th>
-                    <th>{`UOM`}</th>
-                    <th>{`Rate/UOM`}</th>
-                    <th>{`Labour Rate/UOM`}</th>
-                    <th>{`Labour Quantity`}</th>
-                    <th>{`Cost`}</th>
                     <th>{`Action`}</th>
                   </tr>
                 </thead>
@@ -220,42 +200,6 @@ function SurfaceTreatmentCost(props) {
                                 />
                               }
                             </td>
-                            <td>{item.UOM}</td>
-                            <td>{item.RatePerUOM}</td>
-                            <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
-                            <td style={{ width: 200 }}>
-                              {
-                                item.IsLabourRateExist ?
-                                  <TextFieldHookForm
-                                    label=""
-                                    name={`${OperationGridFields}[${index}]LabourQuantity`}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                      //required: true,
-                                      pattern: {
-                                        value: /^[0-9]*$/i,
-                                        //value: /^[0-9]\d*(\.\d+)?$/i,
-                                        message: 'Invalid Number.'
-                                      },
-                                    }}
-                                    defaultValue={item.LabourQuantity}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    handleChange={(e) => {
-                                      e.preventDefault()
-                                      handleLabourQuantityChange(e, index)
-                                    }}
-                                    errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                    disabled={false}
-                                  />
-                                  :
-                                  '-'
-                              }
-                            </td>
-                            <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
                             <td>
                               <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
                               <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
@@ -264,12 +208,7 @@ function SurfaceTreatmentCost(props) {
                           :
                           <tr key={index}>
                             <td>{item.OperationName}</td>
-                            <td style={{ width: 200 }}>{item.SurfaceArea}</td>
-                            <td>{item.UOM}</td>
-                            <td>{item.RatePerUOM}</td>
-                            <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
-                            <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
-                            <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
+                            <td>{item.OperationName}</td>
                             <td>
                               <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
                               <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
@@ -304,4 +243,4 @@ function SurfaceTreatmentCost(props) {
   );
 }
 
-export default SurfaceTreatmentCost;
+export default FreightCost;
