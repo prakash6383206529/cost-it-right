@@ -11,9 +11,23 @@ import { checkForDecimalAndNull, checkForNull } from '../../../../helper';
 
 function AddTool(props) {
 
+  const { rowObjData, isEditFlag } = props;
+
+  const defaultValues = {
+    ToolOperationId: rowObjData && rowObjData.ToolOperationId !== undefined ? rowObjData.ToolOperationId : '',
+    ProcessOrOperation: rowObjData && rowObjData.ProcessOrOperation !== undefined ? rowObjData.ProcessOrOperation : '',
+    ToolCategory: rowObjData && rowObjData.ToolCategory !== undefined ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
+    ToolName: rowObjData && rowObjData.ToolName !== undefined ? rowObjData.ToolName : '',
+    Quantity: rowObjData && rowObjData.Quantity !== undefined ? rowObjData.Quantity : '',
+    ToolCost: rowObjData && rowObjData.ToolCost !== undefined ? rowObjData.ToolCost : '',
+    Life: rowObjData && rowObjData.Life !== undefined ? rowObjData.Life : '',
+    TotalToolCost: rowObjData && rowObjData.TotalToolCost !== undefined ? rowObjData.TotalToolCost : '',
+  }
+
   const { register, handleSubmit, control, setValue, reset, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
+    defaultValues: isEditFlag ? defaultValues : {},
   });
 
   const dispatch = useDispatch()
@@ -30,7 +44,7 @@ function AddTool(props) {
 
   useEffect(() => {
     getNetToolCost()
-    setValue('NetToolCost', getNetToolCost())
+    setValue('TotalToolCost', getNetToolCost())
   }, [fieldValues]);
 
   const toggleDrawer = (event, formData = {}) => {
@@ -95,14 +109,14 @@ function AddTool(props) {
 
   const onSubmit = data => {
     let formData = {
-      ToolOperationId: 1,
-      ProcessOrOperation: data.OperationName,
+      ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
+      ProcessOrOperation: data.ProcessOrOperation,
       ToolCategory: data.ToolCategory.label,
       ToolName: data.ToolName,
       Quantity: data.Quantity,
       ToolCost: data.ToolCost,
       Life: data.Life,
-      NetToolCost: data.NetToolCost,
+      TotalToolCost: data.TotalToolCost,
     }
     toggleDrawer('', formData)
   }
@@ -134,7 +148,7 @@ function AddTool(props) {
                   <Col md="12">
                     <TextFieldHookForm
                       label="Process/Operation"
-                      name={'OperationName'}
+                      name={'ProcessOrOperation'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -151,8 +165,8 @@ function AddTool(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.OperationName}
-                      disabled={false}
+                      errors={errors.ProcessOrOperation}
+                      disabled={isEditFlag ? true : false}
                     />
                   </Col>
 
@@ -170,6 +184,7 @@ function AddTool(props) {
                       mandatory={true}
                       handleChange={handleToolChange}
                       errors={errors.ToolCategory}
+                      disabled={isEditFlag ? true : false}
                     />
                   </Col>
 
@@ -194,7 +209,7 @@ function AddTool(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.ToolName}
-                      disabled={false}
+                      disabled={isEditFlag ? true : false}
                     />
                   </Col>
 
@@ -275,8 +290,8 @@ function AddTool(props) {
 
                   <Col md="12">
                     <TextFieldHookForm
-                      label="Net Tool Cost"
-                      name={'NetToolCost'}
+                      label="Total Tool Cost"
+                      name={'TotalToolCost'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -293,7 +308,7 @@ function AddTool(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.NetToolCost}
+                      errors={errors.TotalToolCost}
                       disabled={true}
                     />
                   </Col>

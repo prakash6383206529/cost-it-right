@@ -467,7 +467,61 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
 }
 
 
+/**
+ * @method getOverheadProfitTabData
+ * @description GET OVERHEAD & PROFIT DATA IN COSTING DETAIL
+ */
+export function getOverheadProfitTabData(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getOverheadProfitTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method getOverheadProfitDataByModelType
+ * @description GET OVERHEAD & PROFIT DATA BY MODEL TYPE
+ */
+export function getOverheadProfitDataByModelType(ModelTypeId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${ModelTypeId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveCostingOverheadProfitTab
+ * @description SAVE COSTING OVERHEAD PROFIT TAB
+ */
+export function saveCostingOverheadProfitTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingOverheadProfitTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
 
 

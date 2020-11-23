@@ -8,10 +8,19 @@ import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import { getUOMSelectList } from '../../../../../actions/Common'
 
 function TransportationCost(props) {
+  const { data } = props;
+
+  const defaultValues = {
+    UOM: data && data.UOM !== undefined ? data.UOM : [],
+    Rate: data && data.Rate !== undefined ? data.Rate : 0,
+    Quantity: data && data.Quantity !== undefined ? data.Quantity : 0,
+    TransporationCost: data && data.TransporationCost !== undefined ? data.TransporationCost : 0,
+  }
 
   const { register, control, errors, setValue, getValues, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
+    defaultValues: defaultValues,
   });
 
   const [gridData, setGridData] = useState([])

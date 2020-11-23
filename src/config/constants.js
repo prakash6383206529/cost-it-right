@@ -446,6 +446,10 @@ export const API = {
   saveCostingSurfaceTreatmentTab: `${BASE_URL}/costing/save-zbc-costing-surface-treatment-details`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
 
+  getOverheadProfitTabData: `${BASE_URL}/costing/get-zbc-costing-detail-overhead-and-profit`,
+  getOverheadProfitDataByModelType: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
+  saveCostingOverheadProfitTab: `${BASE_URL}/costing/save-zbc-costing-overhead-profit-details`,
+
   getCostingPartDetails: `${BASE_URL}/costing/get-costing-part-details`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,

@@ -4,10 +4,12 @@ import { useDispatch, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getSurfaceTreatmentTabData, saveCostingSurfaceTreatmentTab } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import SurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent';
 
 function TabSurfaceTreatment(props) {
+
+  const { netPOPrice } = props;
 
   const { handleSubmit, watch, reset } = useForm();
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +17,6 @@ function TabSurfaceTreatment(props) {
   const [tabData, setTabData] = useState([]);
   const [surfaceTotal, setSurfaceTotal] = useState('');
   const [transportationTotal, setTransportationTotal] = useState('');
-  const [netSurfaceTreatmentCost, setNetSurfaceTreatmentCost] = useState('');
 
   const dispatch = useDispatch()
 
@@ -66,11 +67,12 @@ function TabSurfaceTreatment(props) {
           //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
           NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
           SurfaceTreatmentCost: surfaceCost(surfaceGrid),
-          SurfaceTreatmentZBCDetails: surfaceGrid
+          SurfaceTreatmentDetails: surfaceGrid
         })
     })
 
     setTimeout(() => {
+      setSurfaceTotal(surfaceCost(surfaceGrid))
       setTabData(tempArr)
     }, 200)
 
@@ -104,7 +106,7 @@ function TabSurfaceTreatment(props) {
           //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
           NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
           TransporationCost: transportationObj.TransporationCost,
-          TransporationZBCDetails: transportationObj,
+          TransporationDetails: transportationObj,
         })
     })
 
@@ -127,24 +129,14 @@ function TabSurfaceTreatment(props) {
   */
   const saveCosting = () => {
     const data = {
-      NetRawMaterialsCost: '',
-      NetBoughtOutPartCost: '',
-      NetConversionCost: '',
-      NetOperationCost: '',
-      NetProcessCost: '',
-      NetToolsCost: '',
-      NetTotalRMBOPCC: '',
-      NetSurfaceTreatmentCost: 0,
-      NetOverheadAndProfitCost: 0,
-      NetPackagingAndFreight: 0,
-      NetToolCost: 0,
-      DiscountsAndOtherCost: 0,
-      TotalCost: '',
-      NetPOPrice: '',
-      LoggedInUserId: '',
       CostingId: costData.CostingId,
-      CostingNumber: costData.CostingNumber,
-      ShareOfBusinessPercent: costData.ShareOfBusinessPercent,
+      PartId: costData.PartId,
+      PartNumber: costData.PartNumber,
+      NetPOPrice: netPOPrice,
+      LoggedInUserId: loggedInUserId(),
+      NetSurfaceTreatmentCost: surfaceTotal + transportationTotal,
+      SurfaceTreatmentCost: surfaceTotal,
+      TransporationCost: transportationTotal,
       IsIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatment,
       CostingPartDetails: tabData,
     }
@@ -228,8 +220,8 @@ function TabSurfaceTreatment(props) {
                                     <div>
                                       <SurfaceTreatment
                                         index={index}
-                                        surfaceData={item.SurfaceTreatmentZBCDetails}
-                                        transportationData={item.TransporationZBCDetails}
+                                        surfaceData={item.SurfaceTreatmentDetails}
+                                        transportationData={item.TransporationDetails}
                                         setSurfaceCost={setSurfaceCost}
                                         setTransportationCost={setTransportationCost}
                                       />

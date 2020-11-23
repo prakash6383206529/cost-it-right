@@ -50,6 +50,8 @@ import {
   GET_PLANT_SELECTLIST_BY_TYPE,
   GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
   GET_UOM_SELECTLIST_BY_UNITTYPE,
+  GET_ICC_APPLICABILITY_SELECTLIST,
+  GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
 } from '../config/constants';
 
 const initialState = {
@@ -413,6 +415,18 @@ export default function commanReducer(state = initialState, action) {
         loading: false,
         error: true,
         UOMSelectListByUnitType: action.payload
+      };
+    case GET_ICC_APPLICABILITY_SELECTLIST:
+      return {
+        ...state,
+        loading: false,
+        iccApplicabilitySelectList: action.payload
+      };
+    case GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST:
+      return {
+        ...state,
+        loading: false,
+        paymentTermsSelectList: action.payload
       };
     default:
       return state;

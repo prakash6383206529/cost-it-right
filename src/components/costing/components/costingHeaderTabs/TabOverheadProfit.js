@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, saveCostingSurfaceTreatmentTab } from '../../actions/Costing';
+import { getOverheadProfitTabData, saveCostingOverheadProfitTab, } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
 import OverheadProfit from '../CostingHeadCosts/OverheadProfit';
@@ -24,12 +24,13 @@ function TabOverheadProfit(props) {
         PartId: costData.PartId,
         PlantId: costData.PlantId,
       }
-      // dispatch(getSurfaceTreatmentTabData(data, (res) => {
-      //   if (res && res.data && res.data.Result) {
-      //     let Data = res.data.Data;
-      //     setTabData(Data.CostingPartDetails)
-      //   }
-      // }))
+      dispatch(getOverheadProfitTabData(data, (res) => {
+        console.log('res: >>>>>>>>> ', res);
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          setTabData(Data.CostingPartDetails)
+        }
+      }))
     }
   }, [costData]);
 
@@ -114,29 +115,85 @@ function TabOverheadProfit(props) {
   */
   const saveCosting = () => {
     const data = {
-      NetRawMaterialsCost: '',
-      NetBoughtOutPartCost: '',
-      NetConversionCost: '',
-      NetOperationCost: '',
-      NetProcessCost: '',
-      NetToolsCost: '',
-      NetTotalRMBOPCC: '',
-      NetSurfaceTreatmentCost: 0,
-      NetOverheadAndProfitCost: 0,
-      NetPackagingAndFreight: 0,
-      NetToolCost: 0,
-      DiscountsAndOtherCost: 0,
-      TotalCost: '',
-      NetPOPrice: '',
-      LoggedInUserId: '',
-      CostingId: costData.CostingId,
-      CostingNumber: costData.CostingNumber,
-      ShareOfBusinessPercent: costData.ShareOfBusinessPercent,
-      CostingPartDetails: tabData,
+      "CostingId": "00000000-0000-0000-0000-000000000000",
+      "OverheadProfitDetailId": "00000000-0000-0000-0000-000000000000",
+      "PartId": "00000000-0000-0000-0000-000000000000",
+      "PartNumber": "string",
+      "NetPOPrice": 0,
+      "LoggedInUserId": "00000000-0000-0000-0000-000000000000",
+      "NetOverheadAndProfitCost": 0,
+      "IsApplicableForChildParts": true,
+      "OverheadNetCost": 0,
+      "ProfitNetCost": 0,
+      "RejectionNetCost": 0,
+      "OverheadProfitNetCost": 0,
+      "ModelTypeId": "00000000-0000-0000-0000-000000000000",
+      "ModelType": "string",
+      "CostingOverheadDetail": {
+        "OverheadId": "00000000-0000-0000-0000-000000000000",
+        "IsOverheadCombined": true,
+        "OverheadApplicabilityId": "00000000-0000-0000-0000-000000000000",
+        "OverheadApplicability": "string",
+        "OverheadPercentage": 0,
+        "OverheadCombinedCost": 0,
+        "OverheadCombinedTotalCost": 0,
+        "OverheadCCPercentage": 0,
+        "OverheadCCCost": 0,
+        "OverheadCCTotalCost": 0,
+        "IsOverheadCCApplicable": true,
+        "OverheadBOPPercentage": 0,
+        "OverheadBOPCost": 0,
+        "OverheadBOPTotalCost": 0,
+        "IsOverheadBOPApplicable": true,
+        "OverheadRMPercentage": 0,
+        "OverheadRMCost": 0,
+        "OverheadRMTotalCost": 0,
+        "IsOverheadRMApplicable": true,
+        "OverheadFixedPercentage": 0,
+        "OverheadFixedCost": 0,
+        "OverheadFixedTotalCost": 0,
+        "IsOverheadFixedApplicable": true,
+        "IsSurfaceTreatmentApplicable": true
+      },
+      "CostingProfitDetail": {
+        "ProfitId": "00000000-0000-0000-0000-000000000000",
+        "ProfitApplicabilityId": "00000000-0000-0000-0000-000000000000",
+        "ProfitApplicability": "string",
+        "IsProfitCombined": true,
+        "ProfitPercentage": 0,
+        "ProfitCombinedCost": 0,
+        "ProfitCombinedTotalCost": 0,
+        "ProfitCCPercentage": 0,
+        "ProfitCCCost": 0,
+        "ProfitCCTotalCost": 0,
+        "IsProfitCCApplicable": true,
+        "ProfitBOPPercentage": 0,
+        "ProfitBOPCost": 0,
+        "ProfitBOPTotalCost": 0,
+        "IsProfitBOPApplicable": true,
+        "ProfitRMPercentage": 0,
+        "ProfitRMCost": 0,
+        "ProfitRMTotalCost": 0,
+        "IsProfitRMApplicable": true,
+        "ProfitFixedPercentage": 0,
+        "ProfitFixedCost": 0,
+        "ProfitFixedTotalCost": 0,
+        "IsProfitFixedApplicable": true,
+        "IsSurfaceTreatmentApplicable": true
+      },
+      "CostingRejectionDetail": {
+        "RejectionApplicabilityId": "00000000-0000-0000-0000-000000000000",
+        "RejectionApplicability": "string",
+        "RejectionPercentage": 0,
+        "RejectionCost": 0,
+        "RejectionTotalCost": 0,
+        "IsSurfaceTreatmentApplicable": true
+      }
+
     }
 
-    dispatch(saveCostingSurfaceTreatmentTab(data, res => {
-      console.log('saveCostingSurfaceTreatmentTab: ', res);
+    dispatch(saveCostingOverheadProfitTab(data, res => {
+      console.log('saveCostingOverheadProfitTab: ', res);
     }))
 
   }
@@ -203,8 +260,8 @@ function TabOverheadProfit(props) {
                                     <div>
                                       <OverheadProfit
                                         index={index}
-                                      // surfaceData={item.SurfaceTreatmentZBCDetails}
-                                      // transportationData={item.TransporationZBCDetails}
+                                        tabData={item}
+                                        headCostRMCCBOPData={props.headCostRMCCBOPData}
                                       // setSurfaceCost={setSurfaceCost}
                                       // setTransportationCost={setTransportationCost}
                                       />

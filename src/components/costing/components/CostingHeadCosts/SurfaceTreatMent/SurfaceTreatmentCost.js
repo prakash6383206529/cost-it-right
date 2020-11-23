@@ -15,7 +15,7 @@ function SurfaceTreatmentCost(props) {
     reValidateMode: 'onChange',
   });
 
-  const [gridData, setGridData] = useState([])
+  const [gridData, setGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
