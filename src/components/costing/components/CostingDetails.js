@@ -411,8 +411,8 @@ function CostingDetails() {
     //   return accummlator + checkForNull(el.ShareOfBusinessPercent);
     // }, 0)
 
-    //return (checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB)) > 100 ? false : true;
-    return true;
+    return (checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB)) > 100 ? false : true;
+    // return true;
 
   }
 
