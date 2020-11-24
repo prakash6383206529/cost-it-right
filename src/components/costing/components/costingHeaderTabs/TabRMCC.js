@@ -387,60 +387,61 @@ function TabRMCC(props) {
                   </div>
                 </Col>
               </Row>
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-
+              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
                 <Row>
-                  <Table className="table" size="sm" >
-                    <thead>
-                      <tr>
-                        <th style={{ width: '100px' }}>{``}</th>
-                        <th style={{ width: '100px' }}>{`Type`}</th>
-                        <th style={{ width: '150px' }}>{`RM Cost`}</th>
-                        <th style={{ width: '150px' }}>{`BOP Cost`}</th>
-                        <th style={{ width: '200px' }}>{`Conversion Cost`}</th>
-                        <th style={{ width: '200px' }}>{`Quantity`}</th>
-                        <th style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
-                      </tr>
-                    </thead>
-                    <tbody >
-                      {
-                        tabData && tabData.map((item, index) => {
-                          return (
-                            < >
-                              <tr key={index} onClick={() => toggle(index)}>
-                                <td>{item.PartName}</td>
-                                <td>{item.Type}</td>
-                                <td>{item.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.TotalRawMaterialsCost, 2) : 0}</td>
-                                <td>{item.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.TotalBoughtOutPartCost, 2) : 0}</td>
-                                <td>{item.TotalConversionCost !== null ? checkForDecimalAndNull(item.TotalConversionCost, 2) : 0}</td>
-                                <td>{item.Quantity !== null ? item.Quantity : 1}</td>
-                                <td>{item.GrandTotalCost !== null ? checkForDecimalAndNull(item.GrandTotalCost, 2) : 0}</td>
-                              </tr>
-                              {item.IsOpen && <tr>
-                                <td colSpan={7}>
-                                  <div>
-                                    <PartCompoment
-                                      index={index}
-                                      rmData={item.CostingRawMaterialsCost}
-                                      bopData={item.CostingBoughtOutPartCost}
-                                      ccData={item.CostingConversionCost}
-                                      costData={costData}
-                                      setRMCost={setRMCost}
-                                      setBOPCost={setBOPCost}
-                                      setProcessCost={setProcessCost}
-                                      setOperationCost={setOperationCost}
-                                      setToolCost={setToolCost}
-                                    />
-                                  </div>
-                                </td>
-                              </tr>}
-                            </>
-                          )
-                        })
-                      }
+                  <Col md="12">
+                    <Table className="table cr-brdr-main" size="sm" >
+                      <thead>
+                        <tr>
+                          <th style={{ width: '100px' }}>{``}</th>
+                          <th style={{ width: '100px' }}>{`Type`}</th>
+                          <th style={{ width: '150px' }}>{`RM Cost`}</th>
+                          <th style={{ width: '150px' }}>{`BOP Cost`}</th>
+                          <th style={{ width: '200px' }}>{`Conversion Cost`}</th>
+                          <th style={{ width: '200px' }}>{`Quantity`}</th>
+                          <th style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          tabData && tabData.map((item, index) => {
+                            return (
+                              < >
+                                <tr key={index} onClick={() => toggle(index)}>
+                                  <td><span className="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
+                                  <td>{item.Type}</td>
+                                  <td>{item.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.TotalRawMaterialsCost, 2) : 0}</td>
+                                  <td>{item.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.TotalBoughtOutPartCost, 2) : 0}</td>
+                                  <td>{item.TotalConversionCost !== null ? checkForDecimalAndNull(item.TotalConversionCost, 2) : 0}</td>
+                                  <td>{item.Quantity !== null ? item.Quantity : 1}</td>
+                                  <td>{item.GrandTotalCost !== null ? checkForDecimalAndNull(item.GrandTotalCost, 2) : 0}</td>
+                                </tr>
+                                {item.IsOpen && <tr>
+                                  <td colSpan={7} className="cr-innerwrap-td">
+                                    <div>
+                                      <PartCompoment
+                                        index={index}
+                                        rmData={item.CostingRawMaterialsCost}
+                                        bopData={item.CostingBoughtOutPartCost}
+                                        ccData={item.CostingConversionCost}
+                                        costData={costData}
+                                        setRMCost={setRMCost}
+                                        setBOPCost={setBOPCost}
+                                        setProcessCost={setProcessCost}
+                                        setOperationCost={setOperationCost}
+                                        setToolCost={setToolCost}
+                                      />
+                                    </div>
+                                  </td>
+                                </tr>}
+                              </>
+                            )
+                          })
+                        }
 
-                    </tbody>
-                  </Table>
+                      </tbody>
+                    </Table>
+                  </Col>
                 </Row>
 
                 <Row className="sf-btn-footer no-gutters justify-content-between mt25">

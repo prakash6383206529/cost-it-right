@@ -187,62 +187,63 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
-
               <Row>
-                <Col md="2"><div className={'part-info-title'}><p>Part No.</p>{costingData.PartNumber}</div></Col>
-                <Col md="2"><div className={'part-info-title'}><p>Part Name</p>{costingData.PartName}</div></Col>
-                <Col md="2"><div className={'part-info-title'}><p>{costingData.VendorType}</p>SOB:{costingData.ShareOfBusinessPercent}%</div></Col>
-                <Col md="2"><div className={'part-info-title'}><p>Costing ID</p>{costingData.CostingNumber}</div></Col>
-                <Col md="4"><div className={'part-info-title'}><p>Costing Date Time</p>{moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}</div></Col>
+                <Col md="12">
+                  <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
+                    <tbody>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No.:</span> {costingData.PartNumber}</p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span> {costingData.PartName}</p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">{costingData.VendorType}:</span> SOB:{costingData.ShareOfBusinessPercent}%</p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing ID:</span> {costingData.CostingNumber}</p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Date Time:</span> {moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}</p></div></td>
+                    </tbody>
+                  </Table>
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
+                      <tr>
+                        <th style={{ width: '100px' }}>{``}</th>
+                        <th style={{ width: '100px' }}>{`Net RM Cost/Assembly`}</th>
+                        <th style={{ width: '150px' }}>{`Net BOP Cost/Assembly`}</th>
+                        <th style={{ width: '150px' }}>{`Net Conversion Cost/Assembly`}</th>
+                        <th style={{ width: '200px' }}>{`RM + CC Cost`}</th>
+                        <th style={{ width: '200px' }}>{`Surface Treatment`}</th>
+                        <th style={{ width: '200px' }}>{`Overheads & Profits`}</th>
+                        <th style={{ width: '200px' }}>{`Packaging & Freight`}</th>
+                        <th style={{ width: '200px' }}>{`Tool Cost`}</th>
+                        <th style={{ width: '200px' }}>{`Discount & Other Cost`}</th>
+                        <th style={{ width: '200px' }}>{`Total Cost`}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        partDataList &&
+                        partDataList.map((item, index) => {
+                          return (
+                            <tr key={index} className="cr-bg-tbl">
+                              <td><span className="cr-prt-nm">{item.PartNumber}</span></td>
+                              <td>{netRMCostPerAssembly(item)}</td>
+                              <td>{netBOPCostPerAssembly(item)}</td>
+                              <td>{netConversionCostPerAssembly(item)}</td>
+                              <td>{netRMCCcost(item)}</td>
+                              <td>{netSurfaceTreatmentCost(item)}</td>
+                              <td>{netOverheadProfitCost(item)}</td>
+                              <td>{netPackagingFreightCost(item)}</td>
+                              <td>{netToolCost(item)}</td>
+                              <td>{netDiscountOtherCost(item)}</td>
+                              <td>{netTotalCost(item)}</td>
+                            </tr>
+                          )
+                        }
+                        )}
+                    </tbody>
+                  </Table>
+                </Col>
               </Row>
-
-              <Row>
-                <Table className="table" size="sm" >
-                  <thead>
-                    <tr>
-                      <th style={{ width: '100px' }}>{``}</th>
-                      <th style={{ width: '100px' }}>{`Net RM Cost/Assembly`}</th>
-                      <th style={{ width: '150px' }}>{`Net BOP Cost/Assembly`}</th>
-                      <th style={{ width: '150px' }}>{`Net Conversion Cost/Assembly`}</th>
-                      <th style={{ width: '200px' }}>{`RM + CC Cost`}</th>
-                      <th style={{ width: '200px' }}>{`Surface Treatment`}</th>
-                      <th style={{ width: '200px' }}>{`Overheads & Profits`}</th>
-                      <th style={{ width: '200px' }}>{`Packaging & Freight`}</th>
-                      <th style={{ width: '200px' }}>{`Tool Cost`}</th>
-                      <th style={{ width: '200px' }}>{`Discount & Other Cost`}</th>
-                      <th style={{ width: '200px' }}>{`Total Cost`}</th>
-                    </tr>
-                  </thead>
-                  <tbody >
-                    {
-                      partDataList &&
-                      partDataList.map((item, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>{item.PartNumber}</td>
-                            <td>{netRMCostPerAssembly(item)}</td>
-                            <td>{netBOPCostPerAssembly(item)}</td>
-                            <td>{netConversionCostPerAssembly(item)}</td>
-                            <td>{netRMCCcost(item)}</td>
-                            <td>{netSurfaceTreatmentCost(item)}</td>
-                            <td>{netOverheadProfitCost(item)}</td>
-                            <td>{netPackagingFreightCost(item)}</td>
-                            <td>{netToolCost(item)}</td>
-                            <td>{netDiscountOtherCost(item)}</td>
-                            <td>{netTotalCost(item)}</td>
-                          </tr>
-                        )
-                      }
-                      )}
-                  </tbody>
-                </Table>
-              </Row>
-
               <Row>
                 <Col md="3">
                   <button
                     type="button"
-                    className="submit-button mr5 save-btn"
+                    className="submit-button mr5 save-btn cr-bk-btn"
                     onClick={props.backBtn} >
                     <div className={'check-icon'}><img src={require('../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
                     {'Back '}

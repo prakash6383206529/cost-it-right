@@ -199,7 +199,7 @@ function RawMaterialCost(props) {
               {/*RAW MATERIAL COST GRID */}
 
               <Col md="12">
-                <Table className="table" size="sm" >
+                <Table className="table cr-brdr-main" size="sm" >
                   <thead>
                     <tr>
                       <th>{`RM Name`}</th>
@@ -221,7 +221,7 @@ function RawMaterialCost(props) {
                             <td>{item.RMName}</td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
-                            <td><button className="CalculatorIcon mt15" type={'button'} onClick={() => toggleWeightCalculator(index)} /></td>
+                            <td className="text-center"><button className="CalculatorIcon mt15" type={'button'} onClick={() => toggleWeightCalculator(index)} /></td>
                             <td>
                               {
                                 <TextFieldHookForm

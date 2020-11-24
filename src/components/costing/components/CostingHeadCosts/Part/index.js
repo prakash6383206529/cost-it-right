@@ -19,14 +19,12 @@ function PartCompoment(props) {
             setRMCost={props.setRMCost}
           />
 
-          <hr />
           <BOPCost
             index={props.index}
             data={bopData}
             setBOPCost={props.setBOPCost}
           />
 
-          <hr />
           <ProcessCost
             index={props.index}
             data={ccData}

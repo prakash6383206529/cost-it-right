@@ -397,21 +397,22 @@ function CostingDetails() {
   * @description HANDLE COSTING CHANGE
   */
   const checkSOBTotal = () => {
-    const zbcPlantGridFields = fieldValues.zbcPlantGridFields;
-    const vbcGridFields = fieldValues.vbcGridFields;
+    // const zbcPlantGridFields = fieldValues.zbcPlantGridFields;
+    // const vbcGridFields = fieldValues.vbcGridFields;
 
-    let NetZBCSOB = 0;
-    let NetVBCSOB = 0;
+    // let NetZBCSOB = 0;
+    // let NetVBCSOB = 0;
 
-    NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.ShareOfBusinessPercent);
-    }, 0)
+    // NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields.reduce((accummlator, el) => {
+    //   return accummlator + checkForNull(el.ShareOfBusinessPercent);
+    // }, 0)
 
-    NetVBCSOB = vbcGridFields && vbcGridFields.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.ShareOfBusinessPercent);
-    }, 0)
+    // NetVBCSOB = vbcGridFields && vbcGridFields.reduce((accummlator, el) => {
+    //   return accummlator + checkForNull(el.ShareOfBusinessPercent);
+    // }, 0)
 
-    return (checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB)) > 100 ? false : true;
+    //return (checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB)) > 100 ? false : true;
+    return true;
 
   }
 
@@ -749,7 +750,7 @@ function CostingDetails() {
                         </div>
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <SearchableSelectHookForm
                           label={'Technology'}
                           name={'Technology'}
@@ -766,7 +767,7 @@ function CostingDetails() {
                         />
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <SearchableSelectHookForm
                           label={'Assembly No./Part No.'}
                           name={'Part'}
@@ -783,7 +784,7 @@ function CostingDetails() {
                         />
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Assembly Name/Part Name"
                           name={'PartName'}
@@ -809,7 +810,7 @@ function CostingDetails() {
                         />
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Assembly/Part Description"
                           name={'Description'}
@@ -827,7 +828,7 @@ function CostingDetails() {
                         />
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <TextFieldHookForm
                           label="ECO No."
                           name={'ECNNumber'}
@@ -844,7 +845,7 @@ function CostingDetails() {
                         />
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Drawing No."
                           name={'DrawingNumber'}
@@ -861,7 +862,7 @@ function CostingDetails() {
                         />
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Revision No."
                           name={'RevisionNumber'}
@@ -878,7 +879,7 @@ function CostingDetails() {
                         />
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Price(Approved SOB)"
                           name={'ShareOfBusiness'}
@@ -895,7 +896,7 @@ function CostingDetails() {
                         />
                       </Col>
 
-                      <Col md="2">
+                      <Col className="col-md-15">
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">

@@ -281,18 +281,19 @@ function ProcessCost(props) {
   return (
     <>
       <div className="user-page p-0">
-        <div>
-          <hr />
-          <Row>
-            <Col md="12">
-              <div className="left-border">
-                {'Conversion Cost:'}
-              </div>
-            </Col>
-            <Col md="3">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>
-            <Col md="3">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>
-            <Col md="3">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>
-            <Col md="3" className="switch mb15">
+        <Row>
+          <Col md="12">
+            <div className="left-border">
+              {'Conversion Cost:'}
+            </div>
+          </Col>
+        </Row>
+        <div className="cr-process-costwrap">
+          <Row className="cr-innertool-cost">
+            <Col md="3" className="cr-costlabel">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>
+            <Col md="3" className="cr-costlabel">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>
+            <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>
+            <Col md="3" className="switch cr-costlabel">
               <label className="switch-level">
                 <div className={'left-title'}>{''}</div>
                 <Switch
@@ -333,7 +334,7 @@ function ProcessCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table" size="sm" >
+              <Table className="table cr-brdr-main" size="sm" >
                 <thead>
                   <tr>
                     <th>{`Process Name`}</th>

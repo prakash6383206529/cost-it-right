@@ -179,7 +179,7 @@ function OperationCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table" size="sm" >
+              <Table className="table cr-brdr-main" size="sm" >
                 <thead>
                   <tr>
                     <th>{`Operation Name`}</th>

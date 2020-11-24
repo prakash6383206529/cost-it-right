@@ -30,7 +30,7 @@ function CostingHeaderTabs(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <Nav tabs className="subtabs">
+          <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                 RM + CC
