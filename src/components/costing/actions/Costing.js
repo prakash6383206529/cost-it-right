@@ -523,7 +523,45 @@ export function saveCostingOverheadProfitTab(data, callback) {
   };
 }
 
+/**
+ * @method getInventoryDataByHeads
+ * @description GET INVENTORY DETAIL BY COSTING HEADS
+ */
+export function getInventoryDataByHeads(Id, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getInventoryDataByHeads}/${Id}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method getPaymentTermsDataByHeads
+ * @description GET PAYMENT TERM DETAIL BY COSTING HEADS
+ */
+export function getPaymentTermsDataByHeads(Id, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${Id}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 
 
 

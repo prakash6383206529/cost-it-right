@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import TabRMCC from './TabRMCC';
 import TabSurfaceTreatment from './TabSurfaceTreatment';
 import TabOverheadProfit from './TabOverheadProfit';
+import TabPackagingFreight from './TabPackagingFreight';
 
 function CostingHeaderTabs(props) {
 
@@ -86,7 +87,7 @@ function CostingHeaderTabs(props) {
               />
             </TabPane>
             <TabPane tabId="4">
-              {'Packaging & Freight'}
+              <TabPackagingFreight />
             </TabPane>
             <TabPane tabId="5">
               {'Tool Cost'}

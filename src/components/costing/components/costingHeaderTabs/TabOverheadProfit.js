@@ -6,11 +6,13 @@ import { getOverheadProfitTabData, saveCostingOverheadProfitTab, } from '../../a
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
 import OverheadProfit from '../CostingHeadCosts/OverheadProfit';
+import Switch from "react-switch";
 
 function TabOverheadProfit(props) {
 
   const { register, handleSubmit, reset } = useForm();
   const [isOpen, setIsOpen] = useState(false);
+  const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [tabData, setTabData] = useState([]);
 
   const dispatch = useDispatch()
@@ -50,20 +52,19 @@ function TabOverheadProfit(props) {
   }
 
   /**
-  * @method setSurfaceCost
-  * @description SET SURFACE TREATMENT COST
+  * @method setOverheadDetail
+  * @description SET OVERHEAD DEATILS
   */
-  const setSurfaceCost = (surfaceGrid, index) => {
+  const setOverheadDetail = (overheadObj, index) => {
     let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(tempObj.TransporationCost)
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
-          //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
-          NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          SurfaceTreatmentCost: surfaceCost(surfaceGrid),
-          SurfaceTreatmentZBCDetails: surfaceGrid
+          CostingOverheadDetail: overheadObj,
+          OverheadNetCost: '',
+          NetOverheadAndProfitCost: '',
+          OverheadProfitNetCost: '',
         })
     })
 
@@ -74,39 +75,55 @@ function TabOverheadProfit(props) {
   }
 
   /**
-  * @method surfaceCost
-  * @description GET SURFACE TREATMENT COST
+  * @method setProfitDetail
+  * @description SET PROFIT DETAIL COST
   */
-  const surfaceCost = (item) => {
-    let cost = 0;
-    cost = item && item.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.SurfaceTreatmentCost);
-    }, 0)
-
-    return cost;
-  }
-
-  /**
-  * @method setTransportationCost
-  * @description SET TRANSPORTATION COST
-  */
-  const setTransportationCost = (transportationObj, index) => {
+  const setProfitDetail = (profitObj, index) => {
     let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(tempObj.SurfaceTreatmentCost) + checkForNull(transportationObj.TransporationCost)
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
-          //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
-          NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          TransporationCost: transportationObj.TransporationCost,
-          TransporationZBCDetails: transportationObj,
+          CostingProfitDetail: profitObj,
+          ProfitNetCost: '',
+          NetOverheadAndProfitCost: '',
+          OverheadProfitNetCost: '',
         })
     })
 
     setTimeout(() => {
       setTabData(tempArr)
     }, 200)
+
+  }
+
+  /**
+  * @method setRejectionDetail
+  * @description SET REJECTION DETAIL 
+  */
+  const setRejectionDetail = (rejectionObj, index) => {
+    let tempObj = tabData[index];
+
+    let tempArr = Object.assign([...tabData], {
+      [index]: Object.assign({}, tabData[index],
+        {
+          CostingRejectionDetail: rejectionObj,
+          RejectionNetCost: '',
+        })
+    })
+
+    setTimeout(() => {
+      setTabData(tempArr)
+    }, 200)
+
+  }
+
+  /**
+  * @method onPressApplicability
+  * @description SET ASSEMBLY LEVEL APPLICABILITY
+  */
+  const onPressApplicability = () => {
+    setIsApplicableForChildParts(!IsApplicableForChildParts)
   }
 
   /**
@@ -222,7 +239,26 @@ function TabOverheadProfit(props) {
               </Row>
 
               <Row>
-                <Col md="4" className="mb15">
+                <Col md="1" >{'Applicability:'}</Col>
+                <Col md="3" className="switch mb15">
+                  <label className="switch-level">
+                    <div className={'left-title'}>{'Assembly Level'}</div>
+                    <Switch
+                      onChange={onPressApplicability}
+                      checked={IsApplicableForChildParts}
+                      id="normal-switch"
+                      disabled={false}
+                      background="#4DC771"
+                      onColor="#4DC771"
+                      onHandleColor="#ffffff"
+                      offColor="#CCC"
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      height={20}
+                      width={46}
+                    />
+                    <div className={'right-title'}>{'Sub Assembly Level'}</div>
+                  </label>
 
                 </Col>
               </Row>
@@ -262,8 +298,9 @@ function TabOverheadProfit(props) {
                                         index={index}
                                         tabData={item}
                                         headCostRMCCBOPData={props.headCostRMCCBOPData}
-                                      // setSurfaceCost={setSurfaceCost}
-                                      // setTransportationCost={setTransportationCost}
+                                        setOverheadDetail={setOverheadDetail}
+                                        setProfitDetail={setProfitDetail}
+                                        setRejectionDetail={setRejectionDetail}
                                       />
                                     </div>
                                   </td>

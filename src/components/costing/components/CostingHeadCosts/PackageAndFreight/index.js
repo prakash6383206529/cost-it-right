@@ -25,8 +25,6 @@ function PackageAndFreight(props) {
             data={surfaceData}
             setSurfaceCost={props.setSurfaceCost}
           />
-
-
         </div>
       </div >
     </ >

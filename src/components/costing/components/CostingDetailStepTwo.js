@@ -9,6 +9,7 @@ import CostingHeadTabs from './CostingHeaderTabs/index'
 
 
 export const costingInfoContext = React.createContext()
+export const netHeadCostContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
 
@@ -307,14 +308,16 @@ function CostingDetailStepTwo(props) {
               <Row>
                 <Col md="12">
                   <costingInfoContext.Provider value={costData} >
-                    <CostingHeadTabs
-                      costData={costData}
-                      netPOPrice={netPOPrice}
-                      setHeaderCost={setHeaderCostRMCCTab}
-                      setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
-                      headCostRMCCBOPData={headCostRMCCBOPData}
-                      headCostSurfaceData={headCostSurfaceData}
-                    />
+                    <netHeadCostContext.Provider value={headCostRMCCBOPData} >
+                      <CostingHeadTabs
+                        costData={costData}
+                        netPOPrice={netPOPrice}
+                        setHeaderCost={setHeaderCostRMCCTab}
+                        setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
+                        headCostRMCCBOPData={headCostRMCCBOPData}
+                        headCostSurfaceData={headCostSurfaceData}
+                      />
+                    </netHeadCostContext.Provider>
                   </costingInfoContext.Provider>
                 </Col>
               </Row>

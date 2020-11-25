@@ -405,7 +405,7 @@ class AddMachineRate extends Component {
 
     closeProcessDrawer = (e = '') => {
         this.setState({ isOpenProcessDrawer: false }, () => {
-            //this.props.getMachineTypeSelectList(() => { })
+            this.props.getProcessesSelectList(() => { })
         })
     }
 
