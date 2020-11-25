@@ -7,6 +7,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
+import AddPackaging from '../../Drawers/AddPackaging';
 
 function PackageCost(props) {
 
@@ -17,8 +18,8 @@ function PackageCost(props) {
 
   const [gridData, setGridData] = useState([])
   const [rowObjData, setRowObjData] = useState({})
+  const [isEditFlag, setIsEditFlag] = useState(false)
   const [editIndex, setEditIndex] = useState('')
-  const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
@@ -39,76 +40,38 @@ function PackageCost(props) {
    */
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0) {
-
-      let rowArray = rowData && rowData.map(el => {
-        const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
-        const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
-        const SurfaceTreatmentCost = WithLaboutCost + WithOutLabourCost;
-
-        return {
-          OperationId: el.OperationId,
-          OperationName: el.OperationName,
-          SurfaceArea: '',
-          UOM: el.UnitOfMeasurement,
-          RatePerUOM: el.Rate,
-          LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
-          LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
-          IsLabourRateExist: el.IsLabourRateExist,
-          SurfaceTreatmentCost: 0,
-          SurfaceTreatmentDetailsId: '',
-        }
-      })
-
-      let tempArr = [...gridData, ...rowArray]
-      setGridData(tempArr)
-      selectedIds(tempArr)
+      let rowArray = {
+        PackagingId: rowData.PackagingId,
+        PackagingDescription: rowData.PackagingDescription,
+        PackagingPercentage: rowData.PackagingPercentage,
+        Applicability: rowData.Applicability,
+        PackagingCost: rowData.PackagingCost,
+      }
+      if (editIndex !== '' && isEditFlag) {
+        let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })
+        setGridData(tempArr)
+      } else {
+        let tempArr = [...gridData, rowArray]
+        setGridData(tempArr)
+      }
     }
     setDrawerOpen(false)
   }
 
-  /**
-  * @method selectedIds
-  * @description SELECTED IDS
-  */
-  const selectedIds = (tempArr) => {
-    tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OperationId) === false) {
-        let selectedIds = Ids;
-        selectedIds.push(el.OperationId)
-        setIds(selectedIds)
-      }
-      return null;
-    })
-  }
-
-  const deleteItem = (index, OperationId) => {
+  const deleteItem = (index) => {
     let tempArr = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true;
     })
-    setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
   }
 
   const editItem = (index) => {
     let tempArr = gridData && gridData.find((el, i) => i === index)
-    if (editIndex !== '') {
-      let tempArr = Object.assign([...gridData], { [editIndex]: rowObjData })
-      setGridData(tempArr)
-    }
     setEditIndex(index)
+    setIsEditFlag(true)
     setRowObjData(tempArr)
-  }
-
-  const SaveItem = (index) => {
-    setEditIndex('')
-  }
-
-  const CancelItem = (index) => {
-    let tempArr = Object.assign([...gridData], { [index]: rowObjData })
-    setEditIndex('')
-    setGridData(tempArr)
-    setRowObjData({})
+    setDrawerOpen(true)
   }
 
   const handleSurfaceAreaChange = (event, index) => {
@@ -127,8 +90,6 @@ function PackageCost(props) {
     }
   }
 
-  const OperationGridFields = 'OperationGridFields';
-
   /**
   * @method render
   * @description Renders the component
@@ -140,7 +101,7 @@ function PackageCost(props) {
           <Row>
             <Col md="10">
               <div className="left-border">
-                {'Surface Treatment Cost:'}
+                {'Packaging:'}
               </div>
             </Col>
             <Col col={'2'}>
@@ -148,7 +109,7 @@ function PackageCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD SURFACE TREATMENT</button>
+                <div className={'plus'}></div>ADD PACKAGING</button>
             </Col>
           </Row>
           <Row>
@@ -158,8 +119,9 @@ function PackageCost(props) {
               <Table className="table" size="sm" >
                 <thead>
                   <tr>
-                    <th>{`Operation Name`}</th>
-                    <th>{`Surface Area`}</th>
+                    <th>{`Packaging Description`}</th>
+                    <th>{`Packaging Cost`}</th>
+                    <th>{`Cost`}</th>
                     <th>{`Action`}</th>
                   </tr>
                 </thead>
@@ -168,52 +130,15 @@ function PackageCost(props) {
                     gridData &&
                     gridData.map((item, index) => {
                       return (
-                        editIndex === index ?
-                          <tr key={index}>
-                            <td>{item.OperationName}</td>
-                            <td style={{ width: 200 }}>
-                              {
-                                <TextFieldHookForm
-                                  label=""
-                                  name={`${OperationGridFields}[${index}]SurfaceArea`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      value: /^[0-9]*$/i,
-                                      //value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.'
-                                    },
-                                  }}
-                                  defaultValue={item.SurfaceArea}
-                                  className=""
-                                  customClassName={'withBorder'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleSurfaceAreaChange(e, index)
-                                  }}
-                                  errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].SurfaceArea : ''}
-                                  disabled={false}
-                                />
-                              }
-                            </td>
-                            <td>
-                              <button className="SaveIcon mt15 mr-2" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
-                            </td>
-                          </tr>
-                          :
-                          <tr key={index}>
-                            <td>{item.OperationName}</td>
-                            <td>{item.OperationName}</td>
-                            <td>
-                              <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
-                            </td>
-                          </tr>
+                        <tr key={index}>
+                          <td>{item.PackagingDescription}</td>
+                          <td>{item.PackagingPercentage}</td>
+                          <td>{item.PackagingCost}</td>
+                          <td>
+                            <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                            <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                          </td>
+                        </tr>
                       )
                     })
                   }
@@ -231,13 +156,14 @@ function PackageCost(props) {
 
         </div>
       </div>
-      {isDrawerOpen && <AddSurfaceTreatment
+      {isDrawerOpen && <AddPackaging
         isOpen={isDrawerOpen}
         closeDrawer={closeDrawer}
-        isEditFlag={false}
+        isEditFlag={isEditFlag}
         ID={''}
+        editIndex={editIndex}
+        rowObjData={rowObjData}
         anchor={'right'}
-        Ids={Ids}
       />}
     </ >
   );

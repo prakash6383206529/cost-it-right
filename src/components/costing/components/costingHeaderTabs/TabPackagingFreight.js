@@ -11,7 +11,6 @@ function TabPackagingFreight(props) {
 
   const { handleSubmit, watch, reset } = useForm();
   const [isOpen, setIsOpen] = useState(false);
-  const [isIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
   const [tabData, setTabData] = useState([]);
   const [surfaceTotal, setSurfaceTotal] = useState('');
   const [transportationTotal, setTransportationTotal] = useState('');
@@ -114,14 +113,6 @@ function TabPackagingFreight(props) {
   }
 
   /**
-  * @method onPressIncludeSurfaceTreatment
-  * @description SET INCLUDE SURFACE TREATMENT
-  */
-  const onPressIncludeSurfaceTreatment = () => {
-    setIsIncludeSurfaceTreatment(!isIncludeSurfaceTreatment)
-  }
-
-  /**
   * @method saveCosting
   * @description SAVE COSTING
   */
@@ -145,7 +136,7 @@ function TabPackagingFreight(props) {
       CostingId: costData.CostingId,
       CostingNumber: costData.CostingNumber,
       ShareOfBusinessPercent: costData.ShareOfBusinessPercent,
-      IsIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatment,
+      IsIncludeSurfaceTreatmentWithOverheadAndProfit: '',
       CostingPartDetails: tabData,
     }
 
@@ -178,27 +169,6 @@ function TabPackagingFreight(props) {
                 </Col>
               </Row>
 
-              <Row>
-                <Col md="4" className="mb15">
-                  <label
-                    className={`custom-checkbox`}
-                    onChange={onPressIncludeSurfaceTreatment}
-                  >
-                    Include Surface Treatment Cost in Overhead & Profit
-                      <input
-                      type="checkbox"
-                      checked={isIncludeSurfaceTreatment}
-                      disabled={false}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={isIncludeSurfaceTreatment}
-                      onChange={onPressIncludeSurfaceTreatment}
-                    />
-                  </label>
-                </Col>
-              </Row>
-
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
 
                 <Row>
@@ -206,40 +176,38 @@ function TabPackagingFreight(props) {
                     <thead>
                       <tr>
                         <th style={{ width: '100px' }}>{``}</th>
-                        <th style={{ width: '100px' }}>{`Surface Treatment Cost`}</th>
-                        <th style={{ width: '150px' }}>{`Transportation Cost`}</th>
-                        <th style={{ width: '150px' }}>{`Total Surface Treatment Cost`}</th>
+                        <th style={{ width: '100px' }}>{`Net Packaging Cost`}</th>
+                        <th style={{ width: '150px' }}>{`Net Freight Cost`}</th>
                       </tr>
                     </thead>
                     <tbody >
                       {
-                        tabData && tabData.map((item, index) => {
-                          return (
-                            < >
-                              <tr key={index} onClick={() => toggle(index)}>
-                                <td>{item.PartName}</td>
-                                <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
-                                <td>{item.TransporationCost !== null ? checkForDecimalAndNull(item.TransporationCost, 2) : 0}</td>
-                                <td>{item.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.NetSurfaceTreatmentCost, 2) : 0}</td>
-                              </tr>
-                              {item.IsOpen &&
-                                <tr>
-                                  <td colSpan={4}>
-                                    <div>
-                                      <PackageAndFreight
-                                        index={index}
-                                        surfaceData={item.SurfaceTreatmentZBCDetails}
-                                        transportationData={item.TransporationZBCDetails}
-                                        setSurfaceCost={setSurfaceCost}
-                                        setTransportationCost={setTransportationCost}
-                                      />
-                                    </div>
-                                  </td>
-                                </tr>
-                              }
-                            </>
-                          )
-                        })
+                        // tabData && tabData.map((item, index) => {
+                        //   return (
+                        //     < >
+                        //       <tr key={index} onClick={() => toggle(index)}>
+                        //         <td>{item.PartName}</td>
+                        //         <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
+                        //         <td>{item.TransporationCost !== null ? checkForDecimalAndNull(item.TransporationCost, 2) : 0}</td>
+                        //       </tr>
+                        //       {item.IsOpen &&
+                        <tr>
+                          <td colSpan={4}>
+                            <div>
+                              <PackageAndFreight
+                              //index={index}
+                              //surfaceData={item.SurfaceTreatmentZBCDetails}
+                              //transportationData={item.TransporationZBCDetails}
+                              //setSurfaceCost={setSurfaceCost}
+                              //setTransportationCost={setTransportationCost}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                        //       }
+                        //     </>
+                        //   )
+                        // })
                       }
 
                     </tbody>

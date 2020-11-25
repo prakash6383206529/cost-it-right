@@ -19,7 +19,6 @@ function ToolCost(props) {
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
-  const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
@@ -31,6 +30,9 @@ function ToolCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    setEditIndex('')
+    setRowObjData({})
+    setIsEditFlag(false)
     setDrawerOpen(true)
   }
 
@@ -48,21 +50,17 @@ function ToolCost(props) {
         Quantity: rowData.Quantity,
         ToolCost: rowData.ToolCost,
         Life: rowData.Life,
-        NetToolCost: rowData.NetToolCost,
+        TotalToolCost: rowData.TotalToolCost,
       }
-      let tempArr = [...gridData, rowArray]
-      setGridData(tempArr)
+      if (editIndex !== '' && isEditFlag) {
+        let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })
+        setGridData(tempArr)
+      } else {
+        let tempArr = [...gridData, rowArray]
+        setGridData(tempArr)
+      }
     }
     setDrawerOpen(false)
-    selectedIds()
-  }
-
-  /**
-  * @method selectedIds
-  * @description SELECTED IDS
-  */
-  const selectedIds = () => {
-
   }
 
   const deleteItem = (index) => {
@@ -75,46 +73,15 @@ function ToolCost(props) {
 
   const editItem = (index) => {
     let tempArr = gridData && gridData.find((el, i) => i === index)
-    if (editIndex !== '') {
-      let tempArr = Object.assign([...gridData], { [editIndex]: rowObjData })
-      setGridData(tempArr)
-    }
+    // if (editIndex !== '') {
+    //   let tempArr = Object.assign([...gridData], { [editIndex]: rowObjData })
+    //   setGridData(tempArr)
+    // }
     setEditIndex(index)
+    setIsEditFlag(true)
     setRowObjData(tempArr)
+    setDrawerOpen(true)
   }
-
-  const SaveItem = (index) => {
-    setEditIndex('')
-  }
-
-  const CancelItem = (index) => {
-    let tempArr = Object.assign([...gridData], { [index]: rowObjData })
-    setEditIndex('')
-    setGridData(tempArr)
-    setRowObjData({})
-  }
-
-  const handleQuantityChange = (event, index) => {
-    let tempArr = [];
-    let tempData = gridData[index];
-
-    if (!isNaN(event.target.value)) {
-      const NetCost = tempData.ToolCost * event.target.value;
-      tempData = { ...tempData, Quantity: parseInt(event.target.value), NetCost: NetCost, NetToolCost: NetCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-
-    } else {
-      toastr.warning('Please enter valid number.')
-    }
-  }
-
-  const netCost = (item) => {
-    const cost = (item.Rate * item.Quantity) + (item.LabourRate * item.LabourQuantity);
-    return checkForDecimalAndNull(cost, 2);
-  }
-
-  const ToolGridFields = 'ToolGridFields';
 
   /**
   * @method render
@@ -168,7 +135,7 @@ function ToolCost(props) {
                           <td style={{ width: 200 }}>{item.Quantity}</td>
                           <td>{item.ToolCost}</td>
                           <td>{item.Life}</td>
-                          <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
+                          <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 2) : 0}</td>
                           <td>
                             <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                             <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
@@ -195,8 +162,10 @@ function ToolCost(props) {
       {isDrawerOpen && <AddTool
         isOpen={isDrawerOpen}
         closeDrawer={closeDrawer}
-        isEditFlag={false}
+        isEditFlag={isEditFlag}
         ID={''}
+        editIndex={editIndex}
+        rowObjData={rowObjData}
         anchor={'right'}
       />}
     </ >

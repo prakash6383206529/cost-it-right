@@ -2,15 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, saveCostingSurfaceTreatmentTab } from '../../actions/Costing';
+import { getOverheadProfitTabData, saveCostingOverheadProfitTab, } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
 import OverheadProfit from '../CostingHeadCosts/OverheadProfit';
+import Switch from "react-switch";
 
 function TabOverheadProfit(props) {
 
   const { register, handleSubmit, reset } = useForm();
   const [isOpen, setIsOpen] = useState(false);
+  const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [tabData, setTabData] = useState([]);
 
   const dispatch = useDispatch()
@@ -24,12 +26,13 @@ function TabOverheadProfit(props) {
         PartId: costData.PartId,
         PlantId: costData.PlantId,
       }
-      // dispatch(getSurfaceTreatmentTabData(data, (res) => {
-      //   if (res && res.data && res.data.Result) {
-      //     let Data = res.data.Data;
-      //     setTabData(Data.CostingPartDetails)
-      //   }
-      // }))
+      dispatch(getOverheadProfitTabData(data, (res) => {
+        console.log('res: >>>>>>>>> ', res);
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          setTabData(Data.CostingPartDetails)
+        }
+      }))
     }
   }, [costData]);
 
@@ -49,20 +52,19 @@ function TabOverheadProfit(props) {
   }
 
   /**
-  * @method setSurfaceCost
-  * @description SET SURFACE TREATMENT COST
+  * @method setOverheadDetail
+  * @description SET OVERHEAD DEATILS
   */
-  const setSurfaceCost = (surfaceGrid, index) => {
+  const setOverheadDetail = (overheadObj, index) => {
     let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(tempObj.TransporationCost)
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
-          //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
-          NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          SurfaceTreatmentCost: surfaceCost(surfaceGrid),
-          SurfaceTreatmentZBCDetails: surfaceGrid
+          CostingOverheadDetail: overheadObj,
+          OverheadNetCost: '',
+          NetOverheadAndProfitCost: '',
+          OverheadProfitNetCost: '',
         })
     })
 
@@ -73,39 +75,55 @@ function TabOverheadProfit(props) {
   }
 
   /**
-  * @method surfaceCost
-  * @description GET SURFACE TREATMENT COST
+  * @method setProfitDetail
+  * @description SET PROFIT DETAIL COST
   */
-  const surfaceCost = (item) => {
-    let cost = 0;
-    cost = item && item.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.SurfaceTreatmentCost);
-    }, 0)
-
-    return cost;
-  }
-
-  /**
-  * @method setTransportationCost
-  * @description SET TRANSPORTATION COST
-  */
-  const setTransportationCost = (transportationObj, index) => {
+  const setProfitDetail = (profitObj, index) => {
     let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(tempObj.SurfaceTreatmentCost) + checkForNull(transportationObj.TransporationCost)
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
-          //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
-          NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          TransporationCost: transportationObj.TransporationCost,
-          TransporationZBCDetails: transportationObj,
+          CostingProfitDetail: profitObj,
+          ProfitNetCost: '',
+          NetOverheadAndProfitCost: '',
+          OverheadProfitNetCost: '',
         })
     })
 
     setTimeout(() => {
       setTabData(tempArr)
     }, 200)
+
+  }
+
+  /**
+  * @method setRejectionDetail
+  * @description SET REJECTION DETAIL 
+  */
+  const setRejectionDetail = (rejectionObj, index) => {
+    let tempObj = tabData[index];
+
+    let tempArr = Object.assign([...tabData], {
+      [index]: Object.assign({}, tabData[index],
+        {
+          CostingRejectionDetail: rejectionObj,
+          RejectionNetCost: '',
+        })
+    })
+
+    setTimeout(() => {
+      setTabData(tempArr)
+    }, 200)
+
+  }
+
+  /**
+  * @method onPressApplicability
+  * @description SET ASSEMBLY LEVEL APPLICABILITY
+  */
+  const onPressApplicability = () => {
+    setIsApplicableForChildParts(!IsApplicableForChildParts)
   }
 
   /**
@@ -114,29 +132,85 @@ function TabOverheadProfit(props) {
   */
   const saveCosting = () => {
     const data = {
-      NetRawMaterialsCost: '',
-      NetBoughtOutPartCost: '',
-      NetConversionCost: '',
-      NetOperationCost: '',
-      NetProcessCost: '',
-      NetToolsCost: '',
-      NetTotalRMBOPCC: '',
-      NetSurfaceTreatmentCost: 0,
-      NetOverheadAndProfitCost: 0,
-      NetPackagingAndFreight: 0,
-      NetToolCost: 0,
-      DiscountsAndOtherCost: 0,
-      TotalCost: '',
-      NetPOPrice: '',
-      LoggedInUserId: '',
-      CostingId: costData.CostingId,
-      CostingNumber: costData.CostingNumber,
-      ShareOfBusinessPercent: costData.ShareOfBusinessPercent,
-      CostingPartDetails: tabData,
+      "CostingId": "00000000-0000-0000-0000-000000000000",
+      "OverheadProfitDetailId": "00000000-0000-0000-0000-000000000000",
+      "PartId": "00000000-0000-0000-0000-000000000000",
+      "PartNumber": "string",
+      "NetPOPrice": 0,
+      "LoggedInUserId": "00000000-0000-0000-0000-000000000000",
+      "NetOverheadAndProfitCost": 0,
+      "IsApplicableForChildParts": true,
+      "OverheadNetCost": 0,
+      "ProfitNetCost": 0,
+      "RejectionNetCost": 0,
+      "OverheadProfitNetCost": 0,
+      "ModelTypeId": "00000000-0000-0000-0000-000000000000",
+      "ModelType": "string",
+      "CostingOverheadDetail": {
+        "OverheadId": "00000000-0000-0000-0000-000000000000",
+        "IsOverheadCombined": true,
+        "OverheadApplicabilityId": "00000000-0000-0000-0000-000000000000",
+        "OverheadApplicability": "string",
+        "OverheadPercentage": 0,
+        "OverheadCombinedCost": 0,
+        "OverheadCombinedTotalCost": 0,
+        "OverheadCCPercentage": 0,
+        "OverheadCCCost": 0,
+        "OverheadCCTotalCost": 0,
+        "IsOverheadCCApplicable": true,
+        "OverheadBOPPercentage": 0,
+        "OverheadBOPCost": 0,
+        "OverheadBOPTotalCost": 0,
+        "IsOverheadBOPApplicable": true,
+        "OverheadRMPercentage": 0,
+        "OverheadRMCost": 0,
+        "OverheadRMTotalCost": 0,
+        "IsOverheadRMApplicable": true,
+        "OverheadFixedPercentage": 0,
+        "OverheadFixedCost": 0,
+        "OverheadFixedTotalCost": 0,
+        "IsOverheadFixedApplicable": true,
+        "IsSurfaceTreatmentApplicable": true
+      },
+      "CostingProfitDetail": {
+        "ProfitId": "00000000-0000-0000-0000-000000000000",
+        "ProfitApplicabilityId": "00000000-0000-0000-0000-000000000000",
+        "ProfitApplicability": "string",
+        "IsProfitCombined": true,
+        "ProfitPercentage": 0,
+        "ProfitCombinedCost": 0,
+        "ProfitCombinedTotalCost": 0,
+        "ProfitCCPercentage": 0,
+        "ProfitCCCost": 0,
+        "ProfitCCTotalCost": 0,
+        "IsProfitCCApplicable": true,
+        "ProfitBOPPercentage": 0,
+        "ProfitBOPCost": 0,
+        "ProfitBOPTotalCost": 0,
+        "IsProfitBOPApplicable": true,
+        "ProfitRMPercentage": 0,
+        "ProfitRMCost": 0,
+        "ProfitRMTotalCost": 0,
+        "IsProfitRMApplicable": true,
+        "ProfitFixedPercentage": 0,
+        "ProfitFixedCost": 0,
+        "ProfitFixedTotalCost": 0,
+        "IsProfitFixedApplicable": true,
+        "IsSurfaceTreatmentApplicable": true
+      },
+      "CostingRejectionDetail": {
+        "RejectionApplicabilityId": "00000000-0000-0000-0000-000000000000",
+        "RejectionApplicability": "string",
+        "RejectionPercentage": 0,
+        "RejectionCost": 0,
+        "RejectionTotalCost": 0,
+        "IsSurfaceTreatmentApplicable": true
+      }
+
     }
 
-    dispatch(saveCostingSurfaceTreatmentTab(data, res => {
-      console.log('saveCostingSurfaceTreatmentTab: ', res);
+    dispatch(saveCostingOverheadProfitTab(data, res => {
+      console.log('saveCostingOverheadProfitTab: ', res);
     }))
 
   }
@@ -165,7 +239,26 @@ function TabOverheadProfit(props) {
               </Row>
 
               <Row>
-                <Col md="4" className="mb15">
+                <Col md="1" >{'Applicability:'}</Col>
+                <Col md="3" className="switch mb15">
+                  <label className="switch-level">
+                    <div className={'left-title'}>{'Assembly Level'}</div>
+                    <Switch
+                      onChange={onPressApplicability}
+                      checked={IsApplicableForChildParts}
+                      id="normal-switch"
+                      disabled={false}
+                      background="#4DC771"
+                      onColor="#4DC771"
+                      onHandleColor="#ffffff"
+                      offColor="#CCC"
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      height={20}
+                      width={46}
+                    />
+                    <div className={'right-title'}>{'Sub Assembly Level'}</div>
+                  </label>
 
                 </Col>
               </Row>
@@ -203,10 +296,11 @@ function TabOverheadProfit(props) {
                                     <div>
                                       <OverheadProfit
                                         index={index}
-                                      // surfaceData={item.SurfaceTreatmentZBCDetails}
-                                      // transportationData={item.TransporationZBCDetails}
-                                      // setSurfaceCost={setSurfaceCost}
-                                      // setTransportationCost={setTransportationCost}
+                                        tabData={item}
+                                        headCostRMCCBOPData={props.headCostRMCCBOPData}
+                                        setOverheadDetail={setOverheadDetail}
+                                        setProfitDetail={setProfitDetail}
+                                        setRejectionDetail={setRejectionDetail}
                                       />
                                     </div>
                                   </td>

@@ -426,8 +426,8 @@ export const API = {
   //COSTING API
   createZBCCosting: `${BASE_URL}/costing/create-zbc-costing`,
   createVBCCosting: `${BASE_URL}/costing/create-vbc-costing`,
-  getZBCExistingCosting: `${BASE_URL}/costing/get-zbc-exsit-costings-list`,
-  getVBCExistingCosting: `${BASE_URL}/costing/get-vbc-exsit-costings-list`,
+  getZBCExistingCosting: `${BASE_URL}/costing/get-zbc-exist-costings-list`,
+  getVBCExistingCosting: `${BASE_URL}/costing/get-vbc-exist-costings-list`,
   getZBCDetailByPlantId: `${BASE_URL}/costing/get-zbc-plant-by-id`,
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
@@ -445,6 +445,12 @@ export const API = {
   getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-zbc-costing-detail-surface-treatment`,
   saveCostingSurfaceTreatmentTab: `${BASE_URL}/costing/save-zbc-costing-surface-treatment-details`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
+
+  getOverheadProfitTabData: `${BASE_URL}/costing/get-zbc-costing-detail-overhead-and-profit`,
+  getOverheadProfitDataByModelType: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
+  saveCostingOverheadProfitTab: `${BASE_URL}/costing/save-zbc-costing-overhead-profit-details`,
+  getInventoryDataByHeads: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
+  getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
 
   getCostingPartDetails: `${BASE_URL}/costing/get-costing-part-details`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,

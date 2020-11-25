@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { useForm, Controller, useWatch } from "react-hook-form";
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect, useContext } from 'react';
+import { useForm, } from "react-hook-form";
+import { useDispatch, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import { getRMCCTabData, saveCostingRMCCTab } from '../../actions/Costing';
@@ -9,11 +9,13 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../.
 
 function TabRMCC(props) {
 
-  const { register, handleSubmit, watch, reset } = useForm();
-  const [isOpen, setIsOpen] = useState(false);
+  const { netPOPrice } = props;
+
+  const { handleSubmit, } = useForm();
+
   const [netProcessCost, setNetProcessCost] = useState('');
   const [netOperationCost, setNetOperationCost] = useState('');
-  const [netToolsCost, setNetToolsCost] = useState('');
+  const [netToolsCost, setNetToolsCost] = useState(0);
   const [tabData, setTabData] = useState([]);
 
   const dispatch = useDispatch()
@@ -58,35 +60,12 @@ function TabRMCC(props) {
   }
 
   /**
-  * @method getGrandTotalCost
-  * @description GET GRAND TOTAL COST
-  */
-  const getGrandTotalCost = (data) => {
-    let GrandTotalCost = checkForNull(data.TotalRawMaterialsCost) + checkForNull(data.TotalBoughtOutPartCost) + checkForNull(data.TotalConversionCost)
-    return GrandTotalCost;
-  }
-
-  /**
   * @method setRMCost
   * @description SET RM COST
   */
   const setRMCost = (rmGrid, index) => {
     let tempObj = tabData[index];
     let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(tempObj.TotalConversionCost)
-
-    // let data = rmGrid && rmGrid.map(el => {
-    //   return {
-    //     RawMaterialId: el.RawMaterialId,
-    //     UOM: el.UOM,
-    //     RMName: el.RMName,
-    //     RMRate: el.RMRate,
-    //     ScrapRate: el.ScrapRate,
-    //     FinishWeight: el.FinishWeight,
-    //     GrossWeight: el.GrossWeight,
-    //     NetLandedCost: el.NetLandedCost,
-    //     WeightCalculatorRequest: el.WeightCalculatorRequest,
-    //   }
-    // })
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
@@ -118,18 +97,6 @@ function TabRMCC(props) {
   const setBOPCost = (bopGrid, index) => {
     let tempObj = tabData[index];
     let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(tempObj.TotalConversionCost);
-
-    // let data = bopGrid && bopGrid.map(el => {
-    //   return {
-    //     BOPPartName: el.BoughtOutPartName,
-    //     BOPPartNumber: el.BoughtOutPartNumber,
-    //     BoughtOutPartId: el.BoughtOutPartId,
-    //     Currency: el.Currency,
-    //     LandedCostINR: el.NetLandedCost,
-    //     NetBoughtOutPartCost: el.NetBOPCost,
-    //     Quantity: el.Quantity,
-    //   }
-    // })
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
@@ -164,20 +131,6 @@ function TabRMCC(props) {
 
     let data = conversionGrid && conversionGrid.CostingProcessCostResponse && conversionGrid.CostingProcessCostResponse.map(el => {
       return el;
-      // return {
-      //   Cavity: el.Cavity,
-      //   CycleTime: el.CycleTime,
-      //   Efficiency: el.Efficiency,
-      //   MHR: el.MachineRate,
-      //   MachineId: el.MachineId,
-      //   MachineName: el.MachineName,
-      //   ProcessDescription: el.ProcessDescription,
-      //   ProcessId: el.ProcessId,
-      //   ProcessName: el.ProcessName,
-      //   Quantity: el.Quantity,
-      //   Tonnage: el.MachineTonnage,
-      //   UOM: el.UOM,
-      // }
     })
 
     let tempArr = Object.assign([...tabData], {
@@ -206,17 +159,6 @@ function TabRMCC(props) {
 
     let data = operationGrid && operationGrid.CostingOperationCostResponse && operationGrid.CostingOperationCostResponse.map(el => {
       return el;
-      // return {
-      //   LabourQuantity: el.LabourQuantity,
-      //   LabourRate: el.LabourRate,
-      //   OperationCode: el.OperationCode,
-      //   OperationCost: el.NetCost,
-      //   OperationId: el.OperationId,
-      //   OperationName: el.OperationName,
-      //   Quantity: el.Quantity,
-      //   Rate: el.Rate,
-      //   UOM: el.UnitOfMeasurement,
-      // }
     })
 
     let tempArr = Object.assign([...tabData], {
@@ -234,19 +176,6 @@ function TabRMCC(props) {
   }
 
   /**
-  * @method netGrandToolsCost
-  * @description GET GRAND TOOLS COST
-  */
-  const netGrandToolsCost = (item) => {
-    console.log('item: ', item);
-    let NetCost = 0;
-    NetCost = item && item.CostingToolsCostResponse !== undefined && item.CostingToolsCostResponse.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetToolCost);
-    }, 0)
-    return NetCost;
-  }
-
-  /**
    * @method setToolCost
    * @description SET TOOL COST
    */
@@ -258,35 +187,25 @@ function TabRMCC(props) {
 
     let data = toolGrid && toolGrid.CostingOperationCostResponse && toolGrid.CostingToolsCostResponse.map(el => {
       return el;
-      // return {
-      //   Life: el.Life,
-      //   ProcessOrOperation: el.ProcessOrOperation,
-      //   Quantity: el.Quantity,
-      //   ToolCategory: el.ToolCategory,
-      //   ToolCost: el.ToolCost,
-      //   ToolName: el.ToolName,
-      //   ToolOperationId: el.ToolOperationId,
-      // }
     })
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
           GrandTotalCost: GrandTotalCost,
-          //TotalConversionCost: toolGrid.NetConversionCost,
           IsShowToolCost: true,
           CostingConversionCost: {
             ...toolGrid,
             //NetConversionCost: toolGrid.NetConversionCost,
-            ToolsCostTotal: checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2),
+            //ToolsCostTotal: checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2),
             CostingToolsCostResponse: data,
           },
         })
     })
 
     setTimeout(() => {
+      setNetToolsCost(checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2))
       setTabData(tempArr)
-      setNetToolsCost(toolGrid.ToolCostTotal)
     }, 500)
   }
 
@@ -350,10 +269,10 @@ function TabRMCC(props) {
       NetSurfaceTreatmentCost: 0,
       NetOverheadAndProfitCost: 0,
       NetPackagingAndFreight: 0,
-      NetToolCost: 0,
+      NetToolCost: netToolsCost,
       DiscountsAndOtherCost: 0,
       TotalCost: getTotalCost(),
-      NetPOPrice: getTotalCost(),
+      NetPOPrice: netPOPrice,
       LoggedInUserId: loggedInUserId(),
       CostingId: costData.CostingId,
       CostingNumber: costData.CostingNumber,

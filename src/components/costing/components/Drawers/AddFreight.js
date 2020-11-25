@@ -3,28 +3,27 @@ import { useForm, Controller, useWatch, } from "react-hook-form";
 import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getOperationDrawerDataList } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { netHeadCostContext } from '../CostingDetailStepTwo';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
-import { checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import Switch from "react-switch";
 
-function AddTool(props) {
+function AddFreight(props) {
 
   const { rowObjData, isEditFlag } = props;
 
   const defaultValues = {
-    ToolOperationId: rowObjData && rowObjData.ToolOperationId !== undefined ? rowObjData.ToolOperationId : '',
-    ProcessOrOperation: rowObjData && rowObjData.ProcessOrOperation !== undefined ? rowObjData.ProcessOrOperation : '',
-    ToolCategory: rowObjData && rowObjData.ToolCategory !== undefined ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
-    ToolName: rowObjData && rowObjData.ToolName !== undefined ? rowObjData.ToolName : '',
+    FreightId: rowObjData && rowObjData.FreightId !== undefined ? rowObjData.FreightId : '',
+    RateCriteria: rowObjData && rowObjData.RateCriteria !== undefined ? rowObjData.RateCriteria : '',
+    //ToolCategory: rowObjData && rowObjData.ToolCategory !== undefined ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
     Quantity: rowObjData && rowObjData.Quantity !== undefined ? rowObjData.Quantity : '',
-    ToolCost: rowObjData && rowObjData.ToolCost !== undefined ? rowObjData.ToolCost : '',
-    Life: rowObjData && rowObjData.Life !== undefined ? rowObjData.Life : '',
-    TotalToolCost: rowObjData && rowObjData.TotalToolCost !== undefined ? rowObjData.TotalToolCost : '',
+    Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
+    Cost: rowObjData && rowObjData.Cost !== undefined ? rowObjData.Cost : '',
   }
 
-  const { register, handleSubmit, control, setValue, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
@@ -32,20 +31,22 @@ function AddTool(props) {
 
   const dispatch = useDispatch()
 
-  const costData = useContext(costingInfoContext)
-  const [tool, setTool] = useState([]);
-  //const [formData, setFormData] = useState({});
+  const headCostData = useContext(netHeadCostContext)
+
+  const [rateCriteria, setRateCriteria] = useState([]);
+  const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
   const fieldValues = useWatch({
     control,
-    name: ['Quantity', 'ToolCost', 'Life'],
+    name: ['PackagingPercentage'],
   });
-  console.log('fieldValues: ', fieldValues);
 
   useEffect(() => {
-    getNetToolCost()
-    setValue('TotalToolCost', getNetToolCost())
+    if (rateCriteria) {
+      calculateApplicabilityCost(rateCriteria.value)
+    }
   }, [fieldValues]);
+
 
   const toggleDrawer = (event, formData = {}) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -54,14 +55,6 @@ function AddTool(props) {
     props.closeDrawer('', formData)
   };
 
-  /**
-  * @method getNetToolCost
-  * @description GET NET TOOL COST
-  */
-  const getNetToolCost = () => {
-    const cost = checkForNull(fieldValues.Quantity) * checkForNull(fieldValues.ToolCost) / checkForNull(fieldValues.Life)
-    return checkForDecimalAndNull(cost, 2);
-  }
 
   /**
   * @method renderListing
@@ -69,33 +62,43 @@ function AddTool(props) {
   */
   const renderListing = (label) => {
 
-    if (label === 'ToolCategory') {
+    if (label === 'Applicability') {
       return [
-        { label: 'TOOL 1', value: 'TOOL 1' },
-        { label: 'TOOL 2', value: 'TOOL 2' },
+        { label: 'RM', value: 'RM' },
+        { label: 'CC', value: 'CC' },
+        { label: 'RM + CC', value: 'RM + CC' },
       ];
     }
 
   }
 
   /**
-  * @method handleToolChange
-  * @description  TOOL CHANGE HANDLE
+  * @method handleRateCriteriaChange
+  * @description  RATE CRITERIA CHANGE HANDLE
   */
-  const handleToolChange = (newValue) => {
+  const handleRateCriteriaChange = (newValue) => {
     if (newValue && newValue !== '') {
-      setTool(newValue)
+      setRateCriteria(newValue)
+      calculateApplicabilityCost(newValue.value)
     } else {
-      setTool([])
+      setRateCriteria([])
     }
   }
 
   /**
-  * @method addRow
-  * @description ADD ROW IN TO RM COST GRID
-  */
-  const addRow = () => {
-    //toggleDrawer('')
+   * @method calculateApplicabilityCost
+   * @description APPLICABILITY CALCULATION
+   */
+  const calculateApplicabilityCost = (Text) => {
+
+  }
+
+  /**
+    * @method IsPartTruckToggle
+    * @description FREIGHT TYPE 
+    */
+  const IsPartTruckToggle = () => {
+    setIsPartTruckLoad(!IsPartTruckLoad)
   }
 
   /**
@@ -103,20 +106,18 @@ function AddTool(props) {
   * @description used to Reset form
   */
   const cancel = () => {
-    reset({ ToolCategory: '' })
+    reset({ Applicability: '' })
     props.closeDrawer('', {})
   }
 
   const onSubmit = data => {
     let formData = {
-      ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
-      ProcessOrOperation: data.ProcessOrOperation,
-      ToolCategory: data.ToolCategory.label,
-      ToolName: data.ToolName,
+      FreightId: isEditFlag ? rowObjData.FreightId : '',
+      IsPartTruckLoad: IsPartTruckLoad,
+      RateCriteria: data.RateCriteria,
       Quantity: data.Quantity,
-      ToolCost: data.ToolCost,
-      Life: data.Life,
-      TotalToolCost: data.TotalToolCost,
+      Rate: data.Rate,
+      Cost: data.Cost,
     }
     toggleDrawer('', formData)
   }
@@ -134,7 +135,7 @@ function AddTool(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Tool'}</h3>
+                  <h3>{'ADD Freight'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -145,53 +146,52 @@ function AddTool(props) {
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
               <>
                 <Row>
-                  <Col md="12">
-                    <TextFieldHookForm
-                      label="Process/Operation"
-                      name={'ProcessOrOperation'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProcessOrOperation}
-                      disabled={isEditFlag ? true : false}
-                    />
+                  <Col md="12" className="switch mb15">
+                    <label className="switch-level">
+                      <div className={'left-title'}>{'Freight Type'}</div>
+                    </label>
                   </Col>
-
+                  <Col md="12" className="switch mb15">
+                    <label className="switch-level">
+                      <div className={'left-title'}>{'Full Truck Load'}</div>
+                      <Switch
+                        onChange={IsPartTruckToggle}
+                        checked={IsPartTruckLoad}
+                        id="normal-switch"
+                        disabled={false}
+                        background="#4DC771"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#4DC771"
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        height={20}
+                        width={46}
+                      />
+                      <div className={'right-title'}>{'Part Truck Load'}</div>
+                    </label>
+                  </Col>
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={'Tool Category'}
-                      name={'ToolCategory'}
+                      label={'Rate Criteria'}
+                      name={'RateCriteria'}
                       placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      defaultValue={tool.length !== 0 ? tool : ''}
-                      options={renderListing('ToolCategory')}
+                      defaultValue={rateCriteria.length !== 0 ? rateCriteria : ''}
+                      options={renderListing('RateCriteria')}
                       mandatory={true}
-                      handleChange={handleToolChange}
-                      errors={errors.ToolCategory}
+                      handleChange={handleRateCriteriaChange}
+                      errors={errors.RateCriteria}
                       disabled={isEditFlag ? true : false}
                     />
                   </Col>
-
                   <Col md="12">
                     <TextFieldHookForm
-                      label="Tool Name"
-                      name={'ToolName'}
+                      label="Rate"
+                      name={'Rate'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -208,11 +208,10 @@ function AddTool(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.ToolName}
-                      disabled={isEditFlag ? true : false}
+                      errors={errors.Rate}
+                      disabled={true}
                     />
                   </Col>
-
                   <Col md="12">
                     <TextFieldHookForm
                       label="Quantity"
@@ -225,7 +224,7 @@ function AddTool(props) {
                         required: true,
                         pattern: {
                           value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
+                          message: 'Invalid Number.',
                         },
                         // maxLength: 4,
                       }}
@@ -238,66 +237,18 @@ function AddTool(props) {
                     />
                   </Col>
 
+
+
                   <Col md="12">
                     <TextFieldHookForm
-                      label="Tool Cost"
-                      name={'ToolCost'}
+                      label="Cost"
+                      name={'Cost'}
                       Controller={Controller}
                       control={control}
                       register={register}
                       mandatory={true}
                       rules={{
                         required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ToolCost}
-                      disabled={false}
-                    />
-                  </Col>
-
-                  <Col md="12">
-                    <TextFieldHookForm
-                      label="Life/Amortization"
-                      name={'Life'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.Life}
-                      disabled={false}
-                    />
-                  </Col>
-
-                  <Col md="12">
-                    <TextFieldHookForm
-                      label="Total Tool Cost"
-                      name={'TotalToolCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
                         // pattern: {
                         //   value: /^[0-9]*$/i,
                         //   message: 'Invalid Number.'
@@ -308,7 +259,7 @@ function AddTool(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.TotalToolCost}
+                      errors={errors.Cost}
                       disabled={true}
                     />
                   </Col>
@@ -325,8 +276,7 @@ function AddTool(props) {
 
                     <button
                       type={'submit'}
-                      className="submit-button mr5 save-btn"
-                      onClick={addRow} >
+                      className="submit-button mr5 save-btn">
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                       {'Save'}
                     </button>
@@ -342,4 +292,4 @@ function AddTool(props) {
   );
 }
 
-export default React.memo(AddTool);
+export default React.memo(AddFreight);

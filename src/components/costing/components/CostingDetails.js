@@ -397,22 +397,21 @@ function CostingDetails() {
   * @description HANDLE COSTING CHANGE
   */
   const checkSOBTotal = () => {
-    // const zbcPlantGridFields = fieldValues.zbcPlantGridFields;
-    // const vbcGridFields = fieldValues.vbcGridFields;
+    const { zbcPlantGridFields, vbcGridFields } = fieldValues;
 
-    // let NetZBCSOB = 0;
-    // let NetVBCSOB = 0;
+    let NetZBCSOB = 0;
+    let NetVBCSOB = 0;
 
-    // NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields.reduce((accummlator, el) => {
-    //   return accummlator + checkForNull(el.ShareOfBusinessPercent);
-    // }, 0)
+    NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields !== undefined && zbcPlantGridFields.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.ShareOfBusinessPercent);
+    }, 0)
 
-    // NetVBCSOB = vbcGridFields && vbcGridFields.reduce((accummlator, el) => {
-    //   return accummlator + checkForNull(el.ShareOfBusinessPercent);
-    // }, 0)
+    NetVBCSOB = vbcGridFields && vbcGridFields !== undefined && vbcGridFields.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.ShareOfBusinessPercent);
+    }, 0)
 
-    // return (checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB)) > 100 ? false : true;
-    return true;
+    return (checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB)) > 100 ? false : true;
+    //return true;
 
   }
 
@@ -920,36 +919,6 @@ function CostingDetails() {
                         </div>
                       </Col>
 
-                      {/* <Col md="2">
-                        <TextFieldHooks
-                          name={'test'}
-                          label={'Test'}
-                          register={register({
-                            required: true,
-                            message: 'This field is required',
-                            pattern: {
-                              //value: /^[0-9]*$/i,
-                              value: /^[A-Za-z]+$/,
-                              message: 'Invalid Number.'
-                            },
-                          })}
-                          // rules={{
-                          //   required: true,
-                          //   pattern: {
-                          //     value: /^[0-9]*$/i,
-                          //     message: 'Invalid Number.'
-                          //   },
-                          //   maxLength: 4,
-                          // }}
-                          placeholder={'Enter'}
-                          mandatory={true}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.test}
-                          disabled={false}
-                        />
-                      </Col> */}
-
                     </Row>
 
                     {IsOpenVendorSOBDetails &&
@@ -988,12 +957,12 @@ function CostingDetails() {
                               {
                                 zbcPlantGrid &&
                                 zbcPlantGrid.map((item, index) => {
-                                  const CostingId = item.SelectedCostingVersion !== undefined ? item.SelectedCostingVersion.value : '';
                                   return (
                                     <tr key={index}>
                                       <td>{item.PlantCode}</td>
                                       <td className="cr-select-height">
                                         <TextFieldHookForm
+                                          label={''}
                                           name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
                                           Controller={Controller}
                                           control={control}
@@ -1020,6 +989,7 @@ function CostingDetails() {
                                       </td>
                                       <td className="cr-select-height">
                                         <SearchableSelectHookForm
+                                          label={''}
                                           name={`${zbcPlantGridFields}[${index}]CostingVersion`}
                                           placeholder={'-Select-'}
                                           Controller={Controller}

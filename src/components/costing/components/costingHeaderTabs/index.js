@@ -5,9 +5,11 @@ import classnames from 'classnames';
 import TabRMCC from './TabRMCC';
 import TabSurfaceTreatment from './TabSurfaceTreatment';
 import TabOverheadProfit from './TabOverheadProfit';
+import TabPackagingFreight from './TabPackagingFreight';
 
 function CostingHeaderTabs(props) {
 
+  const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
 
   /**
@@ -48,7 +50,7 @@ function CostingHeaderTabs(props) {
             </NavItem>
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
-                Packaging & Profit
+                Packaging & Freight
               </NavLink>
             </NavItem>
             <NavItem>
@@ -65,23 +67,27 @@ function CostingHeaderTabs(props) {
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
               <TabRMCC
+                netPOPrice={netPOPrice}
                 setHeaderCost={props.setHeaderCost}
                 activeTab={activeTab}
               />
             </TabPane>
             <TabPane tabId="2">
               <TabSurfaceTreatment
+                netPOPrice={netPOPrice}
                 setHeaderCost={props.setHeaderCostSurfaceTab}
                 activeTab={activeTab}
               />
             </TabPane>
             <TabPane tabId="3">
               <TabOverheadProfit
+                netPOPrice={netPOPrice}
                 activeTab={activeTab}
+                headCostRMCCBOPData={props.headCostRMCCBOPData}
               />
             </TabPane>
             <TabPane tabId="4">
-              {'Packaging & Freight'}
+              <TabPackagingFreight />
             </TabPane>
             <TabPane tabId="5">
               {'Tool Cost'}

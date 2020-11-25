@@ -253,18 +253,17 @@ function ProcessCost(props) {
   * @description SET TOOL COST
   */
   const setToolCost = (toolGrid, index) => {
-    console.log('toolGrid: ', toolGrid);
 
     let ToolsCostTotal = 0;
     ToolsCostTotal = toolGrid && toolGrid.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetToolCost);
+      return accummlator + checkForNull(el.TotalToolCost);
     }, 0)
 
     let tempArr = {
       ...tabData,
       //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
       IsShowToolCost: true,
-      ToolsCostTotal: ToolsCostTotal,
+      ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, 2),
       CostingToolsCostResponse: toolGrid
     }
 

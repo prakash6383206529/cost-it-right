@@ -3,13 +3,14 @@ import { useForm, Controller, useWatch, } from "react-hook-form";
 import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getOperationDrawerDataList } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { netHeadCostContext } from '../CostingDetailStepTwo';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
-import { checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import Switch from "react-switch";
 
-function AddTool(props) {
+function AddPackaging(props) {
 
   const { rowObjData, isEditFlag } = props;
 
@@ -24,7 +25,7 @@ function AddTool(props) {
     TotalToolCost: rowObjData && rowObjData.TotalToolCost !== undefined ? rowObjData.TotalToolCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
@@ -32,20 +33,30 @@ function AddTool(props) {
 
   const dispatch = useDispatch()
 
-  const costData = useContext(costingInfoContext)
-  const [tool, setTool] = useState([]);
+  const headCostData = useContext(netHeadCostContext)
+
+  const [applicability, setApplicability] = useState([]);
+  const [IsFixed, setIsFixed] = useState(false);
   //const [formData, setFormData] = useState({});
 
   const fieldValues = useWatch({
     control,
-    name: ['Quantity', 'ToolCost', 'Life'],
+    name: ['PackagingPercentage'],
   });
-  console.log('fieldValues: ', fieldValues);
 
   useEffect(() => {
-    getNetToolCost()
-    setValue('TotalToolCost', getNetToolCost())
+    if (applicability) {
+      calculateApplicabilityCost(applicability.value)
+    }
   }, [fieldValues]);
+
+  useEffect(() => {
+    if (!IsFixed) {
+      setValue('PackagingPercentage', 'Fixed')
+    } else {
+      setValue('PackagingPercentage', '')
+    }
+  }, [IsFixed]);
 
   const toggleDrawer = (event, formData = {}) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -54,14 +65,6 @@ function AddTool(props) {
     props.closeDrawer('', formData)
   };
 
-  /**
-  * @method getNetToolCost
-  * @description GET NET TOOL COST
-  */
-  const getNetToolCost = () => {
-    const cost = checkForNull(fieldValues.Quantity) * checkForNull(fieldValues.ToolCost) / checkForNull(fieldValues.Life)
-    return checkForDecimalAndNull(cost, 2);
-  }
 
   /**
   * @method renderListing
@@ -69,25 +72,73 @@ function AddTool(props) {
   */
   const renderListing = (label) => {
 
-    if (label === 'ToolCategory') {
+    if (label === 'Applicability') {
       return [
-        { label: 'TOOL 1', value: 'TOOL 1' },
-        { label: 'TOOL 2', value: 'TOOL 2' },
+        { label: 'RM', value: 'RM' },
+        { label: 'CC', value: 'CC' },
+        { label: 'RM + CC', value: 'RM + CC' },
       ];
     }
 
   }
 
   /**
-  * @method handleToolChange
-  * @description  TOOL CHANGE HANDLE
+  * @method handleApplicabilityChange
+  * @description  APPLICABILITY CHANGE HANDLE
   */
-  const handleToolChange = (newValue) => {
+  const handleApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
-      setTool(newValue)
+      setApplicability(newValue)
+      calculateApplicabilityCost(newValue.value)
     } else {
-      setTool([])
+      setApplicability([])
     }
+  }
+
+  /**
+   * @method calculateApplicabilityCost
+   * @description APPLICABILITY CALCULATION
+   */
+  const calculateApplicabilityCost = (Text) => {
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
+    const PackagingPercentage = getValues('PackagingPercentage');
+
+    switch (Text) {
+      case 'RM':
+        if (!IsFixed) {
+          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost, 2))
+        } else {
+          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingPercentage), 2))
+        }
+        break;
+
+      case 'RM + CC':
+        if (!IsFixed) {
+          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost + NetConversionCost, 2))
+        } else {
+          setValue('PackagingCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(PackagingPercentage), 2))
+        }
+        break;
+
+      case 'CC':
+        if (!IsFixed) {
+          setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost, 2))
+        } else {
+          setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(PackagingPercentage), 2))
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  /**
+    * @method IsFixedToggle
+    * @description PACKAGING TYPE 
+    */
+  const IsFixedToggle = () => {
+    setIsFixed(!IsFixed)
   }
 
   /**
@@ -103,20 +154,17 @@ function AddTool(props) {
   * @description used to Reset form
   */
   const cancel = () => {
-    reset({ ToolCategory: '' })
+    reset({ Applicability: '' })
     props.closeDrawer('', {})
   }
 
   const onSubmit = data => {
     let formData = {
-      ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
-      ProcessOrOperation: data.ProcessOrOperation,
-      ToolCategory: data.ToolCategory.label,
-      ToolName: data.ToolName,
-      Quantity: data.Quantity,
-      ToolCost: data.ToolCost,
-      Life: data.Life,
-      TotalToolCost: data.TotalToolCost,
+      PackagingId: isEditFlag ? rowObjData.PackagingId : '',
+      PackagingDescription: data.PackagingDescription,
+      PackagingPercentage: data.PackagingPercentage,
+      Applicability: data.Applicability,
+      PackagingCost: data.PackagingCost,
     }
     toggleDrawer('', formData)
   }
@@ -134,7 +182,7 @@ function AddTool(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Tool'}</h3>
+                  <h3>{'ADD Packaging'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -145,10 +193,35 @@ function AddTool(props) {
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
               <>
                 <Row>
+                  <Col md="12" className="switch mb15">
+                    <label className="switch-level">
+                      <div className={'left-title'}>{'Packaging Type'}</div>
+                    </label>
+                  </Col>
+                  <Col md="12" className="switch mb15">
+                    <label className="switch-level">
+                      <div className={'left-title'}>{'Fixed'}</div>
+                      <Switch
+                        onChange={IsFixedToggle}
+                        checked={IsFixed}
+                        id="normal-switch"
+                        disabled={false}
+                        background="#4DC771"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#4DC771"
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        height={20}
+                        width={46}
+                      />
+                      <div className={'right-title'}>{'Percentage'}</div>
+                    </label>
+                  </Col>
                   <Col md="12">
                     <TextFieldHookForm
-                      label="Process/Operation"
-                      name={'ProcessOrOperation'}
+                      label="Packaging Description"
+                      name={'PackagingDescription'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -165,33 +238,57 @@ function AddTool(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.ProcessOrOperation}
+                      errors={errors.PackagingDescription}
                       disabled={isEditFlag ? true : false}
+                    />
+                  </Col>
+                  <Col md="12">
+                    <TextFieldHookForm
+                      label="Packaging Percentage"
+                      name={'PackagingPercentage'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          value: IsFixed ? /^[0-9]*$/i : '',
+                          message: IsFixed ? 'Invalid Number.' : '',
+                        },
+                        // maxLength: 4,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.PackagingPercentage}
+                      disabled={isEditFlag || !IsFixed ? true : false}
                     />
                   </Col>
 
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={'Tool Category'}
-                      name={'ToolCategory'}
+                      label={'Applicability'}
+                      name={'Applicability'}
                       placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      defaultValue={tool.length !== 0 ? tool : ''}
-                      options={renderListing('ToolCategory')}
+                      defaultValue={applicability.length !== 0 ? applicability : ''}
+                      options={renderListing('Applicability')}
                       mandatory={true}
-                      handleChange={handleToolChange}
-                      errors={errors.ToolCategory}
+                      handleChange={handleApplicabilityChange}
+                      errors={errors.Applicability}
                       disabled={isEditFlag ? true : false}
                     />
                   </Col>
 
                   <Col md="12">
                     <TextFieldHookForm
-                      label="Tool Name"
-                      name={'ToolName'}
+                      label="Packaging Cost"
+                      name={'PackagingCost'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -208,107 +305,7 @@ function AddTool(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.ToolName}
-                      disabled={isEditFlag ? true : false}
-                    />
-                  </Col>
-
-                  <Col md="12">
-                    <TextFieldHookForm
-                      label="Quantity"
-                      name={'Quantity'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.Quantity}
-                      disabled={false}
-                    />
-                  </Col>
-
-                  <Col md="12">
-                    <TextFieldHookForm
-                      label="Tool Cost"
-                      name={'ToolCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ToolCost}
-                      disabled={false}
-                    />
-                  </Col>
-
-                  <Col md="12">
-                    <TextFieldHookForm
-                      label="Life/Amortization"
-                      name={'Life'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.Life}
-                      disabled={false}
-                    />
-                  </Col>
-
-                  <Col md="12">
-                    <TextFieldHookForm
-                      label="Total Tool Cost"
-                      name={'TotalToolCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.TotalToolCost}
+                      errors={errors.PackingCost}
                       disabled={true}
                     />
                   </Col>
@@ -342,4 +339,4 @@ function AddTool(props) {
   );
 }
 
-export default React.memo(AddTool);
+export default React.memo(AddPackaging);
