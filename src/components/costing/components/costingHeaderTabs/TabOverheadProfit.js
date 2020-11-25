@@ -240,79 +240,84 @@ function TabOverheadProfit(props) {
 
               <Row>
                 <Col md="1" >{'Applicability:'}</Col>
-                <Col md="3" className="switch mb15">
+                <Col md="8" className="switch mb15">
                   <label className="switch-level">
-                    <div className={'left-title'}>{'Assembly Level'}</div>
-                    <Switch
-                      onChange={onPressApplicability}
-                      checked={IsApplicableForChildParts}
-                      id="normal-switch"
-                      disabled={false}
-                      background="#4DC771"
-                      onColor="#4DC771"
-                      onHandleColor="#ffffff"
-                      offColor="#CCC"
-                      uncheckedIcon={false}
-                      checkedIcon={false}
-                      height={20}
-                      width={46}
-                    />
-                    <div className={'right-title'}>{'Sub Assembly Level'}</div>
+                    <div className={'left-title'}>{' Assembly Level'}</div>
+                    <span className="cr-sw-level">
+                      <span className="cr-switch-icon">
+                        <Switch
+                          onChange={onPressApplicability}
+                          checked={IsApplicableForChildParts}
+                          id="normal-switch"
+                          disabled={false}
+                          background="#4DC771"
+                          onColor="#4DC771"
+                          onHandleColor="#ffffff"
+                          offColor="#CCC"
+                          uncheckedIcon={false}
+                          checkedIcon={false}
+                          height={20}
+                          width={46}
+                        />
+                      </span>
+                      <div className={'right-title'}>{'Sub Assembly Level'}</div>
+                    </span>
                   </label>
-
                 </Col>
               </Row>
 
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
 
                 <Row>
-                  <Table className="table" size="sm" >
-                    <thead>
-                      <tr>
-                        <th style={{ width: '100px' }}>{``}</th>
-                        <th style={{ width: '100px' }}>{`Net Overheads`}</th>
-                        <th style={{ width: '150px' }}>{`Net Profit`}</th>
-                        <th style={{ width: '150px' }}>{`Net Rejection`}</th>
-                        <th style={{ width: '150px' }}>{`Net ICC`}</th>
-                        <th style={{ width: '150px' }}>{`Payment Terms`}</th>
-                      </tr>
-                    </thead>
-                    <tbody >
-                      {
-                        tabData && tabData.map((item, index) => {
-                          return (
-                            < >
-                              <tr key={index} onClick={() => toggle(index)}>
-                                <td>{item.PartName}</td>
-                                <td>{''}</td>
-                                <td>{''}</td>
-                                <td>{''}</td>
-                                <td>{''}</td>
-                                <td>{''}</td>
-                              </tr>
-                              {item.IsOpen &&
-                                <tr>
-                                  <td colSpan={6}>
-                                    <div>
-                                      <OverheadProfit
-                                        index={index}
-                                        tabData={item}
-                                        headCostRMCCBOPData={props.headCostRMCCBOPData}
-                                        setOverheadDetail={setOverheadDetail}
-                                        setProfitDetail={setProfitDetail}
-                                        setRejectionDetail={setRejectionDetail}
-                                      />
-                                    </div>
-                                  </td>
+                  <Col md="12">
+                    <Table className="table cr-brdr-main" size="sm">
+                      <thead>
+                        <tr>
+                          <th style={{ width: '100px' }}>{``}</th>
+                          <th style={{ width: '100px' }}>{`Net Overheads`}</th>
+                          <th style={{ width: '150px' }}>{`Net Profit`}</th>
+                          <th style={{ width: '150px' }}>{`Net Rejection`}</th>
+                          <th style={{ width: '150px' }}>{`Net ICC`}</th>
+                          <th style={{ width: '150px' }}>{`Payment Terms`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          tabData && tabData.map((item, index) => {
+                            return (
+                              < >
+                                <tr key={index} onClick={() => toggle(index)}>
+                                  <td><span class="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
+                                  <td>{''}</td>
+                                  <td>{''}</td>
+                                  <td>{''}</td>
+                                  <td>{''}</td>
+                                  <td>{''}</td>
                                 </tr>
-                              }
-                            </>
-                          )
-                        })
-                      }
+                                {item.IsOpen &&
+                                  <tr>
+                                    <td colSpan={6}>
+                                      <div>
+                                        <OverheadProfit
+                                          index={index}
+                                          tabData={item}
+                                          headCostRMCCBOPData={props.headCostRMCCBOPData}
+                                          setOverheadDetail={setOverheadDetail}
+                                          setProfitDetail={setProfitDetail}
+                                          setRejectionDetail={setRejectionDetail}
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                }
+                              </>
+                            )
+                          })
+                        }
 
-                    </tbody>
-                  </Table>
+                      </tbody>
+                    </Table>
+                  </Col>
                 </Row>
 
                 {/* <Row className="sf-btn-footer no-gutters justify-content-between mt25">

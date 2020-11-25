@@ -71,8 +71,6 @@ class AddPackaging extends Component {
                                         className="form"
                                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                     >
-
-
                                     </form>
                                 </div>
                             </div>

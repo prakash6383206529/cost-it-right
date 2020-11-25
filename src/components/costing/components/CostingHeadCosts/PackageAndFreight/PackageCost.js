@@ -99,12 +99,12 @@ function PackageCost(props) {
       <div className="user-page p-0">
         <div>
           <Row>
-            <Col md="10">
+            <Col md="8">
               <div className="left-border">
                 {'Packaging:'}
               </div>
             </Col>
-            <Col col={'2'}>
+            <Col col={'4'}>
               <button
                 type="button"
                 className={'user-btn'}
@@ -116,7 +116,7 @@ function PackageCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table" size="sm" >
+              <Table className="table cr-brdr-main" size="sm">
                 <thead>
                   <tr>
                     <th>{`Packaging Description`}</th>
@@ -125,7 +125,7 @@ function PackageCost(props) {
                     <th>{`Action`}</th>
                   </tr>
                 </thead>
-                <tbody >
+                <tbody>
                   {
                     gridData &&
                     gridData.map((item, index) => {

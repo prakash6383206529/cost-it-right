@@ -162,12 +162,12 @@ function OperationCost(props) {
       <div className="user-page p-0">
         <div>
           <Row>
-            <Col md="10">
+            <Col md="8">
               <div className="left-border">
                 {'Operation Cost:'}
               </div>
             </Col>
-            <Col col={'2'}>
+            <Col col={'4'}>
               <button
                 type="button"
                 className={'user-btn'}

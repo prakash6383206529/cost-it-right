@@ -171,7 +171,7 @@ function TabSurfaceTreatment(props) {
               </Row>
 
               <Row>
-                <Col md="4" className="mb15">
+                <Col md="6" className="mb15">
                   <label
                     className={`custom-checkbox`}
                     onChange={onPressIncludeSurfaceTreatment}
@@ -194,48 +194,50 @@ function TabSurfaceTreatment(props) {
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
 
                 <Row>
-                  <Table className="table" size="sm" >
-                    <thead>
-                      <tr>
-                        <th style={{ width: '100px' }}>{``}</th>
-                        <th style={{ width: '100px' }}>{`Surface Treatment Cost`}</th>
-                        <th style={{ width: '150px' }}>{`Transportation Cost`}</th>
-                        <th style={{ width: '150px' }}>{`Total Surface Treatment Cost`}</th>
-                      </tr>
-                    </thead>
-                    <tbody >
-                      {
-                        tabData && tabData.map((item, index) => {
-                          return (
-                            < >
-                              <tr key={index} onClick={() => toggle(index)}>
-                                <td>{item.PartName}</td>
-                                <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
-                                <td>{item.TransporationCost !== null ? checkForDecimalAndNull(item.TransporationCost, 2) : 0}</td>
-                                <td>{item.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.NetSurfaceTreatmentCost, 2) : 0}</td>
-                              </tr>
-                              {item.IsOpen &&
-                                <tr>
-                                  <td colSpan={4}>
-                                    <div>
-                                      <SurfaceTreatment
-                                        index={index}
-                                        surfaceData={item.SurfaceTreatmentDetails}
-                                        transportationData={item.TransporationDetails}
-                                        setSurfaceCost={setSurfaceCost}
-                                        setTransportationCost={setTransportationCost}
-                                      />
-                                    </div>
-                                  </td>
+                  <Col md="12">
+                    <Table className="table cr-brdr-main" size="sm">
+                      <thead>
+                        <tr>
+                          <th style={{ width: '100px' }}>{``}</th>
+                          <th style={{ width: '100px' }}>{`Surface Treatment Cost`}</th>
+                          <th style={{ width: '150px' }}>{`Transportation Cost`}</th>
+                          <th style={{ width: '150px' }}>{`Total Surface Treatment Cost`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          tabData && tabData.map((item, index) => {
+                            return (
+                              < >
+                                <tr key={index} onClick={() => toggle(index)}>
+                                  <td><span class="cr-prt-nm">{item.PartName}</span></td>
+                                  <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
+                                  <td>{item.TransporationCost !== null ? checkForDecimalAndNull(item.TransporationCost, 2) : 0}</td>
+                                  <td>{item.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.NetSurfaceTreatmentCost, 2) : 0}</td>
                                 </tr>
-                              }
-                            </>
-                          )
-                        })
-                      }
+                                {item.IsOpen &&
+                                  <tr>
+                                    <td colSpan={4}>
+                                      <div>
+                                        <SurfaceTreatment
+                                          index={index}
+                                          surfaceData={item.SurfaceTreatmentDetails}
+                                          transportationData={item.TransporationDetails}
+                                          setSurfaceCost={setSurfaceCost}
+                                          setTransportationCost={setTransportationCost}
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                }
+                              </>
+                            )
+                          })
+                        }
 
-                    </tbody>
-                  </Table>
+                      </tbody>
+                    </Table>
+                  </Col>
                 </Row>
 
                 <Row className="sf-btn-footer no-gutters justify-content-between mt25">

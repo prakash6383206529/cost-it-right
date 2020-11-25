@@ -205,7 +205,7 @@ function RawMaterialCost(props) {
                       <th>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
-                      <th>{`Weight Calculator`}</th>
+                      <th className="text-center">{`Weight Calculator`}</th>
                       <th>{`Gross Weight`}</th>
                       <th>{`Finish Weight`}</th>
                       <th>{`Net RM Cost`}</th>
@@ -221,7 +221,7 @@ function RawMaterialCost(props) {
                             <td>{item.RMName}</td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
-                            <td className="text-center"><button className="CalculatorIcon mt15" type={'button'} onClick={() => toggleWeightCalculator(index)} /></td>
+                            <td className="text-center"><button className="CalculatorIcon cr-cl-icon mt15" type={'button'} onClick={() => toggleWeightCalculator(index)} /></td>
                             <td>
                               {
                                 <TextFieldHookForm

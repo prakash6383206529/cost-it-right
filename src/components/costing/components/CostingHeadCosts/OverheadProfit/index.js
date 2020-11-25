@@ -1610,7 +1610,7 @@ function OverheadProfit(props) {
 
 
             <Row>
-              <Col md="2" className="switch mb15">
+              <Col md="6" className="switch mb15">
                 <label className="switch-level">
                   <div className={'left-title'}>{''}</div>
                   <Switch
@@ -1630,7 +1630,7 @@ function OverheadProfit(props) {
                   <div className={'right-title'}>Inventory Carrying Cost</div>
                 </label>
               </Col>
-              <Col md="8">
+              <Col md="6">
                 {''}
               </Col>
 
@@ -1707,7 +1707,7 @@ function OverheadProfit(props) {
 
 
             <Row>
-              <Col md="2" className="switch mb15">
+              <Col md="6" className="switch mb15">
                 <label className="switch-level">
                   <div className={'left-title'}>{''}</div>
                   <Switch
@@ -1727,7 +1727,7 @@ function OverheadProfit(props) {
                   <div className={'right-title'}>Payment Terms</div>
                 </label>
               </Col>
-              <Col md="8">
+              <Col md="6">
                 {''}
               </Col>
 

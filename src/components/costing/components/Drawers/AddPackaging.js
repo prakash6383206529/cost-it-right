@@ -178,7 +178,6 @@ function AddPackaging(props) {
       <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
         <Container>
           <div className={'drawer-wrapper'}>
-
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
