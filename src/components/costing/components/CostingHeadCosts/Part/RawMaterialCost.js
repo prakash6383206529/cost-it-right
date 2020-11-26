@@ -148,7 +148,6 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
 
       setTimeout(() => {
-        console.log('called from bottom')
         setGridData(tempArr)
         setValue(`${rmGridFields}[${editIndex}]GrossWeight`, GrossWeight)
         setValue(`${rmGridFields}[${editIndex}]FinishWeight`, FinishWeight)
